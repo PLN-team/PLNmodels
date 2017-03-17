@@ -1,0 +1,151 @@
+---
+title: "Analyzing the Trichopetra data set with Poisson log-normal PCA"
+author: "Julien Chiquet"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette intends to illustrate the basical use of the `PLNPCA` function and the methods accompaning the reference Classes `PLNfamily` and `PLNfit.PCA`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
+
+## The Trichoptera data set
+
+This data set comes with the `R` package *ade4*. We also load our own package for the upcoming analyses:
+```{r}
+library(PLNmodels)
+library(ade4)
+data("trichometeo")
+```
+
+The insects have been trapped between 1959 and 1960 during 49 trapping nights. These trapping nights are the observations in the case at hand. For each one of these, the abundance of 17 Trichoptera species is recorded, which forms the first table:
+```{r}
+dim(trichometeo$fau)
+head(trichometeo$fau)
+```
+
+
+The second table concerns 11 meteorological variables which may influence the abundance of each species:
+
+```{r}
+dim(trichometeo$meteo)
+head(trichometeo$meteo)
+```
+Finally, the observations (that is to say, the trapping nights), have been classified into 12 groups corresponding to contiguous nights between summer 1959 and  summer 1960.
+
+```{r}
+barplot(table(trichometeo$cla), main="Trapping nights classificaton")
+```
+
+A full description of the data set (in French) is available  [at this page](http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf).
+
+## Poisson log-normal models
+
+The family of models available in the package belongs to the family of probabilistic PCA models, where the observation are not necessarily Gaussian.  In particular, we consider that observations are drawn from a Poisson distribution.
+
+### A quick view of the mathematical formulation of the model
+
+The model can be written in a hierachical framework where a sample of $p$-dimensional observation vectors $\mathbf{Y}_i$ is related to some  $q$-dimensional vectors of latent variables $\mathbf{W}_i$ as follows
+\begin{equation} 
+  \label{eq:pca-model}
+  \begin{array}{rcl}
+    \text{latent space }  & \mathbf{W}_i \quad \text{i.i.d.} & \mathbf{W}_i \sim      \mathcal{N}(\mathbf{0}_q, \mathbf{I}_q)  \\
+\text{parameter space } &   \mathbf{Z}_i|\mathbf{W}_i = {\boldsymbol\mu} + \mathbf{B}^\top \mathbf{W}_i  & \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}, \mathbf{B}\mathbf{B}^\top) \\
+  \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
+  \end{array}
+\end{equation}
+
+The parameter ${\boldsymbol\mu}$ corresponds to the main effects, $\mathbf{B}$ to \emph{rescaled} loadings in the parameter spaces and $\mathbf{W}_i$ to scores of the $i$-th observation in the low-dimensional latent subspace of the parameter space. For more details, have a look at our research paper referenced in the package documentation.
+
+The dimension of the latent space $q$ corresponds to the number of axes in the PCA or, in other words, to the rank of $\mathbf{B}\mathbf{B}^\intercal$.
+
+### A model with latent main effects for the Trichopetra data set
+
+We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The model can be fitted with the function `PLNPCA` for a series of values for $q$ as follows:
+
+```{r}
+abundance <- as.matrix(trichometeo$fau) ## must be a matrix
+models.nocov <- PLNPCA(abundance ~ 1, Q=1:5)
+```
+
+Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`.
+
+The `model.nocov` variable is a  `RefClass` object with class `PLNfamily`, which comes with a couple of methods. The most basic is the `show/print` method, which send a very basic summary of the estimation process:
+
+```{r}
+models.nocov
+```
+Complementary information comes with the `plot` method:
+```{r, fig.width=7, fig.height=5}
+models.nocov$plot()
+```
+
+The critetion $J$ represents the variational lower bound of the likelihood: in this case, we can see that it is strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) $R^2$ which is displayed for each value of $q$ (see the paper for details on how ot is computed). Generally, smoothness of these criteria is an good indicator to check that the optimization process went well.
+
+From this plot, we can see that the best model in terms of BIC or ICL is obtained for $q=3$ axes. We may extract the corresponding model with the method `getBestModel("ICL")`. A model with a specific number of axes can be extracted with the `getModel(q)` method. 
+
+```{r}
+myPCA.ICL <- models.nocov$getBestModel() # if no criteria is specified, the best ICL is used
+myPCA.q5 <- models.nocov$getModel(5) 
+```
+
+The variables `myPCA.ICL` and `myPCA.q5` are other `RefClass` objects of class `PLNfit.PCA` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot` method provides the individual maps and correlation circles as in usual PCA. If an additional classification exist for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument of the function.
+
+```{r, fig.width=8, fig.height=8}
+myPCA.ICL$plot(cols=trichometeo$cla)
+```
+
+With our model (and any pPCA model for count data, where model are not necessarily nested), it is important to look at all the axes at the same time, since the model with $q=3$ axes is not included in the model with $q=5$ axes. Indeed, let us vizualize first three axes for the model with $q=5$ (note that we can control the axes which are plotted):
+
+```{r, fig.width=8, fig.height=8}
+myPCA.q5$plot(cols=trichometeo$cla, axes=1:3)
+```
+
+We can see that the maps for axes (1,2) is slightly different for the model with $q=5$ from the one obtained for axes (1,2) in the $q=3$ model. 
+
+Also, percentage of variance must be interpreted with care: it sums to 100% but must be put in perspective with the model $R^2$, giving an approximation of the total percentage of variance explained with the current model.
+
+### A model accounting for meteorological covariates in the Trichopetra data set
+
+An original contribution of our model is to let the possibility of taking into account some covariates in the parameter space. Such a strategy often completly changes the interpretation of PCA. Indeed, the covariates are often responsible for some strong structure in the data. The effect of the covariates should be removed since they are often quite obvious for the analyst and may hide some more important and subtile effects.
+
+Basically, the model with covariates extends the one used in the previous section by modeling the parameter space as follows:
+
+\begin{equation} 
+  \mathbf{Z}_i|\mathbf{W}_i = {\boldsymbol\mu} + {\boldsymbol\Theta} \mathbf{X}_i^\intercal +    \mathbf{B}^\top \mathbf{W}_i, \quad \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu} + {\boldsymbol\Theta} \mathbf{X}_i^\intercal, \mathbf{B}\mathbf{B}^\top),
+\end{equation}
+
+where $\mathbf{X}_i$ is a vector of $d$ covariate for observations $i$. The $p \times d$ matrix  $\boldsymbol\Theta$ entails the associated parameters.
+
+In the case at hand, the covariates corresponds to the meteorological variables, that is, 
+
+```{r}
+colnames(trichometeo$meteo)
+```
+
+Let us try to introduce some of them in our model, for instance, the minimal temperature, the wind and the nebulosity. This can be done thanks to the model formula:
+```{r}
+covar <- trichometeo$meteo
+models.cov <- PLNPCA(abundance ~ 1 + covar$T.min + covar$Nebu.Moy + covar$Vent, Q=1:5)
+```
+
+Again, the best model is obtained for $q=3$ classes.
+
+```{r}
+models.cov
+myPCA.cov <- models.cov$getBestModel()
+```
+
+Suppose thaht we want to give a closer look to the first two axes. This can be done thanks to the two methods `plot_individual.map` and `plot_correlation.circle` :
+
+```{r, fig.height=7, fig.width=7}
+myPCA.cov$plot_individual.map(axes=c(1,2), cols=trichometeo$cla)
+```
+
+```{r, fig.height=7, fig.width=7}
+myPCA.cov$plot_correlation.circle(axes=c(1,2))
+```
+
+That is all for now!
