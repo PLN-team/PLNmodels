@@ -6,7 +6,7 @@ The Poisson lognormal model and variants can be used for a variety of multivaria
 ## Installation
 
 ```
-devtools::install_github("jchiquet/PLNmodels")
+devtools::install_github("jchiquet/PLNmodels", build_vignettes=TRUE)
 ```
 
 ## Use and example
