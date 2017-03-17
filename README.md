@@ -11,4 +11,4 @@ devtools::install_github("jchiquet/PLNmodels")
 
 ## Use and example
 
-See the package [vignette](http://https://github.com/jchiquet/PLNmodels/blob/master/vignettes/trichoptera.Rmd) running PLNPCA on the *ade4* Trichoptera data set.
+See the package [vignette](https://github.com/jchiquet/PLNmodels/blob/master/vignettes/trichoptera.Rmd) running PLNPCA on the *ade4* Trichoptera data set.
