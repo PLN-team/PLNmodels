@@ -16,7 +16,17 @@ Description: The Poisson lognormal model and variants can be used for
 License: GPL>=2
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Imports: ggplot2, gridExtra, parallel, reshape2
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
+Collate: 
+    'PLNPCA.R'
+    'PLNfamily-class.R'
+    'PLNPCAfamily-class.R'
+    'PLNfit-class.R'
+    'PLNPCAfit-class.R'
+    'PLNmodels-package.R'
+    'PLNnetworkfamily-class.R'
+    'PLNnetworkfit-class.R'
+    'utils.R'

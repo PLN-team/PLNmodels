@@ -14,7 +14,7 @@
 ##' @author Mahendra Mariadassou \email{mahendra.mariadassou@@inra.fr}
 ##' @author Stéphane Robin \email{stephane.robin@@inra.fr}
 ##'
-##' @import methods parallel ggplot2 reshape2 grid gridExtra
+##' @import methods parallel ggplot2 reshape2 grid gridExtra R6
 ##' @docType package
 ##' @name PLNmodels
 NULL

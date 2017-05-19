@@ -24,4 +24,3 @@ Mahendra Mariadassou \email{mahendra.mariadassou@inra.fr}
 
 Stéphane Robin \email{stephane.robin@inra.fr}
 }
-

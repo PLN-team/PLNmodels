@@ -2,8 +2,8 @@
 % Please edit documentation in R/PLNPCA.R
 \name{PLNPCA}
 \alias{PLNPCA}
-\alias{PLNPCA.default}
 \alias{PLNPCA.formula}
+\alias{PLNPCA.default}
 \title{Fit a Poisson lognormal model towards Principal Component Analysis}
 \usage{
 PLNPCA(x, ...)
@@ -49,6 +49,5 @@ The parameter \code{control} is a list with the following entries
 ## See the vignette: vignette("trichoptera", package="PLNmodels")
 }
 \seealso{
-The classes \code{\link[=PLNfamily-class]{PLNfamily}} and \code{\link[=PLNfit.PCA-class]{PLNfit.PCA}}
+The classes \code{\link[=PLNfamily-class]{PLNPCAfamily}} and \code{\link[=PLNfit.PCA-class]{PLNfit.PCA}}
 }
-

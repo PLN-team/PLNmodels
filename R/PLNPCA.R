@@ -25,7 +25,7 @@
 ##' @rdname PLNPCA
 ##' @examples
 ##' ## See the vignette: vignette("trichoptera", package="PLNmodels")
-##' @seealso The classes \code{\link[=PLNfamily-class]{PLNfamily}} and \code{\link[=PLNfit.PCA-class]{PLNfit.PCA}}
+##' @seealso The classes \code{\link[=PLNfamily-class]{PLNPCAfamily}} and \code{\link[=PLNfit.PCA-class]{PLNfit.PCA}}
 ##' @export
 PLNPCA <- function(x, ...)
   UseMethod("PLNPCA", x)
@@ -53,16 +53,16 @@ PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y),
 
   ## Instantiate the collection of PLN models, initialized by glm Poisson
   if (ctrl$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNfamily$new(ranks=Q, type=ctrl$approx, responses=Y, covariates=X, offsets=O)
+  myPLN <- PLNPCAfamily$new(ranks=Q, type=ctrl$approx, responses=Y, covariates=X, offsets=O)
 
   ## Now adjust the PLN models
-  if (ctrl$trace > 0) cat("\n Adjusting",ctrl$approx,"models")
+  if (ctrl$trace > 0) cat("\n Adjusting", ctrl$approx,"models")
   myPLN$optimize(ctrl)
   if (ctrl$trace > 0) cat("\n DONE!\n")
   myPLN$setCriteria()
 
-  ## turn the PLN models to PLN-PCA model (set vizualisation)
-  myPLN$setPCA()
+  ## PostTreatment (basically, setup the visualizationfor PCA)
+  myPLN$postTreatment()
 
   return(myPLN)
 }
