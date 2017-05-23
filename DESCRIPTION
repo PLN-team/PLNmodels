@@ -17,7 +17,7 @@ License: GPL>=2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Imports: ggplot2, gridExtra, parallel, reshape2
+Imports: ggplot2, gridExtra, parallel, reshape2, R6, methods, stats, glasso
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 Collate: 
@@ -27,6 +27,7 @@ Collate:
     'PLNfit-class.R'
     'PLNPCAfit-class.R'
     'PLNmodels-package.R'
+    'PLNnetwork.R'
     'PLNnetworkfamily-class.R'
     'PLNnetworkfit-class.R'
     'utils.R'

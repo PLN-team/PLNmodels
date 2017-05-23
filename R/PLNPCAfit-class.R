@@ -1,22 +1,20 @@
-#' A R6 Class to represent a PLNfit in a PCA framework
+#' An R6 Class to represent a PLNfit in a PCA framework
 #'
 #' @description The function \code{\link{PLNPCA}} produces a collection of models which are instances of object with class \code{PLNPCAfit}.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for \code{\link[=PLNPCAfit_plot]{plot}}, \code{\link[=PLNPCAfit_plot_individual.map]{plot_individual.map}}
 #' and \code{\link[=PLNPCAfit_plot_correlation.circle]{plot_correlation.circle}}
-#' Other methods should not be called as they are designed to be used during the optimization process.
 #'
-#' Fields should not be changed or manipulated by the user as they are updated internally
-#' during the estimation process.
+#' Fields should not be changed or manipulated by the user as they are updated internally.
 #'
 #' @field type a character indicating the model used for the covariance matrix in the variational Gaussian approximation. Either "diagonal" or "spherical".
-#' @field rank the dimension of the fitted models
+#' @field rank the dimension of the current model
 #' @field model.par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
 #' @field variation.par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.
 #' @field convergence numeric; the convergence status of the L-BFGS-B method
-#' @field loglik numeric; the Poisson logliklihod of the sub models, from 1 to rank
+#' @field loglik numeric; the Poisson loglikelihood of the current model
 #' @field percentVar the percent of variance explained by each axis
 #' @field corrCircle a matrix of correlations to plot the correlation circles
 #' @field scores a matrix of scores to plot the individual factor maps
@@ -34,10 +32,10 @@ PLNPCAfit <-
       initialize = function(rank = NA, percentVar = NA, corrCircle = NA, scores = NA,
                             type=NA, model.par=NA, variational.par=NA, criteria=NA, convergence=NA, loglik=NA) {
         super$initialize(type, model.par, variational.par, criteria, convergence, loglik)
-        self$rank       <- self$rank
-        self$percentVar <- self$percentVar
-        self$corrCircle <- self$corrCircle
-        self$scores     <- self$scores
+        self$rank       <- rank
+        self$percentVar <- percentVar
+        self$corrCircle <- corrCircle
+        self$scores     <- scores
       }
     )
 )

@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette intends to illustrate the basical use of the `PLNPCA` function and the methods accompaning the reference Classes `PLNfamily` and `PLNfit.PCA`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
+This vignette intends to illustrate the basical use of the `PLNPCA` function and the methods accompaning the R6 Classes `PLNPCAfamily` and `PLNPCAfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
 
 ## The Trichoptera data set
 
@@ -72,7 +72,7 @@ models.nocov <- PLNPCA(abundance ~ 1, Q=1:5)
 
 Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`.
 
-The `model.nocov` variable is a  `RefClass` object with class `PLNfamily`, which comes with a couple of methods. The most basic is the `show/print` method, which send a very basic summary of the estimation process:
+The `model.nocov` variable is an `R6` object with class `PLNPCAfamily`, which comes with a couple of methods. The most basic is the `show/print` method, which send a very basic summary of the estimation process:
 
 ```{r}
 models.nocov
@@ -91,7 +91,7 @@ myPCA.ICL <- models.nocov$getBestModel() # if no criteria is specified, the best
 myPCA.q5 <- models.nocov$getModel(5) 
 ```
 
-The variables `myPCA.ICL` and `myPCA.q5` are other `RefClass` objects of class `PLNfit.PCA` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot` method provides the individual maps and correlation circles as in usual PCA. If an additional classification exist for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument of the function.
+The variables `myPCA.ICL` and `myPCA.q5` are other `RefClass` objects of class `PLNPCAfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot` method provides the individual maps and correlation circles as in usual PCA. If an additional classification exist for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument of the function.
 
 ```{r, fig.width=8, fig.height=8}
 myPCA.ICL$plot(cols=trichometeo$cla)

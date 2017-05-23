@@ -3,7 +3,7 @@
 \docType{data}
 \name{PLNPCAfit}
 \alias{PLNPCAfit}
-\title{A R6 Class to represent a PLNfit in a PCA framework}
+\title{An R6 Class to represent a PLNfit in a PCA framework}
 \format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 PLNPCAfit
@@ -14,17 +14,15 @@ The function \code{\link{PLNPCA}} produces a collection of models which are inst
 This class comes with a set of methods, some of them being useful for the user:
 See the documentation for \code{\link[=PLNPCAfit_plot]{plot}}, \code{\link[=PLNPCAfit_plot_individual.map]{plot_individual.map}}
 and \code{\link[=PLNPCAfit_plot_correlation.circle]{plot_correlation.circle}}
-Other methods should not be called as they are designed to be used during the optimization process.
 
-Fields should not be changed or manipulated by the user as they are updated internally
-during the estimation process.
+Fields should not be changed or manipulated by the user as they are updated internally.
 }
 \section{Fields}{
 
 \describe{
 \item{\code{type}}{a character indicating the model used for the covariance matrix in the variational Gaussian approximation. Either "diagonal" or "spherical".}
 
-\item{\code{rank}}{the dimension of the fitted models}
+\item{\code{rank}}{the dimension of the current model}
 
 \item{\code{model.par}}{a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model}
 
@@ -34,7 +32,7 @@ during the estimation process.
 
 \item{\code{convergence}}{numeric; the convergence status of the L-BFGS-B method}
 
-\item{\code{loglik}}{numeric; the Poisson logliklihod of the sub models, from 1 to rank}
+\item{\code{loglik}}{numeric; the Poisson loglikelihood of the current model}
 
 \item{\code{percentVar}}{the percent of variance explained by each axis}
 

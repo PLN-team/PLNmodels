@@ -3,7 +3,7 @@
 \docType{data}
 \name{PLNPCAfamily}
 \alias{PLNPCAfamily}
-\title{A Reference Class to represent a collection of PLNPCAfit}
+\title{An R6 Class to represent a collection of PLNPCAfit}
 \format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 PLNPCAfamily
@@ -26,7 +26,7 @@ during the estimation process.
 
 \item{\code{ranks}}{the dimensions of the successively fitted models}
 
-\item{\code{models}}{a list of \code{\link[=PLNPCAfit.PCA-class]{PLNPCAfit}} object, one per rank.}
+\item{\code{models}}{a list of \code{\link[=PLNPCAfit-class]{PLNPCAfit}} object, one per rank.}
 
 \item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 
@@ -42,6 +42,6 @@ during the estimation process.
 }}
 
 \seealso{
-The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit.PCA-class]{PLNPCAfit.PCA}}
+The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit-class]{PLNPCAfit}}
 }
 \keyword{datasets}
