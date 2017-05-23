@@ -8,8 +8,10 @@
 ##' @param O an optional (n x p) matrix of offsets.
 ##' @param Q a vector of integer containing the successive ranks (or number of axes to be considered)
 ##' @param control a list for controling the optimization. See details.
-##' @return an R6 object with class \code{\link[=PLNPCAfamily-class]{PLNPCAfamily}}, which contains
-##' a collection of models with class \code{\link[=PLNPCAfit-class]{PLPCAfit}}
+##' @param Robject an R object, either a formula or a matrix
+##' @param ... additional parameters. Not used
+##' @return an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
+##' a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
 ##'
 ##' @details The parameter \code{control} is a list with the following entries
 ##' \itemize{
@@ -25,11 +27,11 @@
 ##' @rdname PLNPCA
 ##' @examples
 ##' ## See the vignette: vignette("trichoptera", package="PLNmodels")
-##' @seealso The classes \code{\link[=PLNnetworkfamily-class]{PLNPCAfamily}} and \code{\link[=PLNPCAfit-class]{PLNPCAfit}}
+##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNPCA <- function(x, ...)
-  UseMethod("PLNPCA", x)
+PLNPCA <- function(Robject, ...)
+  UseMethod("PLNPCA", Robject)
 
 ##' @rdname PLNPCA
 ##' @export

@@ -7,7 +7,7 @@
 \item{rank}{an integer given the rank of the model to be extracted from the collection.}
 }
 \value{
-Send back a object with class \code{\link[=PLNPCAfit-class]{PLNPCAfit}}.
+Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
 }
 \description{
 Model extraction from a collection of PLNPCAfit

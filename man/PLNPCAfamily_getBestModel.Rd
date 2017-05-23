@@ -8,7 +8,7 @@
 "ICL", "BIC", "J" or "R2". Default is "ICL.}
 }
 \value{
-Send back a object with class \code{\link[=PLNPCAfit.PCA-class]{PLNPCAfit}}.
+Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
 }
 \description{
 Best model extraction from a collection of PLNPCAfit

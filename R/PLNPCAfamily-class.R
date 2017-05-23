@@ -1,4 +1,4 @@
-#' A Reference Class to represent a collection of PLNPCAfit
+#' An R6 Class to represent a collection of PLNPCAfit
 #'
 #' @description The function \code{\link{PLNPCA}} produces an instance of this class.
 #'
@@ -12,7 +12,7 @@
 #'
 #' @field type a character indicating the model used for the covariance matrix in the variational Gaussian approximation. Either "diagonal" or "spherical".
 #' @field ranks the dimensions of the successively fitted models
-#' @field models a list of \code{\link[=PLNPCAfit.PCA-class]{PLNPCAfit}} object, one per rank.
+#' @field models a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
@@ -21,7 +21,7 @@
 #' @field gradient the R function to compute the model's gradient during the optimization process
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
-#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit.PCA-class]{PLNPCAfit.PCA}}
+#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 PLNPCAfamily <-
   R6Class(classname = "PLNPCAfamily",
     inherit = PLNfamily,
@@ -165,7 +165,7 @@ PLNPCAfamily$set("public", "optimize",
 #'
 #' @param crit a character for the criterion used to performed the selection. Either
 #' "ICL", "BIC", "J" or "R2". Default is "ICL.
-#' @return  Send back a object with class \code{\link[=PLNPCAfit.PCA-class]{PLNPCAfit}}.
+#' @return  Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
 NULL
 PLNPCAfamily$set("public", "getBestModel",
 function(crit=c("ICL", "BIC", "J", "R2")){
@@ -186,7 +186,7 @@ function(crit=c("ICL", "BIC", "J", "R2")){
 #' @name PLNPCAfamily_getModel
 #'
 #' @param rank an integer given the rank of the model to be extracted from the collection.
-#' @return Send back a object with class \code{\link[=PLNPCAfit-class]{PLNPCAfit}}.
+#' @return Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
 NULL
 PLNPCAfamily$set("public", "getModel",
 function(rank){

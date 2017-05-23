@@ -20,7 +20,7 @@
 #' @field scores a matrix of scores to plot the individual factor maps
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
-#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNfamily-class]{PLNfamily}}
+#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNfamily]{PLNfamily}}
 PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
