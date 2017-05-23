@@ -128,9 +128,9 @@ PLNPCAfamily$set("public", "optimize",
     ## ===========================================
     ## OUTPUT
     ## formating parameters for output
-    Theta <- matrix(optim.out$par[1:(p*d)]           , p,d); colnames(Theta) <- colnames(self$covariates)
-    B     <- matrix(optim.out$par[p*d      + 1:(p*q)], p,q); rownames(B) <- colnames(self$responses)
-    M     <- matrix(optim.out$par[p*(d+q)  + 1:(n*q)], n,q); rownames(M) <- rownames(self$responses)
+    Theta <- matrix(optim.out$par[1:(p*d)]           , p,d)
+    B     <- matrix(optim.out$par[p*d      + 1:(p*q)], p,q)
+    M     <- matrix(optim.out$par[p*(d+q)  + 1:(n*q)], n,q)
     S     <- switch(self$type,
                     "diagonal"  = matrix(optim.out$par[p*(d+q)+n*q + 1:(n*q)],n,q),
                     "spherical" = c(optim.out$par[p*(d+q)+n*q + 1:n]))
@@ -143,7 +143,7 @@ PLNPCAfamily$set("public", "optimize",
       Z <- tcrossprod(M[,1:q_,drop=FALSE],B[,1:q_,drop=FALSE]) + tcrossprod(self$covariates, Theta) + self$offsets
       return(sum(self$responses * (Z)) - sum(as.numeric(self$responses)) - KY)
     })
-    J   <- -optim.out$value # objective(optim.out$par,n,p,q,d,KY)
+    J   <- -optim.out$value
     lmin <- sum(self$responses * (self$offsets + tcrossprod(self$covariates, model$model.par$Theta))) - sum(as.numeric(self$responses)) - KY
     lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1)) - KY
     R2  <- (loglik[q] - lmin)  / (lmax - lmin)
