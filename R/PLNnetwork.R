@@ -51,7 +51,7 @@ PLNnetwork.formula <- function(formula, penalties = 0,  control = list()) {
 PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = 0, control = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(MMtol = 1e-3, MMmaxit = 100, factr=1e7, pgtol=.Machine$double.eps, maxit=100, lbvar=1e-3, cores=1, trace=1)
+  ctrl <- list(MMtol = 5e-3, MMmaxit = 100, factr=1e7, pgtol=.Machine$double.eps, maxit=100, lbvar=1e-3, cores=1, trace=1)
   ctrl[names(control)] <- control
 
   ## Instantiate the collection of PLN models, initialized by glm Poisson

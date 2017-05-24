@@ -35,13 +35,14 @@ PLNnetworkfamily$set("public", "initialize",
   ## initialize the required fields
   super$initialize(responses, covariates, offsets)
   stopifnot(all(penalties >= 0))
-  penalties <- round(penalties,12)
+  ## sort penalties in decreasing order and round
+  penalties <- round(sort(penalties, decreasing = TRUE),12)
   self$penalties <- penalties
 
+  ## instantiate as many models as penalties
   fit <- PLNnetworkfit$new()
   self$models <- lapply(penalties, function(penalty){
     model <- fit$clone()
-    model$model.par <- list(Sigma = self$init.par$Sigma, Theta = self$init.par$Theta)
     model$penalty <- penalty
     return(model)
   })
@@ -56,7 +57,6 @@ PLNnetworkfamily$set("public", "initialize",
       Z <- self$offsets + tcrossprod(self$covariates, Theta) + M
       logP.Z  <- n/2 * (logDetOmega - sum(diag(Omega)*colMeans(S))) - .5*sum(diag(Omega %*% crossprod(M)))
 
-      # we return - J
       return(sum(as.numeric(exp(.trunc(Z + .5*S)) - self$responses*Z)) - logP.Z - .5*sum(log(S)+1)+ KY)
   }
 
@@ -85,24 +85,21 @@ PLNnetworkfamily$set("public", "optimize",
   control.lbfgsb <- list(maxit = control$maxit, pgtol=control$pgtol, factr=control$factr,trace=ifelse(control$trace>1,control$trace,0))
   control.MM     <- list(maxit = control$MMmaxit, tol=control$MMtol, trace=control$trace)
 
-  self$models <- mclapply(self$models, function(model) {
+  ## INITIALIZATION
+  Omega <- solve(self$init.par$Sigma + diag(rep(1e-6,d)))
+  logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+  par0 <- c(self$init.par$Theta, matrix(0,n,d), matrix(control$lbvar*10,n,d))
+  lower.bound <- c(rep(-Inf, p*d), rep(-Inf, n*d), rep(control$lbvar, n*d))
 
-    penalty <- model$penalty
+  for (m in seq_along(self$models))  {
 
-    ## initial parameters (model + variational)
-    Omega <- solve(model$model.par$Sigma + diag(rep(1e-6,d)))
-    logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
-    par0 <- c(model$model.par$Theta, matrix(0,n,d), matrix(control$lbvar*10,n,d))
-    lower.bound <- c(rep(-Inf, p*d), ## Theta
-                     rep(-Inf, n*d), ## M
-                     rep(control$lbvar, n*d)) # S
+    penalty <- self$models[[m]]$penalty
 
     ## ===========================================
     ## OPTIMISATION
     if (control$trace > 0) cat("\n sparsifying penalty =",penalty)
     if (control$trace > 1) cat("\n\t L-BFGS-B for gradient descent")
     if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
-    # browser()
 
     cond <- FALSE; iter <- 0
     convergence <- numeric(control.MM$maxit)
@@ -116,20 +113,21 @@ PLNnetworkfamily$set("public", "optimize",
       optim.out <- optim(par0, fn=self$objective, gr=self$gradient, lower=lower.bound, control = control.lbfgsb, method="L-BFGS-B",n,p,d,KY,logDetOmega,Omega)
       objective[iter] <- optim.out$value
       convergence[iter] <- sqrt(sum((optim.out$par - par0)^2)/sum(par0^2))
+
       if ((convergence[iter] < control.MM$tol) | (iter > control.MM$maxit)) {
         cond <- TRUE
-      } else {
-        M <- matrix(optim.out$par[p*d        + 1:(n*d)], n,d)
-        S <- matrix(optim.out$par[(n+p)*d    + 1:(n*d)], n,d)
-        Sigma <- crossprod(M)/n + diag(colMeans(S))
-        if (penalty <=1e-5) {
-          Omega <- solve(Sigma)
-        } else {
-          Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = FALSE)$wi
-        }
-        logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
-        par0 <- optim.out$par
       }
+
+      M <- matrix(optim.out$par[p*d        + 1:(n*d)], n,d)
+      S <- matrix(optim.out$par[(n+p)*d    + 1:(n*d)], n,d)
+      Sigma <- crossprod(M)/n + diag(colMeans(S))
+      if (penalty <=1e-12) {
+        Omega <- solve(Sigma)
+      } else {
+        Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = FALSE)$wi
+      }
+      logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+      par0 <- optim.out$par
     }
     ## ===========================================
     ## OUTPUT
@@ -149,13 +147,13 @@ PLNnetworkfamily$set("public", "optimize",
     BIC <- J - (p * d + sum(Omega[upper.tri(Omega)]!=0)) * log(n)
     ICL <- BIC - .5*n*d *log(2*pi*exp(1)) - sum(log(S))
 
-    model$model.par       <- list(Omega = Omega, Sigma = solve(Sigma), Theta = Theta)
-    model$variational.par <- list(M = M, S = S)
-    model$criteria        <- c(J = J, BIC = BIC, ICL = ICL)
-    model$loglik          <- NA #loglik
-    model$convergence     <- data.frame(convergence = convergence[1:iter], objective = objective[1:iter])
-    return(model)
-  }, mc.cores=control$cores)
+    self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = solve(Sigma), Theta = Theta)
+    self$models[[m]]$variational.par <- list(M = M, S = S)
+    self$models[[m]]$criteria        <- c(J = J, BIC = BIC, ICL = ICL)
+    self$models[[m]]$loglik          <- NA #loglik
+    self$models[[m]]$convergence     <- data.frame(convergence = convergence[1:iter], objective = objective[1:iter])
+  }
+
 })
 
 #' A plot method for a collection of PLNnetworkfit
