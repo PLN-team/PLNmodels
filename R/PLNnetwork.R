@@ -21,7 +21,6 @@
 ##'  \item{"maxit"}{controls the L-BFGF-B procedure. See the documentaiton of \code{\link{optim}}. Default is 20000}
 ##'  \item{"lb.var"}{the minimum admissible value fr the variance parameter S in the variational approximation. Default is 1e-3.}
 ##'  \item{"cores"}{the number of cores. If Q has many entries, you might consider multiple cores. Default is 1.}
-##'  \item{"approx"}{the model used for the covariance matrix in the variational Gaussian approximation. Either "diagonal" or "spherical". Default is "diagonal"}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 ##' }
 ##'
@@ -52,22 +51,19 @@ PLNnetwork.formula <- function(formula, penalties = 0,  control = list()) {
 PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = 0, control = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(MMtol = 1e-3, MMmaxit = 100, factr=1e7, pgtol=.Machine$double.eps, maxit=100, lbvar=1e-3, cores=1, approx="diagonal", trace=1)
+  ctrl <- list(MMtol = 1e-3, MMmaxit = 100, factr=1e7, pgtol=.Machine$double.eps, maxit=100, lbvar=1e-3, cores=1, trace=1)
   ctrl[names(control)] <- control
 
   ## Instantiate the collection of PLN models, initialized by glm Poisson
   if (ctrl$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNnetworkfamily$new(penalties=penalties, type=ctrl$approx, responses=Y, covariates=X, offsets=O)
+  myPLN <- PLNnetworkfamily$new(penalties=penalties, responses=Y, covariates=X, offsets=O)
 
   ## Now adjust the PLN models
-  if (ctrl$trace > 0) cat("\n Adjusting", ctrl$approx,"models")
+  if (ctrl$trace > 0) cat("\n Adjusting", length(penalties), "PLN models for sparse network inference.")
   myPLN$optimize(ctrl)
   if (ctrl$trace > 0) cat("\n DONE!\n")
 
-  # myPLN$setCriteria()
-  #
-  # ## PostTreatment (basically, setup the visualizationfor PCA)
-  # myPLN$postTreatment()
+  myPLN$setCriteria()
 
   return(myPLN)
 }

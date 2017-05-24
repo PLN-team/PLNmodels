@@ -6,7 +6,6 @@
 #'
 #' Fields should not be changed or manipulated by the user as they are updated internally.
 #'
-#' @field type a character indicating the model used for the covariance matrix in the variational Gaussian approximation. Either "diagonal" or "spherical".
 #' @field penalty the level of sparsity in the current model
 #' @field model.par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
 #' @field variation.par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
@@ -22,9 +21,9 @@ PLNnetworkfit <-
     inherit = PLNfit,
     public  = list(
       penalty    = NULL,
-      initialize = function(penalty = NA, 
-                            type=NA, model.par=NA, variational.par=NA, criteria=NA, convergence=NA, loglik=NA) {
-        super$initialize(type, model.par, variational.par, criteria, convergence, loglik)
+      initialize = function(penalty = NA,
+                            model.par=NA, variational.par=NA, criteria=NA, convergence=NA, loglik=NA) {
+        super$initialize(model.par, variational.par, criteria, convergence, loglik)
         self$penalty <- penalty
       }
     )

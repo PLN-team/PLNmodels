@@ -10,7 +10,6 @@
 #' Fields should not be changed or manipulated by the user as they are updated internally
 #' during the estimation process.
 #'
-#' @field type a character indicating the model used for the covariance matrix in the variational Gaussian approximation. Either "diagonal" or "spherical".
 #' @field penatlies the sparsity level of the network in the successively fitted models
 #' @field models a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per rank.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
@@ -31,24 +30,22 @@ PLNnetworkfamily <-
 )
 
 PLNnetworkfamily$set("public", "initialize",
-  function(type, penalties, responses, covariates, offsets) {
+  function(penalties, responses, covariates, offsets) {
 
   ## initialize the required fields
-  super$initialize(type, responses, covariates, offsets)
+  super$initialize(responses, covariates, offsets)
   stopifnot(all(penalties >= 0))
+  penalties <- round(penalties,12)
   self$penalties <- penalties
 
-  ## recover the initial model for each rank with glm Poisson models
-  fit <- PLNnetworkfit$new(type = self$type)
+  fit <- PLNnetworkfit$new()
   self$models <- lapply(penalties, function(penalty){
-    # glasso.out <- glasso::glasso(self$init.par$Sigma, rho = penalty, penalize.diagonal = FALSE, trace=TRUE, approx=TRUE)
-    # Omega <- glasso.out$wi
-    # Sigma <- glasso.out$w
     model <- fit$clone()
     model$model.par <- list(Sigma = self$init.par$Sigma, Theta = self$init.par$Theta)
     model$penalty <- penalty
     return(model)
   })
+  names(self$models) <- as.character(round(penalties,12))
 
   ## declare the objective and gradient functions for optimization
   self$objective <- function(par,n,p,d,KY,logDetOmega,Omega) {
@@ -148,14 +145,36 @@ PLNnetworkfamily$set("public", "optimize",
     # lmin <- sum(self$responses * (self$offsets + tcrossprod(self$covariates, model$model.par$Theta))) - sum(as.numeric(self$responses)) - KY
     # lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1)) - KY
     # R2  <- (loglik[q] - lmin)  / (lmax - lmin)
-    ## BIC <- J - p * (d + q) * log(n)
-    ## ICL <- BIC - .5*n*q *log(2*pi*exp(1)) - sum(log(S)) * switch(self$type, "diagonal"=1, "spherical"=q)
+
+    BIC <- J - (p * d + sum(Omega[upper.tri(Omega)]!=0)) * log(n)
+    ICL <- BIC - .5*n*d *log(2*pi*exp(1)) - sum(log(S))
 
     model$model.par       <- list(Omega = Omega, Sigma = solve(Sigma), Theta = Theta)
     model$variational.par <- list(M = M, S = S)
-    model$criteria        <- c(J = J)
+    model$criteria        <- c(J = J, BIC = BIC, ICL = ICL)
     model$loglik          <- NA #loglik
     model$convergence     <- data.frame(convergence = convergence[1:iter], objective = objective[1:iter])
     return(model)
   }, mc.cores=control$cores)
+})
+
+#' A plot method for a collection of PLNnetworkfit
+#'
+#' @name PLNnetworkfamily_plot
+#' @return Produces a plot  representing the evolution of the criteria of the different models considered,
+#' highlighting the best model in terms of BIC.
+NULL
+PLNnetworkfamily$set("public", "plot",
+function() {
+  p <- super$plot() + xlab("penalty") + geom_vline(xintercept=self$getBestModel("BIC")$penalty, linetype="dashed", alpha=0.5)
+  p
+})
+
+PLNnetworkfamily$set("public", "show",
+function() {
+  super$show()
+  cat(" Task: Network Inference\n")
+  cat("======================================================\n")
+  cat(" - Penalty considered: from", min(self$ranks), "to", max(self$ranks),"\n")
+  cat(" - Best model (regardings ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$criteria["R2"], 2), "\n")
 })

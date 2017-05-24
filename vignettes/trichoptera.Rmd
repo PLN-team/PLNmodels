@@ -91,7 +91,7 @@ myPCA.ICL <- models.nocov$getBestModel() # if no criteria is specified, the best
 myPCA.q5 <- models.nocov$getModel(5) 
 ```
 
-The variables `myPCA.ICL` and `myPCA.q5` are other `RefClass` objects of class `PLNPCAfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot` method provides the individual maps and correlation circles as in usual PCA. If an additional classification exist for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument of the function.
+The variables `myPCA.ICL` and `myPCA.q5` are other `R6Class` objects of class `PLNPCAfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot` method provides the individual maps and correlation circles as in usual PCA. If an additional classification exist for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument of the function.
 
 ```{r, fig.width=8, fig.height=8}
 myPCA.ICL$plot(cols=trichometeo$cla)
