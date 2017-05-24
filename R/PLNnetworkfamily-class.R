@@ -57,7 +57,7 @@ PLNnetworkfamily$set("public", "initialize",
       Z <- self$offsets + tcrossprod(self$covariates, Theta) + M
       logP.Z  <- n/2 * (logDetOmega - sum(diag(Omega)*colMeans(S))) - .5*sum(diag(Omega %*% crossprod(M)))
 
-      return(sum(as.numeric(exp(.trunc(Z + .5*S)) - self$responses*Z)) - logP.Z - .5*sum(log(S)+1)+ KY)
+      return(sum(as.numeric(exp(.trunc(Z + .5*S)) - self$responses*Z)) - logP.Z - .5*sum(log(S)+1) + KY)
   }
 
   self$gradient <- function(par,n,p,d,KY,logDetOmega,Omega) {
@@ -136,6 +136,7 @@ PLNnetworkfamily$set("public", "optimize",
     rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
     dimnames(S)     <- dimnames(self$responses)
     dimnames(M)     <- dimnames(self$responses)
+    rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
 
     ## compute some criteria for evaluation
     ## loglik <- sum(self$responses * (Z)) - sum(as.numeric(self$responses)) - KY
@@ -144,7 +145,7 @@ PLNnetworkfamily$set("public", "optimize",
     # lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1)) - KY
     # R2  <- (loglik[q] - lmin)  / (lmax - lmin)
 
-    BIC <- J - (p * d + sum(Omega[upper.tri(Omega)]!=0)) * log(n)
+    BIC <- J - (p * d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(n)
     ICL <- BIC - .5*n*d *log(2*pi*exp(1)) - sum(log(S))
 
     self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = solve(Sigma), Theta = Theta)
