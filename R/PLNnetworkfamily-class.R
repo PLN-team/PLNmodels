@@ -34,8 +34,8 @@ PLNnetworkfamily$set("public", "initialize",
 
   ## initialize the required fields
   super$initialize(responses, covariates, offsets)
-  self$init.par$M <- crossprod(covariates,super$init.par$Theta)
-  self$init.par$S <- matrix(rep(diag(super$init.par$Sigma),d),n,d)
+  self$init.par$M <- matrix(0, self$n,self$p) ## -tcrossprod(covariates,self$init.par$Theta)
+  self$init.par$S <- matrix(1e-3, self$n,self$p) ## matrix(rep(sqrt(diag(self$init.par$Sigma)),self$n),self$n,self$p)
 
   stopifnot(all(penalties >= 0))
   ## sort penalties in decreasing order and round
@@ -52,96 +52,98 @@ PLNnetworkfamily$set("public", "initialize",
   names(self$models) <- as.character(round(penalties,12))
 
   ## declare the objective and gradient functions for optimization
-  self$objective <- function(par,n,p,d,KY,logDetOmega,Omega) {
-      Theta <- matrix(par[1:(d*p)]             , d,p)
-      M     <- matrix(par[d*p        + 1:(n*d)], n,d)
-      S     <- matrix(par[(n+p)*d    + 1:(n*d)], n,d)
+  self$objective <- function(par,KY,logDetOmega,Omega) {
+      Theta <- matrix(par[1:(self$p*self$d)]                         , self$p,self$d)
+      M     <- matrix(par[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
+      S     <- matrix(par[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
 
       Z <- self$offsets + tcrossprod(self$covariates, Theta) + M
-      logP.Z  <- n/2 * (logDetOmega - sum(diag(Omega)*colMeans(S))) - .5*sum(diag(Omega %*% crossprod(M)))
+      logP.Z  <- self$n/2 * (logDetOmega - sum(diag(Omega)*colMeans(S))) - .5*sum(diag(Omega %*% crossprod(M)))
 
       return(sum(as.numeric(exp(.trunc(Z + .5*S)) - self$responses*Z)) - logP.Z - .5*sum(log(S)+1) + KY)
   }
 
-  self$gradient <- function(par,n,p,d,KY,logDetOmega,Omega) {
-      Theta <- matrix(par[1:(p*d)]             , d,p)
-      M     <- matrix(par[p*d        + 1:(n*d)], n,d)
-      S     <- matrix(par[(n+p)*d    + 1:(n*d)], n,d)
+  self$gradient <- function(par,KY,logDetOmega,Omega) {
+      Theta <- matrix(par[1:(self$p*self$d)]                         , self$p,self$d)
+      M     <- matrix(par[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
+      S     <- matrix(par[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
 
       A <- exp (.trunc(self$offsets + tcrossprod(self$covariates, Theta) + M + .5*S))
       gr.Theta <- crossprod(self$covariates, A - self$responses)
       gr.M  <- M %*% Omega + A - self$responses
-      gr.S  <- .5 * (matrix(rep(diag(Omega),n), n,d, byrow = TRUE) + A - 1/S)
+      gr.S  <- .5 * (matrix(rep(diag(Omega),self$n), self$n, self$p, byrow = TRUE) + A - 1/S)
 
       return(c(gr.Theta,gr.M,gr.S))
     }
 
 })
 
-PLNnetworkfamily$set("public", "getPenaltyRange",
-  function(control) {
-
-    ## ===========================================
-    ## INITIALISATION
-    n  <- nrow(self$responses); d <- ncol(self$responses); p <- ncol(self$covariates) # problem dimension
-    KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
-    control.lbfgsb <- list(maxit = control$maxit, pgtol=control$pgtol, factr=control$factr,trace=ifelse(control$trace>1,control$trace,0))
-    control.MM     <- list(maxit = control$MMmaxit, tol=control$MMtol, trace=control$trace)
-
-    ## INITIALIZATION
-    Omega <- solve(self$init.par$Sigma + diag(rep(1e-6,d)))
-    logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
-    par0 <- c(self$init.par$Theta, self$init.par$M, self$init.par$S)
-    lower.bound <- c(rep(-Inf, p*d), rep(-Inf, n*d), rep(control$lbvar, n*d))
-
-    cond <- FALSE; iter <- 0
-    convergence <- numeric(control.MM$maxit)
-    objective <- numeric(control.MM$maxit)
-    if (control$trace > 0) cat("\n\titeration: ")
-    while(!cond) {
-      iter <- iter + 1
-      if (control$trace > 0) cat("",iter)
-
-      ## CALL TO L-BFGS OPTIMIZATION WITH BOX CONSTRAINT
-      optim.out <- optim(par0, fn=self$objective, gr=self$gradient, lower=lower.bound, control = control.lbfgsb, method="L-BFGS-B",n,p,d,KY,logDetOmega,Omega)
-      objective[iter] <- optim.out$value
-      convergence[iter] <- sqrt(sum((optim.out$par - par0)^2)/sum(par0^2))
-
-      if ((convergence[iter] < control.MM$tol) | (iter > control.MM$maxit)) {
-        cond <- TRUE
-      }
-
-      M <- matrix(optim.out$par[p*d        + 1:(n*d)], n,d)
-      S <- matrix(optim.out$par[(n+p)*d    + 1:(n*d)], n,d)
-      Sigma <- crossprod(M)/n + diag(colMeans(S))
-      if (penalty <=1e-12) {
-        Omega <- solve(Sigma)
-      } else {
-        Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = FALSE)$wi
-      }
-      logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
-      par0 <- optim.out$par
-    }
-
-
-  }
-)
+# PLNnetworkfamily$set("public", "getPenaltyRange",
+#   function(control) {
+#
+#     ## ===========================================
+#     ## INITIALISATION
+#     KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
+#     control.lbfgsb <- list(maxit = control$maxit, pgtol=control$pgtol, factr=control$factr,trace=ifelse(control$trace>1,control$trace,0))
+#     control.MM     <- list(maxit = control$MMmaxit, tol=control$MMtol, trace=control$trace)
+#
+#     ## INITIALIZATION
+#     Omega <- solve(self$init.par$Sigma + diag(rep(1e-6,self$p)))
+#     logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+#     par0 <- c(self$init.par$Theta, self$init.par$M, self$init.par$S)
+#     lower.bound <- c(rep(-Inf, self$p*self$d), # Theta
+#                      rep(-Inf, self$n*self$p), # M
+#                      rep(control$lbvar, self$n*self$p)) # S
+#
+#     cond <- FALSE; iter <- 0
+#     convergence <- numeric(control.MM$maxit)
+#     objective <- numeric(control.MM$maxit)
+#     if (control$trace > 0) cat("\n\titeration: ")
+#     while(!cond) {
+#       iter <- iter + 1
+#       if (control$trace > 0) cat("",iter)
+#
+#       ## CALL TO L-BFGS OPTIMIZATION WITH BOX CONSTRAINT
+#       optim.out <- optim(par0, fn=self$objective, gr=self$gradient, lower=lower.bound, control = control.lbfgsb, method="L-BFGS-B",KY,logDetOmega,Omega)
+#       objective[iter] <- optim.out$value
+#       convergence[iter] <- sqrt(sum((optim.out$par - par0)^2)/sum(par0^2))
+#
+#       if ((convergence[iter] < control.MM$tol) | (iter > control.MM$maxit)) {
+#         cond <- TRUE
+#       }
+#
+#       M <- matrix(optim.out$par[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
+#       S <- matrix(optim.out$par[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
+#       Sigma <- crossprod(M)/self$n + diag(colMeans(S))
+#       if (penalty <=1e-12) {
+#         Omega <- solve(Sigma)
+#       } else {
+#         Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = FALSE)$wi
+#       }
+#       logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+#       par0 <- optim.out$par
+#     }
+#
+#
+#   }
+# )
 
 PLNnetworkfamily$set("public", "optimize",
   function(control) {
 
   ## ===========================================
   ## INITIALISATION
-  n  <- nrow(self$responses); d <- ncol(self$responses); p <- ncol(self$covariates) # problem dimension
   KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
   control.lbfgsb <- list(maxit = control$maxit, pgtol=control$pgtol, factr=control$factr,trace=ifelse(control$trace>1,control$trace,0))
   control.MM     <- list(maxit = control$MMmaxit, tol=control$MMtol, trace=control$trace)
 
   ## INITIALIZATION
-  Omega <- solve(self$init.par$Sigma + diag(rep(1e-6,d)))
+  Omega <- solve(self$init.par$Sigma + diag(rep(1e-6,self$p)))
   logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
-  par0 <- c(self$init.par$Theta, self$init.par$M, self$init.par$S)
-  lower.bound <- c(rep(-Inf, p*d), rep(-Inf, n*d), rep(control$lbvar, n*d))
+  par0 <- c(self$init.par$Theta, self$init.par$M, pmax(control$lbvar*10, self$init.par$S))
+  lower.bound <- c(rep(-Inf, self$p*self$d), # Theta
+                   rep(-Inf, self$n*self$p), # M
+                   rep(control$lbvar, self$n*self$p)) # S
 
   for (m in seq_along(self$models))  {
 
@@ -162,7 +164,7 @@ PLNnetworkfamily$set("public", "optimize",
       if (control$trace > 0) cat("",iter)
 
       ## CALL TO L-BFGS OPTIMIZATION WITH BOX CONSTRAINT
-      optim.out <- optim(par0, fn=self$objective, gr=self$gradient, lower=lower.bound, control = control.lbfgsb, method="L-BFGS-B",n,p,d,KY,logDetOmega,Omega)
+      optim.out <- optim(par0, fn=self$objective, gr=self$gradient, lower=lower.bound, control = control.lbfgsb, method="L-BFGS-B",KY,logDetOmega,Omega)
       objective[iter] <- optim.out$value
       convergence[iter] <- sqrt(sum((optim.out$par - par0)^2)/sum(par0^2))
 
@@ -170,9 +172,10 @@ PLNnetworkfamily$set("public", "optimize",
         cond <- TRUE
       }
 
-      M <- matrix(optim.out$par[p*d        + 1:(n*d)], n,d)
-      S <- matrix(optim.out$par[(n+p)*d    + 1:(n*d)], n,d)
-      Sigma <- crossprod(M)/n + diag(colMeans(S))
+      M <- matrix(optim.out$par[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
+      S <- matrix(optim.out$par[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
+      Sigma <- crossprod(M)/self$n + diag(colMeans(S))
+
       if (penalty <= 1e-12) {
         Omega <- solve(Sigma)
       } else {
@@ -184,8 +187,8 @@ PLNnetworkfamily$set("public", "optimize",
     ## ===========================================
     ## OUTPUT
     ## formating parameters for output
-    Theta <- matrix(optim.out$par[1:(p*d)] ,d,p)
-    rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
+    Theta <- matrix(optim.out$par[1:(self$p*self$d)] ,self$d, self$p)
+    colnames(Theta) <- colnames(self$responses); rownames(Theta) <- colnames(self$covariates)
     dimnames(S)     <- dimnames(self$responses)
     dimnames(M)     <- dimnames(self$responses)
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
@@ -197,8 +200,8 @@ PLNnetworkfamily$set("public", "optimize",
     # lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1)) - KY
     # R2  <- (loglik[q] - lmin)  / (lmax - lmin)
 
-    BIC <- J - (p * d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(n)
-    ICL <- BIC - .5*n*d *log(2*pi*exp(1)) - sum(log(S))
+    BIC <- J - (self$p * self$d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(self$n)
+    ICL <- BIC - .5*self$n*self$p *log(2*pi*exp(1)) - sum(log(S))
 
     self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = solve(Sigma), Theta = Theta)
     self$models[[m]]$variational.par <- list(M = M, S = S)
@@ -226,6 +229,6 @@ function() {
   super$show()
   cat(" Task: Network Inference\n")
   cat("======================================================\n")
-  cat(" - Penalty considered: from", min(self$ranks), "to", max(self$ranks),"\n")
-  cat(" - Best model (regardings ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$criteria["R2"], 2), "\n")
+  cat(" - Penalty considered: from", min(self$penalties), "to", max(self$penlaties),"\n")
+  cat(" - Best model (regardings ICL): rank =", self$getBestModel("ICL")$penlaty, "- R2 =", round(self$getBestModel("ICL")$criteria["R2"], 2), "\n")
 })
