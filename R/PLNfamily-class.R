@@ -9,6 +9,9 @@ PLNfamily <-
       responses  = NULL,
       covariates = NULL,
       offsets    = NULL,
+      n          = NULL, # number of samples
+      p          = NULL, # number of responses
+      d          = NULL, # number of covariates
       objective  = NULL,
       gradient   = NULL
     )
@@ -19,18 +22,21 @@ PLNfamily$set("public", "initialize",
     self$responses  <- responses
     self$covariates <- covariates
     self$offsets    <- offsets
+    self$n <- nrow(responses)
+    self$p <- ncol(responses)
+    self$d <- ncol(covariates)
 
     ## set names of the data matrices
-    if (is.null(rownames(responses)))  rownames(self$responses)  <- 1:nrow(responses)
-    if (is.null(colnames(responses)))  colnames(self$responses)  <- 1:ncol(responses)
-    if (is.null(rownames(covariates))) rownames(self$covariates) <- 1:nrow(covariates)
-    if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:ncol(covariates)
+    if (is.null(rownames(responses)))  rownames(self$responses)  <- 1:self$n
+    if (is.null(colnames(responses)))  colnames(self$responses)  <- 1:self$p
+    if (is.null(rownames(covariates))) rownames(self$covariates) <- 1:self$n
+    if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:self$d
 
     ## recover the initial model for each rank with glm Poisson models
-    glmP  <- lapply(1:ncol(responses), function(j) glm.fit(covariates, responses[, j], offset = offsets[,j], family = poisson()))
-    Theta <- matrix(Reduce(rbind, lapply(glmP, coefficients)), ncol=ncol(covariates))
-    Sigma <- cov(sapply(glmP, residuals.glm, type="pearson"))
-    self$init.par <- list(Sigma = Sigma, Theta=Theta)
+    glmP  <- lapply(1:self$p, function(j) glm.fit(covariates, responses[, j], offset = offsets[,j], family = poisson()))
+    self$init.par <- list(Sigma = cov(sapply(glmP, residuals.glm, type="pearson")),
+                          Theta = do.call(rbind, lapply(glmP, coefficients)))
+
 })
 
 #' Best model extraction from a collection of PLNfit (PCA, network)
