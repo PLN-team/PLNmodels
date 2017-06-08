@@ -35,7 +35,7 @@ PLNnetwork <- function(Robject, ...)
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.formula <- function(formula, penalties = 0,  control = list()) {
+PLNnetwork.formula <- function(formula, penalties = NULL,  control = list()) {
 
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
@@ -51,15 +51,23 @@ PLNnetwork.formula <- function(formula, penalties = 0,  control = list()) {
 PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, control = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(MMtol = 1e-2, MMmaxit = 100, factr=1e7, pgtol=.Machine$double.eps, maxit=1000, lbvar=1e-4, cores=1, trace=1)
+  ctrl <- list(MMtol = 5e-3, MMmaxit = 100, factr=1e8, pgtol=1e-2, maxit=10000, nPenalties = 10, lbvar=1e-5, cores=1, trace=1)
   ctrl[names(control)] <- control
+  if (!is.null(penalties)) ctrl$nPenalties <- length(penalties)
 
-  ## Instantiate the collection of PLN models, initialized by glm Poisson
+  ## Instantiate the collection of PLN models
   if (ctrl$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNnetworkfamily$new(penalties=penalties, responses=Y, covariates=X, offsets=O)
+  myPLN <- PLNnetworkfamily$new(nModels=ctrl$nPenalties, responses=Y, covariates=X, offsets=O)
 
-  ## Now adjust the PLN models
-  if (ctrl$trace > 0) cat("\n Adjusting", length(penalties), "PLN models for sparse network inference.")
+  ## Adjust the unpenalized model
+  if (ctrl$trace > 0) cat("\n Adjusting the unpenalized PLN model.")
+  myPLN$optimize.unpenalized(ctrl)
+
+  ## Get an appropriate grid of penalties
+  if (ctrl$trace > 0) cat("\n Recovering an appropriate grid of penalties.")
+  myPLN$setPenalties(penalties, ctrl$nPenalties, ctrl$trace > 0)
+
+  if (ctrl$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN models for sparse network inference.")
   myPLN$optimize(ctrl)
   if (ctrl$trace > 0) cat("\n DONE!\n")
 
