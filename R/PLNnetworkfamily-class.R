@@ -78,7 +78,7 @@ PLNnetworkfamily$set("public", "initialize",
       M     <- matrix(par[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
       S     <- matrix(par[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
 
-      Omega <- solve(crossprod(M)/self$n + diag(colMeans(S)))
+      Omega <- self$n * chol2inv(chol(crossprod(M) + diag(colSums(S))))
       logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
 
       Z <- self$offsets + tcrossprod(self$covariates, Theta) + M
@@ -103,11 +103,10 @@ PLNnetworkfamily$set("public", "optimize.unpenalized",
   ## ===========================================
   ## INITIALISATION
 
-  ## INITIALIZATION
-  par0 <- c(self$init.par$Theta, self$init.par$M, pmax(control$lbvar*10, self$init.par$S))
+  par0 <- c(self$init.par$Theta, self$init.par$M, self$init.par$S)
   lower.bound <- c(rep(-Inf, self$p*self$d), # Theta
                    rep(-Inf, self$n*self$p), # M
-                   rep(control$lbvar, self$n*self$p)) # S
+                   rep(control$lbvar.unpen, self$n*self$p)) # S
   ## ===========================================
   ## OPTIMISATION
   if (control$trace > 0) cat("\n Optimizing...")
@@ -115,9 +114,7 @@ PLNnetworkfamily$set("public", "optimize.unpenalized",
 
   cond <- FALSE; iter <- 0
 
-  ## CALL TO L-BFGS OPTIMIZATION WITH BOX CONSTRAINT
-  ## optim.out <- optim(par0, fn=self$objective.unpenalized, gr=self$gradient.unpenalized, lower=lower.bound, control = control.lbfgsb, method="L-BFGS-B",KY)
-
+  ## CALL TO LD-MMA OPTIMIZATION WITH BOX CONSTRAINT
   opts <- list("algorithm" = "NLOPT_LD_MMA",
                "maxeval"   = control$maxit,
                "xtol_rel"  = control$xtol,
@@ -160,7 +157,8 @@ PLNnetworkfamily$set("public", "optimize",
   control.MM    <- list(maxit = control$MMmaxit, tol=control$MMtol, trace=control$trace)
 
   ## INITIALIZATION
-  Omega <- self$model.unpenalized$model.par$Omega
+  Omega    <- self$model.unpenalized$model.par$Omega
+  OmegaInv <- NULL
   logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
   par0 <- c(self$model.unpenalized$model.par$Theta,
             self$model.unpenalized$variational.par$M,
@@ -194,11 +192,10 @@ PLNnetworkfamily$set("public", "optimize",
                "ftol_abs"  = control$ftol,
                "ftol_rel"  = control$ftol,
                "print_level" = max(0, control$trace-1))
-
       optim.out <- nloptr(par0, eval_f = self$fn_optim, lb = lower.bound, opts = opts,
                           logDetOmega=logDetOmega,Omega=Omega)
-      # optim.out <- optim(par0, fn=self$objective, gr=self$gradient, lower=lower.bound, control = control.lbfgsb, method="L-BFGS-B",KY,logDetOmega,Omega)
-      objective[iter] <- optim.out$objective
+
+      objective[iter]   <- optim.out$objective
       convergence[iter] <- sqrt(sum((optim.out$solution - par0)^2)/sum(par0^2))
 
       if ((convergence[iter] < control.MM$tol) | (iter > control.MM$maxit)) {
@@ -209,7 +206,7 @@ PLNnetworkfamily$set("public", "optimize",
       S <- matrix(optim.out$solution[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
       Sigma <- crossprod(M)/self$n + diag(colMeans(S))
 
-      Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = FALSE)$wi
+      Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal)$wi
       logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
       par0 <- optim.out$solution
     }
@@ -253,7 +250,7 @@ PLNnetworkfamily$set("public", "setPenalties",
       stopifnot(all(penalties > 0))
     }
     ## sort penalties and round
-    self$penalties <- round(sort(penalties, decreasing = FALSE),12)
+    self$penalties <- round(sort(penalties, decreasing = FALSE),16)
     names(self$models) <- as.character(self$penalties)
     for (m in seq_along(self$models))  {
       self$models[[m]]$penalty <- self$penalties[m]

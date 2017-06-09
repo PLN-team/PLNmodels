@@ -74,7 +74,7 @@ function(crit=c("ICL", "BIC", "J", "R2")){
 NULL
 PLNfamily$set("public", "getModel",
 function(xvar){
-  id <- match(round(xvar,12), as.numeric(names(self$models)))
+  id <- match(round(xvar,16), as.numeric(names(self$models)))
   if (!is.na(id)){
     return(self$models[[id]]$clone())
   } else {
