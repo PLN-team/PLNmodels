@@ -22,8 +22,6 @@ during the estimation process.
 \section{Fields}{
 
 \describe{
-\item{\code{type}}{a character indicating the model used for the covariance matrix in the variational Gaussian approximation. Either "diagonal" or "spherical".}
-
 \item{\code{ranks}}{the dimensions of the successively fitted models}
 
 \item{\code{models}}{a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.}

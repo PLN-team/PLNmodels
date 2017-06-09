@@ -20,8 +20,6 @@ Fields should not be changed or manipulated by the user as they are updated inte
 \section{Fields}{
 
 \describe{
-\item{\code{type}}{a character indicating the model used for the covariance matrix in the variational Gaussian approximation. Either "diagonal" or "spherical".}
-
 \item{\code{rank}}{the dimension of the current model}
 
 \item{\code{model.par}}{a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model}

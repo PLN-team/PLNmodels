@@ -8,10 +8,10 @@
 \usage{
 PLNnetwork(Robject, ...)
 
-\method{PLNnetwork}{formula}(formula, penalties = 0, control = list())
+\method{PLNnetwork}{formula}(formula, penalties = NULL, control = list())
 
 \method{PLNnetwork}{default}(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0,
-  nrow(Y), ncol(Y)), penalties = 0, control = list())
+  nrow(Y), ncol(Y)), penalties = NULL, control = list())
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a matrix}
@@ -45,7 +45,6 @@ The parameter \code{control} is a list with the following entries
  \item{"maxit"}{controls the L-BFGF-B procedure. See the documentaiton of \code{\link{optim}}. Default is 20000}
  \item{"lb.var"}{the minimum admissible value fr the variance parameter S in the variational approximation. Default is 1e-3.}
  \item{"cores"}{the number of cores. If Q has many entries, you might consider multiple cores. Default is 1.}
- \item{"approx"}{the model used for the covariance matrix in the variational Gaussian approximation. Either "diagonal" or "spherical". Default is "diagonal"}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 }
 }

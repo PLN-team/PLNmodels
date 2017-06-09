@@ -22,11 +22,11 @@ during the estimation process.
 \section{Fields}{
 
 \describe{
-\item{\code{type}}{a character indicating the model used for the covariance matrix in the variational Gaussian approximation. Either "diagonal" or "spherical".}
-
 \item{\code{penatlies}}{the sparsity level of the network in the successively fitted models}
 
-\item{\code{models}}{a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per rank.}
+\item{\code{models}}{a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.}
+
+\item{\code{model.unpenalized}}{a \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, obtained when no sparsifying penalty is applied.}
 
 \item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 

@@ -13,7 +13,8 @@ PLNfamily <-
       p          = NULL, # number of responses
       d          = NULL, # number of covariates
       objective  = NULL,
-      gradient   = NULL
+      gradient   = NULL,
+      fn_optim   = NULL
     )
 )
 
@@ -34,9 +35,12 @@ PLNfamily$set("public", "initialize",
 
     ## recover the initial model for each rank with glm Poisson models
     glmP  <- lapply(1:self$p, function(j) glm.fit(covariates, responses[, j], offset = offsets[,j], family = poisson()))
-    self$init.par <- list(Sigma = cov(sapply(glmP, residuals.glm, type="pearson")),
-                          Theta = do.call(rbind, lapply(glmP, coefficients)))
+    Theta <- do.call(rbind, lapply(glmP, coefficients))
+    # Y.hat <- exp(offsets + tcrossprod(covariates, Theta))
+    # Sigma <- diag(log(1 + colMeans(((responses - Y.hat)^2 - responses)/(Y.hat^2))))
+    Sigma <- cov(sapply(glmP, residuals.glm, "pearson"))
 
+    self$init.par <- list(Sigma = Sigma, Theta = Theta)
 })
 
 #' Best model extraction from a collection of PLNfit (PCA, network)
