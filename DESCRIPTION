@@ -21,10 +21,11 @@ Imports: ggplot2, gridExtra, parallel, reshape2, R6, methods, stats, glasso
 Suggests: knitr, rmarkdown, ade4
 VignetteBuilder: knitr
 Collate: 
+    'PLNfit-class.R'
+    'PLN.R'
     'PLNPCA.R'
     'PLNfamily-class.R'
     'PLNPCAfamily-class.R'
-    'PLNfit-class.R'
     'PLNPCAfit-class.R'
     'PLNmodels-package.R'
     'PLNnetwork.R'

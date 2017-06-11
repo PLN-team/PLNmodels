@@ -22,7 +22,7 @@ during the estimation process.
 \section{Fields}{
 
 \describe{
-\item{\code{penatlies}}{the sparsity level of the network in the successively fitted models}
+\item{\code{penalties}}{the sparsity level of the network in the successively fitted models}
 
 \item{\code{models}}{a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.}
 

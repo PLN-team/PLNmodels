@@ -1,25 +1,27 @@
-## COMMON TO PLNPCA and PLNnetwork
-
+## COMMON TO EVERY COLLECTIONS OF MODELS BASED ON PLN (PLNPCA, PLNnetwork)
 PLNfamily <-
   R6Class(classname = "PLNfamily",
     public = list(
-      models     = NULL,
-      init.par   = NULL,
-      criteria   = NULL,
-      responses  = NULL,
-      covariates = NULL,
-      offsets    = NULL,
+      responses  = NULL, # the Y matrix
+      covariates = NULL, # the X matrix
+      offsets    = NULL, # the O matrix
       n          = NULL, # number of samples
       p          = NULL, # number of responses
       d          = NULL, # number of covariates
+      inception  = NULL, # the basic PLN model in the collection (no regularization, nor sparsity, nor rank)
+      models     = NULL,
+      init.par   = NULL,
+      criteria   = NULL,
       objective  = NULL,
       gradient   = NULL,
-      fn_optim   = NULL
+      fn_optim0  = NULL, # objective and gradient for optimizing model0
+      fn_optim   = NULL  # objective and gradient for optimizing the regularized models
     )
 )
 
 PLNfamily$set("public", "initialize",
-  function(responses, covariates, offsets) {
+  function(responses, covariates, offsets, setup.inceptive=TRUE) {
+    ## set data matrice and dimension
     self$responses  <- responses
     self$covariates <- covariates
     self$offsets    <- offsets
@@ -41,6 +43,7 @@ PLNfamily$set("public", "initialize",
     Sigma <- cov(sapply(glmP, residuals.glm, "pearson"))
 
     self$init.par <- list(Sigma = Sigma, Theta = Theta)
+
 })
 
 #' Best model extraction from a collection of PLNfit (PCA, network)
@@ -54,7 +57,7 @@ NULL
 PLNfamily$set("public", "getBestModel",
 function(crit=c("ICL", "BIC", "J", "R2")){
   crit <- match.arg(crit)
-  if(length(self$criteria$BIC) >1) {
+  if(length(self$criteria$BIC) > 1) {
     id <- switch(crit,
     "BIC" = which.max(self$criteria$BIC),
     "ICL" = which.max(self$criteria$ICL),
@@ -65,7 +68,7 @@ function(crit=c("ICL", "BIC", "J", "R2")){
     return(model)
 })
 
-#' Model extraction from a collection of PLNPCAfit
+#' Model extraction from a collection of PLN models
 #'
 #' @name PLNfamily_getModel
 #'
@@ -84,21 +87,21 @@ function(xvar){
 
 PLNfamily$set("public", "setCriteria",
 function() {
-  self$criteria <- data.frame(xvar = round(as.numeric(names(self$models)), 12),
+  self$criteria <- data.frame(xvar = round(as.numeric(names(self$models)), 16),
                               t(sapply(self$models, function(model) model$criteria)))
 })
 
 PLNfamily$set("public", "plot",
 function() {
   dplot <- melt(self$criteria[, c("xvar", "J", "BIC", "ICL")], id.vars = 1, variable.name = "criterion")
-  p <- ggplot(dplot, aes(x=xvar, y=value, group=criterion, colour=criterion)) +
+  p <- ggplot2::ggplot(dplot, aes(x=xvar, y=value, group=criterion, colour=criterion)) +
         geom_line() + geom_point() + ggtitle("Model selection criteria")
   return(p)
 })
 
 PLNfamily$set("public", "show",
 function() {
-  cat("POISSON LOGNORMAL MODEL\n")
+  cat("COLLECTIONS OF POISSON LOGNORMAL MODELS\n")
   cat("------------------------------------------------------\n")
 })
 

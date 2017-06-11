@@ -10,7 +10,7 @@
 #' Fields should not be changed or manipulated by the user as they are updated internally
 #' during the estimation process.
 #'
-#' @field penatlies the sparsity level of the network in the successively fitted models
+#' @field penalties the sparsity level of the network in the successively fitted models
 #' @field models a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.
 #' @field model.unpenalized a \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, obtained when no sparsifying penalty is applied.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
@@ -22,6 +22,7 @@
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom nloptr nloptr
+#' @import ggplot2
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
 PLNnetworkfamily <-
   R6Class(classname = "PLNnetworkfamily",
@@ -266,8 +267,9 @@ PLNnetworkfamily$set("public", "setPenalties",
 #' highlighting the best model in terms of BIC.
 NULL
 PLNnetworkfamily$set("public", "plot",
-function() {
+function(log.x=TRUE) {
   p <- super$plot() + xlab("penalty") + geom_vline(xintercept=self$getBestModel("BIC")$penalty, linetype="dashed", alpha=0.5)
+  if (log.x) p <- p + ggplot2::coord_trans(x="log10")
   p
 })
 
@@ -276,6 +278,6 @@ function() {
   super$show()
   cat(" Task: Network Inference\n")
   cat("======================================================\n")
-  cat(" - Penalty considered: from", min(self$penalties), "to", max(self$penlaties),"\n")
-  cat(" - Best model (regardings ICL): rank =", self$getBestModel("ICL")$penlaty, "- R2 =", round(self$getBestModel("ICL")$criteria["R2"], 2), "\n")
+  cat(" - Penalty considered: from", format(min(self$penalties),digits=3), "to", format(max(self$penalties),digits=3),"\n")
+  cat(" - Best model (regardings BIC): penalty =", format(self$getBestModel("ICL")$penalty,digits=3), "\n")
 })

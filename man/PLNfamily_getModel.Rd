@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNfamily-class.R
 \name{PLNfamily_getModel}
 \alias{PLNfamily_getModel}
-\title{Model extraction from a collection of PLNPCAfit}
+\title{Model extraction from a collection of PLN models}
 \arguments{
 \item{xvar}{a number (rank for PCA, penalty for network) identifying the model to be extracted from the collection.}
 }
@@ -10,5 +10,5 @@
 Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 }
 \description{
-Model extraction from a collection of PLNPCAfit
+Model extraction from a collection of PLN models
 }
