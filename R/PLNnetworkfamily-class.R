@@ -12,7 +12,7 @@
 #'
 #' @field penalties the sparsity level of the network in the successively fitted models
 #' @field models a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.
-#' @field inception a \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, obtained when no sparsifying penalty is applied.
+#' @field inception a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when no sparsifying penalty is applied.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
@@ -93,7 +93,7 @@ PLNnetworkfamily$set("public", "optimize",
     ## ===========================================
     ## OPTIMISATION
     if (control$trace > 0) cat("\n sparsifying penalty =",penalty)
-    if (control$trace > 1) cat("\n\t L-BFGS-B for gradient descent")
+    if (control$trace > 1) cat("\n\t conservative convex separable approximation for gradient descent")
     if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
 
     cond <- FALSE; iter <- 0
@@ -104,7 +104,7 @@ PLNnetworkfamily$set("public", "optimize",
       iter <- iter + 1
       if (control$trace > 0) cat("",iter)
 
-      ## CALL TO L-BFGS OPTIMIZATION WITH BOX CONSTRAINT
+      ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
       opts <- list("algorithm" = "NLOPT_LD_MMA",
                "maxeval"   = control$maxit,
                "xtol_rel"  = control$xtol,

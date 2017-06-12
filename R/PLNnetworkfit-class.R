@@ -10,8 +10,7 @@
 #' @field model.par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
 #' @field variation.par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.
-#' @field convergence numeric; the convergence status of the L-BFGS-B method
-#' @field loglik numeric; the Poisson loglikelihood of the current model
+#' @field convergence quantities usefull for monitoring the optimization
 #' @include PLNnetworkfit-class.R
 #' @importFrom R6 R6Class
 #' @importFrom glasso glasso
@@ -22,8 +21,8 @@ PLNnetworkfit <-
     public  = list(
       penalty    = NULL,
       initialize = function(penalty = NA,
-                            model.par=NA, variational.par=NA, criteria=NA, convergence=NA, loglik=NA) {
-        super$initialize(model.par, variational.par, criteria, convergence, loglik)
+                            model.par=NA, variational.par=NA, criteria=NA, convergence=NA) {
+        super$initialize(model.par, variational.par, criteria, convergence)
         self$penalty <- penalty
       }
     )

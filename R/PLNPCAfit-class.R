@@ -12,8 +12,7 @@
 #' @field model.par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
 #' @field variation.par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.
-#' @field convergence numeric; the convergence status of the L-BFGS-B method
-#' @field loglik numeric; the Poisson loglikelihood of the current model
+#' @field convergence quantities usefull for monitoring the optimization
 #' @field percentVar the percent of variance explained by each axis
 #' @field corrCircle a matrix of correlations to plot the correlation circles
 #' @field scores a matrix of scores to plot the individual factor maps
@@ -29,8 +28,8 @@ PLNPCAfit <-
       corrCircle = NULL,
       scores     = NULL,
       initialize = function(rank = NA, percentVar = NA, corrCircle = NA, scores = NA,
-                            model.par=NA, variational.par=NA, criteria=NA, convergence=NA, loglik=NA) {
-        super$initialize(model.par, variational.par, criteria, convergence, loglik)
+                            model.par=NA, variational.par=NA, criteria=NA, convergence=NA) {
+        super$initialize(model.par, variational.par, criteria, convergence)
         self$rank       <- rank
         self$percentVar <- percentVar
         self$corrCircle <- corrCircle

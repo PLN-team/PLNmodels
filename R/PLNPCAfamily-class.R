@@ -12,15 +12,17 @@
 #'
 #' @field ranks the dimensions of the successively fitted models
 #' @field models a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.
+#' @field inception a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when full rank is considered.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
 #' @field offsets the matrix of offsets common to every models
-#' @field objective the R function used to compute the model's objective during the optimization process
-#' @field gradient the R function to compute the model's gradient during the optimization process
+#' @field fn_optim the R functions used to compute the model's objective and gradient during the optimization process
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
-#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
+#' @importFrom nloptr nloptr
+#' @import ggplot2
+#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit-class]{PLNPCAfit}}
 PLNPCAfamily <-
   R6Class(classname = "PLNPCAfamily",
     inherit = PLNfamily,
@@ -30,107 +32,125 @@ PLNPCAfamily <-
 )
 
 PLNPCAfamily$set("public", "initialize",
-  function(ranks, responses, covariates, offsets) {
+  function(ranks, responses, covariates, offsets, control) {
 
   ## initialize the required fields
-  super$initialize(responses, covariates, offsets)
+  super$initialize(responses, covariates, offsets, control)
   self$ranks <- ranks
+  KY <-sum(.logfactorial(self$responses))
 
-  ## recover the initial model for each rank with glm Poisson models
-  fit <- PLNPCAfit$new()
-  svdSigma <- svd(self$init.par$Sigma, nu=max(ranks), nv=0)
+  ## instantiate as many models as ranks
+  fit <- PLNPCAfit$new(model.par       = self$inception$model.par,
+                       variational.par = self$inception$variational.par)
+  svdSigma <- svd(self$inception$model.par$Sigma, nu=max(ranks), nv=0)
   self$models <- lapply(ranks, function(q){
-    B <- svdSigma$u[, 1:q, drop=FALSE] %*% diag(sqrt(svdSigma$d[1:q]),nrow=q, ncol=q)
     model <- fit$clone()
-    model$model.par       <- list(B = B, Theta = self$init.par$Theta)
-    ### TODO: Find clever initialization for M and S
-    model$variational.par <- list(M = matrix(0, self$n, q), S = matrix(.Machine$double.eps,self$n,q))
     model$rank <- q
+    model$model.par$B <- svdSigma$u[, 1:q, drop=FALSE] %*% diag(sqrt(svdSigma$d[1:q]),nrow=q, ncol=q)
     return(model)
   })
   names(self$models) <- as.character(ranks)
 
   ## declare the objective and gradient functions for optimization
+  self$fn_optim <- function(par,q) {
 
-  self$objective <- function(par,q,KY) {
     Theta <- matrix(par[1:(self$p*self$d)]                          , self$p,self$d)
     B     <- matrix(par[self$p*self$d                + 1:(self$p*q)], self$p,q)
     M     <- matrix(par[self$p*(self$d+q)            + 1:(self$n*q)], self$n,q)
     S     <- matrix(par[self$p*(self$d+q)+(self$n*q) + 1:(self$n*q)], self$n,q)
+
     Z     <- tcrossprod(M,B) + tcrossprod(self$covariates, Theta) + self$offsets
-    return(sum(as.numeric(exp(.trunc(Z +.5*tcrossprod(S^2, B^2)))-self$responses*Z)) +.5*sum(M^2 + S^2 - 2*log(S)-1) + KY)
-  }
+    A <- exp (.trunc(Z + .5*tcrossprod(S^2, B^2)))
 
-  self$gradient <- function(par,q,KY) {
-    Theta <- matrix(par[1:(self$p*self$d)]                          , self$p,self$d)
-    B     <- matrix(par[self$p*self$d                + 1:(self$p*q)], self$p,q)
-    M     <- matrix(par[self$p*(self$d+q)            + 1:(self$n*q)], self$n,q)
-    S     <- matrix(par[self$p*(self$d+q)+(self$n*q) + 1:(self$n*q)], self$n,q)
-    A <- exp (.trunc(tcrossprod(M,B) + tcrossprod(self$covariates,Theta) + self$offsets + .5*tcrossprod(S^2, B^2)))
     gr.Theta <- crossprod(A-self$responses, self$covariates)
     gr.B     <- crossprod(A-self$responses, M) + crossprod(A,S^2) * B
     gr.M     <- (A-self$responses) %*% B + M
     gr.S     <- S - 1/S  + (A %*% (B^2)) * S
-    return(c(gr.Theta,gr.B,gr.M,gr.S))
+
+    return(list(
+      "objective" = sum(as.numeric(A -self$responses*Z)) +.5*sum(M^2 + S^2 - 2*log(S)-1) + KY,
+      "gradient"  = c(gr.Theta,gr.B,gr.M,gr.S)
+    ))
   }
+
+  # self$objective <- function(par,q,KY) {
+  #   Theta <- matrix(par[1:(self$p*self$d)]                          , self$p,self$d)
+  #   B     <- matrix(par[self$p*self$d                + 1:(self$p*q)], self$p,q)
+  #   M     <- matrix(par[self$p*(self$d+q)            + 1:(self$n*q)], self$n,q)
+  #   S     <- matrix(par[self$p*(self$d+q)+(self$n*q) + 1:(self$n*q)], self$n,q)
+  #   Z     <- tcrossprod(M,B) + tcrossprod(self$covariates, Theta) + self$offsets
+  #   return(sum(as.numeric(exp(.trunc(Z +.5*tcrossprod(S^2, B^2)))-self$responses*Z)) +.5*sum(M^2 + S^2 - 2*log(S)-1) + KY)
+  # }
+  #
+  # self$gradient <- function(par,q,KY) {
+  #   Theta <- matrix(par[1:(self$p*self$d)]                          , self$p,self$d)
+  #   B     <- matrix(par[self$p*self$d                + 1:(self$p*q)], self$p,q)
+  #   M     <- matrix(par[self$p*(self$d+q)            + 1:(self$n*q)], self$n,q)
+  #   S     <- matrix(par[self$p*(self$d+q)+(self$n*q) + 1:(self$n*q)], self$n,q)
+  #   A <- exp (.trunc(tcrossprod(M,B) + tcrossprod(self$covariates,Theta) + self$offsets + .5*tcrossprod(S^2, B^2)))
+  #   gr.Theta <- crossprod(A-self$responses, self$covariates)
+  #   gr.B     <- crossprod(A-self$responses, M) + crossprod(A,S^2) * B
+  #   gr.M     <- (A-self$responses) %*% B + M
+  #   gr.S     <- S - 1/S  + (A %*% (B^2)) * S
+  #   return(c(gr.Theta,gr.B,gr.M,gr.S))
+  # }
 })
 
 PLNPCAfamily$set("public", "optimize",
   function(control) {
 
-  ## ===========================================
-  ## INITIALISATION
-  KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
-  control.lbfgsb <- list(maxit = control$maxit, pgtol=control$pgtol, factr=control$factr,trace=ifelse(control$trace>1,control$trace,0))
-
   self$models <- mclapply(self$models, function(model) {
     ## initial parameters (model + variational)
-    q <- model$rank
-    par0 <- c(model$model.par$Theta, model$model.par$B,
-              model$variational.par$M, pmax(control$lbvar, model$variational.par$S))
-
+    par0 <- c(model$model.par$Theta  , model$model.par$B,
+              #model$variational.par$M, model$variational.par$S)
+              rep(0, self$n*model$rank) , # M
+              rep(10*control$lbvar,self$n*model$rank))
+              # model$variational.par$M, model$variational.par$S)
     ## ===========================================
     ## OPTIMISATION
-    if (control$trace > 0) cat("\n Rank approximation =",q)
-    if (control$trace > 1) cat("\n\t L-BFGS-B for gradient descent...")
+    if (control$trace > 0) cat("\n Rank approximation =",model$rank)
+    if (control$trace > 1) cat("\n\t conservative convex separable approximation for gradient descent")
 
     ## CALL TO L-BFGS OPTIMIZATION WITH BOX CONSTRAINT
-    lower.bound <- c(rep(-Inf, self$p*self$d)   , # Theta
-                     rep(-Inf, self$p*q)        , # B
-                     rep(-Inf, self$n*q)        , # M
-                     rep(control$lbvar,self$n*q)) # S
-    optim.out <- optim(par0, fn=self$objective, gr=self$gradient, lower=lower.bound, control = control.lbfgsb, method="L-BFGS-B",q,KY)
-    ## C++ implementation: TOO FRAGILE for the moment...
-    ##    par <- solvePLN(q, c(Theta,B,M,S), X, Y, O, min.var*10, max.iter, 1e-2, 0, 1e-2)$par
+    lower.bound <- c(rep(-Inf, self$p*self$d)     , # Theta
+                     rep(-Inf, self$p*model$rank) , # B
+                     rep(-Inf, self$n*model$rank) , # M
+                     rep(control$lbvar,self$n*model$rank)) # S
+    ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
+    opts <- list("algorithm" = "NLOPT_LD_MMA",
+                 "maxeval"   = control$maxit,
+                 "xtol_rel"  = control$xtol,
+                 "ftol_rel"  = control$ftol,
+                 "print_level" = max(0, control$trace-1))
+    optim.out <- nloptr(par0, eval_f = self$fn_optim, lb = lower.bound, opts = opts, q=model$rank)
 
     ## ===========================================
     ## OUTPUT
     ## formating parameters for output
-    Theta <- matrix(optim.out$par[1:(self$p*self$d)]           , self$p,self$d)
-    B     <- matrix(optim.out$par[self$p*self$d      + 1:(self$p*q)], self$p,q)
-    M     <- matrix(optim.out$par[self$p*(self$d+q)  + 1:(self$n*q)], self$n,q)
-    S     <- matrix(optim.out$par[self$p*(self$d+q)+self$n*q + 1:(self$n*q)],self$n,q)
+    Theta <- matrix(optim.out$solution[1:(self$p*self$d)]           , self$p,self$d)
+    B     <- matrix(optim.out$solution[self$p*self$d      + 1:(self$p*model$rank)], self$p,model$rank)
+    M     <- matrix(optim.out$solution[self$p*(self$d+model$rank)  + 1:(self$n*model$rank)], self$n,model$rank)
+    S     <- matrix(optim.out$solution[self$p*(self$d+model$rank)+self$n*model$rank + 1:(self$n*model$rank)],self$n,model$rank)
     rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
-    rownames(B)     <- colnames(self$responses); colnames(B) <- 1:q
-    rownames(M)     <- rownames(self$responses); colnames(M) <- 1:q
+    rownames(B)     <- colnames(self$responses); colnames(B) <- 1:model$rank
+    rownames(M)     <- rownames(self$responses); colnames(M) <- 1:model$rank
 
     ## compute some criteria for evaluation
-    loglik <- sapply(1:q, function(q_) {
+    J   <- -optim.out$objective
+    BIC <- J - self$p * (self$d + model$rank) * log(self$n)
+    ICL <- BIC - .5*self$n*model$rank *log(2*pi*exp(1)) - sum(log(S))
+    loglik <- sapply(1:model$rank, function(q_) {
       Z <- tcrossprod(M[,1:q_,drop=FALSE],B[,1:q_,drop=FALSE]) + tcrossprod(self$covariates, Theta) + self$offsets
-      return(sum(self$responses * (Z)) - sum(as.numeric(self$responses)) - KY)
+      return(sum(self$responses * (Z)) - sum(as.numeric(self$responses)))
     })
-    J   <- -optim.out$value
-    lmin <- sum(self$responses * (self$offsets + tcrossprod(self$covariates, model$model.par$Theta))) - sum(as.numeric(self$responses)) - KY
-    lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1)) - KY
-    R2  <- (loglik[q] - lmin)  / (lmax - lmin)
-    BIC <- J - self$p * (self$d + q) * log(self$n)
-    ICL <- BIC - .5*self$n*q *log(2*pi*exp(1)) - sum(log(S))
+    lmin <- sum(self$responses * (self$offsets + tcrossprod(self$covariates, Theta))) - sum(as.numeric(self$responses))
+    lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1))
+    R2  <- (loglik[model$rank] - lmin)  / (lmax - lmin)
 
-    model$model.par       <- list(B = B, Theta = Theta)
+    model$model.par       <- list(B = B, Theta = Theta, Sigma = tcrossprod(B))
     model$variational.par <- list(M = M, S = S)
-    model$criteria        <- c(J = J, R2 = R2, BIC = BIC, ICL = ICL, lmin = lmin, lmax = lmax, lq = loglik[q])
-    model$loglik          <- loglik
-    model$convergence     <- optim.out$convergence
+    model$criteria        <- c(J = J, R2 = R2, BIC = BIC, ICL = ICL)
+    model$convergence     <- data.frame(status = optim.out$message, objective = optim.out$objective, iterations=optim.out$iterations)
     return(model)
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
 })

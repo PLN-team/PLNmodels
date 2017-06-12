@@ -32,7 +32,7 @@ PLNfamily$set("public", "initialize",
     if (is.null(rownames(covariates))) rownames(self$covariates) <- 1:self$n
     if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:self$d
 
-    ## adjust the unpenalized PLN model
+    ## adjust the basic PLN model
     self$inception <- PLN(responses, covariates, offsets, control)
 })
 

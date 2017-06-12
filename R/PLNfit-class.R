@@ -12,7 +12,6 @@ PLNfit <-
       self$variational.par <- variational.par
       self$criteria        <- criteria
       self$convergence     <- convergence
-      self$loglik          <- loglik
       }
     )
   )

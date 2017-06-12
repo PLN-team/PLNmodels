@@ -6,7 +6,7 @@
 ##' @param Y a (n x p) matrix of count data
 ##' @param X an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.
 ##' @param O an optional (n x p) matrix of offsets.
-##' @param Q a vector of integer containing the successive ranks (or number of axes to be considered)
+##' @param ranks a vector of integer containing the successive ranks (or number of axes to be considered)
 ##' @param control a list for controling the optimization. See details.
 ##' @param Robject an R object, either a formula or a matrix
 ##' @param ... additional parameters. Not used
@@ -16,11 +16,11 @@
 ##'
 ##' @details The parameter \code{control} is a list with the following entries
 ##' \itemize{
-##'  \item{"factr"}{controls the L-BFGF-B procedure. See the documentation of \code{\link{optim}}. Default 1e8. Decrease if you experience instability or non monotonous J as a function of the rank}
-##'  \item{"pgtol"}{controls the L-BFGF-B procedure. See the documentation of \code{\link{optim}}. Default 1e-2. Decrease if you experience instability or non monotonous J as a function of the rank}
-##'  \item{"maxit"}{controls the L-BFGF-B procedure. See the documentaiton of \code{\link{optim}}. Default is 20000}
-##'  \item{"lb.var"}{the minimum admissible value fr the variance parameter S in the variational approximation. Default is 1e-3.}
-##'  \item{"cores"}{the number of cores. If Q has many entries, you might consider multiple cores. Default is 1.}
+##'  \item{"xtol"}{stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-4}
+##'  \item{"ftol"}{stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
+##'  \item{"maxit"}{stop when the number of iteration exeeeds maxiter. Default is 10000}
+##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is .Machine$double.eps.}
+##'  \item{"lbvar.unpen"}{the lower bound (box constraint) for the variational variance parameters for the unpenalized model. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 ##' }
 ##'
@@ -35,7 +35,7 @@ PLNPCA <- function(Robject, ...)
 
 ##' @rdname PLNPCA
 ##' @export
-PLNPCA.formula <- function(formula, Q = 1:5,  control = list()) {
+PLNPCA.formula <- function(formula, ranks = 1:5,  control = list()) {
 
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
@@ -43,23 +43,24 @@ PLNPCA.formula <- function(formula, Q = 1:5,  control = list()) {
   O      <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLNPCA.default(Y, X, O, Q, control))
+  return(PLNPCA.default(Y, X, O, ranks, control))
 }
 
 ##' @rdname PLNPCA
 ##' @export
-PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), Q = 1:5,  control = list()) {
+PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), ranks = 1:5,  control = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(factr=1e8, pgtol=1e-2, maxit=20000, lbvar=1e-3, cores=1, trace=1)
+  ctrl <- list(ftol=1e-8, xtol=1e-6, maxit=20000, lbvar.unpen=1e-5, lbvar=1e-8, cores=1, trace=1)
   ctrl[names(control)] <- control
+  ctrl.init <- list(ftol=ctrl$ftol, xtol=ctrl$xtol, maxit=ctrl$maxit, lbvar=ctrl$lbvar.unpen, trace=max(ctrl$trace,1))
 
-  ## Instantiate the collection of PLN models, initialized by glm Poisson
+  ## Instantiate the collection of PLN models, initialized by PLN with full rank
   if (ctrl$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNPCAfamily$new(ranks=Q, responses=Y, covariates=X, offsets=O)
+  myPLN <- PLNPCAfamily$new(ranks=ranks, responses=Y, covariates=X, offsets=O, control=ctrl.init)
 
   ## Now adjust the PLN models
-  if (ctrl$trace > 0) cat("\n Adjusting", length(Q), "PLN models for PCA analysis.")
+  if (ctrl$trace > 0) cat("\n Adjusting", length(ranks), "PLN models for PCA analysis.")
   myPLN$optimize(ctrl)
   if (ctrl$trace > 0) cat("\n DONE!\n")
   myPLN$setCriteria()

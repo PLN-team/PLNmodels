@@ -67,7 +67,7 @@ We start by adjusting the above model to Trichoptera data set. Here, the matrix 
 
 ```{r}
 abundance <- as.matrix(trichometeo$fau) ## must be a matrix
-models.nocov <- PLNPCA(abundance ~ 1, Q=1:5)
+models.nocov <- PLNPCA(abundance ~ 1, ranks=1:5)
 ```
 
 Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`.
@@ -128,7 +128,7 @@ colnames(trichometeo$meteo)
 Let us try to introduce some of them in our model, for instance, the minimal temperature, the wind and the nebulosity. This can be done thanks to the model formula:
 ```{r}
 covar <- trichometeo$meteo
-models.cov <- PLNPCA(abundance ~ 1 + covar$T.min + covar$Nebu.Moy + covar$Vent, Q=1:5)
+models.cov <- PLNPCA(abundance ~ 1 + covar$T.min + covar$Nebu.Moy + covar$Vent, ranks=1:5)
 ```
 
 Again, the best model is obtained for $q=3$ classes.
