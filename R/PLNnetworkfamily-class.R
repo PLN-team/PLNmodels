@@ -12,13 +12,12 @@
 #'
 #' @field penalties the sparsity level of the network in the successively fitted models
 #' @field models a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.
-#' @field model.unpenalized a \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, obtained when no sparsifying penalty is applied.
+#' @field inception a \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, obtained when no sparsifying penalty is applied.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
 #' @field offsets the matrix of offsets common to every models
-#' @field objective the R function used to compute the model's objective during the optimization process
-#' @field gradient the R function to compute the model's gradient during the optimization process
+#' @field fn_optim the R functions used to compute the model's objective and gradient during the optimization process
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom nloptr nloptr
@@ -28,25 +27,19 @@ PLNnetworkfamily <-
   R6Class(classname = "PLNnetworkfamily",
     inherit = PLNfamily,
      public = list(
-      penalties = "numeric",
-      model.unpenalized     = NULL,
-      fn_optim_unpenalized  = NULL
+      penalties = "numeric"
     )
 )
 
 PLNnetworkfamily$set("public", "initialize",
-  function(nModels, responses, covariates, offsets) {
+  function(nModels, responses, covariates, offsets, control) {
 
   ## initialize the required fields
-  super$initialize(responses, covariates, offsets)
-  self$init.par$M <- matrix(0, self$n,self$p) ## -tcrossprod(covariates,self$init.par$Theta)
-  self$init.par$S <- matrix(1e-3, self$n,self$p)
+  super$initialize(responses, covariates, offsets, control)
   KY <-sum(.logfactorial(self$responses))
 
-  ## instantiate as many models as penalties + an unpenalized model
+  ## instantiate as many models as penalties
   fit <- PLNnetworkfit$new()
-  self$model.unpenalized <- fit$clone()
-  self$model.unpenalized$penalty <- 0
   self$models <- vector("list", nModels)
   for (m in 1:nModels) {
     self$models[[m]] <- fit$clone()
@@ -73,80 +66,6 @@ PLNnetworkfamily$set("public", "initialize",
         "gradient"  = c(gr.Theta,gr.M,gr.S)
       ))
   }
-
-  self$fn_optim_unpenalized <- function(par) {
-      Theta <- matrix(par[1:(self$p*self$d)]                         , self$p,self$d)
-      M     <- matrix(par[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
-      S     <- matrix(par[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
-
-      Omega <- self$n * chol2inv(chol(crossprod(M) + diag(colSums(S))))
-      logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
-
-      Z <- self$offsets + tcrossprod(self$covariates, Theta) + M
-      A <- exp (.trunc(Z + .5*S))
-      logP.Z  <- self$n/2 * (logDetOmega - sum(diag(Omega)*colMeans(S))) - .5*sum(diag(Omega %*% crossprod(M)))
-
-      gr.Theta <- crossprod(self$covariates, A - self$responses)
-      gr.M  <- M %*% Omega + A - self$responses
-      gr.S  <- .5 * (matrix(rep(diag(Omega),self$n), self$n, self$p, byrow = TRUE) + A - 1/S)
-
-      return(list(
-        "objective" = sum(as.numeric(A - self$responses*Z)) - logP.Z - .5*sum(log(S)+1) + KY,
-        "gradient"  = c(gr.Theta,gr.M,gr.S)
-          ))
-  }
-
-})
-
-PLNnetworkfamily$set("public", "optimize.unpenalized",
-  function(control) {
-
-  ## ===========================================
-  ## INITIALISATION
-
-  par0 <- c(self$init.par$Theta, self$init.par$M, self$init.par$S)
-  lower.bound <- c(rep(-Inf, self$p*self$d), # Theta
-                   rep(-Inf, self$n*self$p), # M
-                   rep(control$lbvar.unpen, self$n*self$p)) # S
-  ## ===========================================
-  ## OPTIMISATION
-  if (control$trace > 0) cat("\n Optimizing...")
-  if (control$trace > 1) cat("\n\t L-BFGS-B for gradient descent")
-
-  cond <- FALSE; iter <- 0
-
-  ## CALL TO LD-MMA OPTIMIZATION WITH BOX CONSTRAINT
-  opts <- list("algorithm" = "NLOPT_LD_MMA",
-               "maxeval"   = control$maxit,
-               "xtol_rel"  = control$xtol,
-               "ftol_abs"  = control$ftol,
-               "ftol_rel"  = control$ftol,
-               "print_level" = max(0, control$trace-1))
-
-  optim.out <- nloptr(par0, eval_f = self$fn_optim_unpenalized, lb = lower.bound, opts = opts)
-
-  ## ===========================================
-  ## OUTPUT
-  ## formating parameters for output
-  M <- matrix(optim.out$solution[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
-  S <- matrix(optim.out$solution[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
-  Theta <- matrix(optim.out$solution[1:(self$p*self$d)] ,self$d, self$p)
-  Sigma <- crossprod(M)/self$n + diag(colMeans(S))
-  Omega <- solve(Sigma)
-  colnames(Theta) <- colnames(self$responses); rownames(Theta) <- colnames(self$covariates)
-  dimnames(S)     <- dimnames(self$responses)
-  dimnames(M)     <- dimnames(self$responses)
-  rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
-
-  ## compute some criteria for evaluation
-  J   <- - optim.out$objective
-  BIC <- J - (self$p * self$d + sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(self$n)
-  ICL <- BIC - .5*self$n*self$p *log(2*pi*exp(1)) - sum(log(S))
-
-  self$model.unpenalized$model.par       <- list(Omega = Omega, Sigma = Sigma, Theta = Theta)
-  self$model.unpenalized$variational.par <- list(M = M, S = S)
-  self$model.unpenalized$criteria        <- c(J = J, BIC = BIC, ICL = ICL)
-  self$model.unpenalized$convergence     <- data.frame(convergence = optim.out$message, objective = optim.out$objective)
 })
 
 PLNnetworkfamily$set("public", "optimize",
@@ -157,13 +76,12 @@ PLNnetworkfamily$set("public", "optimize",
   KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
   control.MM    <- list(maxit = control$MMmaxit, tol=control$MMtol, trace=control$trace)
 
-  ## INITIALIZATION
-  Omega    <- self$model.unpenalized$model.par$Omega
-  OmegaInv <- NULL
+  ## INITIALIZATION: start from the standard PLN (a.k.a. inception)
+  Omega <- self$inception$model.par$Omega
   logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
-  par0 <- c(self$model.unpenalized$model.par$Theta,
-            self$model.unpenalized$variational.par$M,
-            self$model.unpenalized$variational.par$S)
+  par0 <- c(self$inception$model.par$Theta,
+            self$inception$variational.par$M,
+            self$inception$variational.par$S)
   lower.bound <- c(rep(-Inf, self$p*self$d), # Theta
                    rep(-Inf, self$n*self$p), # M
                    rep(control$lbvar, self$n*self$p)) # S
@@ -180,7 +98,7 @@ PLNnetworkfamily$set("public", "optimize",
 
     cond <- FALSE; iter <- 0
     convergence <- numeric(control.MM$maxit)
-    objective <- numeric(control.MM$maxit)
+    objective   <- numeric(control.MM$maxit)
     if (control$trace > 0) cat("\n\titeration: ")
     while(!cond) {
       iter <- iter + 1
@@ -190,7 +108,6 @@ PLNnetworkfamily$set("public", "optimize",
       opts <- list("algorithm" = "NLOPT_LD_MMA",
                "maxeval"   = control$maxit,
                "xtol_rel"  = control$xtol,
-               "ftol_abs"  = control$ftol,
                "ftol_rel"  = control$ftol,
                "print_level" = max(0, control$trace-1))
       optim.out <- nloptr(par0, eval_f = self$fn_optim, lb = lower.bound, opts = opts,
@@ -241,7 +158,7 @@ PLNnetworkfamily$set("public", "optimize",
 PLNnetworkfamily$set("public", "setPenalties",
   function(penalties, nPenalties, verbose) {
     if (is.null(penalties)) {
-      cov.unpenalized <- self$model.unpenalized$model.par$Sigma
+      cov.unpenalized <- self$inception$model.par$Sigma
       range.penalties <- range(abs(cov.unpenalized[upper.tri(cov.unpenalized)]))
       penalties <- 10^seq(log10(range.penalties[1]), log10(range.penalties[2]), len=nPenalties)
     } else {

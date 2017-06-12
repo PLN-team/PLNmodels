@@ -10,6 +10,7 @@
 ##' @param control a list for controling the optimization. See details.
 ##' @param Robject an R object, either a formula or a matrix
 ##' @param ... additional parameters. Not used
+##'
 ##' @return an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
 ##' a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
 ##'

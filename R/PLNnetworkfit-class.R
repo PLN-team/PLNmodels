@@ -28,3 +28,5 @@ PLNnetworkfit <-
       }
     )
 )
+
+## TODO: add function to for network representation

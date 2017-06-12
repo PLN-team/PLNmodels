@@ -5,22 +5,19 @@ PLNfamily <-
       responses  = NULL, # the Y matrix
       covariates = NULL, # the X matrix
       offsets    = NULL, # the O matrix
+### TODO pass n, p, d to private members
       n          = NULL, # number of samples
       p          = NULL, # number of responses
       d          = NULL, # number of covariates
       inception  = NULL, # the basic PLN model in the collection (no regularization, nor sparsity, nor rank)
-      models     = NULL,
-      init.par   = NULL,
-      criteria   = NULL,
-      objective  = NULL,
-      gradient   = NULL,
-      fn_optim0  = NULL, # objective and gradient for optimizing model0
+      models     = NULL, # the collection of models to be fitted
+      criteria   = NULL, # a data frame with some criteria associated with the collection of fits
       fn_optim   = NULL  # objective and gradient for optimizing the regularized models
     )
 )
 
 PLNfamily$set("public", "initialize",
-  function(responses, covariates, offsets, setup.inceptive=TRUE) {
+  function(responses, covariates, offsets, control) {
     ## set data matrice and dimension
     self$responses  <- responses
     self$covariates <- covariates
@@ -35,15 +32,8 @@ PLNfamily$set("public", "initialize",
     if (is.null(rownames(covariates))) rownames(self$covariates) <- 1:self$n
     if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:self$d
 
-    ## recover the initial model for each rank with glm Poisson models
-    glmP  <- lapply(1:self$p, function(j) glm.fit(covariates, responses[, j], offset = offsets[,j], family = poisson()))
-    Theta <- do.call(rbind, lapply(glmP, coefficients))
-    # Y.hat <- exp(offsets + tcrossprod(covariates, Theta))
-    # Sigma <- diag(log(1 + colMeans(((responses - Y.hat)^2 - responses)/(Y.hat^2))))
-    Sigma <- cov(sapply(glmP, residuals.glm, "pearson"))
-
-    self$init.par <- list(Sigma = Sigma, Theta = Theta)
-
+    ## adjust the unpenalized PLN model
+    self$inception <- PLN(responses, covariates, offsets, control)
 })
 
 #' Best model extraction from a collection of PLNfit (PCA, network)

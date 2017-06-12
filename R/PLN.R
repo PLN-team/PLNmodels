@@ -12,13 +12,12 @@
 ##'
 ##' @return an R6 object with class \code{\link[=PLNfit-class]{PLNfit}}
 ##'
-##' @details The parameter \code{control} is a list with the following entries
+##' @details The parameter \code{control} is a list controling the optimization with the following entries
 ##' \itemize{
-##'  \item{"factr"}{controls the L-BFGF-B procedure. See the documentation of \code{\link{optim}}. Default 1e8. Decrease if you experience instability or non monotonous J as a function of the rank}
-##'  \item{"pgtol"}{controls the L-BFGF-B procedure. See the documentation of \code{\link{optim}}. Default 1e-2. Decrease if you experience instability or non monotonous J as a function of the rank}
-##'  \item{"maxit"}{controls the L-BFGF-B procedure. See the documentaiton of \code{\link{optim}}. Default is 20000}
-##'  \item{"lb.var"}{the minimum admissible value fr the variance parameter S in the variational approximation. Default is 1e-3.}
-##'  \item{"cores"}{the number of cores. If Q has many entries, you might consider multiple cores. Default is 1.}
+##'  \item{"xtol"}{stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-4}
+##'  \item{"ftol"}{stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
+##'  \item{"maxit"}{stop when the number of iteration exeeeds maxiter. Default is 10000}
+##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 ##' }
 ##'
@@ -87,7 +86,7 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   ## ===========================================
   ## OPTIMIZATION
   ##
-  if (ctrl$trace > 0) cat("\n Adjusting the PLN model.")
+  if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
 
   ## Initialization
 
@@ -102,9 +101,8 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   opts <- list("algorithm"   = "NLOPT_LD_MMA",
                "maxeval"     = ctrl$maxit,
                "xtol_rel"    = ctrl$xtol,
-               "ftol_abs"    = ctrl$ftol,
                "ftol_rel"    = ctrl$ftol,
-               "print_level" = ctrl$trace)
+               "print_level" = max(0,ctrl$trace-1))
 
   optim.out <- nloptr(par0, eval_f = fn_optim_PLN, lb = lower.bound, opts = opts)
 
@@ -129,6 +127,6 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   return(PLNfit$new(model.par       = list(Omega = Omega, Sigma = Sigma, Theta = Theta),
                       variational.par = list(M = M, S = S),
                       criteria        = c(J = J, BIC = BIC, ICL = ICL),
-                      convergence     = data.frame(optim.out$message, optim.out$objective)))
+                      convergence     = data.frame(status = optim.out$status, objective = optim.out$objective, iterations=optim.out$iterations)))
 }
 
