@@ -74,7 +74,8 @@ PLNnetworkfamily$set("public", "optimize",
   ## ===========================================
   ## INITIALISATION
   KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
-  control.MM    <- list(maxit = control$MMmaxit, tol=control$MMtol, trace=control$trace)
+  maxit <- control$out.maxit
+  tol <- control$out.tol
 
   ## INITIALIZATION: start from the standard PLN (a.k.a. inception)
   Omega <- self$inception$model.par$Omega
@@ -97,8 +98,8 @@ PLNnetworkfamily$set("public", "optimize",
     if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
 
     cond <- FALSE; iter <- 0
-    convergence <- numeric(control.MM$maxit)
-    objective   <- numeric(control.MM$maxit)
+    convergence <- numeric(maxit)
+    objective   <- numeric(maxit)
     if (control$trace > 0) cat("\n\titeration: ")
     while(!cond) {
       iter <- iter + 1
@@ -116,7 +117,7 @@ PLNnetworkfamily$set("public", "optimize",
       objective[iter]   <- optim.out$objective
       convergence[iter] <- sqrt(sum((optim.out$solution - par0)^2)/sum(par0^2))
 
-      if ((convergence[iter] < control.MM$tol) | (iter > control.MM$maxit)) {
+      if ((convergence[iter] < tol) | (iter > maxit)) {
         cond <- TRUE
       }
 
@@ -138,8 +139,8 @@ PLNnetworkfamily$set("public", "optimize",
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
 
     ## compute some criteria for evaluation
-    ## loglik <- sum(self$responses * (Z)) - sum(as.numeric(self$responses)) - KY
     J   <- -optim.out$objective
+    ## loglik <- sum(self$responses * (Z)) - sum(as.numeric(self$responses)) - KY
     # lmin <- sum(self$responses * (self$offsets + tcrossprod(self$covariates, model$model.par$Theta))) - sum(as.numeric(self$responses)) - KY
     # lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1)) - KY
     # R2  <- (loglik[q] - lmin)  / (lmax - lmin)

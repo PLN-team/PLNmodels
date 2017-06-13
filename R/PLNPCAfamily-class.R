@@ -117,7 +117,7 @@ PLNPCAfamily$set("public", "optimize",
                      rep(-Inf, self$n*model$rank) , # M
                      rep(control$lbvar,self$n*model$rank)) # S
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-    opts <- list("algorithm" = "NLOPT_LD_MMA",
+    opts <- list("algorithm" = "NLOPT_LD_TNEWTON_PRECOND",
                  "maxeval"   = control$maxit,
                  "xtol_rel"  = control$xtol,
                  "ftol_rel"  = control$ftol,
