@@ -140,11 +140,6 @@ PLNnetworkfamily$set("public", "optimize",
 
     ## compute some criteria for evaluation
     J   <- -optim.out$objective
-    ## loglik <- sum(self$responses * (Z)) - sum(as.numeric(self$responses)) - KY
-    # lmin <- sum(self$responses * (self$offsets + tcrossprod(self$covariates, model$model.par$Theta))) - sum(as.numeric(self$responses)) - KY
-    # lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1)) - KY
-    # R2  <- (loglik[q] - lmin)  / (lmax - lmin)
-
     BIC <- J - (self$p * self$d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(self$n)
     ICL <- BIC - .5*self$n*self$p *log(2*pi*exp(1)) - sum(log(S))
 
@@ -152,6 +147,47 @@ PLNnetworkfamily$set("public", "optimize",
     self$models[[m]]$variational.par <- list(M = M, S = S)
     self$models[[m]]$criteria        <- c(J = J, BIC = BIC, ICL = ICL)
     self$models[[m]]$convergence     <- data.frame(convergence = convergence[1:iter], objective = objective[1:iter])
+  }
+
+})
+
+PLNnetworkfamily$set("public", "optimize_approx",
+  function(control) {
+
+  ## ===========================================
+  ## INITIALISATION
+  ## start from the standard PLN (a.k.a. inception)
+  ## keep these values for the variational parameters whatever the penalty
+  KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
+  Theta <- self$inception$model.par$Theta
+  M     <- self$inception$variational.par$M
+  S     <- self$inception$variational.par$S
+  Sigma <- crossprod(M)/self$n + diag(colMeans(S))
+  par0 <- c(Theta, M, S)
+
+  for (m in seq_along(self$models))  {
+
+    penalty <- self$models[[m]]$penalty
+    ## ===========================================
+    ## OPTIMISATION
+    if (control$trace > 0) cat("\n sparsifying penalty =",penalty)
+    if (control$trace > 1) cat("\n\t approximate version: do not optimize the variational paramters")
+    if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
+    Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal)$wi
+    logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+    rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
+
+    ## ===========================================
+    ## OUTPUT
+    ## compute some criteria for evaluation
+    J   <- self$fn_optim(par0, logDetOmega, Omega)$objective
+    BIC <- J - (self$p * self$d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(self$n)
+    ICL <- BIC - .5*self$n*self$p *log(2*pi*exp(1)) - sum(log(S))
+
+    self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = Sigma, Theta = Theta)
+    self$models[[m]]$variational.par <- list(M = M, S = S)
+    self$models[[m]]$criteria        <- c(J = J, BIC = BIC, ICL = ICL)
+    self$models[[m]]$convergence     <- data.frame(convergence = NA, objective = -J)
   }
 
 })

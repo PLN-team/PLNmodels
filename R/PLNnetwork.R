@@ -7,6 +7,7 @@
 ##' @param X an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.
 ##' @param O an optional (n x p) matrix of offsets.
 ##' @param penalties a vector of positive real number controling the level of sparisty of the underlying network
+##' @param approx boolean for performing a two-step approach (PLN + graphical-Lasso) rather than the fully joint optimization. Default to FALSE.
 ##' @param control a list for controling the optimization. See details.
 ##' @param Robject an R object, either a formula or a matrix
 ##' @param ... additional parameters. Not used
@@ -37,7 +38,7 @@ PLNnetwork <- function(Robject, ...)
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.formula <- function(formula, penalties = NULL,  control = list()) {
+PLNnetwork.formula <- function(formula, penalties = NULL, approx=FALSE, control = list()) {
 
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
@@ -45,12 +46,12 @@ PLNnetwork.formula <- function(formula, penalties = NULL,  control = list()) {
   O      <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLNnetwork.default(Y, X, O, penalties, control))
+  return(PLNnetwork.default(Y, X, O, penalties, approx, control))
 }
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, control = list()) {
+PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, approx=FALSE, control = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- list(out.tol = 1e-5, out.maxit = 50, ftol=1e-6, xtol=1e-4, maxit=10000, nPenalties = 25, lbvar.init=1e-5, penalize.diagonal = FALSE, lbvar=.Machine$double.eps, trace=1)
@@ -67,7 +68,12 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
   myPLN$setPenalties(penalties, ctrl$nPenalties, ctrl$trace > 0)
 
   if (ctrl$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN models for sparse network inference.")
-  myPLN$optimize(ctrl)
+  if (approx) {
+    if (ctrl$trace > 0) cat("\n\t approximation: apply graphical-lasso on the inceptive PLN model on a penalty grid.")
+    myPLN$optimize_approx(ctrl)
+  } else {
+    myPLN$optimize(ctrl)
+  }
   if (ctrl$trace > 0) cat("\n DONE!\n")
 
   myPLN$setCriteria()
