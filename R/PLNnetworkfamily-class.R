@@ -181,6 +181,7 @@ PLNnetworkfamily$set("public", "setPenalties",
 #' A plot method for a collection of PLNnetworkfit
 #'
 #' @name PLNnetworkfamily_plot
+#' @import ggplot2
 #' @return Produces a plot  representing the evolution of the criteria of the different models considered,
 #' highlighting the best model in terms of BIC.
 NULL

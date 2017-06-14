@@ -26,7 +26,7 @@ during the estimation process.
 
 \item{\code{models}}{a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.}
 
-\item{\code{model.unpenalized}}{a \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, obtained when no sparsifying penalty is applied.}
+\item{\code{inception}}{a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when no sparsifying penalty is applied.}
 
 \item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 
@@ -36,9 +36,7 @@ during the estimation process.
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
 
-\item{\code{objective}}{the R function used to compute the model's objective during the optimization process}
-
-\item{\code{gradient}}{the R function to compute the model's gradient during the optimization process}
+\item{\code{fn_optim}}{the R functions used to compute the model's objective and gradient during the optimization process}
 }}
 
 \seealso{

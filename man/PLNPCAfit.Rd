@@ -28,9 +28,7 @@ Fields should not be changed or manipulated by the user as they are updated inte
 
 \item{\code{criteria}}{a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.}
 
-\item{\code{convergence}}{numeric; the convergence status of the L-BFGS-B method}
-
-\item{\code{loglik}}{numeric; the Poisson loglikelihood of the current model}
+\item{\code{convergence}}{quantities usefull for monitoring the optimization}
 
 \item{\code{percentVar}}{the percent of variance explained by each axis}
 

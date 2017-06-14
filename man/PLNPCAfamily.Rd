@@ -26,6 +26,8 @@ during the estimation process.
 
 \item{\code{models}}{a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.}
 
+\item{\code{inception}}{a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when full rank is considered.}
+
 \item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 
 \item{\code{responses}}{the matrix of responses common to every models}
@@ -34,12 +36,10 @@ during the estimation process.
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
 
-\item{\code{objective}}{the R function used to compute the model's objective during the optimization process}
-
-\item{\code{gradient}}{the R function to compute the model's gradient during the optimization process}
+\item{\code{fn_optim}}{the R functions used to compute the model's objective and gradient during the optimization process}
 }}
 
 \seealso{
-The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
+The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit-class]{PLNPCAfit}}
 }
 \keyword{datasets}

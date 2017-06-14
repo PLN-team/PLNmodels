@@ -81,10 +81,11 @@ function() {
                               t(sapply(self$models, function(model) model$criteria)))
 })
 
+#' @import ggplot2
 PLNfamily$set("public", "plot",
 function() {
   dplot <- melt(self$criteria[, c("xvar", "J", "BIC", "ICL")], id.vars = 1, variable.name = "criterion")
-  p <- ggplot2::ggplot(dplot, aes(x=xvar, y=value, group=criterion, colour=criterion)) +
+  p <- ggplot(dplot, aes(x=xvar, y=value, group=criterion, colour=criterion)) +
         geom_line() + geom_point() + ggtitle("Model selection criteria")
   return(p)
 })

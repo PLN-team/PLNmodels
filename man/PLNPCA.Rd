@@ -8,10 +8,10 @@
 \usage{
 PLNPCA(Robject, ...)
 
-\method{PLNPCA}{formula}(formula, Q = 1:5, control = list())
+\method{PLNPCA}{formula}(formula, ranks = 1:5, control = list())
 
 \method{PLNPCA}{default}(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0,
-  nrow(Y), ncol(Y)), Q = 1:5, control = list())
+  nrow(Y), ncol(Y)), ranks = 1:5, control = list())
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a matrix}
@@ -20,13 +20,13 @@ PLNPCA(Robject, ...)
 
 \item{formula}{a formula}
 
-\item{Q}{a vector of integer containing the successive ranks (or number of axes to be considered)}
+\item{ranks}{a vector of integer containing the successive ranks (or number of axes to be considered)}
 
 \item{control}{a list for controling the optimization. See details.}
 
 \item{Y}{a (n x p) matrix of count data}
 
-\item{X}{an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.}
+\item{X}{an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.}
 
 \item{O}{an optional (n x p) matrix of offsets.}
 }
@@ -40,11 +40,11 @@ two methods are available for specifing the models (with formulas or matrices)
 \details{
 The parameter \code{control} is a list with the following entries
 \itemize{
- \item{"factr"}{controls the L-BFGF-B procedure. See the documentation of \code{\link{optim}}. Default 1e8. Decrease if you experience instability or non monotonous J as a function of the rank}
- \item{"pgtol"}{controls the L-BFGF-B procedure. See the documentation of \code{\link{optim}}. Default 1e-2. Decrease if you experience instability or non monotonous J as a function of the rank}
- \item{"maxit"}{controls the L-BFGF-B procedure. See the documentaiton of \code{\link{optim}}. Default is 20000}
- \item{"lb.var"}{the minimum admissible value fr the variance parameter S in the variational approximation. Default is 1e-3.}
- \item{"cores"}{the number of cores. If Q has many entries, you might consider multiple cores. Default is 1.}
+ \item{"xtol"}{stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-4}
+ \item{"ftol"}{stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
+ \item{"maxit"}{stop when the number of iteration exeeeds maxiter. Default is 10000}
+ \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is .Machine$double.eps.}
+ \item{"lbvar.init"}{the lower bound (box constraint) for the variational variance parameters for the unpenalized model. Default is 1e-5.}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 }
 }
