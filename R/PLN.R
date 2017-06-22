@@ -61,28 +61,6 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
   KY <-sum(.logfactorial(Y))
 
-  fn_optim_PLN <- function(par) {
-    Theta <- matrix(par[1:(p*d)]                         , p,d)
-    M     <- matrix(par[p*d          + 1:(n*p)], n,p)
-    S     <- matrix(par[(n+d)*p + 1:(n*p)], n,p)
-
-    Omega <- n * chol2inv(chol(crossprod(M) + diag(colSums(S))))
-    logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
-
-    Z <- O + tcrossprod(X, Theta) + M
-    A <- exp (.trunc(Z + .5*S))
-    logP.Z  <- n/2 * (logDetOmega - sum(diag(Omega)*colMeans(S))) - .5*sum(diag(Omega %*% crossprod(M)))
-
-    gr.Theta <- crossprod(X, A - Y)
-    gr.M  <- M %*% Omega + A - Y
-    gr.S  <- .5 * (matrix(rep(diag(Omega),n), n, p, byrow = TRUE) + A - 1/S)
-
-    return(list(
-      "objective" = sum(as.numeric(A - Y*Z)) - logP.Z - .5*sum(log(S)+1) + KY,
-      "gradient"  = c(gr.Theta,gr.M,gr.S)
-    ))
-  }
-
   ## ===========================================
   ## OPTIMIZATION
   ##
@@ -104,8 +82,8 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
                "ftol_rel"    = ctrl$ftol,
                "print_level" = max(0,ctrl$trace-1))
 
-  optim.out <- nloptr(par0, eval_f = fn_optim_PLN, lb = lower.bound, opts = opts)
-
+  optim.out <- nloptr(par0, eval_f = fn_optim_PLN_Cpp, lb = lower.bound, opts = opts,
+                      Y = Y, X = X, O = O, KY = KY)
   ## ===========================================
   ## POST-TREATMENT
   ##

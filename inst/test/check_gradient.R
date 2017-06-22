@@ -29,12 +29,46 @@ func_optim <- function(par) {
   obj <- sum(as.numeric(A - Y*Z)) - logP.Z - .5*sum(log(S)+1) + KY
 
   gr.Theta <- crossprod(X, A - Y)
-  gr.M  <- M %*% Omega + A - Y
+  gr.M  <- .5 * M %*% Omega + A - Y
   gr.S  <- .5 * (matrix(rep(diag(Omega),n), n, p, byrow = TRUE) + A - 1/S)
 
   grad <- c(gr.Theta, gr.M, gr.S)
 
   return(list("objective" = obj, "gradient" = grad))
+}
+
+objective <- function(par) {
+  Theta <- matrix(par[1:(p*d)]                         , p,d)
+  M     <- matrix(par[p*d          + 1:(n*p)], n,p)
+  S     <- matrix(par[(n+d)*p + 1:(n*p)], n,p)
+
+  Omega <- solve(crossprod(M)/n + diag(colMeans(S)))
+  logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+
+  Z <- O + tcrossprod(X, Theta) + M
+  A <- exp (.trunc(Z + .5*S))
+
+  logP.Z  <- n/2 * (logDetOmega - sum(diag(Omega)*colMeans(S))) - .5*sum(diag(Omega %*% crossprod(M)))
+
+  return(sum(as.numeric(A - Y*Z)) - logP.Z - .5*sum(log(S)+1) + KY)
+}
+
+gradient <- function(par) {
+  Theta <- matrix(par[1:(p*d)]                         , p,d)
+  M     <- matrix(par[p*d          + 1:(n*p)], n,p)
+  S     <- matrix(par[(n+d)*p + 1:(n*p)], n,p)
+
+  Omega <- n * solve(crossprod(M) + diag(colSums(S)))
+
+  Z <- O + tcrossprod(X, Theta) + M
+  A <- exp (.trunc(Z + .5*S))
+
+  gr.Theta <- crossprod(X, A - Y)
+  gr.M  <- M %*% Omega + A - Y
+  gr.S  <- .5 * (matrix(rep(diag(Omega),n), n, p, byrow = TRUE) + A - 1/S)
+
+  return(c(gr.Theta, gr.M, gr.S))
+
 }
 
 glmP  <- lapply(1:ncol(Y), function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
@@ -54,11 +88,9 @@ upper.bound <- rep(Inf, p*d+2*n*p)
 #                         xtol_rel = 1e-6,  eval_grad_f = gradient.unpenalized)
 
 
-# check <- check.derivatives(par0,
-#                   objective.unpenalized,
-#                   gradient.unpenalized,
-#                   check_derivatives_tol = 1e-2,
-#                   KY = KY)
+check <- check.derivatives(par0,
+                           objective, gradient,
+                 check_derivatives_tol = 1e-2)
 
 ## LBFGS VAR1, VAR2 ok MMA suoer rapide mais fragile
 opts <- list("algorithm" = NULL,

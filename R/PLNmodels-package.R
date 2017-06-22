@@ -18,3 +18,8 @@
 ##' @docType package
 ##' @name PLNmodels
 NULL
+
+#' @useDynLib PLNmodels
+#' @import RcppArmadillo
+#' @importFrom Rcpp sourceCpp
+NULL

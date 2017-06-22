@@ -8,10 +8,11 @@
 \usage{
 PLNnetwork(Robject, ...)
 
-\method{PLNnetwork}{formula}(formula, penalties = NULL, control = list())
+\method{PLNnetwork}{formula}(formula, penalties = NULL, approx = FALSE,
+  control = list())
 
 \method{PLNnetwork}{default}(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0,
-  nrow(Y), ncol(Y)), penalties = NULL, control = list())
+  nrow(Y), ncol(Y)), penalties = NULL, approx = FALSE, control = list())
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a matrix}
@@ -21,6 +22,8 @@ PLNnetwork(Robject, ...)
 \item{formula}{a formula}
 
 \item{penalties}{a vector of positive real number controling the level of sparisty of the underlying network}
+
+\item{approx}{boolean for performing a two-step approach (PLN + graphical-Lasso) rather than the fully joint optimization. Default to FALSE.}
 
 \item{control}{a list for controling the optimization. See details.}
 
