@@ -46,26 +46,7 @@ PLNnetworkfamily$set("public", "initialize",
   }
 
   ## declare the objective and gradient functions for optimization
-  self$fn_optim <- function(par,logDetOmega,Omega) {
-
-      Theta <- matrix(par[1:(self$p*self$d)]                         , self$p,self$d)
-      M     <- matrix(par[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
-      S     <- matrix(par[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
-
-      Z <- self$offsets + tcrossprod(self$covariates, Theta) + M
-      A <- exp (.trunc(Z + .5*S))
-
-      logP.Z  <- self$n/2 * (logDetOmega - sum(diag(Omega)*colMeans(S))) - .5*sum(diag(Omega %*% crossprod(M)))
-
-      gr.Theta <- crossprod(self$covariates, A - self$responses)
-      gr.M  <- M %*% Omega + A - self$responses
-      gr.S  <- .5 * (matrix(rep(diag(Omega),self$n), self$n, self$p, byrow = TRUE) + A - 1/S)
-
-      return(list(
-        "objective" = sum(as.numeric(A - self$responses*Z)) - logP.Z - .5*sum(log(S)+1) + KY,
-        "gradient"  = c(gr.Theta,gr.M,gr.S)
-      ))
-  }
+  self$fn_optim <- fn_optim_PLNnetwork_Cpp
 })
 
 PLNnetworkfamily$set("public", "optimize",
@@ -78,8 +59,8 @@ PLNnetworkfamily$set("public", "optimize",
   tol <- control$out.tol
 
   ## INITIALIZATION: start from the standard PLN (a.k.a. inception)
-  Omega <- self$inception$model.par$Omega
-  logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+  Sigma <- self$inception$model.par$Sigma
+  # logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
   par0 <- c(self$inception$model.par$Theta,
             self$inception$variational.par$M,
             self$inception$variational.par$S)
@@ -105,6 +86,9 @@ PLNnetworkfamily$set("public", "optimize",
       iter <- iter + 1
       if (control$trace > 0) cat("",iter)
 
+      Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal)$wi
+      logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+
       ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
       opts <- list("algorithm" = "NLOPT_LD_MMA",
                "maxeval"   = control$maxit,
@@ -112,7 +96,8 @@ PLNnetworkfamily$set("public", "optimize",
                "ftol_rel"  = control$ftol,
                "print_level" = max(0, control$trace-1))
       optim.out <- nloptr(par0, eval_f = self$fn_optim, lb = lower.bound, opts = opts,
-                          logDetOmega=logDetOmega,Omega=Omega)
+                          log_detOmega=logDetOmega, Omega=Omega,
+                          Y=self$responses, X=self$covariates, O=self$offsets, KY=KY)
 
       objective[iter]   <- optim.out$objective
       convergence[iter] <- sqrt(sum((optim.out$solution - par0)^2)/sum(par0^2))
@@ -125,8 +110,8 @@ PLNnetworkfamily$set("public", "optimize",
       S <- matrix(optim.out$solution[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
       Sigma <- crossprod(M)/self$n + diag(colMeans(S))
 
-      Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal)$wi
-      logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+      # Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal)$wi
+      # logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
       par0 <- optim.out$solution
     }
     ## ===========================================
@@ -180,7 +165,7 @@ PLNnetworkfamily$set("public", "optimize_approx",
     ## ===========================================
     ## OUTPUT
     ## compute some criteria for evaluation
-    J   <- -self$fn_optim(par0, logDetOmega, Omega)$objective
+    J   <- -self$fn_optim(par0, logDetOmega, Omega, self$responses, self$covariates, self$offsets, KY)$objective
     BIC <- J - (self$p * self$d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(self$n)
     ICL <- BIC - .5*self$n*self$p *log(2*pi*exp(1)) - sum(log(S))
 

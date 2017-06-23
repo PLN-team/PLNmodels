@@ -1,7 +1,7 @@
 Package: PLNmodels
 Type: Package
 Title: Poisson lognormal models
-Version: 0.2.1000
+Version: 0.2.1001
 Author: Authors@R: as.person(c(
     "Julien Chiquet <julien.chiquet@inra.fr> [aut, cre]", 
     "Mahendra Mariadassou <mahendra.mariadassou@@inra.fr> [aut]",
@@ -11,7 +11,7 @@ Maintainer: Julien Chiquet <julien.chiquet@inra.fr>
 Description: The Poisson lognormal model and variants can be used for 
     a variety of multivariate problems when count data are at play (including 
     PCA for count data and network inference). This package 
-    implements an efficient algorithm to fit such models accompanied with a set of
+    implements efficients variational algorithms to fit such models accompanied with a set of
     functions for vizualisation and diagnostic.
 License: GPL (>= 2) | file LICENSE
 Encoding: UTF-8

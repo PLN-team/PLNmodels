@@ -6,3 +6,8 @@ fn_optim_PLN_Cpp <- function(par, Y, X, O, KY) {
     .Call('PLNmodels_fn_optim_PLN_Cpp', PACKAGE = 'PLNmodels', par, Y, X, O, KY)
 }
 
+#' @export
+fn_optim_PLNnetwork_Cpp <- function(par, log_detOmega, Omega, Y, X, O, KY) {
+    .Call('PLNmodels_fn_optim_PLNnetwork_Cpp', PACKAGE = 'PLNmodels', par, log_detOmega, Omega, Y, X, O, KY)
+}
+
