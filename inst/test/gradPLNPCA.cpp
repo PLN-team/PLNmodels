@@ -15,21 +15,25 @@ Rcpp::List fn_optim_PLNPCA_Cpp(const arma::vec par,
   int n = Y.n_rows, p = Y.n_cols, d = X.n_cols ;
 
   arma::mat Theta = par.subvec(0          , p*d          -1) ; Theta.reshape(p,d) ;
-  arma::mat B     = par.subvec(p*d        , p*q          -1) ; B.reshape(p,q) ;
-  arma::mat M     = par.subvec(p*(d+q)    , p*(d+q)+n*q - 1) ; M.reshape(n,q) ;
+  arma::mat B     = par.subvec(p*d        , p*(d+q)      -1) ; B.reshape(p,q) ;
+  arma::mat M     = par.subvec(p*(d+q)    , p*(d+q)+n*q  -1) ; M.reshape(n,q) ;
   arma::mat S     = par.subvec(p*(d+q)+n*q, p*(d+q)+2*n*q-1) ; S.reshape(n,q) ;
+
   arma::mat Z = O + X * Theta.t() + M * B.t();
-  arma::mat A = exp (Z + .5 * (S%S) * (B%B).t() ) ;
+//  arma::mat A = exp (Z + .5 * (S%S) * (B%B).t() ) ;
+  arma::mat A = exp (Z + .5 * S * (B%B).t() ) ;
 
-  arma::vec grd_Theta = vectorise(X.t() * (A-Y));
-  arma::vec grd_B     = vectorise((A-Y).t() * M + A.t() * (S%S)) ;
-  arma::vec grd_M     = vectorise(M + (A-Y) * B) ;
-  arma::vec grd_S     = vectorise(S - 1/S + (A * (B%B)) % S );
+  arma::vec grd_Theta = vectorise((A-Y).t() * X);
+//  arma::vec grd_B     = vectorise((A-Y).t() * M + (A.t() * (S%S)) % B) ;
+  arma::vec grd_B     = vectorise((A-Y).t() * M + (A.t() * S) % B) ;
+  arma::vec grd_M     = vectorise((A-Y) * B + M) ;
+//  arma::vec grd_S     = vectorise(S - 1/S + (A * (B%B)) % S );
+  arma::vec grd_S     = .5 * vectorise(1 - 1/S + A * (B%B) );
 
-  arma::vec grad = join_vert(join_vert(grd_Theta, grd_B),
-                             join_vert(grd_M, grd_S)) ;
+  arma::vec grad = join_vert(join_vert(grd_Theta, grd_B), join_vert(grd_M, grd_S)) ;
 
-  double objective = accu(A - Y % Z - log(S) - .5 + .5 * (M%M + S%S)) + KY ;
+//  double objective = accu(A - Y % Z) + accu(.5 * (M%M + S%S) - log(S) - .5) + KY ;
+  double objective = accu(A - Y % Z) + .5 * accu(M%M + S - log(S) - 1) + KY ;
 
   return Rcpp::List::create(Rcpp::Named("objective") = objective,
                             Rcpp::Named("gradient" ) = grad);
@@ -63,24 +67,28 @@ fn_optim_PLNPCA <- function(par,q,Y,X,O,KY) {
     S     <- matrix(par[p*(d+q)+(n*q) + 1:(n*q)], n,q)
 
     Z     <- tcrossprod(M,B) + tcrossprod(X, Theta) + O
-    A <- exp (.trunc(Z + .5*tcrossprod(S^2, B^2)))
+    # A <- exp (.trunc(Z + .5*tcrossprod(S^2, B^2)))
+    A <- exp (.trunc(Z + .5*tcrossprod(S, B^2)))
 
     gr.Theta <- crossprod(A-Y, X)
-    gr.B     <- crossprod(A-Y, M) + crossprod(A,S^2) * B
+    # gr.B     <- crossprod(A-Y, M) + crossprod(A,S^2) * B
+    gr.B     <- crossprod(A-Y, M) + crossprod(A,S) * B
     gr.M     <- (A-Y) %*% B + M
-    gr.S     <- S - 1/S  + (A %*% (B^2)) * S
+    # gr.S     <- S - 1/S  + (A %*% (B^2)) * S
+    gr.S     <- .5 *(1 - 1/S  + .5 * A %*% (B^2))
 
     return(list(
-      "objective" = sum(as.numeric(A -Y*Z)) +.5*sum(M^2 + S^2 - 2*log(S)-1) + KY,
+#      "objective" = sum(as.numeric(A -Y*Z)) +.5*sum(M^2 + S^2 - 2*log(S)-1) + KY,
+      "objective" = sum(as.numeric(A -Y*Z)) +.5*sum(M^2 + S - log(S)-1) + KY,
       "gradient"  = c(gr.Theta,gr.B,gr.M,gr.S)
     ))
   }
 
-q <- 5
+q <- 2
 glmP  <- lapply(1:ncol(Y), function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
 Theta <- do.call(rbind, lapply(glmP, coefficients))
-M <- matrix(0, n, q) ## -tcrossprod(covariates,self$init.par$Theta)
-S <- matrix(1e-3, n, q)
+M <- matrix(runif(n*q,-1,1), n, q) ## -tcrossprod(covariates,self$init.par$Theta)
+S <- matrix(runif(n*q,1e-3,1e-1), n, q)
 
 Sigma <- cov(sapply(glmP, residuals.glm, "pearson"))
 svdSigma <- svd(Sigma, nu=q, nv=0)

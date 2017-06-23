@@ -37,7 +37,6 @@ PLNPCAfamily$set("public", "initialize",
   ## initialize the required fields
   super$initialize(responses, covariates, offsets, control)
   self$ranks <- ranks
-  KY <-sum(.logfactorial(self$responses))
 
   ## instantiate as many models as ranks
   fit <- PLNPCAfit$new(model.par = self$inception$model.par,
@@ -57,52 +56,14 @@ PLNPCAfamily$set("public", "initialize",
   names(self$models) <- as.character(ranks)
 
   ## declare the objective and gradient functions for optimization
-  self$fn_optim <- function(par,q) {
+  self$fn_optim <- fn_optim_PLNPCA_Cpp
 
-    Theta <- matrix(par[1:(self$p*self$d)]                          , self$p,self$d)
-    B     <- matrix(par[self$p*self$d                + 1:(self$p*q)], self$p,q)
-    M     <- matrix(par[self$p*(self$d+q)            + 1:(self$n*q)], self$n,q)
-    S     <- matrix(par[self$p*(self$d+q)+(self$n*q) + 1:(self$n*q)], self$n,q)
-
-    Z     <- tcrossprod(M,B) + tcrossprod(self$covariates, Theta) + self$offsets
-    A <- exp (.trunc(Z + .5*tcrossprod(S^2, B^2)))
-
-    gr.Theta <- crossprod(A-self$responses, self$covariates)
-    gr.B     <- crossprod(A-self$responses, M) + crossprod(A,S^2) * B
-    gr.M     <- (A-self$responses) %*% B + M
-    gr.S     <- S - 1/S  + (A %*% (B^2)) * S
-
-    return(list(
-      "objective" = sum(as.numeric(A -self$responses*Z)) +.5*sum(M^2 + S^2 - 2*log(S)-1) + KY,
-      "gradient"  = c(gr.Theta,gr.B,gr.M,gr.S)
-    ))
-  }
-
-  # self$objective <- function(par,q,KY) {
-  #   Theta <- matrix(par[1:(self$p*self$d)]                          , self$p,self$d)
-  #   B     <- matrix(par[self$p*self$d                + 1:(self$p*q)], self$p,q)
-  #   M     <- matrix(par[self$p*(self$d+q)            + 1:(self$n*q)], self$n,q)
-  #   S     <- matrix(par[self$p*(self$d+q)+(self$n*q) + 1:(self$n*q)], self$n,q)
-  #   Z     <- tcrossprod(M,B) + tcrossprod(self$covariates, Theta) + self$offsets
-  #   return(sum(as.numeric(exp(.trunc(Z +.5*tcrossprod(S^2, B^2)))-self$responses*Z)) +.5*sum(M^2 + S^2 - 2*log(S)-1) + KY)
-  # }
-  #
-  # self$gradient <- function(par,q,KY) {
-  #   Theta <- matrix(par[1:(self$p*self$d)]                          , self$p,self$d)
-  #   B     <- matrix(par[self$p*self$d                + 1:(self$p*q)], self$p,q)
-  #   M     <- matrix(par[self$p*(self$d+q)            + 1:(self$n*q)], self$n,q)
-  #   S     <- matrix(par[self$p*(self$d+q)+(self$n*q) + 1:(self$n*q)], self$n,q)
-  #   A <- exp (.trunc(tcrossprod(M,B) + tcrossprod(self$covariates,Theta) + self$offsets + .5*tcrossprod(S^2, B^2)))
-  #   gr.Theta <- crossprod(A-self$responses, self$covariates)
-  #   gr.B     <- crossprod(A-self$responses, M) + crossprod(A,S^2) * B
-  #   gr.M     <- (A-self$responses) %*% B + M
-  #   gr.S     <- S - 1/S  + (A %*% (B^2)) * S
-  #   return(c(gr.Theta,gr.B,gr.M,gr.S))
-  # }
 })
 
 PLNPCAfamily$set("public", "optimize",
   function(control) {
+
+  KY <-sum(.logfactorial(self$responses))
 
   self$models <- mclapply(self$models, function(model) {
     ## initial parameters (model + variational)
@@ -127,7 +88,8 @@ PLNPCAfamily$set("public", "optimize",
                  "xtol_rel"  = control$xtol,
                  "ftol_rel"  = control$ftol,
                  "print_level" = max(0, control$trace-1))
-    optim.out <- nloptr(par0, eval_f = self$fn_optim, lb = lower.bound, opts = opts, q=model$rank)
+    optim.out <- nloptr(par0, eval_f = self$fn_optim, lb = lower.bound, opts = opts,
+                        q=model$rank, Y=self$responses, X=self$covariates, O=self$offsets, KY=KY)
 
     ## ===========================================
     ## OUTPUT
@@ -143,7 +105,8 @@ PLNPCAfamily$set("public", "optimize",
     ## compute some criteria for evaluation
     J   <- -optim.out$objective
     BIC <- J - self$p * (self$d + model$rank) * log(self$n)
-    ICL <- BIC - .5*self$n*model$rank *log(2*pi*exp(1)) - sum(log(S))
+    # ICL <- BIC - .5*self$n*model$rank *log(2*pi*exp(1)) - sum(log(S))
+    ICL <- BIC - .5*self$n*model$rank *log(2*pi*exp(1)) - .5 * sum(log(S))
     loglik <- sapply(1:model$rank, function(q_) {
       Z <- tcrossprod(M[,1:q_,drop=FALSE],B[,1:q_,drop=FALSE]) + tcrossprod(self$covariates, Theta) + self$offsets
       return(sum(self$responses * (Z)) - sum(as.numeric(self$responses)))

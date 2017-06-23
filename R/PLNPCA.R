@@ -51,7 +51,7 @@ PLNPCA.formula <- function(formula, ranks = 1:5,  control = list()) {
 PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), ranks = 1:5,  control = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(ftol=1e-8, xtol=1e-6, maxit=30000, lbvar=1e-8, cores=1, trace=1,
+  ctrl <- list(ftol=1e-10, xtol=1e-8, maxit=30000, lbvar=1e-8, cores=1, trace=1,
                ftol.init=1e-6, xtol.init=1e-4, maxit.init=10000, lbvar.init=1e-5)
   ctrl[names(control)] <- control
   ctrl.init <- list(ftol=ctrl$ftol.init, xtol=ctrl$xtol.init, maxit=ctrl$maxit.init, lbvar=ctrl$lbvar.init, trace=max(ctrl$trace,1))
