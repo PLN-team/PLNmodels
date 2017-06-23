@@ -1,0 +1,98 @@
+// [[Rcpp::depends(RcppArmadillo)]]
+
+#include <RcppArmadillo.h>
+using namespace Rcpp;
+using namespace arma;
+
+// [[Rcpp::export]]
+Rcpp::List fn_optim_PLNPCA_Cpp(const arma::vec par,
+                               int q,
+                               const arma::mat Y,
+                               const arma::mat X,
+                               const arma::mat O,
+                               double KY) {
+
+  int n = Y.n_rows, p = Y.n_cols, d = X.n_cols ;
+
+  arma::mat Theta = par.subvec(0          , p*d          -1) ; Theta.reshape(p,d) ;
+  arma::mat B     = par.subvec(p*d        , p*q          -1) ; B.reshape(p,q) ;
+  arma::mat M     = par.subvec(p*(d+q)    , p*(d+q)+n*q - 1) ; M.reshape(n,q) ;
+  arma::mat S     = par.subvec(p*(d+q)+n*q, p*(d+q)+2*n*q-1) ; S.reshape(n,q) ;
+  arma::mat Z = O + X * Theta.t() + M * B.t();
+  arma::mat A = exp (Z + .5 * (S%S) * (B%B).t() ) ;
+
+  arma::vec grd_Theta = vectorise(X.t() * (A-Y));
+  arma::vec grd_B     = vectorise((A-Y).t() * M + A.t() * (S%S)) ;
+  arma::vec grd_M     = vectorise(M + (A-Y) * B) ;
+  arma::vec grd_S     = vectorise(S - 1/S + (A * (B%B)) % S );
+
+  arma::vec grad = join_vert(join_vert(grd_Theta, grd_B),
+                             join_vert(grd_M, grd_S)) ;
+
+  double objective = accu(A - Y % Z - log(S) - .5 + .5 * (M%M + S%S)) + KY ;
+
+  return Rcpp::List::create(Rcpp::Named("objective") = objective,
+                            Rcpp::Named("gradient" ) = grad);
+}
+
+
+// You can include R code blocks in C++ files processed with sourceCpp
+// (useful for testing and development). The R code will be automatically
+// run after the compilation.
+//
+
+/*** R
+source("~/git/PLNmodels/R/utils.R")
+load("~/svn/sparsepca/Pgm/PCA/Output/Corinne_data.RData")
+
+formula <- Data$count ~ 1 + offset(log(Data$offset))
+
+frame  <- model.frame(formula)
+Y      <- model.response(frame)
+X      <- model.matrix(formula)
+O      <- model.offset(frame)
+n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
+KY <- sum(.logfactorial(Y)) ## constant quantity in the objective
+
+## declare the objective and gradient functions for optimization
+fn_optim_PLNPCA <- function(par,q,Y,X,O,KY) {
+
+    Theta <- matrix(par[1:(p*d)]                          , p,d)
+    B     <- matrix(par[p*d                + 1:(p*q)], p,q)
+    M     <- matrix(par[p*(d+q)            + 1:(n*q)], n,q)
+    S     <- matrix(par[p*(d+q)+(n*q) + 1:(n*q)], n,q)
+
+    Z     <- tcrossprod(M,B) + tcrossprod(X, Theta) + O
+    A <- exp (.trunc(Z + .5*tcrossprod(S^2, B^2)))
+
+    gr.Theta <- crossprod(A-Y, X)
+    gr.B     <- crossprod(A-Y, M) + crossprod(A,S^2) * B
+    gr.M     <- (A-Y) %*% B + M
+    gr.S     <- S - 1/S  + (A %*% (B^2)) * S
+
+    return(list(
+      "objective" = sum(as.numeric(A -Y*Z)) +.5*sum(M^2 + S^2 - 2*log(S)-1) + KY,
+      "gradient"  = c(gr.Theta,gr.B,gr.M,gr.S)
+    ))
+  }
+
+q <- 5
+glmP  <- lapply(1:ncol(Y), function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
+Theta <- do.call(rbind, lapply(glmP, coefficients))
+M <- matrix(0, n, q) ## -tcrossprod(covariates,self$init.par$Theta)
+S <- matrix(1e-3, n, q)
+
+Sigma <- cov(sapply(glmP, residuals.glm, "pearson"))
+svdSigma <- svd(Sigma, nu=q, nv=0)
+B <- svdSigma$u[, 1:q, drop=FALSE] %*% diag(sqrt(svdSigma$d[1:q]),nrow=q, ncol=q)
+
+par0 <- c(Theta, B, M, S)
+
+outR <- fn_optim_PLNPCA(par0, q, Y, X, O, KY)
+outC <- fn_optim_PLNPCA_Cpp(par0, q, Y, X, O, KY)
+
+library(microbenchmark)
+res <- microbenchmark(outR = fn_optim_PLNPCA(par0, q, Y, X, O, KY),
+                      outC = fn_optim_PLNPCA_Cpp(par0, q, Y, X, O, KY))
+print(summary(res))
+*/

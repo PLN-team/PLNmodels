@@ -60,7 +60,6 @@ PLNnetworkfamily$set("public", "optimize",
 
   ## INITIALIZATION: start from the standard PLN (a.k.a. inception)
   Sigma <- self$inception$model.par$Sigma
-  # logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
   par0 <- c(self$inception$model.par$Theta,
             self$inception$variational.par$M,
             self$inception$variational.par$S)
@@ -109,10 +108,8 @@ PLNnetworkfamily$set("public", "optimize",
       M <- matrix(optim.out$solution[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
       S <- matrix(optim.out$solution[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
       Sigma <- crossprod(M)/self$n + diag(colMeans(S))
-
-      # Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal)$wi
-      # logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
       par0 <- optim.out$solution
+
     }
     ## ===========================================
     ## OUTPUT
