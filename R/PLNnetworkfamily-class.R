@@ -122,7 +122,7 @@ PLNnetworkfamily$set("public", "optimize",
 
     ## compute some criteria for evaluation
     J   <- -optim.out$objective
-    BIC <- J - (self$p * self$d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(self$n)
+    BIC <- J - .5 * (self$p * self$d + sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(self$n)
     ICL <- BIC - .5*self$n*self$p *log(2*pi*exp(1)) - sum(log(S))
 
     self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = Sigma, Theta = Theta)
