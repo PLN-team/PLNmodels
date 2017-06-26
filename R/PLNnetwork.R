@@ -58,7 +58,7 @@ PLNnetwork.formula <- function(formula, penalties = NULL, approx=FALSE, control 
 PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, approx=FALSE, control = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(out.tol = 1e-5, out.maxit = 50, ftol=1e-6, xtol=1e-4, maxit=10000, nPenalties = 25, lbvar.init=1e-5,
+  ctrl <- list(out.tol = 1e-5, out.maxit = 50, ftol=1e-6, xtol=1e-4, maxit=10000, nPenalties = 25,
                penalize.diagonal = FALSE, lbvar=.Machine$double.eps, trace=1,
                ftol.init=1e-6, xtol.init=1e-4, maxit.init=10000, lbvar.init=1e-5, inception=NULL)
   ctrl[names(control)] <- control

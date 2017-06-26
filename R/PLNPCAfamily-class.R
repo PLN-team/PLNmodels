@@ -69,9 +69,7 @@ PLNPCAfamily$set("public", "optimize",
     ## initial parameters (model + variational)
     par0 <- c(model$model.par$Theta  , model$model.par$B,
               model$variational.par$M, pmax(model$variational.par$S,10*control$lbvar))
-              #rep(0, self$n*model$rank) , # M
-              #rep(10*control$lbvar,self$n*model$rank))
-              # model$variational.par$M, model$variational.par$S)
+
     ## ===========================================
     ## OPTIMISATION
     if (control$trace > 0) cat("\n Rank approximation =",model$rank)

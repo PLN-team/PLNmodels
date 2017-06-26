@@ -1,8 +1,9 @@
 // [[Rcpp::depends(RcppArmadillo)]]
-
 #include <RcppArmadillo.h>
+
 using namespace Rcpp;
 using namespace arma;
+
 
 // [[Rcpp::export]]
 Rcpp::List fn_optim_PLNPCA_Cpp(const arma::vec par,
@@ -84,7 +85,7 @@ fn_optim_PLNPCA <- function(par,q,Y,X,O,KY) {
     ))
   }
 
-q <- 2
+q <- 1
 glmP  <- lapply(1:ncol(Y), function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
 Theta <- do.call(rbind, lapply(glmP, coefficients))
 M <- matrix(runif(n*q,-1,1), n, q) ## -tcrossprod(covariates,self$init.par$Theta)
