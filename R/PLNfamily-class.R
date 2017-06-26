@@ -33,7 +33,17 @@ PLNfamily$set("public", "initialize",
     if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:self$d
 
     ## adjust the basic PLN model
-    self$inception <- PLN(responses, covariates, offsets, control)
+    if (!is.null(control$inception)) {
+      stopifnot(all.equal(class(control$inception), c("PLNfit", "R6")))
+      stopifnot(all.equal(dim(control$inception$model.par$Sigma), c(self$p,self$p)))
+      stopifnot(all.equal(dim(control$inception$model.par$Theta), c(self$d,self$p)))
+      stopifnot(all.equal(dim(control$inception$variational.par$M), c(self$n,self$p)))
+      stopifnot(all.equal(dim(control$inception$variational.par$S), c(self$n,self$p)))
+      cat("\n User define inceptive PLN model")
+      self$inception <- control$inception
+    } else {
+      self$inception <- PLN(responses, covariates, offsets, control)
+    }
 })
 
 #' Best model extraction from a collection of PLNfit (PCA, network)

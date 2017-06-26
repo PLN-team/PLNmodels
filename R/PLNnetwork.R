@@ -23,8 +23,12 @@
 ##'  \item{"ftol"}{inner solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
 ##'  \item{"maxit"}{inner solver stops when the number of iteration exeeeds maxiter. Default is 10000}
 ##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is .Machine$double.eps.}
-##'  \item{"lbvar.init"}{the lower bound (box constraint) for the variational variance parameters for the unpenalized model. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
+##'  \item{"inception"}{a optional PLNfit used for stratup. If NULL (the default), will be automatically fitted.}
+##'  \item{"xtol.init"}{use for fitting the inceptive model. stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-8}
+##'  \item{"ftol.init"}{use for fitting the inceptive model. stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-10}
+##'  \item{"maxit.init"}{use for fitting the inceptive model. stop when the number of iteration exeeeds maxiter. Default is 10000}
+##'  \item{"lbvar.init"}{use for fitting the inceptive model. the lower bound (box constraint) for the variational variance parameters for the unpenalized model. Default is 1e-4.}
 ##' }
 ##'
 ##' @rdname PLNnetwork
@@ -54,9 +58,12 @@ PLNnetwork.formula <- function(formula, penalties = NULL, approx=FALSE, control 
 PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, approx=FALSE, control = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(out.tol = 1e-5, out.maxit = 50, ftol=1e-6, xtol=1e-4, maxit=10000, nPenalties = 25, lbvar.init=1e-5, penalize.diagonal = FALSE, lbvar=.Machine$double.eps, trace=1)
+  ctrl <- list(out.tol = 1e-5, out.maxit = 50, ftol=1e-6, xtol=1e-4, maxit=10000, nPenalties = 25, lbvar.init=1e-5,
+               penalize.diagonal = FALSE, lbvar=.Machine$double.eps, trace=1,
+               ftol.init=1e-6, xtol.init=1e-4, maxit.init=10000, lbvar.init=1e-5, inception=NULL)
   ctrl[names(control)] <- control
-  ctrl.init <- list(ftol=ctrl$ftol, xtol=ctrl$xtol, maxit=ctrl$maxit, lbvar=ctrl$lbvar.init, trace=max(ctrl$trace,1))
+  ctrl.init <- list(ftol=ctrl$ftol.init, xtol=ctrl$xtol.init, maxit=ctrl$maxit.init, lbvar=ctrl$lbvar.init, trace=max(ctrl$trace,1), inception=ctrl$inception)
+
   if (!is.null(penalties)) ctrl$nPenalties <- length(penalties)
 
   ## Instantiate the collection of PLN models
