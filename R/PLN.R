@@ -1,22 +1,22 @@
 ##' @title Fit a Poisson lognormal model
 ##'
-##' @description two methods are available for specifing the models (with formulas or matrices)
+##' @description two methods are available for specifying the models (with formulas or matrices)
 ##'
 ##' @param formula a formula
 ##' @param Y a (n x p) matrix of count data
-##' @param X an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.
+##' @param X an optional (n x d) matrix of covariates. Should include the intercept (a column of ones) if the default method is used.
 ##' @param O an optional (n x p) matrix of offsets.
-##' @param control a list for controling the optimization. See details.
+##' @param control a list for controlling the optimization. See details.
 ##' @param Robject an R object, either a formula or a matrix
 ##' @param ... additional parameters. Not used
 ##'
 ##' @return an R6 object with class \code{\link[=PLNfit-class]{PLNfit}}
 ##'
-##' @details The parameter \code{control} is a list controling the optimization with the following entries
+##' @details The parameter \code{control} is a list controlling the optimization with the following entries
 ##' \itemize{
-##'  \item{"xtol"}{stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-4}
-##'  \item{"ftol"}{stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
-##'  \item{"maxit"}{stop when the number of iteration exeeeds maxiter. Default is 10000}
+##'  \item{"xtol"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
+##'  \item{"ftol"}{stop when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6}
+##'  \item{"maxit"}{stop when the number of iteration exceeds maxiter. Default is 10000}
 ##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 ##' }
@@ -53,7 +53,7 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   ## INITIALIZATION
   ##
 
-  ## define default control parameters for optim and overwrite by user defined parameters
+  ## define default control parameters for optim and overwrite with user defined parameters
   ctrl <- list(ftol=1e-6, xtol=1e-4, maxit=10000, lbvar=1e-5, trace=1)
   ctrl[names(control)] <- control
 
@@ -103,8 +103,9 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   ICL <- BIC - .5*n*p *log(2*pi*exp(1)) - sum(log(S))
 
   return(PLNfit$new(model.par       = list(Omega = Omega, Sigma = Sigma, Theta = Theta),
-                      variational.par = list(M = M, S = S),
-                      criteria        = c(J = J, BIC = BIC, ICL = ICL),
-                      convergence     = data.frame(status = optim.out$status, objective = optim.out$objective, iterations=optim.out$iterations)))
+                    variational.par = list(M = M, S = S),
+                    criteria        = c(J = J, BIC = BIC, ICL = ICL),
+                    convergence     = data.frame(status = optim.out$status,
+                                                 objective = optim.out$objective,
+                                                 iterations=optim.out$iterations)))
 }
-
