@@ -40,12 +40,16 @@ two methods are available for specifing the models (with formulas or matrices)
 \details{
 The parameter \code{control} is a list with the following entries
 \itemize{
- \item{"xtol"}{stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-4}
- \item{"ftol"}{stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
+ \item{"xtol"}{stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-8}
+ \item{"ftol"}{stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-10}
  \item{"maxit"}{stop when the number of iteration exeeeds maxiter. Default is 10000}
- \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is .Machine$double.eps.}
- \item{"lbvar.init"}{the lower bound (box constraint) for the variational variance parameters for the unpenalized model. Default is 1e-5.}
+ \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-8 like xtol.}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
+ \item{"inception"}{a optional PLNfit used for stratup. If NULL (the default), will be automatically fitted.}
+ \item{"xtol.init"}{use for fitting the inceptive model. stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-4}
+ \item{"ftol.init"}{use for fitting the inceptive model. stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
+ \item{"maxit.init"}{use for fitting the inceptive model. stop when the number of iteration exeeeds maxiter. Default is 10000}
+ \item{"lbvar.init"}{use for fitting the inceptive model. the lower bound (box constraint) for the variational variance parameters for the unpenalized model. Default is 1e-4.}
 }
 }
 \examples{

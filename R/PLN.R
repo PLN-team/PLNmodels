@@ -54,7 +54,7 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   ##
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(ftol=1e-6, xtol=1e-4, maxit=10000, lbvar=1e-5, trace=1)
+  ctrl <- list(ftol=1e-6, xtol=1e-4, maxit=10000, lbvar=1e-5, method="MMA", trace=1)
   ctrl[names(control)] <- control
 
   ## problem dimensions and constant
@@ -67,35 +67,40 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
 
   ## Initialization
-
   ## glm-Poisson model for the regression parameters
   Theta <- do.call(rbind, lapply(1:p, function(j) coefficients(glm.fit(X, Y[, j], offset = O[,j], family = poisson()))))
   ## 0 mean and minimum variance for the variational parameters
   par0 <- c(Theta, rep(0, n*p), rep(10*ctrl$lbvar, n*p))
-  ## set box constraint for the variance parameters
-  lower.bound <- c(rep(-Inf, p*(d+n)), rep(ctrl$lbvar, n*p))
+  lower.bound <- c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
 
   ## Now optimize with NLOPTR
-  opts <- list("algorithm"   = "NLOPT_LD_MMA",
+  opts <- list("algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
                "maxeval"     = ctrl$maxit,
                "xtol_rel"    = ctrl$xtol,
                "ftol_rel"    = ctrl$ftol,
                "print_level" = max(0,ctrl$trace-1))
 
-  optim.out <- nloptr(par0, eval_f = fn_optim_PLN_Cpp, lb = lower.bound, opts = opts,
+  optim.out <- nloptr(par0, eval_f = fn_optim_PLN_profiled_Cpp, lb = lower.bound, opts = opts,
                       Y = Y, X = X, O = O, KY = KY)
   ## ===========================================
   ## POST-TREATMENT
   ##
+  # Theta <- matrix(optim.out$solution[1:(p*d)]            , p,d)
+  # Omega <- matrix(optim.out$solution[p*d       + 1:(p*p)], p,p)
+  # M     <- matrix(optim.out$solution[p*(p+d)   + 1:(n*p)], n,p)
+  # S     <- matrix(optim.out$solution[p*(p+d+n) + 1:(n*p)], n,p)
+
   Theta <- matrix(optim.out$solution[1:(p*d)]          , p,d)
-  M     <- matrix(optim.out$solution[p*d     + 1:(n*p)], n,p)
-  S     <- matrix(optim.out$solution[(n+d)*p + 1:(n*p)], n,p)
+  M     <- matrix(optim.out$solution[p*(d)   + 1:(n*p)], n,p)
+  S     <- matrix(optim.out$solution[p*(d+n) + 1:(n*p)], n,p)
   Sigma <- crossprod(M)/n + diag(colMeans(S))
   Omega <- solve(Sigma)
+
   rownames(Theta) <- colnames(Y); colnames(Theta) <- colnames(X)
   dimnames(S)     <- dimnames(Y)
   dimnames(M)     <- dimnames(Y)
   rownames(Omega) <- colnames(Omega) <- colnames(Y)
+  rownames(Sigma) <- colnames(Sigma) <- colnames(Y)
 
   ## compute some criteria for evaluation
   J   <- - optim.out$objective
