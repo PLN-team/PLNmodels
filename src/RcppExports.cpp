@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // fn_optim_PLN_Cpp
 Rcpp::List fn_optim_PLN_Cpp(const arma::vec par, const arma::mat Y, const arma::mat X, const arma::mat O, double KY);
-RcppExport SEXP PLNmodels_fn_optim_PLN_Cpp(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP KYSEXP) {
+RcppExport SEXP _PLNmodels_fn_optim_PLN_Cpp(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP KYSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,7 +23,7 @@ END_RCPP
 }
 // fn_optim_PLNnetwork_Cpp
 Rcpp::List fn_optim_PLNnetwork_Cpp(const arma::vec par, double log_detOmega, const arma::mat Omega, const arma::mat Y, const arma::mat X, const arma::mat O, double KY);
-RcppExport SEXP PLNmodels_fn_optim_PLNnetwork_Cpp(SEXP parSEXP, SEXP log_detOmegaSEXP, SEXP OmegaSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP KYSEXP) {
+RcppExport SEXP _PLNmodels_fn_optim_PLNnetwork_Cpp(SEXP parSEXP, SEXP log_detOmegaSEXP, SEXP OmegaSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP KYSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,7 +40,7 @@ END_RCPP
 }
 // fn_optim_PLNPCA_Cpp
 Rcpp::List fn_optim_PLNPCA_Cpp(const arma::vec par, int q, const arma::mat Y, const arma::mat X, const arma::mat O, double KY);
-RcppExport SEXP PLNmodels_fn_optim_PLNPCA_Cpp(SEXP parSEXP, SEXP qSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP KYSEXP) {
+RcppExport SEXP _PLNmodels_fn_optim_PLNPCA_Cpp(SEXP parSEXP, SEXP qSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP KYSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -56,9 +56,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"PLNmodels_fn_optim_PLN_Cpp", (DL_FUNC) &PLNmodels_fn_optim_PLN_Cpp, 5},
-    {"PLNmodels_fn_optim_PLNnetwork_Cpp", (DL_FUNC) &PLNmodels_fn_optim_PLNnetwork_Cpp, 7},
-    {"PLNmodels_fn_optim_PLNPCA_Cpp", (DL_FUNC) &PLNmodels_fn_optim_PLNPCA_Cpp, 6},
+    {"_PLNmodels_fn_optim_PLN_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLN_Cpp, 5},
+    {"_PLNmodels_fn_optim_PLNnetwork_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLNnetwork_Cpp, 7},
+    {"_PLNmodels_fn_optim_PLNPCA_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLNPCA_Cpp, 6},
     {NULL, NULL, 0}
 };
 
