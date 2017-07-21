@@ -92,7 +92,7 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   S     <- matrix(optim.out$solution[(n+d)*p + 1:(n*p)], n,p)
   Sigma <- crossprod(M)/n + diag(colMeans(S))
   Omega <- solve(Sigma)
-  colnames(Theta) <- colnames(Y); rownames(Theta) <- colnames(X)
+  rownames(Theta) <- colnames(Y); colnames(Theta) <- colnames(X)
   dimnames(S)     <- dimnames(Y)
   dimnames(M)     <- dimnames(Y)
   rownames(Omega) <- colnames(Omega) <- colnames(Y)
