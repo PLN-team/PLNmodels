@@ -29,7 +29,7 @@ Rcpp::List fn_optim_PLNnetwork_Cpp(const arma::vec par,
   double logP_Z = .5 * (n * log_detOmega - dot(diagvec(Omega), S_bar) - trace(Omega * MtM))  ;
   double objective = accu(A - Y % Z - .5 * log(S) - .5) - logP_Z + KY ;
 
-  arma::vec grd_Theta = vectorise(X.t() * (A-Y));
+  arma::vec grd_Theta = vectorise((A-Y).t() * X);
   arma::vec grd_M     = vectorise(M * Omega + A-Y) ;
   arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + A - 1/S));
 
