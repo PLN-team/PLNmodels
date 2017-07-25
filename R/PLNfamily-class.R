@@ -102,8 +102,10 @@ function() {
 
 PLNfamily$set("public", "show",
 function() {
-  cat("COLLECTIONS OF POISSON LOGNORMAL MODELS\n")
+  cat("COLLECTIONS OF", length(self$models), "POISSON LOGNORMAL MODELS\n")
   cat("------------------------------------------------------\n")
+  cat(" - Available models are:\n")
+  cat(paste("    +", names(self$models)), sep = "\n")
 })
 
 PLNfamily$set("public", "print", function() self$show())
