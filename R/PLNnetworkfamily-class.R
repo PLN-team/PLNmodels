@@ -183,7 +183,8 @@ PLNnetworkfamily$set("public", "optimize_approx",
     ## compute some criteria for evaluation
     J   <- -self$fn_optim(par0, logDetOmega, Omega, self$responses, self$covariates, self$offsets, KY)$objective
     BIC <- J - (self$p * self$d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(self$n)
-    ICL <- BIC - .5*self$n*self$p *log(2*pi*exp(1)) - sum(log(S))
+    # ICL <- BIC - .5*self$n*self$p *log(2*pi*exp(1)) - sum(log(S))
+    ICL <- BIC - .5*self$n*self$p *log(2*pi*exp(1)) - .5*sum(log(S))
 
     self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = Sigma, Theta = Theta)
     self$models[[m]]$variational.par <- list(M = M, S = S)
