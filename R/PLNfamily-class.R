@@ -39,7 +39,7 @@ PLNfamily$set("public", "initialize",
                 all.equal(dim(control$inception$model.par$Theta), c(self$d,self$p)),
                 all.equal(dim(control$inception$variational.par$M), c(self$n,self$p)),
                 all.equal(dim(control$inception$variational.par$S), c(self$n,self$p)))
-      cat("\n User define inceptive PLN model")
+      cat("\n User defined inceptive PLN model")
       self$inception <- control$inception
     } else {
       self$inception <- PLN(responses, covariates, offsets, control)
@@ -51,11 +51,11 @@ PLNfamily$set("public", "initialize",
 #' @name PLNfamily_getBestModel
 #'
 #' @param crit a character for the criterion used to performed the selection. Either
-#' "ICL", "BIC", "J". Default is "BIC".
+#' "BIC", "ICL", "J". Default is "BIC".
 #' @return  Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getBestModel",
-function(crit=c("BIC", "ICL", "J", "R2")){
+function(crit=c("BIC", "ICL", "J")){
   crit <- match.arg(crit)
   if(length(self$criteria$BIC) > 1) {
     id <- switch(crit,
@@ -86,6 +86,10 @@ function(xvar){
   }
 })
 
+#' Set data frame with criteria (BIC, ICL, J) associated with the collection of fits
+#'
+#' @name PLNfamily_setCriteria
+#'
 PLNfamily$set("public", "setCriteria",
 function() {
   self$criteria <- data.frame(xvar = round(as.numeric(names(self$models)), 16),
@@ -101,12 +105,19 @@ function() {
   return(p)
 })
 
+#' Basic show method
+#'
+#' @name PLNfamily_show
+#'
+#' @param verbose a logical (defaults to TRUE) controlling the amount of screen output.
 PLNfamily$set("public", "show",
-function() {
-  cat("COLLECTIONS OF", length(self$models), "POISSON LOGNORMAL MODELS\n")
+function(verbose = TRUE) {
+  cat("COLLECTION OF", length(self$models), "POISSON LOGNORMAL MODELS\n")
   cat("------------------------------------------------------\n")
-  cat(" - Available models are:\n")
-  cat(paste("    +", names(self$models)), sep = "\n")
+  if (verbose) {
+    cat(" - Available models are:\n")
+    cat(paste("    +", names(self$models)), sep = "\n")
+  }
 })
 
 PLNfamily$set("public", "print", function() self$show())
