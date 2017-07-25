@@ -49,8 +49,12 @@ The parameter \code{control} is a list with the following entries
  \item{"ftol"}{inner solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
  \item{"maxit"}{inner solver stops when the number of iteration exeeeds maxiter. Default is 10000}
  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is .Machine$double.eps.}
- \item{"lbvar.init"}{the lower bound (box constraint) for the variational variance parameters for the unpenalized model. Default is 1e-5.}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
+ \item{"inception"}{a optional PLNfit used for stratup. If NULL (the default), will be automatically fitted.}
+ \item{"xtol.init"}{use for fitting the inceptive model. stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-8}
+ \item{"ftol.init"}{use for fitting the inceptive model. stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-10}
+ \item{"maxit.init"}{use for fitting the inceptive model. stop when the number of iteration exeeeds maxiter. Default is 10000}
+ \item{"lbvar.init"}{use for fitting the inceptive model. the lower bound (box constraint) for the variational variance parameters for the unpenalized model. Default is 1e-4.}
 }
 }
 \examples{
