@@ -174,6 +174,17 @@ PLNnetworkfamily$set("public", "optimize_approx",
 
 })
 
+#' Set penalties in a \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}} family
+#' of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} models
+#'
+#' @name PLNnetworkfamily_setPenalties
+#'
+#' @param penalties A numeric vector with the sparsity levels of the networks in family. If NULL, a relevant
+#'                  vector is automatically computed from the inception model.
+#' @param nPenalties The number of penalties to use. A warning is thrown if this does not match the number of
+#'                   models in the family.
+#' @param verbose Logical. Controls the amount of screen output.
+#'
 PLNnetworkfamily$set("public", "setPenalties",
   function(penalties, nPenalties, verbose) {
     if (is.null(penalties)) {
@@ -184,7 +195,13 @@ PLNnetworkfamily$set("public", "setPenalties",
       if (verbose) {
         cat("\nPenalties already set by the user")
       }
+      nPenalties <- length(penalties)
       stopifnot(all(penalties > 0))
+    }
+    ## Compare number of penalties and number of models in family
+    if (nPenalties != length(self$models)) {
+      warning(paste0("The number of penalties (", nPenalties, ") does not match the number of models (",
+                     length(self$models), ") in the family."))
     }
     ## sort penalties and round
     self$penalties <- round(sort(penalties, decreasing = FALSE),16)
@@ -205,7 +222,8 @@ PLNnetworkfamily$set("public", "setPenalties",
 NULL
 PLNnetworkfamily$set("public", "plot",
 function(log.x=TRUE) {
-  p <- super$plot() + xlab("penalty") + geom_vline(xintercept=self$getBestModel("BIC")$penalty, linetype="dashed", alpha=0.5)
+  p <- super$plot() + xlab("penalty") +
+    geom_vline(xintercept=self$getBestModel("BIC")$penalty, linetype="dashed", alpha=0.5)
   if (log.x) p <- p + ggplot2::coord_trans(x="log10")
   p
 })
@@ -215,6 +233,6 @@ function() {
   super$show()
   cat(" Task: Network Inference\n")
   cat("======================================================\n")
-  cat(" - Penalty considered: from", format(min(self$penalties),digits=3), "to", format(max(self$penalties),digits=3),"\n")
+  cat(paste(" -", length(self$penalties) , "penalties considered: from", format(min(self$penalties),digits=3), "to", format(max(self$penalties),digits=3),"\n"))
   cat(" - Best model (regardings BIC): penalty =", format(self$getBestModel("BIC")$penalty,digits=3), "\n")
 })
