@@ -114,8 +114,8 @@ PLNnetworkfamily$set("public", "optimize",
     ## ===========================================
     ## OUTPUT
     ## formating parameters for output
-    Theta <- matrix(optim.out$solution[1:(self$p*self$d)] ,self$d, self$p)
-    colnames(Theta) <- colnames(self$responses); rownames(Theta) <- colnames(self$covariates)
+    Theta <- matrix(optim.out$solution[1:(self$p*self$d)] ,self$p, self$d)
+    rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
     dimnames(S)     <- dimnames(self$responses)
     dimnames(M)     <- dimnames(self$responses)
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
