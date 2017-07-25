@@ -22,7 +22,7 @@ Rcpp::List fn_optim_PLN_profiled_Cpp(const arma::vec par,
   arma::mat Z = O + X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
-  double objective = accu(A - Y % Z - .5 * log(S)) - .5 * n*real(log_det(Omega)) + KY ;
+  double objective = accu(A - Y % Z - .5*log(S)) - .5*n*real(log_det(Omega)) + KY ;
 
   arma::vec grd_Theta = vectorise((A-Y).t() * X);
   arma::vec grd_M     = vectorise(M * Omega + A-Y) ;

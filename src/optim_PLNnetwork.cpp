@@ -24,15 +24,13 @@ Rcpp::List fn_optim_PLNnetwork_Cpp(const arma::vec par,
   arma::mat Z = O + X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
-  double logP_Z = .5 * (n * log_detOmega - trace(Omega * nSigma))  ;
-  double objective = accu(A - Y % Z - .5 * log(S) - .5) - logP_Z + KY ;
+  double objective = accu(A - Y % Z - .5*log(S)) -.5*(n*log_detOmega + n*p - trace(Omega*nSigma)) + KY ;
 
   arma::vec grd_Theta = vectorise((A-Y).t() * X);
   arma::vec grd_M     = vectorise(M * Omega + A-Y) ;
   arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + A - 1/S));
 
   arma::vec grad = join_vert(join_vert(grd_Theta, grd_M),grd_S) ;
-
 
   return Rcpp::List::create(Rcpp::Named("objective") = objective,
                             Rcpp::Named("gradient" ) = grad);
