@@ -116,3 +116,5 @@ function(verbose = TRUE) {
 })
 
 PLNfamily$set("public", "print", function() self$show())
+
+## TODO function to update criteria in all fits of the collection?

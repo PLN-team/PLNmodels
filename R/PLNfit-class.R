@@ -63,3 +63,8 @@ PLNfit$set("public", "plot_model_par",
     par(mfrow=c(1,1))
   }
 )
+
+## TODO accessors for the variational and model parameters? Or at least coefficients and Sigma (but vcov not a good name)?
+
+
+

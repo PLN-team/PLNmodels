@@ -75,7 +75,7 @@ PLNPCAfamily$set("public", "optimize",
     if (control$trace > 0) cat("\n Rank approximation =",model$rank)
     if (control$trace > 1) cat("\n\t conservative convex separable approximation for gradient descent")
 
-    ## CALL TO L-BFGS OPTIMIZATION WITH BOX CONSTRAINT
+    ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
     lower.bound <- c(rep(-Inf, self$p*self$d)     , # Theta
                      rep(-Inf, self$p*model$rank) , # B
                      rep(-Inf, self$n*model$rank) , # M
