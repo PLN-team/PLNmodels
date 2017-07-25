@@ -216,5 +216,5 @@ function() {
   cat(" Task: Network Inference\n")
   cat("======================================================\n")
   cat(" - Penalty considered: from", format(min(self$penalties),digits=3), "to", format(max(self$penalties),digits=3),"\n")
-  cat(" - Best model (regardings BIC): penalty =", format(self$getBestModel("ICL")$penalty,digits=3), "\n")
+  cat(" - Best model (regardings BIC): penalty =", format(self$getBestModel("BIC")$penalty,digits=3), "\n")
 })

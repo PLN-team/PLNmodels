@@ -47,7 +47,7 @@ PLN.formula <- function(formula, control = list()) {
 
 ##' @rdname PLN
 ##' @export
-PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), control = list()) {
+PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y), ncol(Y)), control = list()) {
 
   ## ===========================================
   ## INITIALIZATION
@@ -101,6 +101,7 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   J   <- - optim.out$objective
   BIC <- J - (p * d + p*(p+1)/2) * log(n)
   ICL <- BIC - .5*n*p *log(2*pi*exp(1)) - sum(log(S))
+  ## Add R2?
 
   return(PLNfit$new(model.par       = list(Omega = Omega, Sigma = Sigma, Theta = Theta),
                     variational.par = list(M = M, S = S),

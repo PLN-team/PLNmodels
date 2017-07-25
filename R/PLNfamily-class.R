@@ -34,11 +34,11 @@ PLNfamily$set("public", "initialize",
 
     ## adjust the basic PLN model
     if (!is.null(control$inception)) {
-      stopifnot(all.equal(class(control$inception), c("PLNfit", "R6")))
-      stopifnot(all.equal(dim(control$inception$model.par$Sigma), c(self$p,self$p)))
-      stopifnot(all.equal(dim(control$inception$model.par$Theta), c(self$d,self$p)))
-      stopifnot(all.equal(dim(control$inception$variational.par$M), c(self$n,self$p)))
-      stopifnot(all.equal(dim(control$inception$variational.par$S), c(self$n,self$p)))
+      stopifnot(all.equal(class(control$inception), c("PLNfit", "R6")),
+                all.equal(dim(control$inception$model.par$Sigma), c(self$p,self$p)),
+                all.equal(dim(control$inception$model.par$Theta), c(self$d,self$p)),
+                all.equal(dim(control$inception$variational.par$M), c(self$n,self$p)),
+                all.equal(dim(control$inception$variational.par$S), c(self$n,self$p)))
       cat("\n User define inceptive PLN model")
       self$inception <- control$inception
     } else {
@@ -51,18 +51,19 @@ PLNfamily$set("public", "initialize",
 #' @name PLNfamily_getBestModel
 #'
 #' @param crit a character for the criterion used to performed the selection. Either
-#' "ICL", "BIC", "J" or "R2". Default is "ICL.
+#' "ICL", "BIC", "J". Default is "BIC".
 #' @return  Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getBestModel",
-function(crit=c("ICL", "BIC", "J", "R2")){
+function(crit=c("BIC", "ICL", "J", "R2")){
   crit <- match.arg(crit)
   if(length(self$criteria$BIC) > 1) {
     id <- switch(crit,
     "BIC" = which.max(self$criteria$BIC),
     "ICL" = which.max(self$criteria$ICL),
-    "J"   = which.max(self$criteria$J),
-    "R2"  = which.max(self$criteria$R2))
+    "J"   = which.max(self$criteria$J) ##,
+    ## "R2"  = which.max(self$criteria$R2) ## R2 is not one of the standard criteria
+    )
   } else {id <- 1}
     model <- self$models[[id]]$clone()
     return(model)

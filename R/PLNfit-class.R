@@ -14,7 +14,7 @@
 #' @field model.par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
 #' @field variation.par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.
-#' @field convergence quantities usefull for monitoring the optimization
+#' @field convergence quantities useful for monitoring the optimization
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #' @importFrom corrplot corrplot
@@ -41,7 +41,7 @@ PLNfit$set("public", "plot_variational_par",
     rownames(M) <- rep(" ", nrow(M)) ; colnames(M) <- rep(" ", ncol(M))
     par(mfrow=c(2,2))
     hist(M, breaks=nrow(M), xlab="", ylab="", main="means")
-    hist(S, breaks=nrow(S), xlab="", ylab="", main="standard deviations")
+    hist(S, breaks=nrow(S), xlab="", ylab="", main="variances")
     corrplot(M, is.corr = FALSE, method="color", cl.pos = "n")
     corrplot(S, is.corr = FALSE, method="color", cl.pos = "n")
     title(main="\nVariational parameters", outer=TRUE)
