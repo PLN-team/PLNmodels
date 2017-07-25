@@ -85,11 +85,6 @@ PLN.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), nc
   ## ===========================================
   ## POST-TREATMENT
   ##
-  # Theta <- matrix(optim.out$solution[1:(p*d)]            , p,d)
-  # Omega <- matrix(optim.out$solution[p*d       + 1:(p*p)], p,p)
-  # M     <- matrix(optim.out$solution[p*(p+d)   + 1:(n*p)], n,p)
-  # S     <- matrix(optim.out$solution[p*(p+d+n) + 1:(n*p)], n,p)
-
   Theta <- matrix(optim.out$solution[1:(p*d)]          , p,d)
   M     <- matrix(optim.out$solution[p*(d)   + 1:(n*p)], n,p)
   S     <- matrix(optim.out$solution[p*(d+n) + 1:(n*p)], n,p)

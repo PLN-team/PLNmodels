@@ -18,16 +18,11 @@ Rcpp::List fn_optim_PLN_profiled_Cpp(const arma::vec par,
   arma::mat M     = par.subvec(p*d    , p*(n+d) - 1) ; M.reshape(n,p) ;
   arma::mat S     = par.subvec(p*(n+d), p*(2*n+d)-1) ; S.reshape(n,p) ;
 
-  arma::mat S_bar(sum(S, 0)) ;
-  arma::mat MtM = M.t() * M ;
-  arma::mat Omega = n * inv_sympd(MtM + diagmat(S_bar));
-  double log_detOmega = real(log_det(Omega)) ;
-
+  arma::mat Omega = n * inv_sympd(M.t()*M + diagmat(sum(S, 0)));
   arma::mat Z = O + X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
-  double logP_Z = .5 * (n * log_detOmega - dot(diagvec(Omega), S_bar) - trace(Omega * MtM))  ;
-  double objective = accu(A - Y % Z - .5 * log(S) - .5) - logP_Z + KY ;
+  double objective = accu(A - Y % Z - .5 * log(S)) - .5 * n*real(log_det(Omega)) + KY ;
 
   arma::vec grd_Theta = vectorise((A-Y).t() * X);
   arma::vec grd_M     = vectorise(M * Omega + A-Y) ;
