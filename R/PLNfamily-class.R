@@ -51,19 +51,14 @@ PLNfamily$set("public", "initialize",
 #' @name PLNfamily_getBestModel
 #'
 #' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "ICL", "J". Default is "BIC".
+#' "BIC", "ICL", "J", "R2". Default is "BIC".
 #' @return  Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getBestModel",
-function(crit=c("BIC", "ICL", "J")){
+function(crit=c("BIC", "ICL", "J", "R2")){
   crit <- match.arg(crit)
-  if(length(self$criteria$BIC) > 1) {
-    id <- switch(crit,
-    "BIC" = which.max(self$criteria$BIC),
-    "ICL" = which.max(self$criteria$ICL),
-    "J"   = which.max(self$criteria$J) ##,
-    ## "R2"  = which.max(self$criteria$R2) ## R2 is not one of the standard criteria
-    )
+  if(length(self$criteria[[crit]]) > 1) {
+    id <- which.max(self$criteria[[crit]])
   } else {id <- 1}
     model <- self$models[[id]]$clone()
     return(model)
@@ -86,7 +81,7 @@ function(xvar){
   }
 })
 
-#' Set data frame with criteria (BIC, ICL, J) associated with the collection of fits
+#' Set data frame with criteria (BIC, ICL, J and possibly R2) associated with the collection of fits
 #'
 #' @name PLNfamily_setCriteria
 #'
