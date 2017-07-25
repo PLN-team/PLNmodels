@@ -49,6 +49,12 @@ PLNnetworkfamily$set("public", "initialize",
   self$fn_optim <- fn_optim_PLNnetwork_Cpp
 })
 
+#' One (coordinate-descent) optimization for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
+#' the same starting point (inception model from \code{\link[=PLNfit-class]{PLNfit}}) for all models.
+#'
+#' @name PLNnetworkfamily_optimize
+#'
+#' @importFrom glasso glasso
 PLNnetworkfamily$set("public", "optimize",
   function(control) {
 
@@ -85,10 +91,12 @@ PLNnetworkfamily$set("public", "optimize",
       iter <- iter + 1
       if (control$trace > 0) cat("",iter)
 
+      ## Update Omega/Sigma
       Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal)$wi
       logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
 
       ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
+      ## to update Theta, M and S
       opts <- list("algorithm" = "NLOPT_LD_MMA",
                "maxeval"   = control$maxit,
                "xtol_rel"  = control$xtol,
@@ -101,10 +109,12 @@ PLNnetworkfamily$set("public", "optimize",
       objective[iter]   <- optim.out$objective
       convergence[iter] <- sqrt(sum((optim.out$solution - par0)^2)/sum(par0^2))
 
+      ## Check convergence
       if ((convergence[iter] < tol) | (iter > maxit)) {
         cond <- TRUE
       }
 
+      ## Post-Treatment to update Sigma
       M <- matrix(optim.out$solution[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
       S <- matrix(optim.out$solution[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
       Sigma <- crossprod(M)/self$n + diag(colMeans(S))
@@ -133,6 +143,15 @@ PLNnetworkfamily$set("public", "optimize",
 
 })
 
+#' One fit for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
+#' the same starting point (inception model from \code{\link[=PLNfit-class]{PLNfit}}) for all models.
+#' Unlike \code{\link[=PLNnetworkfamily_optimize]{optimize}}, the optimization does not use an iterative procedure:
+#' - Theta, M and S are fixed to their inception values
+#' - Omega/Sigma is optimized only once using graphical lasso
+#'
+#' @name PLNnetworkfamily_optimize_approx
+#'
+#' @importFrom glasso glasso
 PLNnetworkfamily$set("public", "optimize_approx",
   function(control) {
 
