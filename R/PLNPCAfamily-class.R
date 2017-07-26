@@ -105,13 +105,14 @@ PLNPCAfamily$set("public", "optimize",
     BIC <- J - self$p * (self$d + model$rank) * log(self$n)
     # ICL <- BIC - .5*self$n*model$rank *log(2*pi*exp(1)) - sum(log(S))
     ICL <- BIC - .5*self$n*model$rank *log(2*pi*exp(1)) - .5 * sum(log(S))
-    loglik <- sapply(1:model$rank, function(q_) {
-      Z <- tcrossprod(M[,1:q_,drop=FALSE],B[,1:q_,drop=FALSE]) + tcrossprod(self$covariates, Theta) + self$offsets
-      return(sum(self$responses * (Z)) - sum(as.numeric(self$responses)))
-    })
+    ## We use only one value, no need to compute loglik for all ranks
+    Z <- tcrossprod(M,B) + tcrossprod(self$covariates, Theta) + self$offsets
+    loglik <- sum(self$responses * (Z)) - sum(as.numeric(self$responses))
+    ## Computed that way, lmin is different for each fit in the family. Should we use only one
+    ## (computed from either the inception or the Poisson GLM)?
     lmin <- sum(self$responses * (self$offsets + tcrossprod(self$covariates, Theta))) - sum(as.numeric(self$responses))
     lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1))
-    R2  <- (loglik[model$rank] - lmin)  / (lmax - lmin)
+    R2  <- (loglik - lmin)  / (lmax - lmin)
 
     model$model.par       <- list(B = B, Theta = Theta, Sigma = tcrossprod(B))
     model$variational.par <- list(M = M, S = S)
