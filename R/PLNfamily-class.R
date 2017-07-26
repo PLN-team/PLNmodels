@@ -139,3 +139,21 @@ function() {
     model$addCriteria("R2", R2)
   }
 })
+
+
+#' Predict counts of new samples for all fits in the family
+#'
+#' @name PLNfamily_predict
+#'
+#' @param newdata    A optional data frame in which to look for variables with which to predict. If omitted, the family-level covariates are used.
+#' @param newOffsets A optional matrix in which to look for offsets with which to predict. If omitted, the family-level offsets are used.
+#' @param type       The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
+#'                   the alternative "response" is on the scale of the response variable (i.e. average count)
+#' @return A list of matrices (one per fit) of predicted log-counts (if type = "link")
+#'         or predicted counts (if type = "response").
+#'
+PLNfamily$set("public", "predict",
+  function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", "response")) {
+    lapply(self$models, function(model) { model$predict(newdata, newOffsets, type) } )
+  }
+)
