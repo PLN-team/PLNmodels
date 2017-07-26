@@ -117,4 +117,25 @@ function(verbose = TRUE) {
 
 PLNfamily$set("public", "print", function() self$show())
 
-## TODO function to update criteria in all fits of the collection?
+#' Compute goodness of fit (R2) for each fit in the family
+#'
+#' @name PLNfamily_computeR2
+#'
+PLNfamily$set("public", "computeR2",
+function() {
+  ## Likelihood of the null model (covariates and offset only, no latent variables)
+  ## computed from the inception model (should we move to a Poisson-GLM as the base model instead?)
+  # Theta <- do.call(rbind, lapply(1:p, function(j)
+  #   coefficients(glm.fit(self$covariates, self$responses[, j], offset = self$offsets[,j], family = poisson()))))
+  Z <- self$offsets + tcrossprod(self$covariates, self$inception$model.par$Theta)
+  lmin <- sum(self$responses * Z) - sum(as.numeric(self$responses))
+  ## Likelihood of the full model
+  lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1))
+  ## Likelihood of each model
+  for (model in self$models) {
+    Z <- model$latentPos(self$covariates, self$offsets)
+    loglik <- sum(self$responses * (Z)) - sum(as.numeric(self$responses))
+    R2 <- (loglik - lmin) / (lmax - lmin)
+    model$addCriteria("R2", R2)
+  }
+})
