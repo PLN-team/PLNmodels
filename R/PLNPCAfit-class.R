@@ -51,6 +51,18 @@ PLNPCAfit$set("public", "setVisualization",
     rownames(self$scores) <- rownames(self$variational.par$M)
 })
 
+#' Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
+#'
+#' @name PLNfit_latentPos
+#'
+#' @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
+PLNPCAfit$set("public", "latentPos",
+function(covariates, offsets) {
+  return(tcrossprod(self$variational.par$M, self$variational.par$B) +
+           tcrossprod(covariates, self$model.par$Theta) + offsets)
+}
+)
 
 #' Plot the individual map of a specified axis for a \code{PLNPCAfit} object
 #'

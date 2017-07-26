@@ -25,7 +25,7 @@ PLNfit <-
       variational.par = NULL, # M and S
       criteria        = NULL, # J, BIC, ICL
       convergence     = NULL, # results of optimization
-      initialize = function(model.par=NA, variational.par=NA, criteria=NA, convergence=NA, loglik=NA) {
+      initialize = function(model.par=NA, variational.par=NA, criteria=NA, convergence=NA) {
       self$model.par       <- model.par
       self$variational.par <- variational.par
       self$criteria        <- criteria
@@ -66,5 +66,37 @@ PLNfit$set("public", "plot_model_par",
 
 ## TODO accessors for the variational and model parameters? Or at least coefficients and Sigma (but vcov not a good name)?
 
+
+#' Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
+#'
+#' @name PLNfit_latentPos
+#'
+#' @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
+#'
+PLNfit$set("public", "latentPos",
+function(covariates, offsets) {
+  return(self$variational.par$M + tcrossprod(covariates, self$model.par$Theta) + offsets)
+  }
+)
+
+#' Add (or update if existing) criteria value to a fit. New criteria are added at the end.
+#'
+#' @name PLNfit_addCriteria
+#'
+#' @param crit.name criteria name (given as a character string)
+#' @param value     criteria value (numeric)
+#'
+PLNfit$set("public", "addCriteria",
+  function(crit.name, value) {
+    if (crit.name %in% names(self$criteria)) {
+      self$criteria[crit.name] <- value
+    } else {
+      self$criteria <- setNames(object = c(self$criteria, value),
+                                nm     = c(names(self$criteria), crit.name))
+
+    }
+  }
+)
 
 
