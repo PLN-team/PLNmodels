@@ -103,8 +103,8 @@ PLNfit$set("public", "addCriteria",
 #'
 #' @name PLNfit_predict
 #'
-#' @param newdata    A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.
-#' @param newOffsets A optional matrix in which to look for offsets with which to predict. If omitted, no offset is used.
+#' @param newdata    A data frame in which to look for variables with which to predict.
+#' @param newOffsets A matrix in which to look for offsets with which to predict.
 #' @param type       The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
 #'                   the alternative "response" is on the scale of the response variable (i.e. average count)
 #' @return A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
