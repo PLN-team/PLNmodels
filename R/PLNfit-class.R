@@ -99,4 +99,32 @@ PLNfit$set("public", "addCriteria",
   }
 )
 
+#' Predict counts of a new sample
+#'
+#' @name PLNfit_predict
+#'
+#' @param newdata    A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.
+#' @param newOffsets A optional matrix in which to look for offsets with which to predict. If omitted, no offset is used.
+#' @param type       The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
+#'                   the alternative "response" is on the scale of the response variable (i.e. average count)
+#' @return A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
+#'
+PLNfit$set("public", "predict",
+  function(newdata, newOffsets, type = c("link", "response")) {
+    type = match.arg(type)
+    ## Are matrix conformable?
+    stopifnot(ncol(newdata)    == ncol(self$model.par$Theta),
+              nrow(newdata)    == nrow(newOffsets),
+              ncol(newOffsets) == nrow(self$model.par$Theta))
+    ## Mean latent positions in the parameter space
+    Z <- tcrossprod(newdata, self$model.par$Theta) + newOffsets
+    results <- switch(type,
+                      link     = Z,
+                      response = exp(Z))
+    ## output formatting
+    rownames(results) <- rownames(newdata); colnames(results) <- rownames(self$model.par$Theta)
+    attr(results, "type") <- type
+    return(results)
+  }
+)
 
