@@ -105,12 +105,13 @@ PLNPCAfamily$set("public", "optimize",
     BIC <- J - self$p * (self$d + model$rank) * log(self$n)
     # ICL <- BIC - .5*self$n*model$rank *log(2*pi*exp(1)) - sum(log(S))
     ICL <- BIC - .5*self$n*model$rank *log(2*pi*exp(1)) - .5 * sum(log(S))
-    ## We use only one value, no need to compute loglik for all ranks
+    ## Variational approximation (called $\tilde{Lambda}$ in the paper)
     Z <- tcrossprod(M,B) + tcrossprod(self$covariates, Theta) + self$offsets
-    loglik <- sum(self$responses * (Z)) - sum(as.numeric(self$responses))
+    loglik <- sum(self$responses * (Z)) - sum(as.numeric(exp(Z)))
     ## Computed that way, lmin is different for each fit in the family. Should we use only one
     ## (computed from either the inception or the Poisson GLM)?
-    lmin <- sum(self$responses * (self$offsets + tcrossprod(self$covariates, Theta))) - sum(as.numeric(self$responses))
+    lambda.min <- self$offsets + tcrossprod(self$covariates, Theta)
+    lmin <- sum(self$responses * lambda.min) - sum(as.numeric(lambda.min))
     lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1))
     R2  <- (loglik - lmin)  / (lmax - lmin)
 

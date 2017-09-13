@@ -128,13 +128,13 @@ function() {
   # Theta <- do.call(rbind, lapply(1:p, function(j)
   #   coefficients(glm.fit(self$covariates, self$responses[, j], offset = self$offsets[,j], family = poisson()))))
   Z <- self$offsets + tcrossprod(self$covariates, self$inception$model.par$Theta)
-  lmin <- sum(self$responses * Z) - sum(as.numeric(self$responses))
+  lmin <- sum(self$responses * Z) - sum(exp(Z))
   ## Likelihood of the full model
   lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1))
   ## Likelihood of each model
   for (model in self$models) {
     Z <- model$latentPos(self$covariates, self$offsets)
-    loglik <- sum(self$responses * (Z)) - sum(as.numeric(self$responses))
+    loglik <- sum(self$responses * (Z)) - sum(exp(Z))
     R2 <- (loglik - lmin) / (lmax - lmin)
     model$addCriteria("R2", R2)
   }
