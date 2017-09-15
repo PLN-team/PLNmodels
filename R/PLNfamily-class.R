@@ -36,7 +36,7 @@ PLNfamily$set("public", "initialize",
     if (!is.null(control$inception)) {
       stopifnot(all.equal(class(control$inception), c("PLNfit", "R6")),
                 all.equal(dim(control$inception$model.par$Sigma), c(self$p,self$p)),
-                all.equal(dim(control$inception$model.par$Theta), c(self$d,self$p)),
+                all.equal(dim(control$inception$model.par$Theta), c(self$p,self$d)),
                 all.equal(dim(control$inception$variational.par$M), c(self$n,self$p)),
                 all.equal(dim(control$inception$variational.par$S), c(self$n,self$p)))
       cat("\n User defined inceptive PLN model")
@@ -140,7 +140,6 @@ function() {
   }
 })
 
-
 #' Predict counts of new samples for all fits in the family
 #'
 #' @name PLNfamily_predict
@@ -153,7 +152,8 @@ function() {
 #'         or predicted counts (if type = "response").
 #'
 PLNfamily$set("public", "predict",
-  function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", "response")) {
-    lapply(self$models, function(model) { model$predict(newdata, newOffsets, type) } )
-  }
-)
+function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", "response")) {
+  lapply(self$models, function(model) {
+    model$predict(newdata, newOffsets, type)
+  })
+})
