@@ -10,8 +10,8 @@ PLN(Robject, ...)
 
 \method{PLN}{formula}(formula, control = list())
 
-\method{PLN}{default}(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y),
-  ncol(Y)), control = list())
+\method{PLN}{default}(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0,
+  nrow(Y), ncol(Y)), control = list())
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a matrix}
@@ -20,11 +20,11 @@ PLN(Robject, ...)
 
 \item{formula}{a formula}
 
-\item{control}{a list for controling the optimization. See details.}
+\item{control}{a list for controlling the optimization. See details.}
 
 \item{Y}{a (n x p) matrix of count data}
 
-\item{X}{an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.}
+\item{X}{an optional (n x d) matrix of covariates. Should include the intercept (a column of ones) if the default method is used.}
 
 \item{O}{an optional (n x p) matrix of offsets.}
 }
@@ -32,16 +32,22 @@ PLN(Robject, ...)
 an R6 object with class \code{\link[=PLNfit-class]{PLNfit}}
 }
 \description{
-two methods are available for specifing the models (with formulas or matrices)
+two methods are available for specifying the models (with formulas or matrices)
 }
 \details{
-The parameter \code{control} is a list controling the optimization with the following entries
+The parameter \code{control} is a list controlling the optimization with the following entries
 \itemize{
- \item{"xtol"}{stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-4}
- \item{"ftol"}{stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
- \item{"maxit"}{stop when the number of iteration exeeeds maxiter. Default is 10000}
+ \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6}
+ \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6}
+ \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
+ \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
+ \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
+ \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
+    "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
+    "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
+ \item{"inception"}{a PLNfit to start with.}
 }
 }
 \examples{

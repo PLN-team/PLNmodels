@@ -24,6 +24,7 @@
 ##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
 ##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
+##'  \item{"inception"}{a PLNfit to start with.}
 ##' }
 ##'
 ##' @rdname PLN

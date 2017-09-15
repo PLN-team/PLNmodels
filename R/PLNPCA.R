@@ -14,18 +14,18 @@
 ##' @return an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
 ##' a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
 ##'
-##' @details The parameter \code{control} is a list with the following entries
-##' \itemize{
-##'  \item{"xtol"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-8}
-##'  \item{"ftol"}{stop when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-10}
-##'  \item{"maxit"}{stop when the number of iteration exeeeds maxiter. Default is 10000}
-##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-8 like xtol.}
+##' @details The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries
+##'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
+##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
+##'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
+##'  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
+##'  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
+##'  \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
+##'     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
+##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
+##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
-##'  \item{"inception"}{a optional PLNfit used for stratup. If NULL (the default), will be automatically fitted.}
-##'  \item{"xtol.init"}{use for fitting the inceptive model. stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
-##'  \item{"ftol.init"}{use for fitting the inceptive model. stop when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6}
-##'  \item{"maxit.init"}{use for fitting the inceptive model. stop when the number of iteration exeeeds maxiter. Default is 10000}
-##'  \item{"lbvar.init"}{use for fitting the inceptive model. the lower bound (box constraint) for the variational variance parameters for the unpenalized model. Default is 1e-4.}
+##'  \item{"inception"}{a PLNfit to start with.}
 ##' }
 ##'
 ##' @rdname PLNPCA

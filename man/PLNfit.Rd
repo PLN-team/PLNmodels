@@ -26,7 +26,7 @@ Fields should not be changed or manipulated by the user as they are updated inte
 
 \item{\code{criteria}}{a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.}
 
-\item{\code{convergence}}{quantities usefull for monitoring the optimization}
+\item{\code{convergence}}{quantities useful for monitoring the optimization}
 }}
 
 \keyword{datasets}
