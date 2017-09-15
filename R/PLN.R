@@ -64,24 +64,26 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
 
   ## problem dimensions and constant
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
+
   ## Initialization if user-specified
-  if (!is.null(ctrl$inception)) {
-    stopifnot(all.equal(class(ctrl$inception), c("PLNfit", "R6")),
-              all.equal(dim(ctrl$inception$model.par$Sigma)  , c(p,p)),
-              all.equal(dim(ctrl$inception$model.par$Theta)  , c(p,d)),
-              all.equal(dim(ctrl$inception$variational.par$M), c(n,p)),
-              all.equal(dim(ctrl$inception$variational.par$S), c(n,p)))
-    if(ctrl$trace > 1) cat("\n User defined inceptive PLN model")
-    par0 <- c(ctrl$inception$model.par$Theta,
-              ctrl$inception$variational.par$M,
-              ctrl$inception$variational.par$S)
+  user_defined_inception <- (!is.null(ctrl$inception) & isTRUE(all.equal(class(ctrl$inception), c("PLNfit", "R6"))))
+
+  if(ctrl$trace > 1 & user_defined_inception) cat("\n User defined inceptive PLN model")
+
+  predefined_M       <- user_defined_inception & isTRUE(all.equal(dim(ctrl$inception$variational.par$M), c(n,p)))
+  predefined_S       <- user_defined_inception & isTRUE(all.equal(dim(ctrl$inception$variational.par$S), c(n,p)))
+  if(predefined_M) M <- ctrl$inception$variational.par$M else M <- rep(0, n*p)
+  if(predefined_S) S <- ctrl$inception$variational.par$S else S <- rep(10*ctrl$lbvar, n*p)
+
+  predefined_Theta <- user_defined_inception & isTRUE(all.equal(dim(ctrl$inception$model.par$Theta), c(p,d)))
+  if (predefined_Theta) {
+    Theta <- ctrl$inception$model.par$Theta
   } else {
-    if(ctrl$trace > 1) cat("\n Using Poisson GLM for initialization")
-    ## glm-Poisson model for the regression parameters
-    Theta <- do.call(rbind, lapply(1:p, function(j) coefficients(glm.fit(X, Y[, j], offset = O[,j], family = poisson()))))
-    ## 0 mean and minimum variance for the variational parameters
-    par0 <- c(Theta, rep(0, n*p), rep(10*ctrl$lbvar, n*p))
+    if(ctrl$trace > 1) cat("\n Using Poisson GLM for initializing Theta")
+    GLMs  <- lapply(1:p, function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
+    Theta <- do.call(rbind, lapply(GLMs, coefficients))
   }
+  par0 <- c(Theta, M, S)
 
   ## ===========================================
   ## OPTIMIZATION
@@ -99,7 +101,6 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
                "xtol_rel"    = ctrl$xtol_rel,
                "xtol_abs"    = ctrl$xtol_abs,
                "print_level" = max(0,ctrl$trace-1))
-
   optim.out <- nloptr(par0, eval_f = fn_optim_PLN_profiled_Cpp, lb = lower.bound, opts = opts,
                       Y = Y, X = X, O = O, KY = KY)
   ## ===========================================
