@@ -58,29 +58,30 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   ## INITIALIZATION
   ##
 
-  ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(ftol_rel = 1e-6,  ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-5, trace = 1, inception = NULL)
-  ctrl[names(control)] <- control
-
-  ## problem dimensions and constant
+  ## problem dimensions
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
-  ## Initialization if user-specified
-  user_defined_inception <- (!is.null(ctrl$inception) & isTRUE(all.equal(class(ctrl$inception), c("PLNfit", "R6"))))
+  ## define default control parameters for optim and overwrite by user defined parameters
+  ctrl <- list(ftol_rel = 1e-6,  ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = NULL)
+  ctrl[names(control)] <- control
 
+  ## Initialization of the parameters when user-specified
+  user_defined_inception <- (!is.null(ctrl$inception) & isTRUE(all.equal(class(ctrl$inception), c("PLNfit", "R6"))))
   if(ctrl$trace > 1 & user_defined_inception) cat("\n User defined inceptive PLN model")
 
+  ## get back the variational parameters
   predefined_M       <- user_defined_inception & isTRUE(all.equal(dim(ctrl$inception$variational.par$M), c(n,p)))
   predefined_S       <- user_defined_inception & isTRUE(all.equal(dim(ctrl$inception$variational.par$S), c(n,p)))
-  if(predefined_M) M <- ctrl$inception$variational.par$M else M <- rep(0, n*p)
-  if(predefined_S) S <- ctrl$inception$variational.par$S else S <- rep(10*ctrl$lbvar, n*p)
+  if(predefined_M) M <- ctrl$inception$variational.par$M else M <- matrix(rep(0, n*p),n,p)
+  if(predefined_S) S <- ctrl$inception$variational.par$S else S <- matrix(rep(10*ctrl$lbvar, n*p),n,p)
 
+  ## get back the model parameters (regression parameters)
   predefined_Theta <- user_defined_inception & isTRUE(all.equal(dim(ctrl$inception$model.par$Theta), c(p,d)))
   if (predefined_Theta) {
     Theta <- ctrl$inception$model.par$Theta
   } else {
     if(ctrl$trace > 1) cat("\n Using Poisson GLM for initializing Theta")
-    GLMs  <- lapply(1:p, function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
+    GLMs  <- lapply(1:p, function(j) glm.fit(X, Y[, j], offset = O[,j] + M[,j] + .5 * S[,j], family = poisson()))
     Theta <- do.call(rbind, lapply(GLMs, coefficients))
   }
   par0 <- c(Theta, M, S)
