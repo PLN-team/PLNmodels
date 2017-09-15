@@ -35,8 +35,8 @@ PLNfamily$set("public", "initialize",
     ## adjust the basic PLN model
     if (!is.null(control$inception)) {
       stopifnot(all.equal(class(control$inception), c("PLNfit", "R6")),
-                all.equal(dim(control$inception$model.par$Sigma), c(self$p,self$p)),
-                all.equal(dim(control$inception$model.par$Theta), c(self$p,self$d)),
+                all.equal(dim(control$inception$model.par$Sigma)  , c(self$p,self$p)),
+                all.equal(dim(control$inception$model.par$Theta)  , c(self$p,self$d)),
                 all.equal(dim(control$inception$variational.par$M), c(self$n,self$p)),
                 all.equal(dim(control$inception$variational.par$S), c(self$n,self$p)))
       cat("\n User defined inceptive PLN model")
