@@ -104,7 +104,7 @@ PLNPCAfamily$set("public", "optimize",
     rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
     rownames(B)     <- colnames(self$responses); colnames(B) <- 1:model$rank
     rownames(M)     <- rownames(self$responses); colnames(M) <- 1:model$rank
-    Sigma <- B %*% (crossprod(M)/self$n + diag(colMeans(S))) %*% t(B)
+    Sigma <- B %*% (crossprod(M)/self$n + diag(colMeans(S), nrow = model$rank)) %*% t(B)
 
     ## compute some criteria for evaluation
     J   <- -optim.out$objective
