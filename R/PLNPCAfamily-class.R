@@ -39,16 +39,18 @@ PLNPCAfamily$set("public", "initialize",
   self$ranks <- ranks
 
   ## instantiate as many models as ranks
-  fit <- PLNPCAfit$new(model.par = self$inception$model.par,
-                       variational.par = list())
-  svdSigma <- svd(self$inception$model.par$Sigma, nu=max(ranks), nv=0)
-  svdM <- svd(self$inception$variational.par$M, nu=max(ranks), nv=max(ranks))
-  svdS <- svd(self$inception$variational.par$S, nu=max(ranks), nv=max(ranks))
+  fit <- PLNPCAfit$new(model.par = self$inception$model.par, variational.par = list())
+
+  # svdSigma <- svd(self$inception$model.par$Sigma  , nu=max(ranks), nv=0)
+  svdM     <- svd(self$inception$variational.par$M)
+  svdS     <- svd(self$inception$variational.par$S)
 
   self$models <- lapply(ranks, function(q){
     model <- fit$clone()
     model$rank <- q
-    model$model.par$B <- svdSigma$u[, 1:q, drop=FALSE] %*% diag(sqrt(svdSigma$d[1:q]),nrow=q, ncol=q)
+    model$model.par$B       <- matrix(0,self$p,q)
+    # model$model.par$B       <- t(svdM$v[1:q, 1:self$p, drop=FALSE])/self$n
+    # # model$model.par$B       <- svdSigma$u[, 1:q, drop=FALSE] %*% diag(sqrt(svdSigma$d[1:q]),nrow=q, ncol=q)
     model$variational.par$M <- svdM$u[, 1:q, drop=FALSE] %*% diag(svdM$d[1:q], nrow=q, ncol=q) %*% t(svdM$v[1:q, 1:q, drop=FALSE])
     model$variational.par$S <- svdS$u[, 1:q, drop=FALSE] %*% diag(svdS$d[1:q], nrow=q, ncol=q) %*% t(svdS$v[1:q, 1:q, drop=FALSE])
     return(model)
@@ -81,11 +83,14 @@ PLNPCAfamily$set("public", "optimize",
                      rep(-Inf, self$n*model$rank) , # M
                      rep(control$lbvar,self$n*model$rank)) # S
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-    opts <- list("algorithm" = "NLOPT_LD_MMA",
-                 "maxeval"   = control$maxit,
-                 "xtol_rel"  = control$xtol,
-                 "ftol_rel"  = control$ftol,
-                 "print_level" = max(0, control$trace-1))
+    opts <- list("algorithm"   = paste("NLOPT_LD",control$method, sep="_"),
+                 "maxeval"     = control$maxeval,
+                 "ftol_rel"    = control$ftol_rel,
+                 "ftol_abs"    = control$ftol_abs,
+                 "xtol_rel"    = control$xtol_rel,
+                 "xtol_abs"    = control$xtol_abs,
+                 "print_level" = max(0,control$trace-1))
+
     optim.out <- nloptr(par0, eval_f = self$fn_optim, lb = lower.bound, opts = opts,
                         q=model$rank, Y=self$responses, X=self$covariates, O=self$offsets, KY=KY)
 
@@ -99,6 +104,7 @@ PLNPCAfamily$set("public", "optimize",
     rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
     rownames(B)     <- colnames(self$responses); colnames(B) <- 1:model$rank
     rownames(M)     <- rownames(self$responses); colnames(M) <- 1:model$rank
+    Sigma <- B %*% (crossprod(M)/self$n + diag(colMeans(S))) %*% t(B)
 
     ## compute some criteria for evaluation
     J   <- -optim.out$objective
@@ -111,11 +117,11 @@ PLNPCAfamily$set("public", "optimize",
     ## Computed that way, lmin is different for each fit in the family. Should we use only one
     ## (computed from either the inception or the Poisson GLM)?
     lambda.min <- self$offsets + tcrossprod(self$covariates, Theta)
-    lmin <- sum(self$responses * lambda.min) - sum(as.numeric(lambda.min))
+    lmin <- sum(self$responses * lambda.min) - sum(as.numeric(exp(lambda.min)))
     lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1))
     R2  <- (loglik - lmin)  / (lmax - lmin)
 
-    model$model.par       <- list(B = B, Theta = Theta, Sigma = tcrossprod(B))
+    model$model.par       <- list(B = B, Theta = Theta, Sigma = Sigma)
     model$variational.par <- list(M = M, S = S)
     model$criteria        <- c(J = J, R2 = R2, BIC = BIC, ICL = ICL)
     model$convergence     <- data.frame(status = optim.out$message, objective = optim.out$objective, iterations=optim.out$iterations)

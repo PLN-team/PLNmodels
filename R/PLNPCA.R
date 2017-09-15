@@ -39,7 +39,7 @@ PLNPCA <- function(Robject, ...)
 
 ##' @rdname PLNPCA
 ##' @export
-PLNPCA.formula <- function(formula, ranks = 1:5,  control = list()) {
+PLNPCA.formula <- function(formula, ranks = 1:5,  control.init = list(), control.main = list()) {
 
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
@@ -47,27 +47,28 @@ PLNPCA.formula <- function(formula, ranks = 1:5,  control = list()) {
   O      <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLNPCA.default(Y, X, O, ranks, control))
+  return(PLNPCA.default(Y, X, O, ranks, control.init, control.main))
 }
 
 ##' @rdname PLNPCA
 ##' @export
-PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), ranks = 1:5,  control = list()) {
+PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), ranks = 1:5,  control.init = list(), control.main = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(ftol=1e-10, xtol=1e-8, maxit=30000, lbvar=1e-8, cores=1, trace=1,
-               ftol.init=1e-6, xtol.init=1e-4, maxit.init=10000, lbvar.init=1e-5, inception=NULL)
-  ctrl[names(control)] <- control
-  ctrl.init <- list(ftol=ctrl$ftol.init, xtol=ctrl$xtol.init, maxit=ctrl$maxit.init, lbvar=ctrl$lbvar.init, trace=max(ctrl$trace,1), inception=ctrl$inception)
+  ctrl.init <- list(ftol_rel = 1e-6, ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = NULL)
+  ctrl.main <- list(ftol_rel = 1e-8, ftol_abs = 1e-5, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-5, trace = 1, cores = 1)
+
+  ctrl.init[names(control.init)] <- control.init
+  ctrl.main[names(control.main)] <- control.main
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank
-  if (ctrl$trace > 0) cat("\n Initialization...")
+  if (ctrl.main$trace > 0) cat("\n Initialization...")
   myPLN <- PLNPCAfamily$new(ranks=ranks, responses=Y, covariates=X, offsets=O, control=ctrl.init)
 
   ## Now adjust the PLN models
-  if (ctrl$trace > 0) cat("\n Adjusting", length(ranks), "PLN models for PCA analysis.")
-  myPLN$optimize(ctrl)
-  if (ctrl$trace > 0) cat("\n DONE!\n")
+  if (ctrl.main$trace > 0) cat("\n Adjusting", length(ranks), "PLN models for PCA analysis.")
+  myPLN$optimize(ctrl.main)
+  if (ctrl.main$trace > 0) cat("\n DONE!\n")
   myPLN$setCriteria()
 
   ## PostTreatment (basically, setup the visualization for PCA)
