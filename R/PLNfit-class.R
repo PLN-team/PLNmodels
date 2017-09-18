@@ -66,8 +66,7 @@ PLNfit$set("public", "plot_model_par",
 
 ## TODO accessors for the variational and model parameters? Or at least coefficients and Sigma (but vcov not a good name)?
 
-
-#' Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
+#' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
 #'
 #' @name PLNfit_latentPos
 #'
@@ -76,9 +75,9 @@ PLNfit$set("public", "plot_model_par",
 #'
 PLNfit$set("public", "latentPos",
 function(covariates, offsets) {
-  return(self$variational.par$M + tcrossprod(covariates, self$model.par$Theta) + offsets)
-  }
-)
+  latentPos <- self$variational.par$M + tcrossprod(covariates, self$model.par$Theta) + offsets
+  latentPos
+})
 
 #' Add (or update if existing) criteria value to a fit. New criteria are added at the end.
 #'

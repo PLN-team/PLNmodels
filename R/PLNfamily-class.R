@@ -123,21 +123,15 @@ PLNfamily$set("public", "print", function() self$show())
 #'
 PLNfamily$set("public", "computeR2",
 function() {
-  ## Likelihood of the null model (covariates and offset only, no latent variables)
-  ## computed from the inception model (should we move to a Poisson-GLM as the base model instead?)
-  # Theta <- do.call(rbind, lapply(1:p, function(j)
-  #   coefficients(glm.fit(self$covariates, self$responses[, j], offset = self$offsets[,j], family = poisson()))))
-  Z <- self$offsets + tcrossprod(self$covariates, self$inception$model.par$Theta)
-  lmin <- sum(self$responses * Z) - sum(exp(Z))
-  ## Likelihood of the full model
-  lmax <- sum(self$responses * (log(self$responses + 1*(self$responses == 0)) - 1))
-  ## Likelihood of each model
-  for (model in self$models) {
-    Z <- model$latentPos(self$covariates, self$offsets)
-    loglik <- sum(self$responses * (Z)) - sum(exp(Z))
-    R2 <- (loglik - lmin) / (lmax - lmin)
-    model$addCriteria("R2", R2)
-  }
+
+  ## Likelihoods of the null and saturated models
+  lmin <- logLikPoisson(self$responses, nullModelPoisson(self$responses, self$covariates, self$offsets))
+  lmax <- logLikPoisson(self$responses, fullModelPoisson(self$responses))
+
+  lapply(self$models, function(model) {
+    loglik <- logLikPoisson(self$responses, model$latentPos(self$covariates, self$offsets))
+    model$addCriteria("R2", (loglik - lmin) / (lmax - lmin))
+  })
 })
 
 #' Predict counts of new samples for all fits in the family

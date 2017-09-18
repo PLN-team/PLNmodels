@@ -59,10 +59,9 @@ PLNPCAfit$set("public", "setVisualization",
 #' @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
 PLNPCAfit$set("public", "latentPos",
 function(covariates, offsets) {
-  return(tcrossprod(self$variational.par$M, self$variational.par$B) +
-           tcrossprod(covariates, self$model.par$Theta) + offsets)
-}
-)
+  return(tcrossprod(self$variational.par$M, self$model.par$B) +
+         tcrossprod(covariates, self$model.par$Theta) + offsets)
+})
 
 #' Plot the individual map of a specified axis for a \code{PLNPCAfit} object
 #'
@@ -80,7 +79,6 @@ PLNPCAfit$set("public", "plot_individual.map",
     .scores <- as.data.frame(self$scores[,axes])
     .scores$labels <- cols
     colnames(.scores) <- paste("a",1:length(axes),sep="")
-    cols <- factor(cols)
     axes.label <- paste("axis",axes)
     if (percentAxes)
       axes.label <- paste(axes.label, paste0("(", round(100*self$percentVar,3)[axes], "%)"))
@@ -125,7 +123,6 @@ PLNPCAfit$set("public", "plot_correlation.circle",
     correlations <- as.data.frame(self$corrCircle[, axes])
     p <- nrow(correlations)
     colnames(correlations) <- c("axe1","axe2")
-    cols <- factor(cols)
     axes.label <- paste("axis",axes)
     if (percentAxes)
       axes.label <- paste(axes.label, paste0("(", round(100*self$percentVar,3)[axes], "%)"))

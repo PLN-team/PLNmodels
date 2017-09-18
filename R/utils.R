@@ -7,6 +7,23 @@
   return(pmin(x, M))
 }
 
+logLikPoisson <- function(responses, lambda) {
+  loglik <- sum(responses * lambda, na.rm=TRUE) - sum(exp(lambda)) - sum(.logfactorial(responses))
+  loglik
+}
+
+nullModelPoisson <- function(responses, covariates, offsets) {
+  Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
+    coefficients(glm.fit(covariates, responses[, j], offset = offsets[,j], family = poisson()))))
+  lambda <- offsets + tcrossprod(covariates, Theta)
+  lambda
+}
+
+fullModelPoisson <- function(responses) {
+  lambda <- log(responses)
+  lambda
+}
+
 circle <- function(center = c(0, 0), radius = 1, npoints = 100) {
   r = radius
   tt = seq(0, 2 * pi, length = npoints)

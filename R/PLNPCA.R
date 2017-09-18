@@ -26,6 +26,7 @@
 ##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 ##'  \item{"inception"}{a PLNfit to start with.}
+##'  \item{"cores"}{The number of core used to paralellize jobs over the \code{ranks} vector. Default is 1.}
 ##' }
 ##'
 ##' @rdname PLNPCA
@@ -66,14 +67,13 @@ PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y),
   myPLN <- PLNPCAfamily$new(ranks=ranks, responses=Y, covariates=X, offsets=O, control=ctrl.init)
 
   ## Now adjust the PLN models
-  if (ctrl.main$trace > 0) cat("\n Adjusting", length(ranks), "PLN models for PCA analysis.")
+  if (ctrl.main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.")
   myPLN$optimize(ctrl.main)
-  if (ctrl.main$trace > 0) cat("\n DONE!\n")
-  myPLN$setCriteria()
 
-  ## PostTreatment (basically, setup the visualization for PCA)
+  ## Post-treatments: Compute pseudoR2, rearrange criteria and the visualization for PCA
+  if (ctrl.main$trace > 0) cat("\n Post-treatments")
   myPLN$postTreatment()
 
+  if (ctrl.main$trace > 0) cat("\n DONE!\n")
   return(myPLN)
 }
-
