@@ -52,7 +52,7 @@ The model can be written in a hierachical framework where a sample of $p$-dimens
   \label{eq:pca-model}
   \begin{array}{rcl}
     \text{latent space }  & \mathbf{W}_i \quad \text{i.i.d.} & \mathbf{W}_i \sim      \mathcal{N}(\mathbf{0}_q, \mathbf{I}_q)  \\
-\text{parameter space } &   \mathbf{Z}_i|\mathbf{W}_i = {\boldsymbol\mu} + \mathbf{B}^\top \mathbf{W}_i  & \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}, \mathbf{B}\mathbf{B}^\top) \\
+\text{parameter space } &   \mathbf{Z}_i = {\boldsymbol\mu} + \mathbf{B}^\top \mathbf{W}_i & \\
   \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
 \end{equation}
@@ -87,7 +87,7 @@ The critetion $J$ represents the variational lower bound of the likelihood: in t
 From this plot, we can see that the best model in terms of BIC or ICL is obtained for $q=3$ axes. We may extract the corresponding model with the method `getBestModel("ICL")`. A model with a specific number of axes can be extracted with the `getModel(q)` method. 
 
 ```{r}
-myPCA.ICL <- models.nocov$getBestModel() # if no criteria is specified, the best ICL is used
+myPCA.ICL <- models.nocov$getBestModel("ICL") # if no criteria is specified, the best BIC is used
 myPCA.q5 <- models.nocov$getModel(5) 
 ```
 
@@ -114,7 +114,7 @@ An original contribution of our model is to let the possibility of taking into a
 Basically, the model with covariates extends the one used in the previous section by modeling the parameter space as follows:
 
 \begin{equation} 
-  \mathbf{Z}_i|\mathbf{W}_i = {\boldsymbol\mu} + {\boldsymbol\Theta} \mathbf{X}_i^\intercal +    \mathbf{B}^\top \mathbf{W}_i, \quad \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu} + {\boldsymbol\Theta} \mathbf{X}_i^\intercal, \mathbf{B}\mathbf{B}^\top),
+  \mathbf{Z}_i = {\boldsymbol\mu} + {\boldsymbol\Theta} \mathbf{X}_i^\intercal +    \mathbf{B}^\top \mathbf{W}_i, \qquad \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu} + {\boldsymbol\Theta} \mathbf{X}_i^\intercal, \mathbf{B}\mathbf{B}^\top),
 \end{equation}
 
 where $\mathbf{X}_i$ is a vector of $d$ covariate for observations $i$. The $p \times d$ matrix  $\boldsymbol\Theta$ entails the associated parameters.
@@ -135,7 +135,7 @@ Again, the best model is obtained for $q=3$ classes.
 
 ```{r}
 models.cov
-myPCA.cov <- models.cov$getBestModel()
+myPCA.cov <- models.cov$getBestModel("ICL")
 ```
 
 Suppose thaht we want to give a closer look to the first two axes. This can be done thanks to the two methods `plot_individual.map` and `plot_correlation.circle` :
