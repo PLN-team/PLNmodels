@@ -87,7 +87,7 @@ The critetion $J$ represents the variational lower bound of the likelihood: in t
 From this plot, we can see that the best model in terms of BIC or ICL is obtained for $q=3$ axes. We may extract the corresponding model with the method `getBestModel("ICL")`. A model with a specific number of axes can be extracted with the `getModel(q)` method. 
 
 ```{r}
-myPCA.ICL <- models.nocov$getBestModel("ICL") # if no criteria is specified, the best BIC is used
+myPCA.ICL <- models.nocov$getBestModel("ICL") # if no criteria is specified, the best ICL is used
 myPCA.q5 <- models.nocov$getModel(5) 
 ```
 

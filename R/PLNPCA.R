@@ -25,7 +25,7 @@
 ##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
 ##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
-##'  \item{"inception"}{a PLNfit to start with.}
+##'  \item{"inception"}{a PLNfit to start with. If NULL, a PLN is fitted on the . If an R6 object with class 'PLNfit' is given, it is used to initialize the model.}
 ##'  \item{"cores"}{The number of core used to paralellize jobs over the \code{ranks} vector. Default is 1.}
 ##' }
 ##'
@@ -34,6 +34,7 @@
 ##' ## See the vignette: vignette("trichoptera", package="PLNmodels")
 ##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
+##' @importFrom NMF nmf basis
 ##' @export
 PLNPCA <- function(Robject, ...)
   UseMethod("PLNPCA", Robject)
@@ -64,6 +65,13 @@ PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y),
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank
   if (ctrl.main$trace > 0) cat("\n Initialization...")
+  if (is.null(ctrl.init$inception)) {
+    GLMs  <- lapply(1:ncol(Y), function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
+    Theta <- do.call(rbind, lapply(GLMs, coefficients))
+    Sigma <- tcrossprod(do.call(rbind, lapply(GLMs, residuals, "pearson")))
+    ctrl.init$inception <- PLNfit$new(model.par = list(Theta=Theta, Sigma=Sigma),
+                                      variational.par = list(M = matrix(0,nrow(Y),ncol(Y)), S = matrix(ctrl.init$lbvar,nrow(Y),ncol(Y))))
+  }
   myPLN <- PLNPCAfamily$new(ranks=ranks, responses=Y, covariates=X, offsets=O, control=ctrl.init)
 
   ## Now adjust the PLN models

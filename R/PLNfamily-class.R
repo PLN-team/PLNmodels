@@ -33,15 +33,15 @@ PLNfamily$set("public", "initialize",
     if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:self$d
 
     ## adjust the basic PLN model
-    if (!is.null(control$inception)) {
-      stopifnot(all.equal(class(control$inception), c("PLNfit", "R6")),
-                all.equal(dim(control$inception$model.par$Sigma)  , c(self$p,self$p)),
-                all.equal(dim(control$inception$model.par$Theta)  , c(self$p,self$d)),
-                all.equal(dim(control$inception$variational.par$M), c(self$n,self$p)),
-                all.equal(dim(control$inception$variational.par$S), c(self$n,self$p)))
+    if(isTRUE(all.equal(class(control$inception), c("PLNfit", "R6")))) {
       cat("\n User defined inceptive PLN model")
       self$inception <- control$inception
-    } else {
+      stopifnot(isTRUE(all.equal(dim(control$inception$model.par$Sigma)  , c(self$p,self$p))),
+                isTRUE(all.equal(dim(control$inception$model.par$Theta)  , c(self$p,self$d))),
+                isTRUE(all.equal(dim(control$inception$variational.par$M), c(self$n,self$p))),
+                isTRUE(all.equal(dim(control$inception$variational.par$S), c(self$n,self$p))))
+    }
+    if (is.null(control$inception)){
       self$inception <- PLN(responses, covariates, offsets, control)
     }
 })
