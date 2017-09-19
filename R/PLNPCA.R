@@ -57,7 +57,7 @@ PLNPCA.formula <- function(formula, ranks = 1:5,  control.init = list(), control
 PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), ranks = 1:5,  control.init = list(), control.main = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl.init <- list(ftol_rel = 1e-6, ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = NULL)
+  ctrl.init <- list(ftol_rel = 1e-6, ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = ifelse(ncol(Y) < 500, "PLN", "LM"))
   ctrl.main <- list(ftol_rel = 1e-8, ftol_abs = 1e-5, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = 1e-5, trace = 1, cores = 1)
 
   ctrl.init[names(control.init)] <- control.init
@@ -65,13 +65,6 @@ PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y),
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank
   if (ctrl.main$trace > 0) cat("\n Initialization...")
-  if (is.null(ctrl.init$inception)) {
-    GLMs  <- lapply(1:ncol(Y), function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
-    Theta <- do.call(rbind, lapply(GLMs, coefficients))
-    Sigma <- tcrossprod(do.call(rbind, lapply(GLMs, residuals, "pearson")))
-    ctrl.init$inception <- PLNfit$new(model.par = list(Theta=Theta, Sigma=Sigma),
-                                      variational.par = list(M = matrix(0,nrow(Y),ncol(Y)), S = matrix(ctrl.init$lbvar,nrow(Y),ncol(Y))))
-  }
   myPLN <- PLNPCAfamily$new(ranks=ranks, responses=Y, covariates=X, offsets=O, control=ctrl.init)
 
   ## Now adjust the PLN models

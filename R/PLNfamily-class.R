@@ -32,16 +32,40 @@ PLNfamily$set("public", "initialize",
     if (is.null(rownames(covariates))) rownames(self$covariates) <- 1:self$n
     if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:self$d
 
-    ## adjust the basic PLN model
+    ## extract the model used for initializaing the whole family
+    ## User defined (form a previous fit, for instance)
     if(isTRUE(all.equal(class(control$inception), c("PLNfit", "R6")))) {
-      cat("\n User defined inceptive PLN model")
-      self$inception <- control$inception
+      if (control$trace > 0) cat("\n User defined inceptive PLN model")
       stopifnot(isTRUE(all.equal(dim(control$inception$model.par$Sigma)  , c(self$p,self$p))),
                 isTRUE(all.equal(dim(control$inception$model.par$Theta)  , c(self$p,self$d))),
                 isTRUE(all.equal(dim(control$inception$variational.par$M), c(self$n,self$p))),
                 isTRUE(all.equal(dim(control$inception$variational.par$S), c(self$n,self$p))))
-    }
-    if (is.null(control$inception)){
+      self$inception <- control$inception
+
+    ## GLM Poisson (fast)
+    } else if (isTRUE(all.equal(is.character(control$inception), control$inception == "GLM"))) {
+      if (control$trace > 0) cat("\n Use GLM Poisson to define the inceptive model")
+      GLMs  <- lapply(1:self$p, function(j) glm.fit(self$covariates, self$responses[, j], offset = self$offsets[,j], family = poisson()))
+      Theta <- do.call(rbind, lapply(GLMs, coefficients))
+      Sigma <- cov(do.call(cbind, lapply(GLMs, residuals, "pearson")))
+      M <- matrix(0,self$n,self$p)
+      S <- matrix(10 * control$lbvar,self$n,self$p)
+      self$inception <- PLNfit$new(model.par = list(Theta=Theta, Sigma=Sigma), variational.par = list(M=M, S=S))
+
+    ## LM + log transformation
+    } else if (isTRUE(all.equal(is.character(control$inception), control$inception == "LM"))) {
+      if (control$trace > 0) cat("\n Use LM after log transformation to define the inceptive model")
+      LMs  <- lapply(1:self$p, function(j) lm.fit(self$covariates, log(1 + self$responses[,j]), offset =  1 + self$offsets[,j]) )
+      Theta <- exp(do.call(rbind, lapply(LMs, coefficients))) - exp(1)
+      Sigma <- cov(do.call(cbind, lapply(LMs, residuals, "pearson")))
+      M <- matrix(0,self$n,self$p)
+      S <- matrix(10 * control$lbvar,self$n,self$p)
+      self$inception <- PLNfit$new(model.par = list(Theta=Theta, Sigma=Sigma), variational.par = list(M=M, S=S))
+
+    ## Otherwise, fit a PLN first (with no regularization)
+    } else {
+      control$inception <- NULL
+      if (control$trace > 0) cat("\n Adjust a PLN to define the inceptive model (no recommanded for large Y)")
       self$inception <- PLN(responses, covariates, offsets, control)
     }
 })

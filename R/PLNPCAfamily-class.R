@@ -41,14 +41,15 @@ PLNPCAfamily$set("public", "initialize",
   ## instantiate as many models as ranks
   fit <- PLNPCAfit$new(model.par = self$inception$model.par, variational.par = list())
 
+  if (control$trace > 0) cat("\n Perform SVD to initialize other parameters...")
   svdSigma <- svd(self$inception$model.par$Sigma  , nu=max(ranks), nv=0)
-  svdM     <- svd(self$inception$variational.par$M)
-  svdS     <- svd(self$inception$variational.par$S)
+  svdM     <- svd(self$inception$variational.par$M, nu=max(ranks), nv=max(ranks))
+  svdS     <- svd(self$inception$variational.par$S, nu=max(ranks), nv=max(ranks))
 
   self$models <- lapply(ranks, function(q){
     model <- fit$clone()
     model$rank <- q
-    model$model.par$B       <- svdSigma$u[, 1:q, drop=FALSE] %*% diag(sqrt(svdSigma$d[1:q]),nrow=q, ncol=q)
+    model$model.par$B       <- svdSigma$u[, 1:q, drop=FALSE] %*% sqrt(diag(svdSigma$d[1:q],nrow=q, ncol=q))
     model$variational.par$M <- svdM$u[, 1:q, drop=FALSE] %*% diag(svdM$d[1:q], nrow=q, ncol=q) %*% t(svdM$v[1:q, 1:q, drop=FALSE])
     model$variational.par$S <- svdS$u[, 1:q, drop=FALSE] %*% diag(svdS$d[1:q], nrow=q, ncol=q) %*% t(svdS$v[1:q, 1:q, drop=FALSE])
     return(model)
