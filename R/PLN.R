@@ -24,7 +24,7 @@
 ##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
 ##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
-##'  \item{"inception"}{a PLNfit to start with.}
+##'  \item{"inception"}{How to setup the intialization: either with a PLNfit (typically obtained from a previsous fit), or a character string between "LM" and "GLM". If "LM", a log transformation i applied to Y then a linear model for initialization. It "GLM", a GLM Poisson is used. Default is "LM".}
 ##' }
 ##'
 ##' @rdname PLN
@@ -63,33 +63,16 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(ftol_rel = 1e-6,  ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = NULL)
+  ctrl <- list(ftol_rel = 1e-6,  ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = "LM")
   ctrl[names(control)] <- control
 
-  ## Initialization of the parameters when user-specified
-  user_defined_inception <- (!is.null(ctrl$inception) & isTRUE(all.equal(class(ctrl$inception), c("PLNfit", "R6"))))
-  if(ctrl$trace > 1 & user_defined_inception) cat("\n User defined inceptive PLN model")
-
-  ## get back the variational parameters
-  predefined_M       <- user_defined_inception & isTRUE(all.equal(dim(ctrl$inception$variational.par$M), c(n,p)))
-  predefined_S       <- user_defined_inception & isTRUE(all.equal(dim(ctrl$inception$variational.par$S), c(n,p)))
-  if(predefined_M) M <- ctrl$inception$variational.par$M else M <- matrix(rep(0, n*p),n,p)
-  if(predefined_S) S <- ctrl$inception$variational.par$S else S <- matrix(rep(10*ctrl$lbvar, n*p),n,p)
-
-  ## get back the model parameters (regression parameters)
-  predefined_Theta <- user_defined_inception & isTRUE(all.equal(dim(ctrl$inception$model.par$Theta), c(p,d)))
-  if (predefined_Theta) {
-    Theta <- ctrl$inception$model.par$Theta
-  } else {
-    if(ctrl$trace > 1) cat("\n Using Poisson GLM for initializing Theta")
-    GLMs  <- lapply(1:p, function(j) glm.fit(X, Y[, j], offset = O[,j] + M[,j] + .5 * S[,j], family = poisson()))
-    Theta <- do.call(rbind, lapply(GLMs, coefficients))
-  }
-  par0 <- c(Theta, M, S)
+  ## get an initial point for optimization
+  par0 <- unlist(initializePLN(Y, X, O, ctrl)) # Theta, M, S
 
   ## ===========================================
   ## OPTIMIZATION
   ##
+
   KY <-sum(.logfactorial(Y)) ## constant that will remain the same
   if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
 
@@ -133,3 +116,39 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
                                                  objective = optim.out$objective,
                                                  iterations=optim.out$iterations)))
 }
+
+initializePLN <- function(Y, X, O, control) {
+
+  n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
+  ## extract the model used for initializing the whole family
+  ## User defined (form a previous fit, for instance)
+  if(isTRUE(all.equal(class(control$inception), c("PLNfit", "R6")))) {
+    if (control$trace > 0) cat("\n User defined inceptive PLN model")
+    stopifnot(isTRUE(all.equal(dim(control$inception$model.par$Theta)  , c(p,d))),
+              isTRUE(all.equal(dim(control$inception$variational.par$M), c(n,p))),
+              isTRUE(all.equal(dim(control$inception$variational.par$S), c(n,p))))
+    return(list(Theta = control$inception$model.par$Theta,
+                M     = control$inception$variational.par$M,
+                S     = control$inception$variational.par$S))
+    ## GLM Poisson (fast)
+  } else if (isTRUE(all.equal(is.character(control$inception), control$inception == "GLM"))) {
+    if (control$trace > 0) cat("\n Use GLM Poisson to define the inceptive model")
+    GLMs  <- lapply(1:p, function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
+    Theta <- do.call(rbind, lapply(GLMs, coefficients))
+    M     <- do.call(cbind, lapply(GLMs, residuals, "deviance"))
+    S <- matrix(10 * control$lbvar, n, p)
+    return(list(Theta = Theta, M = M, S = S))
+
+    ## default LM + log transformation
+  } else {
+    if (control$trace > 0) cat("\n Use LM after log transformation to define the inceptive model")
+    LMs  <- lapply(1:p, function(j) lm.fit(X, log(1 + Y[,j]), offset =  O[,j]) )
+    Theta <- do.call(rbind, lapply(LMs, coefficients))
+    M     <- do.call(cbind, lapply(LMs, residuals))
+    S <- matrix(10 * control$lbvar, n, p)
+    return(list(Theta = Theta, M = M, S = S))
+  }
+
+}
+
+
