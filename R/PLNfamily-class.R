@@ -19,6 +19,7 @@ PLNfamily <-
 
 PLNfamily$set("public", "initialize",
   function(responses, covariates, offsets, control) {
+
     ## set data matrice and dimension
     self$responses  <- responses
     self$covariates <- covariates

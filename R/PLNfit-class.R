@@ -1,6 +1,3 @@
-## TODO
-## o add a predict method and similar stat tools
-
 #' An R6 Class to represent a PLNfit in a standard, general framework
 #'
 #' @description The function \code{\link{PLN}} produces a collection of models which are instances of object with class \code{PLNfit}.
