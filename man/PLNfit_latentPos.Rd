@@ -3,7 +3,7 @@
 \name{PLNfit_latentPos}
 \alias{PLNfit_latentPos}
 \alias{PLNfit_latentPos}
-\title{Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.}
+\title{Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.}
 \arguments{
 \item{covariates}{a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class}
 
@@ -14,7 +14,7 @@
 \item{offsets}{a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class}
 }
 \description{
-Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
+Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
 
 Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
 }

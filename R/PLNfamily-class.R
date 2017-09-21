@@ -5,15 +5,16 @@ PLNfamily <-
       responses  = NULL, # the Y matrix
       covariates = NULL, # the X matrix
       offsets    = NULL, # the O matrix
-### TODO pass n, p, d to private members
-      n          = NULL, # number of samples
-      p          = NULL, # number of responses
-      d          = NULL, # number of covariates
       inception  = NULL, # the basic PLN model in the collection (no regularization, nor sparsity, nor rank)
       models     = NULL, # the collection of models to be fitted
-      criteria   = NULL, # a data frame with some criteria associated with the collection of fits
-      fn_optim   = NULL  # objective and gradient for optimizing the regularized models
-    )
+      criteria   = NULL  # a data frame with some criteria associated with the collection of fits
+    ),
+    private = list(
+      fn_optim   = NULL, # objective and gradient for optimizing the regularized models
+      n          = NULL, # number of samples
+      p          = NULL, # number of responses
+      d          = NULL  # number of covariates
+  )
 )
 
 PLNfamily$set("public", "initialize",
@@ -22,15 +23,15 @@ PLNfamily$set("public", "initialize",
     self$responses  <- responses
     self$covariates <- covariates
     self$offsets    <- offsets
-    self$n <- nrow(responses)
-    self$p <- ncol(responses)
-    self$d <- ncol(covariates)
+    private$n <- nrow(responses)
+    private$p <- ncol(responses)
+    private$d <- ncol(covariates)
 
     ## set names of the data matrices
-    if (is.null(rownames(responses)))  rownames(self$responses)  <- 1:self$n
-    if (is.null(colnames(responses)))  colnames(self$responses)  <- 1:self$p
-    if (is.null(rownames(covariates))) rownames(self$covariates) <- 1:self$n
-    if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:self$d
+    if (is.null(rownames(responses)))  rownames(self$responses)  <- 1:private$n
+    if (is.null(colnames(responses)))  colnames(self$responses)  <- 1:private$p
+    if (is.null(rownames(covariates))) rownames(self$covariates) <- 1:private$n
+    if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:private$d
 
     ## extract the model used for initializaing the whole family
     if (isTRUE(all.equal(is.character(control$inception), control$inception == "PLN")) ) {
@@ -38,7 +39,7 @@ PLNfamily$set("public", "initialize",
       self$inception <- PLN(self$responses, self$covariates, self$offsets, control)
     } else {
       par0 <- initializePLN(self$responses, self$covariates, self$offsets, control)
-      Sigma <- crossprod(par0$M)/self$n + diag(colMeans(par0$S))
+      Sigma <- crossprod(par0$M)/private$n + diag(colMeans(par0$S))
       self$inception <- PLNfit$new(model.par = list(Theta=par0$Theta, Sigma=Sigma),
                                    variational.par = list(M=par0$M, S=par0$S))
     }
@@ -79,16 +80,6 @@ function(xvar){
   }
 })
 
-#' Set data frame with criteria (BIC, ICL, J and possibly R2) associated with the collection of fits
-#'
-#' @name PLNfamily_setCriteria
-#'
-PLNfamily$set("public", "setCriteria",
-function() {
-  self$criteria <- data.frame(xvar = round(as.numeric(names(self$models)), 16),
-                              t(sapply(self$models, function(model) model$criteria)))
-})
-
 #' @import ggplot2
 PLNfamily$set("public", "plot",
 function() {
@@ -115,23 +106,6 @@ function(verbose = TRUE) {
 
 PLNfamily$set("public", "print", function() self$show())
 
-#' Compute goodness of fit (R2) for each fit in the family
-#'
-#' @name PLNfamily_computeR2
-#'
-PLNfamily$set("public", "computeR2",
-function() {
-
-  ## Likelihoods of the null and saturated models
-  lmin <- logLikPoisson(self$responses, nullModelPoisson(self$responses, self$covariates, self$offsets))
-  lmax <- logLikPoisson(self$responses, fullModelPoisson(self$responses))
-
-  lapply(self$models, function(model) {
-    loglik <- logLikPoisson(self$responses, model$latentPos(self$covariates, self$offsets))
-    model$addCriteria("R2", (loglik - lmin) / (lmax - lmin))
-  })
-})
-
 #' Predict counts of new samples for all fits in the family
 #'
 #' @name PLNfamily_predict
@@ -147,5 +121,29 @@ PLNfamily$set("public", "predict",
 function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", "response")) {
   lapply(self$models, function(model) {
     model$predict(newdata, newOffsets, type)
+  })
+})
+
+## ----------------------------------------------------------------
+## PRIVATE METHODS
+
+# Set data frame with criteria (BIC, ICL, J and possibly R2) associated with the collection of fits
+PLNfamily$set("private", "setCriteria",
+function() {
+  self$criteria <- data.frame(xvar = round(as.numeric(names(self$models)), 16),
+                              t(sapply(self$models, function(model) model$criteria)))
+})
+
+# Compute goodness of fit (R2) for each fit in the family
+PLNfamily$set("private", "computeR2",
+function() {
+
+  ## Likelihoods of the null and saturated models
+  lmin <- logLikPoisson(self$responses, nullModelPoisson(self$responses, self$covariates, self$offsets))
+  lmax <- logLikPoisson(self$responses, fullModelPoisson(self$responses))
+
+  lapply(self$models, function(model) {
+    loglik <- logLikPoisson(self$responses, model$latentPos(self$covariates, self$offsets))
+    model$addCriteria("R2", (loglik - lmin) / (lmax - lmin))
   })
 })

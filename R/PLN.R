@@ -107,7 +107,6 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   J   <- - optim.out$objective
   BIC <- J - (p * d + p*(p+1)/2) * log(n)
   ICL <- BIC - .5*n*p *log(2*pi*exp(1)) - .5*sum(log(S))
-  ## Add R2?
 
   return(PLNfit$new(model.par       = list(Omega = Omega, Sigma = Sigma, Theta = Theta),
                     variational.par = list(M = M, S = S),
@@ -117,11 +116,12 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
                                                  iterations=optim.out$iterations)))
 }
 
+## Extract the model used for initializing the whole family
 initializePLN <- function(Y, X, O, control) {
 
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-  ## extract the model used for initializing the whole family
-  ## User defined (form a previous fit, for instance)
+
+  ## User defined (from a previous fit, for instance)
   if(isTRUE(all.equal(class(control$inception), c("PLNfit", "R6")))) {
     if (control$trace > 0) cat("\n User defined inceptive PLN model")
     stopifnot(isTRUE(all.equal(dim(control$inception$model.par$Theta)  , c(p,d))),
@@ -130,7 +130,8 @@ initializePLN <- function(Y, X, O, control) {
     return(list(Theta = control$inception$model.par$Theta,
                 M     = control$inception$variational.par$M,
                 S     = control$inception$variational.par$S))
-    ## GLM Poisson (fast)
+
+    ## GLM Poisson
   } else if (isTRUE(all.equal(is.character(control$inception), control$inception == "GLM"))) {
     if (control$trace > 0) cat("\n Use GLM Poisson to define the inceptive model")
     GLMs  <- lapply(1:p, function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))

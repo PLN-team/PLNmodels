@@ -17,7 +17,6 @@
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
 #' @field offsets the matrix of offsets common to every models
-#' @field fn_optim the R functions used to compute the model's objective and gradient during the optimization process
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom nloptr nloptr
@@ -57,7 +56,7 @@ PLNPCAfamily$set("public", "initialize",
   names(self$models) <- as.character(ranks)
 
   ## declare the objective and gradient functions for optimization
-  self$fn_optim <- fn_optim_PLNPCA_Cpp
+  private$fn_optim <- fn_optim_PLNPCA_Cpp
 
 })
 
@@ -77,11 +76,10 @@ PLNPCAfamily$set("public", "optimize",
     if (control$trace > 1) cat("\n\t conservative convex separable approximation for gradient descent")
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-    lower.bound <- c(rep(-Inf, self$p*self$d)     , # Theta
-                     rep(-Inf, self$p*model$rank) , # B
-                     rep(-Inf, self$n*model$rank) , # M
-                     rep(control$lbvar,self$n*model$rank)) # S
-    ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
+    lower.bound <- c(rep(-Inf, private$p*private$d)     , # Theta
+                     rep(-Inf, private$p*model$rank) , # B
+                     rep(-Inf, private$n*model$rank) , # M
+                     rep(control$lbvar,private$n*model$rank)) # S
     opts <- list("algorithm"   = paste("NLOPT_LD",control$method, sep="_"),
                  "maxeval"     = control$maxeval,
                  "ftol_rel"    = control$ftol_rel,
@@ -90,18 +88,18 @@ PLNPCAfamily$set("public", "optimize",
                  "xtol_abs"    = control$xtol_abs,
                  "print_level" = max(0,control$trace-1))
 
-    optim.out <- nloptr(par0, eval_f = self$fn_optim, lb = lower.bound, opts = opts,
+    optim.out <- nloptr(par0, eval_f = private$fn_optim, lb = lower.bound, opts = opts,
                         q=model$rank, Y=self$responses, X=self$covariates, O=self$offsets, KY=KY)
 
     ## ===========================================
     ## OUTPUT
 
     ## formating parameters for output
-    Theta <- matrix(optim.out$solution[1:(self$p*self$d)                                                     ], self$p, self$d)
-    B     <- matrix(optim.out$solution[self$p*self$d              + 1:(self$p*model$rank)                    ], self$p, model$rank)
-    M     <- matrix(optim.out$solution[self$p*(self$d+model$rank) + 1:(self$n*model$rank)                    ], self$n, model$rank)
-    S     <- matrix(optim.out$solution[self$p*(self$d+model$rank) + self$n*model$rank + 1:(self$n*model$rank)], self$n, model$rank)
-    Sigma <- B %*% (crossprod(M)/self$n + diag(colMeans(S), nrow = model$rank)) %*% t(B)
+    Theta <- matrix(optim.out$solution[1:(private$p*private$d)                                                     ], private$p, private$d)
+    B     <- matrix(optim.out$solution[private$p*private$d              + 1:(private$p*model$rank)                    ], private$p, model$rank)
+    M     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + 1:(private$n*model$rank)                    ], private$n, model$rank)
+    S     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + private$n*model$rank + 1:(private$n*model$rank)], private$n, model$rank)
+    Sigma <- B %*% (crossprod(M)/private$n + diag(colMeans(S), nrow = model$rank)) %*% t(B)
     rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
     rownames(B)     <- colnames(self$responses); colnames(B) <- 1:model$rank
     rownames(M)     <- rownames(self$responses); colnames(M) <- 1:model$rank
@@ -109,8 +107,8 @@ PLNPCAfamily$set("public", "optimize",
 
     ## compute some criteria for model selection
     J   <- -optim.out$objective
-    BIC <- J - self$p * (self$d + model$rank) * log(self$n)
-    ICL <- BIC - .5*self$n*model$rank*log(2*pi*exp(1)) - .5 * sum(log(S))
+    BIC <- J - private$p * (private$d + model$rank) * log(private$n)
+    ICL <- BIC - .5*private$n*model$rank*log(2*pi*exp(1)) - .5 * sum(log(S))
 
     model$model.par       <- list(B = B, Theta = Theta, Sigma = Sigma)
     model$variational.par <- list(M = M, S = S)
@@ -122,8 +120,8 @@ PLNPCAfamily$set("public", "optimize",
 
 PLNPCAfamily$set("public", "postTreatment",
 function() {
-  self$computeR2()
-  self$setCriteria()
+  private$computeR2()
+  private$setCriteria()
   for (model in self$models) {
     model$setVisualization()
   }
@@ -150,7 +148,7 @@ function() {
   cat(" Task: Principal Component Analysis\n")
   cat("======================================================\n")
   cat(" - Ranks considered: from", min(self$ranks), "to", max(self$ranks),"\n")
-  cat(" - Best model (regardings ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$criteria["R2"], 2), "\n")
+  cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$criteria["R2"], 2), "\n")
 })
 
 # PLNfamily$set("public", "print", function() self$show())

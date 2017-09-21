@@ -35,8 +35,6 @@ during the estimation process.
 \item{\code{covariates}}{the matrix of covariates common to every models}
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{fn_optim}}{the R functions used to compute the model's objective and gradient during the optimization process}
 }}
 
 \seealso{

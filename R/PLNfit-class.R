@@ -21,7 +21,7 @@
 PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
-      model.par       = NULL, # Theta and Sigma
+      model.par       = NULL, # Theta and Sigma (and/or B)
       variational.par = NULL, # M and S
       criteria        = NULL, # J, BIC, ICL
       convergence     = NULL, # results of optimization
@@ -79,13 +79,6 @@ function(covariates, offsets) {
   latentPos
 })
 
-#' Add (or update if existing) criteria value to a fit. New criteria are added at the end.
-#'
-#' @name PLNfit_addCriteria
-#'
-#' @param crit.name criteria name (given as a character string)
-#' @param value     criteria value (numeric)
-#'
 PLNfit$set("public", "addCriteria",
   function(crit.name, value) {
     if (crit.name %in% names(self$criteria)) {
@@ -93,7 +86,6 @@ PLNfit$set("public", "addCriteria",
     } else {
       self$criteria <- setNames(object = c(self$criteria, value),
                                 nm     = c(names(self$criteria), crit.name))
-
     }
   }
 )
@@ -126,4 +118,3 @@ PLNfit$set("public", "predict",
     return(results)
   }
 )
-
