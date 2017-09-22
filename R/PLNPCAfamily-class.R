@@ -7,9 +7,6 @@
 #' \code{\link[=PLNPCAfamily_getModel]{getModel}} and \code{\link[=PLNPCAfamily_plot]{plot}}. Other methods
 #'  should not be called as they are designed to be used during the optimization process.
 #'
-#' Fields should not be changed or manipulated by the user as they are updated internally
-#' during the estimation process.
-#'
 #' @field ranks the dimensions of the successively fitted models
 #' @field models a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.
 #' @field inception a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when full rank is considered.

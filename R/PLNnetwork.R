@@ -7,28 +7,30 @@
 ##' @param X an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.
 ##' @param O an optional (n x p) matrix of offsets.
 ##' @param penalties a vector of positive real number controling the level of sparisty of the underlying network
-##' @param approx boolean for performing a two-step approach (PLN + graphical-Lasso) rather than the fully joint optimization. Default to FALSE.
-##' @param control a list for controling the optimization. See details.
+##' @param control.init a list for controling the optimization. See details.
+##' @param control.main a list for controling the optimization. See details.
 ##' @param Robject an R object, either a formula or a matrix
 ##' @param ... additional parameters. Not used
 ##'
 ##' @return an R6 object with class \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}}, which contains
 ##' a collection of models with class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
 ##'
-##' @details The parameter \code{control} is a list with the following entries
-##' \itemize{
+##' @details The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries
+##'  \item{"approx"}{boolean for performing a two-step approach (PLN + graphical-Lasso) rather than the fully joint optimization. Default to FALSE.}
 ##'  \item{"out.tol"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
 ##'  \item{"out.maxit"}{outer solver stops when the number of iteration exeeeds maxiter. Default is 10000}
-##'  \item{"xtol"}{inner solver stops when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-4}
-##'  \item{"ftol"}{inner solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
-##'  \item{"maxit"}{inner solver stops when the number of iteration exeeeds maxiter. Default is 10000}
-##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is .Machine$double.eps.}
+##'  \item{"penalize.diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}
+##'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
+##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
+##'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
+##'  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
+##'  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
+##'  \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
+##'     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
+##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
+##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
-##'  \item{"inception"}{a optional PLNfit used for stratup. If NULL (the default), will be automatically fitted.}
-##'  \item{"xtol.init"}{use for fitting the inceptive model. stop when an optimization step changes every parameters by less than xtol multiply by the absolute value of the parameter. Default is 1e-8}
-##'  \item{"ftol.init"}{use for fitting the inceptive model. stop when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-10}
-##'  \item{"maxit.init"}{use for fitting the inceptive model. stop when the number of iteration exeeeds maxiter. Default is 10000}
-##'  \item{"lbvar.init"}{use for fitting the inceptive model. the lower bound (box constraint) for the variational variance parameters for the unpenalized model. Default is 1e-4.}
+##'  \item{"inception"}{a PLNfit to start with. If NULL, a PLN is fitted on the . If an R6 object with class 'PLNfit' is given, it is used to initialize the model.}
 ##' }
 ##'
 ##' @rdname PLNnetwork
@@ -42,7 +44,7 @@ PLNnetwork <- function(Robject, ...)
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.formula <- function(formula, penalties = NULL, approx=FALSE, control = list()) {
+PLNnetwork.formula <- function(formula, penalties = NULL, control.init = list(), control.main = list()) {
 
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
@@ -50,41 +52,43 @@ PLNnetwork.formula <- function(formula, penalties = NULL, approx=FALSE, control 
   O      <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLNnetwork.default(Y, X, O, penalties, approx, control))
+  return(PLNnetwork.default(Y, X, O, penalties, control.init, control.main))
 }
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, approx=FALSE, control = list()) {
+PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, approx=FALSE, control.init = list(), control.main=list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(out.tol = 1e-5, out.maxit = 50, ftol=1e-6, xtol=1e-4, maxit=10000, nPenalties = 25,
-               penalize.diagonal = FALSE, lbvar=.Machine$double.eps, trace=1,
-               ftol.init=1e-6, xtol.init=1e-4, maxit.init=10000, lbvar.init=1e-5, inception=NULL)
-  ctrl[names(control)] <- control
-  ctrl.init <- list(ftol=ctrl$ftol.init, xtol=ctrl$xtol.init, maxit=ctrl$maxit.init, lbvar=ctrl$lbvar.init, trace=max(ctrl$trace,1), inception=ctrl$inception)
+  ctrl.init <- list(ftol_rel = 1e-6, ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = ifelse(ncol(Y) < 500, "PLN", "LM"))
+  ctrl.main <- list(approx=FALSE, out.tol = 1e-5, out.maxit = 50, nPenalties = 25, penalize.diagonal = FALSE, ftol_rel = 1e-8, ftol_abs = 1e-5, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = .Machine$double.eps, trace = 1)
 
-  if (!is.null(penalties)) ctrl$nPenalties <- length(penalties)
+  ctrl.init[names(control.init)] <- control.init
+  ctrl.main[names(control.main)] <- control.main
+
+  if (!is.null(penalties)) ctrl.main$nPenalties <- length(penalties)
 
   ## Instantiate the collection of PLN models
-  if (ctrl$trace > 0) cat("\n Initialization")
+  if (ctrl.main$trace > 0) cat("\n Initialization...")
   myPLN <- PLNnetworkfamily$new(nModels=ctrl$nPenalties, responses=Y, covariates=X, offsets=O, control=ctrl.init)
 
   ## Get an appropriate grid of penalties
   if (ctrl$trace > 0) cat("\n Recovering an appropriate grid of penalties.")
   myPLN$setPenalties(penalties, ctrl$nPenalties, ctrl$trace > 0)
 
-  if (ctrl$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN models for sparse network inference.")
-  if (approx) {
-    if (ctrl$trace > 0) cat("\n\t approximation: apply graphical-lasso on the inceptive PLN model on a penalty grid.")
-    myPLN$optimize_approx(ctrl)
+  if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN models for sparse network inference.")
+  if (ctrl.main$approx) {
+    if (ctrl.main$trace > 0) cat("\n\t approximation: apply graphical-lasso on the inceptive PLN model on a penalty grid.")
+    myPLN$optimize_approx(ctrl.main)
   } else {
-    myPLN$optimize(ctrl)
+    myPLN$optimize(ctrl.main)
   }
-  if (ctrl$trace > 0) cat("\n DONE!\n")
 
-  myPLN$setCriteria()
+  ## Post-treatments: Compute pseudoR2, rearrange criteria and the visualization for PCA
+  if (ctrl.main$trace > 0) cat("\n Post-treatments")
+  myPLN$postTreatment()
 
+  if (ctrl.main$trace > 0) cat("\n DONE!\n")
   return(myPLN)
 }
 

@@ -7,9 +7,6 @@
 #' \code{\link[=PLNnetworkfamily_getModel]{getModel}} and \code{\link[=PLNnetworkfamily_plot]{plot}}. Other methods
 #'  should not be called as they are designed to be used during the optimization process.
 #'
-#' Fields should not be changed or manipulated by the user as they are updated internally
-#' during the estimation process.
-#'
 #' @field penalties the sparsity level of the network in the successively fitted models
 #' @field models a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.
 #' @field inception a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when no sparsifying penalty is applied.
@@ -21,6 +18,7 @@
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom nloptr nloptr
+#' @importFrom glasso glasso
 #' @import ggplot2
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
 PLNnetworkfamily <-
@@ -44,17 +42,15 @@ PLNnetworkfamily$set("public", "initialize",
   for (m in 1:nModels) {
     self$models[[m]] <- fit$clone()
   }
+  # names(self$models) <- as.character(round())
 
   ## declare the objective and gradient functions for optimization
-  self$fn_optim <- fn_optim_PLNnetwork_Cpp
+  private$fn_optim <- fn_optim_PLNnetwork_Cpp
 })
 
-#' One (coordinate-descent) optimization for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
-#' the same starting point (inception model from \code{\link[=PLNfit-class]{PLNfit}}) for all models.
-#'
-#' @name PLNnetworkfamily_optimize
-#'
-#' @importFrom glasso glasso
+# One (coordinate-descent) optimization for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
+# the same starting point (inception model from \code{\link[=PLNfit-class]{PLNfit}}) for all models.
+#
 PLNnetworkfamily$set("public", "optimize",
   function(control) {
 
@@ -97,12 +93,15 @@ PLNnetworkfamily$set("public", "optimize",
 
       ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
       ## to update Theta, M and S
-      opts <- list("algorithm" = "NLOPT_LD_MMA",
-               "maxeval"   = control$maxit,
-               "xtol_rel"  = control$xtol,
-               "ftol_rel"  = control$ftol,
-               "print_level" = max(0, control$trace-1))
-      optim.out <- nloptr(par0, eval_f = self$fn_optim, lb = lower.bound, opts = opts,
+      opts <- list("algorithm"   = paste("NLOPT_LD",control$method, sep="_"),
+                   "maxeval"     = control$maxeval,
+                   "ftol_rel"    = control$ftol_rel,
+                   "ftol_abs"    = control$ftol_abs,
+                   "xtol_rel"    = control$xtol_rel,
+                   "xtol_abs"    = control$xtol_abs,
+                   "print_level" = max(0,control$trace-1))
+
+      optim.out <- nloptr(par0, eval_f = private$fn_optim, lb = lower.bound, opts = opts,
                           log_detOmega=logDetOmega, Omega=Omega,
                           Y=self$responses, X=self$covariates, O=self$offsets, KY=KY)
 
@@ -115,16 +114,16 @@ PLNnetworkfamily$set("public", "optimize",
       }
 
       ## Post-Treatment to update Sigma
-      M <- matrix(optim.out$solution[self$p*self$d          + 1:(self$n*self$p)], self$n,self$p)
-      S <- matrix(optim.out$solution[(self$n+self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
-      Sigma <- crossprod(M)/self$n + diag(colMeans(S))
+      M <- matrix(optim.out$solution[private$p*private$d          + 1:(private$n*private$p)], private$n,private$p)
+      S <- matrix(optim.out$solution[(private$n+private$d)*private$p + 1:(private$n*private$p)], private$n,private$p)
+      Sigma <- crossprod(M)/private$n + diag(colMeans(S))
       par0 <- optim.out$solution
 
     }
     ## ===========================================
     ## OUTPUT
     ## formating parameters for output
-    Theta <- matrix(optim.out$solution[1:(self$p*self$d)] ,self$p, self$d)
+    Theta <- matrix(optim.out$solution[1:(private$p*private$d)], private$p, private$d)
     rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
     dimnames(S)     <- dimnames(self$responses)
     dimnames(M)     <- dimnames(self$responses)

@@ -7,7 +7,8 @@
 ##' @param X an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.
 ##' @param O an optional (n x p) matrix of offsets.
 ##' @param ranks a vector of integer containing the successive ranks (or number of axes to be considered)
-##' @param control a list for controlling the optimization. See details.
+##' @param control.init a list for controling the optimization. See details.
+##' @param control.main a list for controling the optimization. See details.
 ##' @param Robject an R object, either a formula or a matrix
 ##' @param ... additional parameters. Not used
 ##'
@@ -34,7 +35,6 @@
 ##' ## See the vignette: vignette("trichoptera", package="PLNmodels")
 ##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
-##' @importFrom NMF nmf basis
 ##' @export
 PLNPCA <- function(Robject, ...)
   UseMethod("PLNPCA", Robject)

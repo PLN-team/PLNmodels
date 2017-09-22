@@ -35,8 +35,8 @@ PLNfamily$set("public", "initialize",
     if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:private$d
 
     ## extract the model used for initializaing the whole family
+    if (control$trace > 0) cat("\n Adjust a PLN to define the inceptive model")
     if (isTRUE(all.equal(is.character(control$inception), control$inception == "PLN")) ) {
-      if (control$trace > 0) cat("\n Adjust a PLN to define the inceptive model (no recommanded for large Y)")
       self$inception <- PLN(self$responses, self$covariates, self$offsets, control)
     } else {
       par0 <- initializePLN(self$responses, self$covariates, self$offsets, control)
