@@ -90,11 +90,12 @@ function() {
   return(p)
 })
 
-#' Basic show method
-#'
-#' @name PLNfamily_show
-#'
-#' @param verbose a logical (defaults to TRUE) controlling the amount of screen output.
+## JC: Do not need a documentation
+# Basic show method
+#
+# name PLNfamily_show
+#
+# param verbose a logical (defaults to TRUE) controlling the amount of screen output.
 PLNfamily$set("public", "show",
 function(verbose = TRUE) {
   cat("COLLECTION OF", length(self$models), "POISSON LOGNORMAL MODELS\n")
@@ -123,6 +124,13 @@ function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", 
   lapply(self$models, function(model) {
     model$predict(newdata, newOffsets, type)
   })
+})
+
+# Set data frame with criteria (BIC, ICL, J and possibly R2) associated with the collection of fits
+PLNfamily$set("public", "postTreatment",
+function() {
+  private$computeR2()
+  private$setCriteria()
 })
 
 ## ----------------------------------------------------------------

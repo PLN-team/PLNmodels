@@ -117,8 +117,7 @@ PLNPCAfamily$set("public", "optimize",
 
 PLNPCAfamily$set("public", "postTreatment",
 function() {
-  private$computeR2()
-  private$setCriteria()
+  super$postTreatment()
   for (model in self$models) {
     model$setVisualization()
   }

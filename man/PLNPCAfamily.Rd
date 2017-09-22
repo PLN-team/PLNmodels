@@ -15,9 +15,6 @@ This class comes with a set of methods, some of them being useful for the user:
 See the documentation for \code{\link[=PLNPCAfamily_getBestModel]{getBestModel}},
 \code{\link[=PLNPCAfamily_getModel]{getModel}} and \code{\link[=PLNPCAfamily_plot]{plot}}. Other methods
  should not be called as they are designed to be used during the optimization process.
-
-Fields should not be changed or manipulated by the user as they are updated internally
-during the estimation process.
 }
 \section{Fields}{
 

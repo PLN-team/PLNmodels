@@ -16,6 +16,7 @@
 ##' a collection of models with class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
 ##'
 ##' @details The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries
+##'  \itemize{
 ##'  \item{"approx"}{boolean for performing a two-step approach (PLN + graphical-Lasso) rather than the fully joint optimization. Default to FALSE.}
 ##'  \item{"out.tol"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
 ##'  \item{"out.maxit"}{outer solver stops when the number of iteration exeeeds maxiter. Default is 10000}
@@ -70,11 +71,11 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
 
   ## Instantiate the collection of PLN models
   if (ctrl.main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNnetworkfamily$new(nModels=ctrl$nPenalties, responses=Y, covariates=X, offsets=O, control=ctrl.init)
+  myPLN <- PLNnetworkfamily$new(nModels=ctrl.main$nPenalties, responses=Y, covariates=X, offsets=O, control=ctrl.init)
 
   ## Get an appropriate grid of penalties
-  if (ctrl$trace > 0) cat("\n Recovering an appropriate grid of penalties.")
-  myPLN$setPenalties(penalties, ctrl$nPenalties, ctrl$trace > 0)
+  if (ctrl.main$trace > 0) cat("\n Recovering an appropriate grid of penalties.")
+  myPLN$setPenalties(penalties, ctrl.main$nPenalties, ctrl.main$trace > 0)
 
   if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN models for sparse network inference.")
   if (ctrl.main$approx) {

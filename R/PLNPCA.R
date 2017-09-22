@@ -16,7 +16,8 @@
 ##' a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
 ##'
 ##' @details The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries
-##'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
+##' \itemize{
+##'   \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
 ##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
 ##'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
 ##'  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
