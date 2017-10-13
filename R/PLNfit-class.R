@@ -18,6 +18,8 @@
 PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
+#### TODO: pass Theta, Sigma, S and M to private
+#### use active binding to control model.par, variational.par and criteria
       model.par       = NULL, # Theta and Sigma (and/or B)
       variational.par = NULL, # M and S
       criteria        = NULL, # J, BIC, ICL
@@ -31,33 +33,30 @@ PLNfit <-
     )
   )
 
-PLNfit$set("public", "plot_variational_par",
-  function() {
-    S <- self$variational.par$S; M <- self$variational.par$M
-    rownames(S) <- rep(" ", nrow(S)) ; colnames(S) <- rep(" ", ncol(S))
-    rownames(M) <- rep(" ", nrow(M)) ; colnames(M) <- rep(" ", ncol(M))
-    par(mfrow=c(2,2))
-    hist(M, breaks=nrow(M), xlab="", ylab="", main="means")
-    hist(S, breaks=nrow(S), xlab="", ylab="", main="variances")
-    corrplot(M, is.corr = FALSE, method="color", cl.pos = "n")
-    corrplot(S, is.corr = FALSE, method="color", cl.pos = "n")
-    title(main="\nVariational parameters", outer=TRUE)
-    par(mfrow=c(1,1))
-  }
-)
+#' Display the model parameters in a matrix fashion
+#'
+#' @name PLNfit_plot_par
+#'
+#' @param type character. should the variational or the model parameters be plotted? default is "model".
+#'
+PLNfit$set("public", "plot_par",
+  function(type=c("model","variational")) {
+    type <- match.arg(type)
+    param <- switch(type,
+               "model"       = self$model.par,
+               "variational" = self$variational.par)
+    par1 <- param[[1]]; par2 <- param[[2]]
+    rownames(par1) <- rep(" ", nrow(par1)) ; colnames(par1) <- rep(" ", ncol(par1))
+    rownames(par2) <- rep(" ", nrow(par2)) ; colnames(par2) <- rep(" ", ncol(par2))
 
-PLNfit$set("public", "plot_model_par",
-  function() {
-    Theta <- t(self$model.par$Theta); Sigma <- self$model.par$Sigma
-    rownames(Theta) <- rep(" ", nrow(Theta)) ; colnames(Theta) <- rep(" ", ncol(Theta))
-    rownames(Sigma) <- rep(" ", nrow(Sigma)) ; colnames(Sigma) <- rep(" ", ncol(Sigma))
     par(mfrow=c(2,2))
-    hist(as.numeric(Theta), breaks=ncol(Theta), xlab="", ylab="", main="Regression parameters")
-    hist(as.numeric(Sigma), breaks=nrow(Sigma), xlab="", ylab="", main="Covariance matrix")
-    corrplot(Theta, is.corr = FALSE, method="color", cl.pos = "n")
-    corrplot(Sigma, is.corr = FALSE, method="color", cl.pos = "n")
-    title(main="\nModel parameters", outer=TRUE)
+    hist(par1, breaks=sqrt(nrow(par1)), xlab="", ylab="", main=paste0(names(param)[1]))
+    hist(par2, breaks=sqrt(nrow(par2)), xlab="", ylab="", main=paste0(names(param)[2]))
+    corrplot::corrplot(par1, is.corr = FALSE, method="color", cl.pos = "n")
+    corrplot::corrplot(par2, is.corr = FALSE, method="color", cl.pos = "n")
+    title(main=paste0("\n",type," parameters"), outer=TRUE)
     par(mfrow=c(1,1))
+
   }
 )
 
@@ -115,3 +114,5 @@ PLNfit$set("public", "predict",
     return(results)
   }
 )
+
+## TODO  add a show method for PLNfit and son

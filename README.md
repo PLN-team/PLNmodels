@@ -6,9 +6,13 @@ The Poisson lognormal model and variants can be used for a variety of multivaria
 ## Installation
 
 ```
-devtools::install_github("jchiquet/PLNmodels", build_vignettes=TRUE)
+devtools::install_github("jchiquet/PLNmodels")
 ```
 
 ## Use and example
 
-See the package [vignette](https://github.com/jchiquet/PLNmodels/blob/master/vignettes/trichoptera.Rmd) running PLNPCA on the *ade4* Trichoptera data set.
+See the package [vignette](https://github.com/jchiquet/PLNmodels/blob/master/vignettes/trichoptera.Rmd) running PLNPCA on the *ade4* Trichoptera data set. To build the vignette on intallation, you need the *ade4* package installed and to run the following code:
+
+```
+devtools::install_github("jchiquet/PLNmodels", build_vignettes=TRUE)
+```

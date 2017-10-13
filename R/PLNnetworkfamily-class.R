@@ -114,7 +114,7 @@ PLNnetworkfamily$set("public", "optimize",
       }
 
       ## Post-Treatment to update Sigma
-      M <- matrix(optim.out$solution[private$p*private$d          + 1:(private$n*private$p)], private$n,private$p)
+      M <- matrix(optim.out$solution[private$p*private$d             + 1:(private$n*private$p)], private$n,private$p)
       S <- matrix(optim.out$solution[(private$n+private$d)*private$p + 1:(private$n*private$p)], private$n,private$p)
       Sigma <- crossprod(M)/private$n + diag(colMeans(S))
       par0 <- optim.out$solution
@@ -142,15 +142,14 @@ PLNnetworkfamily$set("public", "optimize",
 
 })
 
-#' One fit for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
-#' the same starting point (inception model from \code{\link[=PLNfit-class]{PLNfit}}) for all models.
-#' Unlike \code{\link[=PLNnetworkfamily_optimize]{optimize}}, the optimization does not use an iterative procedure:
-#' - Theta, M and S are fixed to their inception values
-#' - Omega/Sigma is optimized only once using graphical lasso
-#'
-#' @name PLNnetworkfamily_optimize_approx
-#'
-#' @importFrom glasso glasso
+# One fit for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
+# the same starting point (inception model from \code{\link[=PLNfit-class]{PLNfit}}) for all models.
+# Unlike \code{\link[=PLNnetworkfamily_optimize]{optimize}}, the optimization does not use an iterative procedure:
+# - Theta, M and S are fixed to their inception values
+# - Omega/Sigma is optimized only once using graphical lasso
+#
+# name PLNnetworkfamily_optimize_approx
+#
 PLNnetworkfamily$set("public", "optimize_approx",
   function(control) {
 
@@ -173,7 +172,7 @@ PLNnetworkfamily$set("public", "optimize_approx",
     if (control$trace > 0) cat("\n sparsifying penalty =",penalty)
     if (control$trace > 1) cat("\n\t approximate version: do not optimize the variational paramters")
     if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
-    Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal)$wi
+    Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal, approx=FALSE)$wi
     logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
 
