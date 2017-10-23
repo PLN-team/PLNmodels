@@ -44,7 +44,7 @@ PLNnetworkfit$set("public", "latentNetwork",
 
 PLNnetworkfit$set("public", "plot_network",
   function(plot=TRUE, remove.isolated = TRUE, layout=NULL) {
-    net <- self$latentNetwork(weigthed=TRUE)
+    net <- self$latentNetwork(weighted=TRUE)
     G <-  graph_from_adjacency_matrix(net, mode = "undirected", weighted = TRUE, diag = FALSE)
     if (!is.null(colnames(net)))
       V(G)$label <- colnames(net)
