@@ -13,6 +13,7 @@
 #' @field convergence quantities usefull for monitoring the optimization
 #' @include PLNnetworkfit-class.R
 #' @importFrom R6 R6Class
+#' @import Matrix
 #' @import igraph
 #' @importFrom corrplot corrplot
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}
@@ -29,10 +30,21 @@ PLNnetworkfit <-
     )
 )
 
+PLNnetworkfit$set("public", "latentNetwork",
+  function(weighted=FALSE) {
+    if (weighted) {
+      res  <- abs(self$model.par$Omega)
+    } else {
+      res  <- 1*(self$model.par$Omega != 0)
+    }
+    diag(res) <- 0
+    Matrix(res)
+  }
+)
+
 PLNnetworkfit$set("public", "plot_network",
   function(plot=TRUE, remove.isolated = TRUE, layout=NULL) {
-    net <- abs(self$model.par$Omega)
-    diag(net) <- 0
+    net <- self$latentNetwork(weigthed=TRUE)
     G <-  graph_from_adjacency_matrix(net, mode = "undirected", weighted = TRUE, diag = FALSE)
     if (!is.null(colnames(net)))
       V(G)$label <- colnames(net)

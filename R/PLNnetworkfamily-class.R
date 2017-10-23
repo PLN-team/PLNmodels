@@ -109,7 +109,7 @@ PLNnetworkfamily$set("public", "optimize",
       convergence[iter] <- sqrt(sum((optim.out$solution - par0)^2)/sum(par0^2))
 
       ## Check convergence
-      if ((convergence[iter] < tol) | (iter > maxit)) {
+      if ((convergence[iter] < tol) | (iter >= maxit)) {
         cond <- TRUE
       }
 
@@ -172,16 +172,20 @@ PLNnetworkfamily$set("public", "optimize_approx",
     if (control$trace > 0) cat("\n sparsifying penalty =",penalty)
     if (control$trace > 1) cat("\n\t approximate version: do not optimize the variational paramters")
     if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
-    Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal, approx=FALSE)$wi
-    logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+
+    Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal, approx=TRUE)$wi
+    # logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
 
     ## ===========================================
     ## OUTPUT
     ## compute some criteria for evaluation
-    J   <- -self$fn_optim(par0, logDetOmega, Omega, self$responses, self$covariates, self$offsets, KY)$objective
-    BIC <- J - (private$p * private$d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(private$n)
-    ICL <- BIC - .5*private$n*private$p *log(2*pi*exp(1)) - .5*sum(log(S))
+    # J   <- -private$fn_optim(par0, 0, Omega, self$responses, self$covariates, self$offsets, KY)$objective
+    # BIC <- J - (private$p * private$d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(private$n)
+    # ICL <- BIC - .5*private$n*private$p *log(2*pi*exp(1)) - .5*sum(log(S))
+    J   <- NA
+    BIC <- NA
+    ICL <- NA
 
     self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = Sigma, Theta = Theta)
     self$models[[m]]$variational.par <- list(M = M, S = S)
@@ -204,11 +208,11 @@ PLNnetworkfamily$set("public", "optimize_approx",
 # param verbose Logical. Controls the amount of screen output.
 
 PLNnetworkfamily$set("public", "setPenalties",
-  function(penalties, nPenalties, verbose) {
+  function(penalties, nPenalties, min.ratio, verbose) {
     if (is.null(penalties)) {
       cov.unpenalized <- self$inception$model.par$Sigma
       range.penalties <- range(abs(cov.unpenalized[upper.tri(cov.unpenalized)]))
-      penalties <- 10^seq(log10(range.penalties[1]), log10(range.penalties[2]), len=nPenalties)
+      penalties <- rev(10^seq(log10(range.penalties[2]), log10(max(range.penalties[1],range.penalties[2]*min.ratio)), len=nPenalties))
     } else {
       if (verbose) {
         cat("\nPenalties already set by the user")
@@ -251,6 +255,6 @@ function() {
   super$show()
   cat(" Task: Network Inference\n")
   cat("======================================================\n")
-  cat(paste(" -", length(public$penalties) , "penalties considered: from", format(min(public$penalties),digits=3), "to", format(max(public$penalties),digits=3),"\n"))
+  cat(paste(" -", length(self$penalties) , "penalties considered: from", format(min(self$penalties),digits=3), "to", format(max(public$penalties),digits=3),"\n"))
   cat(" - Best model (regardings BIC): penalty =", format(self$getBestModel("BIC")$penalty,digits=3), "\n")
 })

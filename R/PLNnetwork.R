@@ -58,11 +58,11 @@ PLNnetwork.formula <- function(formula, penalties = NULL, control.init = list(),
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, approx=FALSE, control.init = list(), control.main=list()) {
+PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, control.init = list(), control.main=list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- list(ftol_rel = 1e-6, ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = ifelse(ncol(Y) < 500, "PLN", "LM"))
-  ctrl.main <- list(approx=FALSE, out.tol = 1e-5, out.maxit = 50, nPenalties = 25, penalize.diagonal = FALSE, ftol_rel = 1e-8, ftol_abs = 1e-5, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = .Machine$double.eps, trace = 1)
+  ctrl.main <- list(approx=FALSE, out.tol = 1e-2, out.maxit = 50, nPenalties = 20, penalize.diagonal = FALSE, min.ratio = ifelse(nrow(Y)<ncol(Y), 0.01, 0), ftol_rel = 1e-8, ftol_abs = 1e-5, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = .Machine$double.eps, trace = 1)
 
   ctrl.init[names(control.init)] <- control.init
   ctrl.main[names(control.main)] <- control.main
@@ -75,11 +75,11 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
 
   ## Get an appropriate grid of penalties
   if (ctrl.main$trace > 0) cat("\n Recovering an appropriate grid of penalties.")
-  myPLN$setPenalties(penalties, ctrl.main$nPenalties, ctrl.main$trace > 0)
+  myPLN$setPenalties(penalties, ctrl.main$nPenalties, ctrl.main$min.ratio, ctrl.main$trace > 0)
 
   if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN models for sparse network inference.")
   if (ctrl.main$approx) {
-    if (ctrl.main$trace > 0) cat("\n\t approximation: apply graphical-lasso on the inceptive PLN model on a penalty grid.")
+    if (ctrl.main$trace > 0) cat("\n\t approximation: apply neighborhood selection on the inceptive PLN model on a penalty grid.")
     myPLN$optimize_approx(ctrl.main)
   } else {
     myPLN$optimize(ctrl.main)

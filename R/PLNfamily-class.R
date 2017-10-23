@@ -146,11 +146,9 @@ function() {
 # Compute goodness of fit (R2) for each fit in the family
 PLNfamily$set("private", "computeR2",
 function() {
-
   ## Likelihoods of the null and saturated models
   lmin <- logLikPoisson(self$responses, nullModelPoisson(self$responses, self$covariates, self$offsets))
   lmax <- logLikPoisson(self$responses, fullModelPoisson(self$responses))
-
   lapply(self$models, function(model) {
     loglik <- logLikPoisson(self$responses, model$latentPos(self$covariates, self$offsets))
     model$addCriteria("R2", (loglik - lmin) / (lmax - lmin))
