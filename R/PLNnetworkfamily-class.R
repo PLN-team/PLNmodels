@@ -134,6 +134,10 @@ PLNnetworkfamily$set("public", "optimize",
     BIC <- J - .5 * (private$p * private$d + sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(private$n)
     ICL <- BIC - .5*private$n*private$p *log(2*pi*exp(1)) - sum(log(S))
 
+    ## Enforce symmetry of Sigma
+    if (!isSymmetric(Sigma))
+      Sigma <- (Sigma + t(Sigma))/2
+
     self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = Sigma, Theta = Theta)
     self$models[[m]]$variational.par <- list(M = M, S = S)
     self$models[[m]]$criteria        <- c(J = J, BIC = BIC, ICL = ICL)
@@ -186,6 +190,10 @@ PLNnetworkfamily$set("public", "optimize_approx",
     J   <- NA
     BIC <- NA
     ICL <- NA
+
+    ## Enforce symmetry of Sigma
+    if (!isSymmetric(Sigma))
+      Sigma <- (Sigma + t(Sigma))/2
 
     self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = Sigma, Theta = Theta)
     self$models[[m]]$variational.par <- list(M = M, S = S)
