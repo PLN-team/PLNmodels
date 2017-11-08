@@ -34,20 +34,20 @@ PLNPCAfamily$set("public", "initialize",
   super$initialize(responses, covariates, offsets, control)
   self$ranks <- ranks
 
-  ## instantiate as many models as ranks
-  fit <- PLNPCAfit$new(model.par = self$inception$model.par, variational.par = list())
-
   if (control$trace > 0) cat("\n Perform SVD to initialize other parameters...")
-  svdM     <- svd(self$inception$variational.par$M, nu=max(ranks), nv=max(ranks))
-  svdS     <- svd(self$inception$variational.par$S, nu=max(ranks), nv=max(ranks))
-  svdSigma <- svd(self$inception$model.par$Sigma  , nu=max(ranks), nv=0)
+  svdM     <- svd(self$inception$var_par$M, nu=max(ranks), nv=max(ranks))
+  svdS     <- svd(self$inception$var_par$S, nu=max(ranks), nv=max(ranks))
+  svdSigma <- svd(self$inception$model_par$Sigma, nu=max(ranks), nv=0)
 
+  ## instantiate as many models as ranks
   self$models <- lapply(ranks, function(q){
-    model <- fit$clone()
-    model$rank <- q
-    model$model.par$B       <- svdSigma$u[, 1:q, drop=FALSE] %*% sqrt(diag(svdSigma$d[1:q],nrow=q, ncol=q))
-    model$variational.par$M <- svdM$u[, 1:q, drop=FALSE] %*% diag(svdM$d[1:q], nrow=q, ncol=q) %*% t(svdM$v[1:q, 1:q, drop=FALSE])
-    model$variational.par$S <- svdS$u[, 1:q, drop=FALSE] %*% diag(svdS$d[1:q], nrow=q, ncol=q) %*% t(svdS$v[1:q, 1:q, drop=FALSE])
+    model <- PLNPCAfit$new(
+      Theta = self$inception$model_par$Theta,
+      Sigma = svdSigma$u[, 1:q, drop=FALSE] %*% diag(svdSigma$d[1:q],nrow=q, ncol=q) %*% t(svdSigma$u[, 1:q, drop=FALSE]),
+      B = svdSigma$u[, 1:q, drop=FALSE] %*% sqrt(diag(svdSigma$d[1:q],nrow=q, ncol=q)),
+      M = svdM$u[, 1:q, drop=FALSE] %*% diag(svdM$d[1:q], nrow=q, ncol=q) %*% t(svdM$v[1:q, 1:q, drop=FALSE]),
+      S = svdS$u[, 1:q, drop=FALSE] %*% diag(svdS$d[1:q], nrow=q, ncol=q) %*% t(svdS$v[1:q, 1:q, drop=FALSE])
+    )
     return(model)
   })
   names(self$models) <- as.character(ranks)
@@ -60,12 +60,12 @@ PLNPCAfamily$set("public", "initialize",
 PLNPCAfamily$set("public", "optimize",
   function(control) {
 
-  KY <-sum(.logfactorial(self$responses))
+  KY <- sum(.logfactorial(self$responses))
 
   self$models <- mclapply(self$models, function(model) {
     ## initial parameters (model + variational)
-    par0 <- c(model$model.par$Theta  , model$model.par$B,
-              model$variational.par$M, pmax(model$variational.par$S,10*control$lbvar))
+    par0 <- c(model$model_par$Theta  , model$model_par$B,
+              model$var_par$M, pmax(model$var_par$S,10*control$lbvar))
 
     ## ===========================================
     ## OPTIMISATION
@@ -96,7 +96,7 @@ PLNPCAfamily$set("public", "optimize",
     B     <- matrix(optim.out$solution[private$p*private$d              + 1:(private$p*model$rank)                    ], private$p, model$rank)
     M     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + 1:(private$n*model$rank)                    ], private$n, model$rank)
     S     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + private$n*model$rank + 1:(private$n*model$rank)], private$n, model$rank)
-    Sigma <- B %*% (crossprod(M)/private$n + diag(colMeans(S), nrow = model$rank)) %*% t(B)
+    Sigma <- B %*% (crossprod(M)/private$n + diag(colMeans(S), nrow = model$rank, ncol = model$rank)) %*% t(B)
     rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
     rownames(B)     <- colnames(self$responses); colnames(B) <- 1:model$rank
     rownames(M)     <- rownames(self$responses); colnames(M) <- 1:model$rank
@@ -104,13 +104,12 @@ PLNPCAfamily$set("public", "optimize",
 
     ## compute some criteria for model selection
     J   <- -optim.out$objective
-    BIC <- J - private$p * (private$d + model$rank) * log(private$n)
+    BIC <- J - .5*private$p * (private$d + model$rank) * log(private$n)
     ICL <- BIC - .5*private$n*model$rank*log(2*pi*exp(1)) - .5 * sum(log(S))
 
-    model$model.par       <- list(B = B, Theta = Theta, Sigma = Sigma)
-    model$variational.par <- list(M = M, S = S)
-    model$criteria        <- c(J = J, BIC = BIC, ICL = ICL)
-    model$convergence     <- data.frame(status = optim.out$message, objective = optim.out$objective, iterations=optim.out$iterations)
+    model$update(B = B, Theta = Theta, Sigma = Sigma,
+                 M = M, S = S, J = J, BIC = BIC, ICL = ICL,
+                 status = optim.out$status, iter = optim.out$iterations)
     return(model)
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
 })
@@ -144,7 +143,7 @@ function() {
   cat(" Task: Principal Component Analysis\n")
   cat("======================================================\n")
   cat(" - Ranks considered: from", min(self$ranks), "to", max(self$ranks),"\n")
-  cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$criteria["R2"], 2), "\n")
+  cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$criteria['R2'], 2), "\n")
 })
 
 # PLNfamily$set("public", "print", function() self$show())

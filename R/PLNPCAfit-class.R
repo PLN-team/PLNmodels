@@ -23,33 +23,50 @@ PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
     public  = list(
-      rank       = NULL,
-      percentVar = NULL,
-      corrCircle = NULL,
-      scores     = NULL,
-      initialize = function(rank = NA, percentVar = NA, corrCircle = NA, scores = NA,
-                            model.par=NA, variational.par=NA, criteria=NA, convergence=NA) {
-        super$initialize(model.par, variational.par, criteria, convergence)
-        self$rank       <- rank
-        self$percentVar <- percentVar
-        self$corrCircle <- corrCircle
-        self$scores     <- scores
+      initialize = function(Theta=NA, Sigma=NA, B = NA, Omega=NA, M=NA, S=NA,
+                            J=NA, BIC=NA, ICL=NA, R2=NA, status=NA, iter=NA) {
+        super$initialize(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, status, iter)
+        private$B <- B
+      },
+      update = function(Theta=NA, Sigma=NA, B=NA, Omega=NA, M=NA, S=NA,
+                      J=NA, BIC=NA, ICL=NA, R2=NA,status=NA, iter=NA) {
+        super$update(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, status, iter)
+
+        if (!anyNA(B)) private$B <- B
+      },
+      setVisualization = function(scale.unit=FALSE) {
+        P <- t(tcrossprod(private$B, private$M))
+        private$svdBM <- svd(scale(P,TRUE, scale.unit), nv = self$rank)
+      }
+    ),
+    private = list(
+      B     = NULL,
+      svdBM = NULL
+    ),
+    active = list(
+      rank = function() {ncol(private$B)},
+      model_par = function() {
+        par <- super$model_par
+        par$B <- private$B
+        par
+      },
+      percentVar = function() {
+        eigen.val <- private$svdBM$d[1:self$rank]^2
+        round(eigen.val/sum(eigen.val),4)
+      },
+      corrCircle = function() {
+        corr <- t(t(private$svdBM$v[, 1:self$rank]) * private$svdBM$d[1:self$rank]^2)
+        corr <- corr/sqrt(rowSums(corr^2))
+        rownames(corr) <- rownames(private$B)
+        corr
+      },
+      scores     = function() {
+        scores <- t(t(private$svdBM$u[, 1:self$rank]) * private$svdBM$d[1:self$rank])
+        rownames(scores) <- rownames(private$M)
+        scores
       }
     )
 )
-
-PLNPCAfit$set("public", "setVisualization",
-  function(scale.unit=FALSE) {
-    svdBM <- svd(scale(t(tcrossprod(self$model.par$B, self$variational.par$M)),TRUE, scale.unit), nv = self$rank)
-    d <- svdBM$d[1:self$rank]
-    eigen.val <- d^2
-    correlations <- t(t(svdBM$v[, 1:self$rank]) * eigen.val)
-    self$scores <- t(t(svdBM$u[, 1:self$rank]) * d)
-    self$percentVar <- round(eigen.val/sum(eigen.val),4)
-    self$corrCircle <- correlations/sqrt(rowSums(correlations^2))
-    rownames(self$corrCircle) <- rownames(self$model.par$B)
-    rownames(self$scores) <- rownames(self$variational.par$M)
-})
 
 #' Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
 #'
@@ -59,8 +76,7 @@ PLNPCAfit$set("public", "setVisualization",
 #' @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
 PLNPCAfit$set("public", "latentPos",
 function(covariates, offsets) {
-  return(tcrossprod(self$variational.par$M, self$model.par$B) +
-         tcrossprod(covariates, self$model.par$Theta) + offsets)
+  return(tcrossprod(private$M, private$B) + tcrossprod(covariates, private$Theta) + offsets)
 })
 
 #' Plot the individual map of a specified axis for a \code{PLNPCAfit} object
@@ -92,7 +108,7 @@ PLNPCAfit$set("public", "plot_individual.map",
             labs(x=axes.label[1], y=axes.label[2])
 
     if (conf.circle) {
-      uncertainty <- sqrt(self$variational.par$S)
+      uncertainty <- sqrt(private$S)
       scaling <- qnorm( (1 - conf.level) / 2)
       p <- p + geom_circle(data = .scores, aes(radius = scaling*uncertainty),
                             alpha = 0.05, colour = cols, fill = cols)

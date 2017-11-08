@@ -151,6 +151,6 @@ function() {
   lmax <- logLikPoisson(self$responses, fullModelPoisson(self$responses))
   lapply(self$models, function(model) {
     loglik <- logLikPoisson(self$responses, model$latentPos(self$covariates, self$offsets))
-    model$addCriteria("R2", (loglik - lmin) / (lmax - lmin))
+    model$update(R2 = (loglik - lmin) / (lmax - lmin))
   })
 })

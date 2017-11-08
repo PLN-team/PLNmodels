@@ -1,4 +1,4 @@
-##' @title Fit a Poisson lognormal model
+##' @title Fit a Poisson lognormal model with a variational algorithm
 ##'
 ##' @description two methods are available for specifying the models (with formulas or matrices)
 ##'
@@ -24,7 +24,9 @@
 ##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
 ##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
-##'  \item{"inception"}{How to setup the intialization: either with a PLNfit (typically obtained from a previsous fit), or a character string between "LM" and "GLM". If "LM", a log transformation i applied to Y then a linear model for initialization. It "GLM", a GLM Poisson is used. Default is "LM".}
+##'  \item{"inception"}{How to setup the intialization: either with a PLNfit (typically obtained from a previsous fit), or a character string between "LM" and "GLM".
+##'   If "LM", a log transformation is applied to Y then a linear model for initialization.
+##'   If "GLM", a GLM Poisson is used. Default is "LM".}
 ##' }
 ##'
 ##' @rdname PLN
@@ -108,12 +110,9 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   BIC <- J - (p * d + p*(p+1)/2) * log(n)
   ICL <- BIC - .5*n*p *log(2*pi*exp(1)) - .5*sum(log(S))
 
-  return(PLNfit$new(model.par       = list(Omega = Omega, Sigma = Sigma, Theta = Theta),
-                    variational.par = list(M = M, S = S),
-                    criteria        = c(J = J, BIC = BIC, ICL = ICL),
-                    convergence     = data.frame(status = optim.out$status,
-                                                 objective = optim.out$objective,
-                                                 iterations=optim.out$iterations)))
+  return(PLNfit$new(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S,
+                    J = J, BIC = BIC, ICL = ICL,
+                    status = optim.out$status, iter = optim.out$iterations))
 }
 
 ## Extract the model used for initializing the whole family
@@ -151,5 +150,4 @@ initializePLN <- function(Y, X, O, control) {
   }
 
 }
-
 

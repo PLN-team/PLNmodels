@@ -8,8 +8,8 @@
 #'
 #' Fields should not be changed or manipulated by the user as they are updated internally.
 #'
-#' @field model.par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
-#' @field variation.par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
+#' @field model_par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
+#' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.
 #' @field convergence quantities useful for monitoring the optimization
 #' @include PLNfit-class.R
@@ -18,17 +18,63 @@
 PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
-#### TODO: pass Theta, Sigma, S and M to private
-#### use active binding to control model.par, variational.par and criteria
-      model.par       = NULL, # Theta and Sigma (and/or B)
-      variational.par = NULL, # M and S
-      criteria        = NULL, # J, BIC, ICL
-      convergence     = NULL, # results of optimization
-      initialize = function(model.par=NA, variational.par=NA, criteria=NA, convergence=NA) {
-      self$model.par       <- model.par
-      self$variational.par <- variational.par
-      self$criteria        <- criteria
-      self$convergence     <- convergence
+      ## constructor
+      initialize = function(Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
+                            J=NA, BIC=NA, ICL=NA, R2 = NA, status=NA, iter=NA) {
+        private$Theta  <- Theta
+        private$Sigma  <- Sigma
+        private$Omega  <- Omega
+        private$M      <- M
+        private$S      <- S
+        private$J      <- J
+        private$BIC    <- BIC
+        private$ICL    <- ICL
+        private$R2     <- R2
+        private$status <- status
+        private$iter   <- iter
+      },
+      ## "setter" function
+      update = function(Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
+                        J=NA, BIC=NA, ICL=NA, R2 = NA, status=NA, iter=NA) {
+        if (!anyNA(Theta))  private$Theta  <- Theta
+        if (!anyNA(Sigma))  private$Sigma  <- Sigma
+        if (!anyNA(Omega))  private$Omega  <- Omega
+        if (!anyNA(M))      private$M      <- M
+        if (!anyNA(S))      private$S      <- S
+        if (!anyNA(J))      private$J      <- J
+        if (!anyNA(BIC))    private$BIC    <- BIC
+        if (!anyNA(ICL))    private$ICL    <- ICL
+        if (!anyNA(R2))     private$R2     <- R2
+        if (!anyNA(status)) private$status <- status
+        if (!anyNA(iter))   private$iter   <- iter
+      }
+    ),
+    private = list(
+      S      = NULL, # the n x p variational parameters for the variances
+      M      = NULL, # the n x p variational parameters for the means
+      Theta  = NULL, # the p x d model parameters for the covariable
+      Sigma  = NULL, # the p x p covariance matrix
+      Omega  = NULL, # the p x p precision matrix
+      J      = NULL, # the variational lower bound of the likelihood
+      BIC    = NULL, # (variational) Baysesian information criterion
+      ICL    = NULL, # (variational) Integrated classification criterion
+      R2     = NULL, # approximated goodness of fit criterion
+      status = NULL, # convergence status
+      iter   = NULL  # number of iteration performed in the gradient descent
+    ),
+    ## use active bindings to access private member as fields
+    active = list(
+      model_par = function() {
+        list(Theta = private$Theta, Sigma = private$Sigma, Omega = private$Omega)
+      },
+      var_par = function() {
+        list(M = private$M, S = private$S)
+      },
+      convergence = function() {
+        c(status = private$status, objective = -private$J, iterates  = private$iter)
+      },
+      criteria = function() {
+        c(J = private$J, BIC = private$BIC, ICL = private$ICL, R2 = private$R2)
       }
     )
   )
@@ -43,8 +89,8 @@ PLNfit$set("public", "plot_par",
   function(type=c("model","variational")) {
     type <- match.arg(type)
     param <- switch(type,
-               "model"       = self$model.par,
-               "variational" = self$variational.par)
+               "model"       = self$model_par,
+               "variational" = self$var_par)
     par1 <- param[[1]]; par2 <- param[[2]]
     rownames(par1) <- rep(" ", nrow(par1)) ; colnames(par1) <- rep(" ", ncol(par1))
     rownames(par2) <- rep(" ", nrow(par2)) ; colnames(par2) <- rep(" ", ncol(par2))
@@ -60,8 +106,6 @@ PLNfit$set("public", "plot_par",
   }
 )
 
-## TODO accessors for the variational and model parameters? Or at least coefficients and Sigma (but vcov not a good name)?
-
 #' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
 #'
 #' @name PLNfit_latentPos
@@ -71,20 +115,9 @@ PLNfit$set("public", "plot_par",
 #'
 PLNfit$set("public", "latentPos",
 function(covariates, offsets) {
-  latentPos <- self$variational.par$M + tcrossprod(covariates, self$model.par$Theta) + offsets
+  latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
   latentPos
 })
-
-PLNfit$set("public", "addCriteria",
-  function(crit.name, value) {
-    if (crit.name %in% names(self$criteria)) {
-      self$criteria[crit.name] <- value
-    } else {
-      self$criteria <- setNames(object = c(self$criteria, value),
-                                nm     = c(names(self$criteria), crit.name))
-    }
-  }
-)
 
 #' Predict counts of a new sample
 #'
@@ -100,18 +133,18 @@ PLNfit$set("public", "predict",
   function(newdata, newOffsets, type = c("link", "response")) {
     type = match.arg(type)
     ## Are matrix conformable?
-    stopifnot(ncol(newdata)    == ncol(self$model.par$Theta),
+    stopifnot(ncol(newdata)    == ncol(private$Theta),
               nrow(newdata)    == nrow(newOffsets),
-              ncol(newOffsets) == nrow(self$model.par$Theta))
+              ncol(newOffsets) == nrow(private$Theta))
     ## Mean latent positions in the parameter space
-    Z <- tcrossprod(newdata, self$model.par$Theta) + newOffsets
+    Z <- tcrossprod(newdata, private$Theta) + newOffsets
     results <- switch(type,
                       link     = Z,
                       response = exp(Z))
     ## output formatting
     rownames(results) <- rownames(newdata); colnames(results) <- rownames(self$model.par$Theta)
     attr(results, "type") <- type
-    return(results)
+    results
   }
 )
 

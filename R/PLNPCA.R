@@ -72,7 +72,7 @@ PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y),
   if (ctrl.main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.")
   myPLN$optimize(ctrl.main)
 
-  ## Post-treatments: Compute pseudoR2, rearrange criteria and the visualization for PCA
+  ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
   if (ctrl.main$trace > 0) cat("\n Post-treatments")
   myPLN$postTreatment()
 
