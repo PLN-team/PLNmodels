@@ -40,9 +40,8 @@ PLNfamily$set("public", "initialize",
       self$inception <- PLN(self$responses, self$covariates, self$offsets, control)
     } else {
       par0 <- initializePLN(self$responses, self$covariates, self$offsets, control)
-      Sigma <- crossprod(par0$M)/private$n + diag(colMeans(par0$S))
-      self$inception <- PLNfit$new(model.par = list(Theta=par0$Theta, Sigma=Sigma),
-                                   variational.par = list(M=par0$M, S=par0$S))
+      Sigma <- crossprod(par0$M)/private$n + diag(colMeans(par0$S), private$p, private$p)
+      self$inception <- PLNfit$new(Theta=par0$Theta, Sigma=Sigma, M=par0$M, S=par0$S)
     }
 })
 

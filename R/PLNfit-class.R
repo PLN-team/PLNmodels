@@ -62,7 +62,7 @@ PLNfit <-
       status = NULL, # convergence status
       iter   = NULL  # number of iteration performed in the gradient descent
     ),
-    ## use active bindings to access private member as fields
+    ## use active bindings to access private members like fields
     active = list(
       model_par = function() {
         list(Theta = private$Theta, Sigma = private$Sigma, Omega = private$Omega)
