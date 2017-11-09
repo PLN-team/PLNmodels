@@ -31,7 +31,6 @@ PLNPCAfit <-
       update = function(Theta=NA, Sigma=NA, B=NA, Omega=NA, M=NA, S=NA,
                       J=NA, BIC=NA, ICL=NA, R2=NA,status=NA, iter=NA) {
         super$update(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, status, iter)
-
         if (!anyNA(B)) private$B <- B
       },
       setVisualization = function(scale.unit=FALSE) {

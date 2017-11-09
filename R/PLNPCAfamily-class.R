@@ -23,6 +23,7 @@ PLNPCAfamily <-
   R6Class(classname = "PLNPCAfamily",
     inherit = PLNfamily,
      public = list(
+## TODO: pass this as active binding
       ranks = "numeric"
     )
 )

@@ -21,21 +21,31 @@ PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
     inherit = PLNfit,
     public  = list(
-      penalty    = NULL,
-      initialize = function(penalty = NA,
-                            model.par=NA, variational.par=NA, criteria=NA, convergence=NA) {
-        super$initialize(model.par, variational.par, criteria, convergence)
-        self$penalty <- penalty
+      initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
+                            J=NA, BIC=NA, ICL=NA, R2=NA, status=NA, iter=NA) {
+        super$initialize(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, status, iter)
+        private$lambda <- penalty
+      },
+      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
+                        J=NA, BIC=NA, ICL=NA, R2=NA,status=NA, iter=NA) {
+        super$update(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, status, iter)
+        if (!anyNA(penalty)) private$lambda <- penalty
       }
+    ),
+    private = list(
+      lambda = NULL
+    ),
+    active = list(
+      penalty = function() {private$lambda}
     )
 )
 
 PLNnetworkfit$set("public", "latentNetwork",
   function(weighted=FALSE) {
     if (weighted) {
-      res  <- abs(self$model.par$Omega)
+      res  <- abs(private$Omega)
     } else {
-      res  <- 1*(self$model.par$Omega != 0)
+      res  <- 1*(private$Omega != 0)
     }
     diag(res) <- 0
     Matrix(res)

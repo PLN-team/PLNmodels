@@ -42,7 +42,6 @@ PLNnetworkfamily$set("public", "initialize",
   for (m in 1:nModels) {
     self$models[[m]] <- fit$clone()
   }
-  # names(self$models) <- as.character(round())
 
   ## declare the objective and gradient functions for optimization
   private$fn_optim <- fn_optim_PLNnetwork_Cpp
@@ -61,10 +60,10 @@ PLNnetworkfamily$set("public", "optimize",
   tol <- control$out.tol
 
   ## INITIALIZATION: start from the standard PLN (a.k.a. inception)
-  Sigma <- self$inception$model.par$Sigma
-  par0 <- c(self$inception$model.par$Theta,
-            self$inception$variational.par$M,
-            self$inception$variational.par$S)
+  Sigma <- self$inception$model_par$Sigma
+  par0 <- c(self$inception$model_par$Theta,
+            self$inception$var_par$M,
+            self$inception$var_par$S)
   lower.bound <- c(rep(-Inf, private$p*private$d), # Theta
                    rep(-Inf, private$n*private$p), # M
                    rep(control$lbvar, private$n*private$p)) # S
@@ -131,17 +130,16 @@ PLNnetworkfamily$set("public", "optimize",
 
     ## compute some criteria for evaluation
     J   <- -optim.out$objective
-    BIC <- J - .5 * (private$p * private$d + sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(private$n)
+    BIC <- J - (private$p * private$d + sum(Omega[upper.tri(Omega, diag = TRUE)] != 0)) * log(private$n)/2
     ICL <- BIC - .5*private$n*private$p *log(2*pi*exp(1)) - sum(log(S))
 
     ## Enforce symmetry of Sigma
     if (!isSymmetric(Sigma))
       Sigma <- (Sigma + t(Sigma))/2
 
-    self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = Sigma, Theta = Theta)
-    self$models[[m]]$variational.par <- list(M = M, S = S)
-    self$models[[m]]$criteria        <- c(J = J, BIC = BIC, ICL = ICL)
-    self$models[[m]]$convergence     <- data.frame(convergence = convergence[1:iter], objective = objective[1:iter])
+    self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta,
+                            M = M, S = S, J = J, BIC = BIC, ICL = ICL,
+                            status = convergence[iter], iter = iter)
   }
 
 })
@@ -161,12 +159,11 @@ PLNnetworkfamily$set("public", "optimize_approx",
   ## INITIALISATION
   ## start from the standard PLN (a.k.a. inception)
   ## keep these values for the variational parameters whatever the penalty
-  KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
-  Theta <- self$inception$model.par$Theta
-  M     <- self$inception$variational.par$M
-  S     <- self$inception$variational.par$S
+  ## KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
+  Theta <- self$inception$model_par$Theta
+  M     <- self$inception$var_par$M
+  S     <- self$inception$var_par$S
   Sigma <- crossprod(M)/private$n + diag(colMeans(S))
-  par0 <- c(Theta, M, S)
 
   for (m in seq_along(self$models))  {
 
@@ -177,7 +174,7 @@ PLNnetworkfamily$set("public", "optimize_approx",
     if (control$trace > 1) cat("\n\t approximate version: do not optimize the variational paramters")
     if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
 
-    Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal, approx=TRUE)$wi
+    Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal, approx = TRUE)$wi
     # logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
 
@@ -187,18 +184,14 @@ PLNnetworkfamily$set("public", "optimize_approx",
     # J   <- -private$fn_optim(par0, 0, Omega, self$responses, self$covariates, self$offsets, KY)$objective
     # BIC <- J - (private$p * private$d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(private$n)
     # ICL <- BIC - .5*private$n*private$p *log(2*pi*exp(1)) - .5*sum(log(S))
-    J   <- NA
-    BIC <- NA
-    ICL <- NA
 
     ## Enforce symmetry of Sigma
     if (!isSymmetric(Sigma))
       Sigma <- (Sigma + t(Sigma))/2
+    if (!isSymmetric(Omega))
+      Omega <- (Omega + t(Omega))/2
 
-    self$models[[m]]$model.par       <- list(Omega = Omega, Sigma = Sigma, Theta = Theta)
-    self$models[[m]]$variational.par <- list(M = M, S = S)
-    self$models[[m]]$criteria        <- c(J = J, BIC = BIC, ICL = ICL)
-    self$models[[m]]$convergence     <- data.frame(convergence = NA, objective = -J)
+    self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S)
   }
 
 })
@@ -218,7 +211,7 @@ PLNnetworkfamily$set("public", "optimize_approx",
 PLNnetworkfamily$set("public", "setPenalties",
   function(penalties, nPenalties, min.ratio, verbose) {
     if (is.null(penalties)) {
-      cov.unpenalized <- self$inception$model.par$Sigma
+      cov.unpenalized <- self$inception$model_par$Sigma
       range.penalties <- range(abs(cov.unpenalized[upper.tri(cov.unpenalized)]))
       penalties <- rev(10^seq(log10(range.penalties[2]), log10(max(range.penalties[1],range.penalties[2]*min.ratio)), len=nPenalties))
     } else {
@@ -237,7 +230,7 @@ PLNnetworkfamily$set("public", "setPenalties",
     self$penalties <- round(sort(penalties, decreasing = FALSE),16)
     names(self$models) <- as.character(self$penalties)
     for (m in seq_along(self$models))  {
-      self$models[[m]]$penalty <- self$penalties[m]
+      self$models[[m]]$update(penalty = self$penalties[m])
     }
     invisible(self)
   }
@@ -253,8 +246,8 @@ NULL
 PLNnetworkfamily$set("public", "plot",
 function(log.x=TRUE) {
   p <- super$plot() + xlab("penalty") +
-    geom_vline(xintercept=self$getBestModel("BIC")$penalty, linetype="dashed", alpha=0.5)
-  if (log.x) p <- p + ggplot2::coord_trans(x="log10")
+    geom_vline(xintercept = self$getBestModel("BIC")$penalty, linetype = "dashed", alpha = 0.5)
+  if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
   p
 })
 
@@ -263,6 +256,6 @@ function() {
   super$show()
   cat(" Task: Network Inference\n")
   cat("======================================================\n")
-  cat(paste(" -", length(self$penalties) , "penalties considered: from", format(min(self$penalties),digits=3), "to", format(max(public$penalties),digits=3),"\n"))
-  cat(" - Best model (regardings BIC): penalty =", format(self$getBestModel("BIC")$penalty,digits=3), "\n")
+  cat(paste(" -", length(self$penalties) , "penalties considered: from", format(min(self$penalties),digits = 3), "to", format(max(public$penalties),digits = 3),"\n"))
+  cat(" - Best model (regardings BIC): penalty =", format(self$getBestModel("BIC")$penalty,digits = 3), "\n")
 })
