@@ -53,12 +53,9 @@ PLNnetworkfamily$set("public", "initialize",
 
     ## instantiate as many models as penalties
     self$params <- sort(penalties, decreasing = FALSE)
-    self$models <- vector("list", length(self$params))
-    fit <- PLNnetworkfit$new()
-    for (m in seq_along(self$params))  {
-      self$models[[m]] <- fit$clone()
-      self$models[[m]]$update(penalty = self$params[m])
-    }
+    self$models <- lapply(self$params, function(penalty) {
+      PLNnetworkfit$new(penalty = penalty)
+    })
 
     ## declare the objective and gradient functions for optimization
     private$fn_optim <- fn_optim_PLNnetwork_Cpp
