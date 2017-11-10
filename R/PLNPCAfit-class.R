@@ -73,7 +73,8 @@ PLNPCAfit <-
 #' @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
 PLNPCAfit$set("public", "latentPos",
 function(covariates, offsets) {
-  return(tcrossprod(private$M, private$B) + tcrossprod(covariates, private$Theta) + offsets)
+  latentPos <- tcrossprod(private$M, private$B) + tcrossprod(covariates, private$Theta) + offsets
+  latentPos
 })
 
 #' Plot the individual map of a specified axis for a \code{PLNPCAfit} object

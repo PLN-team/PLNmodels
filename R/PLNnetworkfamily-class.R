@@ -95,10 +95,10 @@ PLNnetworkfamily$set("public", "optimize",
     cond <- FALSE; iter <- 0
     convergence <- numeric(maxit)
     objective   <- numeric(maxit)
-    if (control$trace > 0) cat("\n\titeration: ")
+    if (control$trace > 1) cat("\n\titeration: ")
     while (!cond) {
       iter <- iter + 1
-      if (control$trace > 0) cat("",iter)
+      if (control$trace > 1) cat("",iter)
 
       ## Update Omega/Sigma
       Omega <- glasso::glasso(Sigma, rho = penalty, penalize.diagonal = control$penalize.diagonal)$wi

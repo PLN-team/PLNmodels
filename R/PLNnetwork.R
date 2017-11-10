@@ -88,8 +88,6 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
   ctrl.init[names(control.init)] <- control.init
   ctrl.main[names(control.main)] <- control.main
 
-  if (!is.null(penalties)) ctrl.main$nPenalties <- length(penalties)
-
   ## Instantiate the collection of PLN models
   if (ctrl.main$trace > 0) cat("\n Initialization...")
   myPLN <- PLNnetworkfamily$new(penalties = penalties, responses = Y, covariates = X, offsets = O, control = ctrl.init)
@@ -102,7 +100,7 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
     myPLN$optimize(ctrl.main)
   }
 
-  ## Post-treatments: Compute pseudoR2, rearrange criteria and the visualization for PCA
+  ## Post-treatments: compute pseudo-R2
   if (ctrl.main$trace > 0) cat("\n Post-treatments")
   myPLN$postTreatment()
 
