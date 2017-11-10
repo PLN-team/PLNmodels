@@ -4,12 +4,10 @@
 #'
 #' This class comes with a set of methods, some of them being useful for the user: plot_network + methods inhererited from PLNfit.
 #'
-#' Fields should not be changed or manipulated by the user as they are updated internally.
-#'
 #' @field penalty the level of sparsity in the current model
-#' @field model.par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
-#' @field variation.par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
-#' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.
+#' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix)
+#' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
+#' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2) for the different models.
 #' @field convergence quantities usefull for monitoring the optimization
 #' @include PLNnetworkfit-class.R
 #' @importFrom R6 R6Class
@@ -48,7 +46,7 @@ PLNnetworkfit$set("public", "latentNetwork",
       res  <- 1*(private$Omega != 0)
     }
     diag(res) <- 0
-    Matrix(res)
+    Matrix::Matrix(res)
   }
 )
 
@@ -75,7 +73,7 @@ PLNnetworkfit$set("public", "plot_network",
       par(mar=c(0.1,0.1,0.1,0.1))
       if (ncol(net) > 100)
         colnames(net) <- rownames(net) <- rep(" ", ncol(net))
-      corrplot(net, method="color", is.corr=FALSE, cl.pos="n", tl.cex=0.5)
+      corrplot(as.matrix(net), method="color", is.corr=FALSE, cl.pos="n", tl.cex=0.5)
       if (!is.null(layout))
         plot(G, layout=layout)
       else

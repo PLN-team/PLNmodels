@@ -19,6 +19,8 @@
 #' @importFrom R6 R6Class
 #' @importFrom nloptr nloptr
 #' @importFrom glasso glasso
+#' @import igraph
+#' @import Matrix
 #' @import ggplot2
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
 PLNnetworkfamily <-
@@ -133,9 +135,9 @@ PLNnetworkfamily$set("public", "optimize",
     BIC <- J - (private$p * private$d + sum(Omega[upper.tri(Omega, diag = TRUE)] != 0)) * log(private$n)/2
     ICL <- BIC - .5*private$n*private$p *log(2*pi*exp(1)) - sum(log(S))
 
-    ## Enforce symmetry of Sigma
-    if (!isSymmetric(Sigma))
-      Sigma <- (Sigma + t(Sigma))/2
+    ## Enforce symmetry of Sigma and Theta
+    if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
+    if (!isSymmetric(Theta)) Omega <- Matrix::symmpart(Omega)
 
     self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta,
                             M = M, S = S, J = J, BIC = BIC, ICL = ICL,
@@ -256,6 +258,6 @@ function() {
   super$show()
   cat(" Task: Network Inference\n")
   cat("======================================================\n")
-  cat(paste(" -", length(self$penalties) , "penalties considered: from", format(min(self$penalties),digits = 3), "to", format(max(public$penalties),digits = 3),"\n"))
+  cat(paste(" -", length(self$penalties) , "penalties considered: from", format(min(self$penalties),digits = 3), "to", format(max(self$penalties),digits = 3),"\n"))
   cat(" - Best model (regardings BIC): penalty =", format(self$getBestModel("BIC")$penalty,digits = 3), "\n")
 })

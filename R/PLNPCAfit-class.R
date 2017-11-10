@@ -6,15 +6,13 @@
 #' See the documentation for \code{\link[=PLNPCAfit_plot]{plot}}, \code{\link[=PLNPCAfit_plot_individual.map]{plot_individual.map}}
 #' and \code{\link[=PLNPCAfit_plot_correlation.circle]{plot_correlation.circle}}
 #'
-#' Fields should not be changed or manipulated by the user as they are updated internally.
-#'
 #' @field rank the dimension of the current model
-#' @field model.par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
-#' @field variation.par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
+#' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
+#' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.
 #' @field convergence quantities usefull for monitoring the optimization
-#' @field percentVar the percent of variance explained by each axis
-#' @field corrCircle a matrix of correlations to plot the correlation circles
+#' @field percent_var the percent of variance explained by each axis
+#' @field corr_circle a matrix of correlations to plot the correlation circles
 #' @field scores a matrix of scores to plot the individual factor maps
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
@@ -49,11 +47,11 @@ PLNPCAfit <-
         par$B <- private$B
         par
       },
-      percentVar = function() {
+      percent_var = function() {
         eigen.val <- private$svdBM$d[1:self$rank]^2
         round(eigen.val/sum(eigen.val),4)
       },
-      corrCircle = function() {
+      corr_circle = function() {
         corr <- t(t(private$svdBM$v[, 1:self$rank]) * private$svdBM$d[1:self$rank]^2)
         corr <- corr/sqrt(rowSums(corr^2))
         rownames(corr) <- rownames(private$B)
@@ -96,7 +94,7 @@ PLNPCAfit$set("public", "plot_individual.map",
     colnames(.scores) <- paste("a",1:length(axes),sep="")
     axes.label <- paste("axis",axes)
     if (percentAxes)
-      axes.label <- paste(axes.label, paste0("(", round(100*self$percentVar,3)[axes], "%)"))
+      axes.label <- paste(axes.label, paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
     p <- ggplot(.scores, aes(x=a1, y=a2, label=rownames(self$scores), colour=cols)) +
             geom_hline(yintercept = 0, colour = "gray65") +
@@ -135,12 +133,12 @@ PLNPCAfit$set("public", "plot_correlation.circle",
     corcir <- circle(c(0, 0), npoints = 100)
 
     ## data frame with correlations between variables and PCs
-    correlations <- as.data.frame(self$corrCircle[, axes])
+    correlations <- as.data.frame(self$corr_circle[, axes])
     p <- nrow(correlations)
     colnames(correlations) <- c("axe1","axe2")
     axes.label <- paste("axis",axes)
     if (percentAxes)
-      axes.label <- paste(axes.label, paste0("(", round(100*self$percentVar,3)[axes], "%)"))
+      axes.label <- paste(axes.label, paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
     ## data frame with arrows coordinates
     arrows = data.frame(x1 = rep(0, p), y1 = rep(0, p),
@@ -191,7 +189,7 @@ PLNPCAfit$set("public", "plot",
 
     ## plot that appear on the diagonal
     criteria.text <- paste("Model Selection\n\n", paste(names(self$criteria), round(self$criteria, 2), sep=" = ", collapse="\n"))
-    percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percentVar[axes],3), "%"), collapse="\n"))
+    percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percent_var[axes],3), "%"), collapse="\n"))
 
     diag.grobs <- list(textGrob(percentV.text, just="left"),
                        g_legend(self$plot_individual.map(plot=FALSE, cols=cols.ind) + guides(colour = guide_legend(nrow = 4, title="classification"))),
