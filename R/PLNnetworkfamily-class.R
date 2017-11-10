@@ -32,20 +32,36 @@ PLNnetworkfamily <-
 )
 
 PLNnetworkfamily$set("public", "initialize",
-  function(nModels, responses, covariates, offsets, control) {
+  function(penalties, responses, covariates, offsets, control) {
 
-  ## initialize the required fields
-  super$initialize(responses, covariates, offsets, control)
+    ## initialize fields shared by the super class
+    super$initialize(responses, covariates, offsets, control)
 
-  ## instantiate as many models as penalties
-  fit <- PLNnetworkfit$new()
-  self$models <- vector("list", nModels)
-  for (m in 1:nModels) {
-    self$models[[m]] <- fit$clone()
-  }
+    ## Get an appropriate grid of penalties
+    if (control$trace > 0) cat("\n Recovering an appropriate grid of penalties.")
+    if (is.null(penalties)) {
+      range_penalties <- range(abs(self$inception$model_par$Sigma[upper.tri(self$inception$model_par$Sigma)]))
+      min_log_scale <- log10(range_penalties[2])
+      max_log_scale <- log10(max(range_penalties[1],range_penalties[2]*control$min.ratio))
+      penalties <- 10^seq(min_log_scale, max_log_scale, len = control$nPenalties)
+    } else {
+      if (verbose) {
+        cat("\nPenalties already set by the user")
+      }
+      stopifnot(all(penalties > 0))
+    }
 
-  ## declare the objective and gradient functions for optimization
-  private$fn_optim <- fn_optim_PLNnetwork_Cpp
+    ## instantiate as many models as penalties
+    self$params <- sort(penalties, decreasing = FALSE)
+    self$models <- vector("list", length(self$params))
+    fit <- PLNnetworkfit$new()
+    for (m in seq_along(self$params))  {
+      self$models[[m]] <- fit$clone()
+      self$models[[m]]$update(penalty = self$params[m])
+    }
+
+    ## declare the objective and gradient functions for optimization
+    private$fn_optim <- fn_optim_PLNnetwork_Cpp
 })
 
 # One (coordinate-descent) optimization for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
@@ -181,43 +197,6 @@ PLNnetworkfamily$set("public", "optimize_approx",
   }
 
 })
-
-# Set penalties in a \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}} family
-# of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} models
-#
-#
-# param penalties A numeric vector with the sparsity levels of the networks in family. If NULL, a relevant
-#                  vector is automatically computed from the inception model.
-# param nPenalties The number of penalties to use. A warning is thrown if this does not match the number of
-#                   models in the family.
-# param verbose Logical. Controls the amount of screen output.
-
-PLNnetworkfamily$set("public", "setPenalties",
-  function(penalties, nPenalties, min.ratio, verbose) {
-    if (is.null(penalties)) {
-      cov.unpenalized <- self$inception$model_par$Sigma
-      range.penalties <- range(abs(cov.unpenalized[upper.tri(cov.unpenalized)]))
-      penalties <- rev(10^seq(log10(range.penalties[2]), log10(max(range.penalties[1],range.penalties[2]*min.ratio)), len = nPenalties))
-    } else {
-      if (verbose) {
-        cat("\nPenalties already set by the user")
-      }
-      nPenalties <- length(penalties)
-      stopifnot(all(penalties > 0))
-    }
-    ## Compare number of penalties and number of models in family
-    if (nPenalties != length(self$models)) {
-      warning(paste0("The number of penalties (", nPenalties, ") does not match the number of models (",
-                     length(self$models), ") in the family."))
-    }
-    ## sort penalties
-    self$params <- sort(penalties, decreasing = FALSE)
-    for (m in seq_along(self$models))  {
-      self$models[[m]]$update(penalty = self$params[m])
-    }
-    invisible(self)
-  }
-)
 
 #' A plot method for a collection of PLNnetworkfit
 #'
