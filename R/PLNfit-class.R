@@ -147,5 +147,3 @@ PLNfit$set("public", "predict",
     results
   }
 )
-
-## TODO  add a show method for PLNfit and son

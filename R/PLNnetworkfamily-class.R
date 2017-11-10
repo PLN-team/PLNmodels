@@ -7,13 +7,13 @@
 #' \code{\link[=PLNnetworkfamily_getModel]{getModel}} and \code{\link[=PLNnetworkfamily_plot]{plot}}. Other methods
 #'  should not be called as they are designed to be used during the optimization process.
 #'
+#' @field responses the matrix of responses common to every models
+#' @field covariates the matrix of covariates common to every models
+#' @field offsets the matrix of offsets common to every models
 #' @field penalties the sparsity level of the network in the successively fitted models
 #' @field models a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.
 #' @field inception a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when no sparsifying penalty is applied.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
-#' @field responses the matrix of responses common to every models
-#' @field covariates the matrix of covariates common to every models
-#' @field offsets the matrix of offsets common to every models
 #' @field fn_optim the R functions used to compute the model's objective and gradient during the optimization process
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
@@ -26,8 +26,8 @@
 PLNnetworkfamily <-
   R6Class(classname = "PLNnetworkfamily",
     inherit = PLNfamily,
-     public = list(
-      penalties = "numeric"
+     active = list(
+      penalties = function() self$params
     )
 )
 
@@ -36,7 +36,6 @@ PLNnetworkfamily$set("public", "initialize",
 
   ## initialize the required fields
   super$initialize(responses, covariates, offsets, control)
-  KY <-sum(.logfactorial(self$responses))
 
   ## instantiate as many models as penalties
   fit <- PLNnetworkfit$new()
@@ -84,27 +83,27 @@ PLNnetworkfamily$set("public", "optimize",
     convergence <- numeric(maxit)
     objective   <- numeric(maxit)
     if (control$trace > 0) cat("\n\titeration: ")
-    while(!cond) {
+    while (!cond) {
       iter <- iter + 1
       if (control$trace > 0) cat("",iter)
 
       ## Update Omega/Sigma
-      Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal)$wi
-      logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+      Omega <- glasso::glasso(Sigma, rho = penalty, penalize.diagonal = control$penalize.diagonal)$wi
+      logDetOmega <- determinant(Omega, logarithm = TRUE)$modulus
 
       ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
       ## to update Theta, M and S
-      opts <- list("algorithm"   = paste("NLOPT_LD",control$method, sep="_"),
+      opts <- list("algorithm"   = paste("NLOPT_LD",control$method, sep = "_"),
                    "maxeval"     = control$maxeval,
                    "ftol_rel"    = control$ftol_rel,
                    "ftol_abs"    = control$ftol_abs,
                    "xtol_rel"    = control$xtol_rel,
                    "xtol_abs"    = control$xtol_abs,
-                   "print_level" = max(0,control$trace-1))
+                   "print_level" = max(0,control$trace - 1))
 
       optim.out <- nloptr(par0, eval_f = private$fn_optim, lb = lower.bound, opts = opts,
-                          log_detOmega=logDetOmega, Omega=Omega,
-                          Y=self$responses, X=self$covariates, O=self$offsets, KY=KY)
+                          log_detOmega = logDetOmega, Omega = Omega,
+                          Y = self$responses, X = self$covariates, O = self$offsets, KY = KY)
 
       objective[iter]   <- optim.out$objective
       convergence[iter] <- sqrt(sum((optim.out$solution - par0)^2)/sum(par0^2))
@@ -117,7 +116,7 @@ PLNnetworkfamily$set("public", "optimize",
       ## Post-Treatment to update Sigma
       M <- matrix(optim.out$solution[private$p*private$d             + 1:(private$n*private$p)], private$n,private$p)
       S <- matrix(optim.out$solution[(private$n+private$d)*private$p + 1:(private$n*private$p)], private$n,private$p)
-      Sigma <- crossprod(M)/private$n + diag(colMeans(S))
+      Sigma <- crossprod(M)/private$n + diag(colMeans(S), nrow = private$p, ncol = private$p)
       par0 <- optim.out$solution
 
     }
@@ -133,7 +132,7 @@ PLNnetworkfamily$set("public", "optimize",
     ## compute some criteria for evaluation
     J   <- -optim.out$objective
     BIC <- J - (private$p * private$d + sum(Omega[upper.tri(Omega, diag = TRUE)] != 0)) * log(private$n)/2
-    ICL <- BIC - .5*private$n*private$p *log(2*pi*exp(1)) - sum(log(S))
+    ICL <- BIC - .5*private$n*private$p * log(2*pi*exp(1)) - sum(log(S))
 
     ## Enforce symmetry of Sigma and Theta
     if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
@@ -146,14 +145,6 @@ PLNnetworkfamily$set("public", "optimize",
 
 })
 
-# One fit for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
-# the same starting point (inception model from \code{\link[=PLNfit-class]{PLNfit}}) for all models.
-# Unlike \code{\link[=PLNnetworkfamily_optimize]{optimize}}, the optimization does not use an iterative procedure:
-# - Theta, M and S are fixed to their inception values
-# - Omega/Sigma is optimized only once using graphical lasso
-#
-# name PLNnetworkfamily_optimize_approx
-#
 PLNnetworkfamily$set("public", "optimize_approx",
   function(control) {
 
@@ -165,7 +156,7 @@ PLNnetworkfamily$set("public", "optimize_approx",
   Theta <- self$inception$model_par$Theta
   M     <- self$inception$var_par$M
   S     <- self$inception$var_par$S
-  Sigma <- crossprod(M)/private$n + diag(colMeans(S))
+  Sigma <- crossprod(M)/private$n + diag(colMeans(S), nrow = private$p, ncol = private$p)
 
   for (m in seq_along(self$models))  {
 
@@ -176,29 +167,20 @@ PLNnetworkfamily$set("public", "optimize_approx",
     if (control$trace > 1) cat("\n\t approximate version: do not optimize the variational paramters")
     if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
 
-    Omega <- glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal, approx = TRUE)$wi
-    # logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
+    Omega <- suppressWarnings(glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal, approx = TRUE)$wi)
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
 
     ## ===========================================
     ## OUTPUT
-    ## compute some criteria for evaluation
-    # J   <- -private$fn_optim(par0, 0, Omega, self$responses, self$covariates, self$offsets, KY)$objective
-    # BIC <- J - (private$p * private$d + .5*sum(Omega[upper.tri(Omega, diag = FALSE)]!=0)) * log(private$n)
-    # ICL <- BIC - .5*private$n*private$p *log(2*pi*exp(1)) - .5*sum(log(S))
 
     ## Enforce symmetry of Sigma
-    if (!isSymmetric(Sigma))
-      Sigma <- (Sigma + t(Sigma))/2
-    if (!isSymmetric(Omega))
-      Omega <- (Omega + t(Omega))/2
+    if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
+    if (!isSymmetric(Theta)) Omega <- Matrix::symmpart(Omega)
 
     self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S)
   }
 
 })
-
-## JC: I don't want a documented function in a separated file for that
 
 # Set penalties in a \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}} family
 # of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} models
@@ -215,7 +197,7 @@ PLNnetworkfamily$set("public", "setPenalties",
     if (is.null(penalties)) {
       cov.unpenalized <- self$inception$model_par$Sigma
       range.penalties <- range(abs(cov.unpenalized[upper.tri(cov.unpenalized)]))
-      penalties <- rev(10^seq(log10(range.penalties[2]), log10(max(range.penalties[1],range.penalties[2]*min.ratio)), len=nPenalties))
+      penalties <- rev(10^seq(log10(range.penalties[2]), log10(max(range.penalties[1],range.penalties[2]*min.ratio)), len = nPenalties))
     } else {
       if (verbose) {
         cat("\nPenalties already set by the user")
@@ -229,10 +211,9 @@ PLNnetworkfamily$set("public", "setPenalties",
                      length(self$models), ") in the family."))
     }
     ## sort penalties and round
-    self$penalties <- round(sort(penalties, decreasing = FALSE),16)
-    names(self$models) <- as.character(self$penalties)
+    self$params <- round(sort(penalties, decreasing = FALSE),16)
     for (m in seq_along(self$models))  {
-      self$models[[m]]$update(penalty = self$penalties[m])
+      self$models[[m]]$update(penalty = self$params[m])
     }
     invisible(self)
   }
@@ -254,10 +235,10 @@ function(log.x=TRUE) {
 })
 
 PLNnetworkfamily$set("public", "show",
-function() {
-  super$show()
-  cat(" Task: Network Inference\n")
-  cat("======================================================\n")
-  cat(paste(" -", length(self$penalties) , "penalties considered: from", format(min(self$penalties),digits = 3), "to", format(max(self$penalties),digits = 3),"\n"))
-  cat(" - Best model (regardings BIC): penalty =", format(self$getBestModel("BIC")$penalty,digits = 3), "\n")
-})
+  function() {
+    super$show()
+    cat(" Task: Network Inference \n")
+    cat("========================================================\n")
+    cat(" -", length(self$penalties) , "penalties considered: from", min(self$params), "to", max(self$params),"\n")
+    cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("BIC")$criteria['R2'], 2), "\n")
+  })

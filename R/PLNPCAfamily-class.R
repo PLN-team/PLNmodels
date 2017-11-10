@@ -7,13 +7,13 @@
 #' \code{\link[=PLNPCAfamily_getModel]{getModel}} and \code{\link[=PLNPCAfamily_plot]{plot}}. Other methods
 #'  should not be called as they are designed to be used during the optimization process.
 #'
+#' @field responses the matrix of responses common to every models
+#' @field covariates the matrix of covariates common to every models
+#' @field offsets the matrix of offsets common to every models
 #' @field ranks the dimensions of the successively fitted models
 #' @field models a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.
 #' @field inception a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when full rank is considered.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
-#' @field responses the matrix of responses common to every models
-#' @field covariates the matrix of covariates common to every models
-#' @field offsets the matrix of offsets common to every models
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom nloptr nloptr
@@ -22,9 +22,8 @@
 PLNPCAfamily <-
   R6Class(classname = "PLNPCAfamily",
     inherit = PLNfamily,
-     public = list(
-## TODO: pass this as active binding
-      ranks = "numeric"
+     active = list(
+      ranks = function() self$params
     )
 )
 
@@ -33,7 +32,7 @@ PLNPCAfamily$set("public", "initialize",
 
   ## initialize the required fields
   super$initialize(responses, covariates, offsets, control)
-  self$ranks <- ranks
+  self$params <- ranks
 
   if (control$trace > 0) cat("\n Perform SVD to initialize other parameters...")
   svdM     <- svd(self$inception$var_par$M, nu=max(ranks), nv=max(ranks))
@@ -51,7 +50,6 @@ PLNPCAfamily$set("public", "initialize",
     )
     return(model)
   })
-  names(self$models) <- as.character(ranks)
 
   ## declare the objective and gradient functions for optimization
   private$fn_optim <- fn_optim_PLNPCA_Cpp
@@ -133,7 +131,7 @@ NULL
 PLNPCAfamily$set("public", "plot",
 function() {
   p <- super$plot() + xlab("rank")
-  p <- p + annotate("text", x=self$ranks, y=min(self$criteria$J), angle=90, label=paste("R2 =", round(self$criteria$R2, 2)), size=3, alpha=0.7) +
+  p <- p + annotate("text", x=self$params, y=min(self$criteria$J), angle=90, label=paste("R2 =", round(self$criteria$R2, 2)), size=3, alpha=0.7) +
     geom_vline(xintercept=self$getBestModel("ICL")$rank, linetype="dashed", alpha=0.5)
   p
 })
@@ -142,9 +140,7 @@ PLNPCAfamily$set("public", "show",
 function() {
   super$show()
   cat(" Task: Principal Component Analysis\n")
-  cat("======================================================\n")
-  cat(" - Ranks considered: from", min(self$ranks), "to", max(self$ranks),"\n")
+  cat("========================================================\n")
+  cat(" - Ranks considered: from", min(self$params), "to", max(self$params),"\n")
   cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$criteria['R2'], 2), "\n")
 })
-
-# PLNfamily$set("public", "print", function() self$show())

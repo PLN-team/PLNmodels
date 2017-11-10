@@ -62,7 +62,7 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- list(ftol_rel = 1e-6, ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = ifelse(ncol(Y) < 500, "PLN", "LM"))
-  ctrl.main <- list(approx=FALSE, out.tol = 1e-2, out.maxit = 50, nPenalties = 20, penalize.diagonal = FALSE, min.ratio = ifelse(nrow(Y)<ncol(Y), 0.01, 0), ftol_rel = 1e-9, ftol_abs = 1e-6, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = .Machine$double.eps, trace = 1)
+  ctrl.main <- list(approx = FALSE, out.tol = 1e-2, out.maxit = 50, nPenalties = 20, penalize.diagonal = FALSE, min.ratio = ifelse(nrow(Y) < ncol(Y), 0.01, 1e-3), ftol_rel = 1e-9, ftol_abs = 1e-6, xtol_rel = 1e-4, xtol_abs = 1e-5, maxeval = 10000, method = "MMA", lbvar = .Machine$double.eps, trace = 1)
 
   ctrl.init[names(control.init)] <- control.init
   ctrl.main[names(control.main)] <- control.main
@@ -71,7 +71,7 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
 
   ## Instantiate the collection of PLN models
   if (ctrl.main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNnetworkfamily$new(nModels=ctrl.main$nPenalties, responses=Y, covariates=X, offsets=O, control=ctrl.init)
+  myPLN <- PLNnetworkfamily$new(nModels = ctrl.main$nPenalties, responses = Y, covariates = X, offsets = O, control = ctrl.init)
 
   ## Get an appropriate grid of penalties
   if (ctrl.main$trace > 0) cat("\n Recovering an appropriate grid of penalties.")

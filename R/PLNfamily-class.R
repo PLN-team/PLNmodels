@@ -5,8 +5,9 @@ PLNfamily <-
       responses  = NULL, # the Y matrix
       covariates = NULL, # the X matrix
       offsets    = NULL, # the O matrix
-      inception  = NULL, # the basic PLN model in the collection (no regularization, nor sparsity, nor rank)
+      inception  = NULL, # the basic model in the collection (no regularization, nor sparsity, nor rank)
       models     = NULL, # the collection of models to be fitted
+      params     = NULL, # vector of the parameters that indexes the models (either sparsity, rank, etc.)
       criteria   = NULL  # a data frame with some criteria associated with the collection of fits
     ),
     private = list(
@@ -41,7 +42,7 @@ PLNfamily$set("public", "initialize",
     } else {
       par0 <- initializePLN(self$responses, self$covariates, self$offsets, control)
       Sigma <- crossprod(par0$M)/private$n + diag(colMeans(par0$S), private$p, private$p)
-      self$inception <- PLNfit$new(Theta=par0$Theta, Sigma=Sigma, M=par0$M, S=par0$S)
+      self$inception <- PLNfit$new(Theta = par0$Theta, Sigma = Sigma, M = par0$M, S = par0$S)
     }
 })
 
@@ -54,9 +55,9 @@ PLNfamily$set("public", "initialize",
 #' @return  Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getBestModel",
-function(crit=c("BIC", "ICL", "J", "R2")){
+function(crit = c("BIC", "ICL", "J", "R2")){
   crit <- match.arg(crit)
-  if(length(self$criteria[[crit]]) > 1) {
+  if (length(self$criteria[[crit]]) > 1) {
     id <- which.max(self$criteria[[crit]])
   } else {id <- 1}
     model <- self$models[[id]]$clone()
@@ -67,13 +68,13 @@ function(crit=c("BIC", "ICL", "J", "R2")){
 #'
 #' @name PLNfamily_getModel
 #'
-#' @param xvar a number (rank for PCA, penalty for network) identifying the model to be extracted from the collection.
+#' @param var value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection. Must belong to the vector params
 #' @return Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getModel",
-function(xvar){
-  id <- match(round(xvar,16), as.numeric(names(self$models)))
-  if (!is.na(id)){
+function(var){
+  id <- match(var, self$params)
+  if (!is.na(id)) {
     return(self$models[[id]]$clone())
   } else {
     stop("No such a model in the collection.")
@@ -83,26 +84,17 @@ function(xvar){
 #' @import ggplot2
 PLNfamily$set("public", "plot",
 function() {
-  dplot <- melt(self$criteria[, c("xvar", "J", "BIC", "ICL")], id.vars = 1, variable.name = "criterion")
-  p <- ggplot(dplot, aes(x=xvar, y=value, group=criterion, colour=criterion)) +
+  dplot <- melt(self$criteria[, c("param", "J", "BIC", "ICL")], id.vars = 1, variable.name = "criterion")
+  p <- ggplot(dplot, aes(x = param, y = value, group = criterion, colour = criterion)) +
         geom_line() + geom_point() + ggtitle("Model selection criteria")
   return(p)
 })
 
-## JC: Do not need a documentation
-# Basic show method
-#
-# name PLNfamily_show
-#
-# param verbose a logical (defaults to TRUE) controlling the amount of screen output.
 PLNfamily$set("public", "show",
-function(verbose = TRUE) {
+function() {
+  cat("--------------------------------------------------------\n")
   cat("COLLECTION OF", length(self$models), "POISSON LOGNORMAL MODELS\n")
-  cat("------------------------------------------------------\n")
-  if (verbose) {
-    cat(" - Available models are:\n")
-    cat(paste("    +", names(self$models)), sep = "\n")
-  }
+  cat("--------------------------------------------------------\n")
 })
 
 PLNfamily$set("public", "print", function() self$show())
@@ -138,7 +130,7 @@ function() {
 # Set data frame with criteria (BIC, ICL, J and possibly R2) associated with the collection of fits
 PLNfamily$set("private", "setCriteria",
 function() {
-  self$criteria <- data.frame(xvar = round(as.numeric(names(self$models)), 16),
+  self$criteria <- data.frame(param = self$params,
                               t(sapply(self$models, function(model) model$criteria)))
 })
 

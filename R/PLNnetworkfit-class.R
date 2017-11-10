@@ -25,7 +25,7 @@ PLNnetworkfit <-
         private$lambda <- penalty
       },
       update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
-                        J=NA, BIC=NA, ICL=NA, R2=NA,status=NA, iter=NA) {
+                        J=NA, BIC=NA, ICL=NA, R2=NA, status=NA, iter=NA) {
         super$update(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, status, iter)
         if (!anyNA(penalty)) private$lambda <- penalty
       }
@@ -51,8 +51,8 @@ PLNnetworkfit$set("public", "latentNetwork",
 )
 
 PLNnetworkfit$set("public", "plot_network",
-  function(plot=TRUE, remove.isolated = TRUE, layout=NULL) {
-    net <- self$latentNetwork(weighted=TRUE)
+  function(plot = TRUE, remove.isolated = TRUE, layout = NULL) {
+    net <- self$latentNetwork(weighted = TRUE)
     G <-  graph_from_adjacency_matrix(net, mode = "undirected", weighted = TRUE, diag = FALSE)
     if (!is.null(colnames(net)))
       V(G)$label <- colnames(net)
@@ -69,17 +69,17 @@ PLNnetworkfit$set("public", "plot_network",
       G <- delete.vertices(G, which(degree(G) == 0))
 
     if (plot) {
-      par(mfrow=c(1,2))
-      par(mar=c(0.1,0.1,0.1,0.1))
+      par(mfrow = c(1,2))
+      par(mar = c(0.1,0.1,0.1,0.1))
       if (ncol(net) > 100)
         colnames(net) <- rownames(net) <- rep(" ", ncol(net))
-      corrplot(as.matrix(net), method="color", is.corr=FALSE, cl.pos="n", tl.cex=0.5)
+      corrplot(as.matrix(net), method = "color", is.corr = FALSE, cl.pos = "n", tl.cex = 0.5)
       if (!is.null(layout))
-        plot(G, layout=layout)
+        plot(G, layout = layout)
       else
         plot(G)
-      par(mfrow=c(1,1))
-      par(mar=c(5.1,4.1,4.1,2.1))
+      par(mfrow = c(1,1))
+      par(mar = c(5.1,4.1,4.1,2.1))
     }
     invisible(G)
 })
