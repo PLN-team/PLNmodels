@@ -7,15 +7,21 @@ PLNfamily <-
       offsets    = NULL, # the O matrix
       inception  = NULL, # the basic model in the collection (no regularization, nor sparsity, nor rank)
       models     = NULL, # the collection of models to be fitted
-      params     = NULL, # vector of the parameters that indexes the models (either sparsity, rank, etc.)
-      criteria   = NULL  # a data frame with some criteria associated with the collection of fits
+      params     = NULL  # vector of the parameters that indexes the models (either sparsity, rank, etc.)
     ),
     private = list(
       fn_optim   = NULL, # objective and gradient for optimizing the regularized models
       n          = NULL, # number of samples
       p          = NULL, # number of responses
       d          = NULL  # number of covariates
-  )
+    ),
+    active = list(
+      # send back a data frame with some criteria associated with the collection of fits
+      criteria = function() {
+        data.frame(param = self$params,
+                  t(sapply(self$models, function(model) model$criteria)))
+      }
+    )
 )
 
 PLNfamily$set("public", "initialize",
@@ -121,7 +127,6 @@ function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", 
 PLNfamily$set("public", "postTreatment",
 function() {
   private$computeR2()
-  private$setCriteria()
 })
 
 ## ----------------------------------------------------------------

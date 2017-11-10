@@ -210,8 +210,8 @@ PLNnetworkfamily$set("public", "setPenalties",
       warning(paste0("The number of penalties (", nPenalties, ") does not match the number of models (",
                      length(self$models), ") in the family."))
     }
-    ## sort penalties and round
-    self$params <- round(sort(penalties, decreasing = FALSE),16)
+    ## sort penalties
+    self$params <- sort(penalties, decreasing = FALSE)
     for (m in seq_along(self$models))  {
       self$models[[m]]$update(penalty = self$params[m])
     }
