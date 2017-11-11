@@ -22,13 +22,13 @@ PLNPCAfit <-
     inherit = PLNfit,
     public  = list(
       initialize = function(Theta=NA, Sigma=NA, B = NA, Omega=NA, M=NA, S=NA,
-                            J=NA, BIC=NA, ICL=NA, R2=NA, status=NA, iter=NA) {
-        super$initialize(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, status, iter)
+                            J=NA, BIC=NA, ICL=NA, R2=NA, monitoring=NA) {
+        super$initialize(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, monitoring)
         private$B <- B
       },
       update = function(Theta=NA, Sigma=NA, B=NA, Omega=NA, M=NA, S=NA,
-                      J=NA, BIC=NA, ICL=NA, R2=NA,status=NA, iter=NA) {
-        super$update(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, status, iter)
+                      J=NA, BIC=NA, ICL=NA, R2=NA, monitoring=NA) {
+        super$update(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, monitoring)
         if (!anyNA(B)) private$B <- B
       },
       setVisualization = function(scale.unit=FALSE) {

@@ -20,47 +20,44 @@ PLNfit <-
     public = list(
       ## constructor
       initialize = function(Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
-                            J=NA, BIC=NA, ICL=NA, R2 = NA, status=NA, iter=NA) {
-        private$Theta  <- Theta
-        private$Sigma  <- Sigma
-        private$Omega  <- Omega
-        private$M      <- M
-        private$S      <- S
-        private$J      <- J
-        private$BIC    <- BIC
-        private$ICL    <- ICL
-        private$R2     <- R2
-        private$status <- status
-        private$iter   <- iter
+                            J=NA, BIC=NA, ICL=NA, R2 = NA, monitoring=NA) {
+        private$Theta      <- Theta
+        private$Sigma      <- Sigma
+        private$Omega      <- Omega
+        private$M          <- M
+        private$S          <- S
+        private$J          <- J
+        private$BIC        <- BIC
+        private$ICL        <- ICL
+        private$R2         <- R2
+        private$monitoring <- monitoring
       },
       ## "setter" function
       update = function(Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
-                        J=NA, BIC=NA, ICL=NA, R2 = NA, status=NA, iter=NA) {
-        if (!anyNA(Theta))  private$Theta  <- Theta
-        if (!anyNA(Sigma))  private$Sigma  <- Sigma
-        if (!anyNA(Omega))  private$Omega  <- Omega
-        if (!anyNA(M))      private$M      <- M
-        if (!anyNA(S))      private$S      <- S
-        if (!anyNA(J))      private$J      <- J
-        if (!anyNA(BIC))    private$BIC    <- BIC
-        if (!anyNA(ICL))    private$ICL    <- ICL
-        if (!anyNA(R2))     private$R2     <- R2
-        if (!anyNA(status)) private$status <- status
-        if (!anyNA(iter))   private$iter   <- iter
+                        J=NA, BIC=NA, ICL=NA, R2 = NA, monitoring = NA) {
+        if (!anyNA(Theta))      private$Theta  <- Theta
+        if (!anyNA(Sigma))      private$Sigma  <- Sigma
+        if (!anyNA(Omega))      private$Omega  <- Omega
+        if (!anyNA(M))          private$M      <- M
+        if (!anyNA(S))          private$S      <- S
+        if (!anyNA(J))          private$J      <- J
+        if (!anyNA(BIC))        private$BIC    <- BIC
+        if (!anyNA(ICL))        private$ICL    <- ICL
+        if (!anyNA(R2))         private$R2     <- R2
+        if (!anyNA(monitoring)) private$monitoring <- monitoring
       }
     ),
     private = list(
-      S      = NULL, # the n x p variational parameters for the variances
-      M      = NULL, # the n x p variational parameters for the means
-      Theta  = NULL, # the p x d model parameters for the covariable
-      Sigma  = NULL, # the p x p covariance matrix
-      Omega  = NULL, # the p x p precision matrix
-      J      = NULL, # the variational lower bound of the likelihood
-      BIC    = NULL, # (variational) Baysesian information criterion
-      ICL    = NULL, # (variational) Integrated classification criterion
-      R2     = NULL, # approximated goodness of fit criterion
-      status = NULL, # convergence status
-      iter   = NULL  # number of iteration performed in the gradient descent
+      S          = NULL, # the n x p variational parameters for the variances
+      M          = NULL, # the n x p variational parameters for the means
+      Theta      = NULL, # the p x d model parameters for the covariable
+      Sigma      = NULL, # the p x p covariance matrix
+      Omega      = NULL, # the p x p precision matrix
+      J          = NULL, # the variational lower bound of the likelihood
+      BIC        = NULL, # (variational) Baysesian information criterion
+      ICL        = NULL, # (variational) Integrated classification criterion
+      R2         = NULL, # approximated goodness of fit criterion
+      monitoring = NULL  # a list with optimization monitoring quantities
     ),
     ## use active bindings to access private members like fields
     active = list(
@@ -71,7 +68,7 @@ PLNfit <-
         list(M = private$M, S = private$S)
       },
       convergence = function() {
-        c(status = private$status, objective = -private$J, iterates  = private$iter)
+        private$monitoring
       },
       criteria = function() {
         c(J = private$J, BIC = private$BIC, ICL = private$ICL, R2 = private$R2)
@@ -95,14 +92,13 @@ PLNfit$set("public", "plot_par",
     rownames(par1) <- rep(" ", nrow(par1)) ; colnames(par1) <- rep(" ", ncol(par1))
     rownames(par2) <- rep(" ", nrow(par2)) ; colnames(par2) <- rep(" ", ncol(par2))
 
-    par(mfrow=c(2,2))
-    hist(par1, breaks=sqrt(nrow(par1)), xlab="", ylab="", main=paste0(names(param)[1]))
-    hist(par2, breaks=sqrt(nrow(par2)), xlab="", ylab="", main=paste0(names(param)[2]))
-    corrplot::corrplot(par1, is.corr = FALSE, method="color", cl.pos = "n")
-    corrplot::corrplot(par2, is.corr = FALSE, method="color", cl.pos = "n")
-    title(main=paste0("\n",type," parameters"), outer=TRUE)
-    par(mfrow=c(1,1))
-
+    par(mfrow = c(2,2))
+    hist(par1, breaks = sqrt(nrow(par1)), xlab = "", ylab = "", main = paste0(names(param)[1]))
+    hist(par2, breaks = sqrt(nrow(par2)), xlab = "", ylab = "", main = paste0(names(param)[2]))
+    corrplot::corrplot(par1, is.corr = FALSE, method = "color", cl.pos = "n")
+    corrplot::corrplot(par2, is.corr = FALSE, method = "color", cl.pos = "n")
+    title(main = paste0("\n",type," parameters"), outer = TRUE)
+    par(mfrow = c(1,1))
   }
 )
 

@@ -72,17 +72,18 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
                     nPenalties = 20,
                     min.ratio = ifelse(nrow(Y) < ncol(Y), 0.01, 1e-3),
                     trace = 1)
+
   ctrl.main <- list(approx = FALSE,
                     out.tol = 1e-2,
                     out.maxit = 50,
                     penalize.diagonal = FALSE,
-                    ftol_rel = 1e-9,
-                    ftol_abs = 1e-6,
+                    ftol_rel = 1e-10,
+                    ftol_abs = 1e-10,
                     xtol_rel = 1e-4,
-                    xtol_abs = 1e-5,
+                    xtol_abs = 1e-8,
                     maxeval  = 10000,
                     method   = "MMA",
-                    lbvar    = .Machine$double.eps,
+                    lbvar    = 1e-5,
                     trace = 1)
 
   ctrl.init[names(control.init)] <- control.init

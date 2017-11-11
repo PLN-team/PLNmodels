@@ -7,7 +7,7 @@ PLNfamily <-
       offsets    = NULL, # the O matrix
       inception  = NULL, # the basic model in the collection (no regularization, nor sparsity, nor rank)
       models     = NULL, # the collection of models to be fitted
-      params     = NULL  # vector of the parameters that indexes the models (either sparsity, rank, etc.)
+      params     = NULL  # vector of parameters that indexes the models (either sparsity, rank, etc.)
     ),
     private = list(
       fn_optim   = NULL, # objective and gradient for optimizing the regularized models
@@ -20,6 +20,10 @@ PLNfamily <-
       criteria = function() {
         data.frame(param = self$params,
                   t(sapply(self$models, function(model) model$criteria)))
+      },
+      convergence = function() {
+        data.frame(param = self$params,
+                   t(sapply(self$models, function(model) model$convergence)))
       }
     )
 )
@@ -123,20 +127,9 @@ function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", 
   })
 })
 
-# Set data frame with criteria (BIC, ICL, J and possibly R2) associated with the collection of fits
 PLNfamily$set("public", "postTreatment",
 function() {
   private$computeR2()
-})
-
-## ----------------------------------------------------------------
-## PRIVATE METHODS
-
-# Set data frame with criteria (BIC, ICL, J and possibly R2) associated with the collection of fits
-PLNfamily$set("private", "setCriteria",
-function() {
-  self$criteria <- data.frame(param = self$params,
-                              t(sapply(self$models, function(model) model$criteria)))
 })
 
 # Compute goodness of fit (R2) for each fit in the family

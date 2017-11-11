@@ -96,7 +96,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   Theta <- matrix(optim.out$solution[1:(p*d)]          , p,d)
   M     <- matrix(optim.out$solution[p*(d)   + 1:(n*p)], n,p)
   S     <- matrix(optim.out$solution[p*(d+n) + 1:(n*p)], n,p)
-  Sigma <- crossprod(M)/n + diag(colMeans(S))
+  Sigma <- crossprod(M)/n + diag(colMeans(S), nrow = p, ncol = p)
   Omega <- solve(Sigma)
 
   rownames(Theta) <- colnames(Y); colnames(Theta) <- colnames(X)
@@ -112,7 +112,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
 
   return(PLNfit$new(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S,
                     J = J, BIC = BIC, ICL = ICL,
-                    status = optim.out$status, iter = optim.out$iterations))
+                    monitoring = list(status = optim.out$status, message = optim.out$message, iterations = optim.out$iterations)))
 }
 
 ## Extract the model used for initializing the whole family

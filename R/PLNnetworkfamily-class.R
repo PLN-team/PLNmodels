@@ -153,7 +153,8 @@ PLNnetworkfamily$set("public", "optimize",
 
     self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta,
                             M = M, S = S, J = J, BIC = BIC, ICL = ICL,
-                            status = convergence[iter], iter = iter)
+                            monitoring = list(outer_epsilon = convergence[iter], outer_iterations = iter,
+                                              inner_status = optim.out$status, inner_message = optim.out$message, inner_iterations = optim.out$iterations))
   }
 
 })

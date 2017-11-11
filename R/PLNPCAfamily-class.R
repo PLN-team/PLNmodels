@@ -108,7 +108,7 @@ PLNPCAfamily$set("public", "optimize",
 
     model$update(B = B, Theta = Theta, Sigma = Sigma,
                  M = M, S = S, J = J, BIC = BIC, ICL = ICL,
-                 status = optim.out$status, iter = optim.out$iterations)
+                 monitoring = list(status = optim.out$status, message = optim.out$message, iterations = optim.out$iterations))
     return(model)
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
 })
