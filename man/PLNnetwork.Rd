@@ -12,8 +12,8 @@ PLNnetwork(Robject, ...)
   control.init = list(), control.main = list())
 
 \method{PLNnetwork}{default}(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0,
-  nrow(Y), ncol(Y)), penalties = NULL, approx = FALSE,
-  control.init = list(), control.main = list())
+  nrow(Y), ncol(Y)), penalties = NULL, control.init = list(),
+  control.main = list())
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a matrix}

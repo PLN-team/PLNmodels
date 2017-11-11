@@ -21,14 +21,14 @@ PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(Theta=NA, Sigma=NA, B = NA, Omega=NA, M=NA, S=NA,
+      initialize = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA,
                             J=NA, BIC=NA, ICL=NA, R2=NA, monitoring=NA) {
-        super$initialize(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, monitoring)
+        super$initialize(Theta, Sigma, M, S, J, BIC, ICL, R2, monitoring)
         private$B <- B
       },
-      update = function(Theta=NA, Sigma=NA, B=NA, Omega=NA, M=NA, S=NA,
+      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA,
                       J=NA, BIC=NA, ICL=NA, R2=NA, monitoring=NA) {
-        super$update(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2, monitoring)
+        super$update(Theta, Sigma, M, S, J, BIC, ICL, R2, monitoring)
         if (!anyNA(B)) private$B <- B
       },
       setVisualization = function(scale.unit=FALSE) {
@@ -97,7 +97,7 @@ PLNPCAfit$set("public", "plot_individual.map",
     if (percentAxes)
       axes.label <- paste(axes.label, paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
-    p <- ggplot(.scores, aes(x=a1, y=a2, label=rownames(self$scores), colour=cols)) +
+    p <- ggplot(.scores, aes(x=a1, y=a2, label=rownames(private$M), colour=cols)) +
             geom_hline(yintercept = 0, colour = "gray65") +
             geom_vline(xintercept = 0, colour = "gray65") +
             geom_text(alpha = 0.8, size = 4) +

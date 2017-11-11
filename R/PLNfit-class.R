@@ -19,11 +19,10 @@ PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
       ## constructor
-      initialize = function(Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
-                            J=NA, BIC=NA, ICL=NA, R2 = NA, monitoring=NA) {
+      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA,
+                            J=NA, BIC=NA, ICL=NA, R2=NA, monitoring=NA) {
         private$Theta      <- Theta
         private$Sigma      <- Sigma
-        private$Omega      <- Omega
         private$M          <- M
         private$S          <- S
         private$J          <- J
@@ -33,11 +32,10 @@ PLNfit <-
         private$monitoring <- monitoring
       },
       ## "setter" function
-      update = function(Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
-                        J=NA, BIC=NA, ICL=NA, R2 = NA, monitoring = NA) {
+      update = function(Theta=NA, Sigma=NA, M=NA, S=NA,
+                        J=NA, BIC=NA, ICL=NA, R2=NA, monitoring = NA) {
         if (!anyNA(Theta))      private$Theta  <- Theta
         if (!anyNA(Sigma))      private$Sigma  <- Sigma
-        if (!anyNA(Omega))      private$Omega  <- Omega
         if (!anyNA(M))          private$M      <- M
         if (!anyNA(S))          private$S      <- S
         if (!anyNA(J))          private$J      <- J
@@ -48,11 +46,10 @@ PLNfit <-
       }
     ),
     private = list(
-      S          = NULL, # the n x p variational parameters for the variances
-      M          = NULL, # the n x p variational parameters for the means
       Theta      = NULL, # the p x d model parameters for the covariable
       Sigma      = NULL, # the p x p covariance matrix
-      Omega      = NULL, # the p x p precision matrix
+      S          = NULL, # the n x p variational parameters for the variances
+      M          = NULL, # the n x p variational parameters for the means
       J          = NULL, # the variational lower bound of the likelihood
       BIC        = NULL, # (variational) Baysesian information criterion
       ICL        = NULL, # (variational) Integrated classification criterion

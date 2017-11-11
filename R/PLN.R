@@ -65,7 +65,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(ftol_rel = 1e-6,  ftol_abs = 1e-4, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = "LM")
+  ctrl <- list(ftol_rel = 1e-9,  ftol_abs = 1e-6, xtol_rel = 1e-4, xtol_abs = 1e-8, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = "LM")
   ctrl[names(control)] <- control
 
   ## get an initial point for optimization
@@ -97,20 +97,18 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   M     <- matrix(optim.out$solution[p*(d)   + 1:(n*p)], n,p)
   S     <- matrix(optim.out$solution[p*(d+n) + 1:(n*p)], n,p)
   Sigma <- crossprod(M)/n + diag(colMeans(S), nrow = p, ncol = p)
-  Omega <- solve(Sigma)
 
   rownames(Theta) <- colnames(Y); colnames(Theta) <- colnames(X)
+  rownames(Sigma) <- colnames(Sigma) <- colnames(Y)
   dimnames(S)     <- dimnames(Y)
   dimnames(M)     <- dimnames(Y)
-  rownames(Omega) <- colnames(Omega) <- colnames(Y)
-  rownames(Sigma) <- colnames(Sigma) <- colnames(Y)
 
   ## compute some criteria for evaluation
   J   <- - optim.out$objective
   BIC <- J - (p * d + p*(p+1)/2) * log(n)
   ICL <- BIC - .5*n*p *log(2*pi*exp(1)) - .5*sum(log(S))
 
-  return(PLNfit$new(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S,
+  return(PLNfit$new(Theta = Theta, Sigma = Sigma, M = M, S = S,
                     J = J, BIC = BIC, ICL = ICL,
                     monitoring = list(status = optim.out$status, message = optim.out$message, iterations = optim.out$iterations)))
 }
@@ -123,12 +121,12 @@ initializePLN <- function(Y, X, O, control) {
   ## User defined (from a previous fit, for instance)
   if(isTRUE(all.equal(class(control$inception), c("PLNfit", "R6")))) {
     if (control$trace > 0) cat("\n User defined inceptive PLN model")
-    stopifnot(isTRUE(all.equal(dim(control$inception$model.par$Theta)  , c(p,d))),
-              isTRUE(all.equal(dim(control$inception$variational.par$M), c(n,p))),
-              isTRUE(all.equal(dim(control$inception$variational.par$S), c(n,p))))
-    return(list(Theta = control$inception$model.par$Theta,
-                M     = control$inception$variational.par$M,
-                S     = control$inception$variational.par$S))
+    stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))),
+              isTRUE(all.equal(dim(control$inception$var_par$M), c(n,p))),
+              isTRUE(all.equal(dim(control$inception$var_par$S), c(n,p))))
+    return(list(Theta = control$inception$model_par$Theta,
+                M     = control$inception$var_par$M,
+                S     = control$inception$var_par$S))
 
     ## GLM Poisson
   } else if (isTRUE(all.equal(is.character(control$inception), control$inception == "GLM"))) {

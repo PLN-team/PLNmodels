@@ -14,25 +14,23 @@ The function \code{\link{PLNPCA}} produces a collection of models which are inst
 This class comes with a set of methods, some of them being useful for the user:
 See the documentation for \code{\link[=PLNPCAfit_plot]{plot}}, \code{\link[=PLNPCAfit_plot_individual.map]{plot_individual.map}}
 and \code{\link[=PLNPCAfit_plot_correlation.circle]{plot_correlation.circle}}
-
-Fields should not be changed or manipulated by the user as they are updated internally.
 }
 \section{Fields}{
 
 \describe{
 \item{\code{rank}}{the dimension of the current model}
 
-\item{\code{model.par}}{a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model}
+\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)}
 
-\item{\code{variation.par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
+\item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 
 \item{\code{criteria}}{a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.}
 
 \item{\code{convergence}}{quantities usefull for monitoring the optimization}
 
-\item{\code{percentVar}}{the percent of variance explained by each axis}
+\item{\code{percent_var}}{the percent of variance explained by each axis}
 
-\item{\code{corrCircle}}{a matrix of correlations to plot the correlation circles}
+\item{\code{corr_circle}}{a matrix of correlations to plot the correlation circles}
 
 \item{\code{scores}}{a matrix of scores to plot the individual factor maps}
 }}

@@ -12,19 +12,17 @@ PLNnetworkfit
 The function \code{\link{PLNnetwork}} produces a collection of models which are instances of object with class \code{PLNnetworkfit}.
 
 This class comes with a set of methods, some of them being useful for the user: plot_network + methods inhererited from PLNfit.
-
-Fields should not be changed or manipulated by the user as they are updated internally.
 }
 \section{Fields}{
 
 \describe{
 \item{\code{penalty}}{the level of sparsity in the current model}
 
-\item{\code{model.par}}{a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model}
+\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix)}
 
-\item{\code{variation.par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
+\item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 
-\item{\code{criteria}}{a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.}
+\item{\code{criteria}}{a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2) for the different models.}
 
 \item{\code{convergence}}{quantities usefull for monitoring the optimization}
 }}

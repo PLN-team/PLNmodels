@@ -20,9 +20,9 @@ Fields should not be changed or manipulated by the user as they are updated inte
 \section{Fields}{
 
 \describe{
-\item{\code{model.par}}{a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model}
+\item{\code{model_par}}{a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model}
 
-\item{\code{variation.par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
+\item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 
 \item{\code{criteria}}{a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.}
 

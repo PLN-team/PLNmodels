@@ -21,20 +21,27 @@ PLNnetworkfit <-
     public  = list(
       initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
                             J=NA, BIC=NA, ICL=NA, R2=NA,  monitoring=NA) {
-        super$initialize(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2,  monitoring)
+        super$initialize(Theta, Sigma, M, S, J, BIC, ICL, R2, monitoring)
         private$lambda <- penalty
       },
       update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
                         J=NA, BIC=NA, ICL=NA, R2=NA,  monitoring=NA) {
-        super$update(Theta, Sigma, Omega, M, S, J, BIC, ICL, R2,  monitoring)
+        super$update(Theta, Sigma, M, S, J, BIC, ICL, R2, monitoring)
         if (!anyNA(penalty)) private$lambda <- penalty
+        if (!anyNA(Omega))   private$Omega  <- Omega
       }
     ),
     private = list(
-      lambda = NULL
+      Omega  = NULL, # the p x p precision matrix
+      lambda = NULL  # the sparsity tuning parameter
     ),
     active = list(
-      penalty = function() {private$lambda}
+      penalty = function() {private$lambda},
+      model_par = function() {
+        par <- super$model_par
+        par$Omega <- private$Omega
+        par
+      }
     )
 )
 

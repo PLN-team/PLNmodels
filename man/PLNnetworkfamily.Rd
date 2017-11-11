@@ -19,6 +19,12 @@ See the documentation for \code{\link[=PLNnetworkfamily_getBestModel]{getBestMod
 \section{Fields}{
 
 \describe{
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
 \item{\code{penalties}}{the sparsity level of the network in the successively fitted models}
 
 \item{\code{models}}{a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.}
@@ -26,12 +32,6 @@ See the documentation for \code{\link[=PLNnetworkfamily_getBestModel]{getBestMod
 \item{\code{inception}}{a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when no sparsifying penalty is applied.}
 
 \item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
-
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
 
 \item{\code{fn_optim}}{the R functions used to compute the model's objective and gradient during the optimization process}
 }}

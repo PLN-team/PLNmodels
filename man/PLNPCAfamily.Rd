@@ -19,6 +19,12 @@ See the documentation for \code{\link[=PLNPCAfamily_getBestModel]{getBestModel}}
 \section{Fields}{
 
 \describe{
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
 \item{\code{ranks}}{the dimensions of the successively fitted models}
 
 \item{\code{models}}{a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.}
@@ -26,12 +32,6 @@ See the documentation for \code{\link[=PLNPCAfamily_getBestModel]{getBestModel}}
 \item{\code{inception}}{a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when full rank is considered.}
 
 \item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
-
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
 }}
 
 \seealso{
