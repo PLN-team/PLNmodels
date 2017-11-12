@@ -6,12 +6,16 @@
 #'
 #' This class comes with a set of methods, some of them being useful for the user: plot_model_par, plot_variational_par
 #'
-#' Fields should not be changed or manipulated by the user as they are updated internally.
+#' Fields are accessed via active binding and cannot be changed by the user.
 #'
 #' @field model_par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
-#' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.
-#' @field convergence quantities useful for monitoring the optimization
+#' @field optim_par a list with parameters useful for monitoring the optimization
+#' @field loglik variational lower bound of the loglikelihood
+#' @field BIC variational lower bound of the BIC
+#' @field ICL variational lower bound of the ICL
+#' @field R_squared approximated goodness-of-fit criterion
+#' @field degrees_freedom number of parameters in the current PLN model
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #' @importFrom corrplot corrplot
@@ -19,28 +23,19 @@ PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
       ## constructor
-      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA,
-                            J=NA, BIC=NA, ICL=NA, R2=NA, monitoring=NA) {
+      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA, monitoring=NA) {
         private$Theta      <- Theta
         private$Sigma      <- Sigma
         private$M          <- M
         private$S          <- S
-        private$J          <- J
-        private$BIC        <- BIC
-        private$ICL        <- ICL
-        private$R2         <- R2
         private$monitoring <- monitoring
       },
       ## "setter" function
-      update = function(Theta=NA, Sigma=NA, M=NA, S=NA,
-                        J=NA, BIC=NA, ICL=NA, R2=NA, monitoring = NA) {
+      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, R2=NA, monitoring = NA) {
         if (!anyNA(Theta))      private$Theta  <- Theta
         if (!anyNA(Sigma))      private$Sigma  <- Sigma
         if (!anyNA(M))          private$M      <- M
         if (!anyNA(S))          private$S      <- S
-        if (!anyNA(J))          private$J      <- J
-        if (!anyNA(BIC))        private$BIC    <- BIC
-        if (!anyNA(ICL))        private$ICL    <- ICL
         if (!anyNA(R2))         private$R2     <- R2
         if (!anyNA(monitoring)) private$monitoring <- monitoring
       }
@@ -50,26 +45,21 @@ PLNfit <-
       Sigma      = NULL, # the p x p covariance matrix
       S          = NULL, # the n x p variational parameters for the variances
       M          = NULL, # the n x p variational parameters for the means
-      J          = NULL, # the variational lower bound of the likelihood
-      BIC        = NULL, # (variational) Baysesian information criterion
-      ICL        = NULL, # (variational) Integrated classification criterion
       R2         = NULL, # approximated goodness of fit criterion
       monitoring = NULL  # a list with optimization monitoring quantities
     ),
     ## use active bindings to access private members like fields
     active = list(
-      model_par = function() {
-        list(Theta = private$Theta, Sigma = private$Sigma, Omega = private$Omega)
+      model_par = function() {list(Theta = private$Theta, Sigma = private$Sigma)},
+      var_par   = function() {list(M = private$M, S = private$S)},
+      optim_par = function() {private$monitoring},
+      degrees_freedom = function() {
+        nrow(private$Theta) * ncol(private$Theta) + ncol(private$Sigma) * (ncol(private$Sigma) + 1)/2
       },
-      var_par = function() {
-        list(M = private$M, S = private$S)
-      },
-      convergence = function() {
-        private$monitoring
-      },
-      criteria = function() {
-        c(J = private$J, BIC = private$BIC, ICL = private$ICL, R2 = private$R2)
-      }
+      loglik    = function() {-private$monitoring$objective},
+      BIC       = function() {self$loglik - .5 * log(nrow(private$M)) * self$degrees_freedom},
+      ICL       = function() {self$BIC - .5 * (nrow(private$M) * ncol(private$M) * log(2*pi*exp(1)) + sum(log(private$S)))},
+      R_squared = function(value) {private$R2}
     )
   )
 

@@ -72,11 +72,14 @@ Note the use of the `formula` object to specify the model: the vector $\boldsymb
 The `model.nocov` variable is an `R6` object with class `PLNfit`, which comes with a couple of methods. 
 
 ```{r}
-model.nocov$convergence
+model.nocov$optim_par
 ```
 
 ```{r}
-model.nocov$criteria
+model.nocov$loglik
+model.nocov$BIC
+model.nocov$ICL
+model.nocov$R_squared
 ```
 
 Complementary information comes with the `plot_par` method:

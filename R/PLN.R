@@ -103,14 +103,12 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   dimnames(S)     <- dimnames(Y)
   dimnames(M)     <- dimnames(Y)
 
-  ## compute some criteria for evaluation
-  J   <- - optim.out$objective
-  BIC <- J - (p * d + p*(p+1)/2) * log(n)
-  ICL <- BIC - .5*n*p *log(2*pi*exp(1)) - .5*sum(log(S))
-
-  return(PLNfit$new(Theta = Theta, Sigma = Sigma, M = M, S = S,
-                    J = J, BIC = BIC, ICL = ICL,
-                    monitoring = list(status = optim.out$status, message = optim.out$message, iterations = optim.out$iterations)))
+  myPLN <- PLNfit$new(Theta = Theta, Sigma = Sigma, M = M, S = S,
+                    monitoring = list(objective = optim.out$objective,
+                                      iterations = optim.out$iterations,
+                                      status = optim.out$status,
+                                      message = optim.out$message))
+  myPLN$computeR2
 }
 
 ## Extract the model used for initializing the whole family

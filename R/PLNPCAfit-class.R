@@ -9,8 +9,12 @@
 #' @field rank the dimension of the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
-#' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.
-#' @field convergence quantities usefull for monitoring the optimization
+#' @field optim_par a list with parameters useful for monitoring the optimization
+#' @field loglik variational lower bound of the loglikelihood
+#' @field BIC variational lower bound of the BIC
+#' @field ICL variational lower bound of the ICL
+#' @field R_squared approximated goodness-of-fit criterion
+#' @field degrees_freedom number of parameters in the current PLN model
 #' @field percent_var the percent of variance explained by each axis
 #' @field corr_circle a matrix of correlations to plot the correlation circles
 #' @field scores a matrix of scores to plot the individual factor maps
@@ -21,14 +25,12 @@ PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA,
-                            J=NA, BIC=NA, ICL=NA, R2=NA, monitoring=NA) {
-        super$initialize(Theta, Sigma, M, S, J, BIC, ICL, R2, monitoring)
+      initialize = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, R2=NA, monitoring=NA) {
+        super$initialize(Theta, Sigma, M, S, monitoring)
         private$B <- B
       },
-      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA,
-                      J=NA, BIC=NA, ICL=NA, R2=NA, monitoring=NA) {
-        super$update(Theta, Sigma, M, S, J, BIC, ICL, R2, monitoring)
+      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, R2=NA, monitoring=NA) {
+        super$update(Theta, Sigma, M, S, R2, monitoring)
         if (!anyNA(B)) private$B <- B
       },
       setVisualization = function(scale.unit=FALSE) {
@@ -42,6 +44,7 @@ PLNPCAfit <-
     ),
     active = list(
       rank = function() {ncol(private$B)},
+      degrees_freedom = function() {nrow(private$Theta) * (ncol(private$Theta) + self$rank)},
       model_par = function() {
         par <- super$model_par
         par$B <- private$B
@@ -92,18 +95,18 @@ PLNPCAfit$set("public", "plot_individual.map",
 
     .scores <- as.data.frame(self$scores[,axes])
     .scores$labels <- cols
-    colnames(.scores) <- paste("a",1:length(axes),sep="")
+    colnames(.scores) <- paste("a",1:length(axes),sep = "")
     axes.label <- paste("axis",axes)
     if (percentAxes)
       axes.label <- paste(axes.label, paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
-    p <- ggplot(.scores, aes(x=a1, y=a2, label=rownames(private$M), colour=cols)) +
+    p <- ggplot(.scores, aes(x = a1, y = a2, label = rownames(private$M), colour = cols)) +
             geom_hline(yintercept = 0, colour = "gray65") +
             geom_vline(xintercept = 0, colour = "gray65") +
             geom_text(alpha = 0.8, size = 4) +
             ggtitle(main) +
             theme_bw() +
-            labs(x=axes.label[1], y=axes.label[2])
+            labs(x = axes.label[1], y = axes.label[2])
 
     if (conf.circle) {
       uncertainty <- sqrt(private$S)
@@ -189,7 +192,8 @@ PLNPCAfit$set("public", "plot",
     })
 
     ## plot that appear on the diagonal
-    criteria.text <- paste("Model Selection\n\n", paste(names(self$criteria), round(self$criteria, 2), sep=" = ", collapse="\n"))
+    crit <- setNames(c(self$loglik, self$BIC, self$ICL), c("loglikelihood", "BIC", "ICL"))
+    criteria.text <- paste("Model Selection\n\n", paste(names(crit), round(crit, 2), sep=" = ", collapse="\n"))
     percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percent_var[axes],3), "%"), collapse="\n"))
 
     diag.grobs <- list(textGrob(percentV.text, just="left"),

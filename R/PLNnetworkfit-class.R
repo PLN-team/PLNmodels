@@ -7,8 +7,12 @@
 #' @field penalty the level of sparsity in the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix)
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
-#' @field criteria a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2) for the different models.
-#' @field convergence quantities usefull for monitoring the optimization
+#' @field optim_par a list with parameters useful for monitoring the optimization
+#' @field loglik variational lower bound of the loglikelihood
+#' @field BIC variational lower bound of the BIC
+#' @field ICL variational lower bound of the ICL
+#' @field R_squared approximated goodness-of-fit criterion
+#' @field degrees_freedom number of parameters in the current PLN model
 #' @include PLNnetworkfit-class.R
 #' @importFrom R6 R6Class
 #' @import Matrix
@@ -19,14 +23,13 @@ PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
-                            J=NA, BIC=NA, ICL=NA, R2=NA,  monitoring=NA) {
-        super$initialize(Theta, Sigma, M, S, J, BIC, ICL, R2, monitoring)
+      initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, monitoring=NA) {
+        super$initialize(Theta, Sigma, M, S, monitoring)
         private$lambda <- penalty
+        private$Omega  <- Omega
       },
-      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA,
-                        J=NA, BIC=NA, ICL=NA, R2=NA,  monitoring=NA) {
-        super$update(Theta, Sigma, M, S, J, BIC, ICL, R2, monitoring)
+      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, R2=NA,  monitoring=NA) {
+        super$update(Theta, Sigma, M, S, R2, monitoring)
         if (!anyNA(penalty)) private$lambda <- penalty
         if (!anyNA(Omega))   private$Omega  <- Omega
       }
@@ -37,6 +40,9 @@ PLNnetworkfit <-
     ),
     active = list(
       penalty = function() {private$lambda},
+      degrees_freedom = function() {
+        nrow(private$Theta) * ncol(private$Theta) + sum(private$Omega[upper.tri(private$Omega, diag = TRUE)] != 0)
+      },
       model_par = function() {
         par <- super$model_par
         par$Omega <- private$Omega
@@ -63,7 +69,7 @@ PLNnetworkfit$set("public", "plot_network",
     G <-  graph_from_adjacency_matrix(net, mode = "undirected", weighted = TRUE, diag = FALSE)
     if (!is.null(colnames(net)))
       V(G)$label <- colnames(net)
-    weight <- (log(1+E(G)$weight)+.4) / max(log(1+E(G)$weight)+.4)
+    weight <- (log(1 + E(G)$weight) + .4) / max(log(1 + E(G)$weight) + .4)
     V.deg <- degree(G)/sum(degree(G))
     V(G)$label.cex <- V.deg / max(V.deg) + .5
     V(G)$size <- V.deg * 100

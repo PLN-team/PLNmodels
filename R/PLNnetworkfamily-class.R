@@ -4,8 +4,7 @@
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for \code{\link[=PLNnetworkfamily_getBestModel]{getBestModel}},
-#' \code{\link[=PLNnetworkfamily_getModel]{getModel}} and \code{\link[=PLNnetworkfamily_plot]{plot}}. Other methods
-#'  should not be called as they are designed to be used during the optimization process.
+#' \code{\link[=PLNnetworkfamily_getModel]{getModel}} and \code{\link[=PLNnetworkfamily_plot]{plot}}.
 #'
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
@@ -142,19 +141,17 @@ PLNnetworkfamily$set("public", "optimize",
     dimnames(M)     <- dimnames(self$responses)
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
 
-    ## compute some criteria for evaluation
-    J   <- -optim.out$objective
-    BIC <- J - (private$p * private$d + sum(Omega[upper.tri(Omega, diag = TRUE)] != 0)) * log(private$n)/2
-    ICL <- BIC - .5*private$n*private$p * log(2*pi*exp(1)) - sum(log(S))
-
     ## Enforce symmetry of Sigma and Theta
     if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
     if (!isSymmetric(Theta)) Omega <- Matrix::symmpart(Omega)
 
-    self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta,
-                            M = M, S = S, J = J, BIC = BIC, ICL = ICL,
-                            monitoring = list(outer_epsilon = convergence[iter], outer_iterations = iter,
-                                              inner_status = optim.out$status, inner_message = optim.out$message, inner_iterations = optim.out$iterations))
+    self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S,
+                            monitoring = list(objective = optim.out$objective,
+                                              outer_iterations = iter,
+                                              outer_epsilon = convergence[iter],
+                                              inner_iterations = optim.out$iterations,
+                                              inner_status = optim.out$status,
+                                              inner_message = optim.out$message))
   }
 
 })
@@ -181,7 +178,7 @@ PLNnetworkfamily$set("public", "optimize_approx",
     if (control$trace > 1) cat("\n\t approximate version: do not optimize the variational paramters")
     if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
 
-    Omega <- suppressWarnings(glasso::glasso(Sigma, rho=penalty, penalize.diagonal = control$penalize.diagonal, approx = TRUE)$wi)
+    Omega <- suppressWarnings(glasso::glasso(Sigma, rho = penalty, penalize.diagonal = control$penalize.diagonal, approx = TRUE)$wi)
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
 
     ## ===========================================
@@ -217,5 +214,5 @@ PLNnetworkfamily$set("public", "show",
     cat(" Task: Network Inference \n")
     cat("========================================================\n")
     cat(" -", length(self$penalties) , "penalties considered: from", min(self$params), "to", max(self$params),"\n")
-    cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("BIC")$criteria['R2'], 2), "\n")
+    cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
   })

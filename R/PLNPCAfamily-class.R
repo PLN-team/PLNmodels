@@ -101,14 +101,11 @@ PLNPCAfamily$set("public", "optimize",
     rownames(M)     <- rownames(self$responses); colnames(M) <- 1:model$rank
     rownames(Sigma) <- colnames(Sigma) <- colnames(self$responses)
 
-    ## compute some criteria for model selection
-    J   <- -optim.out$objective
-    BIC <- J - .5*private$p * (private$d + model$rank) * log(private$n)
-    ICL <- BIC - .5*private$n*model$rank*log(2*pi*exp(1)) - .5 * sum(log(S))
-
-    model$update(B = B, Theta = Theta, Sigma = Sigma,
-                 M = M, S = S, J = J, BIC = BIC, ICL = ICL,
-                 monitoring = list(status = optim.out$status, message = optim.out$message, iterations = optim.out$iterations))
+    model$update(B = B, Theta = Theta, Sigma = Sigma, M = M, S = S,
+                 monitoring = list(objective = optim.out$objective,
+                                   iterations = optim.out$iterations,
+                                   status = optim.out$status,
+                                   message = optim.out$message))
     return(model)
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
 })
@@ -131,7 +128,7 @@ NULL
 PLNPCAfamily$set("public", "plot",
 function() {
   p <- super$plot() + xlab("rank")
-  p <- p + annotate("text", x=self$params, y=min(self$criteria$J), angle=90, label=paste("R2 =", round(self$criteria$R2, 2)), size=3, alpha=0.7) +
+  p <- p + annotate("text", x=self$params, y=min(self$criteria$loglik), angle=90, label=paste("R2 =", round(self$criteria$R_squared, 2)), size=3, alpha=0.7) +
     geom_vline(xintercept=self$getBestModel("ICL")$rank, linetype="dashed", alpha=0.5)
   p
 })
@@ -142,5 +139,5 @@ function() {
   cat(" Task: Principal Component Analysis\n")
   cat("========================================================\n")
   cat(" - Ranks considered: from", min(self$params), "to", max(self$params),"\n")
-  cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$criteria['R2'], 2), "\n")
+  cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })

@@ -18,12 +18,16 @@ PLNfamily <-
     active = list(
       # send back a data frame with some criteria associated with the collection of fits
       criteria = function() {
-        data.frame(param = self$params,
-                  t(sapply(self$models, function(model) model$criteria)))
+        res <- do.call(rbind, lapply(self$models, function(model) {
+          c(degrees_freedom = model$degrees_freedom, loglik = model$loglik, BIC = model$BIC, ICL = model$ICL, R_squared = model$R_squared)
+        }))
+        data.frame(param = self$params, res)
       },
       convergence = function() {
-        data.frame(param = self$params,
-                   t(sapply(self$models, function(model) model$convergence)))
+        res <- do.call(rbind, lapply(self$models, function(model) {
+          c(degrees_freedom = model$degrees_freedom, model$optim_par)
+        }))
+        data.frame(param = self$params, res)
       }
     )
 )
@@ -61,11 +65,11 @@ PLNfamily$set("public", "initialize",
 #' @name PLNfamily_getBestModel
 #'
 #' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "ICL", "J", "R2". Default is "BIC".
+#' "BIC", "ICL", "loglik", "R2". Default is "BIC".
 #' @return  Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getBestModel",
-function(crit = c("BIC", "ICL", "J", "R2")){
+function(crit = c("BIC", "ICL", "loglik", "R2")){
   crit <- match.arg(crit)
   if (length(self$criteria[[crit]]) > 1) {
     id <- which.max(self$criteria[[crit]])
@@ -94,10 +98,10 @@ function(var){
 #' @import ggplot2
 PLNfamily$set("public", "plot",
 function() {
-  dplot <- melt(self$criteria[, c("param", "J", "BIC", "ICL")], id.vars = 1, variable.name = "criterion")
+  dplot <- melt(self$criteria[, c("param", "loglik", "BIC", "ICL")], id.vars = 1, variable.name = "criterion")
   p <- ggplot(dplot, aes(x = param, y = value, group = criterion, colour = criterion)) +
         geom_line() + geom_point() + ggtitle("Model selection criteria")
-  return(p)
+  p
 })
 
 PLNfamily$set("public", "show",
