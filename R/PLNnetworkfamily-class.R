@@ -40,9 +40,9 @@ PLNnetworkfamily$set("public", "initialize",
     if (is.null(penalties)) {
       if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
       range_penalties <- range(abs(self$inception$model_par$Sigma[upper.tri(self$inception$model_par$Sigma)]))
-      min_log_scale <- log10(range_penalties[2])
-      max_log_scale <- log10(max(range_penalties[1],range_penalties[2]*control$min.ratio))
-      penalties <- 10^seq(min_log_scale, max_log_scale, len = control$nPenalties)
+      max_log_scale <- log10(range_penalties[2])
+      min_log_scale <- log10(max(range_penalties[1],max_log_scale*control$min.ratio))
+      penalties <- rev(10^seq(max_log_scale, min_log_scale, len = control$nPenalties))
     } else {
       if (control$trace > 1) cat("\nPenalties already set by the user")
       stopifnot(all(penalties > 0))
