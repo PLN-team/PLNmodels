@@ -22,9 +22,17 @@ This class comes with a set of methods, some of them being useful for the user: 
 
 \item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 
-\item{\code{criteria}}{a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2) for the different models.}
+\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
-\item{\code{convergence}}{quantities usefull for monitoring the optimization}
+\item{\code{loglik}}{variational lower bound of the loglikelihood}
+
+\item{\code{BIC}}{variational lower bound of the BIC}
+
+\item{\code{ICL}}{variational lower bound of the ICL}
+
+\item{\code{R_squared}}{approximated goodness-of-fit criterion}
+
+\item{\code{degrees_freedom}}{number of parameters in the current PLN model}
 }}
 
 \seealso{

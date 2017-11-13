@@ -68,17 +68,26 @@ PLNPCAfit <-
     )
 )
 
-#' Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
-#'
-#' @name PLNfit_latentPos
-#'
-#' @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
-PLNPCAfit$set("public", "latentPos",
+## ----------------------------------------------------------------------
+## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
+## ----------------------------------------------------------------------
+## Should only be accessed BY PLNfamily but R6 friend class don't exist
+
+# Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
+#
+# @name PLNfit_latent_pos
+#
+# @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
+# @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
+PLNPCAfit$set("public", "latent_pos",
 function(covariates, offsets) {
   latentPos <- tcrossprod(private$M, private$B) + tcrossprod(covariates, private$Theta) + offsets
   latentPos
 })
+
+## ----------------------------------------------------------------------
+## PUBLIC METHODS FOR THE USERS
+## ----------------------------------------------------------------------
 
 #' Plot the individual map of a specified axis for a \code{PLNPCAfit} object
 #'
@@ -89,7 +98,7 @@ function(covariates, offsets) {
 #' @param cols a character, factor or numeric to defined the color associated with the observations. Default is "gray"
 #' @return displays a individual map for thecorresponding axes and/or sends back a ggplot2 object
 NULL
-PLNPCAfit$set("public", "plot_individual.map",
+PLNPCAfit$set("public", "plot_individual_map",
   function(axes=c(1,2), main="Individual Factor Map",
            conf.circle = FALSE, conf.level = 0.5, plot=TRUE, cols="gray65", percentAxes=TRUE) {
 
@@ -123,7 +132,7 @@ PLNPCAfit$set("public", "plot_individual.map",
 
 #' Plot the correlation circle of a specified axis for a \code{PLNPCAfit} object
 #'
-#' @name PLNPCAfit_plot_correlation.circle
+#' @name PLNPCAfit_plot_correlation_circle
 #' @param axes numeric, the axes to use for the plot. Default it c(1,2)
 #' @param main character, the title. Default is "Variable Factor map"
 #' @param plot logical. Should the plot be displayed or sent back (ggplot object)
@@ -131,7 +140,7 @@ PLNPCAfit$set("public", "plot_individual.map",
 #' @param size integer, the size of the labels
 #' @return displays a correlation circle for the corresponding axes and/or sends back a ggplot2 object
 NULL
-PLNPCAfit$set("public", "plot_correlation.circle",
+PLNPCAfit$set("public", "plot_correlation_circle",
   function(axes=c(1,2), main="Variable Factor Map", cols = "gray65", plot=TRUE, percentAxes=TRUE, size=3) {
 
     corcir <- circle(c(0, 0), npoints = 100)
@@ -173,7 +182,7 @@ PLNPCAfit$set("public", "plot_correlation.circle",
 #' @param var.cols a character, factor or numeric to define the color associated with the variables. Default is "gray"
 #' @return a plot with a matrix-like layout with size nb.axes x nb.axes, displaying individual maps and correlation circles for the corresponding axes
 NULL
-PLNPCAfit$set("public", "plot",
+PLNPCAfit$set("public", "plot_PCA",
   function(cols.ind = "gray", var.cols = "gray", plot=TRUE, axes=1:min(3,self$rank)) {
 
     nb.axes <- length(axes)
@@ -181,13 +190,13 @@ PLNPCAfit$set("public", "plot",
 
     ## get back all individual maps
     ind.plot <- lapply(pairs.axes, function(pair) {
-      ggobj <- self$plot_individual.map(axes=pair, plot=FALSE, main="", cols=cols.ind, percentAxes=FALSE) + theme(legend.position="none")
+      ggobj <- self$plot_individual_map(axes=pair, plot=FALSE, main="", cols=cols.ind, percentAxes=FALSE) + theme(legend.position="none")
       return(ggplotGrob(ggobj))
     })
 
     ## get back all correlation circle
     cor.plot <- lapply(pairs.axes, function(pair) {
-      ggobj <- self$plot_correlation.circle(axes=pair, plot=FALSE, main="", percentAxes=FALSE, cols = var.cols)
+      ggobj <- self$plot_correlation_circle(axes=pair, plot=FALSE, main="", percentAxes=FALSE, cols = var.cols)
       return(ggplotGrob(ggobj))
     })
 
@@ -197,7 +206,7 @@ PLNPCAfit$set("public", "plot",
     percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percent_var[axes],3), "%"), collapse="\n"))
 
     diag.grobs <- list(textGrob(percentV.text, just="left"),
-                       g_legend(self$plot_individual.map(plot=FALSE, cols=cols.ind) + guides(colour = guide_legend(nrow = 4, title="classification"))),
+                       g_legend(self$plot_individual_map(plot=FALSE, cols=cols.ind) + guides(colour = guide_legend(nrow = 4, title="classification"))),
                        textGrob(criteria.text, just="left"))
     if (nb.axes > 3)
       diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb.axes-3))
@@ -229,3 +238,12 @@ PLNPCAfit$set("public", "plot",
   }
 )
 
+PLNPCAfit$set("public", "show",
+function() {
+  super$show(paste0("Poisson Lognormal with rank constrained for PCA (rank = ",self$rank,")\n"))
+  cat("* Additional fields for PCA\n")
+  cat("    $percent_var, $corr_circle, $scores \n")
+  cat("* Additional methods for PCA\n")
+  cat("    $plot_PCA(), $plot_correlation_circle(), $plot_individual_map() \n")
+})
+PLNPCAfit$set("public", "print", function() self$show())

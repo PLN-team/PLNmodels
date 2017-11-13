@@ -87,14 +87,21 @@ PLNnetworkfamily$set("public", "optimize",
 
     ## ===========================================
     ## OPTIMISATION
-    if (control$trace > 0) cat("\n sparsifying penalty =",penalty)
-    if (control$trace > 1) cat("\n\t conservative convex separable approximation for gradient descent")
-    if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
+    if (control$trace == 1) {
+      cat("\t sparsifying penalty =",penalty, "\r")
+      flush.console()
+    }
+
+    if (control$trace > 1) {
+      cat(" sparsifying penalty =",penalty)
+      cat("\n\t conservative convex separable approximation for gradient descent")
+      cat("\n\t graphical-Lasso for sparse covariance estimation")
+      cat("\n\titeration: ")
+    }
 
     cond <- FALSE; iter <- 0
     convergence <- numeric(maxit)
     objective   <- numeric(maxit)
-    if (control$trace > 1) cat("\n\titeration: ")
     while (!cond) {
       iter <- iter + 1
       if (control$trace > 1) cat("",iter)

@@ -51,7 +51,11 @@ PLNnetworkfit <-
     )
 )
 
-PLNnetworkfit$set("public", "latentNetwork",
+## ----------------------------------------------------------------------
+## PUBLIC METHODS FOR THE USERS
+## ----------------------------------------------------------------------
+
+PLNnetworkfit$set("public", "latent_network",
   function(weighted=FALSE) {
     if (weighted) {
       res  <- abs(private$Omega)
@@ -65,7 +69,7 @@ PLNnetworkfit$set("public", "latentNetwork",
 
 PLNnetworkfit$set("public", "plot_network",
   function(plot = TRUE, remove.isolated = TRUE, layout = NULL) {
-    net <- self$latentNetwork(weighted = TRUE)
+    net <- self$latent_network(weighted = TRUE)
     G <-  graph_from_adjacency_matrix(net, mode = "undirected", weighted = TRUE, diag = FALSE)
     if (!is.null(colnames(net)))
       V(G)$label <- colnames(net)
@@ -96,3 +100,11 @@ PLNnetworkfit$set("public", "plot_network",
     }
     invisible(G)
 })
+
+PLNnetworkfit$set("public", "show",
+function() {
+  super$show(paste0("Poisson Lognormal with sparse inverse covariance (penalty = ",format(self$penalty,digits=3),")\n"))
+  cat("* Additional methods for network\n")
+  cat("    $latent_network(), $plot_network()\n")
+})
+PLNnetworkfit$set("public", "print", function() self$show())

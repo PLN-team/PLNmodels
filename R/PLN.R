@@ -108,7 +108,9 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
                                       iterations = optim.out$iterations,
                                       status = optim.out$status,
                                       message = optim.out$message))
-  myPLN$computeR2
+
+  myPLN$computeR2(Y, X, O)
+  myPLN
 }
 
 ## Extract the model used for initializing the whole family

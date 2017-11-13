@@ -59,17 +59,50 @@ PLNfit <-
       loglik    = function() {-private$monitoring$objective},
       BIC       = function() {self$loglik - .5 * log(nrow(private$M)) * self$degrees_freedom},
       ICL       = function() {self$BIC - .5 * (nrow(private$M) * ncol(private$M) * log(2*pi*exp(1)) + sum(log(private$S)))},
-      R_squared = function(value) {private$R2}
+      R_squared = function() {private$R2},
+      criteria  = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
   )
 
+## ----------------------------------------------------------------------
+## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
+## ----------------------------------------------------------------------
+## Should only be accessed BY PLNfamily but R6 friend class don't exist
+
+#' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
+#'
+#' @name PLNfit_latent_pos
+#'
+#' @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
+#'
+PLNfit$set("public", "latent_pos",
+function(covariates, offsets) {
+  latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
+  latentPos
+})
+
+# Compute goodness of fit (R2)
+PLNfit$set("public", "computeR2",
+function(responses, covariates, offsets) {
+  ## Likelihoods of the null and saturated models
+  lmin <- logLikPoisson(responses, nullModelPoisson(responses, covariates, offsets))
+  lmax <- logLikPoisson(responses, fullModelPoisson(responses))
+  loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets))
+  private$R2 <- (loglik - lmin) / (lmax - lmin)
+})
+
+## ----------------------------------------------------------------------
+## PUBLIC METHODS FOR THE USERS
+## ----------------------------------------------------------------------
+
 #' Display the model parameters in a matrix fashion
 #'
-#' @name PLNfit_plot_par
+#' @name PLNfit_plot
 #'
 #' @param type character. should the variational or the model parameters be plotted? default is "model".
 #'
-PLNfit$set("public", "plot_par",
+PLNfit$set("public", "plot",
   function(type=c("model","variational")) {
     type <- match.arg(type)
     param <- switch(type,
@@ -89,19 +122,6 @@ PLNfit$set("public", "plot_par",
   }
 )
 
-#' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
-#'
-#' @name PLNfit_latentPos
-#'
-#' @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
-#'
-PLNfit$set("public", "latentPos",
-function(covariates, offsets) {
-  latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
-  latentPos
-})
-
 #' Predict counts of a new sample
 #'
 #' @name PLNfit_predict
@@ -120,13 +140,27 @@ PLNfit$set("public", "predict",
               nrow(newdata)    == nrow(newOffsets),
               ncol(newOffsets) == nrow(private$Theta))
     ## Mean latent positions in the parameter space
-    Z <- tcrossprod(newdata, private$Theta) + newOffsets
+    EZ <- tcrossprod(newdata, private$Theta) + newOffsets
     results <- switch(type,
-                      link     = Z,
-                      response = exp(Z))
+                      link     = EZ,
+                      response = exp(EZ))
     ## output formatting
-    rownames(results) <- rownames(newdata); colnames(results) <- rownames(self$model.par$Theta)
+    rownames(results) <- rownames(newdata); colnames(results) <- rownames(private$Theta)
     attr(results, "type") <- type
     results
   }
 )
+
+PLNfit$set("public", "show",
+function(model = "A Poisson Lognormal fit\n") {
+  cat(model)
+  cat("==================================================================\n")
+  print(as.data.frame(t(self$criteria), row.names=""))
+  cat("==================================================================\n")
+  cat("* Useful fields \n")
+  cat("  $model_par, $var_par, $loglik, $BIC, $ICL, $degrees_freedom, $criteria\n")
+  cat("* Useful methods\n")
+  cat("    $plot(), $predict()\n")
+})
+PLNfit$set("public", "print", function() self$show())
+

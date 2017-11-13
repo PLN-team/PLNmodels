@@ -82,7 +82,7 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
                     lbvar    = 1e-4,
                     nPenalties = 20,
                     min.ratio = ifelse(nrow(Y) <= ncol(Y), 0.01, 1e-3),
-                    trace = 1)
+                    trace = 0)
 
   ctrl.main <- list(approx = FALSE,
                     out.tol = 1e-2,
@@ -104,9 +104,9 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
   if (ctrl.main$trace > 0) cat("\n Initialization...")
   myPLN <- PLNnetworkfamily$new(penalties = penalties, responses = Y, covariates = X, offsets = O, control = ctrl.init)
 
-  if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN models for sparse network inference.")
+  if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN models for sparse network inference.\n")
   if (ctrl.main$approx) {
-    if (ctrl.main$trace > 0) cat("\n\t approximation: apply neighborhood selection on the inceptive PLN model on a penalty grid.")
+    if (ctrl.main$trace > 0) cat("\n\t approximation: apply neighborhood selection on the inceptive PLN model on a penalty grid.\n")
     myPLN$optimize_approx(ctrl.main)
   } else {
     myPLN$optimize(ctrl.main)

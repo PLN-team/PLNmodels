@@ -15,7 +15,7 @@ by inheritance.
 
 This class comes with a set of methods, some of them being useful for the user: plot_model_par, plot_variational_par
 
-Fields should not be changed or manipulated by the user as they are updated internally.
+Fields are accessed via active binding and cannot be changed by the user.
 }
 \section{Fields}{
 
@@ -24,9 +24,17 @@ Fields should not be changed or manipulated by the user as they are updated inte
 
 \item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 
-\item{\code{criteria}}{a named vector with the value of some criteria (variational lower bound J, BIC, ICL, R2, lmin and lmax) for the different models.}
+\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
-\item{\code{convergence}}{quantities useful for monitoring the optimization}
+\item{\code{loglik}}{variational lower bound of the loglikelihood}
+
+\item{\code{BIC}}{variational lower bound of the BIC}
+
+\item{\code{ICL}}{variational lower bound of the ICL}
+
+\item{\code{R_squared}}{approximated goodness-of-fit criterion}
+
+\item{\code{degrees_freedom}}{number of parameters in the current PLN model}
 }}
 
 \keyword{datasets}

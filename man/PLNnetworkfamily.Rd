@@ -13,8 +13,7 @@ The function \code{\link{PLNnetwork}} produces an instance of this class.
 
 This class comes with a set of methods, some of them being useful for the user:
 See the documentation for \code{\link[=PLNnetworkfamily_getBestModel]{getBestModel}},
-\code{\link[=PLNnetworkfamily_getModel]{getModel}} and \code{\link[=PLNnetworkfamily_plot]{plot}}. Other methods
- should not be called as they are designed to be used during the optimization process.
+\code{\link[=PLNnetworkfamily_getModel]{getModel}} and \code{\link[=PLNnetworkfamily_plot]{plot}}.
 }
 \section{Fields}{
 

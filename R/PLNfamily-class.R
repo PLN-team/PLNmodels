@@ -18,11 +18,10 @@ PLNfamily <-
     active = list(
       # send back a data frame with some criteria associated with the collection of fits
       criteria = function() {
-        res <- do.call(rbind, lapply(self$models, function(model) {
-          c(degrees_freedom = model$degrees_freedom, loglik = model$loglik, BIC = model$BIC, ICL = model$ICL, R_squared = model$R_squared)
-        }))
+        res <- do.call(rbind, lapply(self$models, function(model) {model$criteria}))
         data.frame(param = self$params, res)
       },
+      # send back a data frame with some quantities associated with the optimization process
       convergence = function() {
         res <- do.call(rbind, lapply(self$models, function(model) {
           c(degrees_freedom = model$degrees_freedom, model$optim_par)
@@ -58,6 +57,14 @@ PLNfamily$set("public", "initialize",
       Sigma <- crossprod(par0$M)/private$n + diag(colMeans(par0$S), private$p, private$p)
       self$inception <- PLNfit$new(Theta = par0$Theta, Sigma = Sigma, M = par0$M, S = par0$S)
     }
+})
+
+      ## a method to compute and set fields after optimization
+PLNfamily$set("public", "postTreatment",
+function() {
+  for (model in self$models) {
+    model$computeR2(self$responses, self$covariates, self$offsets)
+  }
 })
 
 #' Best model extraction from a collection of PLNfit (PCA, network)
@@ -128,22 +135,5 @@ PLNfamily$set("public", "predict",
 function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", "response")) {
   lapply(self$models, function(model) {
     model$predict(newdata, newOffsets, type)
-  })
-})
-
-PLNfamily$set("public", "postTreatment",
-function() {
-  private$computeR2()
-})
-
-# Compute goodness of fit (R2) for each fit in the family
-PLNfamily$set("private", "computeR2",
-function() {
-  ## Likelihoods of the null and saturated models
-  lmin <- logLikPoisson(self$responses, nullModelPoisson(self$responses, self$covariates, self$offsets))
-  lmax <- logLikPoisson(self$responses, fullModelPoisson(self$responses))
-  lapply(self$models, function(model) {
-    loglik <- logLikPoisson(self$responses, model$latentPos(self$covariates, self$offsets))
-    model$update(R2 = (loglik - lmin) / (lmax - lmin))
   })
 })

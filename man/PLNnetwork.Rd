@@ -22,9 +22,9 @@ PLNnetwork(Robject, ...)
 
 \item{formula}{a formula}
 
-\item{penalties}{a vector of positive real number controling the level of sparisty of the underlying network}
+\item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
 
-\item{control.init}{a list for controling the optimization. See details.}
+\item{control.init}{a list for controling the optimization of the initialization, that fits a standard PLN model with the \code{\link[=PLN]{PLN}} function. See details.}
 
 \item{control.main}{a list for controling the optimization. See details.}
 
@@ -42,12 +42,10 @@ a collection of models with class \code{\link[=PLNnetworkfit-class]{PLNnetworkfi
 two methods are available for specifing the models (with formulas or matrices)
 }
 \details{
-The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries
+The list of parameters \code{control.init} and \code{control.main} control the optimization of the initialization and the main process.
+
+ The following entries are shared by both \code{control.init} and \code{control.main} and mainly concern the optimization parameters of NLOPT. There values can be different in \code{control.init} and \code{control.main}
  \itemize{
- \item{"approx"}{boolean for performing a two-step approach (PLN + graphical-Lasso) rather than the fully joint optimization. Default to FALSE.}
- \item{"out.tol"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
- \item{"out.maxit"}{outer solver stops when the number of iteration exeeeds maxiter. Default is 10000}
- \item{"penalize.diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}
  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
@@ -56,9 +54,22 @@ The list of parameters \code{control.init} and \code{control.main} control the o
  \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
- \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
- \item{"inception"}{a PLNfit to start with. If NULL, a PLN is fitted on the . If an R6 object with class 'PLNfit' is given, it is used to initialize the model.}
+}
+
+The following parameter are specific to initialization
+\itemize{
+ \item{"inception"}{a PLNfit to start with. If NULL, a PLN is fitted. If an R6 object with class 'PLNfit' is given, it is used to initialize the model.}
+ \item{"nPenalties"}{an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non NULL}
+ \item{"min.ratio"}{the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min.ratio}. Default is 0.01 for high dimensional problem, 0.001 otherwise.}
+}
+
+The following parameter are specific to main iterative process
+\itemize{
+ \item{"approx"}{boolean for performing a two-step approach (PLN + graphical-Lasso) rather than the fully joint optimization. Default to FALSE.}
+ \item{"out.tol"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
+ \item{"out.maxit"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
+ \item{"penalize.diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}
 }
 }
 \examples{

@@ -66,7 +66,7 @@ PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y),
                     maxeval  = 10000,
                     method   = "MMA",
                     lbvar    = 1e-4,
-                    trace    = 1)
+                    trace    = 0)
 
   ctrl.main <- list(ftol_rel = 1e-10,
                     ftol_abs = 1e-10,
@@ -86,7 +86,7 @@ PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y),
   myPLN <- PLNPCAfamily$new(ranks = ranks, responses = Y, covariates = X, offsets = O, control = ctrl.init)
 
   ## Now adjust the PLN models
-  if (ctrl.main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.")
+  if (ctrl.main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.\n")
   myPLN$optimize(ctrl.main)
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA

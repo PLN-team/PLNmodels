@@ -11,35 +11,8 @@ vignette: >
 
 This vignette intends to illustrate the basical use of the `PLNPCA` function and the methods accompaning the R6 Classes `PLNPCAfamily` and `PLNPCAfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
 
-## The Trichoptera data set
-
-This data set comes with the `R` package *ade4*. We also load our own package for the upcoming analyses:
-```{r}
-library(PLNmodels)
-library(ade4)
-data("trichometeo")
+```{r child = 'trichoptera.Rmd'}
 ```
-
-The insects have been trapped between 1959 and 1960 during 49 trapping nights. These trapping nights are the observations in the case at hand. For each one of these, the abundance of 17 Trichoptera species is recorded, which forms the first table:
-```{r}
-dim(trichometeo$fau)
-head(trichometeo$fau)
-```
-
-
-The second table concerns 11 meteorological variables which may influence the abundance of each species:
-
-```{r}
-dim(trichometeo$meteo)
-head(trichometeo$meteo)
-```
-Finally, the observations (that is to say, the trapping nights), have been classified into 12 groups corresponding to contiguous nights between summer 1959 and  summer 1960.
-
-```{r}
-barplot(table(trichometeo$cla), main="Trapping nights classificaton")
-```
-
-A full description of the data set (in French) is available  [at this page](http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf).
 
 ## Poisson log-normal models
 
@@ -87,20 +60,20 @@ The critetion $J$ represents the variational lower bound of the likelihood: in t
 From this plot, we can see that the best model in terms of BIC or ICL is obtained for $q=3$ axes. We may extract the corresponding model with the method `getBestModel("ICL")`. A model with a specific number of axes can be extracted with the `getModel(q)` method. 
 
 ```{r}
-myPCA.ICL <- models.nocov$getBestModel("ICL") # if no criteria is specified, the best ICL is used
+myPCA.ICL <- models.nocov$getBestModel("ICL") # if no criteria is specified, the best BIC is used
 myPCA.q5 <- models.nocov$getModel(5) 
 ```
 
-The variables `myPCA.ICL` and `myPCA.q5` are other `R6Class` objects of class `PLNPCAfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot` method provides the individual maps and correlation circles as in usual PCA. If an additional classification exist for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument of the function.
+The variables `myPCA.ICL` and `myPCA.q5` are other `R6Class` objects of class `PLNPCAfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_PCA` method provides the individual maps and correlation circles as in usual PCA. If an additional classification exist for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument of the function.
 
 ```{r, fig.width=8, fig.height=8}
-myPCA.ICL$plot(cols=trichometeo$cla)
+myPCA.ICL$plot_PCA(cols=trichometeo$cla)
 ```
 
 With our model (and any pPCA model for count data, where model are not necessarily nested), it is important to look at all the axes at the same time, since the model with $q=3$ axes is not included in the model with $q=5$ axes. Indeed, let us vizualize first three axes for the model with $q=5$ (note that we can control the axes which are plotted):
 
 ```{r, fig.width=8, fig.height=8}
-myPCA.q5$plot(cols=trichometeo$cla, axes=1:3)
+myPCA.q5$plot_PCA(cols=trichometeo$cla, axes=1:3)
 ```
 
 We can see that the maps for axes (1,2) is slightly different for the model with $q=5$ from the one obtained for axes (1,2) in the $q=3$ model. 
@@ -138,14 +111,14 @@ models.cov
 myPCA.cov <- models.cov$getBestModel("ICL")
 ```
 
-Suppose thaht we want to give a closer look to the first two axes. This can be done thanks to the two methods `plot_individual.map` and `plot_correlation.circle` :
+Suppose that we want to give a closer look to the first two axes. This can be done thanks to the two methods `plot_individual_map` and `plot_correlation_circle` :
 
 ```{r, fig.height=7, fig.width=7}
-myPCA.cov$plot_individual.map(axes=c(1,2), cols=trichometeo$cla)
+myPCA.cov$plot_individual_map(axes=c(1,2), cols=trichometeo$cla)
 ```
 
 ```{r, fig.height=7, fig.width=7}
-myPCA.cov$plot_correlation.circle(axes=c(1,2))
+myPCA.cov$plot_correlation_circle(axes=c(1,2))
 ```
 
 That is all for now!

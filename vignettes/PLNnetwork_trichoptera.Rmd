@@ -11,35 +11,8 @@ vignette: >
 
 This vignette intends to illustrate the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
 
-## The Trichoptera data set
-
-This data set comes with the `R` package *ade4*. We also load our own package for the upcoming analyses:
-```{r}
-library(PLNmodels)
-library(ade4)
-data("trichometeo")
+```{r child = 'trichoptera.Rmd'}
 ```
-
-The insects have been trapped between 1959 and 1960 during 49 trapping nights. These trapping nights are the observations in the case at hand. For each one of these, the abundance of 17 Trichoptera species is recorded, which forms the first table:
-```{r}
-dim(trichometeo$fau)
-head(trichometeo$fau)
-```
-
-
-The second table concerns 11 meteorological variables which may influence the abundance of each species:
-
-```{r}
-dim(trichometeo$meteo)
-head(trichometeo$meteo)
-```
-Finally, the observations (that is to say, the trapping nights), have been classified into 12 groups corresponding to contiguous nights between summer 1959 and  summer 1960.
-
-```{r}
-barplot(table(trichometeo$cla), main="Trapping nights classificaton")
-```
-
-A full description of the data set (in French) is available  [at this page](http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf).
 
 ## Poisson log-normal models
 
@@ -66,19 +39,19 @@ We start by adjusting the above model to Trichoptera data set. Here, the matrix 
 
 ```{r}
 abundance <- as.matrix(trichometeo$fau) ## must be a matrix
-models.nocov <- PLNnetwork(abundance ~ 1)
+models <- PLNnetwork(abundance ~ 1)
 ```
 
 Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`.
 
-The `model.nocov` variable is an `R6` object with class `PLNnetworkfamily`, which comes with a couple of methods. The most basic is the `show/print` method, which send a very basic summary of the estimation process:
+The `models` variable is an `R6` object with class `PLNnetworkfamily`, which comes with a couple of methods. The most basic is the `show/print` method, which send a very basic summary of the estimation process:
 
 ```{r}
-models.nocov
+models
 ```
 Complementary information comes with the `plot` method:
 ```{r, fig.width=7, fig.height=5}
-models.nocov$plot()
+models$plot()
 ```
 
 The critetion $J$ represents the variational lower bound of the likelihood: in this case, we can see that it is strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) $R^2$ which is displayed for each value of penalty. Generally, smoothness of these criteria is an good indicator to check that the optimization process went well.
@@ -86,13 +59,13 @@ The critetion $J$ represents the variational lower bound of the likelihood: in t
 From this plot, we can see that the best model in terms of BIC is obtained for $q=3$ axes. We may extract the corresponding model with the method `getBestModel("BIC")`. A model with a specific penalty level can be extracted with the `getModel(lambda)` method. 
 
 ```{r}
-myPCA.BIC <- models.nocov$getBestModel("BIC") # if no criteria is specified, the best ICL is used
-## myPCA.pen <- models.nocov$getModel(models.nocov$penalties[10]) 
+model.BIC <- models$getBestModel() # if no criteria is specified, the best ICL is used
+model.pen <- models$getModel(models$penalties[5]) # give some sparsity
 ```
 
-The variables `myPCA.BIC` and `myPCA.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network.
+The variables `model.BIC` and `model.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network.
 
 ```{r, fig.width=8, fig.height=8}
-myPCA.BIC$plot_network()
+model.BIC$plot_network()
 ```
 
