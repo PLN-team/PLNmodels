@@ -3,13 +3,14 @@
 \docType{data}
 \name{PLNnetworkfit}
 \alias{PLNnetworkfit}
-\title{An R6 Class to represent a PLNfit in a network inference framework}
+\title{An R6 Class to represent a PLNfit in a sparse inverse covariance framework}
 \format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 PLNnetworkfit
 }
 \description{
 The function \code{\link{PLNnetwork}} produces a collection of models which are instances of object with class \code{PLNnetworkfit}.
+See the documentation for \code{\link[=PLNnetwork_plot_network]{plot_network}}
 
 This class comes with a set of methods, some of them being useful for the user: plot_network + methods inhererited from PLNfit.
 }
@@ -33,6 +34,8 @@ This class comes with a set of methods, some of them being useful for the user: 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
 \item{\code{degrees_freedom}}{number of parameters in the current PLN model}
+
+\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and degrees of freedom}
 }}
 
 \seealso{

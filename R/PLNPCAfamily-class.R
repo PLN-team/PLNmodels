@@ -23,7 +23,7 @@ PLNPCAfamily <-
   R6Class(classname = "PLNPCAfamily",
     inherit = PLNfamily,
      active = list(
-      ranks = function() self$params
+      ranks = function() private$params
     )
 )
 
@@ -32,7 +32,7 @@ PLNPCAfamily$set("public", "initialize",
 
   ## initialize the required fields
   super$initialize(responses, covariates, offsets, control)
-  self$params <- ranks
+  private$params <- ranks
 
   if (control$trace > 0) cat("\n Perform SVD to initialize other parameters...")
   svdM     <- svd(self$inception$var_par$M, nu=max(ranks), nv=max(ranks))
@@ -135,7 +135,7 @@ NULL
 PLNPCAfamily$set("public", "plot",
 function() {
   p <- super$plot() + xlab("rank")
-  p <- p + annotate("text", x=self$params, y=min(self$criteria$loglik), angle=90, label=paste("R2 =", round(self$criteria$R_squared, 2)), size=3, alpha=0.7) +
+  p <- p + annotate("text", x=self$ranks, y=min(self$criteria$loglik), angle=90, label=paste("R2 =", round(self$criteria$R_squared, 2)), size=3, alpha=0.7) +
     geom_vline(xintercept=self$getBestModel("ICL")$rank, linetype="dashed", alpha=0.5)
   p
 })
@@ -145,6 +145,8 @@ function() {
   super$show()
   cat(" Task: Principal Component Analysis\n")
   cat("========================================================\n")
-  cat(" - Ranks considered: from", min(self$params), "to", max(self$params),"\n")
+  cat(" - Ranks considered: from", min(self$ranks), "to", max(self$ranks),"\n")
+  cat(" - Best model (regarding BIC): rank =", self$getBestModel("BIC")$rank, "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
   cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })
+PLNPCAfamily$set("public", "print", function() self$show())

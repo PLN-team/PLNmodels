@@ -13,7 +13,7 @@ The function \code{\link{PLN}} produces a collection of models which are instanc
 Objects produced by the functions \code{\link{PLNnetwork}} and \code{\link{PLNPCA}} also enjoy the method of \code{\link{PLNfit}}
 by inheritance.
 
-This class comes with a set of methods, some of them being useful for the user: plot_model_par, plot_variational_par
+This class comes with a set of methods, some of them being useful for the user: plot_model, plot_variational_par
 
 Fields are accessed via active binding and cannot be changed by the user.
 }
@@ -35,6 +35,8 @@ Fields are accessed via active binding and cannot be changed by the user.
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
 \item{\code{degrees_freedom}}{number of parameters in the current PLN model}
+
+\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and degrees of freedom}
 }}
 
 \keyword{datasets}

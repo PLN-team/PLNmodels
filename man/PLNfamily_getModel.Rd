@@ -4,7 +4,7 @@
 \alias{PLNfamily_getModel}
 \title{Model extraction from a collection of PLN models}
 \arguments{
-\item{var}{value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection. Must belong to the vector params}
+\item{var}{value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection.}
 }
 \value{
 Send back a object with class \code{\link[=PLNfit]{PLNfit}}.

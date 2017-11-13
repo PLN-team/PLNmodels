@@ -1,6 +1,7 @@
-#' An R6 Class to represent a PLNfit in a network inference framework
+#' An R6 Class to represent a PLNfit in a sparse inverse covariance framework
 #'
 #' @description The function \code{\link{PLNnetwork}} produces a collection of models which are instances of object with class \code{PLNnetworkfit}.
+#' See the documentation for \code{\link[=PLNnetwork_plot_network]{plot_network}}
 #'
 #' This class comes with a set of methods, some of them being useful for the user: plot_network + methods inhererited from PLNfit.
 #'
@@ -13,6 +14,7 @@
 #' @field ICL variational lower bound of the ICL
 #' @field R_squared approximated goodness-of-fit criterion
 #' @field degrees_freedom number of parameters in the current PLN model
+#' @field criteria a vector with loglik, BIC, ICL, R_squared and degrees of freedom
 #' @include PLNnetworkfit-class.R
 #' @importFrom R6 R6Class
 #' @import Matrix
@@ -67,6 +69,14 @@ PLNnetworkfit$set("public", "latent_network",
   }
 )
 
+#' Plot the network (support of the inverse covariance) for a \code{PLNnetworkfit} object
+#'
+#' @name PLNPCAfit_plot_individual.map
+#' @param plot logical. Should the plot be displayed or sent back as an igraph object
+#' @param remove.isolated if \code{TRUE}, isolated node are remove before plotting.
+#' @param layout an optional igraph layout
+#' @return displays a graph (via igraph for small graph and corrplot for large ones) and/or sends back an igraph object
+NULL
 PLNnetworkfit$set("public", "plot_network",
   function(plot = TRUE, remove.isolated = TRUE, layout = NULL) {
     net <- self$latent_network(weighted = TRUE)

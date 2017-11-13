@@ -14,7 +14,7 @@ This vignette intends to illustrate the basical use of the `PLN` function and th
 ```{r child = 'trichoptera.Rmd'}
 ```
 
-```{r child = 'PLNmodel.Rmd'}
+```{r child = 'PLNmodels.Rmd'}
 ```
 
 ### A model with latent main effects for the Trichopetra data set
@@ -41,6 +41,7 @@ model.nocov$loglik
 model.nocov$BIC
 model.nocov$ICL
 model.nocov$R_squared
+model.nocov$criteria
 ```
 
 Complementary information comes with the `plot` method:

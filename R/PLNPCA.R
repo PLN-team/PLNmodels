@@ -58,7 +58,8 @@ PLNPCA.formula <- function(formula, ranks = 1:5,  control.init = list(), control
 PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), ranks = 1:5,  control.init = list(), control.main = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl.init <- list(inception = ifelse(ncol(Y) < 500, "PLN", "LM"),
+
+  ctrl.init <- list(inception = ifelse((ncol(Y) < 100) & (nrow(Y) > ncol(Y)), "PLN", "LM"),
                     ftol_rel = 1e-6,
                     ftol_abs = 1e-4,
                     xtol_rel = 1e-4,

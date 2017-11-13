@@ -120,7 +120,7 @@ initializePLN <- function(Y, X, O, control) {
 
   ## User defined (from a previous fit, for instance)
   if(isTRUE(all.equal(class(control$inception), c("PLNfit", "R6")))) {
-    if (control$trace > 0) cat("\n User defined inceptive PLN model")
+    if (control$trace > 1) cat("\n User defined inceptive PLN model")
     stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))),
               isTRUE(all.equal(dim(control$inception$var_par$M), c(n,p))),
               isTRUE(all.equal(dim(control$inception$var_par$S), c(n,p))))
@@ -130,7 +130,7 @@ initializePLN <- function(Y, X, O, control) {
 
     ## GLM Poisson
   } else if (isTRUE(all.equal(is.character(control$inception), control$inception == "GLM"))) {
-    if (control$trace > 0) cat("\n Use GLM Poisson to define the inceptive model")
+    if (control$trace > 1) cat("\n Use GLM Poisson to define the inceptive model")
     GLMs  <- lapply(1:p, function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
     Theta <- do.call(rbind, lapply(GLMs, coefficients))
     M     <- do.call(cbind, lapply(GLMs, residuals, "deviance"))
@@ -139,7 +139,7 @@ initializePLN <- function(Y, X, O, control) {
 
     ## default LM + log transformation
   } else {
-    if (control$trace > 0) cat("\n Use LM after log transformation to define the inceptive model")
+    if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
     LMs  <- lapply(1:p, function(j) lm.fit(X, log(1 + Y[,j]), offset =  O[,j]) )
     Theta <- do.call(rbind, lapply(LMs, coefficients))
     M     <- do.call(cbind, lapply(LMs, residuals))

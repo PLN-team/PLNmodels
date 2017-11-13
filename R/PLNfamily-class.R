@@ -6,10 +6,10 @@ PLNfamily <-
       covariates = NULL, # the X matrix
       offsets    = NULL, # the O matrix
       inception  = NULL, # the basic model in the collection (no regularization, nor sparsity, nor rank)
-      models     = NULL, # the collection of models to be fitted
-      params     = NULL  # vector of parameters that indexes the models (either sparsity, rank, etc.)
+      models     = NULL  # the collection of fitted models
     ),
     private = list(
+      params     = NULL,  # vector of parameters that indexes the models (either sparsity, rank, etc.)
       fn_optim   = NULL, # objective and gradient for optimizing the regularized models
       n          = NULL, # number of samples
       p          = NULL, # number of responses
@@ -19,14 +19,14 @@ PLNfamily <-
       # send back a data frame with some criteria associated with the collection of fits
       criteria = function() {
         res <- do.call(rbind, lapply(self$models, function(model) {model$criteria}))
-        data.frame(param = self$params, res)
+        data.frame(param = private$params, res)
       },
       # send back a data frame with some quantities associated with the optimization process
       convergence = function() {
         res <- do.call(rbind, lapply(self$models, function(model) {
           c(degrees_freedom = model$degrees_freedom, model$optim_par)
         }))
-        data.frame(param = self$params, res)
+        data.frame(param = private$params, res)
       }
     )
 )
@@ -49,7 +49,7 @@ PLNfamily$set("public", "initialize",
     if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:private$d
 
     ## extract the model used for initializaing the whole family
-    if (control$trace > 0) cat("\n Adjust a PLN to define the inceptive model")
+    if (control$trace > 0) cat("\n Adjust the inceptive model")
     if (isTRUE(all.equal(is.character(control$inception), control$inception == "PLN")) ) {
       self$inception <- PLN(self$responses, self$covariates, self$offsets, control)
     } else {
@@ -59,7 +59,7 @@ PLNfamily$set("public", "initialize",
     }
 })
 
-      ## a method to compute and set fields after optimization
+## a method to compute and set fields after optimization
 PLNfamily$set("public", "postTreatment",
 function() {
   for (model in self$models) {
@@ -72,11 +72,11 @@ function() {
 #' @name PLNfamily_getBestModel
 #'
 #' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "ICL", "loglik", "R2". Default is "BIC".
+#' "BIC", "ICL", "loglik", "R_squared". Default is "BIC".
 #' @return  Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getBestModel",
-function(crit = c("BIC", "ICL", "loglik", "R2")){
+function(crit = c("BIC", "ICL", "loglik", "R_squared")){
   crit <- match.arg(crit)
   if (length(self$criteria[[crit]]) > 1) {
     id <- which.max(self$criteria[[crit]])
@@ -89,36 +89,18 @@ function(crit = c("BIC", "ICL", "loglik", "R2")){
 #'
 #' @name PLNfamily_getModel
 #'
-#' @param var value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection. Must belong to the vector params
+#' @param var value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection.
 #' @return Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getModel",
 function(var){
-  id <- match(var, self$params)
+  id <- match(var, private$params)
   if (!is.na(id)) {
     return(self$models[[id]]$clone())
   } else {
     stop("No such a model in the collection.")
   }
 })
-
-#' @import ggplot2
-PLNfamily$set("public", "plot",
-function() {
-  dplot <- melt(self$criteria[, c("param", "loglik", "BIC", "ICL")], id.vars = 1, variable.name = "criterion")
-  p <- ggplot(dplot, aes(x = param, y = value, group = criterion, colour = criterion)) +
-        geom_line() + geom_point() + ggtitle("Model selection criteria")
-  p
-})
-
-PLNfamily$set("public", "show",
-function() {
-  cat("--------------------------------------------------------\n")
-  cat("COLLECTION OF", length(self$models), "POISSON LOGNORMAL MODELS\n")
-  cat("--------------------------------------------------------\n")
-})
-
-PLNfamily$set("public", "print", function() self$show())
 
 #' Predict counts of new samples for all fits in the family
 #'
@@ -137,3 +119,20 @@ function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", 
     model$predict(newdata, newOffsets, type)
   })
 })
+
+#' @import ggplot2
+PLNfamily$set("public", "plot",
+function() {
+  dplot <- melt(self$criteria[, c("param", "loglik", "BIC", "ICL")], id.vars = 1, variable.name = "criterion")
+  p <- ggplot(dplot, aes(x = param, y = value, group = criterion, colour = criterion)) +
+        geom_line() + geom_point() + ggtitle("Model selection criteria")
+  p
+})
+
+PLNfamily$set("public", "show",
+function() {
+  cat("--------------------------------------------------------\n")
+  cat("COLLECTION OF", length(self$models), "POISSON LOGNORMAL MODELS\n")
+  cat("--------------------------------------------------------\n")
+})
+PLNfamily$set("public", "print", function() self$show())

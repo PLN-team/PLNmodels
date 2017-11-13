@@ -26,7 +26,7 @@ PLNnetworkfamily <-
   R6Class(classname = "PLNnetworkfamily",
     inherit = PLNfamily,
      active = list(
-      penalties = function() self$params
+      penalties = function() private$params
     )
 )
 
@@ -37,22 +37,20 @@ PLNnetworkfamily$set("public", "initialize",
     super$initialize(responses, covariates, offsets, control)
 
     ## Get an appropriate grid of penalties
-    if (control$trace > 0) cat("\n Recovering an appropriate grid of penalties.")
     if (is.null(penalties)) {
+      if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
       range_penalties <- range(abs(self$inception$model_par$Sigma[upper.tri(self$inception$model_par$Sigma)]))
       min_log_scale <- log10(range_penalties[2])
       max_log_scale <- log10(max(range_penalties[1],range_penalties[2]*control$min.ratio))
       penalties <- 10^seq(min_log_scale, max_log_scale, len = control$nPenalties)
     } else {
-      if (verbose) {
-        cat("\nPenalties already set by the user")
-      }
+      if (control$trace > 1) cat("\nPenalties already set by the user")
       stopifnot(all(penalties > 0))
     }
 
     ## instantiate as many models as penalties
-    self$params <- sort(penalties, decreasing = FALSE)
-    self$models <- lapply(self$params, function(penalty) {
+    private$params <- sort(penalties, decreasing = FALSE)
+    self$models <- lapply(private$params, function(penalty) {
       PLNnetworkfit$new(penalty = penalty)
     })
 
@@ -216,10 +214,12 @@ function(log.x=TRUE) {
 })
 
 PLNnetworkfamily$set("public", "show",
-  function() {
-    super$show()
-    cat(" Task: Network Inference \n")
-    cat("========================================================\n")
-    cat(" -", length(self$penalties) , "penalties considered: from", min(self$params), "to", max(self$params),"\n")
-    cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
-  })
+function() {
+  super$show()
+  cat(" Task: Network Inference \n")
+  cat("========================================================\n")
+  cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties),"\n")
+  cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
+  cat(" - Best model (regarding ICL): lambda =", format(self$getBestModel("ICL")$penalty, digits = 3), "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
+})
+PLNnetworkfamily$set("public", "print", function() self$show())

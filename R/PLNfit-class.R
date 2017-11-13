@@ -4,7 +4,7 @@
 #' Objects produced by the functions \code{\link{PLNnetwork}} and \code{\link{PLNPCA}} also enjoy the method of \code{\link{PLNfit}}
 #' by inheritance.
 #'
-#' This class comes with a set of methods, some of them being useful for the user: plot_model_par, plot_variational_par
+#' This class comes with a set of methods, some of them being useful for the user: plot_model, plot_variational_par
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'
@@ -16,6 +16,7 @@
 #' @field ICL variational lower bound of the ICL
 #' @field R_squared approximated goodness-of-fit criterion
 #' @field degrees_freedom number of parameters in the current PLN model
+#' @field criteria a vector with loglik, BIC, ICL, R_squared and degrees of freedom
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #' @importFrom corrplot corrplot
@@ -31,7 +32,7 @@ PLNfit <-
         private$monitoring <- monitoring
       },
       ## "setter" function
-      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, R2=NA, monitoring = NA) {
+      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, R2=NA, monitoring=NA) {
         if (!anyNA(Theta))      private$Theta  <- Theta
         if (!anyNA(Sigma))      private$Sigma  <- Sigma
         if (!anyNA(M))          private$M      <- M
@@ -96,32 +97,6 @@ function(responses, covariates, offsets) {
 ## PUBLIC METHODS FOR THE USERS
 ## ----------------------------------------------------------------------
 
-#' Display the model parameters in a matrix fashion
-#'
-#' @name PLNfit_plot
-#'
-#' @param type character. should the variational or the model parameters be plotted? default is "model".
-#'
-PLNfit$set("public", "plot",
-  function(type=c("model","variational")) {
-    type <- match.arg(type)
-    param <- switch(type,
-               "model"       = self$model_par,
-               "variational" = self$var_par)
-    par1 <- param[[1]]; par2 <- param[[2]]
-    rownames(par1) <- rep(" ", nrow(par1)) ; colnames(par1) <- rep(" ", ncol(par1))
-    rownames(par2) <- rep(" ", nrow(par2)) ; colnames(par2) <- rep(" ", ncol(par2))
-
-    par(mfrow = c(2,2))
-    hist(par1, breaks = sqrt(nrow(par1)), xlab = "", ylab = "", main = paste0(names(param)[1]))
-    hist(par2, breaks = sqrt(nrow(par2)), xlab = "", ylab = "", main = paste0(names(param)[2]))
-    corrplot::corrplot(par1, is.corr = FALSE, method = "color", cl.pos = "n")
-    corrplot::corrplot(par2, is.corr = FALSE, method = "color", cl.pos = "n")
-    title(main = paste0("\n",type," parameters"), outer = TRUE)
-    par(mfrow = c(1,1))
-  }
-)
-
 #' Predict counts of a new sample
 #'
 #' @name PLNfit_predict
@@ -148,6 +123,32 @@ PLNfit$set("public", "predict",
     rownames(results) <- rownames(newdata); colnames(results) <- rownames(private$Theta)
     attr(results, "type") <- type
     results
+  }
+)
+
+#' Display the model parameters in a matrix fashion
+#'
+#' @name PLNfit_plot
+#'
+#' @param type character. should the variational or the model parameters be plotted? default is "model".
+#'
+PLNfit$set("public", "plot",
+  function(type=c("model","variational")) {
+    type <- match.arg(type)
+    param <- switch(type,
+               "model"       = self$model_par,
+               "variational" = self$var_par)
+    par1 <- param[[1]]; par2 <- param[[2]]
+    rownames(par1) <- rep(" ", nrow(par1)) ; colnames(par1) <- rep(" ", ncol(par1))
+    rownames(par2) <- rep(" ", nrow(par2)) ; colnames(par2) <- rep(" ", ncol(par2))
+
+    par(mfrow = c(2,2))
+    hist(par1, breaks = sqrt(nrow(par1)), xlab = "", ylab = "", main = paste0(names(param)[1]))
+    hist(par2, breaks = sqrt(nrow(par2)), xlab = "", ylab = "", main = paste0(names(param)[2]))
+    corrplot::corrplot(par1, is.corr = FALSE, method = "color", cl.pos = "n")
+    corrplot::corrplot(par2, is.corr = FALSE, method = "color", cl.pos = "n")
+    title(main = paste0("\n",type," parameters"), outer = TRUE)
+    par(mfrow = c(1,1))
   }
 )
 
