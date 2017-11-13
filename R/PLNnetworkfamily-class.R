@@ -41,8 +41,8 @@ PLNnetworkfamily$set("public", "initialize",
       if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
       range_penalties <- range(abs(self$inception$model_par$Sigma[upper.tri(self$inception$model_par$Sigma)]))
       max_log_scale <- log10(range_penalties[2])
-      min_log_scale <- log10(max(range_penalties[1],max_log_scale*control$min.ratio))
-      penalties <- rev(10^seq(max_log_scale, min_log_scale, len = control$nPenalties))
+      min_log_scale <- log10(max(range_penalties[1],range_penalties[2]*control$min.ratio))
+      penalties <- 10^seq(min_log_scale, max_log_scale, len = control$nPenalties)
     } else {
       if (control$trace > 1) cat("\nPenalties already set by the user")
       stopifnot(all(penalties > 0))
@@ -79,6 +79,10 @@ PLNnetworkfamily$set("public", "optimize",
                    rep(-Inf, private$n*private$p), # M
                    rep(control$lbvar, private$n*private$p)) # S
 
+  xtol_abs <- c(rep(0, private$p*private$d), # Theta
+                rep(0, private$n*private$p), # M
+                rep(control$xtol, private$n*private$p)) # S
+
   for (m in seq_along(self$models))  {
 
     penalty <- self$models[[m]]$penalty
@@ -86,15 +90,11 @@ PLNnetworkfamily$set("public", "optimize",
     ## ===========================================
     ## OPTIMISATION
     if (control$trace == 1) {
-      cat("\t sparsifying penalty =",penalty, "\r")
+      cat("\tsparsifying penalty =",penalty, "\r")
       flush.console()
     }
-
     if (control$trace > 1) {
-      cat(" sparsifying penalty =",penalty)
-      cat("\n\t conservative convex separable approximation for gradient descent")
-      cat("\n\t graphical-Lasso for sparse covariance estimation")
-      cat("\n\titeration: ")
+      cat("\tsparsifying penalty =",penalty, "- iteration:")
     }
 
     cond <- FALSE; iter <- 0
@@ -115,8 +115,8 @@ PLNnetworkfamily$set("public", "optimize",
                    "ftol_rel"    = control$ftol_rel,
                    "ftol_abs"    = control$ftol_abs,
                    "xtol_rel"    = control$xtol_rel,
-                   "xtol_abs"    = control$xtol_abs,
-                   "print_level" = max(0,control$trace - 1))
+                   "xtol_abs"    = xtol_abs,
+                   "print_level" = max(0,control$trace - 2))
 
       optim.out <- nloptr(par0, eval_f = private$fn_optim, lb = lower.bound, opts = opts,
                           log_detOmega = logDetOmega, Omega = Omega,
@@ -126,7 +126,7 @@ PLNnetworkfamily$set("public", "optimize",
       convergence[iter] <- sqrt(sum((optim.out$solution - par0)^2)/sum(par0^2))
 
       ## Check convergence
-      if ((convergence[iter] < tol) | (iter >= maxit)) {
+      if (iter > 1 & ((convergence[iter] < tol) | (iter >= maxit))) {
         cond <- TRUE
       }
 
@@ -157,6 +157,11 @@ PLNnetworkfamily$set("public", "optimize",
                                               inner_iterations = optim.out$iterations,
                                               inner_status = optim.out$status,
                                               inner_message = optim.out$message))
+    if (control$trace > 1) {
+      cat("\r")
+      flush.console()
+    }
+
   }
 
 })
@@ -179,9 +184,10 @@ PLNnetworkfamily$set("public", "optimize_approx",
     penalty <- self$models[[m]]$penalty
     ## ===========================================
     ## OPTIMISATION
-    if (control$trace > 0) cat("\n sparsifying penalty =",penalty)
-    if (control$trace > 1) cat("\n\t approximate version: do not optimize the variational paramters")
-    if (control$trace > 1) cat("\n\t graphical-Lasso for sparse covariance estimation")
+    if (control$trace > 0) {
+      cat("\tsparsifying penalty =",penalty, "\r")
+      flush.console()
+    }
 
     Omega <- suppressWarnings(glasso::glasso(Sigma, rho = penalty, penalize.diagonal = control$penalize.diagonal, approx = TRUE)$wi)
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
@@ -193,7 +199,8 @@ PLNnetworkfamily$set("public", "optimize_approx",
     if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
     if (!isSymmetric(Theta)) Omega <- Matrix::symmpart(Omega)
 
-    self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S)
+    self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S,
+                            monitoring = list(objective = NA))
   }
 
 })
@@ -207,6 +214,7 @@ PLNnetworkfamily$set("public", "optimize_approx",
 NULL
 PLNnetworkfamily$set("public", "plot",
 function(log.x=TRUE) {
+  stopifnot(!anyNA(self$criteria))
   p <- super$plot() + xlab("penalty") +
     geom_vline(xintercept = self$getBestModel("BIC")$penalty, linetype = "dashed", alpha = 0.5)
   if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
@@ -219,7 +227,9 @@ function() {
   cat(" Task: Network Inference \n")
   cat("========================================================\n")
   cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties),"\n")
-  cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
-  cat(" - Best model (regarding ICL): lambda =", format(self$getBestModel("ICL")$penalty, digits = 3), "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
+  if (!anyNA(self$criteria$BIC))
+    cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
+  if (!anyNA(self$criteria$ICL))
+    cat(" - Best model (regarding ICL): lambda =", format(self$getBestModel("ICL")$penalty, digits = 3), "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })
 PLNnetworkfamily$set("public", "print", function() self$show())

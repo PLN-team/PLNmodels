@@ -73,25 +73,25 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- list(inception = ifelse((ncol(Y) < 100) & (nrow(Y) > ncol(Y)), "PLN", "LM"),
-                    ftol_rel = 1e-9,
-                    ftol_abs = 1e-6,
+                    ftol_rel = 1e-6,
+                    ftol_abs = 0,
                     xtol_rel = 1e-4,
-                    xtol_abs = 1e-8,
+                    xtol_abs = 1e-4,
                     maxeval  = 10000,
                     method   = "MMA",
                     lbvar    = 1e-4,
                     nPenalties = 20,
-                    min.ratio = ifelse(nrow(Y) <= ncol(Y), 0.01, 1e-3),
+                    min.ratio = ifelse(nrow(Y) <= ncol(Y), 0.05, 1e-2),
                     trace = 0)
 
   ctrl.main <- list(approx = FALSE,
-                    out.tol = 1e-2,
+                    out.tol = 1e-4,
                     out.maxit = 50,
                     penalize.diagonal = FALSE,
-                    ftol_rel = 1e-9,
-                    ftol_abs = 1e-9,
+                    ftol_abs = 0,
+                    ftol_rel = 1e-8,
                     xtol_rel = 1e-4,
-                    xtol_abs = 1e-8,
+                    xtol_abs = 1e-5,
                     maxeval  = 10000,
                     method   = "MMA",
                     lbvar    = 1e-5,
@@ -104,17 +104,17 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
   if (ctrl.main$trace > 0) cat("\n Initialization...")
   myPLN <- PLNnetworkfamily$new(penalties = penalties, responses = Y, covariates = X, offsets = O, control = ctrl.init)
 
-  if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN models for sparse network inference.\n")
+  if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance\n")
   if (ctrl.main$approx) {
-    if (ctrl.main$trace > 0) cat("\n\t approximation: apply neighborhood selection on the inceptive PLN model on a penalty grid.\n")
+    if (ctrl.main$trace > 0) cat("\tapproximation: apply neighborhood selection on the inceptive PLN model on a penalty grid.\n")
     myPLN$optimize_approx(ctrl.main)
   } else {
+    if (ctrl.main$trace > 0) cat("\talternate gradient descent and graphical-lasso\n")
     myPLN$optimize(ctrl.main)
+    ## Post-treatments: compute pseudo-R2
+    if (ctrl.main$trace > 0) cat("\n Post-treatments")
+    myPLN$postTreatment()
   }
-
-  ## Post-treatments: compute pseudo-R2
-  if (ctrl.main$trace > 0) cat("\n Post-treatments")
-  myPLN$postTreatment()
 
   if (ctrl.main$trace > 0) cat("\n DONE!\n")
   return(myPLN)

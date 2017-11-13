@@ -78,6 +78,7 @@ NULL
 PLNfamily$set("public", "getBestModel",
 function(crit = c("BIC", "ICL", "loglik", "R_squared")){
   crit <- match.arg(crit)
+  stopifnot(!anyNA(self$criteria[[crit]]))
   if (length(self$criteria[[crit]]) > 1) {
     id <- which.max(self$criteria[[crit]])
   } else {id <- 1}

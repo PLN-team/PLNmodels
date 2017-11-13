@@ -65,7 +65,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(ftol_rel = 1e-9,  ftol_abs = 1e-6, xtol_rel = 1e-4, xtol_abs = 1e-8, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = "LM")
+  ctrl <- list(ftol_rel = 1e-6,  ftol_abs = 0, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = "LM")
   ctrl[names(control)] <- control
 
   ## get an initial point for optimization
@@ -79,14 +79,14 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
 
   lower.bound <- c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
-
+  xtol_abs    <- c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p))
   ## Now optimize with NLOPTR
   opts <- list("algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
                "maxeval"     = ctrl$maxeval,
                "ftol_rel"    = ctrl$ftol_rel,
                "ftol_abs"    = ctrl$ftol_abs,
                "xtol_rel"    = ctrl$xtol_rel,
-               "xtol_abs"    = ctrl$xtol_abs,
+               "xtol_abs"    = xtol_abs,
                "print_level" = max(0,ctrl$trace-1))
   optim.out <- nloptr(par0, eval_f = fn_optim_PLN_profiled_Cpp, lb = lower.bound, opts = opts,
                       Y = Y, X = X, O = O, KY = KY)

@@ -42,12 +42,12 @@ PLNfit <-
       }
     ),
     private = list(
-      Theta      = NULL, # the p x d model parameters for the covariable
-      Sigma      = NULL, # the p x p covariance matrix
-      S          = NULL, # the n x p variational parameters for the variances
-      M          = NULL, # the n x p variational parameters for the means
-      R2         = NULL, # approximated goodness of fit criterion
-      monitoring = NULL  # a list with optimization monitoring quantities
+      Theta      = NA, # the p x d model parameters for the covariable
+      Sigma      = NA, # the p x p covariance matrix
+      S          = NA, # the n x p variational parameters for the variances
+      M          = NA, # the n x p variational parameters for the means
+      R2         = NA, # approximated goodness of fit criterion
+      monitoring = NA  # a list with optimization monitoring quantities
     ),
     ## use active bindings to access private members like fields
     active = list(

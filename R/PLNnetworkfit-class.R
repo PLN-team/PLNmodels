@@ -25,20 +25,20 @@ PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, monitoring=NA) {
+      initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, monitoring=list(objective=NA)) {
         super$initialize(Theta, Sigma, M, S, monitoring)
         private$lambda <- penalty
         private$Omega  <- Omega
       },
-      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, R2=NA,  monitoring=NA) {
+      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, R2=NA, monitoring=NA) {
         super$update(Theta, Sigma, M, S, R2, monitoring)
         if (!anyNA(penalty)) private$lambda <- penalty
         if (!anyNA(Omega))   private$Omega  <- Omega
       }
     ),
     private = list(
-      Omega  = NULL, # the p x p precision matrix
-      lambda = NULL  # the sparsity tuning parameter
+      Omega  = NA, # the p x p precision matrix
+      lambda = NA  # the sparsity tuning parameter
     ),
     active = list(
       penalty = function() {private$lambda},
