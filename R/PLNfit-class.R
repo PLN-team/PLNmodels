@@ -83,16 +83,6 @@ function(covariates, offsets) {
   latentPos
 })
 
-# Compute goodness of fit (R2)
-PLNfit$set("public", "computeR2",
-function(responses, covariates, offsets) {
-  ## Likelihoods of the null and saturated models
-  lmin <- logLikPoisson(responses, nullModelPoisson(responses, covariates, offsets))
-  lmax <- logLikPoisson(responses, fullModelPoisson(responses))
-  loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets))
-  private$R2 <- (loglik - lmin) / (lmax - lmin)
-})
-
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS
 ## ----------------------------------------------------------------------

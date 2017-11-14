@@ -62,8 +62,13 @@ PLNfamily$set("public", "initialize",
 ## a method to compute and set fields after optimization
 PLNfamily$set("public", "postTreatment",
 function() {
+  ## Compute R2
+  ## Likelihoods of the null and saturated models
+  lmin <- logLikPoisson(self$responses, nullModelPoisson(self$responses, self$covariates, self$offsets))
+  lmax <- logLikPoisson(self$responses, fullModelPoisson(self$responses))
   for (model in self$models) {
-    model$computeR2(self$responses, self$covariates, self$offsets)
+    loglik <- logLikPoisson(self$responses, model$latent_pos(self$covariates, self$offsets))
+    model$update(R2 = (loglik - lmin) / (lmax - lmin))
   }
 })
 

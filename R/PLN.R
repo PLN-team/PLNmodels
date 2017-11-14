@@ -108,8 +108,11 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
                                       iterations = optim.out$iterations,
                                       status = optim.out$status,
                                       message = optim.out$message))
-
-  myPLN$computeR2(Y, X, O)
+  ## Compute R2
+  lmin <- logLikPoisson(Y, nullModelPoisson(Y, X, O))
+  lmax <- logLikPoisson(Y, fullModelPoisson(Y))
+  loglik <- logLikPoisson(Y, myPLN$latent_pos(X, O))
+  myPLN$update(R2 = (loglik - lmin) / (lmax - lmin))
   myPLN
 }
 
