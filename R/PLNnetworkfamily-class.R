@@ -67,18 +67,15 @@ PLNnetworkfamily$set("public", "optimize",
   ## ===========================================
   ## INITIALISATION
   KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
-  maxit <- control$out.maxit
-  tol <- control$out.tol
 
   ## INITIALIZATION: start from the standard PLN (a.k.a. inception)
   Sigma <- self$inception$model_par$Sigma
-  par0 <- c(self$inception$model_par$Theta,
-            self$inception$var_par$M,
-            self$inception$var_par$S)
+  par0  <- c(self$inception$model_par$Theta,
+             self$inception$var_par$M,
+             self$inception$var_par$S)
   lower.bound <- c(rep(-Inf, private$p*private$d), # Theta
                    rep(-Inf, private$n*private$p), # M
                    rep(control$lbvar, private$n*private$p)) # S
-
   xtol_abs <- c(rep(0, private$p*private$d), # Theta
                 rep(0, private$n*private$p), # M
                 rep(control$xtol, private$n*private$p)) # S
@@ -98,8 +95,8 @@ PLNnetworkfamily$set("public", "optimize",
     }
 
     cond <- FALSE; iter <- 0
-    convergence <- numeric(maxit)
-    objective   <- numeric(maxit)
+    convergence <- numeric(control$maxit_out)
+    objective   <- numeric(control$maxit_out)
     while (!cond) {
       iter <- iter + 1
       if (control$trace > 1) cat("",iter)
@@ -126,7 +123,7 @@ PLNnetworkfamily$set("public", "optimize",
       convergence[iter] <- sqrt(sum((optim.out$solution - par0)^2)/sum(par0^2))
 
       ## Check convergence
-      if (iter > 1 & ((convergence[iter] < tol) | (iter >= maxit))) {
+      if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) {
         cond <- TRUE
       }
 
@@ -158,7 +155,7 @@ PLNnetworkfamily$set("public", "optimize",
                                               inner_status = optim.out$status,
                                               inner_message = optim.out$message))
     if (control$trace > 1) {
-      cat("\r")
+      cat("\r                                                                             \r")
       flush.console()
     }
 

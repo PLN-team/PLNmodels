@@ -47,7 +47,7 @@
 ##'
 ##' @rdname PLNnetwork
 ##' @examples
-##' ## See the vignette TODO
+##' ## See the vignette
 ##' @seealso The classes \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
@@ -84,17 +84,17 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
                     min.ratio = ifelse(nrow(Y) <= ncol(Y), 0.05, 1e-2),
                     trace = 0)
 
-  ctrl.main <- list(approx = FALSE,
-                    out.tol = 1e-4,
-                    out.maxit = 50,
+  ctrl.main <- list(approx    = FALSE,
+                    ftol_out  = 1e-4,
+                    maxit_out = 50,
                     penalize.diagonal = FALSE,
-                    ftol_abs = 0,
-                    ftol_rel = 1e-8,
-                    xtol_rel = 1e-4,
-                    xtol_abs = 1e-5,
-                    maxeval  = 10000,
-                    method   = "MMA",
-                    lbvar    = 1e-5,
+                    ftol_abs  = 0,
+                    ftol_rel  = 1e-8,
+                    xtol_rel  = 1e-4,
+                    xtol_abs  = 1e-5,
+                    maxeval   = 10000,
+                    method    = "MMA",
+                    lbvar     = 1e-5,
                     trace = 1)
 
   ctrl.init[names(control.init)] <- control.init
