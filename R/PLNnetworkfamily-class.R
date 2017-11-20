@@ -120,7 +120,6 @@ PLNnetworkfamily$set("public", "optimize",
                       glasso(Sigma,
                              rho = penalty,
                              penalize.diagonal = control$penalize.diagonal,
-                             approx = control$MB,
                              start = "warm", w.init = Sigma0, wi.init = Omega
                              )
                       )
@@ -166,7 +165,7 @@ PLNnetworkfamily$set("public", "optimize",
                                               inner_status = optim.out$status,
                                               inner_message = optim.out$message))
     if (control$trace > 1) {
-      cat("\r                                                                             \r")
+      cat("\r                                                                                    \r")
       flush.console()
     }
 
