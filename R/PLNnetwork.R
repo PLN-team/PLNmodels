@@ -40,7 +40,6 @@
 ##'
 ##' The following parameter are specific to main iterative process
 ##' \itemize{
-##'  \item{"MB"}{a boolean indicating wether the approximated version of the Graphical-Lasso (a.k.a. Neighborhood Selection of Meinshausen and Buhlmann) should be used for netwokr inference. Faster but no model selection criterion is available. Default to \code{FALSE}}
 ##'  \item{"ftol_out"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
 ##'  \item{"maxit_out"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
 ##'  \item{"penalize.diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}
@@ -86,8 +85,7 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
                     min.ratio = ifelse(nrow(Y) <= ncol(Y), 0.05, 1e-2),
                     trace = 0)
 
-  ctrl.main <- list(MB        = FALSE,
-                    ftol_out  = 1e-3,
+  ctrl.main <- list(ftol_out  = 1e-3,
                     maxit_out = 50,
                     penalize.diagonal = FALSE,
                     ftol_abs  = 0,    # default value from nlopt
