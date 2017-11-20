@@ -88,6 +88,7 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
   ctrl.main <- list(ftol_out  = 1e-3,
                     maxit_out = 50,
                     penalize.diagonal = FALSE,
+                    warm      = FALSE,
                     ftol_abs  = 0,    # default value from nlopt
                     ftol_rel  = 1e-9,
                     xtol_rel  = 1e-4, # default value from nlopt

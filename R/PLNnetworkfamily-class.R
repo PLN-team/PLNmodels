@@ -120,7 +120,7 @@ PLNnetworkfamily$set("public", "optimize",
                       glasso(Sigma,
                              rho = penalty,
                              penalize.diagonal = control$penalize.diagonal,
-                             start = "warm", w.init = Sigma0, wi.init = Omega
+                             start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
                              )
                       )
       Omega  <- glasso_out$wi
