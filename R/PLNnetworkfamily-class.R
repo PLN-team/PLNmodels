@@ -115,9 +115,15 @@ PLNnetworkfamily$set("public", "optimize",
       iter <- iter + 1
       if (control$trace > 1) cat("",iter)
 
-      ## Update Omega/Sigma
-      glasso_out <- glasso::glasso(Sigma, rho = penalty, penalize.diagonal = control$penalize.diagonal,
-                                   start = "warm", w.init = Sigma0, wi.init = Omega)
+      ## CALL TO GLASSO TO UPDATE Omega/Sigma
+      glasso_out <- suppressWarnings(
+                      glasso(Sigma,
+                             rho = penalty,
+                             penalize.diagonal = control$penalize.diagonal,
+                             approx = control$MB,
+                             start = "warm", w.init = Sigma0, wi.init = Omega
+                             )
+                      )
       Omega  <- glasso_out$wi
       Sigma0 <- glasso_out$w
 
@@ -153,9 +159,9 @@ PLNnetworkfamily$set("public", "optimize",
     if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
     self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S,
-                            monitoring = list(objective = optim.out$objective,
+                            monitoring = list(objective = objective[1:iter],
+                                              convergence = convergence[1:iter],
                                               outer_iterations = iter,
-                                              outer_epsilon = convergence[iter],
                                               inner_iterations = optim.out$iterations,
                                               inner_status = optim.out$status,
                                               inner_message = optim.out$message))
@@ -168,7 +174,7 @@ PLNnetworkfamily$set("public", "optimize",
 
 })
 
-PLNnetworkfamily$set("public", "optimize_approx",
+PLNnetworkfamily$set("public", "optimize_MB",
   function(control) {
 
   ## ===========================================

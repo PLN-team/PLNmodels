@@ -57,7 +57,7 @@ PLNfit <-
       degrees_freedom = function() {
         nrow(private$Theta) * ncol(private$Theta) + ncol(private$Sigma) * (ncol(private$Sigma) + 1)/2
       },
-      loglik    = function() {-private$monitoring$objective},
+      loglik    = function() {-private$monitoring$objective[length(private$monitoring$objective)]},
       BIC       = function() {self$loglik - .5 * log(nrow(private$M)) * self$degrees_freedom},
       ICL       = function() {self$BIC - .5 * (nrow(private$M) * ncol(private$M) * log(2*pi*exp(1)) + sum(log(private$S)))},
       R_squared = function() {private$R2},

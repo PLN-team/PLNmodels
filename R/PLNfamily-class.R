@@ -24,9 +24,9 @@ PLNfamily <-
       # send back a data frame with some quantities associated with the optimization process
       convergence = function() {
         res <- do.call(rbind, lapply(self$models, function(model) {
-          c(degrees_freedom = model$degrees_freedom, model$optim_par)
+          c(degrees_freedom = model$degrees_freedom, sapply(model$optim_par, function(x) x[length(x)]))
         }))
-        data.frame(param = private$params, res)
+        data.frame(param = private$params, res, stringsAsFactors = FALSE)
       }
     )
 )

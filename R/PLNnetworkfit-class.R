@@ -43,13 +43,15 @@ PLNnetworkfit <-
     active = list(
       penalty = function() {private$lambda},
       degrees_freedom = function() {
-        nrow(private$Theta) * ncol(private$Theta) + sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)
+        nrow(private$Theta) * ncol(private$Theta) + sum(private$Omega[upper.tri(private$Omega, diag = TRUE)] != 0)
       },
+      pen_loglik = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
       model_par = function() {
         par <- super$model_par
         par$Omega <- private$Omega
         par
-      }
+      },
+      criteria  = function() {c(super$criteria, pen_loglik = self$pen_loglik)}
     )
 )
 

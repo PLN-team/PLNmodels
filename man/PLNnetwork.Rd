@@ -8,12 +8,12 @@
 \usage{
 PLNnetwork(Robject, ...)
 
-\method{PLNnetwork}{formula}(formula, penalties = NULL,
+\method{PLNnetwork}{formula}(formula, penalties = NULL, approx = FALSE,
   control.init = list(), control.main = list())
 
 \method{PLNnetwork}{default}(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0,
-  nrow(Y), ncol(Y)), penalties = NULL, control.init = list(),
-  control.main = list())
+  nrow(Y), ncol(Y)), penalties = NULL, approx = FALSE,
+  control.init = list(), control.main = list())
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a matrix}
@@ -23,6 +23,8 @@ PLNnetwork(Robject, ...)
 \item{formula}{a formula}
 
 \item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
+
+\item{approx}{a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to FALSE.}
 
 \item{control.init}{a list for controling the optimization of the initialization, that fits a standard PLN model with the \code{\link[=PLN]{PLN}} function. See details.}
 
@@ -66,14 +68,14 @@ The following parameter are specific to initialization
 
 The following parameter are specific to main iterative process
 \itemize{
- \item{"approx"}{boolean for performing a two-step approach (PLN + graphical-Lasso) rather than the fully joint optimization. Default to FALSE.}
- \item{"out.tol"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
- \item{"out.maxit"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
+ \item{"MB"}{a boolean indicating wether the approximated version of the Graphical-Lasso (a.k.a. Neighborhood Selection of Meinshausen and Buhlmann) should be used for netwokr inference. Faster but no model selection criterion is available. Default to \code{FALSE}}
+ \item{"ftol_out"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
+ \item{"maxit_out"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
  \item{"penalize.diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}
 }
 }
 \examples{
-## See the vignette TODO
+## See the vignette
 }
 \seealso{
 The classes \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}

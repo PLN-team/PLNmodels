@@ -87,7 +87,7 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
                     trace = 0)
 
   ctrl.main <- list(MB        = FALSE,
-                    ftol_out  = 1e-4,
+                    ftol_out  = 1e-3,
                     maxit_out = 50,
                     penalize.diagonal = FALSE,
                     ftol_abs  = 0,    # default value from nlopt
@@ -112,7 +112,7 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
   ## Main optimization
   if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")
   if (ctrl.main$trace & approx) cat("\tTwo-step approach applying Graphical-Lasso on the inceptive PLN fit.\n")
-  if (ctrl.main$trace & !approx) cat("\tJoint optimisation alternating gradient descent and graphical-lasso\n")
+  if (ctrl.main$trace & !approx) cat("\tJoint optimization alternating gradient descent and graphical-lasso\n")
   myPLN$optimize(ctrl.main)
 
   ## Post-treatments: compute pseudo-R2
