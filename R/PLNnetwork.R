@@ -7,6 +7,7 @@
 ##' @param X an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.
 ##' @param O an optional (n x p) matrix of offsets.
 ##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally
+##' @param approx a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to FALSE.
 ##' @param control.init a list for controling the optimization of the initialization, that fits a standard PLN model with the \code{\link[=PLN]{PLN}} function. See details.
 ##' @param control.main a list for controling the optimization. See details.
 ##' @param Robject an R object, either a formula or a matrix
@@ -39,9 +40,9 @@
 ##'
 ##' The following parameter are specific to main iterative process
 ##' \itemize{
-##'  \item{"approx"}{boolean for performing a two-step approach (PLN + graphical-Lasso) rather than the fully joint optimization. Default to FALSE.}
-##'  \item{"out.tol"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
-##'  \item{"out.maxit"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
+##'  \item{"MB"}{a boolean indicating wether the approximated version of the Graphical-Lasso (a.k.a. Neighborhood Selection of Meinshausen and Buhlmann) should be used for netwokr inference. Faster but no model selection criterion is available. Default to \code{FALSE}}
+##'  \item{"ftol_out"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
+##'  \item{"maxit_out"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
 ##'  \item{"penalize.diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}
 ##' }
 ##'
@@ -56,7 +57,7 @@ PLNnetwork <- function(Robject, ...)
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.formula <- function(formula, penalties = NULL, control.init = list(), control.main = list()) {
+PLNnetwork.formula <- function(formula, penalties = NULL, approx = FALSE, control.init = list(), control.main = list()) {
 
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
@@ -64,15 +65,16 @@ PLNnetwork.formula <- function(formula, penalties = NULL, control.init = list(),
   O      <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLNnetwork.default(Y, X, O, penalties, control.init, control.main))
+  return(PLNnetwork.default(Y, X, O, penalties, approx, control.init, control.main))
 }
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, control.init = list(), control.main=list()) {
+PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)),
+                               penalties = NULL, approx=FALSE, control.init = list(), control.main=list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl.init <- list(inception = ifelse((ncol(Y) < 100) & (nrow(Y) > ncol(Y)), "PLN", "LM"),
+  ctrl.init <- list(inception = ifelse((ncol(Y) < 200) & (nrow(Y) > ncol(Y)), "PLN", "LM"),
                     ftol_rel = 1e-6,
                     ftol_abs = 0,
                     xtol_rel = 1e-4,
@@ -84,13 +86,13 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
                     min.ratio = ifelse(nrow(Y) <= ncol(Y), 0.05, 1e-2),
                     trace = 0)
 
-  ctrl.main <- list(approx    = FALSE,
+  ctrl.main <- list(MB        = FALSE,
                     ftol_out  = 1e-4,
                     maxit_out = 50,
                     penalize.diagonal = FALSE,
-                    ftol_abs  = 0,
-                    ftol_rel  = 1e-8,
-                    xtol_rel  = 1e-4,
+                    ftol_abs  = 0,    # default value from nlopt
+                    ftol_rel  = 1e-9,
+                    xtol_rel  = 1e-4, # default value from nlopt
                     xtol_abs  = 1e-5,
                     maxeval   = 10000,
                     method    = "MMA",
@@ -100,21 +102,22 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
   ctrl.init[names(control.init)] <- control.init
   ctrl.main[names(control.main)] <- control.main
 
+  ## approximation can be obtained by performing just one iteration in the joint optimization algorithm
+  if (approx) ctrl.main$maxit_out <- 1
+
   ## Instantiate the collection of PLN models
   if (ctrl.main$trace > 0) cat("\n Initialization...")
   myPLN <- PLNnetworkfamily$new(penalties = penalties, responses = Y, covariates = X, offsets = O, control = ctrl.init)
 
-  if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance\n")
-  if (ctrl.main$approx) {
-    if (ctrl.main$trace > 0) cat("\tapproximation: apply neighborhood selection on the inceptive PLN model on a penalty grid.\n")
-    myPLN$optimize_approx(ctrl.main)
-  } else {
-    if (ctrl.main$trace > 0) cat("\talternate gradient descent and graphical-lasso\n")
-    myPLN$optimize(ctrl.main)
-    ## Post-treatments: compute pseudo-R2
-    if (ctrl.main$trace > 0) cat("\n Post-treatments")
-    myPLN$postTreatment()
-  }
+  ## Main optimization
+  if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")
+  if (ctrl.main$trace & approx) cat("\tTwo-step approach applying Graphical-Lasso on the inceptive PLN fit.\n")
+  if (ctrl.main$trace & !approx) cat("\tJoint optimisation alternating gradient descent and graphical-lasso\n")
+  myPLN$optimize(ctrl.main)
+
+  ## Post-treatments: compute pseudo-R2
+  if (ctrl.main$trace > 0) cat("\n Post-treatments")
+  myPLN$postTreatment()
 
   if (ctrl.main$trace > 0) cat("\n DONE!\n")
   return(myPLN)
