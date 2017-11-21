@@ -25,13 +25,13 @@ PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, monitoring=list(objective=NA)) {
-        super$initialize(Theta, Sigma, M, S, monitoring)
+      initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, monitoring=list(objective=NA)) {
+        super$initialize(Theta, Sigma, M, S, J, monitoring)
         private$lambda <- penalty
         private$Omega  <- Omega
       },
-      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, R2=NA, monitoring=NA) {
-        super$update(Theta, Sigma, M, S, R2, monitoring)
+      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, R2=NA, monitoring=NA) {
+        super$update(Theta, Sigma, M, S, J, R2, monitoring)
         if (!anyNA(penalty)) private$lambda <- penalty
         if (!anyNA(Omega))   private$Omega  <- Omega
       }
@@ -41,17 +41,17 @@ PLNnetworkfit <-
       lambda = NA  # the sparsity tuning parameter
     ),
     active = list(
-      penalty = function() {private$lambda},
-      degrees_freedom = function() {
-        nrow(private$Theta) * ncol(private$Theta) + sum(private$Omega[upper.tri(private$Omega, diag = TRUE)] != 0)
-      },
-      pen_loglik = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
+      penalty         = function() {private$lambda},
+      n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
+      degrees_freedom = function() {self$p * self$d + self$n_edges},
+      pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
       model_par = function() {
         par <- super$model_par
         par$Omega <- private$Omega
         par
       },
-      criteria  = function() {c(super$criteria, pen_loglik = self$pen_loglik)}
+      EBIC      = function() {self$BIC - self$n_edges * log(self$p)},
+      criteria  = function() {c(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik)}
     )
 )
 

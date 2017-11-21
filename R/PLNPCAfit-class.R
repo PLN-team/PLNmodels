@@ -26,12 +26,12 @@ PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, R2=NA, monitoring=NA) {
-        super$initialize(Theta, Sigma, M, S, monitoring)
+      initialize = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, J=NA, monitoring=NA) {
+        super$initialize(Theta, Sigma, M, S, J, monitoring)
         private$B <- B
       },
-      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, R2=NA, monitoring=NA) {
-        super$update(Theta, Sigma, M, S, R2, monitoring)
+      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, J=NA, R2=NA, monitoring=NA) {
+        super$update(Theta, Sigma, M, S, J, R2, monitoring)
         if (!anyNA(B)) private$B <- B
       },
       setVisualization = function(scale.unit=FALSE) {
@@ -45,7 +45,7 @@ PLNPCAfit <-
     ),
     active = list(
       rank = function() {ncol(private$B)},
-      degrees_freedom = function() {nrow(private$Theta) * (ncol(private$Theta) + self$rank)},
+      degrees_freedom = function() {self$p * (self$d + self$rank)},
       model_par = function() {
         par <- super$model_par
         par$B <- private$B

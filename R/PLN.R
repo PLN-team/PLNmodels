@@ -103,7 +103,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   dimnames(S)     <- dimnames(Y)
   dimnames(M)     <- dimnames(Y)
 
-  myPLN <- PLNfit$new(Theta = Theta, Sigma = Sigma, M = M, S = S,
+  myPLN <- PLNfit$new(Theta = Theta, Sigma = Sigma, M = M, S = S, J = -optim.out$objective,
                     monitoring = list(objective = optim.out$objective,
                                       iterations = optim.out$iterations,
                                       status = optim.out$status,

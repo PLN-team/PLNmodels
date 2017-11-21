@@ -39,10 +39,8 @@ PLNnetworkfamily$set("public", "initialize",
     ## Get an appropriate grid of penalties
     if (is.null(penalties)) {
       if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
-      range_penalties <- range(abs(self$inception$model_par$Sigma[upper.tri(self$inception$model_par$Sigma)]))
-      max_log_scale <- log10(range_penalties[2])
-      min_log_scale <- log10(max(range_penalties[1],range_penalties[2]*control$min.ratio))
-      penalties <- 10^seq(max_log_scale, min_log_scale, len = control$nPenalties)
+      max_pen <- max(abs(self$inception$model_par$Sigma[upper.tri(self$inception$model_par$Sigma)]))
+      penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min.ratio), len = control$nPenalties)
     } else {
       if (control$trace > 1) cat("\nPenalties already set by the user")
       stopifnot(all(penalties > 0))
@@ -75,6 +73,7 @@ PLNnetworkfamily$set("public", "optimize",
              self$inception$var_par$S)
   Omega  <- diag(1/diag(Sigma), nrow = private$p, ncol = private$p)
   Sigma0 <- diag(  diag(Sigma), nrow = private$p, ncol = private$p)
+  objective.old <- -self$inception$loglik
 
   ## set option for call to NLOPT: optim typ, lower bound, tolerance...
   lower.bound <- c(rep(-Inf, private$p*private$d), # Theta
@@ -89,6 +88,7 @@ PLNnetworkfamily$set("public", "optimize",
                "ftol_abs"    = control$ftol_abs,
                "xtol_rel"    = control$xtol_rel,
                "xtol_abs"    = xtol_abs,
+               # "check_derivatives" = TRUE,
                "print_level" = max(0,control$trace - 2))
 
   ## ===========================================
@@ -109,8 +109,8 @@ PLNnetworkfamily$set("public", "optimize",
     }
 
     cond <- FALSE; iter <- 0
-    convergence <- numeric(control$maxit_out)
     objective   <- numeric(control$maxit_out)
+    convergence <- numeric(control$maxit_out)
     while (!cond) {
       iter <- iter + 1
       if (control$trace > 1) cat("",iter)
@@ -123,7 +123,7 @@ PLNnetworkfamily$set("public", "optimize",
                              start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
                              )
                       )
-      Omega  <- glasso_out$wi
+      Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
       Sigma0 <- glasso_out$w
 
       ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
@@ -131,8 +131,8 @@ PLNnetworkfamily$set("public", "optimize",
       optim.out <- nloptr(par0, eval_f = private$fn_optim, lb = lower.bound, opts = opts,
                           log_detOmega = logDetOmega, Omega = Omega,
                           Y = self$responses, X = self$covariates, O = self$offsets, KY = KY)
-      objective[iter]   <- optim.out$objective
-      convergence[iter] <- sqrt(sum((optim.out$solution - par0)^2)/sum(par0^2))
+      objective[iter]   <- optim.out$objective + penalty * sum(abs(Omega))
+      convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective.old)
 
       ## Check convergence
       if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
@@ -142,6 +142,7 @@ PLNnetworkfamily$set("public", "optimize",
       S <- matrix(optim.out$solution[(private$n + private$d)*private$p + 1:(private$n*private$p)], private$n,private$p)
       Sigma <- crossprod(M)/private$n + diag(colMeans(S), nrow = private$p, ncol = private$p)
       par0 <- optim.out$solution
+      objective.old <- objective[iter]
     }
 
     ## ===========================================
@@ -153,11 +154,10 @@ PLNnetworkfamily$set("public", "optimize",
     dimnames(M)     <- dimnames(self$responses)
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
 
-    ## Enforce symmetry of Sigma and Theta
-    if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
-    if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
+    # ## Enforce symmetry of Sigma and Theta
+    # if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
 
-    self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S,
+    self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S, J = -optim.out$objective,
                             monitoring = list(objective = objective[1:iter],
                                               convergence = convergence[1:iter],
                                               outer_iterations = iter,

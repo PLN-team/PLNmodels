@@ -24,19 +24,21 @@ PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
       ## constructor
-      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA, monitoring=NA) {
+      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, monitoring=NA) {
         private$Theta      <- Theta
         private$Sigma      <- Sigma
         private$M          <- M
         private$S          <- S
+        private$J          <- J
         private$monitoring <- monitoring
       },
       ## "setter" function
-      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, R2=NA, monitoring=NA) {
+      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, R2=NA, monitoring=NA) {
         if (!anyNA(Theta))      private$Theta  <- Theta
         if (!anyNA(Sigma))      private$Sigma  <- Sigma
         if (!anyNA(M))          private$M      <- M
         if (!anyNA(S))          private$S      <- S
+        if (!anyNA(J))          private$J      <- J
         if (!anyNA(R2))         private$R2     <- R2
         if (!anyNA(monitoring)) private$monitoring <- monitoring
       }
@@ -47,19 +49,24 @@ PLNfit <-
       S          = NA, # the n x p variational parameters for the variances
       M          = NA, # the n x p variational parameters for the means
       R2         = NA, # approximated goodness of fit criterion
+      J          = NA, # approximated loglikelihood
       monitoring = NA  # a list with optimization monitoring quantities
     ),
     ## use active bindings to access private members like fields
     active = list(
+      n = function() {nrow(private$M)},
+      q = function() {ncol(private$M)},
+      p = function() {nrow(private$Theta)},
+      d = function() {ncol(private$Theta)},
       model_par = function() {list(Theta = private$Theta, Sigma = private$Sigma)},
       var_par   = function() {list(M = private$M, S = private$S)},
       optim_par = function() {private$monitoring},
       degrees_freedom = function() {
-        nrow(private$Theta) * ncol(private$Theta) + ncol(private$Sigma) * (ncol(private$Sigma) + 1)/2
+        private$p * private$d + private$p * (private$p + 1)/2
       },
-      loglik    = function() {-private$monitoring$objective[length(private$monitoring$objective)]},
-      BIC       = function() {self$loglik - .5 * log(nrow(private$M)) * self$degrees_freedom},
-      ICL       = function() {self$BIC - .5 * (nrow(private$M) * ncol(private$M) * log(2*pi*exp(1)) + sum(log(private$S)))},
+      loglik    = function() {private$J},
+      BIC       = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
+      ICL       = function() {self$BIC - .5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)))},
       R_squared = function() {private$R2},
       criteria  = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )

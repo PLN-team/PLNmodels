@@ -108,7 +108,7 @@ PLNPCAfamily$set("public", "optimize",
     rownames(M)     <- rownames(self$responses); colnames(M) <- 1:model$rank
     rownames(Sigma) <- colnames(Sigma) <- colnames(self$responses)
 
-    model$update(B = B, Theta = Theta, Sigma = Sigma, M = M, S = S,
+    model$update(B = B, Theta = Theta, Sigma = Sigma, M = M, S = S, J = -optim.out$objective,
                  monitoring = list(objective = optim.out$objective,
                                    iterations = optim.out$iterations,
                                    status = optim.out$status,
