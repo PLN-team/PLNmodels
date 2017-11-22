@@ -27,10 +27,12 @@ Rcpp::List fn_optim_PLNPCA_Cpp(const arma::vec par,
   arma::vec grd_B     = vectorise((A-Y).t() * M + (A.t() * S) % B) ;
   arma::vec grd_M     = vectorise((A-Y) * B + M) ;
   arma::vec grd_S     = .5 * vectorise(1 - 1/S + A * (B%B) );
+  // arma::vec grd_S     = .5 * vectorise(A * (B%B) );
 
   arma::vec grad = join_vert(join_vert(grd_Theta, grd_B), join_vert(grd_M, grd_S)) ;
 
   double objective = accu(A - Y % Z) + .5 * accu(M%M + S - log(S) - 1) + KY ;
+  // double objective = accu(A - Y % Z) + .5 * accu(M%M - 1) + KY ;
 
   return Rcpp::List::create(Rcpp::Named("objective") = objective,
                             Rcpp::Named("gradient" ) = grad);

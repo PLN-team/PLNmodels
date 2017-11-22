@@ -65,38 +65,63 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(ftol_rel = 1e-6,  ftol_abs = 0, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = "LM")
+  ctrl <- list(newpar=FALSE, ftol_rel = 1e-6,  ftol_abs = 0, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = "LM")
   ctrl[names(control)] <- control
 
   ## get an initial point for optimization
-  par0 <- unlist(initializePLN(Y, X, O, ctrl)) # Theta, M, S
+  par0 <- initializePLN(Y, X, O, ctrl) # Theta, M, S
 
   ## ===========================================
   ## OPTIMIZATION
   ##
 
-  KY <-sum(.logfactorial(Y)) ## constant that will remain the same
+  KY <- sum(.logfactorial(Y)) ## constant that will remain the same
   if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
 
-  lower.bound <- c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
-  xtol_abs    <- c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p))
-  ## Now optimize with NLOPTR
-  opts <- list("algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
-               "maxeval"     = ctrl$maxeval,
-               "ftol_rel"    = ctrl$ftol_rel,
-               "ftol_abs"    = ctrl$ftol_abs,
-               "xtol_rel"    = ctrl$xtol_rel,
-               "xtol_abs"    = xtol_abs,
-               "print_level" = max(0,ctrl$trace-1))
-  optim.out <- nloptr(par0, eval_f = fn_optim_PLN_profiled_Cpp, lb = lower.bound, opts = opts,
-                      Y = Y, X = X, O = O, KY = KY)
-  ## ===========================================
-  ## POST-TREATMENT
-  ##
-  Theta <- matrix(optim.out$solution[1:(p*d)]          , p,d)
-  M     <- matrix(optim.out$solution[p*(d)   + 1:(n*p)], n,p)
-  S     <- matrix(optim.out$solution[p*(d+n) + 1:(n*p)], n,p)
-  Sigma <- crossprod(M)/n + diag(colMeans(S), nrow = p, ncol = p)
+  if (ctrl$newpar) {
+    par0 <- c(par0$M, par0$S)
+    lower.bound <- c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
+    xtol_abs    <- c(rep(0, p*n), rep(ctrl$xtol_abs, n*p))
+    ## Now optimize with NLOPTR
+    opts <- list("algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
+                 "maxeval"     = ctrl$maxeval,
+                 "ftol_rel"    = ctrl$ftol_rel,
+                 "ftol_abs"    = ctrl$ftol_abs,
+                 "xtol_rel"    = ctrl$xtol_rel,
+                 "xtol_abs"    = xtol_abs,
+                 "print_level" = max(0,ctrl$trace-1))
+    optim.out <- nloptr(par0, eval_f = fn_optim_PLN_newparam_Cpp, lb = lower.bound, opts = opts,
+                        Y = Y, X = X, O = O, KY = KY)
+    ## ===========================================
+    ## POST-TREATMENT
+    ##
+    M     <- matrix(optim.out$solution[      1:(n*p)], n,p)
+    S     <- matrix(optim.out$solution[n*p + 1:(n*p)], n,p)
+    Theta <- t(solve(crossprod(X)) %*% crossprod(X,M - O))
+    Sigma <- crossprod(M - O - tcrossprod(X,Theta))/n + diag(colMeans(S), nrow = p, ncol = p)
+    loglik <- logLikPoisson(Y, M)
+  } else {
+    par0 <- c(par0$Theta, par0$M, par0$S)
+    lower.bound <- c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
+    xtol_abs    <- c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p))
+    ## Now optimize with NLOPTR
+    opts <- list("algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
+                 "maxeval"     = ctrl$maxeval,
+                 "ftol_rel"    = ctrl$ftol_rel,
+                 "ftol_abs"    = ctrl$ftol_abs,
+                 "xtol_rel"    = ctrl$xtol_rel,
+                 "xtol_abs"    = xtol_abs,
+                 "print_level" = max(0,ctrl$trace-1))
+    optim.out <- nloptr(par0, eval_f = fn_optim_PLN_profiled_Cpp, lb = lower.bound, opts = opts,
+                        Y = Y, X = X, O = O, KY = KY)
+    ## ===========================================
+    ## POST-TREATMENT
+    ##
+    Theta <- matrix(optim.out$solution[1:(p*d)]          , p,d)
+    M     <- matrix(optim.out$solution[p*(d)   + 1:(n*p)], n,p)
+    S     <- matrix(optim.out$solution[p*(d+n) + 1:(n*p)], n,p)
+    Sigma <- crossprod(M)/n + diag(colMeans(S), nrow = p, ncol = p)
+  }
 
   rownames(Theta) <- colnames(Y); colnames(Theta) <- colnames(X)
   rownames(Sigma) <- colnames(Sigma) <- colnames(Y)
@@ -109,9 +134,9 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
                                       status = optim.out$status,
                                       message = optim.out$message))
   ## Compute R2
+  if (!ctrl$newpar) loglik <- logLikPoisson(Y, myPLN$latent_pos(X, O))
   lmin <- logLikPoisson(Y, nullModelPoisson(Y, X, O))
   lmax <- logLikPoisson(Y, fullModelPoisson(Y))
-  loglik <- logLikPoisson(Y, myPLN$latent_pos(X, O))
   myPLN$update(R2 = (loglik - lmin) / (lmax - lmin))
   myPLN
 }

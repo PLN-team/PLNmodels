@@ -74,7 +74,7 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- list(inception = ifelse((ncol(Y) < 200) & (nrow(Y) > ncol(Y)), "PLN", "LM"),
-                    ftol_rel = 1e-8,
+                    ftol_rel = 1e-6,
                     ftol_abs = 0,
                     xtol_rel = 1e-4,
                     xtol_abs = 1e-4,

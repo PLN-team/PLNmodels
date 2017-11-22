@@ -34,6 +34,35 @@ Rcpp::List fn_optim_PLN_profiled_Cpp(const arma::vec par,
                             Rcpp::Named("gradient" ) = grad);
 }
 
+//' @export
+// [[Rcpp::export]]
+Rcpp::List fn_optim_PLN_newparam_Cpp(const arma::vec par,
+                                     const arma::mat Y,
+                                     const arma::mat X,
+                                     const arma::mat O,
+                                     double KY) {
+
+  int n = Y.n_rows, p = Y.n_cols, d = X.n_cols ;
+
+  arma::mat M     = par.subvec(0  , p*n - 1) ; M.reshape(n,p) ;
+  arma::mat S     = par.subvec(p*n, p*2*n-1) ; S.reshape(n,p) ;
+
+  arma::mat Theta = inv_sympd(X.t() * X) * X.t() * (M - O);
+  arma::mat Mtilde = M - O - X * Theta ;
+
+  arma::mat Omega = n * inv_sympd( Mtilde.t() * Mtilde + diagmat(sum(S, 0)));
+  arma::mat A = exp (M + .5 * S) ;
+
+  double objective = accu(A - Y % M - .5*log(S)) - .5*n*real(log_det(Omega)) + KY ;
+
+  arma::vec grd_M     = vectorise( Mtilde * Omega + A - Y) ;
+  arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + A - 1/S));
+
+  arma::vec grad = join_vert(grd_M,grd_S) ;
+
+  return Rcpp::List::create(Rcpp::Named("objective") = objective,
+                            Rcpp::Named("gradient" ) = grad);
+}
 
 // Rcpp::List fn_optim_PLN_Cpp(const arma::vec par,
 //                             const arma::mat Y,
