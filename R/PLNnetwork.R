@@ -1,6 +1,6 @@
 ##' @title Fit a Poisson lognormal model towards network inference
 ##'
-##' @description two methods are available for specifing the models (with formulas or matrices)
+##' @description two methods are available for specifying the models (with formulas or matrices)
 ##'
 ##' @param formula a formula
 ##' @param Y a (n x p) matrix of count data
@@ -122,3 +122,29 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
   return(myPLN)
 }
 
+##' @title Performs stability selection for Poisson lognormal models towards network inference
+##'
+##' @description two methods are available for specifying the models (with formulas or matrices)
+##'
+##' @export
+PLNnetwork_stabs <- function(Robject, ...)
+  UseMethod("PLNnetwork_stabs", Robject)
+
+##' @rdname PLNnetwork_stabs
+##' @export
+PLNnetwork_stabs.formula <- function(formula, penalties, approx = FALSE, control.init = list(), control.main = list()) {
+
+  frame  <- model.frame(formula)
+  Y      <- model.response(frame)
+  X      <- model.matrix(formula)
+  O      <- model.offset(frame)
+  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
+
+  return(PLNnetwork_stabs.default(Y, X, O, penalties, approx, control.init, control.main))
+}
+
+##' @rdname PLNnetwork_stabs
+##' @export
+PLNnetwork_stabs.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)),
+                               penalties = NULL, approx=FALSE, control.init = list(), control.main=list()) {
+}

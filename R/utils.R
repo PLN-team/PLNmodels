@@ -113,3 +113,18 @@ multiplot <- function(..., legend=FALSE, plotlist=NULL, cols) {
   }
 
 }
+
+PLN_param <- function(n, p) {
+
+}
+
+PLNPCA_param <- function(n, p, control = c("init", "main")) {
+  control <- match.arg(control)
+
+}
+
+PLNnetwork_param <- function(n, p, control = c("init", "main")) {
+  control <- match.arg(control)
+
+}
+
