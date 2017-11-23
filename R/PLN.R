@@ -65,8 +65,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- list(newpar=FALSE, ftol_rel = 1e-6,  ftol_abs = 0, xtol_rel = 1e-4, xtol_abs = 1e-4, maxeval = 10000, method = "MMA", lbvar = 1e-4, trace = 1, inception = "LM")
-  ctrl[names(control)] <- control
+  ctrl <- PLN_param(control, n, p)
 
   ## get an initial point for optimization
   par0 <- initializePLN(Y, X, O, ctrl) # Theta, M, S

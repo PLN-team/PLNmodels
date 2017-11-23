@@ -114,17 +114,84 @@ multiplot <- function(..., legend=FALSE, plotlist=NULL, cols) {
 
 }
 
-PLN_param <- function(n, p) {
-
+PLN_param <- function(control, n, p) {
+  ctrl <- list(
+    newpar    = FALSE,
+    ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
+    ftol_abs  = 0,
+    xtol_rel  = 1e-4,
+    xtol_abs  = 1e-4,
+    maxeval   = 10000,
+    method    = "MMA",
+    lbvar     = 1e-4,
+    trace     = 1,
+    inception = "LM"
+  )
+  ctrl[names(control)] <- control
+  ctrl
 }
 
-PLNPCA_param <- function(n, p, control = c("init", "main")) {
-  control <- match.arg(control)
+PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
+  type <- match.arg(type)
 
+  ctrl <- switch(match.arg(type),
+    "init" = list(
+      inception = ifelse(n >= 1.5*p, "PLN", "LM"),
+      ftol_rel = 1e-6,
+      ftol_abs = 0,
+      xtol_rel = 1e-4,
+      xtol_abs = 1e-4,
+      maxeval  = 10000,
+      method   = "MMA",
+      lbvar    = 1e-4,
+      trace    = 0
+    ),
+    "main"= list(
+      ftol_rel = 1e-10,
+      ftol_abs = 0,
+      xtol_rel = 1e-4,
+      xtol_abs = 1e-5,
+      maxeval  = 10000,
+      method   = "MMA",
+      lbvar    = 1e-5,
+      trace    = 1,
+      cores    = 1
+    )
+  )
+  ctrl[names(control)] <- control
+  ctrl
 }
 
-PLNnetwork_param <- function(n, p, control = c("init", "main")) {
-  control <- match.arg(control)
+PLNnetwork_param <- function(control, n, p, type = c("init", "main")) {
+  type <- match.arg(type)
 
+  ctrl <- switch(match.arg(type),
+    "init" = list(
+      inception = ifelse(n >= 1.5*p, "PLN", "LM"),
+      ftol_rel = 1e-6,
+      ftol_abs = 0,
+      xtol_rel = 1e-4,
+      xtol_abs = 1e-4,
+      maxeval  = 10000,
+      method   = "MMA",
+      lbvar    = 1e-4,
+      nPenalties = 20,
+      min.ratio = ifelse(n >= 1.5*p, 0.1, 0.05),
+      trace = 0),
+    "main" = list(
+      ftol_out  = 1e-5,
+      maxit_out = 50,
+      penalize.diagonal = FALSE,
+      warm      = FALSE,
+      ftol_abs  = 0,    # default value from nlopt
+      ftol_rel  = 1e-9,
+      xtol_rel  = 1e-4, # default value from nlopt
+      xtol_abs  = 1e-5,
+      maxeval   = 10000,
+      method    = "MMA",
+      lbvar     = 1e-5,
+      trace = 1)
+  )
+  ctrl[names(control)] <- control
+  ctrl
 }
-

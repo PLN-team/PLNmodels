@@ -58,29 +58,8 @@ PLNPCA.formula <- function(formula, ranks = 1:5,  control.init = list(), control
 PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), ranks = 1:5,  control.init = list(), control.main = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-
-  ctrl.init <- list(inception = ifelse((ncol(Y) < 100) & (nrow(Y) > ncol(Y)), "PLN", "LM"),
-                    ftol_rel = 1e-6,
-                    ftol_abs = 0,
-                    xtol_rel = 1e-4,
-                    xtol_abs = 1e-4,
-                    maxeval  = 10000,
-                    method   = "MMA",
-                    lbvar    = 1e-4,
-                    trace    = 0)
-
-  ctrl.main <- list(ftol_rel = 1e-10,
-                    ftol_abs = 0,
-                    xtol_rel = 1e-4,
-                    xtol_abs = 1e-5,
-                    maxeval  = 10000,
-                    method   = "MMA",
-                    lbvar    = 1e-5,
-                    trace    = 1,
-                    cores    = 1)
-
-  ctrl.init[names(control.init)] <- control.init
-  ctrl.main[names(control.main)] <- control.main
+  ctrl.init <- PLNPCA_param(control.init, nrow(Y), ncol(Y), "init")
+  ctrl.main <- PLNPCA_param(control.main, nrow(Y), ncol(Y), "main")
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank
   if (ctrl.main$trace > 0) cat("\n Initialization...")

@@ -73,33 +73,8 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
                                penalties = NULL, approx=FALSE, control.init = list(), control.main=list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl.init <- list(inception = ifelse((ncol(Y) < 200) & (nrow(Y) > ncol(Y)), "PLN", "LM"),
-                    ftol_rel = 1e-6,
-                    ftol_abs = 0,
-                    xtol_rel = 1e-4,
-                    xtol_abs = 1e-4,
-                    maxeval  = 10000,
-                    method   = "MMA",
-                    lbvar    = 1e-4,
-                    nPenalties = 20,
-                    min.ratio = ifelse(nrow(Y) <= ncol(Y), 0.1, 0.05),
-                    trace = 0)
-
-  ctrl.main <- list(ftol_out  = 1e-5,
-                    maxit_out = 50,
-                    penalize.diagonal = FALSE,
-                    warm      = FALSE,
-                    ftol_abs  = 0,    # default value from nlopt
-                    ftol_rel  = 1e-9,
-                    xtol_rel  = 1e-4, # default value from nlopt
-                    xtol_abs  = 1e-5,
-                    maxeval   = 10000,
-                    method    = "MMA",
-                    lbvar     = 1e-5,
-                    trace = 1)
-
-  ctrl.init[names(control.init)] <- control.init
-  ctrl.main[names(control.main)] <- control.main
+  ctrl.init <- PLNnetwork_param(control.init, nrow(Y), ncol(Y), "init")
+  ctrl.main <- PLNnetwork_param(control.main, nrow(Y), ncol(Y), "main")
 
   ## approximation can be obtained by performing just one iteration in the joint optimization algorithm
   if (approx) ctrl.main$maxit_out <- 1
