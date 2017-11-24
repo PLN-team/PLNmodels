@@ -2,13 +2,13 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @export
-fn_optim_PLN_profiled_Cpp <- function(par, Y, X, O, KY) {
-    .Call('_PLNmodels_fn_optim_PLN_profiled_Cpp', PACKAGE = 'PLNmodels', par, Y, X, O, KY)
+fn_optim_PLN_Cpp <- function(par, Y, ProjOrthX, O, KY) {
+    .Call('_PLNmodels_fn_optim_PLN_Cpp', PACKAGE = 'PLNmodels', par, Y, ProjOrthX, O, KY)
 }
 
 #' @export
-fn_optim_PLN_newparam_Cpp <- function(par, Y, X, O, KY) {
-    .Call('_PLNmodels_fn_optim_PLN_newparam_Cpp', PACKAGE = 'PLNmodels', par, Y, X, O, KY)
+fn_optim_PLN_old2_Cpp <- function(par, Y, X, O, KY) {
+    .Call('_PLNmodels_fn_optim_PLN_old2_Cpp', PACKAGE = 'PLNmodels', par, Y, X, O, KY)
 }
 
 #' @export

@@ -2,15 +2,15 @@
 % Please edit documentation in R/PLNfit-class.R
 \name{plot.PLNfit}
 \alias{plot.PLNfit}
-\title{Display the model parameters in a matrix fashion}
+\title{Display the model parameters of a PLNfit in a matrix fashion}
 \usage{
 \method{plot}{PLNfit}(x, type = c("model", "variational"))
 }
 \arguments{
 \item{x}{an R6 object with class PLNfit}
 
-\item{type}{character. should the variational or the model parameters be plotted? default is "model".}
+\item{type}{character. Should the variational or the model parameters be plotted? default is "model".}
 }
 \description{
-Display the model parameters in a matrix fashion
+Display the model parameters of a PLNfit in a matrix fashion
 }

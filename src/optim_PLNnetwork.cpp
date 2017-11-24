@@ -6,19 +6,24 @@ using namespace arma;
 
 //' @export
 // [[Rcpp::export]]
-Rcpp::List fn_optim_PLNnetwork_Cpp(const arma::vec par,
-                               double log_detOmega,
-                               const arma::mat Omega,
-                               const arma::mat Y,
-                               const arma::mat X,
-                               const arma::mat O,
-                               double KY) {
+Rcpp::List fn_optim_PLNnetwork_Cpp(
+    arma::vec par,
+    double log_detOmega,
+    const arma::mat Omega,
+    const arma::mat Y,
+    const arma::mat X,
+    const arma::mat O,
+    double KY) {
 
   int n = Y.n_rows, p = Y.n_cols, d = X.n_cols ;
 
-  arma::mat Theta = par.subvec(0      , p*d      -1) ; Theta.reshape(p,d) ;
-  arma::mat M     = par.subvec(p*d    , p*(n+d) - 1) ; M.reshape(n,p) ;
-  arma::mat S     = par.subvec(p*(n+d), p*(2*n+d)-1) ; S.reshape(n,p) ;
+  // arma::mat Theta = par.subvec(0      , p*d      -1) ; Theta.reshape(p,d) ;
+  // arma::mat M     = par.subvec(p*d    , p*(n+d) - 1) ; M.reshape(n,p) ;
+  // arma::mat S     = par.subvec(p*(n+d), p*(2*n+d)-1) ; S.reshape(n,p) ;
+
+  arma::mat Theta(&par[0]      , p,d, false) ;
+  arma::mat     M(&par[p*d]    , n,p, false) ;
+  arma::mat     S(&par[p*(d+n)], n,p, false) ;
 
   arma::mat nSigma = diagmat(sum(S, 0)) + M.t() * M ;
   arma::mat Z = O + X * Theta.t() + M;

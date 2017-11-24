@@ -78,26 +78,31 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
 
   if (ctrl$newpar) {
-    par0 <- c(par0$M, par0$S)
+    par0 <- c(par0$M + O + tcrossprod(X, par0$Theta), par0$S)
     lower.bound <- c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
     xtol_abs    <- c(rep(0, p*n), rep(ctrl$xtol_abs, n*p))
+    X.XtXm1 <- X %*% solve(crossprod(X))
+    ProjOrthX <- diag(n) - tcrossprod(X.XtXm1,X)
     ## Now optimize with NLOPTR
     opts <- list("algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
                  "maxeval"     = ctrl$maxeval,
                  "ftol_rel"    = ctrl$ftol_rel,
                  "ftol_abs"    = ctrl$ftol_abs,
                  "xtol_rel"    = ctrl$xtol_rel,
-                 "xtol_abs"    = xtol_abs,
+                 "xtol_abs"    = c(rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
                  "print_level" = max(0,ctrl$trace-1))
-    optim.out <- nloptr(par0, eval_f = fn_optim_PLN_newparam_Cpp, lb = lower.bound, opts = opts,
-                        Y = Y, X = X, O = O, KY = KY)
+    optim.out <- nloptr(par0,
+                        eval_f = fn_optim_PLN_Cpp,
+                        lb     = c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
+                        opts   = opts,
+                        Y = Y, ProjOrthX = ProjOrthX, O = O, KY = KY)
     ## ===========================================
     ## POST-TREATMENT
     ##
     M     <- matrix(optim.out$solution[      1:(n*p)], n,p)
     S     <- matrix(optim.out$solution[n*p + 1:(n*p)], n,p)
-    Theta <- t(solve(crossprod(X)) %*% crossprod(X,M - O))
-    Sigma <- crossprod(M - O - tcrossprod(X,Theta))/n + diag(colMeans(S), nrow = p, ncol = p)
+    Theta <- crossprod(M - O, X.XtXm1)
+    Sigma <- crossprod(ProjOrthX %*% (M - O))/n + diag(colMeans(S), nrow = p, ncol = p)
     loglik <- logLikPoisson(Y, M)
   } else {
     par0 <- c(par0$Theta, par0$M, par0$S)
@@ -111,7 +116,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
                  "xtol_rel"    = ctrl$xtol_rel,
                  "xtol_abs"    = xtol_abs,
                  "print_level" = max(0,ctrl$trace-1))
-    optim.out <- nloptr(par0, eval_f = fn_optim_PLN_profiled_Cpp, lb = lower.bound, opts = opts,
+    optim.out <- nloptr(par0, eval_f = fn_optim_PLN_old2_Cpp, lb = lower.bound, opts = opts,
                         Y = Y, X = X, O = O, KY = KY)
     ## ===========================================
     ## POST-TREATMENT
