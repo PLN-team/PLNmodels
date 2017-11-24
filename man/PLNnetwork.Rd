@@ -41,7 +41,7 @@ an R6 object with class \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}},
 a collection of models with class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
 }
 \description{
-two methods are available for specifing the models (with formulas or matrices)
+two methods are available for specifying the models (with formulas or matrices)
 }
 \details{
 The list of parameters \code{control.init} and \code{control.main} control the optimization of the initialization and the main process.
@@ -68,7 +68,6 @@ The following parameter are specific to initialization
 
 The following parameter are specific to main iterative process
 \itemize{
- \item{"MB"}{a boolean indicating wether the approximated version of the Graphical-Lasso (a.k.a. Neighborhood Selection of Meinshausen and Buhlmann) should be used for netwokr inference. Faster but no model selection criterion is available. Default to \code{FALSE}}
  \item{"ftol_out"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
  \item{"maxit_out"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
  \item{"penalize.diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}

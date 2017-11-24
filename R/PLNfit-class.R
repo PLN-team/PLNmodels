@@ -71,11 +71,13 @@ PLNfit <-
       criteria  = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
   )
+## an S3 function to check if an object is a PLNfit
+isPLNfit <- function(Robject) {all.equal(class(Robject), c('PLNfit', 'R6'))}
 
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
 ## ----------------------------------------------------------------------
-## Should only be accessed BY PLNfamily but R6 friend class don't exist
+## Should only be accessed By PLNfamily but R6 friend class don't exist
 
 #' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
 #'
@@ -93,17 +95,25 @@ function(covariates, offsets) {
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS
 ## ----------------------------------------------------------------------
+## For each methods, I define an corresponding S3 method for simplicity
+## and only document the S3 method
 
 #' Predict counts of a new sample
 #'
-#' @name PLNfit_predict
+#' @name predict.PLNfit
 #'
+#' @param x an R6 object with class PLNfit
 #' @param newdata    A data frame in which to look for variables with which to predict.
 #' @param newOffsets A matrix in which to look for offsets with which to predict.
 #' @param type       The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
 #'                   the alternative "response" is on the scale of the response variable (i.e. average count)
 #' @return A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
-#'
+#' @export
+predict.PLNfit <- function(x, newdata, newOffsets, type = c("link", "response")) {
+  stopifnot(isPLNfit(x))
+  x$predict(newdata, newOffsets, type)
+}
+
 PLNfit$set("public", "predict",
   function(newdata, newOffsets, type = c("link", "response")) {
     type = match.arg(type)
@@ -123,12 +133,19 @@ PLNfit$set("public", "predict",
   }
 )
 
-#' Display the model parameters in a matrix fashion
+#' Display the model parameters of a PLNfit in a matrix fashion
 #'
-#' @name PLNfit_plot
+#' @name plot.PLNfit
 #'
-#' @param type character. should the variational or the model parameters be plotted? default is "model".
+#' @param x an R6 object with class PLNfit
+#' @param type character. Should the variational or the model parameters be plotted? default is "model".
 #'
+#' @export
+plot.PLNfit <- function(x, type=c("model","variational")) {
+  stopifnot(isPLNfit(x))
+  x$plot(type)
+}
+
 PLNfit$set("public", "plot",
   function(type=c("model","variational")) {
     type <- match.arg(type)
@@ -153,7 +170,7 @@ PLNfit$set("public", "show",
 function(model = "A Poisson Lognormal fit\n") {
   cat(model)
   cat("==================================================================\n")
-  print(as.data.frame(t(self$criteria), row.names=""))
+  print(as.data.frame(t(self$criteria), row.names = ""))
   cat("==================================================================\n")
   cat("* Useful fields \n")
   cat("  $model_par, $var_par, $loglik, $BIC, $ICL, $degrees_freedom, $criteria\n")
@@ -161,4 +178,4 @@ function(model = "A Poisson Lognormal fit\n") {
   cat("    $plot(), $predict()\n")
 })
 PLNfit$set("public", "print", function() self$show())
-
+print.PLNfit <- function(x) {x$show()}
