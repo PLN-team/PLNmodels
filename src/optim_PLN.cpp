@@ -6,11 +6,12 @@ using namespace arma;
 
 //' @export
 // [[Rcpp::export]]
-Rcpp::List fn_optim_PLN_Cpp(arma::vec par,
+Rcpp::List fn_optim_PLN_par2_Cpp(arma::vec par,
                             const arma::mat Y,
                             const arma::mat ProjOrthX,
                             const arma::mat O,
                             double KY) {
+  // Gradients checked numerically
 
   int n = Y.n_rows, p = Y.n_cols ;
 
@@ -25,6 +26,7 @@ Rcpp::List fn_optim_PLN_Cpp(arma::vec par,
   arma::vec grd_M     = vectorise( Mtilde * Omega + exp (M + .5 * S)  - Y) ;
   arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + exp (M + .5 * S) - 1/S));
 
+
   arma::vec grad = join_vert(grd_M,grd_S) ;
 
   return Rcpp::List::create(Rcpp::Named("objective") = objective,
@@ -33,11 +35,12 @@ Rcpp::List fn_optim_PLN_Cpp(arma::vec par,
 
 //' @export
 // [[Rcpp::export]]
-Rcpp::List fn_optim_PLN_old2_Cpp( arma::vec par,
+Rcpp::List fn_optim_PLN_par1_Cpp( arma::vec par,
                                   const arma::mat Y,
                                   const arma::mat X,
                                   const arma::mat O,
                                   double KY) {
+  // Gradients checked numerically
 
   int n = Y.n_rows, p = Y.n_cols, d = X.n_cols ;
 
@@ -61,7 +64,7 @@ Rcpp::List fn_optim_PLN_old2_Cpp( arma::vec par,
                             Rcpp::Named("gradient" ) = grad);
 }
 
-// Rcpp::List fn_optim_PLN_old1_Cpp(const arma::vec par,
+// Rcpp::List fn_optim_PLN_old_Cpp(const arma::vec par,
 //                             const arma::mat Y,
 //                             const arma::mat X,
 //                             const arma::mat O,

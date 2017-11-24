@@ -92,7 +92,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
                  "xtol_abs"    = c(rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
                  "print_level" = max(0,ctrl$trace-1))
     optim.out <- nloptr(par0,
-                        eval_f = fn_optim_PLN_Cpp,
+                        eval_f = fn_optim_PLN_par2_Cpp,
                         lb     = c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
                         opts   = opts,
                         Y = Y, ProjOrthX = ProjOrthX, O = O, KY = KY)
@@ -116,7 +116,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
                  "xtol_rel"    = ctrl$xtol_rel,
                  "xtol_abs"    = xtol_abs,
                  "print_level" = max(0,ctrl$trace-1))
-    optim.out <- nloptr(par0, eval_f = fn_optim_PLN_old2_Cpp, lb = lower.bound, opts = opts,
+    optim.out <- nloptr(par0, eval_f = fn_optim_PLN_par1_Cpp, lb = lower.bound, opts = opts,
                         Y = Y, X = X, O = O, KY = KY)
     ## ===========================================
     ## POST-TREATMENT

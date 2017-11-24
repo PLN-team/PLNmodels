@@ -9,10 +9,10 @@
 PLNnetwork(Robject, ...)
 
 \method{PLNnetwork}{formula}(formula, penalties = NULL, approx = FALSE,
-  control.init = list(), control.main = list())
+  new = FALSE, control.init = list(), control.main = list())
 
 \method{PLNnetwork}{default}(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0,
-  nrow(Y), ncol(Y)), penalties = NULL, approx = FALSE,
+  nrow(Y), ncol(Y)), penalties = NULL, approx = FALSE, new = FALSE,
   control.init = list(), control.main = list())
 }
 \arguments{

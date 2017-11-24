@@ -6,6 +6,36 @@ using namespace arma;
 
 //' @export
 // [[Rcpp::export]]
+Rcpp::List fn_optim_PLNnetwork_new_Cpp(
+    arma::vec par,
+    double log_detOmega,
+    const arma::mat Omega,
+    const arma::mat Y,
+    const arma::mat ProjOrthX,
+    const arma::mat O,
+    double KY) {
+
+  // toot large error in gradient for now... 1e-1/1e-0
+  int n = Y.n_rows, p = Y.n_cols ;
+
+  arma::mat     M(&par[0]   , n,p, false) ;
+  arma::mat     S(&par[p*+n], n,p, false) ;
+
+  arma::mat Mtilde = ProjOrthX * (M - O) ;
+
+  double objective = accu(exp(M + .5 * S) - Y % M - .5*log(S)) - .5*n*log_detOmega + KY ;
+
+  arma::vec grd_M     = vectorise( Mtilde * Omega + exp (M + .5 * S)  - Y) ;
+  arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + exp (M + .5 * S) - 1/S));
+
+  arma::vec grad = join_vert(grd_M,grd_S) ;
+
+  return Rcpp::List::create(Rcpp::Named("objective") = objective,
+                            Rcpp::Named("gradient" ) = grad);
+}
+
+//' @export
+// [[Rcpp::export]]
 Rcpp::List fn_optim_PLNnetwork_Cpp(
     arma::vec par,
     double log_detOmega,
@@ -15,11 +45,8 @@ Rcpp::List fn_optim_PLNnetwork_Cpp(
     const arma::mat O,
     double KY) {
 
+  // GRadient checked - ok up to 1e-3
   int n = Y.n_rows, p = Y.n_cols, d = X.n_cols ;
-
-  // arma::mat Theta = par.subvec(0      , p*d      -1) ; Theta.reshape(p,d) ;
-  // arma::mat M     = par.subvec(p*d    , p*(n+d) - 1) ; M.reshape(n,p) ;
-  // arma::mat S     = par.subvec(p*(n+d), p*(2*n+d)-1) ; S.reshape(n,p) ;
 
   arma::mat Theta(&par[0]      , p,d, false) ;
   arma::mat     M(&par[p*d]    , n,p, false) ;
@@ -29,13 +56,12 @@ Rcpp::List fn_optim_PLNnetwork_Cpp(
   arma::mat Z = O + X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
+  // double objective = accu(A - Y % Z - .5*log(S)) -.5*n*log_detOmega + KY ;
   double objective = accu(A - Y % Z - .5*log(S)) -.5*(n*log_detOmega + n*p - trace(Omega*nSigma)) + KY ;
-  // double objective = accu(A - Y % Z - .5*S) -.5*(n*log_detOmega + n*p - trace(Omega*nSigma)) + KY ;
 
   arma::vec grd_Theta = vectorise((A-Y).t() * X);
   arma::vec grd_M     = vectorise(M * Omega + A-Y) ;
   arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + A - 1/S));
-  // arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + A - n*p));
 
   arma::vec grad = join_vert(join_vert(grd_Theta, grd_M),grd_S) ;
 

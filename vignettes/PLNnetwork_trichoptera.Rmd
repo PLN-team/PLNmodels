@@ -59,7 +59,7 @@ The critetion $J$ represents the variational lower bound of the likelihood: in t
 From this plot, we can see that the best model in terms of BIC is obtained for $q=3$ axes. We may extract the corresponding model with the method `getBestModel("BIC")`. A model with a specific penalty level can be extracted with the `getModel(lambda)` method. 
 
 ```{r}
-model.BIC <- models$getBestModel() # if no criteria is specified, the best ICL is used
+model.BIC <- models$getBestModel("BIC") # if no criteria is specified, the best BIC is used
 model.pen <- models$getModel(models$penalties[5]) # give some sparsity
 ```
 
