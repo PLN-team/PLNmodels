@@ -125,16 +125,10 @@ function() {
   }
 })
 
-#' A plot method for a collection of PLNPCAfit
-#'
-#' @name PLNPCAfamily_plot
-#' @return Produces a plot  representing the evolution of the criteria of the different models considered,
-#' highlighting the best model in terms of ICL. If not smooth, you may consider running PLNPCA again with
-#' a smaller tolerance for convergence.
-NULL
 PLNPCAfamily$set("public", "plot",
-function() {
-  p <- super$plot() + xlab("rank")
+function(criteria = c("loglik", "BIC", "ICL")) {
+  stopifnot(!anyNA(self$criteria))
+  p <- super$plot(criteria) + xlab("rank")
   p <- p + annotate("text", x=self$ranks, y=min(self$criteria$loglik), angle=90, label=paste("R2 =", round(self$criteria$R_squared, 2)), size=3, alpha=0.7) +
     geom_vline(xintercept=self$getBestModel("ICL")$rank, linetype="dashed", alpha=0.5)
   p

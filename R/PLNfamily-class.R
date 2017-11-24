@@ -31,6 +31,9 @@ PLNfamily <-
     )
 )
 
+## an S3 function to check if an object is a PLNfit
+isPLNfamily <- function(Robject) {all.equal(rev(class(Robject))[1:2], c('R6','PLNfamily'))}
+
 PLNfamily$set("public", "initialize",
   function(responses, covariates, offsets, control) {
 
@@ -77,11 +80,11 @@ function() {
 #' @name PLNfamily_getBestModel
 #'
 #' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "ICL", "loglik", "R_squared". Default is "BIC".
+#' "BIC", "EBIC", "ICL", "loglik", "R_squared". Default is "BIC".
 #' @return  Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getBestModel",
-function(crit = c("BIC", "ICL", "loglik", "R_squared")){
+function(crit = c("BIC", "ICL", "EBIC", "loglik", "R_squared")){
   crit <- match.arg(crit)
   stopifnot(!anyNA(self$criteria[[crit]]))
   if (length(self$criteria[[crit]]) > 1) {
@@ -126,12 +129,29 @@ function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", 
   })
 })
 
+
+#' Display the criteria associated with a collection of PLN fits (a PLNfamily)
+#'
+#' @name plot.PLNfamily
+#'
+#' @param x an R6 object with class PLNfamily
+#' @param type vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik")
+#' The two last are only available por PLNnetworkfamily. Default is c("loglik", "BIC", "ICL")
+#'@return Produces a plot  representing the evolution of the criteria of the different models considered,
+#' highlighting the best model in terms of ICL for PLNPCA and EBIC for PLNnetwork.
+#'
 #' @import ggplot2
+#' @export
+plot.PLNfamily <- function(x, criteria = c("loglik", "BIC", "ICL")) {
+  stopifnot(isPLNfamily(x))
+  x$plot(criteria)
+}
+
 PLNfamily$set("public", "plot",
-function() {
-  dplot <- melt(self$criteria[, c("param", "loglik", "BIC", "ICL")], id.vars = 1, variable.name = "criterion")
+function(criteria = c("loglik", "BIC", "ICL")) {
+  dplot <- melt(self$criteria[, c('param',criteria)], id.vars = 1, variable.name = "criterion")
   p <- ggplot(dplot, aes(x = param, y = value, group = criterion, colour = criterion)) +
-        geom_line() + geom_point() + ggtitle("Model selection criteria")
+        geom_line() + geom_point() + ggtitle("Model selection criteria") + theme_bw()
   p
 })
 

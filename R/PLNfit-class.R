@@ -71,6 +71,7 @@ PLNfit <-
       criteria  = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
   )
+
 ## an S3 function to check if an object is a PLNfit
 isPLNfit <- function(Robject) {all.equal(class(Robject), c('PLNfit', 'R6'))}
 

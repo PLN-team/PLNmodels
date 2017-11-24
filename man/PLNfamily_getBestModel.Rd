@@ -5,7 +5,7 @@
 \title{Best model extraction from a collection of PLNfit (PCA, network)}
 \arguments{
 \item{crit}{a character for the criterion used to performed the selection. Either
-"BIC", "ICL", "loglik", "R_squared". Default is "BIC".}
+"BIC", "EBIC", "ICL", "loglik", "R_squared". Default is "BIC".}
 }
 \value{
 Send back a object with class \code{\link[=PLNfit]{PLNfit}}.

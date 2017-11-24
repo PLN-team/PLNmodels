@@ -73,7 +73,7 @@ PLNnetworkfamily$set("public", "optimize",
              self$inception$var_par$S)
   Omega  <- diag(1/diag(Sigma), nrow = private$p, ncol = private$p)
   Sigma0 <- diag(  diag(Sigma), nrow = private$p, ncol = private$p)
-  objective.old <- -self$inception$loglik
+  objective.old <- ifelse(is.na(self$inception$loglik),-Inf,-self$inception$loglik)
 
   ## set option for call to NLOPT: optim typ, lower bound, tolerance...
   lower.bound <- c(rep(-Inf, private$p*private$d), # Theta
@@ -132,7 +132,7 @@ PLNnetworkfamily$set("public", "optimize",
                           log_detOmega = logDetOmega, Omega = Omega,
                           Y = self$responses, X = self$covariates, O = self$offsets, KY = KY)
       objective[iter]   <- optim.out$objective + penalty * sum(abs(Omega))
-      convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective.old)
+      convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
 
       ## Check convergence
       if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
@@ -212,18 +212,11 @@ PLNnetworkfamily$set("public", "optimize_MB",
 
 })
 
-#' A plot method for a collection of PLNnetworkfit
-#'
-#' @name PLNnetworkfamily_plot
-#' @import ggplot2
-#' @return Produces a plot  representing the evolution of the criteria of the different models considered,
-#' highlighting the best model in terms of BIC.
-NULL
 PLNnetworkfamily$set("public", "plot",
-function(log.x=TRUE) {
+function(criteria = c("loglik", "BIC", "EBIC", "ICL"), log.x = TRUE) {
   stopifnot(!anyNA(self$criteria))
-  p <- super$plot() + xlab("penalty") +
-    geom_vline(xintercept = self$getBestModel("BIC")$penalty, linetype = "dashed", alpha = 0.5)
+  p <- super$plot(criteria) + xlab("penalty") +
+    geom_vline(xintercept = self$getBestModel("EBIC")$penalty, linetype = "dashed", alpha = 0.5)
   if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
   p
 })
@@ -234,6 +227,8 @@ function() {
   cat(" Task: Network Inference \n")
   cat("========================================================\n")
   cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties),"\n")
+  if (!anyNA(self$criteria$EBIC))
+    cat(" - Best model (regarding EBIC): lambda =", format(self$getBestModel("EBIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("EBIC")$R_squared, 2), "\n")
   if (!anyNA(self$criteria$BIC))
     cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
   if (!anyNA(self$criteria$ICL))
