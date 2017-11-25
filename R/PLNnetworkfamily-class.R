@@ -289,11 +289,24 @@ PLNnetworkfamily$set("public", "optimize_new",
 
 #' @export
 PLNnetworkfamily$set("public", "plot",
-function(criteria = c("loglik", "BIC", "EBIC", "ICL"), log.x = TRUE) {
-  stopifnot(!anyNA(self$criteria))
-  p <- super$plot(criteria) + xlab("penalty") +
-    geom_vline(xintercept = self$getBestModel("EBIC")$penalty, linetype = "dashed", alpha = 0.5)
+function(criteria = c("loglik", "BIC", "EBIC"), log.x = TRUE) {
+  vlines <- sapply(criteria, function(crit) self$getBestModel(crit)$penalty)
+  p <- super$plot(criteria) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
   if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
+  p
+})
+
+#' @export
+PLNnetworkfamily$set("public", "plot_objective",
+function() {
+  objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
+  changes <- cumsum(unlist(lapply(self$models, function(model) model$optim_par$outer_iterations)))
+  dplot <- data.frame(iteration = 1:length(objective), objective = objective)
+  p <- ggplot(dplot, aes(x = iteration, y = objective)) + geom_line() +
+    geom_vline(xintercept = changes, linetype="dashed", alpha = 0.25) +
+    ggtitle("Objective along the alternate algorithm") + xlab("iteration (+ changes of model)") +
+    annotate("text", x = changes, y = min(dplot$objective), angle = 90,
+             label = paste("penalty=",format(self$criteria$param, digits = 1)), hjust = -.1, size = 3, alpha = 0.7) + theme_bw()
   p
 })
 
@@ -307,8 +320,8 @@ function() {
     cat(" - Best model (regarding EBIC): lambda =", format(self$getBestModel("EBIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("EBIC")$R_squared, 2), "\n")
   if (!anyNA(self$criteria$BIC))
     cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
-  if (!anyNA(self$criteria$ICL))
-    cat(" - Best model (regarding ICL): lambda =", format(self$getBestModel("ICL")$penalty, digits = 3), "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
+  # if (!anyNA(self$criteria$ICL))
+  #   cat(" - Best model (regarding ICL): lambda =", format(self$getBestModel("ICL")$penalty, digits = 3), "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })
 PLNnetworkfamily$set("public", "print", function() self$show())
 

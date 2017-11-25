@@ -127,10 +127,8 @@ function() {
 
 PLNPCAfamily$set("public", "plot",
 function(criteria = c("loglik", "BIC", "ICL")) {
-  stopifnot(!anyNA(self$criteria))
-  p <- super$plot(criteria) + xlab("rank")
-  p <- p + annotate("text", x=self$ranks, y=min(self$criteria$loglik), angle=90, label=paste("R2 =", round(self$criteria$R_squared, 2)), size=3, alpha=0.7) +
-    geom_vline(xintercept=self$getBestModel("ICL")$rank, linetype="dashed", alpha=0.5)
+  vlines <- sapply(criteria, function(crit) self$getBestModel(crit)$rank)
+  p <- super$plot(criteria) + xlab("rank") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
   p
 })
 

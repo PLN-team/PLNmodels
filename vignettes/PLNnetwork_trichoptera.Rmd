@@ -69,3 +69,7 @@ The variables `model.BIC` and `model.pen` are other `R6Class` objects of class `
 model.BIC$plot_network()
 ```
 
+Additional information about the optimization process comes with the `plot_objective` method:
+```{r, fig.width=7, fig.height=5}
+models$plot_objective()
+```

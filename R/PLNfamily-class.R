@@ -149,9 +149,12 @@ plot.PLNfamily <- function(x, criteria = c("loglik", "BIC", "ICL")) {
 
 PLNfamily$set("public", "plot",
 function(criteria = c("loglik", "BIC", "ICL")) {
+  stopifnot(!anyNA(self$criteria))
   dplot <- melt(self$criteria[, c('param',criteria)], id.vars = 1, variable.name = "criterion")
   p <- ggplot(dplot, aes(x = param, y = value, group = criterion, colour = criterion)) +
-        geom_line() + geom_point() + ggtitle("Model selection criteria") + theme_bw()
+        geom_line() + geom_point() + ggtitle("Model selection criteria") +
+    annotate("text", x = self$criteria$param, y = min(dplot$value), hjust=-.1, angle = 90,
+             label = paste("R2 =", round(self$criteria$R_squared, 2)), size = 3, alpha = 0.7) +  theme_bw()
   p
 })
 
