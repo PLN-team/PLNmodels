@@ -262,7 +262,6 @@ PLNnetworkfamily$set("public", "optimize_new",
     ## OUTPUT
     ## formating parameters for output
     Theta <- crossprod(M - self$offsets, X.XtXm1)
-
     rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
     dimnames(S)     <- dimnames(self$responses)
     dimnames(M)     <- dimnames(self$responses)
@@ -325,42 +324,3 @@ function() {
 })
 PLNnetworkfamily$set("public", "print", function() self$show())
 
-
-# PLNnetworkfamily$set("public", "optimize_MB",
-#   function(control) {
-#
-#   ## ===========================================
-#   ## INITIALISATION
-#   ## start from the standard PLN (a.k.a. inception)
-#   ## keep these values for the variational parameters whatever the penalty
-#   ## KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
-#   Theta <- self$inception$model_par$Theta
-#   M     <- self$inception$var_par$M
-#   S     <- self$inception$var_par$S
-#   Sigma <- crossprod(M)/private$n + diag(colMeans(S), nrow = private$p, ncol = private$p)
-#
-#   for (m in seq_along(self$models))  {
-#
-#     penalty <- self$models[[m]]$penalty
-#     ## ===========================================
-#     ## OPTIMISATION
-#     if (control$trace > 0) {
-#       cat("\tsparsifying penalty =",penalty, "\r")
-#       flush.console()
-#     }
-#
-#     Omega <- suppressWarnings(glasso::glasso(Sigma, rho = penalty, penalize.diagonal = control$penalize.diagonal, approx = TRUE)$wi)
-#     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
-#
-#     ## ===========================================
-#     ## OUTPUT
-#
-#     ## Enforce symmetry of Sigma
-#     if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
-#     if (!isSymmetric(Theta)) Omega <- Matrix::symmpart(Omega)
-#
-#     self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S,
-#                             monitoring = list(objective = NA))
-#   }
-#
-# })

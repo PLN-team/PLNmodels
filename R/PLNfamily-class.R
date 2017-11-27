@@ -129,7 +129,6 @@ function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", 
   })
 })
 
-
 #' Display the criteria associated with a collection of PLN fits (a PLNfamily)
 #'
 #' @name plot.PLNfamily
