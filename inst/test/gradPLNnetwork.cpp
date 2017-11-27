@@ -19,21 +19,16 @@ Rcpp::List fn_optim_PLNnetwork_Cpp(const arma::vec par,
   arma::mat M     = par.subvec(p*d    , p*(n+d) - 1) ; M.reshape(n,p) ;
   arma::mat S     = par.subvec(p*(n+d), p*(2*n+d)-1) ; S.reshape(n,p) ;
 
-  arma::mat S_bar(sum(S, 0)) ;
-  arma::mat MtM = M.t() * M ;
-
   arma::mat Z = O + X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
-  double logP_Z = .5 * (n * log_detOmega - dot(diagvec(Omega), S_bar) - trace(Omega * MtM))  ;
-  double objective = accu(A - Y % Z - .5 * log(S) - .5) - logP_Z + KY ;
+  double objective = accu(A - Y % Z - .5*log(S)) -.5*(n*log_detOmega + n*p - trace(Omega*(diagmat(sum(S, 0)) + M.t() * M))) + KY ;
 
   arma::vec grd_Theta = vectorise(X.t() * (A-Y));
   arma::vec grd_M     = vectorise(M * Omega + A-Y) ;
   arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + A - 1/S));
 
   arma::vec grad = join_vert(join_vert(grd_Theta, grd_M),grd_S) ;
-
 
   return Rcpp::List::create(Rcpp::Named("objective") = objective,
                             Rcpp::Named("gradient" ) = grad);
@@ -46,17 +41,16 @@ Rcpp::List fn_optim_PLNnetwork_Cpp(const arma::vec par,
 //
 
 /*** R
-source("~/git/PLNmodels/R/utils.R")
-load("~/svn/sparsepca/Pgm/PCA/Output/Corinne_data.RData")
+load("~/svn/sparsepca/Data/OTU/oaks.RData")
 
-formula <- Data$count ~ 1 + offset(log(Data$offset))
+formula <- Data$count[1:10, 1:5] ~ 1 + offset(log(Data$offset[1:10, 1:5]))
 
 frame  <- model.frame(formula)
 Y      <- model.response(frame)
 X      <- model.matrix(formula)
 O      <- model.offset(frame)
 n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-KY <- sum(.logfactorial(Y)) ## constant quantity in the objective
+KY <- 1 ## constant quantity in the objective
 
 ## declare the objective and gradient functions for optimization
 fn_optim_PLNnetwork <- function(par,logDetOmega,Omega,Y,X,O) {
@@ -66,7 +60,7 @@ fn_optim_PLNnetwork <- function(par,logDetOmega,Omega,Y,X,O) {
       S     <- matrix(par[(n+d)*p + 1:(n*p)], n,p)
 
       Z <- O + tcrossprod(X, Theta) + M
-      A <- exp (.trunc(Z + .5*S))
+      A <- exp (Z + .5*S)
 
       logP.Z  <- n/2 * (logDetOmega - sum(diag(Omega)*colMeans(S))) - .5*sum(diag(Omega %*% crossprod(M)))
 
@@ -80,12 +74,12 @@ fn_optim_PLNnetwork <- function(par,logDetOmega,Omega,Y,X,O) {
       ))
   }
 
-glmP  <- lapply(1:ncol(Y), function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
-Theta <- do.call(rbind, lapply(glmP, coefficients))
-M <- matrix(0, n, p) ## -tcrossprod(covariates,self$init.par$Theta)
-S <- matrix(1e-3, n,p)
+logLM  <- lapply(1:ncol(Y), function(j) lm.fit(X, log(1 + Y[, j]), offset = O[,j]))
+Theta <- do.call(rbind, lapply(logLM, coefficients))
+M <- sapply(logLM, residuals)
+S <- matrix(1e-3, n, p)
 
-Omega <- cov(sapply(glmP, residuals.glm, "pearson"))
+Omega <- solve(cov(M))
 logDetOmega <- determinant(Omega, logarithm=TRUE)$modulus
 
 par0 <- c(Theta, M, S)
@@ -97,4 +91,19 @@ library(microbenchmark)
 res <- microbenchmark(outR = fn_optim_PLNnetwork(par0, logDetOmega, Omega, Y, X, O),
                       outC = fn_optim_PLNnetwork_Cpp(par0, logDetOmega, Omega, Y, X, O, KY))
 print(summary(res))
+ggplot2::autoplot(res)
+
+## checking derivative
+library(nloptr)
+# out <- check.derivatives(par0, func = function(x) {
+#                 fn_optim_PLNnetwork(x, logDetOmega, Omega, Y, X, O)$objective
+#             }, func_grad = function(x) {
+#                 fn_optim_PLNnetwork(x, logDetOmega, Omega, Y, X, O)$gradient
+#             })
+out <- check.derivatives(par0, func = function(x) {
+                fn_optim_PLNnetwork_Cpp(x, logDetOmega, Omega, Y, X, O, KY)$objective
+            }, func_grad = function(x) {
+                fn_optim_PLNnetwork_Cpp(x, logDetOmega, Omega, Y, X, O, KY)$gradient
+            }, check_derivatives_print = "all")
+
 */

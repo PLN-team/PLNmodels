@@ -198,7 +198,7 @@ PLNnetworkfamily$set("public", "optimize_new",
                "ftol_abs"    = control$ftol_abs,
                "xtol_rel"    = control$xtol_rel,
                "xtol_abs"    = xtol_abs,
-               "check_derivatives" = TRUE,
+               # "check_derivatives" = TRUE,
                "print_level" = max(0,control$trace - 2))
 
   X.XtXm1 <- self$covariates %*% solve(crossprod(self$covariates))

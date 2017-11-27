@@ -15,7 +15,6 @@ Rcpp::List fn_optim_PLNnetwork_new_Cpp(
     const arma::mat O,
     double KY) {
 
-  // toot large error in gradient for now... 1e-1/1e-0
   int n = Y.n_rows, p = Y.n_cols ;
 
   arma::mat     M(&par[0]   , n,p, false) ;
@@ -23,7 +22,9 @@ Rcpp::List fn_optim_PLNnetwork_new_Cpp(
 
   arma::mat Mtilde = ProjOrthX * (M - O) ;
 
-  double objective = accu(exp(M + .5 * S) - Y % M - .5*log(S)) - .5*n*log_detOmega + KY ;
+  arma::mat nSigma = Mtilde.t() * Mtilde ; nSigma.diag() += sum(S, 0);
+
+  double objective = accu(exp(M + .5 * S) - Y % M - .5*log(S)) -.5*(n*log_detOmega + n*p - trace(Omega*nSigma)) + KY ;
 
   arma::vec grd_M     = vectorise( Mtilde * Omega + exp (M + .5 * S)  - Y) ;
   arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + exp (M + .5 * S) - 1/S));
@@ -45,18 +46,17 @@ Rcpp::List fn_optim_PLNnetwork_Cpp(
     const arma::mat O,
     double KY) {
 
-  // GRadient checked - ok up to 1e-3
+  // Gradient checked - ok up to 1e-3
   int n = Y.n_rows, p = Y.n_cols, d = X.n_cols ;
 
   arma::mat Theta(&par[0]      , p,d, false) ;
   arma::mat     M(&par[p*d]    , n,p, false) ;
   arma::mat     S(&par[p*(d+n)], n,p, false) ;
 
-  arma::mat nSigma = diagmat(sum(S, 0)) + M.t() * M ;
+  arma::mat nSigma = M.t() * M ; nSigma.diag() += sum(S, 0);
   arma::mat Z = O + X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
-  // double objective = accu(A - Y % Z - .5*log(S)) -.5*n*log_detOmega + KY ;
   double objective = accu(A - Y % Z - .5*log(S)) -.5*(n*log_detOmega + n*p - trace(Omega*nSigma)) + KY ;
 
   arma::vec grd_Theta = vectorise((A-Y).t() * X);

@@ -33,37 +33,37 @@ circle <- function(center = c(0, 0), radius = 1, npoints = 100) {
 }
 
 GeomCircle <- ggplot2::ggproto("GeomCircle", ggplot2::Geom,
-                               required_aes = c("x", "y", "radius"),
-                               default_aes = ggplot2::aes(
-                                 colour = "grey30", fill=NA, alpha=NA, linewidth=1, linetype="solid"),
+  required_aes = c("x", "y", "radius"),
+  default_aes = ggplot2::aes(
+    colour = "grey30", fill=NA, alpha=NA, linewidth=1, linetype="solid"),
 
-                               draw_key = function (data, params, size)
-                               {
-                                 grid::circleGrob(
-                                   0.5, 0.5,
-                                   r=0.35,
-                                   gp = grid::gpar(
-                                     col = scales::alpha(data$colour, data$alpha),
-                                     fill = scales::alpha(data$fill, data$alpha),
-                                     lty = data$linetype,
-                                     lwd = data$linewidth
-                                   )
-                                 )
-                               },
+  draw_key = function (data, params, size)
+  {
+    grid::circleGrob(
+      0.5, 0.5,
+      r=0.35,
+      gp = grid::gpar(
+        col = scales::alpha(data$colour, data$alpha),
+        fill = scales::alpha(data$fill, data$alpha),
+        lty = data$linetype,
+        lwd = data$linewidth
+      )
+    )
+  },
 
-                               draw_panel = function(data, panel_scales, coord,  na.rm = TRUE) {
-                                 coords <- coord$transform(data, panel_scales)
-                                 grid::circleGrob(
-                                   x=coords$x, y=coords$y,
-                                   r=coords$radius,
-                                   gp = grid::gpar(
-                                     col = alpha(coords$colour, coords$alpha),
-                                     fill = alpha(coords$fill, coords$alpha),
-                                     lty = coords$linetype,
-                                     lwd = coords$linewidth
-                                   )
-                                 )
-                               }
+  draw_panel = function(data, panel_scales, coord,  na.rm = TRUE) {
+    coords <- coord$transform(data, panel_scales)
+    grid::circleGrob(
+      x=coords$x, y=coords$y,
+      r=coords$radius,
+      gp = grid::gpar(
+        col = alpha(coords$colour, coords$alpha),
+        fill = alpha(coords$fill, coords$alpha),
+        lty = coords$linetype,
+        lwd = coords$linewidth
+      )
+    )
+  }
 )
 
 geom_circle <- function(mapping = NULL, data = NULL, stat = "identity",
@@ -147,7 +147,7 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
       trace    = 0
     ),
     "main"= list(
-      ftol_rel = 1e-10,
+      ftol_rel = 1e-6,
       ftol_abs = 0,
       xtol_rel = 1e-4,
       xtol_abs = 1e-5,
