@@ -62,7 +62,7 @@ PLNfit <-
       var_par   = function() {list(M = private$M, S = private$S)},
       optim_par = function() {private$monitoring},
       degrees_freedom = function() {
-        private$p * private$d + private$p * (private$p + 1)/2
+        self$p * self$d + self$p * (self$p + 1)/2
       },
       loglik    = function() {private$J},
       BIC       = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},

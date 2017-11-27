@@ -32,7 +32,7 @@
 ##' @rdname PLN
 ##' @include PLNfit-class.R
 ##' @examples
-##' ## See the vignette TODO!!!
+##' ## See the vignette
 ##' @seealso The class  \code{\link[=PLNfit-class]{PLNfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @importFrom nloptr nloptr
