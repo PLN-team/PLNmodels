@@ -53,7 +53,7 @@ The parameter \code{control} is a list controlling the optimization with the fol
 }
 }
 \examples{
-## See the vignette TODO!!!
+## See the vignette
 }
 \seealso{
 The class  \code{\link[=PLNfit-class]{PLNfit}}

@@ -105,13 +105,30 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
 ##'
 ##' @description two methods are available for specifying the models (with formulas or matrices)
 ##'
+##' @param formula a formula
+##' @param Y a (n x p) matrix of count data
+##' @param X an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.
+##' @param O an optional (n x p) matrix of offsets.
+##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally. Can be a scalar.
+##' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 100 subsamples with size n/2.
+##' @param approx a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to TRUE.
+##' @param control.init a list for controling the optimization of the initialization, that fits a standard PLN model with the \code{\link[=PLN]{PLN}} function. See details.
+##' @param control.main a list for controling the optimization. See details.
+##' @param mc.cores the number of cores to used. Default is 1.
+##' @param Robject an R object, either a formula or a matrix
+##' @param ... additional parameters. Not used
+##'
+##' @return a list with the vector of penalty used, a p*(p-1)/2 x length(penalties) matrix of estimated probabilities of selection of the edges, and the list of subsamples
+##'
+##' @details See \code{\link[=PLNnetwork]{PLNnetwork}} for details about \code{control.main} and \code{control.init}
+##'
 ##' @export
 PLNnetwork_stabs <- function(Robject, ...)
   UseMethod("PLNnetwork_stabs", Robject)
 
 ##' @rdname PLNnetwork_stabs
 ##' @export
-PLNnetwork_stabs.formula <- function(formula, penalties, approx = FALSE, control.init = list(), control.main = list()) {
+PLNnetwork_stabs.formula <- function(formula, penalties, subsamples, approx = TRUE, control.init = list(), control.main = list()) {
 
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
@@ -119,11 +136,59 @@ PLNnetwork_stabs.formula <- function(formula, penalties, approx = FALSE, control
   O      <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLNnetwork_stabs.default(Y, X, O, penalties, approx, control.init, control.main))
+  return(PLNnetwork_stabs.default(Y, X, O, penalties, subsamples, approx, control.init, control.main))
 }
 
 ##' @rdname PLNnetwork_stabs
 ##' @export
 PLNnetwork_stabs.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)),
-                               penalties = NULL, approx=FALSE, control.init = list(), control.main=list()) {
+                               penalties = NULL, subsamples=NULL, approx=TRUE, mc.cores=1, control.init = list(nPenalties=10), control.main=list()) {
+
+  ## define default control parameters for optim and overwrite by user defined parameters
+  ctrl.init <- PLNnetwork_param(control.init, nrow(Y), ncol(Y), "init")
+  ctrl.init$trace <- 0
+  ctrl.main <- PLNnetwork_param(control.main, nrow(Y), ncol(Y), "main")
+  ctrl.main$trace <- 0
+
+  ## get the common inceptive model to save time
+  inception <- PLN(Y, X, O)
+
+  ## approximation can be obtained by performing just one iteration in the joint optimization algorithm
+  if (approx) ctrl.main$maxit_out <- 1
+
+  if (is.null(subsamples)) subsamples <- replicate(20, sample.int(nrow(Y), round(.5*nrow(Y))), simplify = FALSE)
+
+  ## Get an appropriate grid of penalties
+  if (is.null(penalties)) {
+    if (ctrl.init$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
+    max_pen <- max(abs(inception$model_par$Sigma[upper.tri(inception$model_par$Sigma)]))
+    penalties <- 10^seq(log10(max_pen), log10(max_pen*ctrl.init$min.ratio), len = ctrl.init$nPenalties)
+  } else {
+    if (ctrl.init$trace > 1) cat("\nPenalties already set by the user")
+    stopifnot(all(penalties > 0))
+  }
+
+
+  ## got for stability selection
+  cat("\nStability Selection for PLNnetwork: ")
+  cat("\nsubsampling: ")
+  stabs_out <- mclapply(subsamples, function(subsample) {
+    cat("+")
+    inception_ <- inception$clone()
+    inception_$update(M = inception$var_par$M[subsample, , drop = FALSE])
+    inception_$update(S = inception$var_par$S[subsample, , drop = FALSE])
+    ctrl.init$inception <- inception_
+    myPLN <- PLNnetworkfamily$new(penalties  = penalties,
+                                  responses  = Y[subsample, , drop = FALSE ],
+                                  covariates = X[subsample, , drop = FALSE],
+                                  offsets    = O[subsample, , drop = FALSE ], control = ctrl.init)
+    myPLN$optimize(ctrl.main)
+    nets <- do.call(cbind, lapply(myPLN$models, function(model) {
+      as.matrix(model$latent_network())[upper.tri(diag(ncol(Y)))]
+    }))
+    nets
+  }, mc.cores=mc.cores)
+
+  prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
+  return(list(prob = prob, penalties = penalties, subsamples = subsamples))
 }

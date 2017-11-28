@@ -8,13 +8,45 @@
 \usage{
 PLNnetwork_stabs(Robject, ...)
 
-\method{PLNnetwork_stabs}{formula}(formula, penalties, approx = FALSE,
-  control.init = list(), control.main = list())
+\method{PLNnetwork_stabs}{formula}(formula, penalties, subsamples,
+  approx = TRUE, control.init = list(), control.main = list())
 
 \method{PLNnetwork_stabs}{default}(Y, X = cbind(rep(1, nrow(Y))),
-  O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, approx = FALSE,
-  control.init = list(), control.main = list())
+  O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, subsamples = NULL,
+  approx = TRUE, mc.cores = 1, control.init = list(nPenalties = 10),
+  control.main = list())
+}
+\arguments{
+\item{Robject}{an R object, either a formula or a matrix}
+
+\item{...}{additional parameters. Not used}
+
+\item{formula}{a formula}
+
+\item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally. Can be a scalar.}
+
+\item{subsamples}{a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 100 subsamples with size n/2.}
+
+\item{approx}{a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to TRUE.}
+
+\item{control.init}{a list for controling the optimization of the initialization, that fits a standard PLN model with the \code{\link[=PLN]{PLN}} function. See details.}
+
+\item{control.main}{a list for controling the optimization. See details.}
+
+\item{Y}{a (n x p) matrix of count data}
+
+\item{X}{an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.}
+
+\item{O}{an optional (n x p) matrix of offsets.}
+
+\item{mc.cores}{the number of cores to used. Default is 1.}
+}
+\value{
+a list with the vector of penalty used, a p*(p-1)/2 x length(penalties) matrix of estimated probabilities of selection of the edges, and the list of subsamples
 }
 \description{
 two methods are available for specifying the models (with formulas or matrices)
+}
+\details{
+See \code{\link[=PLNnetwork]{PLNnetwork}} for details about \code{control.main} and \code{control.init}
 }
