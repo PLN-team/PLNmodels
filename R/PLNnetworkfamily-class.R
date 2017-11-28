@@ -92,7 +92,7 @@ PLNnetworkfamily$set("public", "optimize",
                "print_level" = max(0,control$trace - 2))
 
   ## ===========================================
-  ## GET ALONG THE PENLATY GRID (i.e the models)
+  ## GO ALONG THE PENALTY GRID (i.e the models)
 
   for (m in seq_along(self$models))  {
 
