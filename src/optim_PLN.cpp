@@ -18,14 +18,27 @@ Rcpp::List fn_optim_PLN_par2_Cpp(arma::vec par,
   arma::mat M(&par[0]  , n,p, false) ;
   arma::mat S(&par[n*p], n,p, false) ;
 
-  arma::mat Mtilde = ProjOrthX * (M - O) ;
-  arma::mat Omega  = n * inv_sympd( (M - O).t() * Mtilde + diagmat(sum(S, 0)));
+   // SVD of Mtilde * S-1/2
+   // arma::mat U, V;
+   // arma::vec d ;
+   // svd_econ(U, d, V, ProjOrthX * (M - O) * diagmat(1/sqrt(s)));
 
-  double objective = accu(exp (M + .5 * S) - Y % M - .5*log(S)) - .5*n*real(log_det(Omega)) + KY ;
+   arma::mat A = exp (M + .5 * S) ;
+   arma::mat Mtilde = ProjOrthX * (M - O);
 
-  arma::vec grd_M     = vectorise( Mtilde * Omega + exp (M + .5 * S)  - Y) ;
-  arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + exp (M + .5 * S) - 1/S));
+   arma::mat Omega  = n * inv_sympd( Mtilde.t() * Mtilde + diagmat(sum(S, 0)));
 
+   double objective = accu(A - Y % M - .5*log(S)) - .5*n*real(log_det(Omega)) + KY ;
+   arma::vec grd_M     = vectorise( Mtilde * Omega + A  - Y) ;
+   arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + A - 1/S));
+
+  // double objective = accu(A - Y % M - .5*log(S)) + .5* n * sum(log( s/n % (1+square(d)))) + KY ;
+  //
+  // arma::mat VtS = V.t() * diagmat(1/sqrt(s)) ;
+  // arma::vec grd_M     = vectorise( n * U * diagmat(d/(1 + square(d))) * VtS + A - Y) ;
+  //
+  //  vec diagOmega = diagvec( n * VtS.st() * diagmat(1/(1+square(d))) * VtS ) ;
+  //  arma::vec grd_S = vectorise(.5 * (ones(n) * diagOmega.t() + A - 1/S));
 
   arma::vec grad = join_vert(grd_M,grd_S) ;
 

@@ -76,26 +76,30 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
 
   KY <- sum(.logfactorial(Y)) ## constant that will remain the same
   if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
+  ## Set optimization options
+  opts <- list(
+    "algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
+    "maxeval"     = ctrl$maxeval,
+    "ftol_rel"    = ctrl$ftol_rel,
+    "ftol_abs"    = ctrl$ftol_abs,
+    "xtol_rel"    = ctrl$xtol_rel,
+    "print_level" = max(0,ctrl$trace-1)
+  )
 
   if (ctrl$newpar) {
     par0 <- c(par0$M + O + tcrossprod(X, par0$Theta), par0$S)
-    lower.bound <- c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
-    xtol_abs    <- c(rep(0, p*n), rep(ctrl$xtol_abs, n*p))
     X.XtXm1 <- X %*% solve(crossprod(X))
     ProjOrthX <- diag(n) - tcrossprod(X.XtXm1,X)
     ## Now optimize with NLOPTR
-    opts <- list("algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
-                 "maxeval"     = ctrl$maxeval,
-                 "ftol_rel"    = ctrl$ftol_rel,
-                 "ftol_abs"    = ctrl$ftol_abs,
-                 "xtol_rel"    = ctrl$xtol_rel,
-                 "xtol_abs"    = c(rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
-                 "print_level" = max(0,ctrl$trace-1))
-    optim.out <- nloptr(par0,
-                        eval_f = fn_optim_PLN_par2_Cpp,
-                        lb     = c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
-                        opts   = opts,
-                        Y = Y, ProjOrthX = ProjOrthX, O = O, KY = KY)
+    opts$xtol_abs <- c(rep(0, p*n), rep(ctrl$xtol_abs, n*p))
+
+    optim.out <- nloptr(
+      par0,
+      eval_f = fn_optim_PLN_par2_Cpp,
+      lb     = c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
+      opts   = opts,
+      Y = Y, ProjOrthX = ProjOrthX, O = O, KY = KY
+    )
     ## ===========================================
     ## POST-TREATMENT
     ##
@@ -106,18 +110,14 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
     loglik <- logLikPoisson(Y, M)
   } else {
     par0 <- c(par0$Theta, par0$M, par0$S)
-    lower.bound <- c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
-    xtol_abs    <- c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p))
     ## Now optimize with NLOPTR
-    opts <- list("algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
-                 "maxeval"     = ctrl$maxeval,
-                 "ftol_rel"    = ctrl$ftol_rel,
-                 "ftol_abs"    = ctrl$ftol_abs,
-                 "xtol_rel"    = ctrl$xtol_rel,
-                 "xtol_abs"    = xtol_abs,
-                 "print_level" = max(0,ctrl$trace-1))
-    optim.out <- nloptr(par0, eval_f = fn_optim_PLN_par1_Cpp, lb = lower.bound, opts = opts,
-                        Y = Y, X = X, O = O, KY = KY)
+    opts$xtol_abs <- c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p))
+    optim.out <- nloptr(
+      par0,
+      eval_f = fn_optim_PLN_par1_Cpp,
+      lb = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
+      opts = opts,
+      Y = Y, X = X, O = O, KY = KY)
     ## ===========================================
     ## POST-TREATMENT
     ##
