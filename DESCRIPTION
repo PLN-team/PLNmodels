@@ -1,7 +1,7 @@
 Package: PLNmodels
 Type: Package
 Title: Poisson lognormal models
-Version: 0.2.2010
+Version: 0.2.2020
 Author: Authors@R: as.person(c(
     "Julien Chiquet <julien.chiquet@inra.fr> [aut, cre]", 
     "Mahendra Mariadassou <mahendra.mariadassou@@inra.fr> [aut]",
