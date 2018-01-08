@@ -4,7 +4,7 @@
 ##'
 ##' @param formula a formula
 ##' @param Y a (n x p) matrix of count data
-##' @param X an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.
+##' @param X an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.
 ##' @param O an optional (n x p) matrix of offsets.
 ##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally
 ##' @param approx a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to FALSE.
@@ -190,5 +190,6 @@ PLNnetwork_stabs.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0
   }, mc.cores=mc.cores)
 
   prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
+
   return(list(prob = prob, penalties = penalties, subsamples = subsamples))
 }

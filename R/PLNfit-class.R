@@ -58,8 +58,33 @@ PLNfit <-
       q = function() {ncol(private$M)},
       p = function() {nrow(private$Theta)},
       d = function() {ncol(private$Theta)},
-      model_par = function() {list(Theta = private$Theta, Sigma = private$Sigma)},
-      var_par   = function() {list(M = private$M, S = private$S)},
+    ## model_par and var_par allow write access for bootstrapping purposes
+      model_par = function(value) {
+        if (!missing(value)) {
+          if (is.list(value) & all(names(value) %in% c("Sigma", "Theta"))) {
+            if (nrow(value$Theta) == self$p & ncol(value$Theta) == self$d) {
+              private$Theta <- value$Theta
+            }
+            if (nrow(value$Sima) == self$q & ncol(value$Sima) == self$q) {
+              private$Sigma <- value$Sigma
+            }
+          }
+        }
+        list(Theta = private$Theta, Sigma = private$Sigma)
+      },
+      var_par   = function(value) {
+        if (!missing(value)) {
+          if (is.list(value) & all(names(value) %in% c("S", "M"))) {
+            if (nrow(value$S) == self$n & ncol(value$S) == self$q) {
+              private$S <- value$S
+            }
+            if (nrow(value$M) == self$n & ncol(value$M) == self$q) {
+              private$M <- value$M
+            }
+          }
+        }
+        list(M = private$M, S = private$S)
+      },
       optim_par = function() {private$monitoring},
       degrees_freedom = function() {
         self$p * self$d + self$p * (self$p + 1)/2
