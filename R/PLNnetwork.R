@@ -128,7 +128,7 @@ PLNnetwork_stabs <- function(Robject, ...)
 
 ##' @rdname PLNnetwork_stabs
 ##' @export
-PLNnetwork_stabs.formula <- function(formula, penalties, subsamples, approx = TRUE, control.init = list(), control.main = list()) {
+PLNnetwork_stabs.formula <- function(formula, penalties = NULL, subsamples = NULL, approx = TRUE, control.init = list(), control.main = list(), mc.cores = 1) {
 
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
@@ -136,13 +136,13 @@ PLNnetwork_stabs.formula <- function(formula, penalties, subsamples, approx = TR
   O      <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLNnetwork_stabs.default(Y, X, O, penalties, subsamples, approx, control.init, control.main))
+  return(PLNnetwork_stabs.default(Y, X, O, penalties, subsamples, approx, control.init, control.main, mc.cores))
 }
 
 ##' @rdname PLNnetwork_stabs
 ##' @export
 PLNnetwork_stabs.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)),
-                               penalties = NULL, subsamples=NULL, approx=TRUE, mc.cores=1, control.init = list(nPenalties=10), control.main=list()) {
+                               penalties = NULL, subsamples = NULL, approx = TRUE, control.init = list(nPenalties = 10), control.main = list(), mc.cores = 1) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- PLNnetwork_param(control.init, nrow(Y), ncol(Y), "init")
@@ -151,7 +151,11 @@ PLNnetwork_stabs.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0
   ctrl.main$trace <- 0
 
   ## get the common inceptive model to save time
-  inception <- PLN(Y, X, O)
+  if ("PLNfit" %in% class(ctrl.init$inception)) {
+    inception <- ctrl.init$inception
+  } else {
+    inception <- PLN(Y, X, O)
+  }
 
   ## approximation can be obtained by performing just one iteration in the joint optimization algorithm
   if (approx) ctrl.main$maxit_out <- 1
