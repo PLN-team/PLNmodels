@@ -8,13 +8,14 @@
 \usage{
 PLNnetwork_stabs(Robject, ...)
 
-\method{PLNnetwork_stabs}{formula}(formula, penalties, subsamples,
-  approx = TRUE, control.init = list(), control.main = list())
+\method{PLNnetwork_stabs}{formula}(formula, penalties = NULL,
+  subsamples = NULL, approx = TRUE, control.init = list(),
+  control.main = list(), mc.cores = 1)
 
 \method{PLNnetwork_stabs}{default}(Y, X = cbind(rep(1, nrow(Y))),
   O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, subsamples = NULL,
-  approx = TRUE, mc.cores = 1, control.init = list(nPenalties = 10),
-  control.main = list())
+  approx = TRUE, control.init = list(nPenalties = 10),
+  control.main = list(), mc.cores = 1)
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a matrix}
@@ -33,13 +34,13 @@ PLNnetwork_stabs(Robject, ...)
 
 \item{control.main}{a list for controling the optimization. See details.}
 
+\item{mc.cores}{the number of cores to used. Default is 1.}
+
 \item{Y}{a (n x p) matrix of count data}
 
 \item{X}{an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.}
 
 \item{O}{an optional (n x p) matrix of offsets.}
-
-\item{mc.cores}{the number of cores to used. Default is 1.}
 }
 \value{
 a list with the vector of penalty used, a p*(p-1)/2 x length(penalties) matrix of estimated probabilities of selection of the edges, and the list of subsamples

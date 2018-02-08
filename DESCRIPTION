@@ -24,6 +24,8 @@ VignetteBuilder: knitr
 Collate: 
     'PLNfit-class.R'
     'PLN.R'
+    'PLNLDA.R'
+    'PLNLDAfit-class.R'
     'PLNPCA.R'
     'PLNfamily-class.R'
     'PLNPCAfamily-class.R'

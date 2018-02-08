@@ -32,7 +32,7 @@ PLNnetwork(Robject, ...)
 
 \item{Y}{a (n x p) matrix of count data}
 
-\item{X}{an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.}
+\item{X}{an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.}
 
 \item{O}{an optional (n x p) matrix of offsets.}
 }
