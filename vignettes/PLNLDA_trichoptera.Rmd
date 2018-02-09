@@ -1,0 +1,50 @@
+---
+title: "Analyzing the Trichopetra data set with the Poisson log-normal LDA model"
+author: "Julien Chiquet"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{PLN}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette intends to illustrate the basical use of the `PLNLDA` function and the methods accompaning the R6 Class `PLNLDAfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
+
+```{r child = 'trichoptera.Rmd'}
+```
+
+### A discriminant analysis for the Trichopetra data set
+
+We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The classification corresponds to the consecutive night groups caught. The model can be fitted with the function `PLNLDA` as follows:
+
+```{r}
+abundance <- as.matrix(trichometeo$fau) ## must be a matrix
+night_grp <- as.character(trichometeo$cla) ## must be a factor
+myLDA_nocov <- PLNLDA(abundance, grouping = night_grp)
+```
+
+The `myLDA_nocov` variable is an `R6` object with class `PLNLDAfit`, which comes with a couple of methods, as recalled when printing such an object:
+
+```{r show-method}
+myLDA_nocov
+```
+
+Essentially, the most important methodis the `plot` method: we separate well the different groups
+```{r plot_model, fig.width=7, fig.height=5}
+myLDA_nocov$plot_LDA()
+```
+
+### Accounting for other covariates 
+
+It is possible (experimental) to correct for other covariates before finding the LDA axis that separate well the grouping :
+```{r, warning=FALSE}
+abundance <- as.matrix(trichometeo$fau) ## must be a matrix
+night_grp <- as.factor(trichometeo$cla) ## must be a factor
+covariates <- as.matrix(trichometeo$meteo) ## must be a matrix
+myLDA_cov <- PLNLDA(abundance, X = covariates, grouping = night_grp)
+```
+
+```{r plot_model_cov, fig.width=7, fig.height=5}
+myLDA_cov$plot_LDA()
+```

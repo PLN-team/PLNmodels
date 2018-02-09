@@ -65,6 +65,8 @@ PLNLDA.default <- function(Y, grouping, X = NULL, O = matrix(0, nrow(Y), ncol(Y)
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- PLN_param(control, nrow(Y), ncol(Y))
+  Y <- as.matrix(Y)
+  if (!is.null(X)) X <- as.matrix(X)
 
   ## stopifnot(nrow(Y) > ncol(Y))
   if (ctrl$trace > 0) cat("\n Initialization...")
