@@ -31,10 +31,10 @@ PLNLDAfit <-
         mu_bar <- as.vector(Theta %*% nk / self$n)
         private$B <- Theta %*% diag(nk) %*% t(Theta) / self$n - mu_bar %o% mu_bar
       },
-      setVisualization = function(scale.unit=FALSE) {
+      setVisualization = function(scale.unit = FALSE) {
         Wm1B <- solve(private$Sigma) %*% private$B
         private$svdLDA <- svd(scale(Wm1B,TRUE, scale.unit), nv = self$rank)
-        P <- self$latent_pos(model.matrix( ~ private$grouping), matrix(0, self$n, self$q))
+        P <- self$latent_pos(model.matrix( ~ private$grouping + 0), matrix(0, self$n, self$q))
         private$P <- scale(P, TRUE, FALSE)
       }
     ),

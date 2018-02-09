@@ -2,9 +2,11 @@
 ##'
 ##' @description two methods are available for specifing the models (with formulas or matrices)
 ##'
+##' @param formula a formula to describe the relationship between the count matrix and the covariates (apart from the gouping)
 ##' @param formula A formula of the form groups ~ x1 + x2 + ... That is, the response is the grouping factor and the right hand side specifies the (non-factor) discriminators.
-##' @param X a (n x p) matrix of count data
-##' @param grouping a factor specifying the class for each observation..
+##' @param Y a (n x p) matrix of count data
+##' @param X an aoptional (n x d) matrix of covariates
+##' @param grouping a factor specifying the class for each observation used for disciminant analysis
 ##' @param O an optional (n x p) matrix of offsets.
 ##' @param control.init a list for controling the optimization. See details.
 ##' @param control.main a list for controling the optimization. See details.
@@ -41,37 +43,46 @@ PLNLDA <- function(Robject, ...)
 
 ##' @rdname PLNLDA
 ##' @export
-PLNLDA.formula <- function(formula, control.init = list(), control.main = list()) {
+PLNLDA.formula <- function(formula, grouping, control.init = list(), control.main = list()) {
 
   frame  <- model.frame(formula)
-  grouping  <- model.response(frame)
-  Y         <- model.matrix(formula)
-  ## remove intercept
-  xint <- match("(Intercept)", colnames(Y), nomatch = 0L)
-  if (xint > 0L) Y <- Y[, -xint, drop = FALSE]
+  Y      <- model.response(frame)
+  X      <- model.matrix(formula)
+  O      <- model.offset(frame)
+
+  ## remove intercept in the covariates so that grouping describes means in each group
+  xint <- match("(Intercept)", colnames(X), nomatch = 0L)
+  if (xint > 0L) X <- X[, -xint, drop = FALSE]
   O         <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLNLDA.default(Y, grouping, O, control.init, control.main))
+  return(PLNLDA.default(Y, grouping, X, O, control.init, control.main))
 }
 
 ##' @rdname PLNLDA
 ##' @export
-PLNLDA.default <- function(Y, grouping, O = matrix(0, nrow(Y), ncol(Y)),  control = list()) {
+PLNLDA.default <- function(Y, grouping, X = NULL, O = matrix(0, nrow(Y), ncol(Y)),  control = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- PLN_param(control, nrow(Y), ncol(Y))
 
-  stopifnot(nrow(Y) > ncol(Y))
-
+  ## stopifnot(nrow(Y) > ncol(Y))
   if (ctrl$trace > 0) cat("\n Initialization...")
-  myPLN <- PLN(Y, model.matrix( ~as.factor(grouping)), O, control = ctrl)
+  design_group <- model.matrix( ~as.factor(grouping)+0)
+  design_full <- cbind(X, design_group)
+  myPLN <- PLN(Y, design_full, O, control = ctrl)
+  if (!is.null(X)) {
+    P <- (diag(nrow(X)) - X %*% solve(crossprod(X)) %*% t(X)) %*% myPLN$latent_pos(design_full, matrix(0, myPLN$n, myPLN$q))
+    Theta <- t(rowsum(P, grouping) / tabulate(grouping))
+  } else {
+    Theta <- myPLN$model_par$Theta
+  }
 
   if (ctrl$trace > 0) cat("\n Performing Discriminant Analysis...")
-  myLDA <- PLNLDAfit$new(Theta = myPLN$model_par$Theta,
+  myLDA <- PLNLDAfit$new(Theta = Theta,
                          Sigma = myPLN$model_par$Sigma,
                          grouping = grouping,
-                         M = myPLN$var_par$M, S = myPLN$var_par$S, ## correct ?
+                         M = myPLN$var_par$M, S = myPLN$var_par$S,
                          J = myPLN$J, monitoring = myPLN$monitoring)
   myLDA$setVisualization()
 
