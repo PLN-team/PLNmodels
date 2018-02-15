@@ -185,7 +185,8 @@ PLNfit$set("public", "plot",
     par(mfrow = c(2,2))
     hist(par1, breaks = sqrt(nrow(par1)), xlab = "", ylab = "", main = paste0(names(param)[1]))
     hist(par2, breaks = sqrt(nrow(par2)), xlab = "", ylab = "", main = paste0(names(param)[2]))
-    corrplot::corrplot(par1, is.corr = FALSE, method = "color", cl.pos = "n")
+    corrplot::corrplot(par1, is.corr = FALSE, method = "color", cl.pos = "n",
+                       addgrid=ifelse(type == "model", "grey", NA))
     corrplot::corrplot(par2, is.corr = FALSE, method = "color", cl.pos = "n")
     title(main = paste0("\n",type," parameters"), outer = TRUE)
     par(mfrow = c(1,1))
