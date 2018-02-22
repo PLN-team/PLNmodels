@@ -314,7 +314,8 @@ function() {
   super$show()
   cat(" Task: Network Inference \n")
   cat("========================================================\n")
-  cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties),"\n")
+  cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties),
+      "\n", "   use $penalties to see all values and access specific lambdas", "\n")
   if (!anyNA(self$criteria$EBIC))
     cat(" - Best model (regarding EBIC): lambda =", format(self$getBestModel("EBIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("EBIC")$R_squared, 2), "\n")
   if (!anyNA(self$criteria$BIC))
