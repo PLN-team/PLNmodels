@@ -65,7 +65,7 @@ PLNfit <-
             if (nrow(value$Theta) == self$p & ncol(value$Theta) == self$d) {
               private$Theta <- value$Theta
             }
-            if (nrow(value$Sima) == self$q & ncol(value$Sima) == self$q) {
+            if (nrow(value$Sigma) == self$q & ncol(value$Sigma) == self$q) {
               private$Sigma <- value$Sigma
             }
           }
