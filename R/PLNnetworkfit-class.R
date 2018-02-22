@@ -67,7 +67,7 @@ PLNnetworkfit$set("public", "latent_network",
       res  <- 1*(private$Omega != 0)
     }
     diag(res) <- 0
-    Matrix::Matrix(res)
+    Matrix::Matrix(res, sparse = TRUE)
   }
 )
 
