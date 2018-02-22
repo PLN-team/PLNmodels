@@ -101,7 +101,7 @@ function(crit = c("BIC", "ICL", "EBIC", "loglik", "R_squared")){
 #' @name PLNfamily_getModel
 #'
 #' @param var value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection.
-#' @return Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
+#' @return Sends back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getModel",
 function(var){
@@ -109,7 +109,10 @@ function(var){
   if (!is.na(id)) {
     return(self$models[[id]]$clone())
   } else {
-    stop("No such a model in the collection.")
+    stop(paste("No such a model in the collection. Acceptable values can be found via",
+               "$ranks() (for PCA)",
+               "$penalties() (for network)",
+               sep = "\n"))
   }
 })
 
