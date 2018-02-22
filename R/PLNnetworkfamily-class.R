@@ -153,9 +153,10 @@ PLNnetworkfamily$set("public", "optimize",
     dimnames(S)     <- dimnames(self$responses)
     dimnames(M)     <- dimnames(self$responses)
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
-
-    # ## Enforce symmetry of Sigma and Theta
-    # if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
+    ## Optimization ends with a gradient descent step rather than a glasso step.
+    ## Return Sigma from glasso step to ensure that Sigma = solve(Omega)
+    Sigma <- Sigma0 ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
+    dimnames(Sigma) <- dimnames(Omega)
 
     self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S, J = -optim.out$objective,
                             monitoring = list(objective = objective[1:iter],
@@ -266,9 +267,10 @@ PLNnetworkfamily$set("public", "optimize_new",
     dimnames(S)     <- dimnames(self$responses)
     dimnames(M)     <- dimnames(self$responses)
     rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
-
-    # ## Enforce symmetry of Sigma and Theta
-    # if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
+    ## Optimization ends with a gradient descent step rather than a glasso step.
+    ## Return Sigma from glasso step to ensure that Sigma = solve(Omega)
+    Sigma <- Sigma0 ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
+    dimnames(Sigma) <- dimnames(Omega)
 
     self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S, J = -optim.out$objective,
                             monitoring = list(objective = objective[1:iter],
