@@ -100,19 +100,28 @@ function(crit = c("BIC", "ICL", "EBIC", "loglik", "R_squared")){
 #'
 #' @name PLNfamily_getModel
 #'
-#' @param var value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection.
+#' @param var value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
+#' @param index Integer index of the model to be returned. Only the first value is taken into account.
 #' @return Sends back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getModel",
-function(var){
+function(var, index = NULL) {
+  ## Extraction by index
+  if (!is.null(index) && index <= length(self$models)) {
+    return(self$models[[index[1]]]$clone())
+  }
+  ## Extraction by parameter value
   id <- match(var, private$params)
-  if (!is.na(id)) {
+  if (!is.na(id)) { ## Exact match
     return(self$models[[id]]$clone())
-  } else {
-    stop(paste("No such a model in the collection. Acceptable values can be found via",
+  } else { ## No exact match
+    id <- which.min(abs(var - private$params)) ## closest model (in terms of parameter value)
+    warning(paste("No such a model in the collection. Acceptable parameter values can be found via",
                "$ranks() (for PCA)",
                "$penalties() (for network)",
+               paste("Returning model with closest value. Requested:", var, ", returned:", private$params[id]),
                sep = "\n"))
+    return(self$models[[id]]$clone())
   }
 })
 
