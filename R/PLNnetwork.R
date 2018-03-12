@@ -107,10 +107,10 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
 ##'
 ##' @param formula a formula
 ##' @param Y a (n x p) matrix of count data
-##' @param X an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.
+##' @param X an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.
 ##' @param O an optional (n x p) matrix of offsets.
 ##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally. Can be a scalar.
-##' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 100 subsamples with size n/2.
+##' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 100 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
 ##' @param approx a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to TRUE.
 ##' @param control.init a list for controling the optimization of the initialization, that fits a standard PLN model with the \code{\link[=PLN]{PLN}} function. See details.
 ##' @param control.main a list for controling the optimization. See details.
@@ -160,7 +160,12 @@ PLNnetwork_stabs.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0
   ## approximation can be obtained by performing just one iteration in the joint optimization algorithm
   if (approx) ctrl.main$maxit_out <- 1
 
-  if (is.null(subsamples)) subsamples <- replicate(20, sample.int(nrow(Y), round(.5*nrow(Y))), simplify = FALSE)
+  ## select default subsamples according
+  if (is.null(subsamples)) {
+    n <- nrow(Y)
+    subsample.size <- round(ifelse(n >= 144, 10*sqrt(n), 0.8*n))
+    subsamples <- replicate(20, sample.int(nrow(Y), subsample.size), simplify = FALSE)
+  }
 
   ## Get an appropriate grid of penalties
   if (is.null(penalties)) {
