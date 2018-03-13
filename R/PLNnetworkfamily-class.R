@@ -305,7 +305,8 @@ coefficient_path <- function(precision = TRUE, corr = TRUE) {
     G %>% melt(value.name = "Coeff", varnames = c("Node1", "Node2")) %>%
       mutate(Penalty = x,
              Node1   = as.character(Node1),
-             Node2   = as.character(Node2)) %>%
+             Node2   = as.character(Node2),
+             Edge    = paste0(Node1, "--", Node2)) %>%
       filter(Node1 < Node2)
   }) %>% bind_rows()
 })

@@ -115,7 +115,7 @@ PLNnetworkfit$set("public", "plot_network",
       if (remove.isolated) {
         G <- delete.vertices(G, which(degree(G) == 0))
       }
-      plot(G, layout)
+      plot(G, layout = layout)
       invisible(G)
     }
     if (output == "corrplot") {

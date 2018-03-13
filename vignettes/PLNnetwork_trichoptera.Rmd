@@ -56,7 +56,24 @@ models$plot()
 
 The critetion $J$ represents the variational lower bound of the likelihood: in this case, we can see that it is strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) $R^2$ which is displayed for each value of penalty. Generally, smoothness of these criteria is an good indicator to check that the optimization process went well.
 
-From this plot, we can see that the best model in terms of BIC is obtained for $q=3$ axes. We may extract the corresponding model with the method `getBestModel("BIC")`. A model with a specific penalty level can be extracted with the `getModel(lambda)` method. 
+We can represent the coefficient path (i.e., value of the edge in the network according to the penalty level) to see if some edges clearly come off.
+
+```{r path_coeff, fig.width=7, fig.height=7}
+library(ggplot2)
+path <- models$coefficient_path(corr = FALSE)
+ggplot(path, aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + geom_line(show.legend = FALSE) + theme_bw()
+```
+
+An alternative and more intuitive view consiste in plotting the values of the partial correlation along the path.
+
+```{r path_corr, fig.width=7, fig.height=7}
+path <- models$coefficient_path(corr = TRUE)
+ggplot(path, aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + geom_line(show.legend = FALSE) + theme_bw()
+```
+
+#### Model selection issue
+
+If we want to select one network, we may extract best model according to BIC with the method `getBestModel("BIC")`. A model with a specific penalty level can be extracted with the `getModel(lambda)` method. 
 
 ```{r}
 model.BIC <- models$getBestModel("BIC") # if no criteria is specified, the best BIC is used
@@ -65,11 +82,11 @@ model.pen <- models$getModel(models$penalties[5]) # give some sparsity
 
 The variables `model.BIC` and `model.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network, with various options.
 
-```{r, fig.width=8, fig.height=8}
+```{r support_network, fig.width=7, fig.height=7}
 model.BIC$plot_network(type = "support", output = "corrplot")
 ```
 
-```{r, fig.width=8, fig.height=8}
+```{r partial_corr_network, fig.width=7, fig.height=7}
 model.BIC$plot_network(type = "partial_cor", output = "igraph")
 ```
 
