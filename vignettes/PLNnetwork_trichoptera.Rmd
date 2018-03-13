@@ -63,10 +63,14 @@ model.BIC <- models$getBestModel("BIC") # if no criteria is specified, the best 
 model.pen <- models$getModel(models$penalties[5]) # give some sparsity
 ```
 
-The variables `model.BIC` and `model.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network.
+The variables `model.BIC` and `model.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network, with various options.
 
 ```{r, fig.width=8, fig.height=8}
-model.BIC$plot_network()
+model.BIC$plot_network(type = "support", output = "corrplot")
+```
+
+```{r, fig.width=8, fig.height=8}
+model.BIC$plot_network(type = "partial_cor", output = "igraph")
 ```
 
 Additional information about the optimization process comes with the `plot_objective` method:

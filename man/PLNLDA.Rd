@@ -8,28 +8,32 @@
 \usage{
 PLNLDA(Robject, ...)
 
-\method{PLNLDA}{formula}(formula, control.init = list(),
+\method{PLNLDA}{formula}(formula, grouping, control.init = list(),
   control.main = list())
 
-\method{PLNLDA}{default}(Y, grouping, O = matrix(0, nrow(Y), ncol(Y)),
-  control = list())
+\method{PLNLDA}{default}(Y, grouping, X = NULL, O = matrix(0, nrow(Y),
+  ncol(Y)), control = list())
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a matrix}
 
 \item{...}{additional parameters. Not used}
 
-\item{formula}{A formula of the form groups ~ x1 + x2 + ... That is, the response is the grouping factor and the right hand side specifies the (non-factor) discriminators.}
+\item{formula}{a formula to describe the relationship between the count matrix and the covariates (apart from the gouping)}
+
+\item{grouping}{a factor specifying the class for each observation used for disciminant analysis}
 
 \item{control.init}{a list for controling the optimization. See details.}
 
 \item{control.main}{a list for controling the optimization. See details.}
 
-\item{grouping}{a factor specifying the class for each observation..}
+\item{Y}{a (n x p) matrix of count data}
+
+\item{X}{an aoptional (n x d) matrix of covariates}
 
 \item{O}{an optional (n x p) matrix of offsets.}
 
-\item{X}{a (n x p) matrix of count data}
+\item{formula}{A formula of the form groups ~ x1 + x2 + ... That is, the response is the grouping factor and the right hand side specifies the (non-factor) discriminators.}
 }
 \value{
 an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains

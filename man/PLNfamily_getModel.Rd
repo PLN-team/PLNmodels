@@ -4,10 +4,12 @@
 \alias{PLNfamily_getModel}
 \title{Model extraction from a collection of PLN models}
 \arguments{
-\item{var}{value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection.}
+\item{var}{value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
+
+\item{index}{Integer index of the model to be returned. Only the first value is taken into account.}
 }
 \value{
-Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
+Sends back a object with class \code{\link[=PLNfit]{PLNfit}}.
 }
 \description{
 Model extraction from a collection of PLN models

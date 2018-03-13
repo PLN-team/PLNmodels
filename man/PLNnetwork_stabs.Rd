@@ -26,7 +26,7 @@ PLNnetwork_stabs(Robject, ...)
 
 \item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally. Can be a scalar.}
 
-\item{subsamples}{a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 100 subsamples with size n/2.}
+\item{subsamples}{a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 100 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.}
 
 \item{approx}{a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to TRUE.}
 
@@ -38,7 +38,7 @@ PLNnetwork_stabs(Robject, ...)
 
 \item{Y}{a (n x p) matrix of count data}
 
-\item{X}{an optional (n x d) matrix of covariates. SHould include the intercept (a column of one) if the default method is used.}
+\item{X}{an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.}
 
 \item{O}{an optional (n x p) matrix of offsets.}
 }

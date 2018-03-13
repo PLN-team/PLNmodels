@@ -12,14 +12,14 @@ PLNnetworkfit
 The function \code{\link{PLNnetwork}} produces a collection of models which are instances of object with class \code{PLNnetworkfit}.
 See the documentation for \code{\link[=PLNnetwork_plot_network]{plot_network}}
 
-This class comes with a set of methods, some of them being useful for the user: plot_network + methods inhererited from PLNfit.
+This class comes with a set of methods, some of them being useful for the user: plot_network + methods inherited from PLNfit.
 }
 \section{Fields}{
 
 \describe{
 \item{\code{penalty}}{the level of sparsity in the current model}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix)}
+\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.}
 
 \item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 

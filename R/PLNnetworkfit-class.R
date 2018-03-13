@@ -58,59 +58,71 @@ PLNnetworkfit <-
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS
 ## ----------------------------------------------------------------------
-
 PLNnetworkfit$set("public", "latent_network",
-  function(weighted=FALSE) {
-    if (weighted) {
-      res  <- abs(private$Omega)
-    } else {
-      res  <- 1*(private$Omega != 0)
-    }
-    diag(res) <- 0
-    Matrix::Matrix(res, sparse = TRUE)
+  function(type = c("support", "precision", "partial_cor")) {
+    net <- switch(
+      match.arg(type),
+      "support"     = Matrix(1 * (private$Omega != 0 & !diag(TRUE, ncol(private$Omega)))),
+      "precision"   = Matrix(private$Omega),
+      "partial_cor" = {
+        tmp <- - private$Omega / tcrossprod(sqrt(diag(private$Omega)))
+        diag(tmp) <- 1
+        Matrix(tmp)
+        }
+      )
+    net
   }
 )
 
 #' Plot the network (support of the inverse covariance) for a \code{PLNnetworkfit} object
 #'
-#' @name PLNPCAfit_plot_individual.map
+#' @name plot_network
 #' @param plot logical. Should the plot be displayed or sent back as an igraph object
 #' @param remove.isolated if \code{TRUE}, isolated node are remove before plotting.
 #' @param layout an optional igraph layout
 #' @return displays a graph (via igraph for small graph and corrplot for large ones) and/or sends back an igraph object
 NULL
 PLNnetworkfit$set("public", "plot_network",
-  function(plot = TRUE, remove.isolated = TRUE, layout = NULL) {
-    net <- self$latent_network(weighted = TRUE)
-    G <-  graph_from_adjacency_matrix(net, mode = "undirected", weighted = TRUE, diag = FALSE)
-    if (!is.null(colnames(net)))
-      V(G)$label <- colnames(net)
-    weight <- (log(1 + E(G)$weight) + .4) / max(log(1 + E(G)$weight) + .4)
-    V.deg <- degree(G)/sum(degree(G))
-    V(G)$label.cex <- V.deg / max(V.deg) + .5
-    V(G)$size <- V.deg * 100
-    V(G)$label.color <- rgb(0, 0, .2, .8)
-    V(G)$frame.color <- NA
-    E(G)$color <- rgb(.5, .5, 0, weight)
-    E(G)$width <- E(G)$weight * 2
+  function(type = c("support", "partial_cor"), output = c("igraph", "corrplot"), edge.color = c("#F8766D", "#00BFC4"), remove.isolated = FALSE, node.labels = NULL, layout = layout_in_circle) {
 
-    if (remove.isolated)
-      G <- delete.vertices(G, which(degree(G) == 0))
+    type <- match.arg(type)
+    output <- match.arg(output)
 
-    if (plot) {
-      par(mfrow = c(1,2))
-      par(mar = c(0.1,0.1,0.1,0.1))
+    net <- self$latent_network(type)
+
+    if (output == "igraph") {
+
+      G <-  graph_from_adjacency_matrix(net, mode = "undirected", weighted = TRUE, diag = FALSE)
+
+      if (!is.null(node.labels)) {
+        V(G)$label <- node.labels
+      } else {
+        V(G)$label <- colnames(net)
+      }
+      ## Nice nodes
+      V.deg <- degree(G)/sum(degree(G))
+      V(G)$label.cex <- V.deg / max(V.deg) + .5
+      V(G)$size <- V.deg * 100
+      V(G)$label.color <- rgb(0, 0, .2, .8)
+      V(G)$frame.color <- NA
+      ## Nice edges
+      E(G)$color <- ifelse(E(G)$weight > 0, edge.color[1], edge.color[2])
+      if (type == "support")
+        E(G)$width <- abs(E(G)$weight)
+      else
+        E(G)$width <- 15*abs(E(G)$weight)
+
+      if (remove.isolated) {
+        G <- delete.vertices(G, which(degree(G) == 0))
+      }
+      plot(G, layout)
+      invisible(G)
+    }
+    if (output == "corrplot") {
       if (ncol(net) > 100)
         colnames(net) <- rownames(net) <- rep(" ", ncol(net))
-      corrplot(as.matrix(net), method = "color", is.corr = FALSE, cl.pos = "n", tl.cex = 0.5)
-      if (!is.null(layout))
-        plot(G, layout = layout)
-      else
-        plot(G)
-      par(mfrow = c(1,1))
-      par(mar = c(5.1,4.1,4.1,2.1))
+      corrplot(as.matrix(net), method = "color", is.corr = FALSE, tl.pos = "td", cl.pos = "n", tl.cex = 0.5, type = "upper")
     }
-    invisible(G)
 })
 
 PLNnetworkfit$set("public", "show",
@@ -118,5 +130,6 @@ function() {
   super$show(paste0("Poisson Lognormal with sparse inverse covariance (penalty = ",format(self$penalty,digits=3),")\n"))
   cat("* Additional methods for network\n")
   cat("    $latent_network(), $plot_network()\n")
+  cat("    $coefficient_path(), $density_path()\n")
 })
 PLNnetworkfit$set("public", "print", function() self$show())
