@@ -310,16 +310,14 @@ coefficient_path <- function(precision = TRUE, corr = TRUE) {
   }) %>% bind_rows()
 })
 
-#' export
+#' @export
 PLNnetworkfamily$set("public", "density_path",
 function(networks) {
-  penalties <- networks$penalties
-  data.frame(Penalty = penalties,
-             Density = sapply(penalties,
-                              function(x) { networks$getModel(x)$latent_network() %>% mean() }),
+  data.frame(Penalty = self$penalties,
+             Density = sapply(self$penalties,
+                              function(x) { self$getModel(x)$latent_network() %>% mean() }),
              stringsAsFactors = FALSE)
 })
-
 
 #' @export
 PLNnetworkfamily$set("public", "plot",
