@@ -288,6 +288,39 @@ PLNnetworkfamily$set("public", "optimize_new",
 
 })
 
+#' @import dplyr
+#' @export
+PLNnetworkfamily$set("public", "coefficient_path",
+coefficient_path <- function(precision = TRUE, corr = TRUE) {
+  lapply(self$penalties, function(x) {
+    if (precision) {
+      G <- self$getModel(x)$model_par$Omega
+      } else {
+      G <- self$getModel(x)$model_par$Sigma
+      dimnames(G) <- dimnames(self$getModel(x)$model_par$Omega)
+    }
+    if (corr) {
+      G <- ifelse(precision, -1, 1) * G / tcrossprod(sqrt(diag(G)))
+    }
+    G %>% melt(value.name = "Coeff", varnames = c("Node1", "Node2")) %>%
+      mutate(Penalty = x,
+             Node1   = as.character(Node1),
+             Node2   = as.character(Node2)) %>%
+      filter(Node1 < Node2)
+  }) %>% bind_rows()
+})
+
+#' export
+PLNnetworkfamily$set("public", "density_path",
+function(networks) {
+  penalties <- networks$penalties
+  data.frame(Penalty = penalties,
+             Density = sapply(penalties,
+                              function(x) { networks$getModel(x)$latent_network() %>% mean() }),
+             stringsAsFactors = FALSE)
+})
+
+
 #' @export
 PLNnetworkfamily$set("public", "plot",
 function(criteria = c("loglik", "BIC", "EBIC"), log.x = TRUE) {
