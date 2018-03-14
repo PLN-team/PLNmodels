@@ -70,7 +70,9 @@ PLNnetworkfit$set("public", "latent_network",
         Matrix(tmp)
         }
       )
-    net
+    ## Enforce sparse Matrix encoding to avoid downstream problems with igraph::graph_from_adjacency_matrix
+    ## as it fails when given dsyMatrix objects
+    Matrix(net, sparse = TRUE)
   }
 )
 
