@@ -18,9 +18,6 @@
 #' @importFrom R6 R6Class
 #' @importFrom nloptr nloptr
 #' @importFrom glasso glasso
-#' @import igraph
-#' @import Matrix
-#' @import ggplot2
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
 PLNnetworkfamily <-
   R6Class(classname = "PLNnetworkfamily",
@@ -288,7 +285,6 @@ PLNnetworkfamily$set("public", "optimize_new",
 
 })
 
-#' @import dplyr
 #' @export
 PLNnetworkfamily$set("public", "coefficient_path",
 coefficient_path <- function(precision = TRUE, corr = TRUE) {

@@ -181,6 +181,8 @@ PLNPCAfit$set("public", "plot_correlation_circle",
 #' @param plot logical. Should the plot be displayed or sent back (ggplot object)
 #' @param cols.ind a character, factor or numeric to define the color associated with the individuals. Default is "gray"
 #' @param var.cols a character, factor or numeric to define the color associated with the variables. Default is "gray"
+#' @importFrom gridExtra grid.arrange arrangeGrob
+#' @importFrom grid textGrob
 #' @return a plot with a matrix-like layout with size nb.axes x nb.axes, displaying individual maps and correlation circles for the corresponding axes
 NULL
 PLNPCAfit$set("public", "plot_PCA",
