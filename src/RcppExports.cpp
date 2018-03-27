@@ -36,6 +36,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// optim_PLN_MMA
+Rcpp::List optim_PLN_MMA(arma::vec par, const arma::mat Y, const arma::mat X, const arma::mat O, double KY, Rcpp::List control);
+RcppExport SEXP _PLNmodels_optim_PLN_MMA(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP KYSEXP, SEXP controlSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type O(OSEXP);
+    Rcpp::traits::input_parameter< double >::type KY(KYSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type control(controlSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_PLN_MMA(par, Y, X, O, KY, control));
+    return rcpp_result_gen;
+END_RCPP
+}
 // fn_optim_PLNnetwork_new_Cpp
 Rcpp::List fn_optim_PLNnetwork_new_Cpp(arma::vec par, double log_detOmega, const arma::mat Omega, const arma::mat Y, const arma::mat ProjOrthX, const arma::mat O, double KY);
 RcppExport SEXP _PLNmodels_fn_optim_PLNnetwork_new_Cpp(SEXP parSEXP, SEXP log_detOmegaSEXP, SEXP OmegaSEXP, SEXP YSEXP, SEXP ProjOrthXSEXP, SEXP OSEXP, SEXP KYSEXP) {
@@ -90,6 +106,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_fn_optim_PLN_par2_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLN_par2_Cpp, 5},
     {"_PLNmodels_fn_optim_PLN_par1_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLN_par1_Cpp, 5},
+    {"_PLNmodels_optim_PLN_MMA", (DL_FUNC) &_PLNmodels_optim_PLN_MMA, 6},
     {"_PLNmodels_fn_optim_PLNnetwork_new_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLNnetwork_new_Cpp, 7},
     {"_PLNmodels_fn_optim_PLNnetwork_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLNnetwork_Cpp, 7},
     {"_PLNmodels_fn_optim_PLNPCA_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLNPCA_Cpp, 6},

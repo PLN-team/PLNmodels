@@ -1,4 +1,5 @@
-NLOPT_LIBS = `${R_HOME}/bin/Rscript -e "nloptr:::LdFlags()"`
+## NLOPT_LIBS = `${R_HOME}/bin/Rscript -e "nloptr:::LdFlags()"`
+NLOPT_LIBS = -lnlopt -lm
 CXX_STD = CXX11
 PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
 PKG_LIBS = $(SHLIB_OPENMP_CFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(NLOPT_LIBS)

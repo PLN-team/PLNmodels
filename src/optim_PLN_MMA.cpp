@@ -35,15 +35,12 @@ double fn_optim_PLN(const std::vector<double> &x, std::vector<double> &grad, voi
   arma::vec grd_M     = vectorise(M * Omega + A-dat->Y) ;
   arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(Omega).t() + A - 1/S));
 
-  grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M),grd_S)) ;
+  if (!grad.empty()) {
+    grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M),grd_S)) ;
+  }
 
   return objective;
 }
-
-
-// static double wrap(const std::vector<double> &x, std::vector<double> &grad, void *data) {
-//     return (*reinterpret_cast<MyFunction*>(data))(x, grad);
-// }
 
 //' @export
 // [[Rcpp::export]]
@@ -51,34 +48,50 @@ Rcpp::List optim_PLN_MMA(arma::vec par,
                          const arma::mat Y,
                          const arma::mat X,
                          const arma::mat O,
+                         double         KY,
                          Rcpp::List control) {
 
-  // Create data structure
+  // Problem dimensions
   int n = Y.n_rows, p = Y.n_cols, d = X.n_cols ;
+  int n_param = (2 * n + d) * p;
+
+  // Create data structure
   optim_data my_optim_data;
   my_optim_data.Y  = Y  ;
   my_optim_data.X  = X  ;
   my_optim_data.O  = O  ;
-  my_optim_data.KY = 1  ; // compute this internally
+  my_optim_data.KY = KY ; // compute this internally
 
+  // prepare nlopt options
+  double ftol_rel = as<double>(control["ftol_rel"]);
+  double ftol_abs = as<double>(control["ftol_abs"]);
+  double xtol_rel = as<double>(control["xtol_rel"]);
+  double xtol_abs = as<double>(control["xtol_abs"]);
+  int    maxeval  = as<int>   (control["maxeval"]);
+  double lbvar    = as<double>(control["lbvar"]);
+  stdvec lower_bound = arma::conv_to<stdvec>::from(arma::join_cols(R_NegInf * arma::ones(p*(d+n)), lbvar * arma::ones(n * p)));
+  const stdvec xtol_abs_v = arma::conv_to<stdvec>::from(arma::join_cols(arma::zeros(p*(d+n)), xtol_abs * arma::ones(n * p)));
 
-  int n_param = (2 * n + d) * p;
+  arma::colvec test1 = arma::conv_to<arma::colvec>::from(lower_bound) ;
+  arma::colvec test2 = arma::conv_to<arma::colvec>::from(xtol_abs_v) ;
 
-  nlopt::opt opt(nlopt::LD_MMA, n_param);
-
-  opt.set_min_objective(fn_optim_PLN, NULL);
+  // Set nlopt options
+  nlopt::opt opt(nlopt::LD_CCSAQ, n_param);
 
   opt.set_lower_bounds(lower_bound);
+  opt.set_xtol_abs(xtol_abs_v);
+  opt.set_xtol_rel(xtol_rel);
+  opt.set_ftol_abs(ftol_abs);
+  opt.set_ftol_rel(ftol_rel);
+  opt.set_maxeval(maxeval);
 
-  opt.set_xtol_rel(1e-4);
+  // Initialize the optimization
+  double f_optimized ;
+  stdvec x_optimized = arma::conv_to<stdvec>::from(par);
 
-  stdvec x = arma::conv_to<stdvec>::from(par);
+  // Perform the optimization
+  opt.set_min_objective(fn_optim_PLN, &my_optim_data);
+  nlopt::result out_optimization = opt.optimize(x_optimized, f_optimized);
 
-  double minf;
-  nlopt::result result = opt.optimize(x, minf);
-  return List::create(Named("f") = minf, Named("x") = x);
+  return List::create(Named("objective") = f_optimized, Named("solution")  = x_optimized);
 }
-
-/*** R
-timesTwo(42)
-*/

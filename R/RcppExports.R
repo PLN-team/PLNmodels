@@ -12,6 +12,11 @@ fn_optim_PLN_par1_Cpp <- function(par, Y, X, O, KY) {
 }
 
 #' @export
+optim_PLN_MMA <- function(par, Y, X, O, KY, control) {
+    .Call('_PLNmodels_optim_PLN_MMA', PACKAGE = 'PLNmodels', par, Y, X, O, KY, control)
+}
+
+#' @export
 fn_optim_PLNnetwork_new_Cpp <- function(par, log_detOmega, Omega, Y, ProjOrthX, O, KY) {
     .Call('_PLNmodels_fn_optim_PLNnetwork_new_Cpp', PACKAGE = 'PLNmodels', par, log_detOmega, Omega, Y, ProjOrthX, O, KY)
 }

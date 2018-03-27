@@ -87,27 +87,16 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   )
 
   if (ctrl$newpar) {
-    par0 <- c(par0$M + O + tcrossprod(X, par0$Theta), par0$S)
-    X.XtXm1 <- X %*% solve(crossprod(X))
-    ProjOrthX <- diag(n) - tcrossprod(X.XtXm1,X)
-    ## Now optimize with NLOPTR
-    opts$xtol_abs <- c(rep(0, p*n), rep(ctrl$xtol_abs, n*p))
-
-    optim.out <- nloptr(
-      par0,
-      eval_f = fn_optim_PLN_par2_Cpp,
-      lb     = c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
-      opts   = opts,
-      Y = Y, ProjOrthX = ProjOrthX, O = O, KY = KY
+    par0 <- c(par0$Theta, par0$M, par0$S)
+    opts <- list(
+      "maxeval"  = ctrl$maxeval,
+      "ftol_rel" = ctrl$ftol_rel,
+      "ftol_abs" = ctrl$ftol_abs,
+      "xtol_rel" = ctrl$xtol_rel,
+      "xtol_abs" = ctrl$xtol_abs,
+      "lbvar"    = ctrl$lbvar
     )
-    ## ===========================================
-    ## POST-TREATMENT
-    ##
-    M     <- matrix(optim.out$solution[      1:(n*p)], n,p)
-    S     <- matrix(optim.out$solution[n*p + 1:(n*p)], n,p)
-    Theta <- crossprod(M - O, X.XtXm1)
-    Sigma <- crossprod(ProjOrthX %*% (M - O))/n + diag(colMeans(S), nrow = p, ncol = p)
-    loglik <- logLikPoisson(Y, M)
+    optim.out <- optim_PLN_MMA(par0, Y, X, O, KY, opts)
   } else {
     par0 <- c(par0$Theta, par0$M, par0$S)
     ## Now optimize with NLOPTR
@@ -119,14 +108,14 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
       opts = opts,
       Y = Y, X = X, O = O, KY = KY
     )
-    ## ===========================================
-    ## POST-TREATMENT
-    ##
-    Theta <- matrix(optim.out$solution[1:(p*d)]          , p,d)
-    M     <- matrix(optim.out$solution[p*(d)   + 1:(n*p)], n,p)
-    S     <- matrix(optim.out$solution[p*(d+n) + 1:(n*p)], n,p)
-    Sigma <- crossprod(M)/n + diag(colMeans(S), nrow = p, ncol = p)
   }
+  ## ===========================================
+  ## POST-TREATMENT
+  ##
+  Theta <- matrix(optim.out$solution[1:(p*d)]          , p,d)
+  M     <- matrix(optim.out$solution[p*(d)   + 1:(n*p)], n,p)
+  S     <- matrix(optim.out$solution[p*(d+n) + 1:(n*p)], n,p)
+  Sigma <- crossprod(M)/n + diag(colMeans(S), nrow = p, ncol = p)
 
   rownames(Theta) <- colnames(Y); colnames(Theta) <- colnames(X)
   rownames(Sigma) <- colnames(Sigma) <- colnames(Y)
@@ -139,7 +128,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
                                       status = optim.out$status,
                                       message = optim.out$message))
   ## Compute R2
-  if (!ctrl$newpar) loglik <- logLikPoisson(Y, myPLN$latent_pos(X, O))
+  loglik <- logLikPoisson(Y, myPLN$latent_pos(X, O))
   lmin <- logLikPoisson(Y, nullModelPoisson(Y, X, O))
   lmax <- logLikPoisson(Y, fullModelPoisson(Y))
   myPLN$update(R2 = (loglik - lmin) / (lmax - lmin))
