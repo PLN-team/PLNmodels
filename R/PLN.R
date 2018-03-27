@@ -117,7 +117,8 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
       eval_f = fn_optim_PLN_par1_Cpp,
       lb = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
       opts = opts,
-      Y = Y, X = X, O = O, KY = KY)
+      Y = Y, X = X, O = O, KY = KY
+    )
     ## ===========================================
     ## POST-TREATMENT
     ##
