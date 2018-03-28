@@ -4,7 +4,7 @@ data("trichometeo")
 abundance <- as.matrix(trichometeo$fau) ## must be a matrix
 
 model_1 <- PLN(abundance ~ 1, control = list(newpar = FALSE))
-model_2 <- PLN(abundance ~ 1, control = list(newpar = TRUE ))
+model_2 <- PLN(abundance ~ 1, control = list(newpar = TRUE, method = "CCSAQ"))
 
 library(microbenchmark)
 res <- microbenchmark(nloptr = PLN(abundance ~ 1, control = list(trace = FALSE, newpar = FALSE)),
