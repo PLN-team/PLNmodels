@@ -8,7 +8,6 @@ abundance <- as.matrix(trichometeo$fau) ## must be a matrix
 profiling_1 <- profr::profr(model_1 <- PLN(abundance ~ 1, control = list(nloptr = TRUE )))
 profiling_2 <- profr::profr(model_2 <- PLN(abundance ~ 1, control = list(nloptr = FALSE)))
 
-
 library(microbenchmark)
 res <- microbenchmark(nloptr = PLN(abundance ~ 1, control = list(trace = FALSE, nloptr = TRUE )),
                       nlopt  = PLN(abundance ~ 1, control = list(trace = FALSE, nloptr = FALSE)), times = 20)

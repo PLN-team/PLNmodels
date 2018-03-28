@@ -73,7 +73,6 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   ## ===========================================
   ## OPTIMIZATION
   ##
-
   KY <- sum(.logfactorial(Y)) ## constant that will remain the same
   if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
 
