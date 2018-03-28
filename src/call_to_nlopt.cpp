@@ -6,6 +6,16 @@
 
 using namespace Rcpp;
 
+typedef std::vector<double> stdvec;
+
+struct optim_data {
+    arma::mat Y    ;
+    arma::mat X    ;
+    arma::mat O    ;
+    double KY      ;
+    int iterations ;
+};
+
 // Convert string to nlopt_alogirthm
 //
 // restrict the choices to algorithms meaningful for PLN optimization
@@ -51,15 +61,26 @@ nlopt::algorithm getAlgorithmCode( const std::string algorithm_str) {
     return algorithm;
 }
 
-typedef std::vector<double> stdvec;
+nlopt::opt initNLOPT(int n, int p, int d, List control) {
 
-struct optim_data {
-    arma::mat Y   ;
-    arma::mat X   ;
-    arma::mat O   ;
-    double KY     ;
-    int iterations;
-};
+  int n_param = (2 * n + d) * p;
+
+  // Prepare optimization by setting nlopt options
+  nlopt::algorithm algo = getAlgorithmCode(as<std::string>(control["algorithm"])) ;
+  nlopt::opt opt(algo, n_param);
+  opt.set_xtol_rel(as<double>(control["xtol_rel"]));
+  opt.set_ftol_abs(as<double>(control["ftol_abs"]));
+  opt.set_ftol_rel(as<double>(control["ftol_rel"]));
+  opt.set_maxeval (as<int>   (control["maxeval" ]));
+  opt.set_xtol_abs(arma::conv_to<stdvec>::from(
+    arma::join_cols(arma::zeros(p*(d+n)), as<double>(control["xtol_abs"]) * arma::ones(n * p))
+  ));
+  opt.set_lower_bounds(arma::conv_to<stdvec>::from(
+    arma::join_cols(R_NegInf * arma::ones(p*(d+n)), as<double>(control["lbvar"]) * arma::ones(n * p))
+  ));
+
+  return opt;
+}
 
 double fn_optim_PLN(const std::vector<double> &x, std::vector<double> &grad, void *data) {
 
@@ -99,10 +120,6 @@ Rcpp::List optimization_PLN(
     double         KY,
     Rcpp::List control) {
 
-  // Problem dimensions
-  int n = Y.n_rows, p = Y.n_cols, d = X.n_cols ;
-  int n_param = (2 * n + d) * p;
-
   // Create data structure
   optim_data my_optim_data;
   my_optim_data.Y  = Y  ;
@@ -111,34 +128,12 @@ Rcpp::List optimization_PLN(
   my_optim_data.KY = KY ; // compute this internally
   my_optim_data.iterations = 0 ;
 
-  // get back nlopt options
-  double ftol_rel = as<double>(control["ftol_rel"]);
-  double ftol_abs = as<double>(control["ftol_abs"]);
-  double xtol_rel = as<double>(control["xtol_rel"]);
-  double xtol_abs = as<double>(control["xtol_abs"]);
-  int    maxeval  = as<int>   (control["maxeval" ]);
-  double lbvar    = as<double>(control["lbvar"   ]);
-  stdvec lower_bound = arma::conv_to<stdvec>::from(arma::join_cols(R_NegInf * arma::ones(p*(d+n)), lbvar * arma::ones(n * p)));
-  const stdvec xtol_abs_v = arma::conv_to<stdvec>::from(arma::join_cols(arma::zeros(p*(d+n)), xtol_abs * arma::ones(n * p)));
-
-  nlopt::algorithm algo = getAlgorithmCode(as<std::string>(control["algorithm"])) ;
-
-  // prepare optimization by setting nlopt options
-  // nlopt::opt opt(nlopt::algorithm(getAlgorithmCode(&algorithm)), n_param);
-  nlopt::opt opt(algo, n_param);
-
-  opt.set_lower_bounds(lower_bound);
-  opt.set_xtol_abs(xtol_abs_v);
-  opt.set_xtol_rel(xtol_rel);
-  opt.set_ftol_abs(ftol_abs);
-  opt.set_ftol_rel(ftol_rel);
-  opt.set_maxeval(maxeval);
-
-  // Initialize the optimization
-  double f_optimized ;
-  stdvec x_optimized = arma::conv_to<stdvec>::from(par);
+  // Initialize the NLOPT optimizer
+  nlopt::opt opt = initNLOPT(Y.n_rows, Y.n_cols, X.n_cols, control) ;
 
   // Perform the optimization
+  double f_optimized ;
+  stdvec x_optimized = arma::conv_to<stdvec>::from(par);
   opt.set_min_objective(fn_optim_PLN, &my_optim_data);
   nlopt::result status = opt.optimize(x_optimized, f_optimized);
 
