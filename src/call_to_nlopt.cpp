@@ -16,6 +16,11 @@ struct optim_data {
     int iterations ;
 };
 
+double K(arma::mat Y) {
+  arma::colvec v = arma::nonzeros(Y);
+  return accu(v % log(v) - v + log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + log(M_PI)/2);
+}
+
 // Convert string to nlopt_alogirthm
 //
 // restrict the choices to algorithms meaningful for PLN optimization
@@ -117,7 +122,6 @@ Rcpp::List optimization_PLN(
     const arma::mat Y,
     const arma::mat X,
     const arma::mat O,
-    double         KY,
     Rcpp::List control) {
 
   // Create data structure
@@ -125,7 +129,7 @@ Rcpp::List optimization_PLN(
   my_optim_data.Y  = Y  ;
   my_optim_data.X  = X  ;
   my_optim_data.O  = O  ;
-  my_optim_data.KY = KY ; // compute this internally
+  my_optim_data.KY = K(Y) ; // compute this internally
   my_optim_data.iterations = 0 ;
 
   // Initialize the NLOPT optimizer

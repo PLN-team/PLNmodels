@@ -2,8 +2,8 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @export
-optimization_PLN <- function(par, Y, X, O, KY, control) {
-    .Call('_PLNmodels_optimization_PLN', PACKAGE = 'PLNmodels', par, Y, X, O, KY, control)
+optimization_PLN <- function(par, Y, X, O, control) {
+    .Call('_PLNmodels_optimization_PLN', PACKAGE = 'PLNmodels', par, Y, X, O, control)
 }
 
 #' @export
