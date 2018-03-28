@@ -116,18 +116,19 @@ multiplot <- function(..., legend=FALSE, plotlist=NULL, cols) {
 
 PLN_param <- function(control, n, p) {
   ctrl <- list(
-    newpar    = FALSE,
+    nloptr    = FALSE,
     ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
     ftol_abs  = 0,
     xtol_rel  = 1e-4,
     xtol_abs  = 1e-4,
     maxeval   = 10000,
-    method    = "MMA",
+    method    = "CCSAQ",
     lbvar     = 1e-4,
     trace     = 1,
     inception = "LM"
   )
   ctrl[names(control)] <- control
+  ctrl$method <- ifelse(ctrl$nloptr, "MMA", "CCSAQ")
   ctrl
 }
 
