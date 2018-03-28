@@ -9,15 +9,18 @@ using namespace Rcpp;
 typedef std::vector<double> stdvec;
 
 struct optim_data {
-    arma::mat Y ;
-    arma::mat X ;
-    arma::mat O ;
-    double KY;
+    arma::mat Y   ;
+    arma::mat X   ;
+    arma::mat O   ;
+    double KY     ;
+    int iterations;
 };
 
 double fn_optim_PLN(const std::vector<double> &x, std::vector<double> &grad, void *data) {
 
   optim_data *dat = reinterpret_cast<optim_data*>(data);
+  // increase number of iterations
+  dat->iterations++;
 
   int n = dat->Y.n_rows, p = dat->Y.n_cols, d = dat->X.n_cols ;
 
@@ -61,6 +64,7 @@ Rcpp::List optim_PLN_MMA(arma::vec par,
   my_optim_data.X  = X  ;
   my_optim_data.O  = O  ;
   my_optim_data.KY = KY ; // compute this internally
+  my_optim_data.iterations = 0 ; // compute this internally
 
   // prepare nlopt options
   double ftol_rel = as<double>(control["ftol_rel"]);
@@ -91,7 +95,11 @@ Rcpp::List optim_PLN_MMA(arma::vec par,
 
   // Perform the optimization
   opt.set_min_objective(fn_optim_PLN, &my_optim_data);
-  nlopt::result out_optimization = opt.optimize(x_optimized, f_optimized);
+  nlopt::result res = opt.optimize(x_optimized, f_optimized);
+  int status  = (int) res ;
 
-  return List::create(Named("objective") = f_optimized, Named("solution")  = x_optimized);
+  return List::create(Named("status"    ) = status      ,
+                      Named("objective" ) = f_optimized ,
+                      Named("solution"  ) = x_optimized,
+                      Named("iterations") = my_optim_data.iterations);
 }

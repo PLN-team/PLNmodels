@@ -97,6 +97,7 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
       "lbvar"    = ctrl$lbvar
     )
     optim.out <- optim_PLN_MMA(par0, Y, X, O, KY, opts)
+    optim.out$message <- statusToMessage(optim.out$status)
   } else {
     par0 <- c(par0$Theta, par0$M, par0$S)
     ## Now optimize with NLOPTR

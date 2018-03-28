@@ -195,3 +195,21 @@ PLNnetwork_param <- function(control, n, p, type = c("init", "main")) {
   ctrl[names(control)] <- control
   ctrl
 }
+
+statusToMessage <- function(status) {
+    message <- switch( status,
+        "1"  = "NLOPT_SUCCESS: Generic success return value.",
+        "2"  = "NLOPT_STOPVAL_REACHED: Optimization stopped because stopval (above) was reached.",
+        "3"  = "NLOPT_FTOL_REACHED: Optimization stopped because ftol_rel or ftol_abs (above) was reached.",
+        "4"  = "NLOPT_XTOL_REACHED: Optimization stopped because xtol_rel or xtol_abs (above) was reached.",
+        "5"  = "NLOPT_MAXEVAL_REACHED: Optimization stopped because maxeval (above) was reached.",
+        "6"  = "NLOPT_MAXTIME_REACHED: Optimization stopped because maxtime (above) was reached.",
+        "-1" = "NLOPT_FAILURE: Generic failure code.",
+        "-2" = "NLOPT_INVALID_ARGS: Invalid arguments (e.g. lower bounds are bigger than upper bounds, an unknown algorithm was specified, etcetera).",
+        "-3" = "NLOPT_OUT_OF_MEMORY: Ran out of memory.",
+        "-4" = "NLOPT_ROUNDOFF_LIMITED: Roundoff errors led to a breakdown of the optimization algorithm. In this case, the returned minimum may still be useful.",
+        "-5" = "Halted because of a forced termination: the user called nlopt_force_stop(opt) on the optimization's nlopt_opt object opt from the user's objective function.",
+        "Return status not recognized."
+    )
+    message
+}
