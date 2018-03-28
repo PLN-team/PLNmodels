@@ -7,13 +7,8 @@ optimization_PLN <- function(par, Y, X, O, KY, control) {
 }
 
 #' @export
-fn_optim_PLN_par2_Cpp <- function(par, Y, ProjOrthX, O, KY) {
-    .Call('_PLNmodels_fn_optim_PLN_par2_Cpp', PACKAGE = 'PLNmodels', par, Y, ProjOrthX, O, KY)
-}
-
-#' @export
-fn_optim_PLN_par1_Cpp <- function(par, Y, X, O, KY) {
-    .Call('_PLNmodels_fn_optim_PLN_par1_Cpp', PACKAGE = 'PLNmodels', par, Y, X, O, KY)
+fn_optim_PLN_Cpp <- function(par, Y, X, O, KY) {
+    .Call('_PLNmodels_fn_optim_PLN_Cpp', PACKAGE = 'PLNmodels', par, Y, X, O, KY)
 }
 
 #' @export
