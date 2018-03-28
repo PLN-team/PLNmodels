@@ -76,18 +76,10 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
 
   KY <- sum(.logfactorial(Y)) ## constant that will remain the same
   if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
-  ## Set optimization options
-  opts <- list(
-    "algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
-    "maxeval"     = ctrl$maxeval,
-    "ftol_rel"    = ctrl$ftol_rel,
-    "ftol_abs"    = ctrl$ftol_abs,
-    "xtol_rel"    = ctrl$xtol_rel,
-    "print_level" = max(0,ctrl$trace-1)
-  )
 
+  par0 <- c(par0$Theta, par0$M, par0$S)
   if (ctrl$newpar) {
-    par0 <- c(par0$Theta, par0$M, par0$S)
+    ## Set optimization options
     opts <- list(
       "algorithm" = ctrl$method,
       "maxeval"   = ctrl$maxeval,
@@ -97,15 +89,24 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
       "xtol_abs"  = ctrl$xtol_abs,
       "lbvar"     = ctrl$lbvar
     )
+    ## Optimize via NLOPT directly
     optim.out <- optimization_PLN(par0, Y, X, O, KY, opts)
     optim.out$message <- statusToMessage(optim.out$status)
   } else {
-    par0 <- c(par0$Theta, par0$M, par0$S)
-    ## Now optimize with NLOPTR
-    opts$xtol_abs <- c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p))
+    ## Set optimization options
+    opts <- list(
+      "algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
+      "maxeval"     = ctrl$maxeval,
+      "ftol_rel"    = ctrl$ftol_rel,
+      "ftol_abs"    = ctrl$ftol_abs,
+      "xtol_rel"    = ctrl$xtol_rel,
+      "xtol_abs"    = c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
+      "print_level" = max(0,ctrl$trace-1)
+    )
+    ## Optimize via NLOPTR
     optim.out <- nloptr(
       par0,
-      eval_f = fn_optim_PLN_par1_Cpp,
+      eval_f = fn_optim_PLN_Cpp,
       lb = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
       opts = opts,
       Y = Y, X = X, O = O, KY = KY
