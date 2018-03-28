@@ -128,7 +128,7 @@ PLN_param <- function(control, n, p) {
     inception = "LM"
   )
   ctrl[names(control)] <- control
-  ctrl$method <- ifelse(ctrl$nloptr & is.null(control$method), "MMA", "CCSAQ")
+  if (ctrl$nloptr & is.null(control$method)) ctrl$method <- "MMA"
   ctrl
 }
 
