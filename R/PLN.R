@@ -99,13 +99,13 @@ PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y),
   } else {
     ## Set optimization options
     opts <- list(
-      "algorithm" = ctrl$method,
-      "maxeval"   = ctrl$maxeval,
-      "ftol_rel"  = ctrl$ftol_rel,
-      "ftol_abs"  = ctrl$ftol_abs,
-      "xtol_rel"  = ctrl$xtol_rel,
-      "xtol_abs"  = ctrl$xtol_abs,
-      "lbvar"     = ctrl$lbvar
+      "algorithm"   = ctrl$method,
+      "maxeval"     = ctrl$maxeval,
+      "ftol_rel"    = ctrl$ftol_rel,
+      "ftol_abs"    = ctrl$ftol_abs,
+      "xtol_rel"    = ctrl$xtol_rel,
+      "xtol_abs"    = c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
+      "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
     )
     ## Optimize via NLOPT directly
     optim.out <- optimization_PLN(par0, Y, X, O, opts)

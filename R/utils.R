@@ -137,17 +137,19 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
 
   ctrl <- switch(match.arg(type),
     "init" = list(
+      nloptr    = FALSE,
       inception = ifelse(n >= 1.5*p, "PLN", "LM"),
       ftol_rel = 1e-6,
       ftol_abs = 0,
       xtol_rel = 1e-4,
       xtol_abs = 1e-4,
       maxeval  = 10000,
-      method   = "MMA",
+      method   = "CCSAQ",
       lbvar    = 1e-4,
       trace    = 0
     ),
-    "main"= list(
+    "main" = list(
+      nloptr    = FALSE,
       ftol_rel = 1e-6,
       ftol_abs = 0,
       xtol_rel = 1e-4,
@@ -160,6 +162,7 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
     )
   )
   ctrl[names(control)] <- control
+  if (ctrl$nloptr & is.null(control$method)) ctrl$method <- "MMA"
   ctrl
 }
 

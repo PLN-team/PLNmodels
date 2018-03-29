@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // optimization_PLN
-Rcpp::List optimization_PLN(arma::vec par, const arma::mat Y, const arma::mat X, const arma::mat O, Rcpp::List control);
-RcppExport SEXP _PLNmodels_optimization_PLN(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP controlSEXP) {
+Rcpp::List optimization_PLN(arma::vec par, const arma::mat Y, const arma::mat X, const arma::mat O, Rcpp::List options);
+RcppExport SEXP _PLNmodels_optimization_PLN(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP optionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -16,8 +16,24 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat >::type Y(YSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type O(OSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type control(controlSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimization_PLN(par, Y, X, O, control));
+    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(optimization_PLN(par, Y, X, O, options));
+    return rcpp_result_gen;
+END_RCPP
+}
+// optimization_PLNPCA
+Rcpp::List optimization_PLNPCA(arma::vec par, const arma::mat Y, const arma::mat X, const arma::mat O, const int rank, Rcpp::List options);
+RcppExport SEXP _PLNmodels_optimization_PLNPCA(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP rankSEXP, SEXP optionsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const int >::type rank(rankSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(optimization_PLNPCA(par, Y, X, O, rank, options));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -89,6 +105,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optimization_PLN", (DL_FUNC) &_PLNmodels_optimization_PLN, 5},
+    {"_PLNmodels_optimization_PLNPCA", (DL_FUNC) &_PLNmodels_optimization_PLNPCA, 6},
     {"_PLNmodels_fn_optim_PLN_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLN_Cpp, 5},
     {"_PLNmodels_fn_optim_PLNnetwork_new_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLNnetwork_new_Cpp, 7},
     {"_PLNmodels_fn_optim_PLNnetwork_Cpp", (DL_FUNC) &_PLNmodels_fn_optim_PLNnetwork_Cpp, 7},
