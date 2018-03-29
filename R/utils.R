@@ -139,7 +139,7 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
     "init" = list(
       nloptr    = FALSE,
       inception = ifelse(n >= 1.5*p, "PLN", "LM"),
-      ftol_rel = 1e-6,
+      ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
       ftol_abs = 0,
       xtol_rel = 1e-4,
       xtol_abs = 1e-4,
@@ -153,10 +153,10 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
       ftol_rel = 1e-6,
       ftol_abs = 0,
       xtol_rel = 1e-4,
-      xtol_abs = 1e-5,
+      xtol_abs = 1e-4,
       maxeval  = 10000,
-      method   = "MMA",
-      lbvar    = 1e-5,
+      method   = "CCSAQ",
+      lbvar    = 1e-4,
       trace    = 1,
       cores    = 1
     )
