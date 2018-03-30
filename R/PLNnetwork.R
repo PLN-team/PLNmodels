@@ -27,7 +27,7 @@
 ##'  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
 ##'  \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
 ##'     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
-##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
+##'     "VAR1", "VAR2". See NLOPTR documentation for further details. Default is "MMA".}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 ##' }
 ##'
@@ -56,7 +56,7 @@ PLNnetwork <- function(Robject, ...)
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.formula <- function(formula, penalties = NULL, approx = FALSE, new=FALSE, control.init = list(), control.main = list()) {
+PLNnetwork.formula <- function(formula, penalties = NULL, approx = FALSE, control.init = list(), control.main = list()) {
 
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
@@ -64,13 +64,13 @@ PLNnetwork.formula <- function(formula, penalties = NULL, approx = FALSE, new=FA
   O      <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLNnetwork.default(Y, X, O, penalties, approx, new=FALSE, control.init, control.main))
+  return(PLNnetwork.default(Y, X, O, penalties, approx, control.init, control.main))
 }
 
 ##' @rdname PLNnetwork
 ##' @export
 PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)),
-                               penalties = NULL, approx=FALSE, new=FALSE, control.init = list(), control.main=list()) {
+                               penalties = NULL, approx=FALSE, control.init = list(), control.main=list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- PLNnetwork_param(control.init, nrow(Y), ncol(Y), "init")
@@ -87,11 +87,7 @@ PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow
   if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")
   if (ctrl.main$trace & approx) cat("\tTwo-step approach applying Graphical-Lasso on the inceptive PLN fit.\n")
   if (ctrl.main$trace & !approx) cat("\tJoint optimization alternating gradient descent and graphical-lasso\n")
-  if (new) {
-    myPLN$optimize_new(ctrl.main)
-  } else {
-    myPLN$optimize(ctrl.main)
-  }
+  myPLN$optimize(ctrl.main)
 
   ## Post-treatments: compute pseudo-R2
   if (ctrl.main$trace > 0) cat("\n Post-treatments")

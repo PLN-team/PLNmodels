@@ -7,6 +7,11 @@ optimization_PLN <- function(par, Y, X, O, options) {
 }
 
 #' @export
+optimization_PLNnetwork <- function(par, Y, X, O, Omega, log_det_Omega, options) {
+    .Call('_PLNmodels_optimization_PLNnetwork', PACKAGE = 'PLNmodels', par, Y, X, O, Omega, log_det_Omega, options)
+}
+
+#' @export
 optimization_PLNPCA <- function(par, Y, X, O, rank, options) {
     .Call('_PLNmodels_optimization_PLNPCA', PACKAGE = 'PLNmodels', par, Y, X, O, rank, options)
 }
@@ -14,11 +19,6 @@ optimization_PLNPCA <- function(par, Y, X, O, rank, options) {
 #' @export
 fn_optim_PLN_Cpp <- function(par, Y, X, O, KY) {
     .Call('_PLNmodels_fn_optim_PLN_Cpp', PACKAGE = 'PLNmodels', par, Y, X, O, KY)
-}
-
-#' @export
-fn_optim_PLNnetwork_new_Cpp <- function(par, log_detOmega, Omega, Y, ProjOrthX, O, KY) {
-    .Call('_PLNmodels_fn_optim_PLNnetwork_new_Cpp', PACKAGE = 'PLNmodels', par, log_detOmega, Omega, Y, ProjOrthX, O, KY)
 }
 
 #' @export

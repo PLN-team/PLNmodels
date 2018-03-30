@@ -9,10 +9,10 @@
 PLNnetwork(Robject, ...)
 
 \method{PLNnetwork}{formula}(formula, penalties = NULL, approx = FALSE,
-  new = FALSE, control.init = list(), control.main = list())
+  control.init = list(), control.main = list())
 
 \method{PLNnetwork}{default}(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0,
-  nrow(Y), ncol(Y)), penalties = NULL, approx = FALSE, new = FALSE,
+  nrow(Y), ncol(Y)), penalties = NULL, approx = FALSE,
   control.init = list(), control.main = list())
 }
 \arguments{
@@ -55,7 +55,7 @@ The list of parameters \code{control.init} and \code{control.main} control the o
  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
  \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
-    "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
+    "VAR1", "VAR2". See NLOPTR documentation for further details. Default is "MMA".}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 }
 

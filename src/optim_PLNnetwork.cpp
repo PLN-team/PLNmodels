@@ -6,37 +6,6 @@ using namespace arma;
 
 //' @export
 // [[Rcpp::export]]
-Rcpp::List fn_optim_PLNnetwork_new_Cpp(
-    arma::vec par,
-    double log_detOmega,
-    const arma::mat Omega,
-    const arma::mat Y,
-    const arma::mat ProjOrthX,
-    const arma::mat O,
-    double KY) {
-
-  int n = Y.n_rows, p = Y.n_cols ;
-
-  arma::mat     M(&par[0]   , n,p, false) ;
-  arma::mat     S(&par[p*+n], n,p, false) ;
-
-  arma::mat Mtilde = ProjOrthX * (M - O) ;
-
-  arma::mat nSigma = Mtilde.t() * Mtilde ; nSigma.diag() += sum(S, 0);
-
-  double objective = accu(exp(M + .5 * S) - Y % M - .5*log(S)) -.5*(n*log_detOmega + n*p - trace(Omega*nSigma)) + KY ;
-
-  arma::vec grd_M     = vectorise( Mtilde * Omega + exp (M + .5 * S)  - Y) ;
-  arma::vec grd_S     = vectorise(.5 * (ones(n) * diagvec(Omega).t() + exp (M + .5 * S) - 1/S));
-
-  arma::vec grad = join_vert(grd_M,grd_S) ;
-
-  return Rcpp::List::create(Rcpp::Named("objective") = objective,
-                            Rcpp::Named("gradient" ) = grad);
-}
-
-//' @export
-// [[Rcpp::export]]
 Rcpp::List fn_optim_PLNnetwork_Cpp(
     arma::vec par,
     double log_detOmega,
