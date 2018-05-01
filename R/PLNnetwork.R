@@ -51,13 +51,13 @@
 ##' @seealso The classes \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNnetwork <- function(Robject, ...)
-  UseMethod("PLNnetwork", Robject)
+PLNnetwork <- function(Robject, ...) UseMethod("PLNnetwork", Robject)
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.formula <- function(formula, penalties = NULL, approx = FALSE, control.init = list(), control.main = list()) {
+PLNnetwork.formula <- function(Robject, penalties = NULL, approx = FALSE, control.init = list(), control.main = list(), ...) {
 
+  formula <- Robject
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
   X      <- model.matrix(formula)
@@ -69,9 +69,10 @@ PLNnetwork.formula <- function(formula, penalties = NULL, approx = FALSE, contro
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)),
-                               penalties = NULL, approx=FALSE, control.init = list(), control.main=list()) {
+PLNnetwork.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O = matrix(0, nrow(Robject), ncol(Robject)),
+                               penalties = NULL, approx=FALSE, control.init = list(), control.main=list(), ...) {
 
+  Y <- Robject; rm(Robject) # no copy made
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- PLNnetwork_param(control.init, nrow(Y), ncol(Y), "init")
   ctrl.main <- PLNnetwork_param(control.main, nrow(Y), ncol(Y), "main")

@@ -85,7 +85,6 @@ g_legend<-function(a.gplot){
 
 ## Pareil avec un grid.arrange?
 multiplot <- function(..., legend=FALSE, plotlist=NULL, cols) {
-  require(grid)
 
   # Make a list from the ... arguments and plotlist
   plots <- c(list(...), plotlist)

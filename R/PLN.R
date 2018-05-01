@@ -2,12 +2,10 @@
 ##'
 ##' @description two methods are available for specifying the models (with formulas or matrices)
 ##'
-##' @param formula a formula
-##' @param Y a (n x p) matrix of count data
+##' @param Robject an R object, either a formula or a (n x p) matrix of count data
 ##' @param X an optional (n x d) matrix of covariates. Should include the intercept (a column of ones) if the default method is used.
 ##' @param O an optional (n x p) matrix of offsets.
 ##' @param control a list for controlling the optimization. See details.
-##' @param Robject an R object, either a formula or a matrix
 ##' @param ... additional parameters. Not used
 ##'
 ##' @return an R6 object with class \code{\link[=PLNfit-class]{PLNfit}}
@@ -37,13 +35,13 @@
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @importFrom nloptr nloptr
 ##' @export
-PLN <- function(Robject, ...)
-  UseMethod("PLN", Robject)
+PLN <- function(Robject, ...) UseMethod("PLN", Robject)
 
 ##' @rdname PLN
 ##' @export
-PLN.formula <- function(formula, control = list()) {
+PLN.formula <- function(Robject, control = list(), ...) {
 
+  formula <- Robject
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
   X      <- model.matrix(formula)
@@ -55,12 +53,12 @@ PLN.formula <- function(formula, control = list()) {
 
 ##' @rdname PLN
 ##' @export
-PLN.default <- function(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0, nrow(Y), ncol(Y)), control = list()) {
+PLN.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O = matrix(0, nrow(Robject), ncol(Robject)), control = list(), ...) {
 
+  Y <- Robject; rm(Robject)
   ## ===========================================
   ## INITIALIZATION
   ##
-
   ## problem dimensions
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 

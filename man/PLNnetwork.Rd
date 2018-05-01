@@ -8,19 +8,17 @@
 \usage{
 PLNnetwork(Robject, ...)
 
-\method{PLNnetwork}{formula}(formula, penalties = NULL, approx = FALSE,
+\method{PLNnetwork}{formula}(Robject, penalties = NULL, approx = FALSE,
   control.init = list(), control.main = list())
 
-\method{PLNnetwork}{default}(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0,
-  nrow(Y), ncol(Y)), penalties = NULL, approx = FALSE,
-  control.init = list(), control.main = list())
+\method{PLNnetwork}{default}(Robject, X = matrix(1, nrow = nrow(Robject)),
+  O = matrix(0, nrow(Robject), ncol(Robject)), penalties = NULL,
+  approx = FALSE, control.init = list(), control.main = list())
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a matrix}
 
 \item{...}{additional parameters. Not used}
-
-\item{formula}{a formula}
 
 \item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
 
@@ -30,11 +28,13 @@ PLNnetwork(Robject, ...)
 
 \item{control.main}{a list for controling the optimization. See details.}
 
-\item{Y}{a (n x p) matrix of count data}
-
 \item{X}{an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.}
 
 \item{O}{an optional (n x p) matrix of offsets.}
+
+\item{formula}{a formula}
+
+\item{Y}{a (n x p) matrix of count data}
 }
 \value{
 an R6 object with class \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}}, which contains

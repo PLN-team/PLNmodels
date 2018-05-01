@@ -37,13 +37,13 @@
 ##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNPCA <- function(Robject, ...)
-  UseMethod("PLNPCA", Robject)
+PLNPCA <- function(Robject, ...) UseMethod("PLNPCA", Robject)
 
 ##' @rdname PLNPCA
 ##' @export
-PLNPCA.formula <- function(formula, ranks = 1:5,  control.init = list(), control.main = list()) {
+PLNPCA.formula <- function(Robject, ranks = 1:5,  control.init = list(), control.main = list(), ...) {
 
+  formula <- Robject
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
   X      <- model.matrix(formula)
@@ -55,8 +55,10 @@ PLNPCA.formula <- function(formula, ranks = 1:5,  control.init = list(), control
 
 ##' @rdname PLNPCA
 ##' @export
-PLNPCA.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)), ranks = 1:5,  control.init = list(), control.main = list()) {
+PLNPCA.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O = matrix(0, nrow(Robject), ncol(Robject)),
+                           ranks = 1:5,  control.init = list(), control.main = list(), ...) {
 
+  Y <- Robject; rm(Robject) # no copy made
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- PLNPCA_param(control.init, nrow(Y), ncol(Y), "init")
   ctrl.main <- PLNPCA_param(control.main, nrow(Y), ncol(Y), "main")

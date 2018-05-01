@@ -8,19 +8,17 @@
 \usage{
 PLNPCA(Robject, ...)
 
-\method{PLNPCA}{formula}(formula, ranks = 1:5, control.init = list(),
+\method{PLNPCA}{formula}(Robject, ranks = 1:5, control.init = list(),
   control.main = list())
 
-\method{PLNPCA}{default}(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0,
-  nrow(Y), ncol(Y)), ranks = 1:5, control.init = list(),
-  control.main = list())
+\method{PLNPCA}{default}(Robject, X = matrix(1, nrow = nrow(Robject)),
+  O = matrix(0, nrow(Robject), ncol(Robject)), ranks = 1:5,
+  control.init = list(), control.main = list())
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a matrix}
 
 \item{...}{additional parameters. Not used}
-
-\item{formula}{a formula}
 
 \item{ranks}{a vector of integer containing the successive ranks (or number of axes to be considered)}
 
@@ -28,11 +26,13 @@ PLNPCA(Robject, ...)
 
 \item{control.main}{a list for controling the optimization. See details.}
 
-\item{Y}{a (n x p) matrix of count data}
-
 \item{X}{an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.}
 
 \item{O}{an optional (n x p) matrix of offsets.}
+
+\item{formula}{a formula}
+
+\item{Y}{a (n x p) matrix of count data}
 }
 \value{
 an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
