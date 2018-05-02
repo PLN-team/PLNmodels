@@ -14,7 +14,7 @@ Description: The Poisson-lognormal model and variants can be used for
     PCA for count data, linear discriminant analysis and network inference). This package 
     implements efficients variational algorithms to fit such models accompanied with a set of
     functions for vizualisation and diagnostic.
-URL: https://github.com/jchiquet/PLNmodels  (dev version)
+URL: https://github.com/jchiquet/PLNmodels (dev version)
 BugReports: https://github.com/jchiqut/PLNmodels/issues
 License: GPL (>= 2) | file LICENSE
 SystemRequirements: libnlopt: libnlopt-dev (deb) or NLopt-devel (rpm).

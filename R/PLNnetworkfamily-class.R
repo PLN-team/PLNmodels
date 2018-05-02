@@ -178,14 +178,20 @@ PLNnetworkfamily$set("public", "optimize",
 
 })
 
-
+#' Extract the regularization path of a PLNnetwork fit
+#'
+#' @name coefficient_path
+#' @param precision a logical, should the coefficients of the precision matrix Omega or the covariance matrice Sigma be sent back. Default is \code{TRUE}.
+#' @param corr a logical, should the correlation (partial in case  precision = TRUE) be sent back. Default is \code{TRUE}.
+#'
+#' @return  Send back a tibble/data.frame.
 #' @export
 PLNnetworkfamily$set("public", "coefficient_path",
 coefficient_path <- function(precision = TRUE, corr = TRUE) {
   lapply(self$penalties, function(x) {
     if (precision) {
       G <- self$getModel(x)$model_par$Omega
-      } else {
+    } else {
       G <- self$getModel(x)$model_par$Sigma
       dimnames(G) <- dimnames(self$getModel(x)$model_par$Omega)
     }

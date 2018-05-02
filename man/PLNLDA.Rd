@@ -8,36 +8,26 @@
 \usage{
 PLNLDA(Robject, ...)
 
-\method{PLNLDA}{formula}(formula, grouping, control.init = list(),
-  control.main = list())
+\method{PLNLDA}{formula}(Robject, grouping, control, ...)
 
-\method{PLNLDA}{default}(Y, grouping, X = NULL, O = matrix(0, nrow(Y),
-  ncol(Y)), control = list())
+\method{PLNLDA}{default}(Robject, grouping, X = NULL, O = matrix(0, nrow(Y),
+  ncol(Y)), control = list(), ...)
 }
 \arguments{
-\item{Robject}{an R object, either a formula or a matrix}
+\item{Robject}{either (n x p) matrix of count data (used with argument grouping) or a formula to describe the relationship between the count matrix and the covariates (apart from the grouping)}
 
 \item{...}{additional parameters. Not used}
 
-\item{formula}{a formula to describe the relationship between the count matrix and the covariates (apart from the gouping)}
+\item{grouping}{a factor specifying the class fo< each observation used for disciminant analysis. Ignored when Robject is a formula.}
 
-\item{grouping}{a factor specifying the class for each observation used for disciminant analysis}
+\item{control}{a list for controling the optimization process. See details.}
 
-\item{control.init}{a list for controling the optimization. See details.}
+\item{X}{an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.}
 
-\item{control.main}{a list for controling the optimization. See details.}
-
-\item{Y}{a (n x p) matrix of count data}
-
-\item{X}{an aoptional (n x d) matrix of covariates}
-
-\item{O}{an optional (n x p) matrix of offsets.}
-
-\item{formula}{A formula of the form groups ~ x1 + x2 + ... That is, the response is the grouping factor and the right hand side specifies the (non-factor) discriminators.}
+\item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
 }
 \value{
-an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
-a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
+an R6 object with class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 }
 \description{
 two methods are available for specifing the models (with formulas or matrices)

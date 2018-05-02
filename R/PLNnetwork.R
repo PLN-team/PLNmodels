@@ -2,15 +2,13 @@
 ##'
 ##' @description two methods are available for specifying the models (with formulas or matrices)
 ##'
-##' @param formula a formula
-##' @param Y a (n x p) matrix of count data
-##' @param X an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.
-##' @param O an optional (n x p) matrix of offsets.
+##' @param Robject an R object, either a formula or a (n x p) matrix of count data
+##' @param X an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.
+##' @param O an optional (n x p) matrix of offsets. Ignored when Robject is a formula.
 ##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally
-##' @param approx a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to FALSE.
-##' @param control.init a list for controling the optimization of the initialization, that fits a standard PLN model with the \code{\link[=PLN]{PLN}} function. See details.
-##' @param control.main a list for controling the optimization. See details.
-##' @param Robject an R object, either a formula or a matrix
+##' @param control.init a list for controling the optimization at initialization. See details.
+##' @param control.main a list for controling the main optimization process. See details.
+##' @param ... additional parameters for S3 compatibility. Not used
 ##' @param ... additional parameters. Not used
 ##'
 ##' @return an R6 object with class \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}}, which contains
@@ -102,17 +100,15 @@ PLNnetwork.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O =
 ##'
 ##' @description two methods are available for specifying the models (with formulas or matrices)
 ##'
-##' @param formula a formula
-##' @param Y a (n x p) matrix of count data
-##' @param X an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.
-##' @param O an optional (n x p) matrix of offsets.
-##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally. Can be a scalar.
+##' @param Robject an R object, either a formula or a (n x p) matrix of count data
+##' @param X an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.
+##' @param O an optional (n x p) matrix of offsets. Ignored when Robject is a formula.
+##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally
 ##' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 100 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
 ##' @param approx a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to TRUE.
 ##' @param control.init a list for controling the optimization of the initialization, that fits a standard PLN model with the \code{\link[=PLN]{PLN}} function. See details.
 ##' @param control.main a list for controling the optimization. See details.
 ##' @param mc.cores the number of cores to used. Default is 1.
-##' @param Robject an R object, either a formula or a matrix
 ##' @param ... additional parameters. Not used
 ##'
 ##' @return a list with the vector of penalty used, a p*(p-1)/2 x length(penalties) matrix of estimated probabilities of selection of the edges, and the list of subsamples
@@ -120,13 +116,13 @@ PLNnetwork.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O =
 ##' @details See \code{\link[=PLNnetwork]{PLNnetwork}} for details about \code{control.main} and \code{control.init}
 ##'
 ##' @export
-PLNnetwork_stabs <- function(Robject, ...)
-  UseMethod("PLNnetwork_stabs", Robject)
+PLNnetwork_stabs <- function(Robject, ...) UseMethod("PLNnetwork_stabs", Robject)
 
 ##' @rdname PLNnetwork_stabs
 ##' @export
-PLNnetwork_stabs.formula <- function(formula, penalties = NULL, subsamples = NULL, approx = TRUE, control.init = list(), control.main = list(), mc.cores = 1) {
+PLNnetwork_stabs.formula <- function(Robject, penalties = NULL, subsamples = NULL, approx = TRUE, control.init = list(), control.main = list(), mc.cores = 1, ...) {
 
+  formula <- Robject
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
   X      <- model.matrix(formula)
@@ -138,9 +134,10 @@ PLNnetwork_stabs.formula <- function(formula, penalties = NULL, subsamples = NUL
 
 ##' @rdname PLNnetwork_stabs
 ##' @export
-PLNnetwork_stabs.default <- function(Y, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)),
-                               penalties = NULL, subsamples = NULL, approx = TRUE, control.init = list(nPenalties = 10), control.main = list(), mc.cores = 1) {
+PLNnetwork_stabs.default <- function(Robject, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)),
+                               penalties = NULL, subsamples = NULL, approx = TRUE, control.init = list(nPenalties = 10), control.main = list(), mc.cores = 1, ...) {
 
+  Y <- Robject; rm(Robject) # no copy made
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- PLNnetwork_param(control.init, nrow(Y), ncol(Y), "init")
   ctrl.init$trace <- 0

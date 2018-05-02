@@ -14,7 +14,7 @@ logLikPoisson <- function(responses, lambda) {
 
 nullModelPoisson <- function(responses, covariates, offsets) {
   Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
-    coefficients(glm.fit(covariates, responses[, j], offset = offsets[,j], family = poisson()))))
+    coefficients(glm.fit(covariates, responses[, j], offset = offsets[,j], family = stats::poisson()))))
   lambda <- offsets + tcrossprod(covariates, Theta)
   lambda
 }

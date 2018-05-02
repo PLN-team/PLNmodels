@@ -8,25 +8,21 @@
 \usage{
 PLN(Robject, ...)
 
-\method{PLN}{formula}(formula, control = list())
+\method{PLN}{formula}(Robject, control = list(), ...)
 
-\method{PLN}{default}(Y, X = matrix(1, nrow = nrow(Y)), O = matrix(0,
-  nrow(Y), ncol(Y)), control = list())
+\method{PLN}{default}(Robject, X = matrix(1, nrow = nrow(Robject)),
+  O = matrix(0, nrow(Robject), ncol(Robject)), control = list(), ...)
 }
 \arguments{
-\item{Robject}{an R object, either a formula or a matrix}
+\item{Robject}{an R object, either a formula or a (n x p) matrix of count data}
 
-\item{...}{additional parameters. Not used}
-
-\item{formula}{a formula}
+\item{...}{additional parameters for S3 compatibility. Not used}
 
 \item{control}{a list for controlling the optimization. See details.}
 
-\item{Y}{a (n x p) matrix of count data}
+\item{X}{an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.}
 
-\item{X}{an optional (n x d) matrix of covariates. Should include the intercept (a column of ones) if the default method is used.}
-
-\item{O}{an optional (n x p) matrix of offsets.}
+\item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
 }
 \value{
 an R6 object with class \code{\link[=PLNfit-class]{PLNfit}}

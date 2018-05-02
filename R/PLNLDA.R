@@ -2,19 +2,14 @@
 ##'
 ##' @description two methods are available for specifing the models (with formulas or matrices)
 ##'
-##' @param formula a formula to describe the relationship between the count matrix and the covariates (apart from the gouping)
-##' @param formula A formula of the form groups ~ x1 + x2 + ... That is, the response is the grouping factor and the right hand side specifies the (non-factor) discriminators.
-##' @param Y a (n x p) matrix of count data
-##' @param X an aoptional (n x d) matrix of covariates
-##' @param grouping a factor specifying the class for each observation used for disciminant analysis
-##' @param O an optional (n x p) matrix of offsets.
-##' @param control.init a list for controling the optimization. See details.
-##' @param control.main a list for controling the optimization. See details.
-##' @param Robject an R object, either a formula or a matrix
+##' @param Robject either (n x p) matrix of count data (used with argument grouping) or a formula to describe the relationship between the count matrix and the covariates (apart from the grouping)
+##' @param X an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.
+##' @param O an optional (n x p) matrix of offsets. Ignored when Robject is a formula.
+##' @param grouping a factor specifying the class fo< each observation used for disciminant analysis. Ignored when Robject is a formula.
+##' @param control a list for controling the optimization process. See details.
 ##' @param ... additional parameters. Not used
 ##'
-##' @return an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
-##' a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
+##' @return an R6 object with class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 ##'
 ##' @details The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries
 ##' \itemize{
@@ -43,8 +38,9 @@ PLNLDA <- function(Robject, ...)
 
 ##' @rdname PLNLDA
 ##' @export
-PLNLDA.formula <- function(formula, grouping, control.init = list(), control.main = list()) {
+PLNLDA.formula <- function(Robject, grouping, control, ...) {
 
+  formula <- Robject
   frame  <- model.frame(formula)
   Y      <- model.response(frame)
   X      <- model.matrix(formula)
@@ -56,13 +52,14 @@ PLNLDA.formula <- function(formula, grouping, control.init = list(), control.mai
   O         <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLNLDA.default(Y, grouping, X, O, control.init, control.main))
+  return(PLNLDA.default(Y, grouping, X, O, control))
 }
 
 ##' @rdname PLNLDA
 ##' @export
-PLNLDA.default <- function(Y, grouping, X = NULL, O = matrix(0, nrow(Y), ncol(Y)),  control = list()) {
+PLNLDA.default <- function(Robject, grouping, X = NULL, O = matrix(0, nrow(Y), ncol(Y)),  control = list(), ...) {
 
+  Y <- Robject; rm(Robject) # no copy made
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- PLN_param(control, nrow(Y), ncol(Y))
   Y <- as.matrix(Y)

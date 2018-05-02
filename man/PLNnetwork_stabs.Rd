@@ -8,23 +8,21 @@
 \usage{
 PLNnetwork_stabs(Robject, ...)
 
-\method{PLNnetwork_stabs}{formula}(formula, penalties = NULL,
+\method{PLNnetwork_stabs}{formula}(Robject, penalties = NULL,
   subsamples = NULL, approx = TRUE, control.init = list(),
-  control.main = list(), mc.cores = 1)
+  control.main = list(), mc.cores = 1, ...)
 
-\method{PLNnetwork_stabs}{default}(Y, X = cbind(rep(1, nrow(Y))),
+\method{PLNnetwork_stabs}{default}(Robject, X = cbind(rep(1, nrow(Y))),
   O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, subsamples = NULL,
   approx = TRUE, control.init = list(nPenalties = 10),
-  control.main = list(), mc.cores = 1)
+  control.main = list(), mc.cores = 1, ...)
 }
 \arguments{
-\item{Robject}{an R object, either a formula or a matrix}
+\item{Robject}{an R object, either a formula or a (n x p) matrix of count data}
 
 \item{...}{additional parameters. Not used}
 
-\item{formula}{a formula}
-
-\item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally. Can be a scalar.}
+\item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
 
 \item{subsamples}{a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 100 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.}
 
@@ -36,11 +34,9 @@ PLNnetwork_stabs(Robject, ...)
 
 \item{mc.cores}{the number of cores to used. Default is 1.}
 
-\item{Y}{a (n x p) matrix of count data}
+\item{X}{an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.}
 
-\item{X}{an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.}
-
-\item{O}{an optional (n x p) matrix of offsets.}
+\item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
 }
 \value{
 a list with the vector of penalty used, a p*(p-1)/2 x length(penalties) matrix of estimated probabilities of selection of the edges, and the list of subsamples

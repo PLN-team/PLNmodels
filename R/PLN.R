@@ -3,10 +3,10 @@
 ##' @description two methods are available for specifying the models (with formulas or matrices)
 ##'
 ##' @param Robject an R object, either a formula or a (n x p) matrix of count data
-##' @param X an optional (n x d) matrix of covariates. Should include the intercept (a column of ones) if the default method is used.
-##' @param O an optional (n x p) matrix of offsets.
+##' @param X an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.
+##' @param O an optional (n x p) matrix of offsets. Ignored when Robject is a formula.
 ##' @param control a list for controlling the optimization. See details.
-##' @param ... additional parameters. Not used
+##' @param ... additional parameters for S3 compatibility. Not used
 ##'
 ##' @return an R6 object with class \code{\link[=PLNfit-class]{PLNfit}}
 ##'
@@ -135,6 +135,7 @@ PLN.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O = matrix
 }
 
 ## Extract the model used for initializing the whole family
+#' @importFrom stats glm.fit lm.fit poisson residuals coefficients
 initializePLN <- function(Y, X, O, control) {
 
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)

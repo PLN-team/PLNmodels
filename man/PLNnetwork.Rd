@@ -9,32 +9,28 @@
 PLNnetwork(Robject, ...)
 
 \method{PLNnetwork}{formula}(Robject, penalties = NULL, approx = FALSE,
-  control.init = list(), control.main = list())
+  control.init = list(), control.main = list(), ...)
 
 \method{PLNnetwork}{default}(Robject, X = matrix(1, nrow = nrow(Robject)),
   O = matrix(0, nrow(Robject), ncol(Robject)), penalties = NULL,
-  approx = FALSE, control.init = list(), control.main = list())
+  approx = FALSE, control.init = list(), control.main = list(), ...)
 }
 \arguments{
-\item{Robject}{an R object, either a formula or a matrix}
+\item{Robject}{an R object, either a formula or a (n x p) matrix of count data}
 
-\item{...}{additional parameters. Not used}
+\item{...}{additional parameters for S3 compatibility. Not used}
 
 \item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
 
-\item{approx}{a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to FALSE.}
+\item{control.init}{a list for controling the optimization at initialization. See details.}
 
-\item{control.init}{a list for controling the optimization of the initialization, that fits a standard PLN model with the \code{\link[=PLN]{PLN}} function. See details.}
+\item{control.main}{a list for controling the main optimization process. See details.}
 
-\item{control.main}{a list for controling the optimization. See details.}
+\item{X}{an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.}
 
-\item{X}{an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.}
+\item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
 
-\item{O}{an optional (n x p) matrix of offsets.}
-
-\item{formula}{a formula}
-
-\item{Y}{a (n x p) matrix of count data}
+\item{...}{additional parameters. Not used}
 }
 \value{
 an R6 object with class \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}}, which contains

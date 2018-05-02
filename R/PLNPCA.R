@@ -2,15 +2,13 @@
 ##'
 ##' @description two methods are available for specifing the models (with formulas or matrices)
 ##'
-##' @param formula a formula
-##' @param Y a (n x p) matrix of count data
-##' @param X an optional (n x d) matrix of covariates. Should include the intercept (a column of one) if the default method is used.
-##' @param O an optional (n x p) matrix of offsets.
+##' @param Robject an R object, either a formula or a (n x p) matrix of count data
+##' @param X an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.
+##' @param O an optional (n x p) matrix of offsets. Ignored when Robject is a formula.
 ##' @param ranks a vector of integer containing the successive ranks (or number of axes to be considered)
-##' @param control.init a list for controling the optimization. See details.
-##' @param control.main a list for controling the optimization. See details.
-##' @param Robject an R object, either a formula or a matrix
-##' @param ... additional parameters. Not used
+##' @param control.init a list for controling the optimization at initialization. See details.
+##' @param control.main a list for controling the main optimization process. See details.
+##' @param ... additional parameters for S3 compatibility. Not used
 ##'
 ##' @return an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
 ##' a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}

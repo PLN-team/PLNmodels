@@ -58,7 +58,7 @@ PLNnetworkfit <-
 
 #' @importFrom Matrix Matrix
 PLNnetworkfit$set("public", "latent_network",
-  function(type = c("support", "precision", "partial_cor")) {
+  function(type = c("partial_cor", "support", "precision")) {
     net <- switch(
       match.arg(type),
       "support"     = 1 * (private$Omega != 0 & !diag(TRUE, ncol(private$Omega))),
