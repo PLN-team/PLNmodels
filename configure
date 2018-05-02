@@ -5,13 +5,14 @@
 #
 # 02-05-2018 initial version: only working for linux
 
+PKG_CONFIG_NAME="nlopt"
 PKGCONFIG_DEB_NAME="pkg-config"
 PKGCONFIG_RPM_NAME="pkgconfig"
-PKG_CONFIG_NAME="nlopt"
+PKGCONFIG_BREW_NAME="pkg-config"
 PKG_DEB_NAME="libnlopt-dev"
 PKG_RPM_NAME="NLopt-devel"
-PKG_CSW_NAME=""
 PKG_BREW_NAME="nlopt"
+PKG_CSW_NAME=""
 PKG_TEST_HEADER="<nlopt.hpp>"
 
 # Use pkg-config if available
@@ -21,8 +22,10 @@ if [ $? -eq 0 ]; then
 else
   echo "------------------------- ANTICONF ERROR ---------------------------"
   echo "Configuration failed because pkg-config is not installed. Try installing: "
-  echo " * deb: $PKGCONFIG_DEB_NAME (Debian, Ubuntu)"
+  echo " * deb: sudo apt-get install $PKGCONFIG_DEB_NAME (Debian, Ubuntu)"
   echo " * rpm: $PKGCONFIG_RPM_NAME (Fedora, EPEL)"
+  echo " * brew: brew install $PKGCONFIG_BREW_NAME (MacOS with brew)"
+  echo " * otherwise: not available"
   echo "--------------------------------------------------------------------"
   exit 1;
 fi
@@ -38,7 +41,7 @@ if [ $? -ne 0 ]; then
   echo " * deb: sudo apt-get install $PKG_DEB_NAME (Debian, Ubuntu)"
   echo " * rpm: sudo yum install $PKG_RPM_NAME (Fedora, EPEL)"
   echo " * brew: brew install $PKG_RPM_NAME (MacOS with brew)"
-  echo " * otherwise: not yet available (get a real os ;-)"
+  echo " * otherwise: not yet available"
   echo "--------------------------------------------------------------------"
   exit 1;
 fi
