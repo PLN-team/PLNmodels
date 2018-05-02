@@ -1,4 +1,4 @@
-# PLNmodels: Poisson lognormal models
+# PLNmodels: Poisson lognormal models <img src="inst/sticker/PLNmodels.png" align="right" />
 
 ## Description
 
