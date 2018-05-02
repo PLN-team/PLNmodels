@@ -1,4 +1,4 @@
-# PLNmodels: Poisson lognormal models <img src="inst/sticker/PLNmodels.png" align="right" />
+# PLNmodels: Poisson lognormal models <img src="inst/sticker/PLNmodels.png" align="right" width = "155", height = "180"/>
 
 ## Description
 
