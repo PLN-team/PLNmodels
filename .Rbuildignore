@@ -4,3 +4,6 @@
 ^\.gitignore$
 ^\.Rhistory$
 ^README.md$
+^LICENSE$
+^.editorconfig$
+^src/Makevars$

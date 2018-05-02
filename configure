@@ -1,0 +1,47 @@
+#!/bin/bash
+# Julien Chiquet (2018) mainly stolen from Anticonf scripts by Jeroen Ooms
+#
+# This script will query 'pkg-config' for the required cflags and ldflags.
+#
+# 02-05-2018 initial version: only working for linux
+
+PKGCONFIG_DEB_NAME="pkg-config"
+PKGCONFIG_RPM_NAME="pkgconfig"
+PKG_CONFIG_NAME="nlopt"
+PKG_DEB_NAME="libnlopt-dev"
+PKG_RPM_NAME="NLopt-devel"
+PKG_CSW_NAME=""
+PKG_TEST_HEADER="<nlopt.hpp>"
+
+# Use pkg-config if available
+pkg-config --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+  NLOPT_LIBS=`pkg-config --libs ${PKG_CONFIG_NAME}`
+else
+  echo "------------------------- ANTICONF ERROR ---------------------------"
+  echo "Configuration failed because pkg-config is not installed. Try installing: "
+  echo " * deb: $PKGCONFIG_DEB_NAME (Debian, Ubuntu)"
+  echo " * rpm: $PKGCONFIG_RPM_NAME (Fedora, EPEL)"
+  echo "--------------------------------------------------------------------"
+  exit 1;
+fi
+
+# For debugging
+echo "Using NLOPT_LIBS=$NLOPT_LIBS"
+
+# Test for linblopt
+echo "#include $PKG_TEST_HEADER" >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "------------------------- ANTICONF ERROR ---------------------------"
+  echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
+  echo " * deb: $PKG_DEB_NAME (Debian, Ubuntu)"
+  echo " * rpm: $PKG_RPM_NAME (Fedora, EPEL)"
+  echo "--------------------------------------------------------------------"
+  exit 1;
+fi
+
+# Write to Makevars
+sed -e "s|@nlopt_libs@|$NLOPT_LIBS|" src/Makevars.in > src/Makevars
+
+# Success
+exit 0

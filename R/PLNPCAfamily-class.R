@@ -86,18 +86,18 @@ PLNPCAfamily$set("public", "optimize",
 
     xtol_abs <- c(rep(0, private$p*(private$d + model$rank) + private$n * model$rank),
                   rep(control$xtol_abs, private$n*model$rank))
-    if (control$nloptr) {
-      opts <- list("algorithm"   = paste("NLOPT_LD",control$method, sep = "_"),
-                   "maxeval"     = control$maxeval,
-                   "ftol_rel"    = control$ftol_rel,
-                   "ftol_abs"    = control$ftol_abs,
-                   "xtol_rel"    = control$xtol_rel,
-                   "xtol_abs"    = xtol_abs,
-                   "print_level" = max(0,control$trace - 1))
-
-      optim.out <- nloptr(par0, eval_f = private$fn_optim, lb = lower.bound, opts = opts,
-                          q = model$rank, Y = self$responses, X = self$covariates, O = self$offsets, KY = KY)
-    } else {
+    # if (control$nloptr) {
+    #   opts <- list("algorithm"   = paste("NLOPT_LD",control$method, sep = "_"),
+    #                "maxeval"     = control$maxeval,
+    #                "ftol_rel"    = control$ftol_rel,
+    #                "ftol_abs"    = control$ftol_abs,
+    #                "xtol_rel"    = control$xtol_rel,
+    #                "xtol_abs"    = xtol_abs,
+    #                "print_level" = max(0,control$trace - 1))
+    #
+    #   optim.out <- nloptr(par0, eval_f = private$fn_optim, lb = lower.bound, opts = opts,
+    #                       q = model$rank, Y = self$responses, X = self$covariates, O = self$offsets, KY = KY)
+    # } else {
       opts <- list(
         "algorithm"   = control$method,
         "maxeval"     = control$maxeval,
@@ -110,7 +110,7 @@ PLNPCAfamily$set("public", "optimize",
       ## Optimize via NLOPT directly
       optim.out <- optimization_PLNPCA(par0, self$responses, self$covariates, self$offsets, model$rank, opts)
       optim.out$message <- statusToMessage(optim.out$status)
-    }
+    # }
 
     ## ===========================================
     ## OUTPUT
