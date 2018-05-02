@@ -16,7 +16,6 @@
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
-#' @importFrom nloptr nloptr
 #' @import ggplot2
 #' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit-class]{PLNPCAfit}}
 PLNPCAfamily <-

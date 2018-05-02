@@ -33,7 +33,6 @@
 ##' ## See the vignette
 ##' @seealso The class  \code{\link[=PLNfit-class]{PLNfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
-##' @importFrom nloptr nloptr
 ##' @export
 PLN <- function(Robject, ...) UseMethod("PLN", Robject)
 
