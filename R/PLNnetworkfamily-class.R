@@ -14,7 +14,6 @@
 #' @field models a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.
 #' @field inception a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
-#' @field fn_optim the R functions used to compute the model's objective and gradient during the optimization process
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom glasso glasso
