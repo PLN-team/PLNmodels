@@ -136,9 +136,9 @@ function(covariates, offsets) {
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
 #' @export
-predict.PLNfit <- function(x, newdata, newOffsets, type = c("link", "response"), ...) {
-  stopifnot(isPLNfit(x))
-  x$predict(newdata, newOffsets, type)
+predict.PLNfit <- function(object, newdata, newOffsets, type = c("link", "response"), ...) {
+  stopifnot(isPLNfit(object))
+  object$predict(newdata, newOffsets, type)
 }
 
 PLNfit$set("public", "predict",
