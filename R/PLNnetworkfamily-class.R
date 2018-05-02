@@ -185,9 +185,9 @@ PLNnetworkfamily$set("public", "optimize",
 #' @param corr a logical, should the correlation (partial in case  precision = TRUE) be sent back. Default is \code{TRUE}.
 #'
 #' @return  Send back a tibble/data.frame.
-#' @export
+NULL
 PLNnetworkfamily$set("public", "coefficient_path",
-coefficient_path <- function(precision = TRUE, corr = TRUE) {
+function(precision = TRUE, corr = TRUE) {
   lapply(self$penalties, function(x) {
     if (precision) {
       G <- self$getModel(x)$model_par$Omega

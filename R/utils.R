@@ -84,6 +84,7 @@ g_legend<-function(a.gplot){
 }
 
 ## Pareil avec un grid.arrange?
+#' @importFrom grid grid.newpage pushViewport viewport grid.layout grid.draw
 multiplot <- function(..., legend=FALSE, plotlist=NULL, cols) {
 
   # Make a list from the ... arguments and plotlist
