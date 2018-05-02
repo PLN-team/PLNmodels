@@ -4,12 +4,14 @@
 \alias{plot.PLNfamily}
 \title{Display the criteria associated with a collection of PLN fits (a PLNfamily)}
 \usage{
-\method{plot}{PLNfamily}(x, criteria = c("loglik", "BIC", "ICL"))
+\method{plot}{PLNfamily}(x, criteria = c("loglik", "BIC", "ICL"), ...)
 }
 \arguments{
 \item{x}{an R6 object with class PLNfamily}
 
-\item{type}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik")
+\item{criteria}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik")}
+
+\item{...}{additional parameters for S3 compatibility. Not used
 The two last are only available por PLNnetworkfamily. Default is c("loglik", "BIC", "ICL")}
 }
 \value{

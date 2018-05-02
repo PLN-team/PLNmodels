@@ -8,12 +8,12 @@
 \usage{
 PLNnetwork(Robject, ...)
 
-\method{PLNnetwork}{formula}(Robject, penalties = NULL, approx = FALSE,
+\method{PLNnetwork}{formula}(Robject, penalties = NULL,
   control.init = list(), control.main = list(), ...)
 
 \method{PLNnetwork}{default}(Robject, X = matrix(1, nrow = nrow(Robject)),
   O = matrix(0, nrow(Robject), ncol(Robject)), penalties = NULL,
-  approx = FALSE, control.init = list(), control.main = list(), ...)
+  control.init = list(), control.main = list(), ...)
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a (n x p) matrix of count data}
@@ -29,8 +29,6 @@ PLNnetwork(Robject, ...)
 \item{X}{an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.}
 
 \item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
-
-\item{...}{additional parameters. Not used}
 }
 \value{
 an R6 object with class \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}}, which contains

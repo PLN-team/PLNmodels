@@ -9,13 +9,13 @@
 PLNnetwork_stabs(Robject, ...)
 
 \method{PLNnetwork_stabs}{formula}(Robject, penalties = NULL,
-  subsamples = NULL, approx = TRUE, control.init = list(),
-  control.main = list(), mc.cores = 1, ...)
+  subsamples = NULL, control.init = list(), control.main = list(),
+  mc.cores = 1, ...)
 
 \method{PLNnetwork_stabs}{default}(Robject, X = cbind(rep(1, nrow(Y))),
   O = matrix(0, nrow(Y), ncol(Y)), penalties = NULL, subsamples = NULL,
-  approx = TRUE, control.init = list(nPenalties = 10),
-  control.main = list(), mc.cores = 1, ...)
+  control.init = list(nPenalties = 10), control.main = list(),
+  mc.cores = 1, ...)
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a (n x p) matrix of count data}
@@ -25,8 +25,6 @@ PLNnetwork_stabs(Robject, ...)
 \item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
 
 \item{subsamples}{a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 100 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.}
-
-\item{approx}{a boolean for the type of optimization. if \code{FALSE}, perform the full alternating optimization scheme. if \code{TRUE} the fastest (yet approximated) two-step approach is used, first estimating a PLN model then applying graphical-Lasso on a grid of penalties. Default to TRUE.}
 
 \item{control.init}{a list for controling the optimization of the initialization, that fits a standard PLN model with the \code{\link[=PLN]{PLN}} function. See details.}
 

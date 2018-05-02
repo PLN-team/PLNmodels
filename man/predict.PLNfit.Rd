@@ -4,7 +4,8 @@
 \alias{predict.PLNfit}
 \title{Predict counts of a new sample}
 \usage{
-\method{predict}{PLNfit}(x, newdata, newOffsets, type = c("link", "response"))
+\method{predict}{PLNfit}(x, newdata, newOffsets, type = c("link", "response"),
+  ...)
 }
 \arguments{
 \item{x}{an R6 object with class PLNfit}
@@ -15,6 +16,8 @@
 
 \item{type}{The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
 the alternative "response" is on the scale of the response variable (i.e. average count)}
+
+\item{...}{additional parameters for S3 compatibility. Not used}
 }
 \value{
 A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").

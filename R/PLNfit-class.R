@@ -133,9 +133,10 @@ function(covariates, offsets) {
 #' @param newOffsets A matrix in which to look for offsets with which to predict.
 #' @param type       The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
 #'                   the alternative "response" is on the scale of the response variable (i.e. average count)
+#' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
 #' @export
-predict.PLNfit <- function(x, newdata, newOffsets, type = c("link", "response")) {
+predict.PLNfit <- function(x, newdata, newOffsets, type = c("link", "response"), ...) {
   stopifnot(isPLNfit(x))
   x$predict(newdata, newOffsets, type)
 }
@@ -165,9 +166,10 @@ PLNfit$set("public", "predict",
 #'
 #' @param x an R6 object with class PLNfit
 #' @param type character. Should the variational or the model parameters be plotted? default is "model".
+#' @param ... additional parameters for S3 compatibility. Not used
 #'
 #' @export
-plot.PLNfit <- function(x, type=c("model","variational")) {
+plot.PLNfit <- function(x, type=c("model","variational"), ...) {
   stopifnot(isPLNfit(x))
   x$plot(type)
 }

@@ -4,12 +4,14 @@
 \alias{plot.PLNfit}
 \title{Display the model parameters of a PLNfit in a matrix fashion}
 \usage{
-\method{plot}{PLNfit}(x, type = c("model", "variational"))
+\method{plot}{PLNfit}(x, type = c("model", "variational"), ...)
 }
 \arguments{
 \item{x}{an R6 object with class PLNfit}
 
 \item{type}{character. Should the variational or the model parameters be plotted? default is "model".}
+
+\item{...}{additional parameters for S3 compatibility. Not used}
 }
 \description{
 Display the model parameters of a PLNfit in a matrix fashion

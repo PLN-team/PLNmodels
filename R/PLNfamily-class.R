@@ -148,14 +148,15 @@ function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", 
 #' @name plot.PLNfamily
 #'
 #' @param x an R6 object with class PLNfamily
-#' @param type vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik")
+#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik")
+#' @param ... additional parameters for S3 compatibility. Not used
 #' The two last are only available por PLNnetworkfamily. Default is c("loglik", "BIC", "ICL")
 #'@return Produces a plot  representing the evolution of the criteria of the different models considered,
 #' highlighting the best model in terms of ICL for PLNPCA and EBIC for PLNnetwork.
 #'
 #' @import ggplot2
 #' @export
-plot.PLNfamily <- function(x, criteria = c("loglik", "BIC", "ICL")) {
+plot.PLNfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), ...) {
   stopifnot(isPLNfamily(x))
   x$plot(criteria)
 }
