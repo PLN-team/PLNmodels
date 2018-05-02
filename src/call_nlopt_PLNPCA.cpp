@@ -33,7 +33,6 @@ double fn_optim_PLNPCA(const std::vector<double> &x, std::vector<double> &grad, 
   return objective;
 }
 
-//' @export
 // [[Rcpp::export]]
 Rcpp::List optimization_PLNPCA (
     arma::vec par,

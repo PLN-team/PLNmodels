@@ -3,21 +3,21 @@
 #' @description The function \code{\link{PLNPCA}} produces an instance of this class.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=PLNPCAfamily_getBestModel]{getBestModel}},
-#' \code{\link[=PLNPCAfamily_getModel]{getModel}} and \code{\link[=PLNPCAfamily_plot]{plot}}. Other methods
-#'  should not be called as they are designed to be used during the optimization process.
+#' See the documentation for \code{\link[=PLNfamily_getBestModel]{getBestModel}},
+#' \code{\link[=PLNfamily_getModel]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
+#' and \code{\link[=predict.PLNfit]{predict}}.
 #'
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
 #' @field offsets the matrix of offsets common to every models
 #' @field ranks the dimensions of the successively fitted models
 #' @field models a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.
-#' @field inception a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when full rank is considered.
+#' @field inception a \code{\link[=PLNfit]{PLNfit}} object, obtained when full rank is considered.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @import ggplot2
-#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit-class]{PLNPCAfit}}
+#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 PLNPCAfamily <-
   R6Class(classname = "PLNPCAfamily",
     inherit = PLNfamily,

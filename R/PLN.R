@@ -8,7 +8,7 @@
 ##' @param control a list for controlling the optimization. See details.
 ##' @param ... additional parameters for S3 compatibility. Not used
 ##'
-##' @return an R6 object with class \code{\link[=PLNfit-class]{PLNfit}}
+##' @return an R6 object with class \code{\link[=PLNfit]{PLNfit}}
 ##'
 ##' @details The parameter \code{control} is a list controlling the optimization with the following entries
 ##' \itemize{
@@ -31,7 +31,7 @@
 ##' @include PLNfit-class.R
 ##' @examples
 ##' ## See the vignette
-##' @seealso The class  \code{\link[=PLNfit-class]{PLNfit}}
+##' @seealso The class  \code{\link[=PLNfit]{PLNfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
 PLN <- function(Robject, ...) UseMethod("PLN", Robject)

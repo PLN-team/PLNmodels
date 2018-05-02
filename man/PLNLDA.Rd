@@ -4,7 +4,7 @@
 \alias{PLNLDA}
 \alias{PLNLDA.formula}
 \alias{PLNLDA.default}
-\title{Fit a Poisson lognormal model towards LInear Disciminant Analysis}
+\title{Fit a Poisson lognormal model towards Linear Disciminant Analysis}
 \usage{
 PLNLDA(Robject, ...)
 
@@ -33,7 +33,7 @@ an R6 object with class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 two methods are available for specifing the models (with formulas or matrices)
 }
 \details{
-The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries
+The list of parameters \code{control} tunes the optimization of the intialization and the main process, with the following entries
 \itemize{
   \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
@@ -50,8 +50,8 @@ The list of parameters \code{control.init} and \code{control.main} control the o
 }
 }
 \examples{
-## See the vignette: vignette("trichoptera", package="PLNmodels")
+## See the vignette: vignette("PLNLDA_trichoptera", package="PLNmodels")
 }
 \seealso{
-The class \code{\link[=PLNPCAfit]{PLNLDAfit}}
+The class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 }

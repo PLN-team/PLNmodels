@@ -1,10 +1,10 @@
 #' An R6 Class to represent a PLNfit in a LDA framework
 #'
-#' @description The function \code{\link{PLNPCA}} produces a collection of models which are instances of object with class \code{PLNPCAfit}.
+#' @description The function \code{\link{PLNLDA}} produces an instance of an object with class \code{PLNPLDAfit}.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=PLNPCAfit_plot_PCA]{plot_PCA}}, \code{\link[=PLNPCAfit_plot_individual_map]{plot_individual_map}}
-#' and \code{\link[=PLNPCAfit_plot_correlation_circle]{plot_correlation_circle}}
+#' See the documentation for \code{\link[=PLNLDAfit_plot_LDA]{plot_LDA}}, \code{\link[=PLNLDAfit_plot_individual_map]{plot_individual_map}}
+#' and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
 #'
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
@@ -19,7 +19,7 @@
 #' @field scores a matrix of scores to plot the individual factor maps
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
-#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNfamily]{PLNfamily}}
+#' @seealso The function \code{\link{PLNPCA}}.
 PLNLDAfit <-
   R6Class(classname = "PLNLDAfit",
     inherit = PLNfit,
@@ -75,7 +75,7 @@ PLNLDAfit <-
 
 #' Plot the individual map of a specified axis for a \code{PLNLDAfit} object
 #'
-#' @name PLNLDAfit_plot_individual.map
+#' @name PLNLDAfit_plot_individual_map
 #' @param axes numeric, the axes to use for the plot. Default it c(1,2)
 #' @param main character, the title. Default is "Individual Factor Map"
 #' @param plot logical. Should the plot be displayed or sent back as a ggplot object
@@ -115,9 +115,9 @@ PLNLDAfit$set("public", "plot_individual_map",
     invisible(p)
 })
 
-#' Plot the correlation circle of a specified axis for a \code{PLNPCAfit} object
+#' Plot the correlation circle of a specified axis for a \code{PLNLDAfit} object
 #'
-#' @name PLNPCAfit_plot_correlation_circle
+#' @name PLNLDAfit_plot_correlation_circle
 #' @param axes numeric, the axes to use for the plot. Default it c(1,2)
 #' @param main character, the title. Default is "Variable Factor map"
 #' @param plot logical. Should the plot be displayed or sent back (ggplot object)
@@ -158,9 +158,9 @@ PLNLDAfit$set("public", "plot_correlation_circle",
 
 })
 
-#' Plot a summary of the current \code{PLNPCAfit} object
+#' Plot a summary of the current \code{PLNLDAfit} object
 #'
-#' @name PLNPCAfit_plot
+#' @name PLNLDAfit_plot_LDA
 #' @param axes numeric a vector of axes to be considered. The default is 1:min(3,rank).
 #' @param plot logical. Should the plot be displayed or sent back (ggplot object)
 #' @param var.cols a character, factor or numeric to define the color associated with the variables. Default is "gray"

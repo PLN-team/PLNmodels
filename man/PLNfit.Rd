@@ -10,7 +10,7 @@ PLNfit
 }
 \description{
 The function \code{\link{PLN}} produces a collection of models which are instances of object with class \code{PLNfit}.
-Objects produced by the functions \code{\link{PLNnetwork}} and \code{\link{PLNPCA}} also enjoy the method of \code{\link{PLNfit}}
+Objects produced by the functions \code{\link{PLNnetwork}}, \code{\link{PLNPCA}} and \code{\link{PLNLDA}} also enjoy the method of \code{\link{PLNfit}}
 by inheritance.
 
 This class comes with a set of methods, some of them being useful for the user: plot_model, plot_variational_par

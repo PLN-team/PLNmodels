@@ -21,7 +21,7 @@
 #' @field scores a matrix of scores to plot the individual factor maps
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
-#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNfamily]{PLNfamily}}
+#' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}
 PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
@@ -92,7 +92,7 @@ function(covariates, offsets) {
 
 #' Plot the individual map of a specified axis for a \code{PLNPCAfit} object
 #'
-#' @name PLNPCAfit_plot_individual.map
+#' @name PLNPCAfit_plot_individual_map
 #' @param axes numeric, the axes to use for the plot. Default it c(1,2)
 #' @param main character, the title. Default is "Individual Factor Map"
 #' @param plot logical. Should the plot be displayed or sent back as a ggplot object
@@ -176,7 +176,7 @@ PLNPCAfit$set("public", "plot_correlation_circle",
 
 #' Plot a summary of the current \code{PLNPCAfit} object
 #'
-#' @name PLNPCAfit_plot
+#' @name PLNPCAfit_plot_PCA
 #' @param axes numeric a vector of axes to be considered. The default is 1:min(3,rank).
 #' @param plot logical. Should the plot be displayed or sent back (ggplot object)
 #' @param cols.ind a character, factor or numeric to define the color associated with the individuals. Default is "gray"

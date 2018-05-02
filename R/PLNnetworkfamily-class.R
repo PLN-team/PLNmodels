@@ -3,21 +3,22 @@
 #' @description The function \code{\link{PLNnetwork}} produces an instance of this class.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=PLNnetworkfamily_getBestModel]{getBestModel}},
-#' \code{\link[=PLNnetworkfamily_getModel]{getModel}} and \code{\link[=PLNnetworkfamily_plot]{plot}}.
+#' See the documentation for \code{\link[=PLNfamily_getBestModel]{getBestModel}},
+#' \code{\link[=PLNfamily_getModel]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
+#' and \code{\link[=predict.PLNfit]{predict}}.
 #'
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
 #' @field offsets the matrix of offsets common to every models
 #' @field penalties the sparsity level of the network in the successively fitted models
-#' @field models a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.
-#' @field inception a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when no sparsifying penalty is applied.
+#' @field models a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.
+#' @field inception a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @field fn_optim the R functions used to compute the model's objective and gradient during the optimization process
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom glasso glasso
-#' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
+#' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 PLNnetworkfamily <-
   R6Class(classname = "PLNnetworkfamily",
     inherit = PLNfamily,

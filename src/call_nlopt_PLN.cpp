@@ -32,7 +32,6 @@ double fn_optim_PLN(const std::vector<double> &x, std::vector<double> &grad, voi
   return objective;
 }
 
-//' @export
 // [[Rcpp::export]]
 Rcpp::List optimization_PLN(
     arma::vec par,

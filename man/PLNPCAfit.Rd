@@ -46,6 +46,6 @@ and \code{\link[=PLNPCAfit_plot_correlation_circle]{plot_correlation_circle}}
 }}
 
 \seealso{
-The function \code{\link{PLNPCA}}, the class \code{\link[=PLNfamily]{PLNfamily}}
+The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}
 }
 \keyword{datasets}

@@ -4,7 +4,7 @@ author: "Julien Chiquet"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{PLN}
+  %\VignetteIndexEntry{PLNLDA}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

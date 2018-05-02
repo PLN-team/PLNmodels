@@ -8,6 +8,8 @@
   "response"), ...)
 }
 \arguments{
+\item{object}{an R6 object with class PLNfit}
+
 \item{newdata}{A data frame in which to look for variables with which to predict.}
 
 \item{newOffsets}{A matrix in which to look for offsets with which to predict.}
@@ -16,8 +18,6 @@
 the alternative "response" is on the scale of the response variable (i.e. average count)}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
-
-\item{x}{an R6 object with class PLNfit}
 }
 \value{
 A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").

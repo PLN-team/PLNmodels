@@ -31,8 +31,8 @@ PLNnetwork(Robject, ...)
 \item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
 }
 \value{
-an R6 object with class \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}}, which contains
-a collection of models with class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
+an R6 object with class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}, which contains
+a collection of models with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 }
 \description{
 two methods are available for specifying the models (with formulas or matrices)
@@ -71,5 +71,5 @@ The following parameter are specific to main iterative process
 ## See the vignette
 }
 \seealso{
-The classes \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
+The classes \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 }

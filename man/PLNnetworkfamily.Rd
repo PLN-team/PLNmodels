@@ -12,8 +12,9 @@ PLNnetworkfamily
 The function \code{\link{PLNnetwork}} produces an instance of this class.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNnetworkfamily_getBestModel]{getBestModel}},
-\code{\link[=PLNnetworkfamily_getModel]{getModel}} and \code{\link[=PLNnetworkfamily_plot]{plot}}.
+See the documentation for \code{\link[=PLNfamily_getBestModel]{getBestModel}},
+\code{\link[=PLNfamily_getModel]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
+and \code{\link[=predict.PLNfit]{predict}}.
 }
 \section{Fields}{
 
@@ -26,9 +27,9 @@ See the documentation for \code{\link[=PLNnetworkfamily_getBestModel]{getBestMod
 
 \item{\code{penalties}}{the sparsity level of the network in the successively fitted models}
 
-\item{\code{models}}{a list of \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} object, one per penalty.}
+\item{\code{models}}{a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.}
 
-\item{\code{inception}}{a \code{\link[=PLNfit-class]{PLNfit}} object, obtained when no sparsifying penalty is applied.}
+\item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.}
 
 \item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 
@@ -36,6 +37,6 @@ See the documentation for \code{\link[=PLNnetworkfamily_getBestModel]{getBestMod
 }}
 
 \seealso{
-The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
+The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 }
 \keyword{datasets}

@@ -11,6 +11,7 @@ PKG_CONFIG_NAME="nlopt"
 PKG_DEB_NAME="libnlopt-dev"
 PKG_RPM_NAME="NLopt-devel"
 PKG_CSW_NAME=""
+PKG_BREW_NAME="nlopt"
 PKG_TEST_HEADER="<nlopt.hpp>"
 
 # Use pkg-config if available
@@ -34,8 +35,10 @@ echo "#include $PKG_TEST_HEADER" >/dev/null 2>&1
 if [ $? -ne 0 ]; then
   echo "------------------------- ANTICONF ERROR ---------------------------"
   echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
-  echo " * deb: $PKG_DEB_NAME (Debian, Ubuntu)"
-  echo " * rpm: $PKG_RPM_NAME (Fedora, EPEL)"
+  echo " * deb: sudo apt-get install $PKG_DEB_NAME (Debian, Ubuntu)"
+  echo " * rpm: sudo yum install $PKG_RPM_NAME (Fedora, EPEL)"
+  echo " * brew: brew install $PKG_RPM_NAME (MacOS with brew)"
+  echo " * otherwise: not yet available (get a real os ;-)"
   echo "--------------------------------------------------------------------"
   exit 1;
 fi

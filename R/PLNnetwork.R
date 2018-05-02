@@ -10,8 +10,8 @@
 ##' @param control.main a list for controling the main optimization process. See details.
 ##' @param ... additional parameters for S3 compatibility. Not used
 ##'
-##' @return an R6 object with class \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}}, which contains
-##' a collection of models with class \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
+##' @return an R6 object with class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}, which contains
+##' a collection of models with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 ##'
 ##' @details The list of parameters \code{control.init} and \code{control.main} control the optimization of the initialization and the main process.
 ##'
@@ -45,7 +45,7 @@
 ##' @rdname PLNnetwork
 ##' @examples
 ##' ## See the vignette
-##' @seealso The classes \code{\link[=PLNnetworkfamily-class]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}}
+##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
 PLNnetwork <- function(Robject, ...) UseMethod("PLNnetwork", Robject)

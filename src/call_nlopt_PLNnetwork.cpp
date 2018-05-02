@@ -32,7 +32,6 @@ double fn_optim_PLNnetwork(const std::vector<double> &x, std::vector<double> &gr
   return objective;
 }
 
-//' @export
 // [[Rcpp::export]]
 Rcpp::List optimization_PLNnetwork (
     arma::vec par,

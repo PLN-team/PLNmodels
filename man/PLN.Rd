@@ -25,7 +25,7 @@ PLN(Robject, ...)
 \item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
 }
 \value{
-an R6 object with class \code{\link[=PLNfit-class]{PLNfit}}
+an R6 object with class \code{\link[=PLNfit]{PLNfit}}
 }
 \description{
 two methods are available for specifying the models (with formulas or matrices)
@@ -52,5 +52,5 @@ The parameter \code{control} is a list controlling the optimization with the fol
 ## See the vignette
 }
 \seealso{
-The class  \code{\link[=PLNfit-class]{PLNfit}}
+The class  \code{\link[=PLNfit]{PLNfit}}
 }

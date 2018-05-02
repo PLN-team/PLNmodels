@@ -1,4 +1,4 @@
-##' @title Fit a Poisson lognormal model towards LInear Disciminant Analysis
+##' @title Fit a Poisson lognormal model towards Linear Disciminant Analysis
 ##'
 ##' @description two methods are available for specifing the models (with formulas or matrices)
 ##'
@@ -11,7 +11,7 @@
 ##'
 ##' @return an R6 object with class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 ##'
-##' @details The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries
+##' @details The list of parameters \code{control} tunes the optimization of the intialization and the main process, with the following entries
 ##' \itemize{
 ##'   \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
 ##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
@@ -29,8 +29,8 @@
 ##'
 ##' @rdname PLNLDA
 ##' @examples
-##' ## See the vignette: vignette("trichoptera", package="PLNmodels")
-##' @seealso The class \code{\link[=PLNPCAfit]{PLNLDAfit}}
+##' ## See the vignette: vignette("PLNLDA_trichoptera", package="PLNmodels")
+##' @seealso The class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
 PLNLDA <- function(Robject, ...)

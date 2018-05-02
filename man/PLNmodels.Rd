@@ -6,16 +6,12 @@
 \alias{PLNmodels-package}
 \title{PLNmodels}
 \description{
-Implements probabilistic PCA for count data via a Poisson log-normal model. Can use covariates
-and offset on top of the main observation matrix in a GLM setup. The algorithm relies on variational
-inference which is performed by maximizing a bi-convex function with the L-BFGS-B method.
+The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including
+PCA or LDA for count data, network inference). This package implements efficients
+variational algorithms to fit such models accompanied with a set of functions for vizualisation and diagnostic.
 }
-\details{
-Try vignette("trichoptera", package="PLNmodels") for an (not yet comprehensive) example.
-
-The main function is \code{\link{PLNPCA}} which produces two kinds of Reference Class objects,
-\code{\link[=PLNfamily-class]{PLNfamily}} and \code{\link[=PLNfit.PCA-class]{PLNfit.PCA}}. See their
-documentation and the associated methods for manipulation.
+\references{
+Julien Chiquet, Mahendra Mariadassou and Stéphane Robin. Variational inference for probabilistic Poisson PCA, to appear in the Annals of Applied Statistics <https://arxiv.org/abs/1703.06633>
 }
 \author{
 Julien Chiquet \email{julien.chiquet@inra.fr}

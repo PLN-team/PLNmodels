@@ -1,7 +1,7 @@
 #' An R6 Class to represent a PLNfit in a standard, general framework
 #'
 #' @description The function \code{\link{PLN}} produces a collection of models which are instances of object with class \code{PLNfit}.
-#' Objects produced by the functions \code{\link{PLNnetwork}} and \code{\link{PLNPCA}} also enjoy the method of \code{\link{PLNfit}}
+#' Objects produced by the functions \code{\link{PLNnetwork}}, \code{\link{PLNPCA}} and \code{\link{PLNLDA}} also enjoy the method of \code{\link{PLNfit}}
 #' by inheritance.
 #'
 #' This class comes with a set of methods, some of them being useful for the user: plot_model, plot_variational_par
@@ -128,7 +128,7 @@ function(covariates, offsets) {
 #'
 #' @name predict.PLNfit
 #'
-#' @param x an R6 object with class PLNfit
+#' @param object an R6 object with class PLNfit
 #' @param newdata    A data frame in which to look for variables with which to predict.
 #' @param newOffsets A matrix in which to look for offsets with which to predict.
 #' @param type       The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);

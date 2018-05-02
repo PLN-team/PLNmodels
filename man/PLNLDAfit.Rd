@@ -9,11 +9,11 @@
 PLNLDAfit
 }
 \description{
-The function \code{\link{PLNPCA}} produces a collection of models which are instances of object with class \code{PLNPCAfit}.
+The function \code{\link{PLNLDA}} produces an instance of an object with class \code{PLNPLDAfit}.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNPCAfit_plot_PCA]{plot_PCA}}, \code{\link[=PLNPCAfit_plot_individual_map]{plot_individual_map}}
-and \code{\link[=PLNPCAfit_plot_correlation_circle]{plot_correlation_circle}}
+See the documentation for \code{\link[=PLNLDAfit_plot_LDA]{plot_LDA}}, \code{\link[=PLNLDAfit_plot_individual_map]{plot_individual_map}}
+and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
 }
 \section{Fields}{
 
@@ -42,6 +42,6 @@ and \code{\link[=PLNPCAfit_plot_correlation_circle]{plot_correlation_circle}}
 }}
 
 \seealso{
-The function \code{\link{PLNPCA}}, the class \code{\link[=PLNfamily]{PLNfamily}}
+The function \code{\link{PLNPCA}}.
 }
 \keyword{datasets}
