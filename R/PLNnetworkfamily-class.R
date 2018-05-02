@@ -49,8 +49,6 @@ PLNnetworkfamily$set("public", "initialize",
       PLNnetworkfit$new(penalty = penalty)
     })
 
-    ## declare the objective and gradient functions for optimization
-    private$fn_optim <- fn_optim_PLNnetwork_Cpp
 })
 
 # One (coordinate-descent) optimization for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
@@ -86,10 +84,9 @@ PLNnetworkfamily$set("public", "optimize",
                "xtol_rel"    = control$xtol_rel,
                "xtol_abs"    = xtol_abs,
                "print_level" = max(0,control$trace - 2))
-  # if (!control$nloptr) {
-    opts$algorithm   <- control$method
-    opts$lower_bound <- lower.bound
-  # }
+  opts$algorithm   <- control$method
+  opts$lower_bound <- lower.bound
+
   ## ===========================================
   ## GO ALONG THE PENALTY GRID (i.e the models)
   for (m in seq_along(self$models))  {
@@ -126,15 +123,8 @@ PLNnetworkfamily$set("public", "optimize",
 
       ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
       logDetOmega <- as.double(determinant(Omega, logarithm = TRUE)$modulus)
-      # if (control$nloptr) {
-      #   optim.out <- nloptr(par0, eval_f = private$fn_optim, lb = lower.bound, opts = opts,
-      #                       log_detOmega = logDetOmega, Omega = Omega,
-      #                       Y = self$responses, X = self$covariates, O = self$offsets, KY = KY)
-      # } else {
-        ## Optimize via NLOPT directly
-        optim.out <- optimization_PLNnetwork(par0, self$responses, self$covariates, self$offsets, Omega, logDetOmega, opts)
-        optim.out$message <- statusToMessage(optim.out$status)
-      # }
+      optim.out <- optimization_PLNnetwork(par0, self$responses, self$covariates, self$offsets, Omega, logDetOmega, opts)
+      optim.out$message <- statusToMessage(optim.out$status)
       objective[iter]   <- optim.out$objective + penalty * sum(abs(Omega))
       convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
 

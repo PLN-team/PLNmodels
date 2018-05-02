@@ -74,41 +74,20 @@ PLN.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O = matrix
   if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
 
   par0 <- c(par0$Theta, par0$M, par0$S)
-  # if (ctrl$nloptr) {
-  #   ## Set optimization options
-  #   opts <- list(
-  #     "algorithm"   = paste("NLOPT_LD",ctrl$method, sep="_"),
-  #     "maxeval"     = ctrl$maxeval,
-  #     "ftol_rel"    = ctrl$ftol_rel,
-  #     "ftol_abs"    = ctrl$ftol_abs,
-  #     "xtol_rel"    = ctrl$xtol_rel,
-  #     "xtol_abs"    = c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
-  #     "print_level" = max(0,ctrl$trace-1)
-  #   )
-  #   ## Optimize via NLOPTR
-  #   KY <- sum(.logfactorial(Y)) ## constant that will remain the same
-  #   optim.out <- nloptr(
-  #     par0,
-  #     eval_f = fn_optim_PLN_Cpp,
-  #     lb = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
-  #     opts = opts,
-  #     Y = Y, X = X, O = O, KY = KY
-  #   )
-  # } else {
-    ## Set optimization options
-    opts <- list(
-      "algorithm"   = ctrl$method,
-      "maxeval"     = ctrl$maxeval,
-      "ftol_rel"    = ctrl$ftol_rel,
-      "ftol_abs"    = ctrl$ftol_abs,
-      "xtol_rel"    = ctrl$xtol_rel,
-      "xtol_abs"    = c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
-      "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
-    )
-    ## Optimize via NLOPT directly
-    optim.out <- optimization_PLN(par0, Y, X, O, opts)
-    optim.out$message <- statusToMessage(optim.out$status)
-  # }
+
+  opts <- list(
+    "algorithm"   = ctrl$method,
+    "maxeval"     = ctrl$maxeval,
+    "ftol_rel"    = ctrl$ftol_rel,
+    "ftol_abs"    = ctrl$ftol_abs,
+    "xtol_rel"    = ctrl$xtol_rel,
+    "xtol_abs"    = c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
+    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
+  )
+
+  optim.out <- optimization_PLN(par0, Y, X, O, opts)
+  optim.out$message <- statusToMessage(optim.out$status)
+
   ## ===========================================
   ## POST-TREATMENT
   ##

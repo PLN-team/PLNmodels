@@ -16,18 +16,3 @@ optimization_PLNPCA <- function(par, Y, X, O, rank, options) {
     .Call('_PLNmodels_optimization_PLNPCA', PACKAGE = 'PLNmodels', par, Y, X, O, rank, options)
 }
 
-#' @export
-fn_optim_PLN_Cpp <- function(par, Y, X, O, KY) {
-    .Call('_PLNmodels_fn_optim_PLN_Cpp', PACKAGE = 'PLNmodels', par, Y, X, O, KY)
-}
-
-#' @export
-fn_optim_PLNnetwork_Cpp <- function(par, log_detOmega, Omega, Y, X, O, KY) {
-    .Call('_PLNmodels_fn_optim_PLNnetwork_Cpp', PACKAGE = 'PLNmodels', par, log_detOmega, Omega, Y, X, O, KY)
-}
-
-#' @export
-fn_optim_PLNPCA_Cpp <- function(par, q, Y, X, O, KY) {
-    .Call('_PLNmodels_fn_optim_PLNPCA_Cpp', PACKAGE = 'PLNmodels', par, q, Y, X, O, KY)
-}
-

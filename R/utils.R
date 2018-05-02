@@ -116,7 +116,6 @@ multiplot <- function(..., legend=FALSE, plotlist=NULL, cols) {
 
 PLN_param <- function(control, n, p) {
   ctrl <- list(
-    nloptr    = FALSE,
     ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
     ftol_abs  = 0,
     xtol_rel  = 1e-4,
@@ -128,7 +127,6 @@ PLN_param <- function(control, n, p) {
     inception = "LM"
   )
   ctrl[names(control)] <- control
-  if (ctrl$nloptr & is.null(control$method)) ctrl$method <- "MMA"
   ctrl
 }
 
@@ -137,7 +135,6 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
 
   ctrl <- switch(match.arg(type),
     "init" = list(
-      nloptr    = FALSE,
       inception = ifelse(n >= 1.5*p, "PLN", "LM"),
       ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
       ftol_abs = 0,
@@ -149,7 +146,6 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
       trace    = 0
     ),
     "main" = list(
-      nloptr    = FALSE,
       ftol_rel = 1e-6,
       ftol_abs = 0,
       xtol_rel = 1e-4,
@@ -162,7 +158,6 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
     )
   )
   ctrl[names(control)] <- control
-  if (ctrl$nloptr & is.null(control$method)) ctrl$method <- "MMA"
   ctrl
 }
 
@@ -171,7 +166,6 @@ PLNnetwork_param <- function(control, n, p, type = c("init", "main")) {
 
   ctrl <- switch(match.arg(type),
     "init" = list(
-      nloptr    = FALSE,
       inception = ifelse(n >= 1.5*p, "PLN", "LM"),
       ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
       ftol_abs = 0,
@@ -184,7 +178,6 @@ PLNnetwork_param <- function(control, n, p, type = c("init", "main")) {
       min.ratio = ifelse(n >= 1.5*p, 0.1, 0.05),
       trace = 0),
     "main" = list(
-      nloptr    = FALSE,
       ftol_out  = 1e-5,
       maxit_out = 50,
       penalize.diagonal = FALSE,
@@ -199,7 +192,6 @@ PLNnetwork_param <- function(control, n, p, type = c("init", "main")) {
       trace = 1)
   )
   ctrl[names(control)] <- control
-  if (ctrl$nloptr & is.null(control$method)) ctrl$method <- "MMA"
   ctrl
 }
 
