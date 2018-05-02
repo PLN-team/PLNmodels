@@ -80,8 +80,7 @@ PLNnetwork.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O =
 
   ## Main optimization
   if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")
-  if (ctrl.main$trace & approx) cat("\tTwo-step approach applying Graphical-Lasso on the inceptive PLN fit.\n")
-  if (ctrl.main$trace & !approx) cat("\tJoint optimization alternating gradient descent and graphical-lasso\n")
+  if (ctrl.main$trace) cat("\tJoint optimization alternating gradient descent and graphical-lasso\n")
   myPLN$optimize(ctrl.main)
 
   ## Post-treatments: compute pseudo-R2

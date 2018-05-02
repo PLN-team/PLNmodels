@@ -65,14 +65,14 @@ We can represent the coefficient path (i.e., value of the edge in the network ac
 ```{r path_coeff, fig.width=7, fig.height=7}
 library(ggplot2)
 path <- models$coefficient_path(corr = FALSE)
-ggplot(path, aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + geom_line(show.legend = FALSE) + theme_bw()
+ggplot(path, aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + geom_line(show.legend = FALSE) +  coord_trans(x="log10") + theme_bw()
 ```
 
 An alternative and more intuitive view consiste in plotting the values of the partial correlation along the path.
 
 ```{r path_corr, fig.width=7, fig.height=7}
 path <- models$coefficient_path(corr = TRUE)
-ggplot(path, aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + geom_line(show.legend = FALSE) + theme_bw()
+ggplot(path, aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + geom_line(show.legend = FALSE) + coord_trans(x="log10") + theme_bw()
 ```
 
 #### Model selection issue
