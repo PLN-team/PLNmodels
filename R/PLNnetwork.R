@@ -66,13 +66,18 @@ PLNnetwork.formula <- function(Robject, penalties = NULL, control.init = list(),
 
 ##' @rdname PLNnetwork
 ##' @export
-PLNnetwork.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O = matrix(0, nrow(Robject), ncol(Robject)),
-                               penalties = NULL, control.init = list(), control.main=list(), ...) {
+PLNnetwork.default <- function(Robject, X = NULL, O = NULL, penalties = NULL,
+                               control.init = list(), control.main=list(), ...) {
 
-  Y <- Robject; rm(Robject) # no copy made
+  Y <- as.matrix(Robject); rm(Robject) # no copy made
+  ## problem dimensions
+  n  <- nrow(Y); p <- ncol(Y)
+  if (is.null(X)) X <- matrix(1, n, 1)
+  if (is.null(O)) O <- matrix(0, n, p)
+
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl.init <- PLNnetwork_param(control.init, nrow(Y), ncol(Y), "init")
-  ctrl.main <- PLNnetwork_param(control.main, nrow(Y), ncol(Y), "main")
+  ctrl.init <- PLNnetwork_param(control.init, n, p, "init")
+  ctrl.main <- PLNnetwork_param(control.main, n, p, "main")
 
   ## Instantiate the collection of PLN models
   if (ctrl.main$trace > 0) cat("\n Initialization...")

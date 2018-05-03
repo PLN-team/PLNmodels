@@ -52,14 +52,17 @@ PLN.formula <- function(Robject, control = list(), ...) {
 
 ##' @rdname PLN
 ##' @export
-PLN.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O = matrix(0, nrow(Robject), ncol(Robject)), control = list(), ...) {
+PLN.default <- function(Robject, X = NULL, O = NULL, control = list(), ...) {
 
-  Y <- Robject; rm(Robject)
+  Y <- as.matrix(Robject); rm(Robject)
   ## ===========================================
   ## INITIALIZATION
   ##
   ## problem dimensions
-  n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
+  n  <- nrow(Y); p <- ncol(Y)
+  if (is.null(X)) X <- matrix(1, n, 1)
+  if (is.null(O)) O <- matrix(0, n, p)
+  d <- ncol(X)
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- PLN_param(control, n, p)

@@ -3,7 +3,7 @@
 ##' @description two methods are available for specifing the models (with formulas or matrices)
 ##'
 ##' @param Robject either (n x p) matrix of count data (used with argument grouping) or a formula to describe the relationship between the count matrix and the covariates (apart from the grouping)
-##' @param X an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.
+##' @param X an optional (n x d) matrix of covariates. Default is NULL (no covariate). Ignored when Robject is a formula.
 ##' @param O an optional (n x p) matrix of offsets. Ignored when Robject is a formula.
 ##' @param grouping a factor specifying the class fo< each observation used for disciminant analysis. Ignored when Robject is a formula.
 ##' @param control a list for controling the optimization process. See details.
@@ -33,12 +33,12 @@
 ##' @seealso The class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNLDA <- function(Robject, ...)
+PLNLDA <- function(Robject, grouping, ...)
   UseMethod("PLNLDA", Robject)
 
 ##' @rdname PLNLDA
 ##' @export
-PLNLDA.formula <- function(Robject, grouping, control, ...) {
+PLNLDA.formula <- function(Robject, grouping, control = list(), ...) {
 
   formula <- Robject
   frame  <- model.frame(formula)
@@ -57,20 +57,23 @@ PLNLDA.formula <- function(Robject, grouping, control, ...) {
 
 ##' @rdname PLNLDA
 ##' @export
-PLNLDA.default <- function(Robject, grouping, X = NULL, O = matrix(0, nrow(Y), ncol(Y)),  control = list(), ...) {
+PLNLDA.default <- function(Robject, grouping, X = NULL, O = NULL,  control = list(), ...) {
 
-  Y <- Robject; rm(Robject) # no copy made
+  Y <- as.matrix(Robject); rm(Robject) # no copy made
+  ## problem dimensions
+  n  <- nrow(Y); p <- ncol(Y)
+  if (is.null(X)) X <- matrix(0, n, 0) else X <- as.matrix(X)
+  if (is.null(O)) O <- matrix(0, n, p)
+  d <- ncol(X)
+
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- PLN_param(control, nrow(Y), ncol(Y))
-  Y <- as.matrix(Y)
-  if (!is.null(X)) X <- as.matrix(X)
+  ctrl <- PLN_param(control, n, p)
 
-  ## stopifnot(nrow(Y) > ncol(Y))
   if (ctrl$trace > 0) cat("\n Initialization...")
   design_group <- model.matrix( ~as.factor(grouping)+0)
   design_full <- cbind(X, design_group)
   myPLN <- PLN(Y, design_full, O, control = ctrl)
-  if (!is.null(X)) {
+  if (d > 0) {
     P <- (diag(nrow(X)) - X %*% solve(crossprod(X)) %*% t(X)) %*% myPLN$latent_pos(design_full, matrix(0, myPLN$n, myPLN$q))
     Theta <- t(rowsum(P, grouping) / tabulate(grouping))
   } else {

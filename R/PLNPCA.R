@@ -53,13 +53,18 @@ PLNPCA.formula <- function(Robject, ranks = 1:5,  control.init = list(), control
 
 ##' @rdname PLNPCA
 ##' @export
-PLNPCA.default <- function(Robject, X = matrix(1, nrow = nrow(Robject)), O = matrix(0, nrow(Robject), ncol(Robject)),
-                           ranks = 1:5,  control.init = list(), control.main = list(), ...) {
+PLNPCA.default <- function(Robject, X = NULL, O = NULL, ranks = 1:5,
+                           control.init = list(), control.main = list(), ...) {
 
-  Y <- Robject; rm(Robject) # no copy made
+  Y <- as.matrix(Robject); rm(Robject) # no copy made
+  ## problem dimensions
+  n  <- nrow(Y); p <- ncol(Y)
+  if (is.null(X)) X <- matrix(1, n, 1)
+  if (is.null(O)) O <- matrix(0, n, p)
+
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl.init <- PLNPCA_param(control.init, nrow(Y), ncol(Y), "init")
-  ctrl.main <- PLNPCA_param(control.main, nrow(Y), ncol(Y), "main")
+  ctrl.init <- PLNPCA_param(control.init, n, p, "init")
+  ctrl.main <- PLNPCA_param(control.main, n, p, "main")
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank
   if (ctrl.main$trace > 0) cat("\n Initialization...")
