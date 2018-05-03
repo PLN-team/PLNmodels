@@ -20,7 +20,7 @@ We start by adjusting the above model to Trichoptera data set. Here, the matrix 
 
 ```{r}
 abundance <- as.matrix(trichometeo$fau) ## must be a matrix
-night_grp <- as.character(trichometeo$cla) ## must be a factor
+night_grp <- as.factor(trichometeo$cla) 
 myLDA_nocov <- PLNLDA(abundance, grouping = night_grp)
 ```
 
@@ -42,7 +42,7 @@ It is possible (experimental) to correct for other covariates before finding the
 abundance <- as.matrix(trichometeo$fau) ## must be a matrix
 night_grp <- as.factor(trichometeo$cla) ## must be a factor
 covariates <- as.matrix(trichometeo$meteo) ## must be a matrix
-myLDA_cov <- PLNLDA(abundance, X = covariates, grouping = night_grp)
+myLDA_cov <- PLNLDA(abundance, night_grp, covariates)
 ```
 
 ```{r plot_model_cov, fig.width=7, fig.height=5}

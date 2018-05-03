@@ -7,7 +7,7 @@ library(ade4)
 data("trichometeo")
 
 abundance <- as.matrix(trichometeo$fau)
-night_grp <- as.character(trichometeo$cla)
+night_grp <- as.factor(trichometeo$cla)
 
 profiling1 <- profr::profr(model1 <- PLNLDA(abundance, night_grp))
 profiling2 <- profr::profr(model2 <- PLNLDA(abundance ~ 0, night_grp))
