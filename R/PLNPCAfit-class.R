@@ -100,29 +100,29 @@ function(covariates, offsets) {
 #' @return displays a individual map for thecorresponding axes and/or sends back a ggplot2 object
 NULL
 PLNPCAfit$set("public", "plot_individual_map",
-  function(axes=c(1,2), main="Individual Factor Map",
-           conf.circle = FALSE, conf.level = 0.5, plot=TRUE, cols="gray65", percentAxes=TRUE) {
+  function(axes=1:min(2,self$rank), main="Individual Factor Map", plot=TRUE, cols="gray65") {
 
-    .scores <- as.data.frame(self$scores[,axes])
+    .scores <- data.frame(self$scores[,axes, drop = FALSE])
+    colnames(.scores) <- paste("a",1:ncol(.scores),sep = "")
     .scores$labels <- cols
-    colnames(.scores) <- paste("a",1:length(axes),sep = "")
-    axes.label <- paste("axis",axes)
-    if (percentAxes)
-      axes.label <- paste(axes.label, paste0("(", round(100*self$percent_var,3)[axes], "%)"))
+    .scores$names <- rownames(private$M)
+    axes_label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
-    p <- ggplot(.scores, aes(x = a1, y = a2, label = rownames(private$M), colour = cols)) +
-            geom_hline(yintercept = 0, colour = "gray65") +
-            geom_vline(xintercept = 0, colour = "gray65") +
-            geom_text(alpha = 0.8, size = 4) +
-            ggtitle(main) +
-            theme_bw() +
-            labs(x = axes.label[1], y = axes.label[2])
-
-    if (conf.circle) {
-      uncertainty <- sqrt(private$S)
-      scaling <- qnorm( (1 - conf.level) / 2)
-      p <- p + geom_circle(data = .scores, aes(radius = scaling*uncertainty),
-                            alpha = 0.05, colour = cols, fill = cols)
+    if (length(axes) > 1 ) {
+      p <- ggplot(.scores, aes(x = a1, y = a2, label = names, colour = labels)) +
+        geom_hline(yintercept = 0, colour = "gray65") +
+        geom_vline(xintercept = 0, colour = "gray65") +
+        geom_text(alpha = 0.8, size = 4) +
+        ggtitle(main) +
+        theme_bw() +
+        labs(x = axes_label[1], y = axes_label[2])
+    } else {
+      p <- ggplot(.scores, aes(x = a1, group = labels, fill = labels, colour = labels)) +
+        geom_density(alpha = .4) +
+        geom_rug() +
+        ggtitle(main) +
+        theme_bw() +
+        labs(x = axes_label[1])
     }
 
     if (plot)
@@ -142,7 +142,7 @@ PLNPCAfit$set("public", "plot_individual_map",
 #' @return displays a correlation circle for the corresponding axes and/or sends back a ggplot2 object
 NULL
 PLNPCAfit$set("public", "plot_correlation_circle",
-  function(axes=c(1,2), main="Variable Factor Map", cols = "gray65", plot=TRUE, percentAxes=TRUE, size=3) {
+  function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "gray65", plot=TRUE, percentAxes=TRUE, size=3) {
 
     corcir <- circle(c(0, 0), npoints = 100)
 

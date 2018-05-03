@@ -1,5 +1,4 @@
 library(PLNmodels)
-library(ggplot2)
 library(testthat)
 library(microbenchmark)
 library(profr)
