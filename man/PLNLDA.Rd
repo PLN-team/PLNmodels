@@ -6,23 +6,23 @@
 \alias{PLNLDA.default}
 \title{Fit a Poisson lognormal model towards Linear Disciminant Analysis}
 \usage{
-PLNLDA(Robject, ...)
+PLNLDA(Robject, grouping, ...)
 
-\method{PLNLDA}{formula}(Robject, grouping, control, ...)
+\method{PLNLDA}{formula}(Robject, grouping, control = list(), ...)
 
-\method{PLNLDA}{default}(Robject, grouping, X = NULL, O = matrix(0, nrow(Y),
-  ncol(Y)), control = list(), ...)
+\method{PLNLDA}{default}(Robject, grouping, X = NULL, O = NULL,
+  control = list(), ...)
 }
 \arguments{
 \item{Robject}{either (n x p) matrix of count data (used with argument grouping) or a formula to describe the relationship between the count matrix and the covariates (apart from the grouping)}
 
-\item{...}{additional parameters. Not used}
-
 \item{grouping}{a factor specifying the class fo< each observation used for disciminant analysis. Ignored when Robject is a formula.}
+
+\item{...}{additional parameters. Not used}
 
 \item{control}{a list for controling the optimization process. See details.}
 
-\item{X}{an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.}
+\item{X}{an optional (n x d) matrix of covariates. Default is NULL (no covariate). Ignored when Robject is a formula.}
 
 \item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
 }

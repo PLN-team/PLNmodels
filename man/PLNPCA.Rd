@@ -11,8 +11,7 @@ PLNPCA(Robject, ...)
 \method{PLNPCA}{formula}(Robject, ranks = 1:5, control.init = list(),
   control.main = list(), ...)
 
-\method{PLNPCA}{default}(Robject, X = matrix(1, nrow = nrow(Robject)),
-  O = matrix(0, nrow(Robject), ncol(Robject)), ranks = 1:5,
+\method{PLNPCA}{default}(Robject, X = NULL, O = NULL, ranks = 1:5,
   control.init = list(), control.main = list(), ...)
 }
 \arguments{

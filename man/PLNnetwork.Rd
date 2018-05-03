@@ -11,9 +11,8 @@ PLNnetwork(Robject, ...)
 \method{PLNnetwork}{formula}(Robject, penalties = NULL,
   control.init = list(), control.main = list(), ...)
 
-\method{PLNnetwork}{default}(Robject, X = matrix(1, nrow = nrow(Robject)),
-  O = matrix(0, nrow(Robject), ncol(Robject)), penalties = NULL,
-  control.init = list(), control.main = list(), ...)
+\method{PLNnetwork}{default}(Robject, X = NULL, O = NULL,
+  penalties = NULL, control.init = list(), control.main = list(), ...)
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a (n x p) matrix of count data}
