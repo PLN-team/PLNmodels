@@ -85,7 +85,7 @@ PLNLDA.default <- function(Robject, grouping, X = NULL, O = NULL,  control = lis
                          Sigma = myPLN$model_par$Sigma,
                          grouping = grouping,
                          M = myPLN$var_par$M, S = myPLN$var_par$S,
-                         J = myPLN$J, monitoring = myPLN$monitoring)
+                         J = myPLN$J, monitoring = myPLN$optim_par)
   myLDA$setVisualization()
 
   if (ctrl$trace > 0) cat("\n DONE!\n")

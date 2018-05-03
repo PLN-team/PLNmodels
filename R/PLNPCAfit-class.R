@@ -138,30 +138,26 @@ PLNPCAfit$set("public", "plot_individual_map",
 #' @param main character, the title. Default is "Variable Factor map"
 #' @param plot logical. Should the plot be displayed or sent back (ggplot object)
 #' @param cols a character, factor or numeric to defined the color associated with the variable. Default is "gray"
-#' @param size integer, the size of the labels
 #' @return displays a correlation circle for the corresponding axes and/or sends back a ggplot2 object
 NULL
 PLNPCAfit$set("public", "plot_correlation_circle",
-  function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "gray65", plot=TRUE, percentAxes=TRUE, size=3) {
+  function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "gray65", plot=TRUE) {
 
     corcir <- circle(c(0, 0), npoints = 100)
 
     ## data frame with correlations between variables and PCs
-    correlations <- as.data.frame(self$corr_circle[, axes])
-    p <- nrow(correlations)
-    colnames(correlations) <- c("axe1","axe2")
-    axes.label <- paste("axis",axes)
-    if (percentAxes)
-      axes.label <- paste(axes.label, paste0("(", round(100*self$percent_var,3)[axes], "%)"))
+    correlations <- as.data.frame(self$corr_circle[, axes, drop = FALSE])
+    colnames(correlations) <- paste0("axe", 1:length(axes))
+    axes.label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
     ## data frame with arrows coordinates
-    arrows = data.frame(x1 = rep(0, p), y1 = rep(0, p),
+    arrows = data.frame(x1 = rep(0, nrow(correlations)), y1 = rep(0, nrow(correlations)),
                         x2 = correlations$axe1,  y2 = correlations$axe2)
 
     ## geom_path will do open circles
     p <- ggplot() + geom_path(data = corcir, aes(x=x,y=y), colour="gray65") +
           geom_segment(data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2, colour = cols)) +
-          geom_text(data = correlations, aes(x = axe1, y = axe2, label = rownames(correlations), colour=cols), size=size) +
+          geom_text(data = correlations, aes(x = axe1, y = axe2, label = rownames(correlations), colour=cols), size=3) +
           geom_hline(yintercept = 0, colour = "gray65") + geom_vline(xintercept = 0, colour = "gray65") +
           xlim(-1.1, 1.1) + ylim(-1.1, 1.1)  +
           theme_bw() +  theme(legend.position="none") +

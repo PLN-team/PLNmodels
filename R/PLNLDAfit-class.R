@@ -9,6 +9,7 @@
 #' @field rank the dimension of the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
+#' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field loglik variational lower bound of the loglikelihood
 #' @field BIC variational lower bound of the BIC
 #' @field ICL variational lower bound of the ICL
@@ -84,9 +85,7 @@ PLNLDAfit <-
 #' @return displays a individual map for thecorresponding axes and/or sends back a ggplot2 object
 NULL
 PLNLDAfit$set("public", "plot_individual_map",
-  function(axes=1:min(2,self$rank), main="Individual Factor Map", plot=TRUE) {
-
-    cols <- private$grouping
+  function(axes=1:min(2,self$rank), main="Individual Factor Map", plot=TRUE, cols = private$grouping) {
 
     .scores <- data.frame(self$scores[,axes, drop = FALSE])
     colnames(.scores) <- paste("a",1:ncol(.scores),sep = "")
@@ -128,26 +127,23 @@ PLNLDAfit$set("public", "plot_individual_map",
 #' @return displays a correlation circle for the corresponding axes and/or sends back a ggplot2 object
 NULL
 PLNLDAfit$set("public", "plot_correlation_circle",
-  function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "gray65", plot=TRUE, percentAxes=TRUE, size=3) {
+  function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "gray65", plot=TRUE, size=3) {
 
     corcir <- circle(c(0, 0), npoints = 100)
 
     ## data frame with correlations between variables and PCs
-    correlations <- as.data.frame(self$corr_circle[, axes])
-    p <- nrow(correlations)
-    colnames(correlations) <- c("axe1","axe2")
-    axes.label <- paste("axis",axes)
-    if (percentAxes)
-      axes.label <- paste(axes.label, paste0("(", round(100*self$percent_var,3)[axes], "%)"))
+    correlations <- as.data.frame(self$corr_circle[, axes, drop = FALSE])
+    colnames(correlations) <- paste0("axe", 1:length(axes))
+    axes.label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
     ## data frame with arrows coordinates
-    arrows = data.frame(x1 = rep(0, p), y1 = rep(0, p),
+    arrows = data.frame(x1 = rep(0, nrow(correlations)), y1 = rep(0, nrow(correlations)),
                         x2 = correlations$axe1,  y2 = correlations$axe2)
 
     ## geom_path will do open circles
     p <- ggplot() + geom_path(data = corcir, aes(x=x,y=y), colour="gray65") +
           geom_segment(data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2, colour = cols)) +
-          geom_text(data = correlations, aes(x = axe1, y = axe2, label = rownames(correlations), colour=cols), size=size) +
+          geom_text(data = correlations, aes(x = axe1, y = axe2, label = rownames(correlations), colour=cols), size=3) +
           geom_hline(yintercept = 0, colour = "gray65") + geom_vline(xintercept = 0, colour = "gray65") +
           xlim(-1.1, 1.1) + ylim(-1.1, 1.1)  +
           theme_bw() +  theme(legend.position="none") +
