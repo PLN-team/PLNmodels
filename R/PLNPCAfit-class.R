@@ -108,26 +108,8 @@ PLNPCAfit$set("public", "plot_individual_map",
     .scores$names <- rownames(private$M)
     axes_label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
-    if (length(axes) > 1 ) {
-      p <- ggplot(.scores, aes(x = a1, y = a2, label = names, colour = labels)) +
-        geom_hline(yintercept = 0, colour = "gray65") +
-        geom_vline(xintercept = 0, colour = "gray65") +
-        geom_text(alpha = 0.8, size = 4) +
-        ggtitle(main) +
-        theme_bw() +
-        labs(x = axes_label[1], y = axes_label[2])
-    } else {
-      p <- ggplot(.scores, aes(x = a1, group = labels, fill = labels, colour = labels)) +
-        geom_density(alpha = .4) +
-        geom_rug() +
-        ggtitle(main) +
-        theme_bw() +
-        labs(x = axes_label[1])
-    }
-
-    if (plot)
-      print(p)
-
+    p <- get_ggplot_ind_map(.scores, axes_label, main)
+    if (plot) print(p)
     invisible(p)
 })
 
@@ -143,31 +125,15 @@ NULL
 PLNPCAfit$set("public", "plot_correlation_circle",
   function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "gray65", plot=TRUE) {
 
-    corcir <- circle(c(0, 0), npoints = 100)
-
     ## data frame with correlations between variables and PCs
     correlations <- as.data.frame(self$corr_circle[, axes, drop = FALSE])
     colnames(correlations) <- paste0("axe", 1:length(axes))
-    axes.label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
+    axes_label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
-    ## data frame with arrows coordinates
-    arrows = data.frame(x1 = rep(0, nrow(correlations)), y1 = rep(0, nrow(correlations)),
-                        x2 = correlations$axe1,  y2 = correlations$axe2)
+    p <- get_ggplot_corr_circle(correlations, axes_label, main, cols)
 
-    ## geom_path will do open circles
-    p <- ggplot() + geom_path(data = corcir, aes(x=x,y=y), colour="gray65") +
-          geom_segment(data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2, colour = cols)) +
-          geom_text(data = correlations, aes(x = axe1, y = axe2, label = rownames(correlations), colour=cols), size=3) +
-          geom_hline(yintercept = 0, colour = "gray65") + geom_vline(xintercept = 0, colour = "gray65") +
-          xlim(-1.1, 1.1) + ylim(-1.1, 1.1)  +
-          theme_bw() +  theme(legend.position="none") +
-          ggtitle(main) + labs(x=axes.label[1], y=axes.label[2])
-
-    if (plot)
-      print(p)
-
+    if (plot) print(p)
     invisible(p)
-
 })
 
 #' Plot a summary of the current \code{PLNPCAfit} object

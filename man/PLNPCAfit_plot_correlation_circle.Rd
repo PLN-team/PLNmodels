@@ -11,8 +11,6 @@
 \item{plot}{logical. Should the plot be displayed or sent back (ggplot object)}
 
 \item{cols}{a character, factor or numeric to defined the color associated with the variable. Default is "gray"}
-
-\item{size}{integer, the size of the labels}
 }
 \value{
 displays a correlation circle for the corresponding axes and/or sends back a ggplot2 object

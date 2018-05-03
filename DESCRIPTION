@@ -38,5 +38,6 @@ Collate:
     'PLNnetworkfamily-class.R'
     'PLNnetworkfit-class.R'
     'RcppExports.R'
+    'plot_utils.R'
     'utils.R'
 LinkingTo: Rcpp, RcppArmadillo

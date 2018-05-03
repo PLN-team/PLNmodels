@@ -18,9 +18,13 @@ and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
 \section{Fields}{
 
 \describe{
+\item{\code{rank}}{the dimension of the current model}
+
 \item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)}
 
 \item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
+
+\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
 \item{\code{loglik}}{variational lower bound of the loglikelihood}
 
@@ -42,6 +46,6 @@ and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
 }}
 
 \seealso{
-The function \code{\link{PLNPCA}}.
+The function \code{\link{PLNLDA}}.
 }
 \keyword{datasets}
