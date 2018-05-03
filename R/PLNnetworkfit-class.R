@@ -118,13 +118,15 @@ PLNnetworkfit$set("public", "plot_network",
         G <- delete.vertices(G, which(degree(G) == 0))
       }
       plot(G, layout = layout)
-      invisible(G)
     }
     if (output == "corrplot") {
       if (ncol(net) > 100)
         colnames(net) <- rownames(net) <- rep(" ", ncol(net))
+      G <- net
+      diag(net) <- 0
       corrplot(as.matrix(net), method = "color", is.corr = FALSE, tl.pos = "td", cl.pos = "n", tl.cex = 0.5, type = "upper")
     }
+    invisible(G)
 })
 
 PLNnetworkfit$set("public", "show",
