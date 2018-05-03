@@ -249,4 +249,4 @@ function() {
   cat("* Additional methods for PCA\n")
   cat("    $plot_PCA(), $plot_correlation_circle(), $plot_individual_map() \n")
 })
-PLNPCAfit$set("public", "print", function() self$show())
+

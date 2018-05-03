@@ -121,17 +121,16 @@ function(covariates, offsets) {
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS
 ## ----------------------------------------------------------------------
-## For each methods, I define an corresponding S3 method for simplicity
-## and only document the S3 method
+## For each R6 method I define an S3 method and only document the latter
 
 #' Predict counts of a new sample
 #'
 #' @name predict.PLNfit
 #'
 #' @param object an R6 object with class PLNfit
-#' @param newdata    A data frame in which to look for variables with which to predict.
+#' @param newdata A data frame in which to look for variables with which to predict.
 #' @param newOffsets A matrix in which to look for offsets with which to predict.
-#' @param type       The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
+#' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
 #'                   the alternative "response" is on the scale of the response variable (i.e. average count)
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
@@ -207,4 +206,4 @@ function(model = "A Poisson Lognormal fit\n") {
   cat("    $plot(), $predict()\n")
 })
 PLNfit$set("public", "print", function() self$show())
-print.PLNfit <- function(x) {x$show()}
+

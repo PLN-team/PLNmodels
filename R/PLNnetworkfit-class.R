@@ -1,9 +1,9 @@
-#' @title An R6 Class to represent a PLNfit in a sparse inverse covariance framework
+#' An R6 Class to represent a PLNfit in a sparse inverse covariance framework
 #'
 #' @description The function \code{\link{PLNnetwork}} produces a collection of models which are instances of object with class \code{PLNnetworkfit}.
-#' See the documentation for \code{\link[=plot_network]{plot_network}}
 #'
-#' This class comes with a set of methods, some of them being useful for the user: plot_network + methods inherited from PLNfit.
+#' This class comes with a set of methods, some of them being useful for the user:
+#' See the documentation for \code{\link[=plot_network]{plot_network}} + methods inherited from PLNfit.
 #'
 #' @field penalty the level of sparsity in the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.
@@ -85,7 +85,7 @@ PLNnetworkfit$set("public", "latent_network",
 #' @return displays a graph (via igraph for small graph and corrplot for large ones) and/or sends back an igraph object
 NULL
 PLNnetworkfit$set("public", "plot_network",
-  function(type = c("support", "partial_cor"), output = c("igraph", "corrplot"), edge.color = c("#F8766D", "#00BFC4"), remove.isolated = FALSE, node.labels = NULL, layout = layout_in_circle) {
+  function(type = c("partial_cor", "support"), output = c("igraph", "corrplot"), edge.color = c("#F8766D", "#00BFC4"), remove.isolated = FALSE, node.labels = NULL, layout = layout_in_circle) {
 
     type <- match.arg(type)
     output <- match.arg(output)
@@ -134,4 +134,3 @@ function() {
   cat("    $latent_network(), $plot_network()\n")
   cat("    $coefficient_path(), $density_path()\n")
 })
-PLNnetworkfit$set("public", "print", function() self$show())
