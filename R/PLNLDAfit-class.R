@@ -138,13 +138,13 @@ PLNLDAfit$set("public", "plot_LDA",
 
     ## get back all individual maps
     ind.plot <- lapply(pairs.axes, function(pair) {
-      ggobj <- self$plot_individual_map(axes=pair, plot=FALSE, main="", percentAxes=FALSE) + theme(legend.position="none")
+      ggobj <- self$plot_individual_map(axes=pair, plot=FALSE, main="") + theme(legend.position="none")
       return(ggplotGrob(ggobj))
     })
 
     ## get back all correlation circle
     cor.plot <- lapply(pairs.axes, function(pair) {
-      ggobj <- self$plot_correlation_circle(axes=pair, plot=FALSE, main="", percentAxes=FALSE, cols = var.cols)
+      ggobj <- self$plot_correlation_circle(axes=pair, plot=FALSE, main="", cols = var.cols)
       return(ggplotGrob(ggobj))
     })
 

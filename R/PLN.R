@@ -116,7 +116,7 @@ PLN.default <- function(Robject, X = NULL, O = NULL, control = list(), ...) {
 }
 
 ## Extract the model used for initializing the whole family
-#' @importFrom stats glm.fit lm.fit poisson residuals coefficients
+#' @importFrom stats glm.fit lm.fit poisson residuals coefficients runif
 initializePLN <- function(Y, X, O, control) {
 
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)

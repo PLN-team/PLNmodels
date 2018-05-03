@@ -1,6 +1,6 @@
 get_ggplot_ind_map <- function(scores, axes_label, main) {
   if (length(axes_label) > 1 ) {
-    p <- ggplot(scores, aes(x = a1, y = a2, label = names, colour = labels)) +
+    p <- ggplot(scores, aes_(x = ~a1, y = ~a2, label = ~names, colour = ~labels)) +
       geom_hline(yintercept = 0, colour = "gray65") +
       geom_vline(xintercept = 0, colour = "gray65") +
       geom_text(alpha = 0.8, size = 4) +
@@ -8,7 +8,7 @@ get_ggplot_ind_map <- function(scores, axes_label, main) {
       theme_bw() +
       labs(x = axes_label[1], y = axes_label[2])
   } else {
-    p <- ggplot(scores, aes(x = a1, group = labels, fill = labels, colour = labels)) +
+    p <- ggplot(scores, aes_(x =~a1, group = ~labels, fill = ~labels, colour = ~labels)) +
       geom_density(alpha = .4) +
       geom_rug() +
       ggtitle(main) +
@@ -26,22 +26,22 @@ get_ggplot_corr_circle <- function(correlations, axes_label, main, cols) {
                          x2 = correlations$axe1,  y2 = correlations$axe2)
     ## geom_path will do open circles
     p <- ggplot() + xlim(-1.1, 1.1) + ylim(-1.1, 1.1)  +
-      geom_path(data = corcir, aes(x = x,y = y), colour="gray65") +
+      geom_path(data = corcir, aes_(x = ~x,y = ~y), colour="gray65") +
       geom_hline(yintercept = 0, colour = "gray65") +
       geom_vline(xintercept = 0, colour = "gray65") +
-      geom_segment(data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2, colour = cols)) +
-      geom_text(data = correlations, aes(x = axe1, y = axe2, label = rownames(correlations), colour = cols), size=3) +
+      geom_segment(data = arrows, aes_(x = ~x1, y = ~y1, xend = ~x2, yend = ~y2, colour = ~cols)) +
+      geom_text(data = correlations, aes_(x = ~axe1, y = ~axe2, label = rownames(correlations), colour = ~cols), size=3) +
       theme_bw() +  theme(legend.position="none") + ggtitle(main) + labs(x = axes_label[1], y = axes_label[2])
   } else {
     sign  <- rep(c(-1,1), each = ceiling(nrow(correlations)/2))[1:nrow(correlations)]
-    value <- runif(nrow(correlations), 0.25, 1)
+    value <- stats::runif(nrow(correlations), 0.25, 1)
     arrows <- data.frame(x1 = correlations$axe1, y1 = rep(0, nrow(correlations)),
                          x2 = correlations$axe1, y2 = sign * value)
     p <- ggplot(arrows) + xlim(-1.1, 1.1) + ylim(-1.1, 1.1) +
       geom_hline(yintercept = 0, colour = "gray65") +
-      geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2, colour = cols)) +
-      geom_text(aes(x = x2, y = y2, label = rownames(correlations), colour = cols), vjust = -.5, angle = 90, size=5) +
-      geom_point(aes(x = x2, y = 0)) +
+      geom_segment(aes_(x = ~x1, y = ~y1, xend = ~x2, yend = ~y2, colour = ~cols)) +
+      geom_text(aes_(x = ~x2, y = ~y2, label = rownames(correlations), colour = ~cols), vjust = -.5, angle = 90, size=5) +
+      geom_point(aes_(x = ~x2, y = 0)) +
       theme_bw() +  theme(axis.title.y=element_blank(),
                           axis.text.y=element_blank(),
                           axis.ticks.y=element_blank(), legend.position="none") + ggtitle(main) +
