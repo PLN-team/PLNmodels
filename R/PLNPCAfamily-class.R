@@ -55,12 +55,14 @@ PLNPCAfamily$set("public", "initialize",
 PLNPCAfamily$set("public", "optimize",
   function(control) {
 
-  KY <- sum(.logfactorial(self$responses))
-
   self$models <- mclapply(self$models, function(model) {
     ## initial parameters (model + variational)
-    par0 <- c(model$model_par$Theta  , model$model_par$B,
-              model$var_par$M, pmax(model$var_par$S,10*control$lbvar))
+    par0 <- c(
+      model$model_par$Theta  ,
+      model$model_par$B,
+      model$var_par$M,
+      pmax(model$var_par$S,10*control$lbvar)
+    )
 
     ## ===========================================
     ## OPTIMISATION
@@ -75,23 +77,19 @@ PLNPCAfamily$set("public", "optimize",
     }
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-    lower.bound <- c(rep(-Inf, private$p*private$d)     , # Theta
-                     rep(-Inf, private$p*model$rank) , # B
-                     rep(-Inf, private$n*model$rank) , # M
-                     rep(control$lbvar,private$n*model$rank)) # S
-
-    xtol_abs <- c(rep(0, private$p*(private$d + model$rank) + private$n * model$rank),
-                  rep(control$xtol_abs, private$n*model$rank))
     opts <- list(
-        "algorithm"   = control$method,
-        "maxeval"     = control$maxeval,
-        "ftol_rel"    = control$ftol_rel,
-        "ftol_abs"    = control$ftol_abs,
-        "xtol_rel"    = control$xtol_rel,
-        "xtol_abs"    = xtol_abs,
-        "lower_bound" = lower.bound
+      "algorithm"   = control$method,
+      "maxeval"     = control$maxeval,
+      "ftol_rel"    = control$ftol_rel,
+      "ftol_abs"    = control$ftol_abs,
+      "xtol_rel"    = control$xtol_rel,
+      "xtol_abs"    = c(rep(0, private$p*(private$d + model$rank) + private$n * model$rank),
+                        rep(control$xtol_abs, private$n*model$rank)),
+      "lower_bound" = c(rep(-Inf, private$p*private$d)  , # Theta
+                        rep(-Inf, private$p*model$rank) , # B
+                        rep(-Inf, private$n*model$rank) , # M
+                        rep(control$lbvar,private$n*model$rank)) # S
     )
-
     optim.out <- optimization_PLNPCA(par0, self$responses, self$covariates, self$offsets, model$rank, opts)
     optim.out$message <- statusToMessage(optim.out$status)
 
@@ -99,7 +97,7 @@ PLNPCAfamily$set("public", "optimize",
     ## OUTPUT
 
     ## formating parameters for output
-    Theta <- matrix(optim.out$solution[1:(private$p*private$d)                                                     ], private$p, private$d)
+    Theta <- matrix(optim.out$solution[1:(private$p*private$d)                                                        ], private$p, private$d)
     B     <- matrix(optim.out$solution[private$p*private$d              + 1:(private$p*model$rank)                    ], private$p, model$rank)
     M     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + 1:(private$n*model$rank)                    ], private$n, model$rank)
     S     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + private$n*model$rank + 1:(private$n*model$rank)], private$n, model$rank)

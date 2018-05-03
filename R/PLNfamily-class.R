@@ -10,7 +10,6 @@ PLNfamily <-
     ),
     private = list(
       params     = NULL,  # vector of parameters that indexes the models (either sparsity, rank, etc.)
-      fn_optim   = NULL, # objective and gradient for optimizing the regularized models
       n          = NULL, # number of samples
       p          = NULL, # number of responses
       d          = NULL  # number of covariates
