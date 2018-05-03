@@ -205,7 +205,7 @@ function(networks) {
 PLNnetworkfamily$set("public", "plot",
 function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE) {
   vlines <- sapply(criteria, function(crit) self$getBestModel(crit)$penalty)
-  p <- super$plot(criteria) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
+  p <- super$plot(criteria, FALSE) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
   if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
   p
 })

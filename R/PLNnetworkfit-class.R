@@ -16,7 +16,6 @@
 #' @field degrees_freedom number of parameters in the current PLN model
 #' @field criteria a vector with loglik, BIC, ICL, R_squared and degrees of freedom
 #' @include PLNnetworkfit-class.R
-#' @importFrom R6 R6Class
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}
 PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
@@ -80,8 +79,6 @@ PLNnetworkfit$set("public", "latent_network",
 #' @param plot logical. Should the plot be displayed or sent back as an igraph object
 #' @param remove.isolated if \code{TRUE}, isolated node are remove before plotting.
 #' @param layout an optional igraph layout
-#' @importFrom igraph V E plot.igraph layout_in_circle graph_from_adjacency_matrix degree delete.vertices
-#' @importFrom corrplot corrplot
 #' @return displays a graph (via igraph for small graph and corrplot for large ones) and/or sends back an igraph object
 NULL
 PLNnetworkfit$set("public", "plot_network",

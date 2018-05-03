@@ -153,7 +153,6 @@ function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", 
 #'@return Produces a plot  representing the evolution of the criteria of the different models considered,
 #' highlighting the best model in terms of ICL for PLNPCA and EBIC for PLNnetwork.
 #'
-#' @import ggplot2
 #' @export
 plot.PLNfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), ...) {
   stopifnot(isPLNfamily(x))
@@ -161,13 +160,19 @@ plot.PLNfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), ...) {
 }
 
 PLNfamily$set("public", "plot",
-function(criteria = c("loglik", "BIC", "ICL")) {
+function(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE) {
   stopifnot(!anyNA(self$criteria))
-  dplot <- melt(self$criteria[, c('param',criteria)], id.vars = 1, variable.name = "criterion")
+
+  dplot <- self$criteria %>%
+    dplyr::select(c("param", criteria)) %>%
+    tidyr::gather(key = "criterion", value = "value", -param) %>%
+    dplyr::group_by(criterion)
   p <- ggplot(dplot, aes(x = param, y = value, group = criterion, colour = criterion)) +
-        geom_line() + geom_point() + ggtitle("Model selection criteria") +
-    annotate("text", x = self$criteria$param, y = min(dplot$value), hjust=-.1, angle = 90,
-             label = paste("R2 =", round(self$criteria$R_squared, 2)), size = 3, alpha = 0.7) +  theme_bw()
+       geom_line() + geom_point() + ggtitle("Model selection criteria") + theme_bw()
+
+  if (annotate)
+    p <- p + annotate("text", x = self$criteria$param, y = min(dplot$value), hjust=-.1, angle = 90,
+           label = paste("R2 =", round(self$criteria$R_squared, 2)), size = 3, alpha = 0.7)
   p
 })
 

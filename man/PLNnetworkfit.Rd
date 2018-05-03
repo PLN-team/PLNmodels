@@ -10,9 +10,9 @@ PLNnetworkfit
 }
 \description{
 The function \code{\link{PLNnetwork}} produces a collection of models which are instances of object with class \code{PLNnetworkfit}.
-See the documentation for \code{\link[=plot_network]{plot_network}}
 
-This class comes with a set of methods, some of them being useful for the user: plot_network + methods inherited from PLNfit.
+This class comes with a set of methods, some of them being useful for the user:
+See the documentation for \code{\link[=plot_network]{plot_network}} + methods inherited from PLNfit.
 }
 \section{Fields}{
 
