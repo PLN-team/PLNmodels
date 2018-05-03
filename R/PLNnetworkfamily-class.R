@@ -58,7 +58,6 @@ PLNnetworkfamily$set("public", "optimize",
 
   ## ===========================================
   ## INITIALISATION
-  KY <- sum(.logfactorial(self$responses)) ## constant quantity in the objective
 
   ## start from the standard PLN (a.k.a. inception)
   Sigma <- self$inception$model_par$Sigma
@@ -70,21 +69,18 @@ PLNnetworkfamily$set("public", "optimize",
   objective.old <- ifelse(is.na(self$inception$loglik),-Inf,-self$inception$loglik)
 
   ## set option for call to NLOPT: optim typ, lower bound, tolerance...
-  lower.bound <- c(rep(-Inf, private$p*private$d), # Theta
-                   rep(-Inf, private$n*private$p), # M
-                   rep(control$lbvar, private$n*private$p)) # S
-  xtol_abs <- c(rep(0, private$p*private$d), # Theta
-                rep(0, private$n*private$p), # M
-                rep(control$xtol_abs, private$n*private$p)) # S
-  opts <- list("algorithm"   = paste("NLOPT_LD",control$method, sep = "_"),
+  opts <- list("algorithm"   = control$method,
                "maxeval"     = control$maxeval,
                "ftol_rel"    = control$ftol_rel,
                "ftol_abs"    = control$ftol_abs,
                "xtol_rel"    = control$xtol_rel,
-               "xtol_abs"    = xtol_abs,
-               "print_level" = max(0,control$trace - 2))
-  opts$algorithm   <- control$method
-  opts$lower_bound <- lower.bound
+               "xtol_abs"    = c(rep(0, private$p*private$d), # Theta
+                                 rep(0, private$n*private$p), # M
+                                 rep(control$xtol_abs, private$n*private$p)), #S
+               "lower_bound" = c(rep(-Inf, private$p*private$d), # Theta
+                                 rep(-Inf, private$n*private$p), # M
+                                 rep(control$lbvar, private$n*private$p)) # S
+               )
 
   ## ===========================================
   ## GO ALONG THE PENALTY GRID (i.e the models)
@@ -207,7 +203,7 @@ function(networks) {
 
 #' @export
 PLNnetworkfamily$set("public", "plot",
-function(criteria = c("loglik", "BIC", "EBIC"), log.x = TRUE) {
+function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE) {
   vlines <- sapply(criteria, function(crit) self$getBestModel(crit)$penalty)
   p <- super$plot(criteria) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
   if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
@@ -239,8 +235,6 @@ function() {
     cat(" - Best model (regarding EBIC): lambda =", format(self$getBestModel("EBIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("EBIC")$R_squared, 2), "\n")
   if (!anyNA(self$criteria$BIC))
     cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
-  # if (!anyNA(self$criteria$ICL))
-  #   cat(" - Best model (regarding ICL): lambda =", format(self$getBestModel("ICL")$penalty, digits = 3), "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })
 PLNnetworkfamily$set("public", "print", function() self$show())
 

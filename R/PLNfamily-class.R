@@ -85,7 +85,7 @@ function() {
 #' @return  Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 NULL
 PLNfamily$set("public", "getBestModel",
-function(crit = c("BIC", "ICL", "EBIC", "loglik", "R_squared")){
+function(crit = c("BIC", "ICL", "EBIC", "loglik", "R_squared", "pen_loglik")){
   crit <- match.arg(crit)
   stopifnot(!anyNA(self$criteria[[crit]]))
   if (length(self$criteria[[crit]]) > 1) {
