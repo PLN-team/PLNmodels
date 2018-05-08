@@ -133,10 +133,14 @@ PLNnetwork_stabs.formula <- function(Robject, penalties = NULL, subsamples = NUL
 
 ##' @rdname PLNnetwork_stabs
 ##' @export
-PLNnetwork_stabs.default <- function(Robject, X = cbind(rep(1, nrow(Y))), O = matrix(0, nrow(Y), ncol(Y)),
+PLNnetwork_stabs.default <- function(Robject, X = NULL, O = NULL,
                                penalties = NULL, subsamples = NULL, control.init = list(nPenalties = 10), control.main = list(), mc.cores = 1, ...) {
 
   Y <- Robject; rm(Robject) # no copy made
+  n  <- nrow(Y); p <- ncol(Y)
+  if (is.null(X)) X <- matrix(1, n, 1)
+  if (is.null(O)) O <- matrix(0, n, p)
+
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- PLNnetwork_param(control.init, nrow(Y), ncol(Y), "init")
   ctrl.init$trace <- 0

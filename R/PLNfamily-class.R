@@ -9,7 +9,7 @@ PLNfamily <-
       models     = NULL  # the collection of fitted models
     ),
     private = list(
-      params     = NULL,  # vector of parameters that indexes the models (either sparsity, rank, etc.)
+      params     = NULL, # vector of parameters that indexes the models (either sparsity, rank, etc.)
       n          = NULL, # number of samples
       p          = NULL, # number of responses
       d          = NULL  # number of covariates
