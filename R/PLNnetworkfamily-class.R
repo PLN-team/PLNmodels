@@ -25,8 +25,23 @@ PLNnetworkfamily <-
       stab_path = NULL
       ), # a field to store the stability path,
     active = list(
-      penalties = function(value) private$params,
-      stability_path = function(value) private$stab_path
+      penalties = function() private$params,
+      stability_path = function() private$stab_path,
+      stability = function() {
+        stopifnot(!is.null(private$stab_path))
+        if (!is.null(private$stab_path)) {
+          stability <- self$stability_path %>%
+            dplyr::select(Penalty, Prob) %>%
+            group_by(Penalty) %>%
+            summarize(Stability = 1 - mean(4 * Prob * (1 - Prob))) %>%
+            arrange(desc(Penalty)) %>%
+            pull(Stability)
+        } else {
+          stability <- rep(NA, length(self$penalties))
+        }
+        stability
+      },
+      criteria = function() {mutate(super$criteria, stability = self$stability)}
     )
 )
 
@@ -168,25 +183,16 @@ PLNnetworkfamily$set("public", "optimize",
 })
 
 
-#' Perform StARS (Stability Approach to Regularization Selection)
-#'
-#' Compute StARS criterion after stability selection. If a stability path is already present,
-#' it will not be recomputed
-#'
-#' @name stars
-#' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
-#' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
-#'
-#' @return a thing
-NULL
-PLNnetworkfamily$set("public", "StARS",
-  function(stability = 0.9, subsamples = NULL, control = list(), mc.cores = 1) {
-    if (is.null(private$stab_path)) {
-      self$stability_selection(subsamples, control, mc.cores)
-    }
+# #' Perform StARS (Stability Approach to Regularization Selection)
+# #'
+# #' Compute StARS criterion after stability selection. If a stability path is already present,
+# #' it will not be recomputed
+# #'
+# #' @name stars
+# #' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
+# #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
 
-  }
-)
+
 
 #' Compute the stability path by stability selection
 #'
@@ -286,11 +292,36 @@ function(precision = TRUE, corr = TRUE) {
 #' @export
 PLNnetworkfamily$set("public", "plot",
 function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE) {
-  vlines <- sapply(criteria, function(crit) self$getBestModel(crit)$penalty)
+  vlines <- sapply(intersect(criteria, c("BIC", "EBIC")) , function(crit) self$getBestModel(crit)$penalty)
   p <- super$plot(criteria, FALSE) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
   if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
   p
 })
+
+#' @export
+PLNnetworkfamily$set("public", "plot_stars",
+function(stability = 0.9, log.x = TRUE) {
+  dplot <- self$criteria %>% select(param, density, stability) %>%
+    rename(Penalty = param) %>%
+    gather(key = "Metric", value = "Value", stability:density)
+  penalty_stars <- dplot %>% filter(Metric == "stability" & Value >= 0.9) %>%
+    pull(Penalty) %>% min()
+
+  p <- ggplot(dplot, aes(x = Penalty, y = Value, group = Metric, color = Metric)) +
+    geom_point() +  geom_line() +
+    ## Add information correspinding to best lambda
+    geom_vline(xintercept = penalty_stars, linetype = 2) +
+    geom_hline(yintercept = stability, linetype = 2) +
+    annotate(x = penalty_stars, y = 0,
+           label = paste("lambda == ", round(penalty_stars, 5)),
+           parse = TRUE,
+           hjust = 0,
+           vjust = 0,
+           geom = "text") + theme_bw()
+  if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
+  p
+})
+
 
 #' @export
 PLNnetworkfamily$set("public", "plot_objective",
