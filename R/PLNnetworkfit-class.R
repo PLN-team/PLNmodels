@@ -47,7 +47,8 @@ PLNnetworkfit <-
         par
       },
       EBIC      = function() {self$BIC - .5 * self$degrees_freedom * log(self$p^2 + self$p * self$d)},
-      criteria  = function() {c(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik)}
+      density   = function() {mean(self$latent_network("support"))},
+      criteria  = function() {c(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik, density = self$density)}
     )
 )
 

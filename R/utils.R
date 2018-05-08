@@ -1,5 +1,5 @@
-.logfactorial <- function (n) { # Ramanujan's formula
-  n <- n[n!=0]
+.logfactorial <- function(n) { # Ramanujan's formula
+  n <- n[n != 0]
   return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)
 }
 
@@ -8,13 +8,13 @@
 }
 
 edge_to_node <- function(x, n = max(x)) {
-  x <- x-1 ## easier for arithmetic to number edges starting from 0
-  n.node <- round((1 + sqrt(1+8*n)) / 2) ## n.node * (n.node -1) / 2 = n (if integer)
+  x <- x - 1 ## easier for arithmetic to number edges starting from 0
+  n.node <- round((1 + sqrt(1 + 8*n)) / 2) ## n.node * (n.node -1) / 2 = n (if integer)
   j.grid <- cumsum(0:n.node)
   j <- findInterval(x, vec = j.grid)
   i <- x - j.grid[j]
   ## Renumber i and j starting from 1 to stick with R convention
-  return(data.frame(node1 = i+1, node2 = j+1))
+  return(data.frame(node1 = i + 1, node2 = j + 1))
 }
 
 node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
@@ -23,7 +23,7 @@ node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
   y <- match(y, node.set) - 1
   ## For each pair (x,y) return, corresponding edge number
   n <- length(node.set)
-  j.grid <- cumsum(0:(n-1))
+  j.grid <- cumsum(0:(n - 1))
   x + j.grid[y] + 1
 }
 

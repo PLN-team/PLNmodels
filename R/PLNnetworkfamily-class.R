@@ -168,19 +168,25 @@ PLNnetworkfamily$set("public", "optimize",
 })
 
 
-# #' Perform StARS (Stability Approach to Regularization Selection)
-# #'
-# #' @name stars
-# #' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
-# #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
-# #'
-# #' @return
-# NULL
-# PLNnetworkfamily$set("public", "StARS",
-#   function(stability = 0.9, subsamples = NULL, control = list()) {
-#
-#   }
-# )
+#' Perform StARS (Stability Approach to Regularization Selection)
+#'
+#' Compute StARS criterion after stability selection. If a stability path is already present,
+#' it will not be recomputed
+#'
+#' @name stars
+#' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
+#' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
+#'
+#' @return a thing
+NULL
+PLNnetworkfamily$set("public", "StARS",
+  function(stability = 0.9, subsamples = NULL, control = list(), mc.cores = 1) {
+    if (is.null(private$stab_path)) {
+      self$stability_selection(subsamples, control, mc.cores)
+    }
+
+  }
+)
 
 #' Compute the stability path by stability selection
 #'
@@ -275,15 +281,6 @@ function(precision = TRUE, corr = TRUE) {
              Edge    = paste0(Node1, "--", Node2)) %>%
       filter(Node1 < Node2)
   }) %>% bind_rows()
-})
-
-#' @export
-PLNnetworkfamily$set("public", "density_path",
-function(networks) {
-  data.frame(Penalty = self$penalties,
-             Density = sapply(self$penalties,
-                              function(x) { self$getModel(x)$latent_network() %>% mean() }),
-             stringsAsFactors = FALSE)
 })
 
 #' @export
