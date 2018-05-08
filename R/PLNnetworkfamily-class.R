@@ -163,6 +163,21 @@ PLNnetworkfamily$set("public", "optimize",
 
 })
 
+
+#' Perform StARS (Stability Approach to Regularization Selection)
+#'
+#' @name stars
+#' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
+#' @param n_resamples integer indicating the number of resamples. Default is \code{20}.
+#' @param size a integer indicating the size of each subsample. Default is \code{min(10 * sqrt{n}, 0.8 n)}, with n the sample size.
+#'
+NULL
+PLNnetworkfamily$set("public", "StARS",
+  function(stability = 0.9, n_resamples = 20, size = min(10 * sqrt(self$n), .8 * self$n)) {
+
+  }
+)
+
 #' Extract the regularization path of a PLNnetwork fit
 #'
 #' @name coefficient_path
