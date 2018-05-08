@@ -7,6 +7,26 @@
   return(pmin(x, M))
 }
 
+edge_to_node <- function(x, n = max(x)) {
+  x <- x-1 ## easier for arithmetic to number edges starting from 0
+  n.node <- round((1 + sqrt(1+8*n)) / 2) ## n.node * (n.node -1) / 2 = n (if integer)
+  j.grid <- cumsum(0:n.node)
+  j <- findInterval(x, vec = j.grid)
+  i <- x - j.grid[j]
+  ## Renumber i and j starting from 1 to stick with R convention
+  return(data.frame(node1 = i+1, node2 = j+1))
+}
+
+node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
+  ## Convert node labels to integers (starting from 0)
+  x <- match(x, node.set) - 1
+  y <- match(y, node.set) - 1
+  ## For each pair (x,y) return, corresponding edge number
+  n <- length(node.set)
+  j.grid <- cumsum(0:(n-1))
+  x + j.grid[y] + 1
+}
+
 logLikPoisson <- function(responses, lambda) {
   loglik <- sum(responses * lambda, na.rm=TRUE) - sum(exp(lambda)) - sum(.logfactorial(responses))
   loglik

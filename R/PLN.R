@@ -122,7 +122,7 @@ initializePLN <- function(Y, X, O, control) {
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## User defined (from a previous fit, for instance)
-  if(isTRUE(all.equal(class(control$inception), c("PLNfit", "R6")))) {
+  if(isTRUE(all.equal(tail(class(control$inception), 2), c("PLNfit", "R6")))) {
     if (control$trace > 1) cat("\n User defined inceptive PLN model")
     stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))),
               isTRUE(all.equal(dim(control$inception$var_par$M), c(n,p))),

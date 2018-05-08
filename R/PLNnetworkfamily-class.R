@@ -21,8 +21,12 @@
 PLNnetworkfamily <-
   R6Class(classname = "PLNnetworkfamily",
     inherit = PLNfamily,
-     active = list(
-      penalties = function() private$params
+    private = list(
+      stab_path = NULL
+      ), # a field to store the stability path,
+    active = list(
+      penalties = function(value) private$params,
+      stability_path = function(value) private$stab_path
     )
 )
 
@@ -164,19 +168,85 @@ PLNnetworkfamily$set("public", "optimize",
 })
 
 
-#' Perform StARS (Stability Approach to Regularization Selection)
-#'
-#' @name stars
-#' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
-#' @param n_resamples integer indicating the number of resamples. Default is \code{20}.
-#' @param size a integer indicating the size of each subsample. Default is \code{min(10 * sqrt{n}, 0.8 n)}, with n the sample size.
-#'
-NULL
-PLNnetworkfamily$set("public", "StARS",
-  function(stability = 0.9, n_resamples = 20, size = min(10 * sqrt(self$n), .8 * self$n)) {
+# #' Perform StARS (Stability Approach to Regularization Selection)
+# #'
+# #' @name stars
+# #' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
+# #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
+# #'
+# #' @return
+# NULL
+# PLNnetworkfamily$set("public", "StARS",
+#   function(stability = 0.9, subsamples = NULL, control = list()) {
+#
+#   }
+# )
 
+#' Compute the stability path by stability selection
+#'
+#' @name stability_selection
+#' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
+#' @param control a list controling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.
+#' @param mc.cores the number of cores to used. Default is 1.
+#'
+##' @return the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the PLNnetwork object
+NULL
+PLNnetworkfamily$set("public", "stability_selection",
+  function(subsamples = NULL, control = list(), mc.cores = 1) {
+
+    ## define default control parameters for optim and overwrite by user defined parameters
+    ctrl_init <- PLNnetwork_param(list(), private$n, private$p, "init")
+    ctrl_init$trace <- 0
+    ctrl_main <- PLNnetwork_param(control, n, p, "main")
+    ctrl_main$trace <- 0
+
+    ## select default subsamples according
+    if (is.null(subsamples)) {
+      subsample.size <- round(ifelse(private$n >= 144, 10*sqrt(private$n), 0.8*private$n))
+      subsamples <- replicate(20, sample.int(private$n, subsample.size), simplify = FALSE)
+    }
+
+    ## got for stability selection
+    cat("\nStability Selection for PLNnetwork: ")
+    cat("\nsubsampling: ")
+
+    stabs_out <- mclapply(subsamples, function(subsample) {
+      cat("+")
+      inception_ <- self$getModel(self$penalties[1])
+      inception_$update(
+        M = inception_$var_par$M[subsample, ],
+        S = inception_$var_par$S[subsample, ]
+      )
+      ctrl_init$inception <- inception_
+      myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
+                                    responses  = self$responses [subsample, , drop = FALSE ],
+                                    covariates = self$covariates[subsample, , drop = FALSE],
+                                    offsets    = self$offsets   [subsample, , drop = FALSE ], control = ctrl_init)
+
+      myPLN$optimize(ctrl_main)
+      nets <- do.call(cbind, lapply(myPLN$models, function(model) {
+        as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
+      }))
+      nets
+    }, mc.cores = mc.cores)
+
+    prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
+    ## formatting/tyding
+    colnames(prob) <- self$penalties
+    private$stab_path <- prob %>%
+      as.data.frame() %>%
+      mutate(Edge = 1:n()) %>%
+      gather(key = "Penalty", value = "Prob", -Edge) %>%
+      mutate(Penalty = as.numeric(Penalty),
+             Node1   = as.character(edge_to_node(Edge)$node1),
+             Node2   = as.character(edge_to_node(Edge)$node2),
+             Edge    = paste0(Node1, "--", Node2)) %>%
+      filter(Node1 < Node2)
+
+    invisible(subsamples)
   }
 )
+
 
 #' Extract the regularization path of a PLNnetwork fit
 #'
