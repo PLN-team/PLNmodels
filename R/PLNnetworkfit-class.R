@@ -46,7 +46,7 @@ PLNnetworkfit <-
         par$Omega <- private$Omega
         par
       },
-      EBIC      = function() {self$BIC - self$n_edges * log(self$p)},
+      EBIC      = function() {self$BIC - .5 * self$degrees_freedom * log(self$p^2 + self$p * self$d)},
       criteria  = function() {c(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik)}
     )
 )
