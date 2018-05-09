@@ -322,7 +322,7 @@ function(stability = 0.9, log.x = TRUE) {
   dplot <- self$criteria %>% select(param, density, stability) %>%
     rename(Penalty = param) %>%
     gather(key = "Metric", value = "Value", stability:density)
-  penalty_stars <- dplot %>% filter(Metric == "stability" & Value >= 0.9) %>%
+  penalty_stars <- dplot %>% filter(Metric == "stability" & Value >= stability) %>%
     pull(Penalty) %>% min()
 
   p <- ggplot(dplot, aes(x = Penalty, y = Value, group = Metric, color = Metric)) +
