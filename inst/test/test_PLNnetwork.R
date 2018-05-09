@@ -30,7 +30,7 @@ p4 <- fits$plot_stars()
 grid.arrange(p0, p1, p2, p4, ncol = 2)
 
 network_BIC   <- fits$getBestModel("BIC")
-network_StARS <- fits$getBestModel("StARS")
+network_StARS <- fits$getBestModel("StARS", stability = 0.95)
 
 par(mfrow = c(1,2))
 network_BIC$plot_network()
