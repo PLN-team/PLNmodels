@@ -77,21 +77,25 @@ ggplot(path, aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + geom_li
 
 #### Model selection issue
 
-If we want to select one network, we may extract best model according to BIC with the method `getBestModel("BIC")`. A model with a specific penalty level can be extracted with the `getModel(lambda)` method. 
+If we want to select one network, we may extract best model according to BIC or StARS with the method `getBestModel()`. A model with a specific penalty level can be extracted with the `getModel(lambda)` method. 
 
 ```{r}
-model.BIC <- models$getBestModel("BIC") # if no criteria is specified, the best BIC is used
-model.pen <- models$getModel(models$penalties[5]) # give some sparsity
+model.BIC   <- models$getBestModel("BIC")   # if no criteria is specified, the best BIC is used
+model.StARS <- models$getBestModel("StARS") # if StARS is requested, stabiltiy selection is performed if needed 
+model.pen   <- models$getModel(models$penalties[20]) # give some sparsity
 ```
 
-The variables `model.BIC` and `model.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network, with various options.
+The variables `model.BIC`, `model.StARS` and `model.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network, with various options.
 
 ```{r support_network, fig.width=7, fig.height=7}
 model.BIC$plot_network(type = "support", output = "corrplot")
 ```
 
 ```{r partial_corr_network, fig.width=7, fig.height=7}
-model.BIC$plot_network(type = "partial_cor", output = "igraph")
+par(mfrow = c(1, 3))
+model.BIC$plot_network()
+model.StARS$plot_network()
+model.pen$plot_network()
 ```
 
 Additional information about the optimization process comes with the `plot_objective` method:

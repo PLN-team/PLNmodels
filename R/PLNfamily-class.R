@@ -165,8 +165,7 @@ plot.PLNfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), ...) {
 
 PLNfamily$set("public", "plot",
 function(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE) {
-  stopifnot(!anyNA(self$criteria))
-
+  stopifnot(!anyNA(self$criteria[criteria]))
   dplot <- self$criteria %>%
     dplyr::select(c("param", criteria)) %>%
     tidyr::gather(key = "criterion", value = "value", -param) %>%

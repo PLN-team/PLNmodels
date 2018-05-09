@@ -28,7 +28,6 @@ PLNnetworkfamily <-
       penalties = function() private$params,
       stability_path = function() private$stab_path,
       stability = function() {
-        stopifnot(!is.null(private$stab_path))
         if (!is.null(private$stab_path)) {
           stability <- self$stability_path %>%
             dplyr::select(Penalty, Prob) %>%
