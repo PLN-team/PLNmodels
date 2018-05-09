@@ -8,25 +8,25 @@ data("trichometeo")
 
 abundance <- as.matrix(trichometeo$fau)
 
-profiling1 <- profr::profr(model1 <- PLNnetwork(abundance))
-profiling2 <- profr::profr(model2 <- PLNnetwork(abundance ~ 1))
+profiling1 <- profr::profr(fits     <- PLNnetwork(abundance))
+profiling2 <- profr::profr(fits_alt <- PLNnetwork(abundance ~ 1))
 
-expect_equivalent(model1, model2)
+expect_equivalent(fits, fits_alt)
 
-model1$stability_selection()
+fits$stability_selection()
 
-p0 <- model1$plot()
-p1 <- model1$plot_objective()
-p2 <- ggplot(model1$coefficient_path()) +
+p0 <- fits$plot()
+p1 <- fits$plot_objective()
+p2 <- ggplot(fits$coefficient_path()) +
   aes(x = Penalty, y = Coeff, group = Edge, color = Edge) +
   geom_line(show.legend = FALSE) + theme_bw() +
   coord_trans(x = "log10")
-p22 <- ggplot(model1$stability_path) +
+p3 <- ggplot(fits$stability_path) +
   aes(x = Penalty, y = Prob, group = Edge, color = Edge) +
   geom_line(show.legend = FALSE) + theme_bw() +
   coord_trans(x = "log10")
-p3 <- model1$plot_stars()
+p4 <- fits$plot_stars()
 
-grid.arrange(p0, p1, p2, p3, ncol = 2)
+grid.arrange(p0, p1, p2, p4, ncol = 2)
 
-model1$getBestModel()$plot_network("partial_cor")
+fits$getBestModel()$plot_network("partial_cor")

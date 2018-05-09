@@ -193,7 +193,6 @@ PLNnetworkfamily$set("public", "optimize",
 # #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
 
 
-
 #' Compute the stability path by stability selection
 #'
 #' @name stability_selection
@@ -315,10 +314,10 @@ function(stability = 0.9, log.x = TRUE) {
     annotate(x = penalty_stars, y = 0,
            label = paste("lambda == ", round(penalty_stars, 5)),
            parse = TRUE,
-           hjust = 0,
+           hjust = 0.05,
            vjust = 0,
            geom = "text") + theme_bw()
-  if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
+  if (log.x) p <- p + ggplot2::scale_x_log10() + annotation_logticks(sides = "b")
   p
 })
 
