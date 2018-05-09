@@ -182,17 +182,6 @@ PLNnetworkfamily$set("public", "optimize",
 
 })
 
-
-# #' Perform StARS (Stability Approach to Regularization Selection)
-# #'
-# #' Compute StARS criterion after stability selection. If a stability path is already present,
-# #' it will not be recomputed
-# #'
-# #' @name stars
-# #' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
-# #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
-
-
 #' Compute the stability path by stability selection
 #'
 #' @name stability_selection
@@ -287,6 +276,37 @@ function(precision = TRUE, corr = TRUE) {
       filter(Node1 < Node2)
   }) %>% bind_rows()
 })
+
+#' Best model extraction from a collection of PLNnetworkfit
+#'
+#' @name PLNnetworkfamily_getBestModel
+#'
+#' @param crit a character for the criterion used to performed the selection. Either
+#' "BIC", "EBIC", "StARS", "R_squared". Default is \code{BIC}. If StARS
+#' (Stability Approach to Regularization Selection) is chosen and stability selection
+#'  was not yet performed, the function will call the method stability_selection with default argument.
+#' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
+#' @return  Send back a object with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}.
+NULL
+PLNnetworkfamily$set("public", "getBestModel",
+function(crit = c("BIC", "ICL", "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9){
+  crit <- match.arg(crit)
+  if (crit == "StARS") {
+    if (is.null(private$stab_path)) self$stability_selection()
+    id_stars <- self$criteria %>%
+      select(param, stability) %>% rename(Stability = stability) %>%
+      filter(Stability > stability) %>%
+      pull(param) %>% min() %>% match(self$penalties)
+    model <- self$models[[id_stars]]$clone()
+  } else {
+    model <- super$getBestModel(crit)
+  }
+  model
+})
+
+## ----------------------------------------------------------------------
+## PUBLIC PLOTTING METHODS
+## ----------------------------------------------------------------------
 
 #' @export
 PLNnetworkfamily$set("public", "plot",

@@ -76,7 +76,11 @@ function() {
   }
 })
 
-#' Best model extraction from a collection of PLNfit (PCA, network)
+## ----------------------------------------------------------------------
+## PUBLIC METHODS FOR THE USERS
+## ----------------------------------------------------------------------
+
+#' Best model extraction from a collection of PLNfit
 #'
 #' @name PLNfamily_getBestModel
 #'

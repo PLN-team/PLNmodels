@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNfamily-class.R
 \name{PLNfamily_getBestModel}
 \alias{PLNfamily_getBestModel}
-\title{Best model extraction from a collection of PLNfit (PCA, network)}
+\title{Best model extraction from a collection of PLNfit}
 \arguments{
 \item{crit}{a character for the criterion used to performed the selection. Either
 "BIC", "EBIC", "ICL", "loglik", "R_squared". Default is "BIC".}
@@ -11,5 +11,5 @@
 Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
 }
 \description{
-Best model extraction from a collection of PLNfit (PCA, network)
+Best model extraction from a collection of PLNfit
 }
