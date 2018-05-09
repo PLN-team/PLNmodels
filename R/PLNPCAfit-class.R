@@ -151,51 +151,59 @@ PLNPCAfit$set("public", "plot_PCA",
   function(cols.ind = "gray", var.cols = "gray", plot=TRUE, axes=1:min(3,self$rank)) {
 
     nb.axes <- length(axes)
-    pairs.axes <- combn(axes, 2, simplify = FALSE)
+    if (nb.axes > 1) {
+      pairs.axes <- combn(axes, 2, simplify = FALSE)
 
-    ## get back all individual maps
-    ind.plot <- lapply(pairs.axes, function(pair) {
-      ggobj <- self$plot_individual_map(axes=pair, plot=FALSE, main="", cols=cols.ind) + theme(legend.position="none")
-      return(ggplotGrob(ggobj))
-    })
+      ## get back all individual maps
+      ind.plot <- lapply(pairs.axes, function(pair) {
+        ggobj <- self$plot_individual_map(axes=pair, plot=FALSE, main="", cols=cols.ind) + theme(legend.position="none")
+        return(ggplotGrob(ggobj))
+      })
 
-    ## get back all correlation circle
-    cor.plot <- lapply(pairs.axes, function(pair) {
-      ggobj <- self$plot_correlation_circle(axes=pair, plot=FALSE, main="", cols = var.cols)
-      return(ggplotGrob(ggobj))
-    })
+      ## get back all correlation circle
+      cor.plot <- lapply(pairs.axes, function(pair) {
+        ggobj <- self$plot_correlation_circle(axes=pair, plot=FALSE, main="", cols = var.cols)
+        return(ggplotGrob(ggobj))
+      })
 
-    ## plot that appear on the diagonal
-    crit <- setNames(c(self$loglik, self$BIC, self$ICL), c("loglikelihood", "BIC", "ICL"))
-    criteria.text <- paste("Model Selection\n\n", paste(names(crit), round(crit, 2), sep=" = ", collapse="\n"))
-    percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percent_var[axes],3), "%"), collapse="\n"))
+      ## plot that appear on the diagonal
+      crit <- setNames(c(self$loglik, self$BIC, self$ICL), c("loglikelihood", "BIC", "ICL"))
+      criteria.text <- paste("Model Selection\n\n", paste(names(crit), round(crit, 2), sep=" = ", collapse="\n"))
+      percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percent_var[axes],3), "%"), collapse="\n"))
 
-    diag.grobs <- list(textGrob(percentV.text, just="left"),
-                       g_legend(self$plot_individual_map(plot=FALSE, cols=cols.ind) + guides(colour = guide_legend(nrow = 4, title="classification"))),
-                       textGrob(criteria.text, just="left"))
-    if (nb.axes > 3)
-      diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb.axes-3))
+      diag.grobs <- list(textGrob(percentV.text, just="left"),
+                         g_legend(self$plot_individual_map(plot=FALSE, cols=cols.ind) + guides(colour = guide_legend(nrow = 4, title="classification"))),
+                         textGrob(criteria.text, just="left"))
+      if (nb.axes > 3)
+        diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb.axes-3))
 
 
-    grobs <- vector("list", nb.axes^2)
-    i.cor <- 1; i.ind <- 1; i.dia <- 1
-    ind <- 0
-    for (i in 1:nb.axes) {
-      for (j in 1:nb.axes) {
-        ind <- ind+1
-        if (j > i) { ## upper triangular  -> cor plot
-          grobs[[ind]] <- cor.plot[[i.ind]]
-          i.ind <- i.ind + 1
-        } else if (i == j) { ## diagonal
-          grobs[[ind]] <- diag.grobs[[i.dia]]
-          i.dia <- i.dia + 1
-        } else {
-          grobs[[ind]] <- ind.plot[[i.cor]]
-          i.cor <- i.cor + 1
+      grobs <- vector("list", nb.axes^2)
+      i.cor <- 1; i.ind <- 1; i.dia <- 1
+      ind <- 0
+      for (i in 1:nb.axes) {
+        for (j in 1:nb.axes) {
+          ind <- ind+1
+          if (j > i) { ## upper triangular  -> cor plot
+            grobs[[ind]] <- cor.plot[[i.ind]]
+            i.ind <- i.ind + 1
+          } else if (i == j) { ## diagonal
+            grobs[[ind]] <- diag.grobs[[i.dia]]
+            i.dia <- i.dia + 1
+          } else {
+            grobs[[ind]] <- ind.plot[[i.cor]]
+            i.cor <- i.cor + 1
+          }
         }
       }
+      p <- arrangeGrob(grobs=grobs, ncol=nb.axes)
+    } else {
+      p <- arrangeGrob(grobs = list(
+        self$plot_individual_map(plot = FALSE),
+        self$plot_correlation_circle(plot = FALSE)
+      ), ncol = 1)
     }
-    p <- arrangeGrob(grobs=grobs, ncol=nb.axes)
+
     if (plot)
       grid.arrange(p)
 
