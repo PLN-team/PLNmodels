@@ -307,16 +307,16 @@ function(stability = 0.9, log.x = TRUE) {
     pull(Penalty) %>% min()
 
   p <- ggplot(dplot, aes(x = Penalty, y = Value, group = Metric, color = Metric)) +
-    geom_point() +  geom_line() +
+    geom_point() +  geom_line() + theme_bw() +
     ## Add information correspinding to best lambda
     geom_vline(xintercept = penalty_stars, linetype = 2) +
     geom_hline(yintercept = stability, linetype = 2) +
     annotate(x = penalty_stars, y = 0,
            label = paste("lambda == ", round(penalty_stars, 5)),
-           parse = TRUE,
-           hjust = 0.05,
-           vjust = 0,
-           geom = "text") + theme_bw()
+           parse = TRUE, hjust = -0.05, vjust = 0, geom = "text") +
+    annotate(x = penalty_stars, y = stability,
+             label = paste("stability == ", stability),
+             parse = TRUE, hjust = -0.05, vjust = 1.5, geom = "text")
   if (log.x) p <- p + ggplot2::scale_x_log10() + annotation_logticks(sides = "b")
   p
 })
