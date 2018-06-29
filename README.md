@@ -6,6 +6,8 @@ The Poisson lognormal model and variants can be used for a variety of multivaria
 
 ## Installation
 
+[![Build Status](https://travis-ci.org/jchiquet/PLNmodels.svg?branch=master)](https://travis-ci.org/jchiquet/PLNmodels)
+
 ### Linux
 
 Installation from source on Linux requires libnlopt 2.4-2. On Debian or Ubuntu use libnlopt-dev:
