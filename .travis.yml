@@ -1,0 +1,12 @@
+# Travis CI for automatic building.
+#
+# Changelog:
+#   2018-06-29: first try
+
+language: r
+cache: packages
+
+addons:
+  apt:
+    packages:
+    - libnlopt-dev
