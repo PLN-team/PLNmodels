@@ -6,7 +6,9 @@ The Poisson lognormal model and variants can be used for a variety of multivaria
 
 ## Installation
 
-For now, only works on Linux. Installation from source on Linux requires libnlopt 2.4-2. On Debian or Ubuntu use libnlopt-dev:
+### Linux
+
+Installation from source on Linux requires libnlopt 2.4-2. On Debian or Ubuntu use libnlopt-dev:
 
 ```bash
 sudo apt-get install libnlopt-dev
@@ -21,9 +23,29 @@ sudo yum install NLopt-devel
 
 Then you can install from github
 
-```
+```R
 devtools::install_github("jchiquet/PLNmodels")
 ```
+
+### MAC OS
+
+Installation requires nlopt, which can be installed via [homebrew](https://brew.sh/)
+
+```bash
+brew install nlopt
+```
+
+Finally install the package via
+
+```R
+devtools::install_github("jchiquet/PLNmodels")
+```
+
+If you experience problems due to OpenMP, [have a look a this page](http://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/).
+
+### Windows
+
+Not supported yet...
 
 ## Use and example
 
