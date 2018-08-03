@@ -7,7 +7,7 @@
 #' and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
 #'
 #' @field rank the dimension of the current model
-#' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
+#' @field model_par a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field loglik variational lower bound of the loglikelihood
@@ -26,25 +26,28 @@ PLNLDAfit <-
   R6Class(classname = "PLNLDAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(Theta=NA, Sigma=NA, grouping = NA, M=NA, S=NA, J=NA, monitoring=NA) {
+      initialize = function(Theta=NA, Group_Means = NA, Sigma=NA, grouping = NA, M=NA, S=NA, J=NA, monitoring=NA) {
         super$initialize(Theta, Sigma, M, S, J, monitoring)
         private$grouping <- as.factor(grouping)
+        private$Group_Means <- Group_Means
         nk <- table(grouping)
-        mu_bar <- as.vector(Theta %*% nk / self$n)
-        private$B <- Theta %*% diag(nk) %*% t(Theta) / self$n - mu_bar %o% mu_bar
+        mu_bar <- as.vector(Group_Means %*% nk / self$n)
+        private$B <- Group_Means %*% diag(nk) %*% t(Group_Means) / self$n - mu_bar %o% mu_bar
       },
       setVisualization = function(scale.unit = FALSE) {
         Wm1B <- solve(private$Sigma) %*% private$B
         private$svdLDA <- svd(scale(Wm1B,TRUE, scale.unit), nv = self$rank)
-        P <- self$latent_pos(model.matrix( ~ private$grouping + 0), matrix(0, self$n, self$q))
+        ## P <- self$latent_pos(model.matrix( ~ private$grouping + 0), matrix(0, self$n, self$q))
+        P <- private$M + tcrossprod(model.matrix( ~ private$grouping + 0), Group_Means) ## P = M + G mu
         private$P <- scale(P, TRUE, FALSE)
       }
     ),
     private = list(
-      B        = NULL,
-      P        = NULL,
-      grouping = NULL,
-      svdLDA   = NULL
+      B           = NULL,
+      P           = NULL,
+      Group_Means = NULL,
+      grouping    = NULL,
+      svdLDA      = NULL
     ),
     active = list(
       rank = function() {nlevels(private$grouping) - 1},
@@ -53,6 +56,7 @@ PLNLDAfit <-
         par <- super$model_par
         par$B <- private$B
         par$P <- private$P
+        par$Group_Means <- private$Group_Means
         par
       },
       percent_var = function() {
@@ -195,7 +199,7 @@ PLNLDAfit$set("public", "plot_LDA",
 
 PLNLDAfit$set("public", "show",
 function() {
-  super$show(paste0("Linear Discriminant Analysis for Poisson Lognormal distirbution\n"))
+  super$show(paste0("Linear Discriminant Analysis for Poisson Lognormal distribution\n"))
   cat("* Additional fields for LDA\n")
   cat("    $percent_var, $corr_circle, $scores \n")
   cat("* Additional methods for LDA\n")
