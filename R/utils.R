@@ -8,7 +8,7 @@
 }
 
 .loglikPLN <- function(Y, X, O, Theta, Sigma, M, S) {
-  Omega <- solve(Sigma)
+  Omega <- chol2inv(chol(Sigma))
   Z <- O + M + tcrossprod(X, private$Theta)
   A = exp (Z + .5 * S)
   res <- Y * Z - A + .5*log(S) + .5 + .logfactorial(Y) + 0.5(Omega * (crossprod(M) + diag(colSums(S))))
