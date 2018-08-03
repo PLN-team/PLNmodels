@@ -14,13 +14,13 @@ double fn_optim_VEstep_PLN(const std::vector<double> &x, std::vector<double> &gr
   arma::mat M(&x[0]    , n,p);
   arma::mat S(&x[n*p]  , n,p);
 
-  arma::mat Z = dat->O + dat->X * Theta.t() + M;
+  arma::mat Z = dat->O + dat->X * dat->Theta.t() + M;
   arma::mat A = exp (Z + .5 * S);
 
-  double objective = accu(A - dat->Y % Z - .5*log(S)) - .5*n*real(log_det_Omega) + dat->KY ;
+  double objective = accu(A - dat->Y % Z - .5*log(S)) - .5*n* dat->log_det_Omega + dat->KY ;
 
-  arma::vec grd_M     = vectorise(M * Omega + A-dat->Y) ;
-  arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(Omega).t() + A - 1/S));
+  arma::vec grd_M     = vectorise(M * dat->Omega + A-dat->Y) ;
+  arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(dat->Omega).t() + A - 1/S));
 
   if (!grad.empty()) {
     grad = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
