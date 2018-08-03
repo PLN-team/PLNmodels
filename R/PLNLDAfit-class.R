@@ -38,7 +38,7 @@ PLNLDAfit <-
         Wm1B <- solve(private$Sigma) %*% private$B
         private$svdLDA <- svd(scale(Wm1B,TRUE, scale.unit), nv = self$rank)
         ## P <- self$latent_pos(model.matrix( ~ private$grouping + 0), matrix(0, self$n, self$q))
-        P <- private$M + tcrossprod(model.matrix( ~ private$grouping + 0), Group_Means) ## P = M + G mu
+        P <- private$M + tcrossprod(model.matrix( ~ private$grouping + 0), private$Group_Means) ## P = M + G mu
         private$P <- scale(P, TRUE, FALSE)
       }
     ),
