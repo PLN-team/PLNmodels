@@ -118,6 +118,68 @@ function(covariates, offsets) {
   latentPos
 })
 
+#' Result of the VE step of the optimization procedure: optimal variational parameters (M, S)
+#' and corresponding log likelihood values of new observations for fixed model parameters (Sigma, Theta)
+#'
+#' @name PLNfit_VEstep
+#'
+#' @param newdata A data frame in which to look for covariates.
+#' @param newOffsets A matrix in which to look for offsets.
+#' @param newCounts A matrix in which to look for counts.
+#' @param control a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.
+#' @return A list with three components:
+#'            the matrix M of variational means,
+#'            the matrix S of variational variances
+#'            the vector log.lik of (variational) log-likelihood of each new observation
+#'
+PLNfit$set("public", "VEstep",
+           function(newdata, newOffsets, newCounts, control = list()) {
+
+             ## ===========================================
+             ## OPTIMIZATION
+             ##
+
+             ## define default control parameters for optim and overwrite by user defined parameters
+             ctrl <- PLN_param(control, self$n, self$p)
+
+             ## Problem dimension
+             n <- nrow(newCounts); p <- ncol(newCounts)
+
+             ## get an initial point for optimization
+             M <- matrix(0, n, p)
+             S <- matrix(10 * ctrl$lbvar, n, p)
+             par0 <- c(M, S)
+
+             ## Set lower bounds for variance parameters
+             ctrl$lower_bound <- c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
+
+             optim.out <- optimization_VEstep_PLN(par0,
+                                                  newCounts, newdata, newOffsets,
+                                                  private$Theta, private$Sigma,
+                                                  ctrl)
+
+             ## ===========================================
+             ## POST-TREATMENT
+             ##
+             optim.out$message <- statusToMessage(optim.out$status)
+
+             M     <- matrix(optim.out$solution[1:(n*p)], n,p)
+             S     <- matrix(optim.out$solution[n*p + 1:(n*p)], n,p)
+
+             rownames(M) <- rownames(S) <- rownames(newdata)
+             colnames(M) <- colnames(S) <- colnames(newCounts)
+
+             log.lik <- .loglikPLN(Y = newCounts, X = newdata, O = newOffsets,
+                                   Theta = private$Theta, Sigma = private$Sigma,
+                                   M = M, S = S)
+             names(log.lik) <- rownames(newdata)
+
+             return(list(M       = M,
+                         S       = S,
+                         log.lik = log.lik))
+           }
+           )
+
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS
 ## ----------------------------------------------------------------------
@@ -205,5 +267,6 @@ function(model = "A Poisson Lognormal fit\n") {
   cat("* Useful methods\n")
   cat("    $plot(), $predict()\n")
 })
+
 PLNfit$set("public", "print", function() self$show())
 
