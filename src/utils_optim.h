@@ -13,6 +13,7 @@ typedef struct optim_data {
     arma::mat X          ;
     arma::mat O          ;
     arma::mat Omega      ;
+    arma::mat Theta      ;
     double log_det_Omega ;
     double KY            ;
     int iterations       ;
@@ -21,7 +22,8 @@ typedef struct optim_data {
     int d                ;
     int q                ;
 
-    // constructor
+    // constructors
+    // PLN constructor
     optim_data(const arma::mat &responses,
                const arma::mat &covariates,
                const arma::mat &offsets
@@ -33,6 +35,7 @@ typedef struct optim_data {
         iterations = 0 ;
         KY = K(Y) ;
       } ;
+    // PLNPCA constructor
     optim_data(const arma::mat &responses,
                const arma::mat &covariates,
                const arma::mat &offsets,
@@ -45,8 +48,8 @@ typedef struct optim_data {
         iterations = 0 ;
         KY = K(Y) ;
       } ;
-
-      optim_data(const arma::mat &responses,
+    // PLNnetwork constructor
+    optim_data(const arma::mat &responses,
                const arma::mat &covariates,
                const arma::mat &offsets,
                const arma::mat covinv,
@@ -59,6 +62,21 @@ typedef struct optim_data {
         iterations = 0 ;
         KY = K(Y) ;
       } ;
+    // PLN VE-step constructor
+    optim_data(const arma::mat &responses,
+               const arma::mat &covariates,
+               const arma::mat &offsets,
+               const arma::mat &regression_parameters,
+               const arma::mat &covinv,
+               const double log_det
+    ) : Y(responses), X(covariates), O(offsets), Theta(regression_parameters), Omega(cov), log_det_Omega(log_det)
+    {
+      n = Y.n_rows ;
+      p = Y.n_cols ;
+      d = X.n_cols ;
+      iterations = 0 ;
+      KY = K(Y) ;
+    } ;
 
 } optim_data ;
 
