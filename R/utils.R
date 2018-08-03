@@ -1,10 +1,18 @@
 .logfactorial <- function(n) { # Ramanujan's formula
-  n <- n[n != 0]
+  n[n == 0] <- 1 ## 0! = 1!
   return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)
 }
 
 .trunc <- function(x, M = 300) {
   return(pmin(x, M))
+}
+
+.loglikPLN <- function(Y, X, O, Theta, Sigma, M, S) {
+  Omega <- solve(Sigma)
+  Z <- O + M + tcrossprod(X, private$Theta)
+  A = exp (Z + .5 * S)
+  res <- Y * Z - A + .5*log(S) + .5 + .logfactorial(Y) + 0.5(Omega * (crossprod(M) + diag(colSums(S))))
+  return(rowSums(res) + 0.5 * det(Omega, logarithm = TRUE))
 }
 
 edge_to_node <- function(x, n = max(x)) {
