@@ -197,6 +197,65 @@ PLNLDAfit$set("public", "plot_LDA",
   }
 )
 
+## ----------------------------------------------------------------------
+## PUBLIC METHODS FOR THE USERS
+## ----------------------------------------------------------------------
+
+## an S3 function to check if an object is a PLNLDAfit
+isPLNLDAfit <- function(Robject) {all.equal(class(Robject), c('PLNLDAfit', 'PLNfit', 'R6'))}
+
+#' Predict group of new samples
+#'
+#' @name predict.PLNLDAfit
+#'
+#' @param object an R6 object with class PLNLDAfit
+#' @param newdata A data frame in which to look for variables with which to predict.
+#' @param newOffsets A matrix in which to look for offsets with which to predict.
+#' @param newCounts A matrix in which to look for counts with to predict
+#' @param type The type of prediction required. The default are posterior probabilities for each group (in log-scale),
+#'             the alternative "response" is the group with maximal posterior probability.
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A matrix of predicted scores for each group (if type = "score") or a vector of predicted
+#'         groups (if type = "response").
+#' @export
+predict.PLNLDAfit <- function(object, newdata, newOffsets, newCounts,
+                              type = c("posterior", "response"), control = list(), ...) {
+  stopifnot(isPLNLDAfit(object))
+  object$predict(newdata, newOffsets, newcounts, type, control)
+}
+
+PLNLDAfit$set("public", "predict",
+              function(newdata, newOffsets, newCounts, type = c("posterior", "response"), control = list()) {
+                type = match.arg(type)
+                ## Are matrix conformable?
+                stopifnot(ncol(newdata)    == ncol(private$Theta),
+                          nrow(newdata)    == nrow(newOffsets),
+                          ncol(newOffsets) == nrow(private$Theta))
+                ## Problem dimensions
+                n.new <- ncol(newdata); groups <- levels(private$grouping); K <- length(groups)
+                ## Compute conditional log-likelihoods of new data, using previously estimated parameters
+                cond.log.lik <- matrix(0, n.new, K)
+                for (k in 1:K) { ## One VE-step to estimate the conditional (variational) likelihood of each group
+                  grouping <- factor(rep(groups[k], n), levels = groups)
+                  X <- cbind(newdata, model.matrix( ~ grouping + 0))
+                  cond.log.lik[, k] <- self$VEstep(X, newOffsets, newCounts, control)$log.lik
+                }
+                ## Compute posterior probabilities
+                log.prior <- rep(1, n.new) %o% log( table(private$grouping) / self$n)
+                log.posterior <- cond.log.lik + log.prior
+                ## format output
+                res <- log.posterior
+                rownames(res) <- rownames(newdata)
+                colnames(res) <- groups
+                if (type == "response") {
+                  res <- apply(res, 1, which.max)
+                  res[] <- groups[res]
+                }
+                return(res)
+              }
+)
+
+
 PLNLDAfit$set("public", "show",
 function() {
   super$show(paste0("Linear Discriminant Analysis for Poisson Lognormal distribution\n"))
