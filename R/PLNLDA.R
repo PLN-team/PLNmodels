@@ -75,13 +75,14 @@ PLNLDA.default <- function(Robject, grouping, X = NULL, O = NULL,  control = lis
   myPLN <- PLN(Y, design_full, O, control = ctrl)
   if (d > 0) {
     P <- (diag(nrow(X)) - X %*% solve(crossprod(X)) %*% t(X)) %*% myPLN$latent_pos(design_full, matrix(0, myPLN$n, myPLN$q))
-    Theta <- t(rowsum(P, grouping) / tabulate(grouping))
+    Group_Means <- t(rowsum(P, grouping) / tabulate(grouping))
   } else {
-    Theta <- myPLN$model_par$Theta
+    Group_Means <- myPLN$model_par$Theta
   }
 
   if (ctrl$trace > 0) cat("\n Performing Discriminant Analysis...")
-  myLDA <- PLNLDAfit$new(Theta = Theta,
+  myLDA <- PLNLDAfit$new(Theta = myPLN$model_par$Theta,
+                         Group_Means = Group_Means,
                          Sigma = myPLN$model_par$Sigma,
                          grouping = grouping,
                          M = myPLN$var_par$M, S = myPLN$var_par$S,
