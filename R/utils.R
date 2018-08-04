@@ -9,10 +9,10 @@
 
 .loglikPLN <- function(Y, X, O, Theta, Sigma, M, S) {
   Omega <- chol2inv(chol(Sigma))
-  Z <- O + M + tcrossprod(X, private$Theta)
+  Z <- O + M + tcrossprod(X, Theta)
   A = exp (Z + .5 * S)
-  res <- Y * Z - A + .5*log(S) + .5 + .logfactorial(Y) + 0.5(Omega * (crossprod(M) + diag(colSums(S))))
-  return(rowSums(res) + 0.5 * det(Omega, logarithm = TRUE))
+  res <- Y * Z - A + .5*log(S) + .5 - .logfactorial(Y) - 0.5*(M * (M %*% Omega) + t(t(S) * diag(Omega)) )
+  return(rowSums(res) + 0.5 * log(det(Omega)) )
 }
 
 edge_to_node <- function(x, n = max(x)) {
