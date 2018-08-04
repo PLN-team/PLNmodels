@@ -45,7 +45,7 @@ predicted.class <- myLDA_nocov$predict(newCounts = Y,
 ```
 and asses that we recover the correct class in most (but not all) cases:
 ```{r check_predicted_class}
-table(predicted.class, night_grp)
+table(predicted.class, night_grp, dnn = c("predicted", "true"))
 ```
 
 
@@ -74,5 +74,5 @@ predicted.class_cov <- myLDA_cov$predict(newCounts = Y,
 ```
 and asses that we recover the correct class in most (but not all) cases:
 ```{r check_predicted_class_cov}
-table(predicted.class_cov, night_grp)
+table(predicted.class_cov, night_grp, dnn = c("predicted", "true"))
 ```
