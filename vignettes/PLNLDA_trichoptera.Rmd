@@ -35,6 +35,24 @@ Essentially, the most important methodis the `plot` method: we separate well the
 myLDA_nocov$plot_LDA()
 ```
 
+If new samples become available, we can predict their class
+```{r predict_class}
+set.seed(42)
+ii <- sample(1:nrow(abundance), 10, replace = FALSE)
+Y <- abundance[ii, ]
+predicted.class <- myLDA_nocov$predict(newCounts = Y, 
+                                       newdata = matrix(0, nrow(Y), 0),           ## No covariates
+                                       newOffsets = matrix(0, nrow(Y), ncol(Y)),  ## No offset
+                                       type = "response")
+predicted.class
+```
+and asses that we recover the correct class in most cases:
+```{r check_predicted_class}
+table(predicted.class, night_grp[ii])
+```
+
+
+
 ### Accounting for other covariates 
 
 It is possible (experimental) to correct for other covariates before finding the LDA axis that separate well the grouping :
