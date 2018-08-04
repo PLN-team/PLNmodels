@@ -184,7 +184,7 @@ PLNfit$set("public", "VEstep",
              colnames(M) <- colnames(S) <- colnames(newCounts)
 
              log.lik <- .loglikPLN(Y = newCounts, X = newdata, O = newOffsets,
-                                   Theta = private$Theta, Sigma = private$Sigma,
+                                   Theta = self$model_par$Theta, Sigma = self$model_par$Sigma,
                                    M = M, S = S)
              names(log.lik) <- rownames(newdata)
 

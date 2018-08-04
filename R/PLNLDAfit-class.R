@@ -249,7 +249,7 @@ PLNLDAfit$set("public", "predict",
                 colnames(res) <- groups
                 if (type == "response") {
                   res <- apply(res, 1, which.max)
-                  res[] <- groups[res]
+                  res[] <- factor(groups[res], levels = groups)
                 }
                 return(res)
               }
