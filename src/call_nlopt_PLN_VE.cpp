@@ -17,7 +17,7 @@ double fn_optim_VEstep_PLN(const std::vector<double> &x, std::vector<double> &gr
   arma::mat Z = dat->O + dat->X * dat->Theta.t() + M;
   arma::mat A = exp (Z + .5 * S);
   // 0.5 tr(\Omega M'M) + 0.5 tr(\bar{S} \Omega)
-  double prior = .5*accu(dat->Omega % (M.t() * M)) + .5*accu(S * diagmat(dat->Omega)) ;
+  double prior = .5*accu(dat->Omega % (M.t() * M)) + .5*dot(arma::ones(n).t() * S, diagvec(dat->Omega)) ;
   // J(M, S, \Theta, \Omega, Y, X, O)
   double objective = accu(A - dat->Y % Z - .5*log(S)) + prior - .5*n* dat->log_det_Omega + dat->KY ;
 
