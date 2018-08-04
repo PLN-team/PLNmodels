@@ -37,18 +37,15 @@ myLDA_nocov$plot_LDA()
 
 If new samples become available, we can predict their class
 ```{r predict_class}
-set.seed(42)
-ii <- sample(1:nrow(abundance), 10, replace = FALSE)
-Y <- abundance[ii, ]
+Y <- abundance[, ]
 predicted.class <- myLDA_nocov$predict(newCounts = Y, 
-                                       newdata = matrix(0, nrow(Y), 0),           ## No covariates
-                                       newOffsets = matrix(0, nrow(Y), ncol(Y)),  ## No offset
+                                       newdata = matrix(0, nrow(Y), 0), 
+                                       newOffsets = matrix(0, nrow(Y), ncol(Y)), 
                                        type = "response")
-predicted.class
 ```
-and asses that we recover the correct class in most cases:
+and asses that we recover the correct class in most (but not all) cases:
 ```{r check_predicted_class}
-table(predicted.class, night_grp[ii])
+table(predicted.class, night_grp)
 ```
 
 
@@ -65,4 +62,17 @@ myLDA_cov <- PLNLDA(abundance, night_grp, covariates)
 
 ```{r plot_model_cov, fig.width=7, fig.height=5}
 myLDA_cov$plot_LDA()
+```
+
+And again try to predict class based on the counts and some covariates
+```{r predict_class_cov}
+Y <- abundance[, ]
+predicted.class_cov <- myLDA_cov$predict(newCounts = Y, 
+                                       newdata = covariates, 
+                                       newOffsets = matrix(0, nrow(Y), ncol(Y)), 
+                                       type = "response")
+```
+and asses that we recover the correct class in most (but not all) cases:
+```{r check_predicted_class_cov}
+table(predicted.class_cov, night_grp)
 ```
