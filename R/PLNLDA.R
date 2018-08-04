@@ -70,7 +70,8 @@ PLNLDA.default <- function(Robject, grouping, X = NULL, O = NULL,  control = lis
   ctrl <- PLN_param(control, n, p)
 
   if (ctrl$trace > 0) cat("\n Initialization...")
-  design_group <- model.matrix( ~as.factor(grouping)+0)
+  grouping <- as.factor(grouping)
+  design_group <- model.matrix( ~grouping+0)
   design_full <- cbind(X, design_group)
   myPLN <- PLN(Y, design_full, O, control = ctrl)
   if (d > 0) {
@@ -79,6 +80,7 @@ PLNLDA.default <- function(Robject, grouping, X = NULL, O = NULL,  control = lis
   } else {
     Group_Means <- myPLN$model_par$Theta
   }
+  colnames(Group_Means) <- colnames(design_group)
 
   if (ctrl$trace > 0) cat("\n Performing Discriminant Analysis...")
   myLDA <- PLNLDAfit$new(Theta = myPLN$model_par$Theta,
