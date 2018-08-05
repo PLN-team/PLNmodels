@@ -177,17 +177,12 @@ PLNfit$set("public", "VEstep",
              ##
              optim.out$message <- statusToMessage(optim.out$status)
 
-             # M     <- matrix(optim.out$solution[1:(n*p)], n,p)
-             # S     <- matrix(optim.out$solution[n*p + 1:(n*p)], n,p)
              M <- optim.out$M
              S <- optim.out$S
 
              rownames(M) <- rownames(S) <- rownames(newdata)
              colnames(M) <- colnames(S) <- colnames(newCounts)
 
-             # log.lik <- .loglikPLN(Y = newCounts, X = newdata, O = newOffsets,
-             #                       Theta = self$model_par$Theta, Sigma = self$model_par$Sigma,
-             #                       M = M, S = S)
              log.lik <- optim.out$loglik
              names(log.lik) <- rownames(newdata)
 

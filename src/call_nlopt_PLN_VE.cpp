@@ -57,19 +57,18 @@ Rcpp::List optimization_VEstep_PLN(
 
   // Format the output
   int n = Y.n_rows, p = Y.n_cols;
-  arma::mat M(x_optimized[0]    , n,p);
-  arma::mat S(x_optimized[n*p]  , n,p);
+  arma::mat M(&x_optimized[0]    , n,p);
+  arma::mat S(&x_optimized[n*p]  , n,p);
 
   // Compute log-likelihood
   arma::mat Z = O + X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S);
-  arma::vec loglik = arma::ones(n).t() * (-A + Y % Z + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega) ) - logfact(Y) )  +
-    .5*log_det_Omega*arma::ones(n).t();
+  arma::vec loglik = (-A + Y % Z + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)) - logfact(Y)) * arma::ones(p) +
+    .5*log_det_Omega*arma::ones(n);
 
   return Rcpp::List::create(
     Rcpp::Named("status"    ) = (int) status,
     Rcpp::Named("objective" ) = f_optimized,
-    Rcpp::Named("solution"  ) = x_optimized,
     Rcpp::Named("M"         ) = M,
     Rcpp::Named("S"         ) = S,
     Rcpp::Named("loglik"    ) = loglik,
