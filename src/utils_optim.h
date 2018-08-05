@@ -6,6 +6,8 @@
 
 double K(arma::mat Y) ;
 
+arma::mat logfact(arma::mat Y) ;
+
 typedef std::vector<double> stdvec;
 
 typedef struct optim_data {

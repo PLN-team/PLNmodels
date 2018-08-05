@@ -55,10 +55,24 @@ Rcpp::List optimization_VEstep_PLN(
   opt.set_min_objective(fn_optim_VEstep_PLN, &my_optim_data);
   nlopt::result status = opt.optimize(x_optimized, f_optimized);
 
+  // Format the output
+  int n = Y.n_rows, p = Y.n_cols;
+  arma::mat M(x_optimized[0]    , n,p);
+  arma::mat S(x_optimized[n*p]  , n,p);
+
+  // Compute log-likelihood
+  arma::mat Z = O + X * Theta.t() + M;
+  arma::mat A = exp (Z + .5 * S);
+  arma::vec loglik = arma::ones(n).t() * (-A + Y % Z + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega) ) - logfact(Y) )  +
+    .5*log_det_Omega*arma::ones(n).t();
+
   return Rcpp::List::create(
     Rcpp::Named("status"    ) = (int) status,
-    Rcpp::Named("objective" ) = f_optimized ,
+    Rcpp::Named("objective" ) = f_optimized,
     Rcpp::Named("solution"  ) = x_optimized,
+    Rcpp::Named("M"         ) = M,
+    Rcpp::Named("S"         ) = S,
+    Rcpp::Named("loglik"    ) = loglik,
     Rcpp::Named("iterations") = my_optim_data.iterations
   );
 }

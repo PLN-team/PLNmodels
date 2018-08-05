@@ -7,6 +7,11 @@ double K(arma::mat Y) {
   return accu(v % log(v) - v + log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + log(M_PI)/2);
 }
 
+arma::mat logfact(arma::mat Y) {
+  arma::mat v = Y.replace(0, 1);
+  return v % log(v) - v + log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + log(M_PI)/2;
+}
+
 // Convert string to nlopt_alogirthm
 //
 // restrict the choices to algorithms meaningful for PLN optimization
