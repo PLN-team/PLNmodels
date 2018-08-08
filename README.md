@@ -43,7 +43,31 @@ Finally install the package via
 devtools::install_github("jchiquet/PLNmodels")
 ```
 
-If you experience problems due to OpenMP, [have a look a this page](http://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/).
+#### Troubleshooting
+
+If you experience problems due to the lack of OpenMP support in Clang like 
+```bash
+clang: error: unsupported option '-fopenmp'
+make: *** [RcppExports.o] Error 1
+ERROR: compilation failed for package ‘PLNmodels’
+```
+[have a look a this page](http://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/) or this [issue](https://github.com/jchiquet/PLNmodels/issues/12)
+
+A simple fix (for R 3.4.x) consists in installing the [dev tool chains](https://github.com/coatless/r-macos-rtools/releases) for Mac OS X: https://github.com/coatless/r-macos-rtools/releases/download/v1.1.0/macos-rtools-1.1.0.pkg
+
+For R 3.5.x, you can also install the CRAN Mac OS toolchain from https://cran.r-project.org/bin/macosx/tools/, especially the [Clang 6.0.0 compiler](https://cran.r-project.org/bin/macosx/tools/clang-6.0.0.pkg) and the [GNU Fortran 6.1 compiler](https://cran.r-project.org/bin/macosx/tools/gfortran-6.1.pkg) and modify your `Makevars` to make it look like
+
+```bash
+F77 = /usr/local/bin/gfortran
+FC = $F77
+CXX =  /usr/local/clang6/bin/clang++  -Wall
+LDFLAGS=-L/usr/local/clang6/lib
+CC=  /usr/local/clang6/bin/clang
+SHLIB_CXXLD=ccache /usr/local/clang6/bin/clang++
+CXX11 =  /usr/local/clang6/bin/clang++
+CXX98 =  /usr/local/clang6/bin/clang++
+CXX14 =  /usr/local/clang6/bin/clang++
+```
 
 ### Windows
 
