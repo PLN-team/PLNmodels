@@ -9,7 +9,7 @@ double fn_optim_VEstep_PLN(const std::vector<double> &x, std::vector<double> &gr
   optim_data *dat = reinterpret_cast<optim_data*>(data);
   dat->iterations++; // increase number of iterations
 
-  int n = dat->Y.n_rows, p = dat->Y.n_cols, d = dat->X.n_cols ;
+  int n = dat->Y.n_rows, p = dat->Y.n_cols ;
 
   arma::mat M(&x[0]    , n,p);
   arma::mat S(&x[n*p]  , n,p);
