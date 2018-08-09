@@ -83,7 +83,7 @@ fullModelPoisson <- function(responses) {
 rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths = rep(1e4, n)) {
   p <- ncol(Sigma)
   if (is.vector(mu)) {
-    mu <- matrix(rep(mu, p), ncol = p)
+    mu <- matrix(rep(mu, n), ncol = p, byrow = T)
   }
   ## adjust depths
   exp_depths <- rowSums(exp(diag(Sigma)/2 + mu)) ## sample-wise expected depths
