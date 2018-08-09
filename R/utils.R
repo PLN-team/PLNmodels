@@ -15,6 +15,7 @@
   return(rowSums(res) + 0.5 * log(det(Omega)) )
 }
 
+
 edge_to_node <- function(x, n = max(x)) {
   x <- x - 1 ## easier for arithmetic to number edges starting from 0
   n.node <- round((1 + sqrt(1 + 8*n)) / 2) ## n.node * (n.node -1) / 2 = n (if integer)
@@ -50,6 +51,46 @@ nullModelPoisson <- function(responses, covariates, offsets) {
 fullModelPoisson <- function(responses) {
   lambda <- log(responses)
   lambda
+}
+
+##' @title PLN RNG
+##'
+##' @description Random generation for the PLN model with latent mean equal to mu, latent covariance matrix
+##'              equal to Sigma and average depths (sum of counts in a sample) equal to depths
+##'
+##' @param n the sample size
+##' @param mu vectors of means of the latent variable
+##' @param Sigma covariance matrix of the latent variable
+##' @param depths Target depths
+##'
+##' @return a n * p count matrix, with row-sums close to depths
+##'
+##' @details The default value for mu and Sigma assume equal abundances and no correlation between
+##'          the different species.
+##'
+##' @rdname rPLN
+##' @examples
+##' ## 10 samples of 5 species with equal abundances, no covariance and target depths of 10,000
+##' rPLN()
+##' ## 2 samples of 10 highly correlated species with target depths 1,000 and 100,000
+##' ## very different abundances
+##' mu <- rep(c(1, -1), each = 5)
+##' Sigma <- matrix(0.8, 10, 10); diag(Sigma) <- 1
+##' rPLN(n=2, mu = mu, Sigma = Sigma, depths = c(1e3, 1e5))
+##'
+##' @importFrom MASS mvrnorm
+##' @export
+rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths = rep(1e4, n)) {
+  p <- ncol(Sigma)
+  if (is.vector(mu)) {
+    mu <- matrix(rep(mu, p), ncol = p)
+  }
+  ## adjust depths
+  exp_depths <- rowSums(exp(diag(Sigma)/2 + mu)) ## sample-wise expected depths
+  offsets <- log(depths %o% rep(1, p)) - log(exp_depths)
+  Z <- mu + mvrnorm(n, rep(0,ncol(Sigma)), as.matrix(Sigma)) + offsets
+  Y <- matrix(rpois(n * p, as.vector(exp(Z))), n, p)
+  Y
 }
 
 
