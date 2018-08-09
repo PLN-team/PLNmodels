@@ -20,7 +20,7 @@ and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
 \describe{
 \item{\code{rank}}{the dimension of the current model}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)}
+\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)}
 
 \item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 

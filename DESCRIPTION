@@ -20,7 +20,7 @@ License: GPL (>= 3)
 SystemRequirements: libnlopt: libnlopt-dev (deb) or NLopt-devel (rpm).
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Imports: igraph, grid, gridExtra, dplyr, tidyr, reshape2, ggplot2, Matrix, parallel, R6, methods, stats, glasso, Rcpp, RcppArmadillo, corrplot
 Suggests: knitr, rmarkdown, ade4
 VignetteBuilder: knitr

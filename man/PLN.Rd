@@ -10,7 +10,8 @@ PLN(Robject, ...)
 
 \method{PLN}{formula}(Robject, control = list(), ...)
 
-\method{PLN}{default}(Robject, X = NULL, O = NULL, control = list(), ...)
+\method{PLN}{default}(Robject, X = NULL, O = NULL, control = list(),
+  ...)
 }
 \arguments{
 \item{Robject}{an R object, either a formula or a (n x p) matrix of count data}
