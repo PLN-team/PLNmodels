@@ -19,6 +19,8 @@
 \item{type}{The type of prediction required. The default are posterior probabilities for each group (in log-scale),
 the alternative "response" is the group with maximal posterior probability.}
 
+\item{control}{a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.}
+
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
 \value{
