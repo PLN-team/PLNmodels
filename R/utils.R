@@ -79,6 +79,7 @@ fullModelPoisson <- function(responses) {
 ##' rPLN(n=2, mu = mu, Sigma = Sigma, depths = c(1e3, 1e5))
 ##'
 ##' @importFrom MASS mvrnorm
+##' @importFrom stats rpois
 ##' @export
 rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths = rep(1e4, n)) {
   p <- ncol(Sigma)
