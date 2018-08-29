@@ -61,7 +61,7 @@ fullModelPoisson <- function(responses) {
 ##' @param n the sample size
 ##' @param mu vectors of means of the latent variable
 ##' @param Sigma covariance matrix of the latent variable
-##' @param depths Target depths
+##' @param depths Numeric vector of target depths. The first is recycled if there are not `n` values
 ##'
 ##' @return a n * p count matrix, with row-sums close to depths
 ##'
@@ -83,8 +83,11 @@ fullModelPoisson <- function(responses) {
 ##' @export
 rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths = rep(1e4, n)) {
   p <- ncol(Sigma)
-  if (is.vector(mu)) {
+  if (any(is.vector(mu), ncol(mu) == 1)) {
     mu <- matrix(rep(mu, n), ncol = p, byrow = T)
+  }
+  if (length(depths) != n) {
+    depths <- rep(depths[1], n)
   }
   ## adjust depths
   exp_depths <- rowSums(exp(diag(Sigma)/2 + mu)) ## sample-wise expected depths
