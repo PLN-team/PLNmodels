@@ -220,7 +220,7 @@ PLNPCAfit$set("public", "show",
 function() {
   super$show(paste0("Poisson Lognormal with rank constrained for PCA (rank = ",self$rank,")\n"))
   cat("* Additional fields for PCA\n")
-  cat("    $percent_var, $corr_circle, $scores \n")
+  cat("    $percent_var, $corr_circle, $scores, $rotation \n")
   cat("* Additional methods for PCA\n")
   cat("    $plot_PCA(), $plot_correlation_circle(), $plot_individual_map() \n")
 })
