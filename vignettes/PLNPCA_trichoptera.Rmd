@@ -121,4 +121,25 @@ myPCA.cov$plot_individual_map(axes=c(1,2), cols=trichometeo$cla)
 myPCA.cov$plot_correlation_circle(axes=c(1,2))
 ```
 
+### Data structure of a `PLNPCAfit` model
+
+`myPCA.cov` is an object of class `PLNPCAfit` with several fields, in addition to the two plot methods previously mentioned. Among the many fields, the most interesting for the end-user are 
+
+- the regression coefficient matrix
+```{r}
+head(myPCA.cov$model_par$Theta)
+## Or equivalently
+head(coef(myPCA.cov))
+```
+- the rotation matrix (in the latent space)
+```{r}
+head(myPCA.cov$model_par$B)
+```
+- the principal components values (or scores)
+```{r}
+head(myPCA.cov$scores)
+```
+
+
+
 That is all for now!
