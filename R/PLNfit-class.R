@@ -233,6 +233,19 @@ PLNfit$set("public", "predict",
   }
 )
 
+#' Extracts model coefficients from objects returned by \code{\link[=PLN]{PLN}} and its variants
+#'
+#' @name coef.PLNfit
+#'
+#' @param object an R6 object with class PLNfit
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A matrix of coefficients extracted from the PLNfit model.
+#' @export
+coef.PLNfit <- function(object, ...) {
+  stopifnot(isPLNfit(object))
+  return(object$model_par$Theta)
+}
+
 #' Display the model parameters of a PLNfit in a matrix fashion
 #'
 #' @name plot.PLNfit
