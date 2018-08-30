@@ -65,7 +65,7 @@ PLNPCAfit <-
         scores <- t(t(private$svdBM$u[, 1:self$rank]) * private$svdBM$d[1:self$rank])
         rownames(scores) <- rownames(private$M)
         scores
-      }
+      },
       rotation   = function() {
         rotation <- private$svdBM$v[, 1:self$rank]
         rownames(rotation) <- rownames(private$B)
