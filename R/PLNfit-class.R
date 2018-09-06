@@ -98,7 +98,10 @@ PLNfit <-
   )
 
 ## an S3 function to check if an object is a PLNfit
-isPLNfit <- function(Robject) {all.equal(class(Robject), c('PLNfit', 'R6'))}
+isPLNfit <- function(Robject) {
+  ## all.equal(tail(class(Robject), 2), c('PLNfit', 'R6'))
+  inherits(Robject, "PLNfit")
+  }
 
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
@@ -240,6 +243,7 @@ PLNfit$set("public", "predict",
 #' @param object an R6 object with class PLNfit
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of coefficients extracted from the PLNfit model.
+#'
 #' @export
 coef.PLNfit <- function(object, ...) {
   stopifnot(isPLNfit(object))
