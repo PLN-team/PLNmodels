@@ -111,6 +111,12 @@ models.cov
 myPCA.cov <- models.cov$getBestModel("ICL")
 ```
 
+The `show/print` method lists a few summary statistics and useful methods / fields.
+```{r}
+myPCA.cov
+```
+
+
 Suppose that we want to give a closer look to the first two axes. This can be done thanks to the two methods `plot_individual_map` and `plot_correlation_circle` :
 
 ```{r, fig.height=7, fig.width=7}
@@ -127,13 +133,13 @@ myPCA.cov$plot_correlation_circle(axes=c(1,2))
 
 - the regression coefficient matrix
 ```{r}
-head(myPCA.cov$model_par$Theta)
-## Or equivalently
 head(coef(myPCA.cov))
+## Or equivalently
+## head(myPCA.cov$model_par$B)
 ```
 - the rotation matrix (in the latent space)
 ```{r}
-head(myPCA.cov$model_par$B)
+head(myPCA.cov$rotation)
 ```
 - the principal components values (or scores)
 ```{r}

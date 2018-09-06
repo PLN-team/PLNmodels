@@ -14,7 +14,7 @@ rPLN(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
 
 \item{Sigma}{covariance matrix of the latent variable}
 
-\item{depths}{Target depths}
+\item{depths}{Numeric vector of target depths. The first is recycled if there are not `n` values}
 }
 \value{
 a n * p count matrix, with row-sums close to depths
