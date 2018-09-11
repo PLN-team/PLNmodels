@@ -1,10 +1,13 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2018-09-11: warning as error set to false
 #  - 2018-06-29: first try
 
 language: r
 cache: packages
+warnings_are_errors: false
+r_check_args: --as-cran
 
 addons:
   apt:
