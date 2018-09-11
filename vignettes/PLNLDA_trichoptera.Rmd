@@ -57,7 +57,7 @@ table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
 
 It is possible (experimental) to correct for other covariates before finding the LDA axis that separate well the grouping :
 ```{r, warning=FALSE}
-myLDA_cov <- PLNLDA(Abundance ~ T_min + Wind + 0, grouping = grouping, data = trichoptera)
+myLDA_cov <- PLNLDA(Abundance ~ Wind + 0, grouping = grouping, data = trichoptera)
 ```
 
 ```{r plot_model_cov, fig.width=7, fig.height=5}
