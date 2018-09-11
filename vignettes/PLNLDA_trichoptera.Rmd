@@ -68,7 +68,7 @@ And again try to predict class based on the counts and some covariates
 ```{r predict_class_cov}
 Y <- trichoptera$Abundance
 predicted.class_cov <- myLDA_cov$predict(newCounts = Y, 
-                                       newdata = model.matrix( ~ T_min + Wind + 0, trichoptera), 
+                                       newdata = model.matrix( ~ Wind + 0, trichoptera), 
                                        newOffsets = matrix(0, nrow(Y), ncol(Y)), 
                                        type = "response")
 ```
