@@ -4,7 +4,7 @@
 \alias{PLNLDA}
 \title{Poisson lognormal model towards Linear Disciminant Analysis}
 \usage{
-PLNLDA(formula, data, subset, grouping, control = list(), ...)
+PLNLDA(formula, data, subset, grouping, control = list())
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}

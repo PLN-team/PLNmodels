@@ -28,7 +28,7 @@
 ##'
 ##' @examples
 ##' data(trichoptera)
-##' str(trichopetra)
+##' str(trichoptera)
 ##' ## also see the package vignettes
 ##'
 ##' @references Usseglio-Polatera, P. and Auda, Y. (1987) Influence des facteurs météorologiques sur les résultats de piégeage lumineux. Annales de Limnologie, 23, 65–79. (code des espèces p. 76)

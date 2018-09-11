@@ -38,7 +38,7 @@ contiguous nights between summer 1959 and summer 1960.
 }
 \examples{
 data(trichoptera)
-str(trichopetra)
+str(trichoptera)
 ## also see the package vignettes
 
 }

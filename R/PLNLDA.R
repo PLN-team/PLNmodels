@@ -32,7 +32,7 @@
 ##' @seealso The class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNLDA <- function(formula, data, subset, grouping, control = list(), ...) {
+PLNLDA <- function(formula, data, subset, grouping, control = list()) {
 
   ## create the call for the model frame
   call_frame <- match.call(expand.dots = FALSE)
