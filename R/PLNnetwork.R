@@ -1,14 +1,14 @@
-##' @title Fit a Poisson lognormal model towards network inference
+##' Poisson lognormal model towards sparse network inference
 ##'
-##' @description two methods are available for specifying the models (with formulas or matrices)
+##' Fit the sparse inverse covariance variant of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 ##'
-##' @param Robject an R object, either a formula or a (n x p) matrix of count data
-##' @param X an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.
-##' @param O an optional (n x p) matrix of offsets. Ignored when Robject is a formula.
+##' @param formula an object of class "formula": a symbolic description of the model to be fitted.
+##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
+##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
+##' @param control a list for controlling the optimization. See details.
 ##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally
 ##' @param control.init a list for controling the optimization at initialization. See details.
 ##' @param control.main a list for controling the main optimization process. See details.
-##' @param ... additional parameters for S3 compatibility. Not used
 ##'
 ##' @return an R6 object with class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}, which contains
 ##' a collection of models with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
@@ -48,32 +48,22 @@
 ##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNnetwork <- function(Robject, ...) UseMethod("PLNnetwork", Robject)
+PLNnetwork <- function(formula, data, subset, penalties = NULL, control.init = list(), control.main = list()) {
 
-##' @rdname PLNnetwork
-##' @export
-PLNnetwork.formula <- function(Robject, penalties = NULL, control.init = list(), control.main = list(), ...) {
+  ## create the call for the model frame
+  call_frame <- match.call(expand.dots = FALSE)
+  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset"), names(call_frame), 0L))]
+  call_frame[[1]] <- quote(stats::model.frame)
 
-  formula <- Robject
-  frame  <- model.frame(formula)
-  Y      <- model.response(frame)
-  X      <- model.matrix(formula)
-  O      <- model.offset(frame)
+  ## eval the call in the parent environment
+  frame <- eval(call_frame, parent.frame())
+
+  ## create the set of matrices to fit the PLN model
+  Y <- model.response(frame)
+  n  <- nrow(Y); p <- ncol(Y) # problem dimensions
+  X <- model.matrix(terms(frame), frame)
+  O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
-
-  return(PLNnetwork.default(Y, X, O, penalties, control.init, control.main))
-}
-
-##' @rdname PLNnetwork
-##' @export
-PLNnetwork.default <- function(Robject, X = NULL, O = NULL, penalties = NULL,
-                               control.init = list(), control.main=list(), ...) {
-
-  Y <- as.matrix(Robject); rm(Robject) # no copy made
-  ## problem dimensions
-  n  <- nrow(Y); p <- ncol(Y)
-  if (is.null(X)) X <- matrix(1, n, 1)
-  if (is.null(O)) O <- matrix(0, n, p)
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl.init <- PLNnetwork_param(control.init, n, p, "init")
@@ -93,5 +83,5 @@ PLNnetwork.default <- function(Robject, X = NULL, O = NULL, penalties = NULL,
   myPLN$postTreatment()
 
   if (ctrl.main$trace > 0) cat("\n DONE!\n")
-  return(myPLN)
+  myPLN
 }

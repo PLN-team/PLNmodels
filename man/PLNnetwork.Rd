@@ -2,23 +2,17 @@
 % Please edit documentation in R/PLNnetwork.R
 \name{PLNnetwork}
 \alias{PLNnetwork}
-\alias{PLNnetwork.formula}
-\alias{PLNnetwork.default}
-\title{Fit a Poisson lognormal model towards network inference}
+\title{Poisson lognormal model towards sparse network inference}
 \usage{
-PLNnetwork(Robject, ...)
-
-\method{PLNnetwork}{formula}(Robject, penalties = NULL,
-  control.init = list(), control.main = list(), ...)
-
-\method{PLNnetwork}{default}(Robject, X = NULL, O = NULL,
-  penalties = NULL, control.init = list(), control.main = list(),
-  ...)
+PLNnetwork(formula, data, subset, penalties = NULL,
+  control.init = list(), control.main = list())
 }
 \arguments{
-\item{Robject}{an R object, either a formula or a (n x p) matrix of count data}
+\item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
 
-\item{...}{additional parameters for S3 compatibility. Not used}
+\item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.}
+
+\item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
 
 \item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
 
@@ -26,16 +20,14 @@ PLNnetwork(Robject, ...)
 
 \item{control.main}{a list for controling the main optimization process. See details.}
 
-\item{X}{an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.}
-
-\item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
+\item{control}{a list for controlling the optimization. See details.}
 }
 \value{
 an R6 object with class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}, which contains
 a collection of models with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 }
 \description{
-two methods are available for specifying the models (with formulas or matrices)
+Fit the sparse inverse covariance variant of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \details{
 The list of parameters \code{control.init} and \code{control.main} control the optimization of the initialization and the main process.

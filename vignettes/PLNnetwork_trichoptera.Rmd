@@ -3,7 +3,9 @@ title: "Analyzing the Trichopetra data set with Poisson log-normal Network infer
 author: "Julien Chiquet"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-Kvignette: >
+bibliography: PLNmodels.bib
+link-citations: yes
+vignette: >
   %\VignetteIndexEntry{PLNnetwork}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
@@ -13,11 +15,16 @@ Kvignette: >
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
-This vignette intends to illustrate the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. See `?PLNmodels::trichoptera` for details. 
+This vignette intends to illustrate the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
 
-## Poisson log-normal models
+```{r data_load}
+library(PLNmodels)
+data(trichoptera)
+```
 
-The family of models available in the package belongs to the family of probabilistic PCA models, where the observation are not necessarily Gaussian.  In particular, we consider that observations are drawn from a Poisson distribution.
+See `?PLNmodels::trichoptera` for details. 
+
+## Sparse Poisson log-normal models
 
 ### A quick view of the mathematical formulation of the model
 
@@ -32,15 +39,14 @@ The Poisson lognormal model relates some $p$-dimensional observation vectors $\m
 
 The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying structure of dependence between the $p$ variables. 
 
-In the PLN network, we penalized the inverse covariance $\boldsymbol\Sigma^{-1} = \boldsymbol\Theta$ by a $\ell_1$ penalty to induce sparsity and select important direct relationships between entities. Hence, the support of $\boldsymbol\Theta$ correspond to a network of underlying interactions.
+In the PLN network, we penalized the inverse covariance $\boldsymbol\Sigma^{-1} = \boldsymbol\Theta$ by a $\ell_1$ penalty to induce sparsity and select important direct relationships between entities. Hence, the support of $\boldsymbol\Theta$ correspond to a network of underlying interactions. All mathematical details can be found in @PLNnetwork.
 
 ### A model with latent main effects for the Trichopetra data set
 
 We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The model can be fitted with the function `PLNNetwork` for a series of penalties contorling the number of edges in the network as follows:
 
 ```{r}
-abundance <- as.matrix(trichometeo$fau) ## must be a matrix
-models <- PLNnetwork(abundance ~ 1)
+models <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 ```
 
 Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`.
@@ -98,4 +104,12 @@ model.pen$plot_network()
 Additional information about the optimization process comes with the `plot_objective` method:
 ```{r, fig.width=7, fig.height=5}
 models$plot_objective()
+```
+
+
+## References
+
+```{r bib, include=FALSE}
+# create a bib file for the R packages used in this document
+writeLines(enc2utf8(toBibtex(citation("PLNmodels"))), "PLNmodels.bib", useBytes = TRUE)
 ```

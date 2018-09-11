@@ -1,12 +1,11 @@
-##' @title Fit a Poisson lognormal model with a variational algorithm
+##' Poisson lognormal model
 ##'
-##' @description two methods are available for specifying the models (with formulas or matrices)
+##' Fit the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 ##'
-##' @param Robject an R object, either a formula or a (n x p) matrix of count data
-##' @param X an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.
-##' @param O an optional (n x p) matrix of offsets. Ignored when Robject is a formula.
+##' @param formula an object of class "formula": a symbolic description of the model to be fitted.
+##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
+##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param control a list for controlling the optimization. See details.
-##' @param ... additional parameters for S3 compatibility. Not used
 ##'
 ##' @return an R6 object with class \code{\link[=PLNfit]{PLNfit}}
 ##'
@@ -34,38 +33,46 @@
 ##' @seealso The class  \code{\link[=PLNfit]{PLNfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLN <- function(Robject, ...) UseMethod("PLN", Robject)
+PLN <- function(formula, data, subset, control = list()) {
 
-##' @rdname PLN
-##' @export
-PLN.formula <- function(Robject, control = list(), ...) {
+  ## create the call for the model frame
+  call_frame <- match.call(expand.dots = FALSE)
+  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset"), names(call_frame), 0L))]
+  call_frame[[1]] <- quote(stats::model.frame)
 
-  formula <- Robject
-  frame  <- model.frame(formula)
-  Y      <- model.response(frame)
-  X      <- model.matrix(formula)
-  O      <- model.offset(frame)
+  ## eval the call in the parent environment
+  frame <- eval(call_frame, parent.frame())
+
+  ## create the set of matrices to fit the PLN model
+  Y <- model.response(frame)
+  X <- model.matrix(terms(frame), frame)
+  O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
-  return(PLN.default(Y, X, O, control))
+  ## define default control parameters for optim and overwrite by user defined parameters
+  ctrl <- PLN_param(control, nrow(Y), ncol(Y))
+
+  ## call to the fitting function
+  res <- PLN_internal(
+    as.matrix(Y),
+    as.matrix(X),
+    as.matrix(O),
+    ctrl
+    )
+
+  ## TODO formating the output to by (g)lm like
+  ## TODO use the same output as in the broom package
+
+  res
 }
 
-##' @rdname PLN
-##' @export
-PLN.default <- function(Robject, X = NULL, O = NULL, control = list(), ...) {
+PLN_internal <- function(Y, X, O, ctrl) {
 
-  Y <- as.matrix(Robject); rm(Robject)
   ## ===========================================
   ## INITIALIZATION
   ##
   ## problem dimensions
-  n  <- nrow(Y); p <- ncol(Y)
-  if (is.null(X)) X <- matrix(1, n, 1)
-  if (is.null(O)) O <- matrix(0, n, p)
-  d <- ncol(X)
-
-  ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- PLN_param(control, n, p)
+  n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## get an initial point for optimization
   par0 <- initializePLN(Y, X, O, ctrl) # Theta, M, S

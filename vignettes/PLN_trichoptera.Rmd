@@ -9,44 +9,67 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette intends to illustrate the basical use of the `PLN` function and the methods accompaning the R6 Classes `PLNfamily` and `PLNfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. See `?PLNmodels::trichoptera` for details. 
+This vignette intends to illustrate the basical use of the `PLN` function and the methods accompaning the R6 Classes `PLNfamily` and `PLNfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. 
+
+```{r data_load}
+library(PLNmodels)
+data(trichoptera)
+```
+
+See `?PLNmodels::trichoptera` for details. 
 
 ```{r child = 'PLNmodels.Rmd'}
 ```
 
 ### A model with latent main effects for the Trichopetra data set
 
-We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The model can be fitted with the function `PLN` for a series of penalties contorling the number of edges in the network as follows:
+We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. 
 
-```{r}
-abundance <- as.matrix(trichometeo$fau) ## must be a matrix
-model.nocov <- PLN(abundance ~ 1)
+```{r responses_trichoptera}
+str(trichoptera$Abundance)
 ```
 
-Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`.
 
-The `model.nocov` variable is an `R6` object with class `PLNfit`, which comes with a couple of methods, as recalled when printing such an object:
+It seems also natural to add an offset corresponding to the total count per night.
+```{r offset_trichopera}
+TotalCount <- matrix(
+  rowSums(trichoptera$Abundance),
+  nrow = nrow(trichoptera$Abundance),
+  ncol = ncol(trichoptera$Abundance)
+)
+```
+
+
+The model can be fitted with the function `PLN` as follows:
+
+```{r}
+myPLN <- PLN(Abundance ~ 1 + offset(log(TotalCount)), trichoptera)
+```
+
+Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`. We use the function offset with a log transform of the total count. Abundace is a variable in ther data frame `trichoptera` correspondings to a matrix of 17 columns.
+
+`myPLN` is an `R6` object with class `PLNfit`, which comes with a couple of methods, as recalled when printing such an object:
 
 ```{r show-method}
-model.nocov
+myPLN
 ```
 
 Let us try this a bit:
 
 ```{r fields-access}
-model.nocov$loglik
-model.nocov$BIC
-model.nocov$ICL
-model.nocov$R_squared
-model.nocov$criteria
+myPLN$loglik
+myPLN$BIC
+myPLN$ICL
+myPLN$R_squared
+myPLN$criteria
 ```
 
 Complementary information comes with the `plot` method:
 ```{r plot_model, fig.width=7, fig.height=5}
-model.nocov$plot("model")
+myPLN$plot("model")
 ```
 
 ```{r plot_var, fig.width=7, fig.height=5}
-model.nocov$plot("variational")
+myPLN$plot("variational")
 ```
 

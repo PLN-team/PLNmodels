@@ -2,33 +2,24 @@
 % Please edit documentation in R/PLN.R
 \name{PLN}
 \alias{PLN}
-\alias{PLN.formula}
-\alias{PLN.default}
-\title{Fit a Poisson lognormal model with a variational algorithm}
+\title{Poisson lognormal model}
 \usage{
-PLN(Robject, ...)
-
-\method{PLN}{formula}(Robject, control = list(), ...)
-
-\method{PLN}{default}(Robject, X = NULL, O = NULL, control = list(),
-  ...)
+PLN(formula, data, subset, control = list())
 }
 \arguments{
-\item{Robject}{an R object, either a formula or a (n x p) matrix of count data}
+\item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
 
-\item{...}{additional parameters for S3 compatibility. Not used}
+\item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.}
+
+\item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
 
 \item{control}{a list for controlling the optimization. See details.}
-
-\item{X}{an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.}
-
-\item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
 }
 \value{
 an R6 object with class \code{\link[=PLNfit]{PLNfit}}
 }
 \description{
-two methods are available for specifying the models (with formulas or matrices)
+Fit the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \details{
 The parameter \code{control} is a list controlling the optimization with the following entries

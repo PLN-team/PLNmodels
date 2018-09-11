@@ -20,6 +20,8 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+vignettes/*.bib
+
 # doc files
 inst/doc/*
 

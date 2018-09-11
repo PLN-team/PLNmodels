@@ -1,21 +1,6 @@
 library(PLNmodels)
-library(testthat)
-library(microbenchmark)
-library(profr)
-library(ade4)
+library(profvis)
 data("trichometeo")
 
-abundance <- as.matrix(trichometeo$fau)
-night_grp <- as.factor(trichometeo$cla)
+profvis(model <- PLNLDA(Abundance ~ 0, grouping = trichoptera$Group, data = trichoptera))
 
-profiling1 <- profr::profr(model1 <- PLNLDA(abundance, night_grp))
-profiling2 <- profr::profr(model2 <- PLNLDA(abundance ~ 0, night_grp))
-
-expect_equivalent(model1, model2)
-
-par(mfrow = c(2,1))
-plot(profiling1)
-plot(profiling2)
-
-res <- microbenchmark(PLNLDA = PLNLDA(abundance, night_grp, control = list(trace = 0)), times = 20)
-autoplot(res)

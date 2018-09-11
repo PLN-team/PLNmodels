@@ -2,22 +2,17 @@
 % Please edit documentation in R/PLNPCA.R
 \name{PLNPCA}
 \alias{PLNPCA}
-\alias{PLNPCA.formula}
-\alias{PLNPCA.default}
-\title{Fit a Poisson lognormal model towards Principal Component Analysis}
+\title{Poisson lognormal model towards Principal Component Analysis}
 \usage{
-PLNPCA(Robject, ...)
-
-\method{PLNPCA}{formula}(Robject, ranks = 1:5, control.init = list(),
-  control.main = list(), ...)
-
-\method{PLNPCA}{default}(Robject, X = NULL, O = NULL, ranks = 1:5,
-  control.init = list(), control.main = list(), ...)
+PLNPCA(formula, data, subset, ranks = 1:5, control.init = list(),
+  control.main = list())
 }
 \arguments{
-\item{Robject}{an R object, either a formula or a (n x p) matrix of count data}
+\item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
 
-\item{...}{additional parameters for S3 compatibility. Not used}
+\item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.}
+
+\item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
 
 \item{ranks}{a vector of integer containing the successive ranks (or number of axes to be considered)}
 
@@ -25,16 +20,14 @@ PLNPCA(Robject, ...)
 
 \item{control.main}{a list for controling the main optimization process. See details.}
 
-\item{X}{an optional (n x d) matrix of covariates. A vector of intercept is included by default. Ignored when Robject is a formula.}
-
-\item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
+\item{control}{a list for controlling the optimization. See details.}
 }
 \value{
 an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
 a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
 }
 \description{
-two methods are available for specifing the models (with formulas or matrices)
+Fit the PCA variants of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \details{
 The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries

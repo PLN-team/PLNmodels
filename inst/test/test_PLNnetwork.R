@@ -1,17 +1,10 @@
 library(PLNmodels)
 library(ggplot2)
 library(gridExtra)
-library(testthat)
-library(profr)
-library(ade4)
+library(profvis)
 data("trichometeo")
 
-abundance <- as.matrix(trichometeo$fau)
-
-profiling1 <- profr::profr(fits     <- PLNnetwork(abundance))
-profiling2 <- profr::profr(fits_alt <- PLNnetwork(abundance ~ 1))
-
-expect_equivalent(fits, fits_alt)
+profvis(fits <- PLNnetwork(Abundance ~ 1, data = trichoptera))
 
 fits$stability_selection()
 

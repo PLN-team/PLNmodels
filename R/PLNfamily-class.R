@@ -54,7 +54,7 @@ PLNfamily$set("public", "initialize",
     if (ifelse(is.character(control$inception),
                ifelse(control$inception == "PLN", TRUE, FALSE), FALSE)) {
         if (control$trace > 0) cat("\n Extract the inceptive model")
-        self$inception <- PLN(self$responses, self$covariates, self$offsets, control)
+        self$inception <- PLN_internal(self$responses, self$covariates, self$offsets, control)
     } else {
       if (control$trace > 0) cat("\n Adjust the inceptive model")
       par0 <- initializePLN(self$responses, self$covariates, self$offsets, control)

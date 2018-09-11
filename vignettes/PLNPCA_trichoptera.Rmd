@@ -3,17 +3,26 @@ title: "Analyzing the Trichopetra data set with Poisson log-normal PCA"
 author: "Julien Chiquet"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: PLNmodels.bib
+link-citations: yes
 vignette: >
   %\VignetteIndexEntry{PLNPCA}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette intends to illustrate the basical use of the `PLNPCA` function and the methods accompaning the R6 Classes `PLNPCAfamily` and `PLNPCAfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. See `?PLNmodels::trichoptera` for details. 
+This vignette intends to illustrate the basical use of the `PLNPCA` function and the methods accompaning the R6 Classes `PLNPCAfamily` and `PLNPCAfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
+
+```{r data_load}
+library(PLNmodels)
+data(trichoptera)
+```
+
+See `?PLNmodels::trichoptera` for details. 
 
 ## Poisson log-normal models
 
-The family of models available in the package belongs to the family of probabilistic PCA models, where the observation are not necessarily Gaussian.  In particular, we consider that observations are drawn from a Poisson distribution.
+The family of models available in the package belongs to the family of probabilistic PCA models, where the observation are not necessarily Gaussian.  In particular, we consider that observations are drawn from a Poisson distribution. All mathematical details can be found in @PLNPCA.
 
 ### A quick view of the mathematical formulation of the model
 
@@ -33,11 +42,25 @@ The dimension of the latent space $q$ corresponds to the number of axes in the P
 
 ### A model with latent main effects for the Trichopetra data set
 
-We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The model can be fitted with the function `PLNPCA` for a series of values for $q$ as follows:
+We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night.
+
+```{r responses_trichoptera}
+str(trichoptera$Abundance)
+```
+
+It seems also natural to add an offset corresponding to the total count per night.
+```{r offset_trichopera}
+TotalCount <- matrix(
+  rowSums(trichoptera$Abundance),
+  nrow = nrow(trichoptera$Abundance),
+  ncol = ncol(trichoptera$Abundance)
+)
+```
+
+The model can be fitted with the function `PLNPCA` for a series of values for $q$ as follows:
 
 ```{r}
-abundance <- as.matrix(trichometeo$fau) ## must be a matrix
-models.nocov <- PLNPCA(abundance ~ 1, ranks=1:5)
+models.nocov <- PLNPCA(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera, ranks = 1:5)
 ```
 
 Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`.
@@ -64,13 +87,13 @@ myPCA.q3 <- models.nocov$getModel(3)
 The variables `myPCA.ICL` and `myPCA.q3` are other `R6Class` objects of class `PLNPCAfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_PCA` method provides the individual maps and correlation circles as in usual PCA. If an additional classification exist for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument of the function.
 
 ```{r, fig.width=8, fig.height=8}
-myPCA.ICL$plot_PCA(cols=trichometeo$cla)
+myPCA.ICL$plot_PCA(cols = trichoptera$Group)
 ```
 
 With our model (and any pPCA model for count data, where model are not necessarily nested), it is important to look at all the axes at the same time, since the model with $q=3$ axes is not included in the model with $q=5$ axes. Indeed, let us vizualize first three axes for the model with $q=5$ (note that we can control the axes which are plotted):
 
 ```{r, fig.width=8, fig.height=8}
-myPCA.q3$plot_PCA(cols=trichometeo$cla, axes=1:3)
+myPCA.q3$plot_PCA(cols = trichoptera$Group, axes=1:3)
 ```
 
 We can see that the maps for axes (1,2) is slightly different for the model with $q=3$ from the one obtained for axes (1,2) in the $q=3$ model. 
@@ -89,16 +112,9 @@ Basically, the model with covariates extends the one used in the previous sectio
 
 where $\mathbf{X}_i$ is a vector of $d$ covariate for observations $i$. The $p \times d$ matrix  $\boldsymbol\Theta$ entails the associated parameters.
 
-In the case at hand, the covariates corresponds to the meteorological variables, that is, 
-
+In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the minimal temperature, the wind and the average cloudiness This can be done thanks to the model formula:
 ```{r}
-colnames(trichometeo$meteo)
-```
-
-Let us try to introduce some of them in our model, for instance, the minimal temperature, the wind and the nebulosity. This can be done thanks to the model formula:
-```{r}
-covar <- trichometeo$meteo
-models.cov <- PLNPCA(abundance ~ 0 + covar$T.min + covar$Nebu.Moy + covar$Vent, ranks=1:5)
+models.cov <- PLNPCA(Abundance ~ 1 + offset(log(TotalCount)) + T_min + Wind + Cloudiness_average, data = trichoptera, ranks = 1:5)
 ```
 
 Again, the best model is obtained for $q=3$ classes.
@@ -117,7 +133,7 @@ myPCA.cov
 Suppose that we want to give a closer look to the first two axes. This can be done thanks to the two methods `plot_individual_map` and `plot_correlation_circle` :
 
 ```{r, fig.height=7, fig.width=7}
-myPCA.cov$plot_individual_map(axes=c(1,2), cols=trichometeo$cla)
+myPCA.cov$plot_individual_map(axes=c(1,2), cols=trichoptera$Group)
 ```
 
 ```{r, fig.height=7, fig.width=7}
@@ -143,6 +159,11 @@ head(myPCA.cov$rotation)
 head(myPCA.cov$scores)
 ```
 
-
-
 That is all for now!
+
+## References
+
+```{r bib, include=FALSE}
+# create a bib file for the R packages used in this document
+writeLines(enc2utf8(toBibtex(citation("PLNmodels"))), "PLNmodels.bib", useBytes = TRUE)
+```

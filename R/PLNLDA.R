@@ -1,13 +1,12 @@
-##' @title Fit a Poisson lognormal model towards Linear Disciminant Analysis
+##' Poisson lognormal model towards Linear Disciminant Analysis
 ##'
-##' @description two methods are available for specifing the models (with formulas or matrices)
+##' Fit the Poisson lognormal for LDA with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 ##'
-##' @param Robject either (n x p) matrix of count data (used with argument grouping) or a formula to describe the relationship between the count matrix and the covariates (apart from the grouping)
-##' @param X an optional (n x d) matrix of covariates. Default is NULL (no covariate). Ignored when Robject is a formula.
-##' @param O an optional (n x p) matrix of offsets. Ignored when Robject is a formula.
-##' @param grouping a factor specifying the class fo< each observation used for disciminant analysis. Ignored when Robject is a formula.
+##' @param formula an object of class "formula": a symbolic description of the model to be fitted.
+##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
+##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
+##' @param grouping a factor specifying the class of each observation used for discriminant analysis.
 ##' @param control a list for controling the optimization process. See details.
-##' @param ... additional parameters. Not used
 ##'
 ##' @return an R6 object with class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 ##'
@@ -33,47 +32,39 @@
 ##' @seealso The class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNLDA <- function(Robject, grouping, ...)
-  UseMethod("PLNLDA", Robject)
+PLNLDA <- function(formula, data, subset, grouping, control = list(), ...) {
 
-##' @rdname PLNLDA
-##' @export
-PLNLDA.formula <- function(Robject, grouping, control = list(), ...) {
+  ## create the call for the model frame
+  call_frame <- match.call(expand.dots = FALSE)
+  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset"), names(call_frame), 0L))]
+  call_frame[[1]] <- quote(stats::model.frame)
 
-  formula <- Robject
-  frame  <- model.frame(formula)
-  Y      <- model.response(frame)
-  X      <- model.matrix(formula)
-  O      <- model.offset(frame)
+  ## eval the call in the parent environment
+  frame <- eval(call_frame, parent.frame())
+
+  ## create the set of matrices to fit the PLN model
+  Y <- model.response(frame)
+  n  <- nrow(Y); p <- ncol(Y) # problem dimension
+  X <- model.matrix(terms(frame), frame)
 
   ## remove intercept in the covariates so that grouping describes means in each group
   xint <- match("(Intercept)", colnames(X), nomatch = 0L)
   if (xint > 0L) X <- X[, -xint, drop = FALSE]
-  O         <- model.offset(frame)
-  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
-
-  return(PLNLDA.default(Y, grouping, X, O, control))
-}
-
-##' @rdname PLNLDA
-##' @export
-PLNLDA.default <- function(Robject, grouping, X = NULL, O = NULL,  control = list(), ...) {
-
-  Y <- as.matrix(Robject); rm(Robject) # no copy made
-  ## problem dimensions
-  n  <- nrow(Y); p <- ncol(Y)
-  if (is.null(X)) X <- matrix(0, n, 0) else X <- as.matrix(X)
-  if (is.null(O)) O <- matrix(0, n, p)
   d <- ncol(X)
+
+  O <- model.offset(frame)
+  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- PLN_param(control, n, p)
 
   if (ctrl$trace > 0) cat("\n Initialization...")
+
   grouping <- as.factor(grouping)
-  design_group <- model.matrix( ~grouping+0)
+  design_group <- model.matrix(~ grouping + 0)
   design_full <- cbind(X, design_group)
-  myPLN <- PLN(Y, design_full, O, control = ctrl)
+
+  myPLN <- PLN_internal(Y, design_full, O, ctrl)
   if (d > 0) {
     P <- (diag(nrow(X)) - X %*% solve(crossprod(X)) %*% t(X)) %*% myPLN$latent_pos(design_full, matrix(0, myPLN$n, myPLN$q))
     Group_Means <- t(rowsum(P, grouping) / tabulate(grouping))
@@ -92,5 +83,5 @@ PLNLDA.default <- function(Robject, grouping, X = NULL, O = NULL,  control = lis
   myLDA$setVisualization()
 
   if (ctrl$trace > 0) cat("\n DONE!\n")
-  return(myLDA)
+  myLDA
 }

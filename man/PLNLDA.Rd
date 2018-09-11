@@ -2,35 +2,26 @@
 % Please edit documentation in R/PLNLDA.R
 \name{PLNLDA}
 \alias{PLNLDA}
-\alias{PLNLDA.formula}
-\alias{PLNLDA.default}
-\title{Fit a Poisson lognormal model towards Linear Disciminant Analysis}
+\title{Poisson lognormal model towards Linear Disciminant Analysis}
 \usage{
-PLNLDA(Robject, grouping, ...)
-
-\method{PLNLDA}{formula}(Robject, grouping, control = list(), ...)
-
-\method{PLNLDA}{default}(Robject, grouping, X = NULL, O = NULL,
-  control = list(), ...)
+PLNLDA(formula, data, subset, grouping, control = list(), ...)
 }
 \arguments{
-\item{Robject}{either (n x p) matrix of count data (used with argument grouping) or a formula to describe the relationship between the count matrix and the covariates (apart from the grouping)}
+\item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
 
-\item{grouping}{a factor specifying the class fo< each observation used for disciminant analysis. Ignored when Robject is a formula.}
+\item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.}
 
-\item{...}{additional parameters. Not used}
+\item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
+
+\item{grouping}{a factor specifying the class of each observation used for discriminant analysis.}
 
 \item{control}{a list for controling the optimization process. See details.}
-
-\item{X}{an optional (n x d) matrix of covariates. Default is NULL (no covariate). Ignored when Robject is a formula.}
-
-\item{O}{an optional (n x p) matrix of offsets. Ignored when Robject is a formula.}
 }
 \value{
 an R6 object with class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 }
 \description{
-two methods are available for specifing the models (with formulas or matrices)
+Fit the Poisson lognormal for LDA with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \details{
 The list of parameters \code{control} tunes the optimization of the intialization and the main process, with the following entries

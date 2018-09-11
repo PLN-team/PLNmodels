@@ -1,6 +1,7 @@
 citHeader("To cite PLNmodels (either PLNPCA or PLNnetwork) in publications, please use:")
 
 citEntry(entry = "article",
+  key = "PLNPCA",
   author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
   title = "Variational inference for probabilistic Poisson PCA",
   journal = "The Annals of Applied Statistics",
@@ -10,6 +11,7 @@ citEntry(entry = "article",
 )
 
 citEntry(entry = "article",
+  key = "PLNnetwork",
   author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
   title = "Variational inference for sparse network reconstruction from count data",
   journal = "arXiv preprint",

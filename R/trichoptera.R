@@ -10,9 +10,19 @@
 ##'
 ##' @format A data frame with 49 rows and 3 variables (matrices):
 ##' \describe{
-##'   \item{abundance}{a matrix with 49 rows (trapping nights) and 17 species.}
-##'   \item{meteo}{a matrix with 49 rows and 11 meteorological variables.}
-##'   \item{group}{a factor of 12 levels for the definition of the consecutive night groups}
+##'   \item{Abundance}{a 49 x 17 matrix of abundancies (49 trapping nights and 17 trichoptera species).}
+##'   \item{T_max}{Maximal temperature in Celsius}
+##'   \item{T_evening}{Evening Temperature in Celsius}
+##'   \item{T_min}{Minimal temperature in Celsius}
+##'   \item{Wind}{Wind in m/s}
+##'   \item{Pressure}{Pressure in mm Hg}
+##'   \item{Pressure_range}{Pressure range in mm Hg}
+##'   \item{Humidity}{relative to evening humidity in percent}
+##'   \item{Cloudiness_night}{proportion of sky coverage at 9pm}
+##'   \item{Precipitation_night}{Nighttime precipitation in mm}
+##'   \item{Cloudiness_average}{average proportion of sky coverage}
+##'   \item{Precipitation_total}{Total precipitation in mm}
+##'   \item{Group}{a factor of 12 levels for the definition of the consecutive night groups}
 ##' }
 ##' This format is convenient for using formula in multivariate analysis (multiple outputs and inputs).
 ##'
