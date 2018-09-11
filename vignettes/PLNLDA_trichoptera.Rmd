@@ -14,6 +14,7 @@ This vignette intends to illustrate the basical use of the `PLNLDA` function and
 ```{r data_load}
 library(PLNmodels)
 data(trichoptera)
+grouping <- trichoptera$Group
 ```
 
 See `?PLNmodels::trichoptera` for details. 
@@ -23,7 +24,7 @@ See `?PLNmodels::trichoptera` for details.
 We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The classification corresponds to the consecutive night groups caught. The model can be fitted with the function `PLNLDA` as follows:
 
 ```{r}
-myLDA_nocov <- PLNLDA(Abundance ~ 0, grouping = trichoptera$Group, data = trichoptera)
+myLDA_nocov <- PLNLDA(Abundance ~ 0, grouping = grouping, data = trichoptera)
 ```
 
 The `myLDA_nocov` variable is an `R6` object with class `PLNLDAfit`, which comes with a couple of methods, as recalled when printing such an object:
@@ -56,7 +57,7 @@ table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
 
 It is possible (experimental) to correct for other covariates before finding the LDA axis that separate well the grouping :
 ```{r, warning=FALSE}
-myLDA_cov <- PLNLDA(Abundance ~ T_min + Wind, grouping = trichoptera$Group, data = trichoptera)
+myLDA_cov <- PLNLDA(Abundance ~ T_min + Wind + 0, grouping = grouping, data = trichoptera)
 ```
 
 ```{r plot_model_cov, fig.width=7, fig.height=5}
