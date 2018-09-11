@@ -9,10 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette intends to illustrate the basical use of the `PLNLDA` function and the methods accompaning the R6 Class `PLNLDAfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
-
-```{r child = 'trichoptera.Rmd'}
-```
+This vignette intends to illustrate the basical use of the `PLNLDA` function and the methods accompaning the R6 Class `PLNLDAfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. See `?PLNmodels::trichoptera` for details. 
 
 ### A discriminant analysis for the Trichopetra data set
 

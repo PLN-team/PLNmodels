@@ -22,7 +22,7 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
 Imports: igraph, grid, gridExtra, dplyr, tidyr, reshape2, ggplot2, Matrix, parallel, R6, methods, stats, glasso, Rcpp, RcppArmadillo, corrplot, MASS
-Suggests: knitr, rmarkdown, ade4
+Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 Collate: 
     'PLNfit-class.R'
@@ -39,5 +39,6 @@ Collate:
     'PLNnetworkfit-class.R'
     'RcppExports.R'
     'plot_utils.R'
+    'trichoptera.R'
     'utils.R'
 LinkingTo: Rcpp, RcppArmadillo

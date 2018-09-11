@@ -13,10 +13,7 @@ Kvignette: >
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
-This vignette intends to illustrate the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
-
-```{r child = 'trichoptera.Rmd'}
-```
+This vignette intends to illustrate the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. See `?PLNmodels::trichoptera` for details. 
 
 ## Poisson log-normal models
 
