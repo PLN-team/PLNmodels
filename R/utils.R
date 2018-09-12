@@ -108,7 +108,7 @@ PLN_param <- function(control, n, p) {
     method    = "CCSAQ",
     lbvar     = 1e-4,
     trace     = 1,
-    inception = "LM"
+    inception = NULL
   )
   ctrl[names(control)] <- control
   ctrl

@@ -21,9 +21,7 @@
 ##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
 ##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
-##'  \item{"inception"}{How to setup the intialization: either with a PLNfit (typically obtained from a previsous fit), or a character string between "LM" and "GLM".
-##'   If "LM", a log transformation is applied to Y then a linear model for initialization.
-##'   If "GLM", a GLM Poisson is used. Default is "LM".}
+##'  \item{"inception"}{Set up the intialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previsous fit), which often speed up the inference.}
 ##' }
 ##'
 ##' @rdname PLN
@@ -129,33 +127,24 @@ initializePLN <- function(Y, X, O, control) {
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## User defined (from a previous fit, for instance)
-  if(isTRUE(all.equal(tail(class(control$inception), 2), c("PLNfit", "R6")))) {
+  if (isPLNfit(control$inception)) {
     if (control$trace > 1) cat("\n User defined inceptive PLN model")
     stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))),
               isTRUE(all.equal(dim(control$inception$var_par$M), c(n,p))),
               isTRUE(all.equal(dim(control$inception$var_par$S), c(n,p))))
-    return(list(Theta = control$inception$model_par$Theta,
-                M     = control$inception$var_par$M,
-                S     = control$inception$var_par$S))
-
-    ## GLM Poisson
-  } else if (isTRUE(all.equal(is.character(control$inception), control$inception == "GLM"))) {
-    if (control$trace > 1) cat("\n Use GLM Poisson to define the inceptive model")
-    GLMs  <- lapply(1:p, function(j) glm.fit(X, Y[, j], offset = O[,j], family = poisson()))
-    Theta <- do.call(rbind, lapply(GLMs, coefficients))
-    M     <- do.call(cbind, lapply(GLMs, residuals, "deviance"))
-    S <- matrix(10 * control$lbvar, n, p)
-    return(list(Theta = Theta, M = M, S = S))
-
-    ## default LM + log transformation
+    init <- list(Theta = control$inception$model_par$Theta,
+                 M     = control$inception$var_par$M,
+                 S     = control$inception$var_par$S)
+  ## Default LM + log transformation
   } else {
     if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
     LMs  <- lapply(1:p, function(j) lm.fit(X, log(1 + Y[,j]), offset =  O[,j]) )
     Theta <- do.call(rbind, lapply(LMs, coefficients))
     M     <- do.call(cbind, lapply(LMs, residuals))
     S <- matrix(10 * control$lbvar, n, p)
-    return(list(Theta = Theta, M = M, S = S))
+    init <- list(Theta = Theta, M = M, S = S)
   }
 
+  init
 }
 
