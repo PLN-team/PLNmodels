@@ -34,9 +34,7 @@ The parameter \code{control} is a list controlling the optimization with the fol
     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
- \item{"inception"}{How to setup the intialization: either with a PLNfit (typically obtained from a previsous fit), or a character string between "LM" and "GLM".
-  If "LM", a log transformation is applied to Y then a linear model for initialization.
-  If "GLM", a GLM Poisson is used. Default is "LM".}
+ \item{"inception"}{Set up the intialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previsous fit), which often speed up the inference.}
 }
 }
 \examples{
