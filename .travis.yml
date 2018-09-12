@@ -10,22 +10,26 @@ r_check_args: --as-cran
 cache: packages
 warnings_are_errors: false
 
-os:
-  - linux
-  - osx
-
 addons:
   apt:
     packages:
     - libnlopt-dev
 
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update        ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install nlopt ; fi
+brew_packages:
+  - nlopt
 
-## Codecov integration
-r_packages:
-  - covr
+matrix:
+  include:
+    - os: linux
+      r: release
+      r_github_packages:
+      - jimhester/covr
+      after_success:
+      - Rscript -e 'covr::codecov(quiet=FALSE)'
+      env: NB='w/ covr' ## Just a label
+    - os: linux
+      r: devel
+    - os: osx
+      r: release
 
-after_success:
-  - Rscript -e 'library(covr); codecov()'
+

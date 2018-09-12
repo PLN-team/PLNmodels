@@ -1,6 +1,11 @@
 ## We now use configure to find where NLopt is installed on the system
 NLOPT_LIBS=@nlopt_libs@
+ifeq ($(shell $(CXX1X) -fopenmp -E -xc++ - && echo 'true'), true)
+	PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
+	PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(NLOPT_LIBS)
+else
+	PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(NLOPT_LIBS)
+endif
+
 CXX_STD = CXX11
-PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
-PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(NLOPT_LIBS)
 
