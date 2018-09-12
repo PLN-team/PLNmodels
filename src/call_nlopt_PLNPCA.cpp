@@ -36,9 +36,9 @@ double fn_optim_PLNPCA(const std::vector<double> &x, std::vector<double> &grad, 
 // [[Rcpp::export]]
 Rcpp::List optimization_PLNPCA (
     arma::vec par,
-    const arma::mat Y,
-    const arma::mat X,
-    const arma::mat O,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
     const int rank,
     Rcpp::List options) {
 

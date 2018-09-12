@@ -27,5 +27,5 @@ network_EBIC   <- fits$getBestModel("BIC")
 network_StARS  <- fits$getBestModel("StARS", stability = 0.95)
 
 par(mfrow = c(1,2))
-network_BIC$plot_network()
+network_BIC$plot_network(type = "partial_cor")
 network_StARS$plot_network()

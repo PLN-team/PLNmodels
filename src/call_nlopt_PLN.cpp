@@ -35,9 +35,9 @@ double fn_optim_PLN(const std::vector<double> &x, std::vector<double> &grad, voi
 // [[Rcpp::export]]
 Rcpp::List optimization_PLN(
     arma::vec par,
-    const arma::mat Y,
-    const arma::mat X,
-    const arma::mat O,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
     Rcpp::List options) {
 
   // Create data structure

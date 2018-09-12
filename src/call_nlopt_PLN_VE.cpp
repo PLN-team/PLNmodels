@@ -34,11 +34,11 @@ double fn_optim_VEstep_PLN(const std::vector<double> &x, std::vector<double> &gr
 // [[Rcpp::export]]
 Rcpp::List optimization_VEstep_PLN(
     arma::vec par,
-    const arma::mat Y,
-    const arma::mat X,
-    const arma::mat O,
-    const arma::mat Theta,
-    const arma::mat Sigma,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
+    const arma::mat & Theta,
+    const arma::mat & Sigma,
     Rcpp::List options) {
 
   // Create optim data structure

@@ -133,64 +133,64 @@ function(covariates, offsets) {
 #'            the vector log.lik of (variational) log-likelihood of each new observation
 #'
 PLNfit$set("public", "VEstep",
-           function(newdata, newOffsets, newCounts, control = list()) {
+function(newdata, newOffsets, newCounts, control = list()) {
+  ## ===========================================
+  ## OPTIMIZATION
+  ##
 
-             ## ===========================================
-             ## OPTIMIZATION
-             ##
+  ## define default control parameters for optim and overwrite by user defined parameters
+  ctrl <- PLN_param(control, self$n, self$p)
+  ## Handle missing offsets and covariates
+  ## TODO
 
-             ## define default control parameters for optim and overwrite by user defined parameters
-             ctrl <- PLN_param(control, self$n, self$p)
-             ## Handle missing offsets and covariates
-             ## TODO
+  ## Problem dimension
+  n <- nrow(newCounts); p <- ncol(newCounts)
 
-             ## Problem dimension
-             n <- nrow(newCounts); p <- ncol(newCounts)
+  ## get an initial point for optimization
+  M <- matrix(0, n, p)
+  S <- matrix(10 * ctrl$lbvar, n, p)
+  par0 <- c(M, S)
 
-             ## get an initial point for optimization
-             M <- matrix(0, n, p)
-             S <- matrix(10 * ctrl$lbvar, n, p)
-             par0 <- c(M, S)
+  ## Set lower bounds for variance parameters
+  ctrl$lower_bound <- c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
+  ctrl$xtol_abs <- c(rep(0, n*p), rep(ctrl$xtol_abs, n*p))
 
-             ## Set lower bounds for variance parameters
-             ctrl$lower_bound <- c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
-             ctrl$xtol_abs <- c(rep(0, n*p), rep(ctrl$xtol_abs, n*p))
+  ## Set parameters for the optimization method
+  opts <- list(
+    "algorithm"   = ctrl$method,
+    "maxeval"     = ctrl$maxeval,
+    "ftol_rel"    = ctrl$ftol_rel,
+    "ftol_abs"    = ctrl$ftol_abs,
+    "xtol_rel"    = ctrl$xtol_rel,
+    "xtol_abs"    = ctrl$xtol_abs,
+    "lower_bound" = ctrl$lower_bound
+  )
 
-             ## Set parameters for the optimization method
-             opts <- list(
-               "algorithm"   = ctrl$method,
-               "maxeval"     = ctrl$maxeval,
-               "ftol_rel"    = ctrl$ftol_rel,
-               "ftol_abs"    = ctrl$ftol_abs,
-               "xtol_rel"    = ctrl$xtol_rel,
-               "xtol_abs"    = ctrl$xtol_abs,
-               "lower_bound" = ctrl$lower_bound
-             )
+  optim.out <- optimization_VEstep_PLN(
+    par0,
+    newCounts, newdata, newOffsets,
+    self$model_par$Theta, self$model_par$Sigma,
+    opts
+  )
 
-             optim.out <- optimization_VEstep_PLN(par0,
-                                                  newCounts, newdata, newOffsets,
-                                                  self$model_par$Theta, self$model_par$Sigma,
-                                                  opts)
+  ## ===========================================
+  ## POST-TREATMENT
+  ##
+  optim.out$message <- statusToMessage(optim.out$status)
 
-             ## ===========================================
-             ## POST-TREATMENT
-             ##
-             optim.out$message <- statusToMessage(optim.out$status)
+  M <- optim.out$M
+  S <- optim.out$S
 
-             M <- optim.out$M
-             S <- optim.out$S
+  rownames(M) <- rownames(S) <- rownames(newdata)
+  colnames(M) <- colnames(S) <- colnames(newCounts)
 
-             rownames(M) <- rownames(S) <- rownames(newdata)
-             colnames(M) <- colnames(S) <- colnames(newCounts)
+  log.lik <- optim.out$loglik
+  names(log.lik) <- rownames(newdata)
 
-             log.lik <- optim.out$loglik
-             names(log.lik) <- rownames(newdata)
-
-             return(list(M       = M,
-                         S       = S,
-                         log.lik = log.lik))
-           }
-           )
+  return(list(M       = M,
+              S       = S,
+              log.lik = log.lik))
+})
 
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS

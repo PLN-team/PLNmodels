@@ -35,10 +35,10 @@ double fn_optim_PLNnetwork(const std::vector<double> &x, std::vector<double> &gr
 // [[Rcpp::export]]
 Rcpp::List optimization_PLNnetwork (
     arma::vec par,
-    const arma::mat Y,
-    const arma::mat X,
-    const arma::mat O,
-    const arma::mat Omega,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
+    const arma::mat & Omega,
     const double log_det_Omega,
     Rcpp::List options) {
 
