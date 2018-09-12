@@ -98,10 +98,7 @@ PLNfit <-
   )
 
 ## an S3 function to check if an object is a PLNfit
-isPLNfit <- function(Robject) {
-  ## all.equal(tail(class(Robject), 2), c('PLNfit', 'R6'))
-  inherits(Robject, "PLNfit")
-  }
+isPLNfit <- function(Robject) { inherits(Robject, "PLNfit") }
 
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
@@ -247,7 +244,7 @@ PLNfit$set("public", "predict",
 #' @export
 coef.PLNfit <- function(object, ...) {
   stopifnot(isPLNfit(object))
-  return(object$model_par$Theta)
+  object$model_par$Theta
 }
 
 #' Display the model parameters of a PLNfit in a matrix fashion
