@@ -38,17 +38,16 @@ PLNMMfit <-
       }
     ),
     private = list(
-      k   = NULL,
       mu  = NULL,
       tau = NULL,
       pi  = NULL
     ),
     active = list(
-      cluster = function() {private$k},
+      k = function() {ncol(private$tau)},
       posteriorProb = function() {private$tau},
       memberships = function(value) {apply(private$tau, 1, which.max)},
       mixtureParam = function() {private$pi},
-      degrees_freedom = function() {self$p * (self$d + self$cluster)},
+      degrees_freedom = function() {self$p * (self$d + self$k)},
       model_par = function() {
         par <- super$model_par
         par$mu <- private$mu
@@ -86,7 +85,7 @@ function(covariates, offsets) {
 
 PLNMMfit$set("public", "show",
 function() {
-  super$show(paste0("Poisson Lognormal mxiture model with ",self$cluster,"components.\n"))
+  super$show(paste0("Poisson Lognormal mxiture model with ",self$k,"components.\n"))
   cat("* Additional fields for PLNMM\n")
   cat("    coming... \n")
   cat("* Additional methods for PLNMM\n")

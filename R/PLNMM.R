@@ -1,4 +1,4 @@
-##' Poisson lognormal mixture model towards probabilistic classification
+##' Poisson lognormal mixture model
 ##'
 ##' Fit the mixture variants of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 ##'
@@ -61,7 +61,7 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
   myPLN <- PLNMMfamily$new(clusters = clusters, responses = Y, covariates = X, offsets = O, control = ctrl_init)
 
   ## Now adjust the PLN models
-  # if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models analysis.\n")
+  if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models analysis.\n")
   # myPLN$optimize(ctrl_main)
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA

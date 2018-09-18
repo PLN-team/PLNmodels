@@ -42,15 +42,14 @@ PLNMMfamily$set("public", "initialize",
   self$models <- lapply(clusters, function(k){
     out_kmeans <- kmeans(M, centers = k)
     clusters <- out_kmeans$cl
-    mu <- out_kmeans$centers[clusters, ]
-    M_tilde <- M - mu
+    M_tilde <- M - out_kmeans$centers[clusters, ]
     tau <- matrix(0, private$n, k)
     tau[cbind(1:private$n, clusters)] <- 1
 
     model <- PLNMMfit$new(
       Theta = self$inception$model_par$Theta,
       Sigma = crossprod(M_tilde)/private$n + S_bar,
-      mu    = mu ,
+      mu    = out_kmeans$centers ,
       pi    = colMeans(tau),
       M     = M_tilde,
       S     = S,
@@ -70,8 +69,6 @@ PLNMMfamily$set("public", "optimize",
     par0 <- c(
       model$model_par$Theta,
       model$model_par$mu,
-      model$model_par$pi,
-      model$var_par$tau,
       model$var_par$M,
       pmax(model$var_par$S,10*control$lbvar),
     )
@@ -79,12 +76,12 @@ PLNMMfamily$set("public", "optimize",
     ## ===========================================
     ## OPTIMISATION
     if (control$trace == 1) {
-      cat("\t NUmber of cluster =",model$cluster, "\r")
+      cat("\t Number of clusters =", model$k, "\r")
       flush.console()
     }
 
     if (control$trace > 1) {
-      cat(" Rank approximation =",model$rank)
+      cat(" Number of clusters =", model$k)
       cat("\n\t conservative convex separable approximation for gradient descent")
     }
 
@@ -97,21 +94,24 @@ PLNMMfamily$set("public", "optimize",
       "xtol_rel"    = control$xtol_rel,
       "xtol_abs"    = c(rep(0, private$p*(private$d + model$rank) + private$n * model$rank),
                         rep(control$xtol_abs, private$n*model$rank)),
-      "lower_bound" = c(rep(-Inf, private$p*private$d)  , # Theta
-                        rep(-Inf, private$p*model$rank) , # B
-                        rep(-Inf, private$n*model$rank) , # M
-                        rep(control$lbvar,private$n*model$rank)) # S
+      "lower_bound" = c(rep(-Inf, private$p*private$d), # Theta
+                        rep(-Inf, private$p*model$k  ), # mu
+                        rep(-Inf, private$n*private$p), # M
+                        rep(control$lbvar,private$n*model$p)) # S
     )
-    optim.out <- optimization_PLNPCA(par0, self$responses, self$covariates, self$offsets, model$rank, opts)
-    optim.out$message <- statusToMessage(optim.out$status)
+    # optim.out <- optimization_PLNMM(par0, self$responses, self$covariates, self$offsets, model$k, opts)
+    # optim.out$message <- statusToMessage(optim.out$status)
 
     ## ===========================================
     ## OUTPUT
 
+    ### TODO
+    ### COMPUTE Tau and pi from the optimized parameters
+
     ## formating parameters for output
     Theta <- matrix(optim.out$solution[1:(private$p*private$d)                                                        ], private$p, private$d)
-    B     <- matrix(optim.out$solution[private$p*private$d              + 1:(private$p*model$rank)                    ], private$p, model$rank)
-    M     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + 1:(private$n*model$rank)                    ], private$n, model$rank)
+    mu    <- matrix(optim.out$solution[private$p*private$d              + 1:(private$p*model$k)                    ], private$p, model$k)
+    M     <- matrix(optim.out$solution[private$p*(private$d+model$k)    + 1:(private$n*private$p)                    ], private$n, model$rank)
     S     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + private$n*model$rank + 1:(private$n*model$rank)], private$n, model$rank)
     Sigma <- B %*% (crossprod(M)/private$n + diag(colMeans(S), nrow = model$rank, ncol = model$rank)) %*% t(B)
     rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
