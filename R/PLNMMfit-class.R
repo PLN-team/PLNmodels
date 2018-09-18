@@ -56,7 +56,7 @@ PLNMMfit <-
         par
       },
        var_par = function() {
-        par <- super$model_par
+        par <- super$var_par
         par$tau <- private$tau
         par
       }

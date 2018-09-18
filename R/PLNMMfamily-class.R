@@ -62,84 +62,78 @@ PLNMMfamily$set("public", "initialize",
 
 })
 
-# PLNMMfamily$set("public", "optimize",
-#   function(control) {
-#
-#   self$models <- mclapply(self$models, function(model) {
-#     ## initial parameters (model + variational)
-#     par0 <- c(
-#       model$model_par$Theta  ,
-#       model$model_par$B,
-#       model$var_par$M,
-#       pmax(model$var_par$S,10*control$lbvar)
-#     )
-#
-#     ## ===========================================
-#     ## OPTIMISATION
-#     if (control$trace == 1) {
-#       cat("\t Rank approximation =",model$rank, "\r")
-#       flush.console()
-#     }
-#
-#     if (control$trace > 1) {
-#       cat(" Rank approximation =",model$rank)
-#       cat("\n\t conservative convex separable approximation for gradient descent")
-#     }
-#
-#     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-#     opts <- list(
-#       "algorithm"   = control$method,
-#       "maxeval"     = control$maxeval,
-#       "ftol_rel"    = control$ftol_rel,
-#       "ftol_abs"    = control$ftol_abs,
-#       "xtol_rel"    = control$xtol_rel,
-#       "xtol_abs"    = c(rep(0, private$p*(private$d + model$rank) + private$n * model$rank),
-#                         rep(control$xtol_abs, private$n*model$rank)),
-#       "lower_bound" = c(rep(-Inf, private$p*private$d)  , # Theta
-#                         rep(-Inf, private$p*model$rank) , # B
-#                         rep(-Inf, private$n*model$rank) , # M
-#                         rep(control$lbvar,private$n*model$rank)) # S
-#     )
-#     optim.out <- optimization_PLNPCA(par0, self$responses, self$covariates, self$offsets, model$rank, opts)
-#     optim.out$message <- statusToMessage(optim.out$status)
-#
-#     ## ===========================================
-#     ## OUTPUT
-#
-#     ## formating parameters for output
-#     Theta <- matrix(optim.out$solution[1:(private$p*private$d)                                                        ], private$p, private$d)
-#     B     <- matrix(optim.out$solution[private$p*private$d              + 1:(private$p*model$rank)                    ], private$p, model$rank)
-#     M     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + 1:(private$n*model$rank)                    ], private$n, model$rank)
-#     S     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + private$n*model$rank + 1:(private$n*model$rank)], private$n, model$rank)
-#     Sigma <- B %*% (crossprod(M)/private$n + diag(colMeans(S), nrow = model$rank, ncol = model$rank)) %*% t(B)
-#     rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
-#     rownames(B)     <- colnames(self$responses); colnames(B) <- 1:model$rank
-#     rownames(M)     <- rownames(self$responses); colnames(M) <- 1:model$rank
-#     rownames(Sigma) <- colnames(Sigma) <- colnames(self$responses)
-#
-#     model$update(B = B, Theta = Theta, Sigma = Sigma, M = M, S = S, J = -optim.out$objective,
-#                  monitoring = list(objective = optim.out$objective,
-#                                    iterations = optim.out$iterations,
-#                                    status = optim.out$status,
-#                                    message = optim.out$message))
-#     return(model)
-#   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
-# })
+PLNMMfamily$set("public", "optimize",
+  function(control) {
 
-# PLNPCAfamily$set("public", "postTreatment",
-# function() {
-#   super$postTreatment()
-#   for (model in self$models) {
-#     model$setVisualization()
-#   }
-# })
-#
-# PLNPCAfamily$set("public", "plot",
-# function(criteria = c("loglik", "BIC", "ICL")) {
-#   vlines <- sapply(criteria, function(crit) self$getBestModel(crit)$rank)
-#   p <- super$plot(criteria) + xlab("rank") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
-#   p
-# })
+  self$models <- mclapply(self$models, function(model) {
+    ## initial parameters (model + variational)
+    par0 <- c(
+      model$model_par$Theta,
+      model$model_par$mu,
+      model$model_par$pi,
+      model$var_par$tau,
+      model$var_par$M,
+      pmax(model$var_par$S,10*control$lbvar),
+    )
+
+    ## ===========================================
+    ## OPTIMISATION
+    if (control$trace == 1) {
+      cat("\t NUmber of cluster =",model$cluster, "\r")
+      flush.console()
+    }
+
+    if (control$trace > 1) {
+      cat(" Rank approximation =",model$rank)
+      cat("\n\t conservative convex separable approximation for gradient descent")
+    }
+
+    ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
+    opts <- list(
+      "algorithm"   = control$method,
+      "maxeval"     = control$maxeval,
+      "ftol_rel"    = control$ftol_rel,
+      "ftol_abs"    = control$ftol_abs,
+      "xtol_rel"    = control$xtol_rel,
+      "xtol_abs"    = c(rep(0, private$p*(private$d + model$rank) + private$n * model$rank),
+                        rep(control$xtol_abs, private$n*model$rank)),
+      "lower_bound" = c(rep(-Inf, private$p*private$d)  , # Theta
+                        rep(-Inf, private$p*model$rank) , # B
+                        rep(-Inf, private$n*model$rank) , # M
+                        rep(control$lbvar,private$n*model$rank)) # S
+    )
+    optim.out <- optimization_PLNPCA(par0, self$responses, self$covariates, self$offsets, model$rank, opts)
+    optim.out$message <- statusToMessage(optim.out$status)
+
+    ## ===========================================
+    ## OUTPUT
+
+    ## formating parameters for output
+    Theta <- matrix(optim.out$solution[1:(private$p*private$d)                                                        ], private$p, private$d)
+    B     <- matrix(optim.out$solution[private$p*private$d              + 1:(private$p*model$rank)                    ], private$p, model$rank)
+    M     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + 1:(private$n*model$rank)                    ], private$n, model$rank)
+    S     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + private$n*model$rank + 1:(private$n*model$rank)], private$n, model$rank)
+    Sigma <- B %*% (crossprod(M)/private$n + diag(colMeans(S), nrow = model$rank, ncol = model$rank)) %*% t(B)
+    rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
+    rownames(B)     <- colnames(self$responses); colnames(B) <- 1:model$rank
+    rownames(M)     <- rownames(self$responses); colnames(M) <- 1:model$rank
+    rownames(Sigma) <- colnames(Sigma) <- colnames(self$responses)
+
+    model$update(B = B, Theta = Theta, Sigma = Sigma, M = M, S = S, J = -optim.out$objective,
+                 monitoring = list(objective = optim.out$objective,
+                                   iterations = optim.out$iterations,
+                                   status = optim.out$status,
+                                   message = optim.out$message))
+    return(model)
+  }, mc.cores = control$cores, mc.allow.recursive = FALSE)
+})
+
+PLNMMfamily$set("public", "plot",
+function(criteria = c("loglik", "BIC", "ICL")) {
+  vlines <- sapply(criteria, function(crit) self$getBestModel(crit)$cluster)
+  p <- super$plot(criteria) + xlab("# of clusters") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
+  p
+})
 
 PLNMMfamily$set("public", "show",
 function() {

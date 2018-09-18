@@ -65,8 +65,8 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
   # myPLN$optimize(ctrl_main)
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
-  # if (ctrl_main$trace > 0) cat("\n Post-treatments")
-  # myPLN$postTreatment()
+  if (ctrl_main$trace > 0) cat("\n Post-treatments")
+  myPLN$postTreatment()
 
   if (ctrl_main$trace > 0) cat("\n DONE!\n")
   myPLN
