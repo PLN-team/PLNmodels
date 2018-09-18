@@ -46,6 +46,7 @@ if [ $? -ne 0 ]; then
   exit 1;
 fi
 
+
 # Write to Makevars
 sed -e "s|@nlopt_libs@|$NLOPT_LIBS|" src/Makevars.in > src/Makevars
 

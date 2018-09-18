@@ -103,7 +103,7 @@ isPLNfit <- function(Robject) { inherits(Robject, "PLNfit") }
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
 ## ----------------------------------------------------------------------
-## Should only be accessed By PLNfamily but R6 friend class don't exist
+## Should only be accessed by PLNfamily but R6 friend class doesn't exist
 
 #' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
 #'

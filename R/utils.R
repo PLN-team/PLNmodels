@@ -145,6 +145,37 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
   ctrl
 }
 
+PLNMM_param <- function(control, n, p, type = c("init", "main")) {
+  type <- match.arg(type)
+
+  ctrl <- switch(match.arg(type),
+    "init" = list(
+      inception = ifelse(n >= 1.5*p, "PLN", "LM"),
+      ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
+      ftol_abs = 0,
+      xtol_rel = 1e-4,
+      xtol_abs = 1e-4,
+      maxeval  = 10000,
+      method   = "CCSAQ",
+      lbvar    = 1e-4,
+      trace    = 0
+    ),
+    "main" = list(
+      ftol_rel = 1e-6,
+      ftol_abs = 0,
+      xtol_rel = 1e-4,
+      xtol_abs = 1e-4,
+      maxeval  = 10000,
+      method   = "MMA",
+      lbvar    = 1e-4,
+      trace    = 1,
+      cores    = 1
+    )
+  )
+  ctrl[names(control)] <- control
+  ctrl
+}
+
 PLNnetwork_param <- function(control, n, p, type = c("init", "main")) {
   type <- match.arg(type)
 

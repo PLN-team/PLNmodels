@@ -1,19 +1,19 @@
-##' Poisson lognormal model towards Principal Component Analysis
+##' Poisson lognormal mixture model towards probabilistic classification
 ##'
-##' Fit the PCA variants of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
+##' Fit the mixture variants of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 ##'
 ##' @param formula an object of class "formula": a symbolic description of the model to be fitted.
 ##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param control a list for controlling the optimization. See details.
-##' @param ranks a vector of integer containing the successive ranks (or number of axes to be considered)
-##' @param control.init a list for controling the optimization at initialization. See details.
-##' @param control.main a list for controling the main optimization process. See details.
+##' @param clusters a vector of integer containing the successive number of clusters (or components) to be considered
+##' @param control_init a list for controling the optimization at initialization. See details.
+##' @param control_main a list for controling the main optimization process. See details.
 ##'
-##' @return an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
-##' a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
+##' @return an R6 object with class \code{\link[=PLNMMfamily]{PLNMMfamily}}, which contains
+##' a collection of models with class \code{\link[=PLNMMfit]{PLNMMfit}}
 ##'
-##' @details The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries
+##' @details The list of parameters \code{control_init} and \code{control_main} control the optimization of the intialization and the main process, with the following entries
 ##' \itemize{
 ##'   \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
 ##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
@@ -29,13 +29,13 @@
 ##'  \item{"cores"}{The number of core used to paralellize jobs over the \code{ranks} vector. Default is 1.}
 ##' }
 ##'
-##' @rdname PLNPCA
+##' @rdname PLNMM
 ##' @examples
 ##' ## See the vignette: vignette("trichoptera", package="PLNmodels")
-##' @seealso The classes \code{\link[=PLNPCAfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
+##' @seealso The classes \code{\link[=PLNMM]{PLNMMfamily}} and \code{\link[=PLNMMfit]{PLNMMfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNPCA <- function(formula, data, subset, ranks = 1:5,  control.init = list(), control.main = list()) {
+PLNMM <- function(formula, data, subset, clusters = 2:10,  control_init = list(), control_main = list()) {
 
   ## create the call for the model frame
   call_frame <- match.call(expand.dots = FALSE)
@@ -53,24 +53,21 @@ PLNPCA <- function(formula, data, subset, ranks = 1:5,  control.init = list(), c
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl.init <- PLNPCA_param(control.init, n, p, "init")
-  ctrl.main <- PLNPCA_param(control.main, n, p, "main")
+  ctrl_init <- PLNMM_param(control_init, n, p, "init")
+  ctrl_main <- PLNMM_param(control_main, n, p, "main")
 
-  ## Instantiate the collection of PLN models, initialized by PLN with full rank
-  if (ctrl.main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNPCAfamily$new(ranks = ranks, responses = Y, covariates = X, offsets = O, control = ctrl.init)
+  ## Instantiate the collection of PLN models
+  if (ctrl_main$trace > 0) cat("\n Initialization...")
+  myPLN <- PLNMMfamily$new(clusters = clusters, responses = Y, covariates = X, offsets = O, control = ctrl_init)
 
   ## Now adjust the PLN models
-  if (ctrl.main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.\n")
-  myPLN$optimize(ctrl.main)
+  # if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models analysis.\n")
+  # myPLN$optimize(ctrl_main)
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
-  if (ctrl.main$trace > 0) cat("\n Post-treatments")
-  myPLN$postTreatment()
+  # if (ctrl_main$trace > 0) cat("\n Post-treatments")
+  # myPLN$postTreatment()
 
-  if (ctrl.main$trace > 0) cat("\n DONE!\n")
-
-  ## TODO formating the output to by (g)lm like
-  ## TODO use the same output as in the broom package
+  if (ctrl_main$trace > 0) cat("\n DONE!\n")
   myPLN
 }
