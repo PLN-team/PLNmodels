@@ -40,7 +40,6 @@ PLNMMfamily$set("public", "initialize",
 
   ## instantiate as many models as clusters
   self$models <- lapply(clusters, function(k){
-
     out_kmeans <- kmeans(M, centers = k)
     clusters <- out_kmeans$cl
     mu <- out_kmeans$centers[clusters, ]
@@ -56,6 +55,7 @@ PLNMMfamily$set("public", "initialize",
       M     = M_tilde,
       S     = S,
       tau   = tau,
+      J     = self$inception$loglik
     )
     return(model)
   })
@@ -147,7 +147,7 @@ function() {
   cat(" Task: Mixture Model \n")
   cat("========================================================\n")
   cat(" - Number of clusters considered: from", min(self$clusters), "to", max(self$clusters),"\n")
-  # cat(" - Best model (regarding BIC): rank =", self$getBestModel("BIC")$cluster, "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
-  # cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$cluster, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
+  cat(" - Best model (regarding BIC): rank =", self$getBestModel("BIC")$cluster, "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
+  cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$cluster, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })
 PLNMMfamily$set("public", "print", function() self$show())

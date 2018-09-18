@@ -35,7 +35,7 @@
 ##' @seealso The classes \code{\link[=PLNMM]{PLNMMfamily}} and \code{\link[=PLNMMfit]{PLNMMfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNMM <- function(formula, data, subset, clusters = 2:10,  control_init = list(), control_main = list()) {
+PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list(), control_main = list()) {
 
   ## create the call for the model frame
   call_frame <- match.call(expand.dots = FALSE)

@@ -87,9 +87,9 @@ function(covariates, offsets) {
 PLNMMfit$set("public", "show",
 function() {
   super$show(paste0("Poisson Lognormal mxiture model with ",self$cluster,"components.\n"))
-  # cat("* Additional fields for mixture model\n")
-  # cat("    $percent_var, $corr_circle, $scores, $rotation \n")
-  # cat("* Additional methods for PCA\n")
-  # cat("    $plot_PCA(), $plot_correlation_circle(), $plot_individual_map() \n")
+  cat("* Additional fields for PLNMM\n")
+  cat("    coming... \n")
+  cat("* Additional methods for PLNMM\n")
+  cat("    coming... \n")
 })
 
