@@ -29,7 +29,7 @@
 ##' @examples
 ##' ## See the vignette
 ##' @seealso The class  \code{\link[=PLNfit]{PLNfit}}
-##' @importFrom stats model.frame model.matrix model.response model.offset terms
+##' @importFrom stats model.frame model.matrix model.response model.offset model.weights terms
 ##' @export
 PLN <- function(formula, data, subset, weights, control = list()) {
 

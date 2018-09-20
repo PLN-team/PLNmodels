@@ -106,7 +106,7 @@ Rcpp::List optimization_wPLN(
   // Perform the optimization
   double f_optimized ;
   stdvec x_optimized = arma::conv_to<stdvec>::from(par);
-  opt.set_min_objective(fn_optim_PLN, &my_optim_data);
+  opt.set_min_objective(fn_optim_wPLN, &my_optim_data);
   nlopt::result status = opt.optimize(x_optimized, f_optimized);
 
   return Rcpp::List::create(
