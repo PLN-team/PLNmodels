@@ -15,7 +15,6 @@
   return(rowSums(res) + 0.5 * log(det(Omega)) )
 }
 
-
 edge_to_node <- function(x, n = max(x)) {
   x <- x - 1 ## easier for arithmetic to number edges starting from 0
   n.node <- round((1 + sqrt(1 + 8*n)) / 2) ## n.node * (n.node -1) / 2 = n (if integer)

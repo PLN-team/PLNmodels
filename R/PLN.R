@@ -31,21 +31,23 @@
 ##' @seealso The class  \code{\link[=PLNfit]{PLNfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset terms
 ##' @export
-PLN <- function(formula, data, subset, control = list()) {
+PLN <- function(formula, data, subset, weights, control = list()) {
 
   ## create the call for the model frame
   call_frame <- match.call(expand.dots = FALSE)
-  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset"), names(call_frame), 0L))]
+  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset", "weights"), names(call_frame), 0L))]
   call_frame[[1]] <- quote(stats::model.frame)
 
   ## eval the call in the parent environment
-  frame <- eval(call_frame, parent.frame())
+  frame <- eval(call_frame, parent.frame(2))
 
   ## create the set of matrices to fit the PLN model
   Y <- model.response(frame)
   X <- model.matrix(terms(frame), frame)
   O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
+  w <- model.weights(frame)
+  if (!is.null(w)) stopifnot(all(w > 0) && length(w) == nrow(Y))
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- PLN_param(control, nrow(Y), ncol(Y))
@@ -55,16 +57,14 @@ PLN <- function(formula, data, subset, control = list()) {
     as.matrix(Y),
     as.matrix(X),
     as.matrix(O),
+    as.vector(w),
     ctrl
     )
-
-  ## TODO formating the output to by (g)lm like
-  ## TODO use the same output as in the broom package
 
   res
 }
 
-PLN_internal <- function(Y, X, O, ctrl) {
+PLN_internal <- function(Y, X, O, w, ctrl) {
 
   ## ===========================================
   ## INITIALIZATION
@@ -92,7 +92,12 @@ PLN_internal <- function(Y, X, O, ctrl) {
     "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
   )
 
-  optim.out <- optimization_PLN(par0, Y, X, O, opts)
+  if (is.null(w)) {
+    optim.out <- optimization_PLN(par0, Y, X, O, opts)
+  } else {
+    optim.out <- optimization_wPLN(par0, Y, X, O, w, opts)
+  }
+
   optim.out$message <- statusToMessage(optim.out$status)
 
   ## ===========================================

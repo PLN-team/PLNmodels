@@ -9,6 +9,10 @@ optimization_PLN <- function(par, Y, X, O, options) {
     .Call('_PLNmodels_optimization_PLN', PACKAGE = 'PLNmodels', par, Y, X, O, options)
 }
 
+optimization_wPLN <- function(par, Y, X, O, w, options) {
+    .Call('_PLNmodels_optimization_wPLN', PACKAGE = 'PLNmodels', par, Y, X, O, w, options)
+}
+
 optimization_PLNnetwork <- function(par, Y, X, O, Omega, log_det_Omega, options) {
     .Call('_PLNmodels_optimization_PLNnetwork', PACKAGE = 'PLNmodels', par, Y, X, O, Omega, log_det_Omega, options)
 }

@@ -4,12 +4,17 @@ using namespace Rcpp;
 
 double K(arma::mat Y) {
   arma::colvec v = arma::nonzeros(Y);
-  return accu(v % log(v) - v + log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + log(M_PI)/2);
+  return accu(v % arma::log(v) - v + log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2);
+}
+
+double Kw(arma::mat Y, arma::vec w) {
+  arma::colvec v = arma::nonzeros(diagmat(w) * Y);
+  return accu(v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2);
 }
 
 arma::mat logfact(arma::mat Y) {
   arma::mat v = Y.replace(0, 1);
-  return v % log(v) - v + log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + log(M_PI)/2;
+  return v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2;
 }
 
 // Convert string to nlopt_alogirthm
