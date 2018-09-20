@@ -63,8 +63,8 @@ PLNLDA <- function(formula, data, subset, grouping, control = list()) {
   grouping <- as.factor(grouping)
   design_group <- model.matrix(~ grouping + 0)
   design_full <- cbind(X, design_group)
-
-  myPLN <- PLN_internal(Y, design_full, O, ctrl)
+### TODO: add weights properly...
+  myPLN <- PLN_internal(Y, design_full, O, NULL, ctrl)
   if (d > 0) {
     P <- (diag(nrow(X)) - X %*% solve(crossprod(X)) %*% t(X)) %*% myPLN$latent_pos(design_full, matrix(0, myPLN$n, myPLN$q))
     Group_Means <- t(rowsum(P, grouping) / tabulate(grouping))
