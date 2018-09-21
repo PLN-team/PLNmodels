@@ -87,3 +87,11 @@ myPLN$plot("model")
 myPLN$plot("variational")
 ```
 
+It is also possible to use observation weights like in standard (generalized) linear models:
+
+```{r weighted, fig.width=7, fig.height=5}
+myPLN_weighted <- PLN(trichoptera$Abundance ~ 1 + offset(log(TotalCount)), weights = runif(nrow(TotalCount)))
+myPLN_weighted$plot("model")
+myPLN_weighted$plot("variational")
+```
+
