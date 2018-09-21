@@ -104,7 +104,7 @@ fullModelPoisson <- function(responses) {
 rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths = rep(1e4, n)) {
   p <- ncol(Sigma)
   if (any(is.vector(mu), ncol(mu) == 1)) {
-    mu <- matrix(rep(mu, n), ncol = p, byrow = T)
+    mu <- matrix(rep(mu, n), ncol = p, byrow = TRUE)
   }
   if (length(depths) != n) {
     depths <- rep(depths[1], n)
