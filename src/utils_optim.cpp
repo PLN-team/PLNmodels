@@ -2,13 +2,8 @@
 
 using namespace Rcpp;
 
-double K(arma::mat Y) {
-  arma::colvec v = arma::nonzeros(Y);
-  return accu(v % arma::log(v) - v + log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2);
-}
-
 double Kw(arma::mat Y, arma::vec w) {
-  arma::colvec v = arma::nonzeros(diagmat(w) * Y);
+  arma::colvec v = arma::nonzeros(Y.each_col() % w);
   return accu(v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2);
 }
 

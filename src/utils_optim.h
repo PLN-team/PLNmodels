@@ -4,7 +4,6 @@
 #include "RcppArmadillo.h"
 #include <nlopt.hpp>
 
-double K(arma::mat Y) ;
 double Kw(arma::mat Y, arma::vec w) ;
 
 arma::mat logfact(arma::mat Y) ;
@@ -37,7 +36,7 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KY = K(Y) ;
+        KY = Kw(Y, w) ;
       } ;
     // weighted PLN constructor
     optim_data(const arma::mat &responses,
@@ -63,7 +62,7 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KY = K(Y) ;
+        KY = Kw(Y, arma::ones(n)) ;
       } ;
     // PLNnetwork constructor
     optim_data(const arma::mat &responses,
@@ -77,7 +76,7 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KY = K(Y) ;
+        KY = Kw(Y, arma::ones(n)) ;
       } ;
     // PLN VE-step constructor
     optim_data(const arma::mat &responses,
@@ -92,7 +91,7 @@ typedef struct optim_data {
       p = Y.n_cols ;
       d = X.n_cols ;
       iterations = 0 ;
-      KY = K(Y) ;
+      KY = Kw(Y, arma::ones(n)) ;
     } ;
 
 } optim_data ;

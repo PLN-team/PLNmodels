@@ -7,7 +7,7 @@
 #' and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
 #'
 #' @field rank the dimension of the current model
-#' @field model_par a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
+#' @field model_par a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), B (latent loadings), P (latent position) and Mu (group means)
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field loglik variational lower bound of the loglikelihood
@@ -26,37 +26,37 @@ PLNLDAfit <-
   R6Class(classname = "PLNLDAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(Theta=NA, Group_Means = NA, Sigma=NA, grouping = NA, M=NA, S=NA, J=NA, monitoring=NA) {
+      initialize = function(Theta=NA, Mu=NA, Sigma=NA, grouping = NA, M=NA, S=NA, J=NA, monitoring=NA) {
         super$initialize(Theta, Sigma, M, S, J, monitoring)
         private$grouping <- grouping
-        private$Group_Means <- Group_Means
+        private$Mu <- Mu
         nk <- table(grouping)
-        mu_bar <- as.vector(Group_Means %*% nk / self$n)
-        private$B <- Group_Means %*% diag(nk) %*% t(Group_Means) / self$n - mu_bar %o% mu_bar
+        Mu_bar <- as.vector(Mu %*% nk / self$n)
+        private$B <- Mu %*% diag(nk) %*% t(Mu) / self$n - Mu_bar %o% Mu_bar
       },
       setVisualization = function(scale.unit = FALSE) {
         Wm1B <- solve(private$Sigma) %*% private$B
         private$svdLDA <- svd(scale(Wm1B,TRUE, scale.unit), nv = self$rank)
         ## P <- self$latent_pos(model.matrix( ~ private$grouping + 0), matrix(0, self$n, self$q))
-        P <- private$M + tcrossprod(model.matrix( ~ private$grouping + 0), private$Group_Means) ## P = M + G mu
+        P <- private$M + tcrossprod(model.matrix( ~ private$grouping + 0), private$Mu) ## P = M + G Mu
         private$P <- scale(P, TRUE, FALSE)
       }
     ),
     private = list(
-      B           = NULL,
-      P           = NULL,
-      Group_Means = NULL,
-      grouping    = NULL,
-      svdLDA      = NULL
+      B        = NULL,
+      P        = NULL,
+      Mu       = NULL,
+      grouping = NULL,
+      svdLDA   = NULL
     ),
     active = list(
       rank = function() {nlevels(private$grouping) - 1},
       degrees_freedom = function() {self$p * (self$d + self$rank)},
       model_par = function() {
         par <- super$model_par
-        par$B <- private$B
-        par$P <- private$P
-        par$Group_Means <- private$Group_Means
+        par$B  <- private$B
+        par$P  <- private$P
+        par$Mu <- private$Mu
         par
       },
       percent_var = function() {

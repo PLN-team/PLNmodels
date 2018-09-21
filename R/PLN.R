@@ -53,7 +53,7 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
   ## problem dimensions
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
-  ## Check weights
+  ## Check weights
   weighted <- ifelse(is.null(w), FALSE, TRUE)
   if (!weighted) w <- rep(1.0,n)
 
