@@ -4,7 +4,7 @@
 \alias{PLNLDA}
 \title{Poisson lognormal model towards Linear Disciminant Analysis}
 \usage{
-PLNLDA(formula, data, subset, grouping, control = list())
+PLNLDA(formula, data, subset, weights, grouping, control = list())
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
@@ -12,6 +12,8 @@ PLNLDA(formula, data, subset, grouping, control = list())
 \item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.}
 
 \item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
+
+\item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
 
 \item{grouping}{a factor specifying the class of each observation used for discriminant analysis.}
 
@@ -26,7 +28,7 @@ Fit the Poisson lognormal for LDA with a variational algorithm. Use the (g)lm sy
 \details{
 The list of parameters \code{control} tunes the optimization of the intialization and the main process, with the following entries
 \itemize{
-  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
+ \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
