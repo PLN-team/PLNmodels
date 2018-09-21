@@ -37,28 +37,16 @@
 ##' @export
 PLNPCA <- function(formula, data, subset, ranks = 1:5,  control.init = list(), control.main = list()) {
 
-  ## create the call for the model frame
-  call_frame <- match.call(expand.dots = FALSE)
-  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset"), names(call_frame), 0L))]
-  call_frame[[1]] <- quote(stats::model.frame)
-
-  ## eval the call in the parent environment
-  frame <- eval(call_frame, parent.frame())
-
-  ## create the set of matrices to fit the PLN model
-  Y <- model.response(frame)
-  n  <- nrow(Y); p <- ncol(Y) # problem dimensions
-  X <- model.matrix(terms(frame), frame)
-  O <- model.offset(frame)
-  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
+  ## extract the data matrices and weights
+  args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl.init <- PLNPCA_param(control.init, n, p, "init")
-  ctrl.main <- PLNPCA_param(control.main, n, p, "main")
+  ctrl.init <- PLNPCA_param(control.init, nrow(args$Y), ncol(args$Y), "init")
+  ctrl.main <- PLNPCA_param(control.main, nrow(args$Y), ncol(args$Y), "main")
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank
   if (ctrl.main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNPCAfamily$new(ranks = ranks, responses = Y, covariates = X, offsets = O, control = ctrl.init)
+  myPLN <- PLNPCAfamily$new(ranks = ranks, responses = args$Y, covariates = args$X, offsets = args$O, control = ctrl.init)
 
   ## Now adjust the PLN models
   if (ctrl.main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.\n")
@@ -69,8 +57,5 @@ PLNPCA <- function(formula, data, subset, ranks = 1:5,  control.init = list(), c
   myPLN$postTreatment()
 
   if (ctrl.main$trace > 0) cat("\n DONE!\n")
-
-  ## TODO formating the output to by (g)lm like
-  ## TODO use the same output as in the broom package
   myPLN
 }

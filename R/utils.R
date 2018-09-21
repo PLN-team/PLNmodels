@@ -15,6 +15,26 @@
   return(rowSums(res) + 0.5 * log(det(Omega)) )
 }
 
+extract_model <- function(call_frame, envir) {
+
+  ## create the call for the model frame
+  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset", "weights"), names(call_frame), 0L))]
+  call_frame[[1]] <- quote(stats::model.frame)
+
+  ## eval the call in the parent environment
+  frame <- eval(call_frame, envir)
+
+  ## create the set of matrices to fit the PLN model
+  Y <- model.response(frame)
+  X <- model.matrix(terms(frame), frame)
+  O <- model.offset(frame)
+  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
+  w <- model.weights(frame)
+  if (!is.null(w)) stopifnot(all(w > 0) && length(w) == nrow(Y))
+
+  list(Y = Y, X = X, O = O, w = w)
+}
+
 edge_to_node <- function(x, n = max(x)) {
   x <- x - 1 ## easier for arithmetic to number edges starting from 0
   n.node <- round((1 + sqrt(1 + 8*n)) / 2) ## n.node * (n.node -1) / 2 = n (if integer)

@@ -34,34 +34,14 @@
 ##' @export
 PLN <- function(formula, data, subset, weights, control = list()) {
 
-  ## create the call for the model frame
-  call_frame <- match.call(expand.dots = FALSE)
-  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset", "weights"), names(call_frame), 0L))]
-  call_frame[[1]] <- quote(stats::model.frame)
-
-  ## eval the call in the parent environment
-  frame <- eval(call_frame, parent.frame(2))
-
-  ## create the set of matrices to fit the PLN model
-  Y <- model.response(frame)
-  X <- model.matrix(terms(frame), frame)
-  O <- model.offset(frame)
-  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
-  w <- model.weights(frame)
-  if (!is.null(w)) stopifnot(all(w > 0) && length(w) == nrow(Y))
+  ## extract the data matrices and weights
+  args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- PLN_param(control, nrow(Y), ncol(Y))
+  args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y))
 
   ## call to the fitting function
-  res <- PLN_internal(
-    as.matrix(Y),
-    as.matrix(X),
-    as.matrix(O),
-    as.vector(w),
-    ctrl
-    )
-
+  res <- do.call(PLN_internal, args)
   res
 }
 

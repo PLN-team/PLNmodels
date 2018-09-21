@@ -41,3 +41,5 @@ test_that("Check PLN weights",  {
 # summary(res)
 #
 # weights = PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(trace = 0))
+
+weights = PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(trace = 0))
