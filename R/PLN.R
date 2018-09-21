@@ -72,15 +72,20 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
   ## problem dimensions
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
+  ## Check weights
+  weighted <- ifelse(is.null(w), FALSE, TRUE)
+  if (!weighted) w <- rep(1.0,n)
+
   ## get an initial point for optimization
-  par0 <- initializePLN(Y, X, O, ctrl) # Theta, M, S
+  par0 <- initializePLN(Y, X, O, w, ctrl) # Theta, M, S
 
   ## ===========================================
   ## OPTIMIZATION
   ##
-  if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
-
   par0 <- c(par0$Theta, par0$M, par0$S)
+
+  if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model")
+  if (ctrl$trace > 0 & weighted) cat(" (weigthed)")
 
   opts <- list(
     "algorithm"   = ctrl$method,
@@ -89,15 +94,11 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
     "ftol_abs"    = ctrl$ftol_abs,
     "xtol_rel"    = ctrl$xtol_rel,
     "xtol_abs"    = c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
-    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
+    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
+    "weighted"    = weighted
   )
 
-  if (is.null(w)) {
-    optim.out <- optimization_PLN(par0, Y, X, O, opts)
-  } else {
-    optim.out <- optimization_wPLN(par0, Y, X, O, w, opts)
-  }
-
+  optim.out <- optimization_PLN(par0, Y, X, O, w, opts)
   optim.out$message <- statusToMessage(optim.out$status)
 
   ## ===========================================
@@ -127,7 +128,7 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
 
 ## Extract the model used for initializing the whole family
 #' @importFrom stats glm.fit lm.fit poisson residuals coefficients runif
-initializePLN <- function(Y, X, O, control) {
+initializePLN <- function(Y, X, O, w, control) {
 
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
@@ -143,7 +144,7 @@ initializePLN <- function(Y, X, O, control) {
   ## Default LM + log transformation
   } else {
     if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-    LMs  <- lapply(1:p, function(j) lm.fit(X, log(1 + Y[,j]), offset =  O[,j]) )
+    LMs  <- lapply(1:p, function(j) lm.wfit(X, log(1 + Y[,j]), w, offset =  O[,j]) )
     Theta <- do.call(rbind, lapply(LMs, coefficients))
     M     <- do.call(cbind, lapply(LMs, residuals))
     S <- matrix(10 * control$lbvar, n, p)

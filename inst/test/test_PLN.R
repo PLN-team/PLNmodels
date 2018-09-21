@@ -18,25 +18,26 @@ test_that("Check PLN initialization",  {
 })
 
 test_that("Check PLN weights",  {
-  tol <- 1e-2
+  tol <- 1e-4
 
   ## no weights
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 1))
 
   ## equivalent weigths
-  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1, nrow(trichoptera)), control = list(trace = 0))
+  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(trace = 1))
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
   expect_equal(model2$model_par, model1$model_par, tolerance = tol)
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
-## no weights
+# ## timings (weight/no weights -> 6/7% slower)
 # res <- microbenchmark::microbenchmark(
 #   noweights = PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0)),
 #   ## equivalent weigths
 #   weights = PLN(Abundance ~ 1, data = trichoptera, weights = rep(1, nrow(trichoptera)), control = list(trace = 0)),
 #   times = 20
 # )
+# summary(res)
 #
 # weights = PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(trace = 0))
