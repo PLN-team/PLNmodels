@@ -8,3 +8,4 @@
 ^.editorconfig$
 ^src/Makevars$
 .travis.yml
+^README.Rmd

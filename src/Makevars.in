@@ -1,4 +1,3 @@
-## We now use configure to find where NLopt is installed on the system
 NLOPT_LIBS=@nlopt_libs@
 ifeq ($(shell $(CXX1X) -fopenmp -E -xc++ - && echo 'true'), true)
 	PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)

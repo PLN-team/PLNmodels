@@ -40,6 +40,7 @@ logLikPoisson <- function(responses, lambda) {
   loglik
 }
 
+##' @importFrom stats glm.fit
 nullModelPoisson <- function(responses, covariates, offsets) {
   Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
     coefficients(glm.fit(covariates, responses[, j], offset = offsets[,j], family = stats::poisson()))))
