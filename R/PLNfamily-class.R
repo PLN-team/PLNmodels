@@ -54,10 +54,12 @@ PLNfamily$set("public", "initialize",
     if (ifelse(is.character(control$inception),
                ifelse(control$inception == "PLN", TRUE, FALSE), FALSE)) {
         if (control$trace > 0) cat("\n Extract the inceptive model")
-        self$inception <- PLN_internal(self$responses, self$covariates, self$offsets, control)
+       ## TODO: add weights properly...
+        self$inception <- PLN_internal(self$responses, self$covariates, self$offsets, NULL, control)
     } else {
       if (control$trace > 0) cat("\n Adjust the inceptive model")
-      par0 <- initializePLN(self$responses, self$covariates, self$offsets, control)
+       ## TODO: add weights properly...
+      par0 <- initializePLN(self$responses, self$covariates, rep(1,private$n), self$offsets, control)
       Sigma <- crossprod(par0$M)/private$n + diag(colMeans(par0$S), private$p, private$p)
       self$inception <- PLNfit$new(Theta = par0$Theta, Sigma = Sigma, M = par0$M, S = par0$S)
     }

@@ -2,7 +2,7 @@ library(PLNmodels)
 library(ggplot2)
 library(gridExtra)
 library(profvis)
-data("trichometeo")
+data("trichoptera")
 
 profvis(fits <- PLNnetwork(Abundance ~ 1, data = trichoptera))
 

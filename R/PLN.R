@@ -4,6 +4,7 @@
 ##'
 ##' @param formula an object of class "formula": a symbolic description of the model to be fitted.
 ##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
+##' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param control a list for controlling the optimization. See details.
 ##'
@@ -29,42 +30,22 @@
 ##' @examples
 ##' ## See the vignette
 ##' @seealso The class  \code{\link[=PLNfit]{PLNfit}}
-##' @importFrom stats model.frame model.matrix model.response model.offset terms
+##' @importFrom stats model.frame model.matrix model.response model.offset model.weights terms
 ##' @export
-PLN <- function(formula, data, subset, control = list()) {
+PLN <- function(formula, data, subset, weights, control = list()) {
 
-  ## create the call for the model frame
-  call_frame <- match.call(expand.dots = FALSE)
-  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset"), names(call_frame), 0L))]
-  call_frame[[1]] <- quote(stats::model.frame)
-
-  ## eval the call in the parent environment
-  frame <- eval(call_frame, parent.frame())
-
-  ## create the set of matrices to fit the PLN model
-  Y <- model.response(frame)
-  X <- model.matrix(terms(frame), frame)
-  O <- model.offset(frame)
-  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
+  ## extract the data matrices and weights
+  args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- PLN_param(control, nrow(Y), ncol(Y))
+  args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y))
 
   ## call to the fitting function
-  res <- PLN_internal(
-    as.matrix(Y),
-    as.matrix(X),
-    as.matrix(O),
-    ctrl
-    )
-
-  ## TODO formating the output to by (g)lm like
-  ## TODO use the same output as in the broom package
-
+  res <- do.call(PLN_internal, args)
   res
 }
 
-PLN_internal <- function(Y, X, O, ctrl) {
+PLN_internal <- function(Y, X, O, w, ctrl) {
 
   ## ===========================================
   ## INITIALIZATION
@@ -72,15 +53,20 @@ PLN_internal <- function(Y, X, O, ctrl) {
   ## problem dimensions
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
+  ## Check weights
+  weighted <- ifelse(is.null(w), FALSE, TRUE)
+  if (!weighted) w <- rep(1.0,n)
+
   ## get an initial point for optimization
-  par0 <- initializePLN(Y, X, O, ctrl) # Theta, M, S
+  par0 <- initializePLN(Y, X, O, w, ctrl) # Theta, M, S
 
   ## ===========================================
   ## OPTIMIZATION
   ##
-  if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model.")
-
   par0 <- c(par0$Theta, par0$M, par0$S)
+
+  if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model")
+  if (ctrl$trace > 0 & weighted) cat(" (weigthed)")
 
   opts <- list(
     "algorithm"   = ctrl$method,
@@ -89,10 +75,11 @@ PLN_internal <- function(Y, X, O, ctrl) {
     "ftol_abs"    = ctrl$ftol_abs,
     "xtol_rel"    = ctrl$xtol_rel,
     "xtol_abs"    = c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
-    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
+    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
+    "weighted"    = weighted
   )
 
-  optim.out <- optimization_PLN(par0, Y, X, O, opts)
+  optim.out <- optimization_PLN(par0, Y, X, O, w, opts)
   optim.out$message <- statusToMessage(optim.out$status)
 
   ## ===========================================
@@ -121,8 +108,8 @@ PLN_internal <- function(Y, X, O, ctrl) {
 }
 
 ## Extract the model used for initializing the whole family
-#' @importFrom stats glm.fit lm.fit poisson residuals coefficients runif
-initializePLN <- function(Y, X, O, control) {
+#' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
+initializePLN <- function(Y, X, O, w, control) {
 
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
@@ -138,7 +125,7 @@ initializePLN <- function(Y, X, O, control) {
   ## Default LM + log transformation
   } else {
     if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-    LMs  <- lapply(1:p, function(j) lm.fit(X, log(1 + Y[,j]), offset =  O[,j]) )
+    LMs  <- lapply(1:p, function(j) lm.wfit(X, log(1 + Y[,j]), w, offset =  O[,j]) )
     Theta <- do.call(rbind, lapply(LMs, coefficients))
     M     <- do.call(cbind, lapply(LMs, residuals))
     S <- matrix(10 * control$lbvar, n, p)

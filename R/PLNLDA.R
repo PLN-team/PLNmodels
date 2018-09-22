@@ -4,6 +4,7 @@
 ##'
 ##' @param formula an object of class "formula": a symbolic description of the model to be fitted.
 ##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
+##' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param grouping a factor specifying the class of each observation used for discriminant analysis.
 ##' @param control a list for controling the optimization process. See details.
@@ -12,7 +13,7 @@
 ##'
 ##' @details The list of parameters \code{control} tunes the optimization of the intialization and the main process, with the following entries
 ##' \itemize{
-##'   \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
+##'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
 ##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
 ##'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
 ##'  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
@@ -32,56 +33,52 @@
 ##' @seealso The class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNLDA <- function(formula, data, subset, grouping, control = list()) {
+PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
 
-  ## create the call for the model frame
-  call_frame <- match.call(expand.dots = FALSE)
-  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset"), names(call_frame), 0L))]
-  call_frame[[1]] <- quote(stats::model.frame)
+  ## extract the data matrices and weights
+  args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
-  ## eval the call in the parent environment
-  frame <- eval(call_frame, parent.frame())
-
-  ## create the set of matrices to fit the PLN model
-  Y <- model.response(frame)
-  n  <- nrow(Y); p <- ncol(Y) # problem dimension
-  X <- model.matrix(terms(frame), frame)
-
-  ## remove intercept in the covariates so that grouping describes means in each group
-  xint <- match("(Intercept)", colnames(X), nomatch = 0L)
-  if (xint > 0L) X <- X[, -xint, drop = FALSE]
-  d <- ncol(X)
-
-  O <- model.offset(frame)
-  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
-
-  ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- PLN_param(control, n, p)
-
-  if (ctrl$trace > 0) cat("\n Initialization...")
-
+  ## treatment of the design, which is specific to LDA
+  # - save the covariates
+  covar <- args$X
+  # - remove intercept so that 'grouping' describes group means
+  xint <- match("(Intercept)", colnames(covar), nomatch = 0L)
+  if (xint > 0L) covar <- covar[, -xint, drop = FALSE]
+  # - build the design matrix encompassing covariates and LDA grouping
   grouping <- as.factor(grouping)
   design_group <- model.matrix(~ grouping + 0)
-  design_full <- cbind(X, design_group)
+  args$X <- cbind(covar, design_group)
 
-  myPLN <- PLN_internal(Y, design_full, O, ctrl)
-  if (d > 0) {
-    P <- (diag(nrow(X)) - X %*% solve(crossprod(X)) %*% t(X)) %*% myPLN$latent_pos(design_full, matrix(0, myPLN$n, myPLN$q))
-    Group_Means <- t(rowsum(P, grouping) / tabulate(grouping))
+  ## define default control parameters for optim and overwrite by user defined parameters
+  args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y))
+
+  ## call to the fitting function
+  myPLN <- do.call(PLN_internal, args)
+
+  ## extract group means
+  if (ncol(covar) > 0) {
+    proj_orth_X <- (diag(myPLN$n) - covar %*% solve(crossprod(covar)) %*% t(covar))
+    P <- proj_orth_X %*% myPLN$latent_pos(args$X, matrix(0, myPLN$n, myPLN$q))
+    Mu <- t(rowsum(P, grouping) / tabulate(grouping))
   } else {
-    Group_Means <- myPLN$model_par$Theta
+    Mu <- myPLN$model_par$Theta
   }
-  colnames(Group_Means) <- colnames(design_group)
+  colnames(Mu) <- colnames(design_group)
 
-  if (ctrl$trace > 0) cat("\n Performing Discriminant Analysis...")
-  myLDA <- PLNLDAfit$new(Theta = myPLN$model_par$Theta,
-                         Group_Means = Group_Means,
-                         Sigma = myPLN$model_par$Sigma,
-                         grouping = grouping,
-                         M = myPLN$var_par$M, S = myPLN$var_par$S,
-                         J = myPLN$J, monitoring = myPLN$optim_par)
+  ## vizualization for discriminant analysis
+  if (args$ctrl$trace > 0) cat("\n Performing discriminant Analysis...")
+  myLDA <- PLNLDAfit$new(
+    Theta      = myPLN$model_par$Theta,
+    Mu         = Mu,
+    Sigma      = myPLN$model_par$Sigma,
+    grouping   = grouping,
+    M          = myPLN$var_par$M,
+    S          = myPLN$var_par$S,
+    J          = myPLN$J,
+    monitoring = myPLN$optim_par
+  )
   myLDA$setVisualization()
 
-  if (ctrl$trace > 0) cat("\n DONE!\n")
+  if (args$ctrl$trace > 0) cat("\n DONE!\n")
   myLDA
 }
