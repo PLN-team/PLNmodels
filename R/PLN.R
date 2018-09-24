@@ -58,6 +58,7 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
   if (!weighted) w <- rep(1.0,n)
 
   ## get an initial point for optimization
+  if (ctrl$trace > 0) cat("\n Initialization...")
   par0 <- initializePLN(Y, X, O, w, ctrl) # Theta, M, S
 
   ## ===========================================
@@ -67,7 +68,6 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
 
   if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model")
   if (ctrl$trace > 0 & weighted) cat(" (weigthed)")
-
   opts <- list(
     "algorithm"   = ctrl$method,
     "maxeval"     = ctrl$maxeval,
@@ -96,14 +96,18 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
   dimnames(M)     <- dimnames(Y)
 
   myPLN <- PLNfit$new(
-    Theta = Theta, Sigma = Sigma, M = M, S = S, J = -optim.out$objective,
+    Theta = Theta,
+    Sigma = Sigma,
+    M     = M,
+    S     = S,
+    J     = -optim.out$objective,
     monitoring = optim.out[c("objective", "iterations", "status", "message")]
-    )
-  ## Compute R2
-  loglik <- logLikPoisson(Y, myPLN$latent_pos(X, O))
-  lmin   <- logLikPoisson(Y, nullModelPoisson(Y, X, O))
-  lmax   <- logLikPoisson(Y, fullModelPoisson(Y))
-  myPLN$update(R2 = (loglik - lmin) / (lmax - lmin))
+  )
+
+  if (ctrl$trace > 0) cat("\n Computing (pseudo) R2")
+  myPLN$set_R2(Y, X, O)
+
+  if (ctrl$trace > 0) cat("\n DONE!\n")
   myPLN
 }
 

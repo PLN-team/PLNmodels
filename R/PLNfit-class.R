@@ -118,6 +118,14 @@ function(covariates, offsets) {
   latentPos
 })
 
+PLNfit$set("public", "set_R2",
+function(responses, covariates, offsets) {
+  loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets))
+  lmin   <- logLikPoisson(responses, nullModelPoisson(responses, covariates, offsets))
+  lmax   <- logLikPoisson(responses, fullModelPoisson(responses))
+  private$R2 <- (loglik - lmin) / (lmax - lmin)
+})
+
 #' Result of the VE step of the optimization procedure: optimal variational parameters (M, S)
 #' and corresponding log likelihood values of new observations for fixed model parameters (Sigma, Theta)
 #'
