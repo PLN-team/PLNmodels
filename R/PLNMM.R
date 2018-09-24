@@ -39,10 +39,14 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
+  # be sure that the intercept is removed, to not conflict with the cluster means
+  # - remove intercept so that 'grouping' describes group means
+  xint <- match("(Intercept)", colnames(args$X), nomatch = 0L)
+  if (xint > 0L) args$X <- args$X[, -xint, drop = FALSE]
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl_init <- PLNMM_param(control_init, n, p, "init")
-  ctrl_main <- PLNMM_param(control_main, n, p, "main")
+  ctrl_init <- PLNMM_param(control_init, nrow(args$Y), ncol(args$Y), "init")
+  ctrl_main <- PLNMM_param(control_main, nrow(args$Y), ncol(args$Y), "main")
 
   ## Instantiate the collection of PLN models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
@@ -55,12 +59,12 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
   )
 
   ## Now adjust the PLN models
-  if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")
+  # if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")
   # myPLN$optimize(ctrl_main)
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
-  if (ctrl_main$trace > 0) cat("\n Post-treatments")
-  myPLN$postTreatment()
+  # if (ctrl_main$trace > 0) cat("\n Post-treatments")
+  # myPLN$postTreatment()
 
   if (ctrl_main$trace > 0) cat("\n DONE!\n")
   myPLN

@@ -23,40 +23,35 @@ PLNMMfit <-
   R6Class(classname = "PLNMMfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(Theta=NA, Sigma=NA, mu=NA, pi=NA, M=NA, S=NA, tau=NA, J=NA, monitoring=NA) {
+      initialize = function(Theta=NA, Sigma=NA, Mu=NA, M=NA, S=NA, Tau=NA, J=NA, monitoring=NA) {
         super$initialize(Theta, Sigma, M, S, J, monitoring)
-        private$k   <- ncol(tau)
-        private$mu  <- mu
-        private$pi  <- pi
-        private$tau <- tau
+        private$Mu  <- Mu
+        private$Tau <- Tau
       },
-      update = function(Theta=NA, Sigma=NA, mu=NA, pi=NA, M=NA, S=NA, tau=NA, J=NA, R2=NA, monitoring=NA) {
+      update = function(Theta=NA, Sigma=NA, Mu=NA, M=NA, S=NA, Tau=NA, J=NA, R2=NA, monitoring=NA) {
         super$update(Theta, Sigma, M, S, J, R2, monitoring)
-        if (!anyNA(mu))  private$mu  <- mu
-        if (!anyNA(pi))  private$pi  <- pi
-        if (!anyNA(tau)) private$tau <- tau
+        if (!anyNA(Mu))  private$mu  <- Mu
+        if (!anyNA(Tau)) private$tau <- tau
       }
     ),
     private = list(
-      mu  = NULL,
-      tau = NULL,
-      pi  = NULL
+      Mu  = NULL,
+      Tau = NULL
     ),
     active = list(
-      k = function() {ncol(private$tau)},
-      posteriorProb = function() {private$tau},
-      memberships = function(value) {apply(private$tau, 1, which.max)},
-      mixtureParam = function() {private$pi},
+      k = function() {ncol(private$Mu)},
+      posteriorProb = function() {private$Tau},
+      memberships = function(value) {apply(private$Tau, 1, which.max)},
+      mixtureParam = function() {colMeans(private$Tau)},
       degrees_freedom = function() {self$p * (self$d + self$k)},
       model_par = function() {
         par <- super$model_par
-        par$mu <- private$mu
-        par$pi <- private$pi
+        par$Mu <- private$Mu
         par
       },
        var_par = function() {
         par <- super$var_par
-        par$tau <- private$tau
+        par$Tau <- private$Tau
         par
       }
     )
@@ -73,11 +68,11 @@ PLNMMfit <-
 #
 # @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
 # @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
-PLNMMfit$set("public", "latent_pos",
-function(covariates, offsets) {
-  latentPos <- private$mu + private$M + tcrossprod(covariates, private$Theta) + offsets
-  latentPos
-})
+# PLNMMfit$set("public", "latent_pos",
+# function(covariates, offsets) {
+#   latentPos <- private$Mu + private$M + tcrossprod(covariates, private$Theta) + offsets
+#   latentPos
+# })
 
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS
@@ -85,7 +80,7 @@ function(covariates, offsets) {
 
 PLNMMfit$set("public", "show",
 function() {
-  super$show(paste0("Poisson Lognormal mxiture model with ",self$k,"components.\n"))
+  super$show(paste0("Poisson Lognormal mxiture model with ",self$k," components.\n"))
   cat("* Additional fields for PLNMM\n")
   cat("    coming... \n")
   cat("* Additional methods for PLNMM\n")
