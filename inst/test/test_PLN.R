@@ -18,13 +18,13 @@ test_that("Check PLN initialization",  {
 })
 
 test_that("Check PLN weights",  {
-  tol <- 1e-4
+  tol <- 1e-5
 
   ## no weights
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 1))
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
 
   ## equivalent weigths
-  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(trace = 1))
+  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(trace = 0))
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
   expect_equal(model2$model_par, model1$model_par, tolerance = tol)
