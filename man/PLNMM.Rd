@@ -2,9 +2,9 @@
 % Please edit documentation in R/PLNMM.R
 \name{PLNMM}
 \alias{PLNMM}
-\title{Poisson lognormal mixture model towards probabilistic classification}
+\title{Poisson lognormal mixture model}
 \usage{
-PLNMM(formula, data, subset, clusters = 2:10, control_init = list(),
+PLNMM(formula, data, subset, clusters = 1:10, control_init = list(),
   control_main = list())
 }
 \arguments{

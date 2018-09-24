@@ -125,12 +125,14 @@ initializePLN <- function(Y, X, O, w, control) {
   ## Default LM + log transformation
   } else {
     if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-    LMs  <- lapply(1:p, function(j) lm.wfit(X, log(1 + Y[,j]), w, offset =  O[,j]) )
+    LMs   <- lapply(1:p, function(j) lm.wfit(X, log(1 + Y[,j]), w, offset =  O[,j]) )
     Theta <- do.call(rbind, lapply(LMs, coefficients))
     M     <- do.call(cbind, lapply(LMs, residuals))
     S <- matrix(10 * control$lbvar, n, p)
     init <- list(Theta = Theta, M = M, S = S)
   }
+
+
 
   init
 }

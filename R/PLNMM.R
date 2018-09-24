@@ -37,20 +37,8 @@
 ##' @export
 PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list(), control_main = list()) {
 
-  ## create the call for the model frame
-  call_frame <- match.call(expand.dots = FALSE)
-  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset"), names(call_frame), 0L))]
-  call_frame[[1]] <- quote(stats::model.frame)
-
-  ## eval the call in the parent environment
-  frame <- eval(call_frame, parent.frame())
-
-  ## create the set of matrices to fit the PLN model
-  Y <- model.response(frame)
-  n  <- nrow(Y); p <- ncol(Y) # problem dimensions
-  X <- model.matrix(terms(frame), frame)
-  O <- model.offset(frame)
-  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
+  ## extract the data matrices and weights
+  args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl_init <- PLNMM_param(control_init, n, p, "init")
@@ -58,10 +46,16 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
 
   ## Instantiate the collection of PLN models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNMMfamily$new(clusters = clusters, responses = Y, covariates = X, offsets = O, control = ctrl_init)
+  myPLN <- PLNMMfamily$new(
+    clusters   = clusters,
+    responses  = args$Y,
+    covariates = args$X,
+    offsets    = args$O,
+    control    = ctrl_init
+  )
 
   ## Now adjust the PLN models
-  if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models analysis.\n")
+  if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")
   # myPLN$optimize(ctrl_main)
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA

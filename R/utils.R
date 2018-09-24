@@ -3,22 +3,28 @@
   return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)
 }
 
-.trunc <- function(x, M = 300) {
-  return(pmin(x, M))
+logLikPoisson <- function(responses, lambda) {
+  loglik <- sum(responses * lambda, na.rm = TRUE) - sum(exp(lambda)) - sum(.logfactorial(responses))
+  loglik
 }
 
-.loglikPLN <- function(Y, X, O, Theta, Sigma, M, S) {
-  Omega <- chol2inv(chol(Sigma))
-  Z <- O + M + tcrossprod(X, Theta)
-  A = exp (Z + .5 * S)
-  res <- Y * Z - A + .5*log(S) + .5 - .logfactorial(Y) - 0.5*(M * (M %*% Omega) + t(t(S) * diag(Omega)) )
-  return(rowSums(res) + 0.5 * log(det(Omega)) )
+##' @importFrom stats glm.fit
+nullModelPoisson <- function(responses, covariates, offsets) {
+  Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
+    coefficients(glm.fit(covariates, responses[, j], offset = offsets[,j], family = stats::poisson()))))
+  lambda <- offsets + tcrossprod(covariates, Theta)
+  lambda
 }
 
-extract_model <- function(call_frame, envir) {
+fullModelPoisson <- function(responses) {
+  lambda <- log(responses)
+  lambda
+}
+
+extract_model <- function(call, envir) {
 
   ## create the call for the model frame
-  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset", "weights"), names(call_frame), 0L))]
+  call_frame <- call[c(1L, match(c("formula", "data", "subset", "weights"), names(call), 0L))]
   call_frame[[1]] <- quote(stats::model.frame)
 
   ## eval the call in the parent environment
@@ -53,24 +59,6 @@ node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
   n <- length(node.set)
   j.grid <- cumsum(0:(n - 1))
   x + j.grid[y] + 1
-}
-
-logLikPoisson <- function(responses, lambda) {
-  loglik <- sum(responses * lambda, na.rm=TRUE) - sum(exp(lambda)) - sum(.logfactorial(responses))
-  loglik
-}
-
-##' @importFrom stats glm.fit
-nullModelPoisson <- function(responses, covariates, offsets) {
-  Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
-    coefficients(glm.fit(covariates, responses[, j], offset = offsets[,j], family = stats::poisson()))))
-  lambda <- offsets + tcrossprod(covariates, Theta)
-  lambda
-}
-
-fullModelPoisson <- function(responses) {
-  lambda <- log(responses)
-  lambda
 }
 
 ##' @title PLN RNG
@@ -117,7 +105,9 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths
   Y
 }
 
-
+## -----------------------------------------------------------------
+##  Series of setter to default parameters for user's main functions
+##
 PLN_param <- function(control, n, p) {
   ctrl <- list(
     ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
