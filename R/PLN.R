@@ -136,8 +136,6 @@ initializePLN <- function(Y, X, O, w, control) {
     init <- list(Theta = Theta, M = M, S = S)
   }
 
-
-
   init
 }
 

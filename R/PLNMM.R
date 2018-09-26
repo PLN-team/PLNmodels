@@ -59,8 +59,8 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
   )
 
   ## Now adjust the PLN models
-  # if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")
-  # myPLN$optimize(ctrl_main)
+  if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")
+  myPLN$optimize(ctrl_main)
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
   # if (ctrl_main$trace > 0) cat("\n Post-treatments")

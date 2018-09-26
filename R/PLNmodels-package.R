@@ -40,6 +40,7 @@
 ##' @importFrom Rcpp sourceCpp
 ##' @importFrom reshape2 melt
 ##' @import dplyr
+##' @import magrittr
 ##' @importFrom tidyr gather
 ##' @import ggplot2
 ##' @importFrom igraph V E plot.igraph layout_in_circle graph_from_adjacency_matrix degree delete.vertices

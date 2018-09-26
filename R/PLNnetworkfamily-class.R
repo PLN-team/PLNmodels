@@ -109,11 +109,11 @@ PLNnetworkfamily$set("public", "optimize",
     ## ===========================================
     ## OPTIMISATION
     if (control$trace == 1) {
-      cat("\tsparsifying penalty =",penalty, "\r")
+      cat("\tsparsifying penalty =", penalty, "\r")
       flush.console()
     }
     if (control$trace > 1) {
-      cat("\tsparsifying penalty =",penalty, "- iteration:")
+      cat("\tsparsifying penalty =", penalty, "- iteration:")
     }
 
     cond <- FALSE; iter <- 0
@@ -121,7 +121,7 @@ PLNnetworkfamily$set("public", "optimize",
     convergence <- numeric(control$maxit_out)
     while (!cond) {
       iter <- iter + 1
-      if (control$trace > 1) cat("",iter)
+      if (control$trace > 1) cat("", iter)
 
       ## CALL TO GLASSO TO UPDATE Omega/Sigma
       glasso_out <- suppressWarnings(
@@ -165,13 +165,15 @@ PLNnetworkfamily$set("public", "optimize",
     ## Sigma <- Sigma0 ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
     ## dimnames(Sigma) <- dimnames(Omega)
 
-    self$models[[m]]$update(Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S, J = -optim.out$objective,
-                            monitoring = list(objective = objective[1:iter],
-                                              convergence = convergence[1:iter],
-                                              outer_iterations = iter,
-                                              inner_iterations = optim.out$iterations,
-                                              inner_status = optim.out$status,
-                                              inner_message = optim.out$message))
+    self$models[[m]]$update(
+      Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S, J = -optim.out$objective,
+          monitoring = list(objective        = objective[1:iter],
+                            convergence      = convergence[1:iter],
+                            outer_iterations = iter,
+                            inner_iterations = optim.out$iterations,
+                            inner_status     = optim.out$status,
+                            inner_message    = optim.out$message))
+
     if (control$trace > 1) {
       cat("\r                                                                                    \r")
       flush.console()
