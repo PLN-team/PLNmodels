@@ -30,8 +30,8 @@ PLNMMfit <-
       },
       update = function(Theta=NA, Sigma=NA, Mu=NA, M=NA, S=NA, Tau=NA, J=NA, R2=NA, monitoring=NA) {
         super$update(Theta, Sigma, M, S, J, R2, monitoring)
-        if (!anyNA(Mu))  private$mu  <- Mu
-        if (!anyNA(Tau)) private$tau <- tau
+        if (!anyNA(Mu))  private$Mu  <- Mu
+        if (!anyNA(Tau)) private$Tau <- Tau
       }
     ),
     private = list(

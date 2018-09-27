@@ -125,12 +125,13 @@ PLNnetworkfamily$set("public", "optimize",
 
       ## CALL TO GLASSO TO UPDATE Omega/Sigma
       glasso_out <- suppressWarnings(
-                      glasso(Sigma,
-                             rho = penalty,
-                             penalize.diagonal = control$penalize.diagonal,
-                             start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
-                             )
-                      )
+        glasso(
+          Sigma,
+          rho = penalty,
+          penalize.diagonal = control$penalize.diagonal,
+          start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
+        )
+      )
       Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
       Sigma0 <- glasso_out$w
 

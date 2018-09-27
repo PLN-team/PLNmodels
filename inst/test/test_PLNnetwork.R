@@ -4,6 +4,12 @@ library(gridExtra)
 library(profvis)
 data("trichoptera")
 
+## warm / cold start are very similar in terms of timings
+timings <- microbenchmark::microbenchmark(
+  warm  = PLNnetwork(Abundance ~ 1, data = trichoptera, control.main = list(warm = TRUE , trace = 0)),
+  cold  = PLNnetwork(Abundance ~ 1, data = trichoptera, control.main = list(warm = FALSE, trace = 0)),
+  times = 20)
+
 profvis(fits <- PLNnetwork(Abundance ~ 1, data = trichoptera))
 
 fits$stability_selection()

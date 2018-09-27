@@ -1,3 +1,10 @@
+.xlogx <- function(x) ifelse(x < .Machine$double.eps, 0, x*log(x))
+
+.softmax <- function(x) {
+  b <- max(x)
+  exp(x-b) / sum(exp(x-b))
+}
+
 .logfactorial <- function(n) { # Ramanujan's formula
   n[n == 0] <- 1 ## 0! = 1!
   return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)
@@ -145,7 +152,7 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
       xtol_rel = 1e-4,
       xtol_abs = 1e-4,
       maxeval  = 10000,
-      method   = "MMA",
+      method   = "CCSAQ",
       lbvar    = 1e-4,
       trace    = 1,
       cores    = 1
@@ -171,12 +178,14 @@ PLNMM_param <- function(control, n, p, type = c("init", "main")) {
       trace    = 0
     ),
     "main" = list(
+      ftol_out  = 1e-5,
+      maxit_out = 50,
       ftol_rel = 1e-6,
       ftol_abs = 0,
       xtol_rel = 1e-4,
       xtol_abs = 1e-4,
       maxeval  = 10000,
-      method   = "MMA",
+      method   = "CCSAQ",
       lbvar    = 1e-4,
       trace    = 1,
       cores    = 1

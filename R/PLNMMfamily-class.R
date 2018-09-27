@@ -47,11 +47,13 @@ PLNMMfamily$set("public", "initialize",
 
     Mu  <- mclust_out$parameters$mean
 
-    Mk <- array(M, c(private$n, private$p, k)) %>% sweep(c(2, 3), Mu, "-")
+  ##  Mk <- array(M, c(private$n, private$p, k)) %>% sweep(c(2, 3), Mu, "-")
+
+    Mk <- array(0, c(private$n, private$p, k))
 
     Sigma <- matrix(0, private$p, private$p)
     for (k_ in 1:k) Sigma <- Sigma + t(Mk[ , ,k_]) %*% diag(Tau[, k_]) %*% Mk[ , ,k_]
-    Sigma <- Sigma / private$n
+    Sigma <- diag(rep(1, private$p)) / private$n
 
     model <- PLNMMfit$new(
       Theta = self$inception$model_par$Theta,
@@ -80,7 +82,8 @@ PLNMMfamily$set("public", "optimize",
                                  rep(control$xtol_abs, private$n*private$p)), #Sk
                "lower_bound" = c(rep(-Inf, private$p*(private$d + 1)), # Theta + Muk
                                  rep(-Inf, private$n*private$p), # Mk
-                                 rep(control$lbvar, private$n*private$p)) # Sk
+                                 rep(control$lbvar, private$n*private$p)), # Sk
+               "weighted"    = TRUE
   )
 
 
@@ -93,9 +96,10 @@ PLNMMfamily$set("public", "optimize",
 
     ## ===========================================
     ## INITIALISATION
-    tau <- matrix(NA, private$n, k); par0    <- list()
+    objective_old <- -Inf
+    tau_old <- matrix(NA, private$n, k); par0    <- list()
     for (k_ in 1:k) {
-      tau[, k_] <- self$models[[m]]$posteriorProb[, k_]
+      tau_old[, k_] <- self$models[[m]]$posteriorProb[, k_]
       par0[[k_]] <- c(
         cbind(self$models[[m]]$model_par$Mu[,k_], self$models[[m]]$model_par$Theta),
         self$models[[m]]$var_par$M[, , k_],
@@ -115,60 +119,69 @@ PLNMMfamily$set("public", "optimize",
     ## OPTIMISATION
     cond <- FALSE; iter <- 0
     objective   <- numeric(control$maxit_out)
+    objective_component <- vector("numeric", k)
     convergence <- numeric(control$maxit_out)
     while (!cond) {
       iter <- iter + 1
       if (control$trace > 1) cat("", iter)
-
       ## UPDATE COMPONENTS OF THE MIXTURE
       for (k_ in 1:k) {
         ## UPDATE COMPONENTS OF THE MIXTURE
         ## weighted-PLN model - probabilities of cluster belonging
-        par0[[k_]] <- optimization_PLN(
+        optim_out <- optimization_PLN(
           par0[[k_]],
           self$responses,
           cbind(rep(1,private$n), self$covariates),
           self$offsets,
-          tau[, k_], opts
-        )$solution
+          tau_old[, k_], opts
+        )
+        par0[[k_]] <- optim_out$solution
+        objective_component[k_] <- optim_out$objective
       }
       ## UPDATE THE POSTERIOR PROBABILITIES
-      kappa <- get_kappa(self$responses, self$covariates, self$offsets, tau, par0)
-      tau <- exp(kappa)/rowSums(exp(kappa))
+      kappa <- get_kappa(self$responses, cbind(rep(1,private$n),self$covariates), self$offsets, tau_old, par0)
+      tau   <- matrix(t(apply(kappa, 1, .softmax)), ncol = k)
+      objective[iter]   <- sum(objective_component * colMeans(tau)) - sum(.xlogx(tau))
+      # convergence[iter] <- sum(abs(tau_old - tau)) / private$n
+      convergence[iter] <- abs(objective_old - objective[iter])/abs(objective[iter])
 
       ## Check convergence
-
       if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
-
-      ## Post-Treatment to update Sigma
-      # M <- matrix(optim.out$solution[private$p*private$d               + 1:(private$n*private$p)], private$n,private$p)
-      # S <- matrix(optim.out$solution[(private$n + private$d)*private$p + 1:(private$n*private$p)], private$n,private$p)
-      # Sigma <- crossprod(M)/private$n + diag(colMeans(S), nrow = private$p, ncol = private$p)
-      # par0 <- optim.out$solution
-      # objective.old <- objective[iter]
+      objective_old <- objective[iter]
+      tau_old <- tau
     }
 
     ## ===========================================
     ## OUTPUT
     ## formating parameters for output
-    # Theta <- matrix(optim.out$solution[1:(private$p*private$d)], private$p, private$d)
-    # rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
-    # dimnames(S)     <- dimnames(self$responses)
-    # dimnames(M)     <- dimnames(self$responses)
-    # rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
-    ## Optimization ends with a gradient descent step rather than a glasso step.
-    ## Return Sigma from glasso step to ensure that Sigma = solve(Omega)
-    ## Sigma <- Sigma0 ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
-    ## dimnames(Sigma) <- dimnames(Omega)
+
+    Theta <- list()
+    Mu    <- list()
+    M     <- list()
+    S     <- list()
+    Sigma <- list()
+
+    for (k_ in seq.int(k)) {
+      Theta[[k_]] <- matrix(par0[[k_]][1:(private$p*(private$d + 1))], private$p, private$d + 1)
+      Mu[[k_]]    <- Theta[[k_]][, 1, drop = FALSE]
+      Theta[[k_]] <- Theta[[k_]][, -1, drop = FALSE]
+      M[[k_]]     <- matrix(par0[[k_]][private$p*(private$d + 1)   + 1:(private$n*private$p)], private$n,private$p)
+      S[[k_]]     <- matrix(par0[[k_]][private$p*(private$d + 1 + private$n) + 1:(private$n*private$p)], private$n, private$p)
+      Sigma[[k_]] <- t(M[[k_]]) %*% diag(tau[, k_]) %*% M[[k_]]/ sum(tau[, k_] + diag(tau[, k_] %*% S[[k_]]))
+    }
+
+    Theta <- Reduce("+", Theta)
+    rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
+    Sigma <- Reduce("+", Sigma)
+    rownames(Sigma) <- colnames(Sigma) <- colnames(self$responses)
+    M <- array(unlist(M), c(private$n, private$p, k) )
+    S <- array(unlist(S), c(private$n, private$p, k) )
 
     self$models[[m]]$update(
-      Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S, J = -optim.out$objective,
+      Sigma = Sigma, Theta = Theta, M = M, S = S, J = -objective[iter], Tau = tau,
           monitoring = list(objective        = objective[1:iter],
                             convergence      = convergence[1:iter],
-                            outer_iterations = iter,
-                            inner_iterations = optim.out$iterations,
-                            inner_status     = optim.out$status,
-                            inner_message    = optim.out$message))
+                            outer_iterations = iter))
     if (control$trace > 1) {
       cat("\r                                                                                    \r")
       flush.console()
@@ -190,45 +203,39 @@ function() {
   cat(" Task: Mixture Model \n")
   cat("========================================================\n")
   cat(" - Number of clusters considered: from", min(self$clusters), "to", max(self$clusters),"\n")
-  cat(" - Best model (regarding BIC): rank =", self$getBestModel("BIC")$cluster, "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
-  cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$cluster, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
+  cat(" - Best model (regarding BIC): cluster =", self$getBestModel("BIC")$cluster, "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
+  cat(" - Best model (regarding ICL): cluster =", self$getBestModel("ICL")$cluster, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })
 PLNMMfamily$set("public", "print", function() self$show())
 
-
-
 get_kappa <- function(Y, X, O, Tau, par) {
 
-  n <- nrow(Y); p <- ncol(Y); d <- ncol(X) + 1
+  n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   Theta <- list()
-  Mu    <- list()
   M     <- list()
   S     <- list()
+  Sigma <- list()
   A     <- list()
   Z     <- list()
-  Sigma <- list()
   kappa <- matrix(NA, n, ncol(Tau))
 
   for (k_ in seq.int(ncol(Tau))) {
     Theta[[k_]] <- matrix(par[[k_]][1:(p*d)   ], p, d)
-    Mu[[k_]]    <- Theta[[k_]][, 1, drop = FALSE]
-    Theta[[k_]] <- Theta[[k_]][, -1, drop = FALSE]
     M[[k_]]     <- matrix(par[[k_]][p*d   + 1:(n*p)], n,p)
     S[[k_]]     <- matrix(par[[k_]][p*(d + n) + 1:(n*p)], n,p)
     Sigma[[k_]] <- t(M[[k_]]) %*% diag(Tau[, k_]) %*% M[[k_]]/ sum(Tau[, k_] + diag(Tau[, k_] %*% S[[k_]]))
   }
 
-  Theta_bar <- Reduce("+", Theta)
   Sigma_bar <- Reduce("+", Sigma)
   Omega_bar <- solve(Sigma_bar)
   pi <- colMeans(Tau)
   log_det_Sigma <- determinant(Sigma_bar, logarithm = TRUE)$modulus
 
   for (k_ in seq.int(ncol(Tau))) {
-    Z[[k_]] <- O + rep(1, n) %*% t(Mu[[k_]]) + X %*% t(Theta_bar) + M[[k_]]
+    Z[[k_]] <- O +  X %*% t(Theta[[k_]]) + M[[k_]]
     A[[k_]] <- exp(Z[[k_]] + .5 * S[[k_]])
-    kappa[, k_] <- rowSums(Y * Z[[k_]]) - rowSums(A[[k_]]) - - .5 * rowSums(log(S[[k_]])) -
+    kappa[, k_] <- rowSums(Y * Z[[k_]]) - rowSums(A[[k_]]) - .5 * rowSums(log(S[[k_]])) -
       .5 * (log_det_Sigma + diag(M[[k_]] %*% Omega_bar %*% t(M[[k_]])) + S[[k_]] %*% diag(Omega_bar)) + log(pi[k_])
   }
 
