@@ -59,7 +59,7 @@ PLNfamily$set("public", "initialize",
     } else {
       if (control$trace > 0) cat("\n Adjust the inceptive model")
        ## TODO: add weights properly...
-      par0 <- initializePLN(self$responses, self$covariates, rep(1,private$n), self$offsets, control)
+      par0 <- initializePLN(self$responses, self$covariates, self$offsets, rep(1,private$n), control)
       Sigma <- crossprod(par0$M)/private$n + diag(colMeans(par0$S), private$p, private$p)
       self$inception <- PLNfit$new(Theta = par0$Theta, Sigma = Sigma, M = par0$M, S = par0$S)
     }
