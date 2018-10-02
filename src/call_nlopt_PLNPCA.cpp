@@ -1,6 +1,7 @@
 #include "RcppArmadillo.h"
 
 // [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::plugins(cpp11)]]
 
 #include "utils_optim.h"
 
@@ -28,7 +29,7 @@ double fn_optim_PLNPCA(const std::vector<double> &x, std::vector<double> &grad, 
     grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_B), join_vert(grd_M, grd_S))) ;
   }
 
-  double objective = accu(A - dat->Y % Z) + .5 * accu(M%M + S - log(S) - 1) + dat->KY ;
+  double objective = accu(A - dat->Y % Z) + .5 * accu(M%M + S - log(S) - 1) ;
 
   return objective;
 }
@@ -56,7 +57,7 @@ Rcpp::List optimization_PLNPCA (
 
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
-      Rcpp::Named("objective" ) = f_optimized ,
+      Rcpp::Named("objective" ) = f_optimized  + my_optim_data.KY,
       Rcpp::Named("solution"  ) = x_optimized,
       Rcpp::Named("iterations") = my_optim_data.iterations
     );

@@ -4,7 +4,7 @@
 #include "RcppArmadillo.h"
 #include <nlopt.hpp>
 
-double Kw(arma::mat Y, arma::vec w) ;
+arma::vec get_KY(arma::mat Y, arma::vec w) ;
 
 arma::mat logfact(arma::mat Y) ;
 
@@ -19,6 +19,7 @@ typedef struct optim_data {
     arma::mat Theta      ;
     double log_det_Omega ;
     double KY            ;
+    arma::vec KYi        ;
     int iterations       ;
     int n                ;
     int p                ;
@@ -36,7 +37,8 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KY = Kw(Y, w) ;
+        KYi = get_KY(Y, arma::ones(n));
+        KY = accu(KYi) ;
       } ;
     // weighted PLN constructor
     optim_data(const arma::mat &responses,
@@ -49,7 +51,8 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KY = Kw(Y,w) ;
+        KYi = get_KY(Y, w) ;
+        KY = accu(KYi) ;
       } ;
     // PLNPCA constructor
     optim_data(const arma::mat &responses,
@@ -62,7 +65,8 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KY = Kw(Y, arma::ones(n)) ;
+        KYi = get_KY(Y, arma::ones(n));
+        KY = accu(KYi) ;
       } ;
     // PLNnetwork constructor
     optim_data(const arma::mat &responses,
@@ -76,7 +80,8 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KY = Kw(Y, arma::ones(n)) ;
+        KYi = get_KY(Y, arma::ones(n)) ;
+        KY = accu(KYi) ;
       } ;
     // PLN VE-step constructor
     optim_data(const arma::mat &responses,
@@ -91,7 +96,8 @@ typedef struct optim_data {
       p = Y.n_cols ;
       d = X.n_cols ;
       iterations = 0 ;
-      KY = Kw(Y, arma::ones(n)) ;
+      KYi = get_KY(Y, arma::ones(n)) ;
+      KY = accu(KYi) ;
     } ;
 
 } optim_data ;

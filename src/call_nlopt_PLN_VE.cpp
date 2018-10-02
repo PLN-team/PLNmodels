@@ -1,6 +1,7 @@
 #include "RcppArmadillo.h"
 
 // [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::plugins(cpp11)]]
 
 #include "utils_optim.h"
 
@@ -19,7 +20,7 @@ double fn_optim_VEstep_PLN(const std::vector<double> &x, std::vector<double> &gr
   // 0.5 tr(\Omega M'M) + 0.5 tr(\bar{S} \Omega)
   double prior = .5*accu(dat->Omega % (M.t() * M)) + .5*dot(arma::ones(n).t() * S, diagvec(dat->Omega)) ;
   // J(M, S, \Theta, \Omega, Y, X, O)
-  double objective = accu(A - dat->Y % Z - .5*log(S)) + prior - .5*n* dat->log_det_Omega + dat->KY ;
+  double objective = accu(A - dat->Y % Z - .5*log(S)) + prior - .5*n* dat->log_det_Omega ;
 
   arma::vec grd_M     = vectorise(M * dat->Omega + A-dat->Y) ;
   arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(dat->Omega).t() + A - 1/S));
@@ -69,7 +70,7 @@ Rcpp::List optimization_VEstep_PLN(
 
   return Rcpp::List::create(
     Rcpp::Named("status"    ) = (int) status,
-    Rcpp::Named("objective" ) = f_optimized,
+    Rcpp::Named("objective" ) = f_optimized + my_optim_data.KY ,
     Rcpp::Named("M"         ) = M,
     Rcpp::Named("S"         ) = S,
     Rcpp::Named("loglik"    ) = loglik,

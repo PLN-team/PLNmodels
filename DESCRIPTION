@@ -1,7 +1,7 @@
 Package: PLNmodels
 Type: Package
 Title: Poisson Lognormal Models
-Version: 0.5.2003
+Version: 0.5.3001
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
