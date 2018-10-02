@@ -1,6 +1,7 @@
 #include "RcppArmadillo.h"
 
 // [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::plugins(cpp11)]]
 
 #include "utils_optim.h"
 
@@ -9,7 +10,7 @@ double fn_optim_PLN(const std::vector<double> &x, std::vector<double> &grad, voi
   optim_data *dat = reinterpret_cast<optim_data*>(data);
   dat->iterations++; // increase number of iterations
 
-  int n = dat->Y.n_rows, p = dat->Y.n_cols, d = dat->X.n_cols ;
+  int n = dat->n, p = dat->p, d = dat->d ;
 
   arma::mat Theta(&x[0]  , p,d);
   arma::mat M(&x[p*d]    , n,p);
@@ -19,15 +20,13 @@ double fn_optim_PLN(const std::vector<double> &x, std::vector<double> &grad, voi
   arma::mat A = exp (Z + .5 * S) ;
   arma::mat Omega = n * inv_sympd(M.t()*M  + diagmat(sum(S, 0)));
 
-  double objective = accu(A - dat->Y % Z - .5*log(S)) - .5*n*real(log_det(Omega)) + dat->KY ;
+  double objective = accu(A - dat->Y % Z - .5*log(S)) - .5*n*real(log_det(Omega)) ; // + dat->KY ;
 
   arma::vec grd_Theta = vectorise(trans(A - dat->Y) * dat->X);
   arma::vec grd_M     = vectorise(M * Omega + A - dat->Y) ;
   arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(Omega).t() + A - pow(S, -1)));
 
-  if (!grad.empty()) {
-    grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
-  }
+  grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
 
   return objective;
 }
@@ -37,7 +36,7 @@ double fn_optim_PLN_weighted(const std::vector<double> &x, std::vector<double> &
   optim_data *dat = reinterpret_cast<optim_data*>(data);
   dat->iterations++; // increase number of iterations
 
-  int n = dat->Y.n_rows, p = dat->Y.n_cols, d = dat->X.n_cols ;
+  int n = dat->n, p = dat->p, d = dat->d ;
 
   arma::mat Theta(&x[0]  , p,d);
   arma::mat M(&x[p*d]    , n,p);
@@ -48,15 +47,15 @@ double fn_optim_PLN_weighted(const std::vector<double> &x, std::vector<double> &
   arma::mat Z = dat->O + dat->X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
-  double objective = accu(diagmat(dat->w) *(A - dat->Y % Z - .5*log(S)) ) - .5 * w_bar*real(log_det(Omega)) + dat->KY ;
+  // arma::vec J_i = sum((A - dat->Y % Z - .5*log(S)),1) - .5 *real(log_det(Omega)) ; // + dat->KYi ;
+  // double objective = accu(dat->w % J_i) + dat->KY;
+  double objective = accu(diagmat(dat->w) *(A - dat->Y % Z - .5*log(S)) ) - .5 * w_bar*real(log_det(Omega)) ;
 
   arma::vec grd_Theta = vectorise(trans(A - dat->Y) * (dat->X.each_col() % dat->w));
   arma::vec grd_M     = vectorise(diagmat(dat->w) * (M * Omega + A - dat->Y)) ;
   arma::vec grd_S     = vectorise(.5 * (dat->w * diagvec(Omega).t() + diagmat(dat->w) * A - diagmat(dat->w) * pow(S,-1) ) );
 
-  if (!grad.empty()) {
-    grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
-  }
+  grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
 
   return objective;
 }
@@ -89,7 +88,7 @@ Rcpp::List optimization_PLN(
 
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
-      Rcpp::Named("objective" ) = f_optimized ,
+      Rcpp::Named("objective" ) = f_optimized + my_optim_data.KY ,
       Rcpp::Named("solution"  ) = x_optimized,
       Rcpp::Named("iterations") = my_optim_data.iterations
     );

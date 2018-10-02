@@ -31,9 +31,9 @@ test_that("Check PLN weights",  {
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
-# ## timings (weight/no weights -> 6/7% slower)
+## timings (weight/no weights -> 6/7% slower)
 # res <- microbenchmark::microbenchmark(
-#   noweights = PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0)),
+#    noweights = PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0)),
 #   ## equivalent weigths
 #   weights = PLN(Abundance ~ 1, data = trichoptera, weights = rep(1, nrow(trichoptera)), control = list(trace = 0)),
 #   times = 20
@@ -41,5 +41,5 @@ test_that("Check PLN weights",  {
 # summary(res)
 #
 # weights = PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(trace = 0))
-
-weights = PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(trace = 0))
+#
+# weights = PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(trace = 0))

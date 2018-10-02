@@ -8,5 +8,4 @@ TotalCount <- matrix(
   ncol = ncol(trichoptera$Abundance)
 )
 
-profvis(model <- PLNPCA(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera, ranks = 1:5))
-
+profvis(model <- PLNPCA(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera, ranks = 1:8))

@@ -1,6 +1,7 @@
 #include "RcppArmadillo.h"
 
 // [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::plugins(cpp11)]]
 
 #include "utils_optim.h"
 
@@ -19,7 +20,7 @@ double fn_optim_PLNnetwork(const std::vector<double> &x, std::vector<double> &gr
   arma::mat Z = dat->O + dat->X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
-  double objective = accu(A - dat->Y % Z - .5*log(S)) -.5*(n*dat->log_det_Omega + n*p - trace(dat->Omega*nSigma)) + dat->KY ;
+  double objective = accu(A - dat->Y % Z - .5*log(S)) -.5*(n*dat->log_det_Omega + n*p - trace(dat->Omega*nSigma)) ;
 
   arma::vec grd_Theta = vectorise((A - dat->Y).t() * dat->X);
   arma::vec grd_M     = vectorise(M * dat->Omega + A - dat->Y) ;
@@ -56,7 +57,7 @@ Rcpp::List optimization_PLNnetwork (
 
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
-      Rcpp::Named("objective" ) = f_optimized ,
+      Rcpp::Named("objective" ) = f_optimized  + my_optim_data.KY,
       Rcpp::Named("solution"  ) = x_optimized,
       Rcpp::Named("iterations") = my_optim_data.iterations
     );

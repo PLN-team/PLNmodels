@@ -1,7 +1,7 @@
 Package: PLNmodels
 Type: Package
 Title: Poisson Lognormal Models
-Version: 0.5.2003
+Version: 0.5.3001
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -22,7 +22,7 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
 Depends: R (>= 3.4)
-Imports: igraph, grid, gridExtra, dplyr, tidyr, reshape2, ggplot2, Matrix, parallel, R6, methods, stats, glasso, Rcpp, RcppArmadillo, corrplot, MASS
+Imports: igraph, grid, gridExtra, dplyr, tidyr, reshape2, ggplot2, Matrix, parallel, R6, methods, stats, glasso, Rcpp, RcppArmadillo, corrplot, MASS, mclust, magrittr
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 Collate: 
@@ -30,8 +30,11 @@ Collate:
     'PLN.R'
     'PLNLDA.R'
     'PLNLDAfit-class.R'
-    'PLNPCA.R'
+    'PLNMM.R'
     'PLNfamily-class.R'
+    'PLNMMfamily-class.R'
+    'PLNMMfit-class.R'
+    'PLNPCA.R'
     'PLNPCAfamily-class.R'
     'PLNPCAfit-class.R'
     'PLNmodels-package.R'
