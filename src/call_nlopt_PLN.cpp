@@ -76,8 +76,6 @@ arma::vec lower_bound_PLN_weighted(const std::vector<double> &x, void *data) {
  arma::vec J_i = sum(dat->Y % Z - A + .5*log(S), 1) + .5 * real(log_det(Omega)) - dat->KYi -
   .5 * (arma::diagvec(M * Omega * M.t()) + S * diagvec(Omega)) ;
 
- // double objective = accu(diagmat(dat->w) *(A - dat->Y % Z - .5*log(S)) ) - .5 * w_bar*real(log_det(Omega)) ;
-
   return J_i;
 }
 
