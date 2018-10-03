@@ -150,7 +150,7 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
       trace    = 0
     ),
     "main" = list(
-      ftol_rel = 1e-6,
+      ftol_rel = 1e-8,
       ftol_abs = 0,
       xtol_rel = 1e-4,
       xtol_abs = 1e-4,
