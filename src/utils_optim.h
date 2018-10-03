@@ -37,8 +37,8 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KYi = get_KY(Y, arma::ones(n));
-        KY = accu(KYi) ;
+        KYi = logfact(Y);
+        KY  = accu(KYi) ;
       } ;
     // weighted PLN constructor
     optim_data(const arma::mat &responses,
@@ -51,8 +51,8 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KYi = get_KY(Y, w) ;
-        KY = accu(KYi) ;
+        KYi = logfact(Y) ;
+        KY = accu(w % KYi) ;
       } ;
     // PLNPCA constructor
     optim_data(const arma::mat &responses,
@@ -65,7 +65,7 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KYi = get_KY(Y, arma::ones(n));
+        KYi = logfact(Y) ;
         KY = accu(KYi) ;
       } ;
     // PLNnetwork constructor
@@ -80,7 +80,7 @@ typedef struct optim_data {
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0 ;
-        KYi = get_KY(Y, arma::ones(n)) ;
+        KYi = logfact(Y) ;
         KY = accu(KYi) ;
       } ;
     // PLN VE-step constructor
@@ -96,7 +96,7 @@ typedef struct optim_data {
       p = Y.n_cols ;
       d = X.n_cols ;
       iterations = 0 ;
-      KYi = get_KY(Y, arma::ones(n)) ;
+      KYi = logfact(Y) ;
       KY = accu(KYi) ;
     } ;
 

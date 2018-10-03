@@ -35,33 +35,17 @@ PLNMMfamily$set("public", "initialize",
   private$params <- clusters
 
   if (control$trace > 0) cat("\n Perform GMM on the inceptive model for initializing...")
-  M     <- self$inception$var_par$M
-  S     <- self$inception$var_par$S
-  S_bar <- diag(colMeans(S))
 
   ## instantiate as many models as clusters
   self$models <- lapply(clusters, function(k) {
-    mclust_out <- mclust::Mclust(M, k, modelNames = "EII", verbose = FALSE)
-
-    Tau <- mclust_out$z
-
-    Mu  <- mclust_out$parameters$mean
-
-  ##  Mk <- array(M, c(private$n, private$p, k)) %>% sweep(c(2, 3), Mu, "-")
-
-    Mk <- array(0, c(private$n, private$p, k))
-
-    Sigma <- matrix(0, private$p, private$p)
-    for (k_ in 1:k) Sigma <- Sigma + t(Mk[ , ,k_]) %*% diag(Tau[, k_]) %*% Mk[ , ,k_]
-    Sigma <- diag(rep(1, private$p)) / private$n
-
+    mclust_out <- mclust::Mclust(self$inception$var_par$M, k, modelNames = "EII", verbose = FALSE)
     model <- PLNMMfit$new(
       Theta = self$inception$model_par$Theta,
-      Sigma = Sigma,
-      Mu    = Mu,
-      M     = Mk,
+      Sigma = diag(colMeans(self$inception$var_par$S)),
+      Mu    = mclust_out$parameters$mean,
+      M     = array(0, c(private$n, private$p, k)),
       S     = array(10 * control$lbvar, c(private$n, private$p, k)),
-      Tau   = Tau
+      Tau   = mclust_out$z
     )
     return(model)
   })
@@ -97,7 +81,7 @@ PLNMMfamily$set("public", "optimize",
     ## ===========================================
     ## INITIALISATION
     objective_old <- -Inf
-    tau_old <- matrix(NA, private$n, k); par0    <- list()
+    tau_old <- matrix(NA, private$n, k); par0 <- list()
     for (k_ in 1:k) {
       tau_old[, k_] <- self$models[[m]]$posteriorProb[, k_]
       par0[[k_]] <- c(
@@ -120,6 +104,7 @@ PLNMMfamily$set("public", "optimize",
     cond <- FALSE; iter <- 0
     objective   <- numeric(control$maxit_out)
     objective_component <- vector("numeric", k)
+    loglikObs_component <- matrix(NA, private$n, k)
     convergence <- numeric(control$maxit_out)
     while (!cond) {
       iter <- iter + 1
@@ -133,16 +118,24 @@ PLNMMfamily$set("public", "optimize",
           self$responses,
           cbind(rep(1,private$n), self$covariates),
           self$offsets,
-          tau_old[, k_], opts
+          tau_old[, k_],
+          opts
         )
         par0[[k_]] <- optim_out$solution
-        objective_component[k_] <- optim_out$objective
+        loglikObs_component[, k_] <- optim_out$loglik_obs
       }
       ## UPDATE THE POSTERIOR PROBABILITIES
-      kappa <- get_kappa(self$responses, cbind(rep(1,private$n),self$covariates), self$offsets, tau_old, par0)
-      tau   <- matrix(t(apply(kappa, 1, .softmax)), ncol = k)
-      objective[iter]   <- sum(objective_component * colMeans(tau)) - sum(.xlogx(tau))
-      # convergence[iter] <- sum(abs(tau_old - tau)) / private$n
+##      tau <- t(apply(sweep(loglikObs_component, 2, log(pi_hat), "+"), 1, .softmax)
+      tau <- sweep(loglikObs_component, 2, log(colMeans(tau_old)), "+")
+      tau <- t(apply(tau, 1, .softmax))
+      tau[tau < .Machine$double.eps] <- .Machine$double.eps
+      tau[tau > 1 - .Machine$double.eps] <- 1 - .Machine$double.eps
+      pi_hat <- colMeans(tau)
+
+      objective[iter] <- -sum(tau * loglikObs_component) + sum(.xlogx(tau)) - sum(tau * log(pi_hat))
+      # print(- sum(tau * loglikObs_component) + sum(.xlogx(tau)) - sum(tau * log(pi)))
+      # print(pi_hat)
+      # print(aricode::NID(apply(tau_old, 1, which.max),apply(tau, 1, which.max)))
       convergence[iter] <- abs(objective_old - objective[iter])/abs(objective[iter])
 
       ## Check convergence
@@ -167,7 +160,7 @@ PLNMMfamily$set("public", "optimize",
       Theta[[k_]] <- Theta[[k_]][, -1, drop = FALSE]
       M[[k_]]     <- matrix(par0[[k_]][private$p*(private$d + 1)   + 1:(private$n*private$p)], private$n,private$p)
       S[[k_]]     <- matrix(par0[[k_]][private$p*(private$d + 1 + private$n) + 1:(private$n*private$p)], private$n, private$p)
-      Sigma[[k_]] <- t(M[[k_]]) %*% diag(tau[, k_]) %*% M[[k_]]/ sum(tau[, k_] + diag(tau[, k_] %*% S[[k_]]))
+      Sigma[[k_]] <- t(M[[k_]]) %*% diag(tau[, k_]) %*% M[[k_]]/ sum(tau[, k_]) + diag(tau[, k_] %*% S[[k_]])
     }
 
     Theta <- Reduce("+", Theta)
@@ -192,7 +185,7 @@ PLNMMfamily$set("public", "optimize",
 
 PLNMMfamily$set("public", "plot",
 function(criteria = c("loglik", "BIC", "ICL")) {
-  vlines <- sapply(criteria, function(crit) self$getBestModel(crit)$cluster)
+  vlines <- sapply(criteria, function(crit) self$getBestModel(crit)$k)
   p <- super$plot(criteria) + xlab("# of clusters") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
   p
 })
@@ -207,37 +200,3 @@ function() {
   cat(" - Best model (regarding ICL): cluster =", self$getBestModel("ICL")$cluster, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })
 PLNMMfamily$set("public", "print", function() self$show())
-
-get_kappa <- function(Y, X, O, Tau, par) {
-
-  n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-
-  Theta <- list()
-  M     <- list()
-  S     <- list()
-  Sigma <- list()
-  A     <- list()
-  Z     <- list()
-  kappa <- matrix(NA, n, ncol(Tau))
-
-  for (k_ in seq.int(ncol(Tau))) {
-    Theta[[k_]] <- matrix(par[[k_]][1:(p*d)   ], p, d)
-    M[[k_]]     <- matrix(par[[k_]][p*d   + 1:(n*p)], n,p)
-    S[[k_]]     <- matrix(par[[k_]][p*(d + n) + 1:(n*p)], n,p)
-    Sigma[[k_]] <- t(M[[k_]]) %*% diag(Tau[, k_]) %*% M[[k_]]/ sum(Tau[, k_] + diag(Tau[, k_] %*% S[[k_]]))
-  }
-
-  Sigma_bar <- Reduce("+", Sigma)
-  Omega_bar <- solve(Sigma_bar)
-  pi <- colMeans(Tau)
-  log_det_Sigma <- determinant(Sigma_bar, logarithm = TRUE)$modulus
-
-  for (k_ in seq.int(ncol(Tau))) {
-    Z[[k_]] <- O +  X %*% t(Theta[[k_]]) + M[[k_]]
-    A[[k_]] <- exp(Z[[k_]] + .5 * S[[k_]])
-    kappa[, k_] <- rowSums(Y * Z[[k_]]) - rowSums(A[[k_]]) - .5 * rowSums(log(S[[k_]])) -
-      .5 * (log_det_Sigma + diag(M[[k_]] %*% Omega_bar %*% t(M[[k_]])) + S[[k_]] %*% diag(Omega_bar)) + log(pi[k_])
-  }
-
-  kappa
-}

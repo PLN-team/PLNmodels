@@ -47,8 +47,6 @@ double fn_optim_PLN_weighted(const std::vector<double> &x, std::vector<double> &
   arma::mat Z = dat->O + dat->X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
-  // arma::vec J_i = sum((A - dat->Y % Z - .5*log(S)),1) - .5 *real(log_det(Omega)) ; // + dat->KYi ;
-  // double objective = accu(dat->w % J_i) + dat->KY;
   double objective = accu(diagmat(dat->w) *(A - dat->Y % Z - .5*log(S)) ) - .5 * w_bar*real(log_det(Omega)) ;
 
   arma::vec grd_Theta = vectorise(trans(A - dat->Y) * (dat->X.each_col() % dat->w));
@@ -58,6 +56,29 @@ double fn_optim_PLN_weighted(const std::vector<double> &x, std::vector<double> &
   grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
 
   return objective;
+}
+
+arma::vec lower_bound_PLN_weighted(const std::vector<double> &x, void *data) {
+
+  optim_data *dat = reinterpret_cast<optim_data*>(data);
+
+  int n = dat->n, p = dat->p, d = dat->d ;
+
+  arma::mat Theta(&x[0]  , p,d);
+  arma::mat M(&x[p*d]    , n,p);
+  arma::mat S(&x[p*(d+n)], n,p);
+  double w_bar = accu(dat->w) ;
+
+  arma::mat Omega = w_bar * inv_sympd(M.t() * (M.each_col() % dat->w) + diagmat(sum(S.each_col() % dat->w, 0)));
+  arma::mat Z = dat->O + dat->X * Theta.t() + M;
+  arma::mat A = exp (Z + .5 * S) ;
+
+ arma::vec J_i = sum(dat->Y % Z - A + .5*log(S), 1) + .5 * real(log_det(Omega)) - dat->KYi -
+  .5 * (arma::diagvec(M * Omega * M.t()) + S * diagvec(Omega)) ;
+
+ // double objective = accu(diagmat(dat->w) *(A - dat->Y % Z - .5*log(S)) ) - .5 * w_bar*real(log_det(Omega)) ;
+
+  return J_i;
 }
 
 // [[Rcpp::export]]
@@ -86,10 +107,13 @@ Rcpp::List optimization_PLN(
 
   nlopt::result status = opt.optimize(x_optimized, f_optimized);
 
+  arma::vec lower_bound_terms = lower_bound_PLN_weighted(x_optimized, &my_optim_data) ;
+
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
       Rcpp::Named("objective" ) = f_optimized + my_optim_data.KY ,
       Rcpp::Named("solution"  ) = x_optimized,
-      Rcpp::Named("iterations") = my_optim_data.iterations
+      Rcpp::Named("iterations") = my_optim_data.iterations,
+      Rcpp::Named("loglik_obs") = lower_bound_terms
     );
 }
