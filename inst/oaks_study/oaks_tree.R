@@ -1,9 +1,37 @@
 library(PLNmodels)
 
 ## get oaks data set
-load("inst/oaks_study/oaks_Ealphitoides.RData")
+load("inst/oaks_study/oaks_alphitoides.RData")
 
-myPLNs <- PLN(Abundancies ~ 1 + log(Offsets), data = oaks)
+## simple PLN
+myPLN <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks)
 
-system.time(covariates_tree <- PLN(Y ~ 1 + covariates$tree + covariates$orientation + offset(log(O))))
+## Discriminant Analysis with LDA
+myLDA_tree <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks)
+myLDA_tree$plot_LDA()
+
+myLDA_orientation <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$orientation, data = oaks)
+myLDA_orientation$plot_LDA()
+
+## Dimension reduction with PCA
+myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control.main = list(cores = 10))
+myPLNPCA <- myPLNPCAs$getBestModel('ICL')
+myPLNPCA$plot_PCA(cols.ind = oaks$treeStatus)
+
+## Network inference with sparce covariance estimation
+myPLNnets <- PLNnetwork(Abundancies ~ 1 + treeStatus + offset(log(sequencingEffort)), data = oaks)
+myPLNnets$stability_selection()
+myPLNnet <- myPLNnets$getBestModel("StARS", .9925)
+myPLNnet$plot_network()
+
+
+## Clustering with mixture model
+# myPLNMMs <- PLNMM(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, clusters = 2:5)
+# myPLNMMs$plot(c("BIC", "loglik"))
+#
+# aricode::NID(myPLNMMs$models[[4]]$memberships, oaks$treeStatus)
+#
+# myPLNMMs$models[[2]]$memberships
+#
+# myPLNPCA$plot_PCA(cols.ind = oaks$treeStatus)
 
