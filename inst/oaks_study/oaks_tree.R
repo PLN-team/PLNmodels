@@ -24,14 +24,8 @@ myPLNnets$stability_selection()
 myPLNnet <- myPLNnets$getBestModel("StARS", .9925)
 myPLNnet$plot_network()
 
-
 ## Clustering with mixture model
-# myPLNMMs <- PLNMM(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, clusters = 2:5)
-# myPLNMMs$plot(c("BIC", "loglik"))
-#
-# aricode::NID(myPLNMMs$models[[4]]$memberships, oaks$treeStatus)
-#
-# myPLNMMs$models[[2]]$memberships
-#
-# myPLNPCA$plot_PCA(cols.ind = oaks$treeStatus)
+myPLNMMs <- PLNMM(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, clusters = 2:5)
+myPLNMMs$plot(c("BIC", "loglik"))
+aricode::NID(myPLNMMs$models[[2]]$memberships, oaks$treeStatus)
 

@@ -38,13 +38,19 @@ PLNMMfamily$set("public", "initialize",
 
   ## instantiate as many models as clusters
   self$models <- lapply(clusters, function(k) {
-    mclust_out <- mclust::Mclust(self$inception$var_par$M, k, modelNames = "EII", verbose = FALSE)
+    mclust_out <- mclust::Mclust(
+      data           = self$inception$var_par$M,
+      G              = k,
+      modelNames     = "EII",
+      initialization = list(hcPairs = hc(self$inception$var_par$M, "EII")),
+      verbose        = FALSE)
+
     model <- PLNMMfit$new(
       Theta = self$inception$model_par$Theta,
       Sigma = diag(colMeans(self$inception$var_par$S)),
       Mu    = mclust_out$parameters$mean,
-      M     = array(0, c(private$n, private$p, k)),
-      S     = array(10 * control$lbvar, c(private$n, private$p, k)),
+      M     = array(rep(self$inception$var_par$M, k), c(private$n, private$p, k)),
+      S     = array(rep(self$inception$var_par$S, k), c(private$n, private$p, k)),
       Tau   = mclust_out$z
     )
     return(model)

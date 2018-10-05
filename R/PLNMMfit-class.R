@@ -43,7 +43,7 @@ PLNMMfit <-
       posteriorProb = function() {private$Tau},
       memberships = function(value) {apply(private$Tau, 1, which.max)},
       mixtureParam = function() {colMeans(private$Tau)},
-      degrees_freedom = function() {self$p * (self$d + self$k)},
+      degrees_freedom = function() {self$p * (self$d + self$k) + self$k + self$p * (self$p + 1)/2 },
       model_par = function() {
         par <- super$model_par
         par$Mu <- private$Mu
@@ -53,7 +53,9 @@ PLNMMfit <-
         par <- super$var_par
         par$Tau <- private$Tau
         par
-      }
+      },
+      ICL       = function() {NA} # should be computed with the weights
+      ## a simple way would be to introduce an entropy function
     )
 )
 

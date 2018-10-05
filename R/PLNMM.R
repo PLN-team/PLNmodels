@@ -39,7 +39,7 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
-  # be sure that the intercept is removed, to not conflict with the cluster means
+  # be sure that the intercept is removed, to avoid conflict with the cluster means
   # - remove intercept so that 'grouping' describes group means
   xint <- match("(Intercept)", colnames(args$X), nomatch = 0L)
   if (xint > 0L) args$X <- args$X[, -xint, drop = FALSE]
