@@ -1,24 +1,37 @@
+.xlogx <- function(x) ifelse(x < .Machine$double.eps, 0, x*log(x))
+
+.softmax <- function(x) {
+  b <- max(x)
+  exp(x-b) / sum(exp(x-b))
+}
+
 .logfactorial <- function(n) { # Ramanujan's formula
   n[n == 0] <- 1 ## 0! = 1!
   return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)
 }
 
-.trunc <- function(x, M = 300) {
-  return(pmin(x, M))
+logLikPoisson <- function(responses, lambda) {
+  loglik <- sum(responses * lambda, na.rm = TRUE) - sum(exp(lambda)) - sum(.logfactorial(responses))
+  loglik
 }
 
-.loglikPLN <- function(Y, X, O, Theta, Sigma, M, S) {
-  Omega <- chol2inv(chol(Sigma))
-  Z <- O + M + tcrossprod(X, Theta)
-  A = exp (Z + .5 * S)
-  res <- Y * Z - A + .5*log(S) + .5 - .logfactorial(Y) - 0.5*(M * (M %*% Omega) + t(t(S) * diag(Omega)) )
-  return(rowSums(res) + 0.5 * log(det(Omega)) )
+##' @importFrom stats glm.fit
+nullModelPoisson <- function(responses, covariates, offsets) {
+  Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
+    coefficients(glm.fit(covariates, responses[, j], offset = offsets[,j], family = stats::poisson()))))
+  lambda <- offsets + tcrossprod(covariates, Theta)
+  lambda
 }
 
-extract_model <- function(call_frame, envir) {
+fullModelPoisson <- function(responses) {
+  lambda <- log(responses)
+  lambda
+}
+
+extract_model <- function(call, envir) {
 
   ## create the call for the model frame
-  call_frame <- call_frame[c(1L, match(c("formula", "data", "subset", "weights"), names(call_frame), 0L))]
+  call_frame <- call[c(1L, match(c("formula", "data", "subset", "weights"), names(call), 0L))]
   call_frame[[1]] <- quote(stats::model.frame)
 
   ## eval the call in the parent environment
@@ -53,24 +66,6 @@ node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
   n <- length(node.set)
   j.grid <- cumsum(0:(n - 1))
   x + j.grid[y] + 1
-}
-
-logLikPoisson <- function(responses, lambda) {
-  loglik <- sum(responses * lambda, na.rm=TRUE) - sum(exp(lambda)) - sum(.logfactorial(responses))
-  loglik
-}
-
-##' @importFrom stats glm.fit
-nullModelPoisson <- function(responses, covariates, offsets) {
-  Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
-    coefficients(glm.fit(covariates, responses[, j], offset = offsets[,j], family = stats::poisson()))))
-  lambda <- offsets + tcrossprod(covariates, Theta)
-  lambda
-}
-
-fullModelPoisson <- function(responses) {
-  lambda <- log(responses)
-  lambda
 }
 
 ##' @title PLN RNG
@@ -117,7 +112,9 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths
   Y
 }
 
-
+## -----------------------------------------------------------------
+##  Series of setter to default parameters for user's main functions
+##
 PLN_param <- function(control, n, p) {
   ctrl <- list(
     ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
@@ -155,7 +152,40 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
       xtol_rel = 1e-4,
       xtol_abs = 1e-4,
       maxeval  = 10000,
-      method   = "MMA",
+      method   = "CCSAQ",
+      lbvar    = 1e-4,
+      trace    = 1,
+      cores    = 1
+    )
+  )
+  ctrl[names(control)] <- control
+  ctrl
+}
+
+PLNMM_param <- function(control, n, p, type = c("init", "main")) {
+  type <- match.arg(type)
+
+  ctrl <- switch(match.arg(type),
+    "init" = list(
+      inception = ifelse(n >= 1.5*p, "PLN", "LM"),
+      ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
+      ftol_abs = 0,
+      xtol_rel = 1e-4,
+      xtol_abs = 1e-4,
+      maxeval  = 10000,
+      method   = "CCSAQ",
+      lbvar    = 1e-4,
+      trace    = 0
+    ),
+    "main" = list(
+      ftol_out  = 1e-5,
+      maxit_out = 50,
+      ftol_rel = 1e-8,
+      ftol_abs = 0,
+      xtol_rel = 1e-4,
+      xtol_abs = 1e-4,
+      maxeval  = 10000,
+      method   = "CCSAQ",
       lbvar    = 1e-4,
       trace    = 1,
       cores    = 1

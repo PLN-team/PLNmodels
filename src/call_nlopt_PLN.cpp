@@ -47,8 +47,6 @@ double fn_optim_PLN_weighted(const std::vector<double> &x, std::vector<double> &
   arma::mat Z = dat->O + dat->X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
-  // arma::vec J_i = sum((A - dat->Y % Z - .5*log(S)),1) - .5 *real(log_det(Omega)) ; // + dat->KYi ;
-  // double objective = accu(dat->w % J_i) + dat->KY;
   double objective = accu(diagmat(dat->w) *(A - dat->Y % Z - .5*log(S)) ) - .5 * w_bar*real(log_det(Omega)) ;
 
   arma::vec grd_Theta = vectorise(trans(A - dat->Y) * (dat->X.each_col() % dat->w));
@@ -83,13 +81,31 @@ Rcpp::List optimization_PLN(
   } else {
     opt.set_min_objective(fn_optim_PLN, &my_optim_data);
   }
-
   nlopt::result status = opt.optimize(x_optimized, f_optimized);
+
+  // Format the output
+  int n = Y.n_rows, p = Y.n_cols, d = X.n_cols;
+  arma::mat Theta(&x_optimized[0]  , p,d);
+  arma::mat M(&x_optimized[p*d]    , n,p);
+  arma::mat S(&x_optimized[p*(d+n)], n,p);
+  arma::mat Sigma = (M.t() * (M.each_col() % w) + diagmat(sum(S.each_col() % w, 0))) / accu(w) ;
+
+  // Compute element-wise log-likelihood (works both for weighted/unweigthed loglikelihood)
+  arma::mat Omega = inv_sympd(Sigma);
+  arma::mat Z = O + X * Theta.t() + M;
+  arma::mat A = exp (Z + .5 * S) ;
+  arma::vec loglik = sum(Y % Z - A + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) +
+    + .5 * real(log_det(Omega)) - logfact(Y);
 
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
       Rcpp::Named("objective" ) = f_optimized + my_optim_data.KY ,
       Rcpp::Named("solution"  ) = x_optimized,
-      Rcpp::Named("iterations") = my_optim_data.iterations
+      Rcpp::Named("Theta" )     = Theta,
+      Rcpp::Named("Sigma" )     = Sigma,
+      Rcpp::Named("M"         ) = M,
+      Rcpp::Named("S"         ) = S,
+      Rcpp::Named("iterations") = my_optim_data.iterations,
+      Rcpp::Named("loglik"    ) = loglik
     );
 }

@@ -2,21 +2,9 @@
 
 using namespace Rcpp;
 
-arma::vec get_KY(arma::mat Y, arma::vec w) {
-  arma::mat KY = Y.each_col() % w;
-  KY.for_each([](arma::mat::elem_type& v) {
-    if (v != 0)
-      v = v * std::log(v) - v + std::log(8 * std::pow(v,3) + 4*std::pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2;
-    }
-  );
-  return(sum(KY, 1)) ;
-//  arma::colvec v = arma::nonzeros(Y.each_col() % w);
-//  return (v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2);
-}
-
 arma::mat logfact(arma::mat Y) {
   arma::mat v = Y.replace(0, 1);
-  return v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2;
+  return sum(v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2, 1);
 }
 
 // Convert string to nlopt_alogirthm

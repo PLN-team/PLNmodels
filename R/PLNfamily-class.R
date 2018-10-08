@@ -48,7 +48,7 @@ PLNfamily$set("public", "initialize",
     if (is.null(rownames(responses)))  rownames(self$responses)  <- 1:private$n
     if (is.null(colnames(responses)))  colnames(self$responses)  <- 1:private$p
     if (is.null(rownames(covariates))) rownames(self$covariates) <- 1:private$n
-    if (is.null(colnames(covariates))) colnames(self$covariates) <- 1:private$d
+    if (is.null(colnames(covariates)) & private$d > 0) colnames(self$covariates) <- 1:private$d
 
     ## extract the model used for initializaing the whole family
     if (ifelse(is.character(control$inception),

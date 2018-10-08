@@ -32,7 +32,7 @@
 ##' @rdname PLNPCA
 ##' @examples
 ##' ## See the vignette: vignette("trichoptera", package="PLNmodels")
-##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
+##' @seealso The classes \code{\link[=PLNPCAfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
 PLNPCA <- function(formula, data, subset, ranks = 1:5,  control.init = list(), control.main = list()) {
