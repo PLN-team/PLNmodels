@@ -7,7 +7,7 @@ clean:
 	rm -f $(SHLIB) $(OBJECTS) $(WIN32FIX)
 
 winlibs:
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R"
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlib.R"
 
 
 .PHONY: all winlibs clean
