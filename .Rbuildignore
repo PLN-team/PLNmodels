@@ -9,3 +9,4 @@
 ^src/Makevars$
 .travis.yml
 ^README.Rmd
+^appveyor\.yml$
