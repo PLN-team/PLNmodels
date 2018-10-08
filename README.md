@@ -2,14 +2,14 @@
 PLNmodels: Poisson lognormal models <img src="inst/sticker/PLNmodels.png" align="right" width="155" height="180"/>
 ==================================================================================================================
 
-[![Travis-CI build status](https://travis-ci.org/jchiquet/PLNmodels.svg?branch=master)](https://travis-ci.org/jchiquet/PLNmodels)
+[![Travis-CI build status](https://travis-ci.org/jchiquet/PLNmodels.svg?branch=master)](https://travis-ci.org/jchiquet/PLNmodels) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jchiquet/PLNmodels?branch=master&svg=true)](https://ci.appveyor.com/project/jchiquet/PLNmodels)
 
 > The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA for count data and network inference). This package implements an efficient algorithm to fit such models accompanied with a set of functions for vizualisation and diagnostic. Learn more in the vignettes: `vignette(package = "PLNmodels")`.
 
 Installation
 ------------
 
-###  System Requirements
+### System Requirements
 
 Installation requires a system version of [nlopt 2.4-2](https://nlopt.readthedocs.io/)
 
@@ -33,10 +33,10 @@ brew install nlopt
 
 -   Windows is not supported yet: feel free to give it a try and send us some feedbacks.
 
-###  R Package installation
+### R Package installation
 
 ``` r
-## w/o vignettes
+## w/o vignettes
 devtools::install_github("jchiquet/PLNmodels")
 devtools::install_github("jchiquet/PLNmodels", build_vignettes = TRUE)
 ```
