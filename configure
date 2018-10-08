@@ -46,8 +46,14 @@ if [ $? -ne 0 ]; then
   exit 1;
 fi
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  OPENMP_FLAG=''
+else
+  OPENMP_FLAG='$(SHLIB_OPENMP_CXXFLAGS)'
+fi
+
 # Write to Makevars
-sed -e "s|@nlopt_libs@|$NLOPT_LIBS|" src/Makevars.in > src/Makevars
+sed -e "s|@nlopt_libs@|$NLOPT_LIBS|" -e "s|@openmp_flag@|$OPENMP_FLAG|" src/Makevars.in > src/Makevars
 
 # Success
 exit 0
