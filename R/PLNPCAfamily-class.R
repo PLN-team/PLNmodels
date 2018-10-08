@@ -90,29 +90,30 @@ PLNPCAfamily$set("public", "optimize",
                         rep(-Inf, private$n*model$rank) , # M
                         rep(control$lbvar,private$n*model$rank)) # S
     )
-    optim.out <- optimization_PLNPCA(par0, self$responses, self$covariates, self$offsets, model$rank, opts)
-    optim.out$message <- statusToMessage(optim.out$status)
+    optim_out <- optimization_PLNPCA(par0, self$responses, self$covariates, self$offsets, model$rank, opts)
 
     ## ===========================================
     ## OUTPUT
 
-    ## formating parameters for output
-    Theta <- matrix(optim.out$solution[1:(private$p*private$d)                                                        ], private$p, private$d)
-    B     <- matrix(optim.out$solution[private$p*private$d              + 1:(private$p*model$rank)                    ], private$p, model$rank)
-    M     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + 1:(private$n*model$rank)                    ], private$n, model$rank)
-    S     <- matrix(optim.out$solution[private$p*(private$d+model$rank) + private$n*model$rank + 1:(private$n*model$rank)], private$n, model$rank)
-    Sigma <- B %*% (crossprod(M)/private$n + diag(colMeans(S), nrow = model$rank, ncol = model$rank)) %*% t(B)
-    rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
-    rownames(B)     <- colnames(self$responses); colnames(B) <- 1:model$rank
-    rownames(M)     <- rownames(self$responses); colnames(M) <- 1:model$rank
-    rownames(Sigma) <- colnames(Sigma) <- colnames(self$responses)
+    rownames(optim_out$Theta) <- rownames(optim_out$B) <- rownames(optim_out$Sigma) <- colnames(optim_out$Sigma) <- colnames(self$responses)
+    colnames(optim_out$Theta) <- colnames(self$covariates)
+    colnames(optim_out$B) <- colnames(optim_out$M) <- 1:model$rank
+    rownames(optim_out$M) <- rownames(self$responses)
 
-    model$update(B = B, Theta = Theta, Sigma = Sigma, M = M, S = S, J = -optim.out$objective,
-                 monitoring = list(objective = optim.out$objective,
-                                   iterations = optim.out$iterations,
-                                   status = optim.out$status,
-                                   message = optim.out$message))
-    return(model)
+    model$update(
+      B     = optim_out$B,
+      Theta = optim_out$Theta,
+      Sigma = optim_out$Sigma,
+      M     = optim_out$M,
+      S     = optim_out$S,
+      J     = sum(optim_out$loglik),
+      monitoring = list(
+        objective  = -sum(optim_out$loglik),
+        iterations = optim_out$iterations,
+        status     = optim_out$status,
+        message    = statusToMessage(optim_out$status))
+    )
+    model
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
 })
 
