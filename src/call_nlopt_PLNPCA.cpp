@@ -61,7 +61,7 @@ Rcpp::List optimization_PLNPCA (
   arma::mat S(&x_optimized[p*(d+q)+n*q], n,q) ;
   arma::mat Sigma = B * (M.t()* M + diagmat(sum(S, 0)) ) * B.t() / n ;
 
-  // Compute element-wise log-likelihood
+  // Compute element-wise lower bound of the log-likelihood
   arma::mat Z = O + X * Theta.t() + M * B.t();
   arma::mat A = exp (Z + .5 * S * (B % B).t() ) ;
   arma::vec loglik = arma::sum(Y % Z - A, 1) - .5 * sum(M % M + S - log(S) - 1, 1) - logfact(Y);

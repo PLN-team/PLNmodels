@@ -79,29 +79,24 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
     "weighted"    = weighted
   )
 
-  optim.out <- optimization_PLN(par0, Y, X, O, w, opts)
-  optim.out$message <- statusToMessage(optim.out$status)
-
+  optim_out <- optimization_PLN(par0, Y, X, O, w, opts)
+  optim_out$message <- statusToMessage(optim_out$status)
   ## ===========================================
   ## POST-TREATMENT
   ##
-  Theta <- matrix(optim.out$solution[1:(p*d)]          , p,d)
-  M     <- matrix(optim.out$solution[p*(d)   + 1:(n*p)], n,p)
-  S     <- matrix(optim.out$solution[p*(d+n) + 1:(n*p)], n,p)
-  Sigma <- crossprod(M)/n + diag(colMeans(S), nrow = p, ncol = p)
 
-  rownames(Theta) <- colnames(Y); colnames(Theta) <- colnames(X)
-  rownames(Sigma) <- colnames(Sigma) <- colnames(Y)
-  dimnames(S)     <- dimnames(Y)
-  dimnames(M)     <- dimnames(Y)
+  rownames(optim_out$Theta) <- colnames(Y)
+  colnames(optim_out$Theta) <- colnames(X)
+  rownames(optim_out$Sigma) <- colnames(optim_out$Sigma) <- colnames(Y)
+  dimnames(optim_out$S) <- dimnames(optim_out$M) <- dimnames(Y)
 
   myPLN <- PLNfit$new(
-    Theta = Theta,
-    Sigma = Sigma,
-    M     = M,
-    S     = S,
-    J     = -optim.out$objective,
-    monitoring = optim.out[c("objective", "iterations", "status", "message")]
+    Theta = optim_out$Theta,
+    Sigma = optim_out$Sigma,
+    M     = optim_out$M,
+    S     = optim_out$S,
+    J     = -optim_out$objective,
+    monitoring = optim_out[c("objective", "iterations", "status", "message")]
   )
 
   if (ctrl$trace > 0) cat("\n Computing (pseudo) R2")

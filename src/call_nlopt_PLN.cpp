@@ -58,27 +58,6 @@ double fn_optim_PLN_weighted(const std::vector<double> &x, std::vector<double> &
   return objective;
 }
 
-arma::vec lower_bound_PLN_weighted(const std::vector<double> &x, void *data) {
-
-  optim_data *dat = reinterpret_cast<optim_data*>(data);
-
-  int n = dat->n, p = dat->p, d = dat->d ;
-
-  arma::mat Theta(&x[0]  , p,d);
-  arma::mat M(&x[p*d]    , n,p);
-  arma::mat S(&x[p*(d+n)], n,p);
-  double w_bar = accu(dat->w) ;
-
-  arma::mat Omega = w_bar * inv_sympd(M.t() * (M.each_col() % dat->w) + diagmat(sum(S.each_col() % dat->w, 0)));
-  arma::mat Z = dat->O + dat->X * Theta.t() + M;
-  arma::mat A = exp (Z + .5 * S) ;
-
- arma::vec J_i = sum(dat->Y % Z - A + .5*log(S), 1) + .5 * real(log_det(Omega)) - dat->KYi -
-  .5 * (arma::diagvec(M * Omega * M.t()) + S * diagvec(Omega)) ;
-
-  return J_i;
-}
-
 // [[Rcpp::export]]
 Rcpp::List optimization_PLN(
     arma::vec par,
@@ -102,16 +81,31 @@ Rcpp::List optimization_PLN(
   } else {
     opt.set_min_objective(fn_optim_PLN, &my_optim_data);
   }
-
   nlopt::result status = opt.optimize(x_optimized, f_optimized);
 
-  arma::vec lower_bound_terms = lower_bound_PLN_weighted(x_optimized, &my_optim_data) ;
+  // Format the output
+  int n = Y.n_rows, p = Y.n_cols, d = X.n_cols;
+  arma::mat Theta(&x_optimized[0]  , p,d);
+  arma::mat M(&x_optimized[p*d]    , n,p);
+  arma::mat S(&x_optimized[p*(d+n)], n,p);
+  arma::mat Sigma = (M.t() * (M.each_col() % w) + diagmat(sum(S.each_col() % w, 0))) / accu(w) ;
+
+  // Compute element-wise log-likelihood (works both for weighted/unweigthed loglikelihood)
+  arma::mat Omega = inv_sympd(Sigma);
+  arma::mat Z = O + X * Theta.t() + M;
+  arma::mat A = exp (Z + .5 * S) ;
+  arma::vec loglik = sum(Y % Z - A + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) +
+    + .5 * real(log_det(Omega)) - logfact(Y);
 
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
       Rcpp::Named("objective" ) = f_optimized + my_optim_data.KY ,
       Rcpp::Named("solution"  ) = x_optimized,
+      Rcpp::Named("Theta" )     = Theta,
+      Rcpp::Named("Sigma" )     = Sigma,
+      Rcpp::Named("M"         ) = M,
+      Rcpp::Named("S"         ) = S,
       Rcpp::Named("iterations") = my_optim_data.iterations,
-      Rcpp::Named("loglik_obs") = lower_bound_terms
+      Rcpp::Named("loglik"    ) = loglik
     );
 }
