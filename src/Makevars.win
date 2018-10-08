@@ -1,10 +1,11 @@
+CXX_STD = CXX11
 PKG_CPPFLAGS= -I../windows/nlopt-2.4.2/include
 PKG_LIBS= -L../windows/nlopt-2.4.2/lib${R_ARCH} -lnlopt_cxx
 
 all: clean winlibs
 
 clean:
-	rm -f $(SHLIB) $(OBJECTS) $(WIN32FIX)
+	rm -f $(SHLIB) $(OBJECTS)
 
 winlibs:
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlib.R"
