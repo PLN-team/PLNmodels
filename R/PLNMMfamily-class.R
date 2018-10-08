@@ -128,7 +128,7 @@ PLNMMfamily$set("public", "optimize",
           opts
         )
         par0[[k_]] <- optim_out$solution
-        loglikObs_component[, k_] <- optim_out$loglik_obs
+        loglikObs_component[, k_] <- optim_out$loglik
       }
       ## UPDATE THE POSTERIOR PROBABILITIES
 ##      tau <- t(apply(sweep(loglikObs_component, 2, log(pi_hat), "+"), 1, .softmax)

@@ -12,7 +12,7 @@ PLNMMfit
 The function \code{\link{PLNMM}} produces a collection of models which are instances of object with class \code{PLNMMfit}.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNMMfit_plot]{plot}}
+See the documentation for ...
 }
 \section{Fields}{
 

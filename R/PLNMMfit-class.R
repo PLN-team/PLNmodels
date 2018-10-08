@@ -3,7 +3,7 @@
 #' @description The function \code{\link{PLNMM}} produces a collection of models which are instances of object with class \code{PLNMMfit}.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=PLNMMfit_plot]{plot}}
+#' See the documentation for ...
 #'
 #' @field cluster the number of clusters of the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the mixture model: Theta (covariates), Sigma (latent covariance), mu (vector of means/centers) and pi (vector of cluster proportions)

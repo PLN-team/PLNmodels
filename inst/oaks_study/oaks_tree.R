@@ -14,7 +14,7 @@ myLDA_orientation <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), gro
 myLDA_orientation$plot_LDA()
 
 ## Dimension reduction with PCA
-myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control.main = list(cores = 10))
+myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control.main = list(cores = 10)) # about 50 sec.
 myPLNPCA <- myPLNPCAs$getBestModel('ICL')
 myPLNPCA$plot_PCA(cols.ind = oaks$treeStatus)
 

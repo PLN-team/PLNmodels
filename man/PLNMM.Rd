@@ -19,8 +19,6 @@ PLNMM(formula, data, subset, clusters = 1:10, control_init = list(),
 \item{control_init}{a list for controling the optimization at initialization. See details.}
 
 \item{control_main}{a list for controling the main optimization process. See details.}
-
-\item{control}{a list for controlling the optimization. See details.}
 }
 \value{
 an R6 object with class \code{\link[=PLNMMfamily]{PLNMMfamily}}, which contains
