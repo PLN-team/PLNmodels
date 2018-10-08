@@ -37,7 +37,7 @@ sudo yum install NLopt-devel
 brew install nlopt
 ```
 
-- Windows is not supported yet: feel free to give it a try and send us some feedbacks.
+- On Windows, the package now builds and installs correctly, by [including static libraries](https://github.com/rwinlib/nlopt) on compilation. However, I just test it with appveyor so I have never run PLNmodels on Windows: any feedbacks welcomed!
 
 ### R Package installation
 
