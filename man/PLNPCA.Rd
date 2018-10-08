@@ -50,5 +50,5 @@ The list of parameters \code{control.init} and \code{control.main} control the o
 ## See the vignette: vignette("trichoptera", package="PLNmodels")
 }
 \seealso{
-The classes \code{\link[=PLNnetworkfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
+The classes \code{\link[=PLNPCAfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }
