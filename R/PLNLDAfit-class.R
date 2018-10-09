@@ -27,7 +27,7 @@ PLNLDAfit <-
     inherit = PLNfit,
     public  = list(
       initialize = function(Theta=NA, Mu=NA, Sigma=NA, grouping = NA, M=NA, S=NA, J=NA, monitoring=NA) {
-        super$initialize(Theta, Sigma, M, S, J, monitoring)
+        super$initialize(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, monitoring = monitoring)
         private$grouping <- grouping
         private$Mu <- Mu
         nk <- table(grouping)
