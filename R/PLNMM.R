@@ -38,10 +38,10 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
-  # be sure that the intercept is removed, to avoid conflict with the cluster means
+  # be sure that the intercept is in: to avoid conflict with the cluster means
   # - remove intercept so that 'grouping' describes group means
   xint <- match("(Intercept)", colnames(args$X), nomatch = 0L)
-  if (xint > 0L) args$X <- args$X[, -xint, drop = FALSE]
+  if (xint == 0L) args$X <- cbind(1, args$X)
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl_init <- PLNMM_param(control_init, nrow(args$Y), ncol(args$Y), "init")

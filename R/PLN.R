@@ -96,6 +96,7 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
     M     = optim_out$M,
     S     = optim_out$S,
     J     = -optim_out$objective,
+    Ji    = optim_out$loglik,
     monitoring = optim_out[c("objective", "iterations", "status", "message")]
   )
 

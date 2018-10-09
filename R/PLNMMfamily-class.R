@@ -23,54 +23,48 @@ PLNMMfamily <-
   R6Class(classname = "PLNMMfamily",
     inherit = PLNfamily,
      active = list(
-      clusters = function() private$params
+       clusters = function() private$params
+     ),
+    public  = list(
+      initialize = function(clusters, responses, covariates, offsets, control) {
+        ## initialize the required fields
+        super$initialize(responses, covariates, offsets, control)
+        private$params <- clusters
+
+        if (control$trace > 0) cat("\n Perform GMM on the inceptive model for initializing...")
+
+        data0 <- self$inception$var_par$M + tcrossprod(covariates, self$inception$model_par$Theta)
+        initMclust <- hc(data0, "EII")
+
+        ## instantiate as many PLNMMfit as choices for the number of components
+        self$models <- lapply(clusters, function(k) {
+          mclust_out <- mclust::Mclust(
+            data           = data0,
+            G              = k,
+            modelNames     = "EII",
+            initialization = list(hcPairs = initMclust),
+            verbose        = FALSE)
+          ## each PLNMMfit will itself instantiate as many PLNmodels
+          ## as the current choice of number of components
+          PLNMMfit$new(inception = self$inception, tau = mclust_out$z)
+        })
+      }
     )
 )
-
-PLNMMfamily$set("public", "initialize",
-  function(clusters, responses, covariates, offsets, control) {
-
-  ## initialize the required fields
-  super$initialize(responses, covariates, offsets, control)
-  private$params <- clusters
-
-  if (control$trace > 0) cat("\n Perform GMM on the inceptive model for initializing...")
-
-  ## instantiate as many models as clusters
-  self$models <- lapply(clusters, function(k) {
-    mclust_out <- mclust::Mclust(
-      data           = self$inception$var_par$M,
-      G              = k,
-      modelNames     = "EII",
-      initialization = list(hcPairs = hc(self$inception$var_par$M, "EII")),
-      verbose        = FALSE)
-
-    model <- PLNMMfit$new(
-      Theta = self$inception$model_par$Theta,
-      Sigma = diag(colMeans(self$inception$var_par$S)),
-      Mu    = mclust_out$parameters$mean,
-      M     = array(rep(self$inception$var_par$M, k), c(private$n, private$p, k)),
-      S     = array(rep(self$inception$var_par$S, k), c(private$n, private$p, k)),
-      Tau   = mclust_out$z
-    )
-    return(model)
-  })
-
-})
 
 PLNMMfamily$set("public", "optimize",
   function(control) {
 
-  ## set option for call to NLOPT: optim typ, lower bound, tolerance...
+  ## set option for call to NLOPT: optim type, lower bound, tolerance...
   opts <- list("algorithm"   = control$method,
                "maxeval"     = control$maxeval,
                "ftol_rel"    = control$ftol_rel,
                "ftol_abs"    = control$ftol_abs,
                "xtol_rel"    = control$xtol_rel,
-               "xtol_abs"    = c(rep(0, private$p*(private$d + 1)), # Theta + Muk
-                                 rep(0, private$n*private$p), # Mk
+               "xtol_abs"    = c(rep(0, private$p*(private$d)), # Theta_k
+                                 rep(0, private$n*private$p),   # Mk
                                  rep(control$xtol_abs, private$n*private$p)), #Sk
-               "lower_bound" = c(rep(-Inf, private$p*(private$d + 1)), # Theta + Muk
+               "lower_bound" = c(rep(-Inf, private$p*(private$d)), # Theta_k
                                  rep(-Inf, private$n*private$p), # Mk
                                  rep(control$lbvar, private$n*private$p)), # Sk
                "weighted"    = TRUE
@@ -87,15 +81,7 @@ PLNMMfamily$set("public", "optimize",
     ## ===========================================
     ## INITIALISATION
     objective_old <- -Inf
-    tau_old <- matrix(NA, private$n, k); par0 <- list()
-    for (k_ in 1:k) {
-      tau_old[, k_] <- self$models[[m]]$posteriorProb[, k_]
-      par0[[k_]] <- c(
-        cbind(self$models[[m]]$model_par$Mu[,k_], self$models[[m]]$model_par$Theta),
-        self$models[[m]]$var_par$M[, , k_],
-        self$models[[m]]$var_par$S[, , k_]
-      )
-    }
+    tau_old <- self$models[[m]]$posteriorProb
 
     if (control$trace == 1) {
       cat("\tnumber of cluster =", k, "\r")
@@ -112,24 +98,15 @@ PLNMMfamily$set("public", "optimize",
     objective_component <- vector("numeric", k)
     loglikObs_component <- matrix(NA, private$n, k)
     convergence <- numeric(control$maxit_out)
+
     while (!cond) {
       iter <- iter + 1
       if (control$trace > 1) cat("", iter)
       ## UPDATE COMPONENTS OF THE MIXTURE
-      for (k_ in 1:k) {
-        ## UPDATE COMPONENTS OF THE MIXTURE
-        ## weighted-PLN model - probabilities of cluster belonging
-        optim_out <- optimization_PLN(
-          par0[[k_]],
-          self$responses,
-          cbind(rep(1,private$n), self$covariates),
-          self$offsets,
-          tau_old[, k_],
-          opts
-        )
-        par0[[k_]] <- optim_out$solution
-        loglikObs_component[, k_] <- optim_out$loglik
-      }
+      ## weighted-PLN models- with weights equal to probabilities of cluster belonging
+      self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, tau_old, opts)
+      loglikObs_component <- sapply(self$models[[m]]$components, function(model) model$loglik_vec)
+
       ## UPDATE THE POSTERIOR PROBABILITIES
 ##      tau <- t(apply(sweep(loglikObs_component, 2, log(pi_hat), "+"), 1, .softmax)
       tau <- sweep(loglikObs_component, 2, log(colMeans(tau_old)), "+")
@@ -154,33 +131,10 @@ PLNMMfamily$set("public", "optimize",
     ## OUTPUT
     ## formating parameters for output
 
-    Theta <- list()
-    Mu    <- list()
-    M     <- list()
-    S     <- list()
-    Sigma <- list()
-
-    for (k_ in seq.int(k)) {
-      Theta[[k_]] <- matrix(par0[[k_]][1:(private$p*(private$d + 1))], private$p, private$d + 1)
-      Mu[[k_]]    <- Theta[[k_]][, 1, drop = FALSE]
-      Theta[[k_]] <- Theta[[k_]][, -1, drop = FALSE]
-      M[[k_]]     <- matrix(par0[[k_]][private$p*(private$d + 1)   + 1:(private$n*private$p)], private$n,private$p)
-      S[[k_]]     <- matrix(par0[[k_]][private$p*(private$d + 1 + private$n) + 1:(private$n*private$p)], private$n, private$p)
-      Sigma[[k_]] <- t(M[[k_]]) %*% diag(tau[, k_]) %*% M[[k_]]/ sum(tau[, k_]) + diag(tau[, k_] %*% S[[k_]])
-    }
-
-    Theta <- Reduce("+", Theta)
-    rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
-    Sigma <- Reduce("+", Sigma)
-    rownames(Sigma) <- colnames(Sigma) <- colnames(self$responses)
-    M <- array(unlist(M), c(private$n, private$p, k) )
-    S <- array(unlist(S), c(private$n, private$p, k) )
-
-    self$models[[m]]$update(
-      Sigma = Sigma, Theta = Theta, M = M, S = S, J = -objective[iter], Tau = tau,
-          monitoring = list(objective        = objective[1:iter],
-                            convergence      = convergence[1:iter],
-                            outer_iterations = iter))
+    self$models[[m]]$update(tau = tau, J = -objective[iter],
+      monitoring = list(objective        = objective[1:iter],
+                        convergence      = convergence[1:iter],
+                        outer_iterations = iter))
     if (control$trace > 1) {
       cat("\r                                                                                    \r")
       flush.console()
