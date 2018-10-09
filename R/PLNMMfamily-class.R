@@ -27,7 +27,8 @@ PLNMMfamily <-
      ),
     public  = list(
       initialize = function(clusters, responses, covariates, offsets, control) {
-        ## initialize the required fields
+
+        control$inception <- "PLN"
         super$initialize(responses, covariates, offsets, control)
         private$params <- clusters
 
@@ -70,8 +71,6 @@ PLNMMfamily$set("public", "optimize",
                "weighted"    = TRUE
   )
 
-
-
   ## ===========================================
   ## GO ALONG THE NUMBER OF CLUSTER (i.e the models)
   for (m in seq_along(self$models))  {
@@ -80,8 +79,11 @@ PLNMMfamily$set("public", "optimize",
 
     ## ===========================================
     ## INITIALISATION
-    objective_old <- -Inf
     tau_old <- self$models[[m]]$posteriorProb
+    loglikObs_component <- sapply(self$models[[m]]$components, function(model) model$loglik_vec)
+    objective    <- numeric(control$maxit_out)
+    objective[1] <- -sum(tau_old * loglikObs_component) + sum(.xlogx(tau_old )) - sum(tau_old * log(self$models[[m]]$mixtureParam))
+    convergence <- numeric(control$maxit_out)
 
     if (control$trace == 1) {
       cat("\tnumber of cluster =", k, "\r")
@@ -94,32 +96,30 @@ PLNMMfamily$set("public", "optimize",
     ## ===========================================
     ## OPTIMISATION
     cond <- FALSE; iter <- 0
-    objective   <- numeric(control$maxit_out)
-    objective_component <- vector("numeric", k)
-    loglikObs_component <- matrix(NA, private$n, k)
-    convergence <- numeric(control$maxit_out)
-
     while (!cond) {
       iter <- iter + 1
       if (control$trace > 1) cat("", iter)
+
       ## UPDATE COMPONENTS OF THE MIXTURE
       ## weighted-PLN models- with weights equal to probabilities of cluster belonging
       self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, tau_old, opts)
       loglikObs_component <- sapply(self$models[[m]]$components, function(model) model$loglik_vec)
+      ## Stop here for a single class
 
       ## UPDATE THE POSTERIOR PROBABILITIES
-##      tau <- t(apply(sweep(loglikObs_component, 2, log(pi_hat), "+"), 1, .softmax)
-      tau <- sweep(loglikObs_component, 2, log(colMeans(tau_old)), "+")
-      tau <- t(apply(tau, 1, .softmax))
-      tau[tau < .Machine$double.eps] <- .Machine$double.eps
-      tau[tau > 1 - .Machine$double.eps] <- 1 - .Machine$double.eps
-      pi_hat <- colMeans(tau)
+      if (k > 1) {
+        tau <- t(apply(sweep(loglikObs_component, 2, colMeans(tau_old), "+"), 1, .softmax))
+        tau[tau < .Machine$double.eps] <- .Machine$double.eps
+        tau[tau > 1 - .Machine$double.eps] <- 1 - .Machine$double.eps
+      } else {
+        tau <- tau_old
+      }
+      objective[iter + 1] <- -sum(tau * loglikObs_component) + sum(.xlogx(tau)) - sum(tau * log(colMeans(tau)))
 
-      objective[iter] <- -sum(tau * loglikObs_component) + sum(.xlogx(tau)) - sum(tau * log(pi_hat))
       # print(- sum(tau * loglikObs_component) + sum(.xlogx(tau)) - sum(tau * log(pi)))
       # print(pi_hat)
       # print(aricode::NID(apply(tau_old, 1, which.max),apply(tau, 1, which.max)))
-      convergence[iter] <- abs(objective_old - objective[iter])/abs(objective[iter])
+      convergence[iter] <- abs(objective[iter + 1] - objective[iter])/abs(objective[iter])
 
       ## Check convergence
       if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
@@ -131,8 +131,8 @@ PLNMMfamily$set("public", "optimize",
     ## OUTPUT
     ## formating parameters for output
 
-    self$models[[m]]$update(tau = tau, J = -objective[iter],
-      monitoring = list(objective        = objective[1:iter],
+    self$models[[m]]$update(tau = tau, J = -objective[iter+1],
+      monitoring = list(objective        = objective[1:iter+1],
                         convergence      = convergence[1:iter],
                         outer_iterations = iter))
     if (control$trace > 1) {

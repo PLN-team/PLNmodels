@@ -28,6 +28,8 @@ Fields are accessed via active binding and cannot be changed by the user.
 
 \item{\code{loglik}}{variational lower bound of the loglikelihood}
 
+\item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}
+
 \item{\code{BIC}}{variational lower bound of the BIC}
 
 \item{\code{ICL}}{variational lower bound of the ICL}

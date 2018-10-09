@@ -10,7 +10,7 @@
 #' @field components a list with cluster component element, each of whom is a \code{PLNfit}.
 #' @field model_par a list with the matrices associated with the final estimated parameters of the mixture model: Theta (covariates), Sigma (latent covariance), mu (vector of means/centers) and pi (vector of cluster proportions)
 #' @field posteriorProbabilities matrix of posterior probabilities of class belonging
-#' @filed mixtureParam vector of cluster proportions
+#' @field mixtureParam vector of cluster proportions
 #' @field loglik variational lower bound of the loglikelihood
 #' @field BIC variational lower bound of the BIC
 #' @field ICL variational lower bound of the ICL
@@ -59,7 +59,7 @@ PLNMMfit <-
       loglik    = function() {private$J},
       BIC       = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
       ## ICL is wrong in this context
-      ICL       = function() {self$BIC - .5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)))},
+      ICL       = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
       R_squared = function() {private$R2},
       criteria  = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
