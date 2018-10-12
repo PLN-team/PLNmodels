@@ -26,8 +26,6 @@ myPLNnet$plot_network()
 
 ## Clustering with mixture model
 myPLNMMs <- PLNMM(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, clusters = 1:5)
-myPLNMMs$plot(c("BIC", "loglik"))
-
 plot(purrr::map_dbl(myPLNMMs$models, ~aricode::NID(.$memberships, oaks$treeStatus)),
      xlab = "number of components", ylab = "NID",  type = "l")
 

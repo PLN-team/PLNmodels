@@ -99,7 +99,7 @@ Rcpp::List optimization_PLN(
 
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
-      Rcpp::Named("objective" ) = f_optimized + my_optim_data.KY ,
+      Rcpp::Named("objective" ) = f_optimized + my_optim_data.KY,
       Rcpp::Named("solution"  ) = x_optimized,
       Rcpp::Named("Theta"     ) = Theta,
       Rcpp::Named("Sigma"     ) = Sigma,
