@@ -66,7 +66,7 @@ Rcpp::List optimization_VEstep_PLN(
   arma::mat A = exp (Z + .5 * S);
   // sum(., 1) = rowSums(.)
   arma::vec loglik = arma::sum(-A + Y % Z + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) +
-    .5*log_det_Omega*arma::ones(n) - logfact(Y);
+    .5*log_det_Omega - logfact(Y) + .5 * p;
 
   return Rcpp::List::create(
     Rcpp::Named("status"    ) = (int) status,

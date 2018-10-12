@@ -95,7 +95,7 @@ Rcpp::List optimization_PLN(
   arma::mat Z = O + X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
   arma::vec loglik = sum(Y % Z - A + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) +
-    + .5 * real(log_det(Omega)) - logfact(Y);
+    + .5 * real(log_det(Omega)) - logfact(Y) + .5 * p;
 
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
