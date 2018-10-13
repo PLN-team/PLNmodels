@@ -55,7 +55,7 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
 
   ## Check weights
   weighted <- ifelse(is.null(w), FALSE, TRUE)
-  if (!weighted) w <- rep(1.0,n)
+  if (!weighted) w <- rep(1.0, n)
 
   ## get an initial point for optimization
   if (ctrl$trace > 0) cat("\n Initialization...")

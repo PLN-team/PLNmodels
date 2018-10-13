@@ -31,6 +31,33 @@ double fn_optim_PLN(const std::vector<double> &x, std::vector<double> &grad, voi
   return objective;
 }
 
+double fn_optim_PLN_spherical(const std::vector<double> &x, std::vector<double> &grad, void *data) {
+
+  optim_data *dat = reinterpret_cast<optim_data*>(data);
+  dat->iterations++; // increase number of iterations
+
+  int n = dat->n, p = dat->p, d = dat->d ;
+
+  arma::mat Theta(&x[0]  , p,d);
+  arma::mat M(&x[p*d]    , n,p);
+  arma::vec S(&x[p*(d+n)], n);
+
+  arma::mat Z = dat->O + dat->X * Theta.t() + M;
+  arma::mat A = exp (Z + .5 * S) ;
+  double sigma2 = arma::as_scalar(accu(M % M) / (n * p) + sum(S)/n);
+
+  double objective = accu(A - dat->Y % Z - .5*p*log(S)) - .5*n*p*std::log(sigma2) ; // + dat->KY ;
+
+  arma::vec grd_Theta = vectorise(trans(A - dat->Y) * dat->X);
+  arma::vec grd_M     = vectorise(M/sigma2 + A - dat->Y) ;
+
+  arma::vec grd_S     = .5 * (sum(A,1) -  p * pow(S, -1) - p/sigma2);
+
+  grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
+
+  return objective;
+}
+
 double fn_optim_PLN_weighted(const std::vector<double> &x, std::vector<double> &grad, void *data) {
 
   optim_data *dat = reinterpret_cast<optim_data*>(data);
