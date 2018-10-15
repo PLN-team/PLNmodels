@@ -12,6 +12,7 @@
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field loglik variational lower bound of the loglikelihood
+#' @field loglik_vec element-wise variational lower bound of the loglikelihood
 #' @field BIC variational lower bound of the BIC
 #' @field ICL variational lower bound of the ICL
 #' @field R_squared approximated goodness-of-fit criterion
@@ -24,21 +25,23 @@ PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
       ## constructor
-      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, monitoring=NA) {
+      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, Ji=NA, monitoring=NA) {
         private$Theta      <- Theta
         private$Sigma      <- Sigma
         private$M          <- M
         private$S          <- S
         private$J          <- J
+        private$Ji         <- Ji
         private$monitoring <- monitoring
       },
       ## "setter" function
-      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, R2=NA, monitoring=NA) {
+      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, Ji=NA, R2=NA, monitoring=NA) {
         if (!anyNA(Theta))      private$Theta  <- Theta
         if (!anyNA(Sigma))      private$Sigma  <- Sigma
         if (!anyNA(M))          private$M      <- M
         if (!anyNA(S))          private$S      <- S
         if (!anyNA(J))          private$J      <- J
+        if (!anyNA(Ji))         private$Ji     <- Ji
         if (!anyNA(R2))         private$R2     <- R2
         if (!anyNA(monitoring)) private$monitoring <- monitoring
       }
@@ -50,6 +53,7 @@ PLNfit <-
       M          = NA, # the n x p variational parameters for the means
       R2         = NA, # approximated goodness of fit criterion
       J          = NA, # approximated loglikelihood
+      Ji         = NA, # element-wise approximated loglikelihood
       monitoring = NA  # a list with optimization monitoring quantities
     ),
     ## use active bindings to access private members like fields
@@ -89,7 +93,8 @@ PLNfit <-
       degrees_freedom = function() {
         self$p * self$d + self$p * (self$p + 1)/2
       },
-      loglik    = function() {private$J},
+      loglik     = function() {private$J },
+      loglik_vec = function() {private$Ji},
       BIC       = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
       ICL       = function() {self$BIC - .5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)))},
       R_squared = function() {private$R2},
@@ -103,7 +108,7 @@ isPLNfit <- function(Robject) { inherits(Robject, "PLNfit") }
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
 ## ----------------------------------------------------------------------
-## Should only be accessed By PLNfamily but R6 friend class don't exist
+## Should only be accessed by PLNfamily but R6 friend class doesn't exist
 
 #' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
 #'
