@@ -139,25 +139,32 @@ PLN_param <- function(control, n, p, d, weighted = FALSE, covariance = "full") {
   )
   ctrl[names(control)] <- control
   ctrl
-
 }
 
-PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
-  type <- match.arg(type)
+PLN_param_VE <- function(control, n, p, weighted = FALSE, covariance = "full") {
+  lbvar <- ifelse(is.null(control$lower_bound), 1e-4, control$lower_bound)
+  xavar <- ifelse(is.null(control$xtol_abs)   , 1e-4, control$xtol_abs)
+  ctrl <- list(
+    "algorithm"   = "CCSAQ",
+    "maxeval"     = 10000  ,
+    "maxtime"     = -1     ,
+    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
+    "ftol_abs"    = 0,
+    "xtol_rel"    = 1e-4,
+    "xtol_abs"    = c(rep(0   , p*n), rep(xavar, ifelse(covariance == "spherical", n, n*p))),
+    "lower_bound" = c(rep(-Inf, p*n), rep(lbvar, ifelse(covariance == "spherical", n, n*p))),
+    "trace"       = 1,
+    "weighted"    = weighted  ,
+    "covariance"  = covariance,
+    "inception"   = NULL
+  )
+  ctrl[names(control)] <- control
+  ctrl
+}
 
-  ctrl <- switch(match.arg(type),
-    "init" = list(
-      inception = ifelse(n >= 1.5*p, "PLN", "LM"),
-      ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
-      ftol_abs = 0,
-      xtol_rel = 1e-4,
-      xtol_abs = 1e-4,
-      maxeval  = 10000,
-      method   = "CCSAQ",
-      lbvar    = 1e-4,
-      trace    = 0
-    ),
-    "main" = list(
+
+PLNPCA_param <- function(control, n, p) {
+  ctrl <- list(
       ftol_rel = 1e-8,
       ftol_abs = 0,
       xtol_rel = 1e-4,
@@ -168,12 +175,11 @@ PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
       trace    = 1,
       cores    = 1
     )
-  )
   ctrl[names(control)] <- control
   ctrl
 }
 
-PLNMM_param <- function(control, n, p, type = c("init", "main")) {
+PLNMM_param <- function(control, n, p) {
   type <- match.arg(type)
 
   ctrl <- switch(match.arg(type),
@@ -206,35 +212,20 @@ PLNMM_param <- function(control, n, p, type = c("init", "main")) {
   ctrl
 }
 
-PLNnetwork_param <- function(control, n, p, type = c("init", "main")) {
-  type <- match.arg(type)
-
-  ctrl <- switch(match.arg(type),
-    "init" = list(
-      inception = ifelse(n >= 1.5*p, "PLN", "LM"),
-      ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
-      ftol_abs = 0,
-      xtol_rel = 1e-4,
-      xtol_abs = 1e-4,
-      maxeval  = 10000,
-      method   = "CCSAQ",
-      lbvar    = 1e-4,
-      nPenalties = 30,
-      min.ratio = ifelse(n < 1.5*p, 0.1, 0.05),
-      trace = 0),
-    "main" = list(
-      ftol_out  = 1e-5,
-      maxit_out = 50,
-      penalize.diagonal = FALSE,
-      warm      = FALSE,
-      ftol_abs  = 0,
-      ftol_rel  = 1e-8,
-      xtol_rel  = 1e-4,
-      xtol_abs  = 1e-4,
-      maxeval   = 10000,
-      method    = "CCSAQ",
-      lbvar     = 1e-4,
-      trace = 1)
+PLNnetwork_param <- function(control, n, p) {
+  ctrl <-  list(
+    ftol_out  = 1e-5,
+    maxit_out = 50,
+    penalize.diagonal = FALSE,
+    warm      = FALSE,
+    ftol_abs  = 0,
+    ftol_rel  = 1e-8,
+    xtol_rel  = 1e-4,
+    xtol_abs  = 1e-4,
+    maxeval   = 10000,
+    method    = "CCSAQ",
+    lbvar     = 1e-4,
+    trace = 1
   )
   ctrl[names(control)] <- control
   ctrl

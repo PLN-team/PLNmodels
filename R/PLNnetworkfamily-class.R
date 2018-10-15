@@ -197,9 +197,9 @@ PLNnetworkfamily$set("public", "stability_selection",
   function(subsamples = NULL, control = list(), mc.cores = 1) {
 
     ## define default control parameters for optim and overwrite by user defined parameters
-    ctrl_init <- PLNnetwork_param(list(), private$n, private$p, "init")
+    ctrl_init <- PLN_param(list(), private$n, private$p, private$d)
     ctrl_init$trace <- 0
-    ctrl_main <- PLNnetwork_param(control, n, p, "main")
+    ctrl_main <- PLNnetwork_param(control, n, p)
     ctrl_main$trace <- 0
 
     ## select default subsamples according

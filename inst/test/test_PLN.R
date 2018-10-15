@@ -18,7 +18,7 @@ test_that("Check PLN initialization",  {
 })
 
 test_that("Check PLN weights",  {
-  tol <- 1e-5
+  tol <- 1e-2
 
   ## no weights
   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
@@ -59,13 +59,13 @@ test_that("Test different covariance models",  {
 # )
 # summary(res)
 
-res <- microbenchmark::microbenchmark(
-  uw = PLN(Abundance ~ 1, data = trichoptera, covariance  ="spherical",  control = list(trace = 0)),
-  ## equivalent weigths
-  w  = PLN(Abundance ~ 1, data = trichoptera, covariance  ="spherical", weights = rep(1.0, nrow(trichoptera)), control = list(trace = 0)),
-  times = 20
-)
-summary(res)
+# res <- microbenchmark::microbenchmark(
+#   uw = PLN(Abundance ~ 1, data = trichoptera, covariance  ="spherical",  control = list(trace = 0)),
+#   ## equivalent weigths
+#   w  = PLN(Abundance ~ 1, data = trichoptera, covariance  ="spherical", weights = rep(1.0, nrow(trichoptera)), control = list(trace = 0)),
+#   times = 20
+# )
+# summary(res)
 
 #
 # weights = PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(trace = 0))

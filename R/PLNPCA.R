@@ -7,13 +7,13 @@
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param control a list for controlling the optimization. See details.
 ##' @param ranks a vector of integer containing the successive ranks (or number of axes to be considered)
-##' @param control.init a list for controling the optimization at initialization. See details.
-##' @param control.main a list for controling the main optimization process. See details.
+##' @param control_init a list for controling the optimization at initialization. See details.
+##' @param control_main a list for controling the main optimization process. See details.
 ##'
 ##' @return an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
 ##' a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
 ##'
-##' @details The list of parameters \code{control.init} and \code{control.main} control the optimization of the intialization and the main process, with the following entries
+##' @details The list of parameters \code{control_init} and \code{control_main} control the optimization of the intialization and the main process, with the following entries
 ##' \itemize{
 ##'   \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
 ##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
@@ -35,27 +35,28 @@
 ##' @seealso The classes \code{\link[=PLNPCAfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNPCA <- function(formula, data, subset, ranks = 1:5,  control.init = list(), control.main = list()) {
+PLNPCA <- function(formula, data, subset, ranks = 1:5,  control_init = list(), control_main = list()) {
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl.init <- PLNPCA_param(control.init, nrow(args$Y), ncol(args$Y), "init")
-  ctrl.main <- PLNPCA_param(control.main, nrow(args$Y), ncol(args$Y), "main")
+  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
+  if (is.null(ctrl_init$inception)) ctrl_init$inception <- ifelse(nrow(args$Y) >= 1.5*ncol(args$Y), "PLN", "LM")
+  ctrl_main <- PLNPCA_param(control_main, nrow(args$Y), ncol(args$Y))
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank
-  if (ctrl.main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNPCAfamily$new(ranks = ranks, responses = args$Y, covariates = args$X, offsets = args$O, control = ctrl.init)
+  if (ctrl_main$trace > 0) cat("\n Initialization...")
+  myPLN <- PLNPCAfamily$new(ranks = ranks, responses = args$Y, covariates = args$X, offsets = args$O, control = ctrl_init)
 
   ## Now adjust the PLN models
-  if (ctrl.main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.\n")
-  myPLN$optimize(ctrl.main)
+  if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.\n")
+  myPLN$optimize(ctrl_main)
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
-  if (ctrl.main$trace > 0) cat("\n Post-treatments")
+  if (ctrl_main$trace > 0) cat("\n Post-treatments")
   myPLN$postTreatment()
 
-  if (ctrl.main$trace > 0) cat("\n DONE!\n")
+  if (ctrl_main$trace > 0) cat("\n DONE!\n")
   myPLN
 }

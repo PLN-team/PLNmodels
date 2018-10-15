@@ -50,7 +50,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   args$X <- cbind(covar, design_group)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y))
+  args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X))
 
   ## call to the fitting function
   myPLN <- do.call(PLN_internal, args)

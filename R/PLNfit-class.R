@@ -152,7 +152,10 @@ function(newdata, newOffsets, newCounts, control = list()) {
   ##
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- PLN_param(control, self$n, self$p)
+  ctrl <- PLN_param_VE(control, self$n, self$p)
+  ## TODO
+  ## we should use the same covarance model and weights as in the original model
+
   ## Handle missing offsets and covariates
   ## TODO
 
@@ -161,29 +164,14 @@ function(newdata, newOffsets, newCounts, control = list()) {
 
   ## get an initial point for optimization
   M <- matrix(0, n, p)
-  S <- matrix(10 * ctrl$lbvar, n, p)
+  S <- matrix(10 * max(ctrl$lower_bound), n, p)
   par0 <- c(M, S)
-
-  ## Set lower bounds for variance parameters
-  ctrl$lower_bound <- c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
-  ctrl$xtol_abs <- c(rep(0, n*p), rep(ctrl$xtol_abs, n*p))
-
-  ## Set parameters for the optimization method
-  opts <- list(
-    "algorithm"   = ctrl$method,
-    "maxeval"     = ctrl$maxeval,
-    "ftol_rel"    = ctrl$ftol_rel,
-    "ftol_abs"    = ctrl$ftol_abs,
-    "xtol_rel"    = ctrl$xtol_rel,
-    "xtol_abs"    = ctrl$xtol_abs,
-    "lower_bound" = ctrl$lower_bound
-  )
 
   optim.out <- optimization_VEstep_PLN(
     par0,
     newCounts, newdata, newOffsets,
     self$model_par$Theta, self$model_par$Sigma,
-    opts
+    ctrl
   )
 
   ## ===========================================

@@ -7,15 +7,15 @@
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param control a list for controlling the optimization. See details.
 ##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally
-##' @param control.init a list for controling the optimization at initialization. See details.
-##' @param control.main a list for controling the main optimization process. See details.
+##' @param control_init a list for controling the optimization at initialization. See details.
+##' @param control_main a list for controling the main optimization process. See details.
 ##'
 ##' @return an R6 object with class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}, which contains
 ##' a collection of models with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 ##'
-##' @details The list of parameters \code{control.init} and \code{control.main} control the optimization of the initialization and the main process.
+##' @details The list of parameters \code{control_init} and \code{control_main} control the optimization of the initialization and the main process.
 ##'
-##'  The following entries are shared by both \code{control.init} and \code{control.main} and mainly concern the optimization parameters of NLOPT. There values can be different in \code{control.init} and \code{control.main}
+##'  The following entries are shared by both \code{control_init} and \code{control_main} and mainly concern the optimization parameters of NLOPT. There values can be different in \code{control_init} and \code{control_main}
 ##'  \itemize{
 ##'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
 ##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
@@ -48,28 +48,31 @@
 ##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNnetwork <- function(formula, data, subset, penalties = NULL, control.init = list(), control.main = list()) {
+PLNnetwork <- function(formula, data, subset, penalties = NULL, control_init = list(), control_main = list()) {
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl.init <- PLNnetwork_param(control.init, nrow(args$Y), ncol(args$Y), "init")
-  ctrl.main <- PLNnetwork_param(control.main, nrow(args$Y), ncol(args$Y), "main")
+  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
+  if (is.null(ctrl_init$inception)) ctrl_init$inception <- ifelse(nrow(args$Y) >= 1.5*ncol(args$Y), "PLN", "LM")
+  if (is.null(ctrl_init$nPenalties)) ctrl_init$nPenalties <- 30
+  if (is.null(ctrl_init$min.ratio)) ctrl_init$min.ratio <- ifelse(nrow(args$Y) < 1.5*ncol(args$Y), 0.1, 0.05)
+  ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y))
 
   ## Instantiate the collection of PLN models
-  if (ctrl.main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNnetworkfamily$new(penalties = penalties, responses = args$Y, covariates = args$X, offsets = args$O, control = ctrl.init)
+  if (ctrl_main$trace > 0) cat("\n Initialization...")
+  myPLN <- PLNnetworkfamily$new(penalties = penalties, responses = args$Y, covariates = args$X, offsets = args$O, control = ctrl_init)
 
   ## Main optimization
-  if (ctrl.main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")
-  if (ctrl.main$trace) cat("\tJoint optimization alternating gradient descent and graphical-lasso\n")
-  myPLN$optimize(ctrl.main)
+  if (ctrl_main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")
+  if (ctrl_main$trace) cat("\tJoint optimization alternating gradient descent and graphical-lasso\n")
+  myPLN$optimize(ctrl_main)
 
   ## Post-treatments: compute pseudo-R2
-  if (ctrl.main$trace > 0) cat("\n Post-treatments")
+  if (ctrl_main$trace > 0) cat("\n Post-treatments")
   myPLN$postTreatment()
 
-  if (ctrl.main$trace > 0) cat("\n DONE!\n")
+  if (ctrl_main$trace > 0) cat("\n DONE!\n")
   myPLN
 }

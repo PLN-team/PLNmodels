@@ -5,7 +5,7 @@
 \title{Poisson lognormal model towards sparse network inference}
 \usage{
 PLNnetwork(formula, data, subset, penalties = NULL,
-  control.init = list(), control.main = list())
+  control_init = list(), control_main = list())
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
@@ -16,9 +16,9 @@ PLNnetwork(formula, data, subset, penalties = NULL,
 
 \item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
 
-\item{control.init}{a list for controling the optimization at initialization. See details.}
+\item{control_init}{a list for controling the optimization at initialization. See details.}
 
-\item{control.main}{a list for controling the main optimization process. See details.}
+\item{control_main}{a list for controling the main optimization process. See details.}
 
 \item{control}{a list for controlling the optimization. See details.}
 }
@@ -30,9 +30,9 @@ a collection of models with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 Fit the sparse inverse covariance variant of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \details{
-The list of parameters \code{control.init} and \code{control.main} control the optimization of the initialization and the main process.
+The list of parameters \code{control_init} and \code{control_main} control the optimization of the initialization and the main process.
 
- The following entries are shared by both \code{control.init} and \code{control.main} and mainly concern the optimization parameters of NLOPT. There values can be different in \code{control.init} and \code{control.main}
+ The following entries are shared by both \code{control_init} and \code{control_main} and mainly concern the optimization parameters of NLOPT. There values can be different in \code{control_init} and \code{control_main}
  \itemize{
  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
