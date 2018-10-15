@@ -32,13 +32,14 @@
 ##' @seealso The class  \code{\link[=PLNfit]{PLNfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset model.weights terms
 ##' @export
-PLN <- function(formula, data, subset, weights, control = list()) {
+PLN <- function(formula, data, subset, weights, covariance = c("full", "spherical", "diagonal"), control = list()) {
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
   args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y))
+  args$ctrl$covariance <- match.arg(covariance)
 
   ## call to the fitting function
   res <- do.call(PLN_internal, args)
@@ -53,15 +54,15 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
   ## problem dimensions
   n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
-  ## Check weights
+  ## check weights
   weighted <- ifelse(is.null(w), FALSE, TRUE)
   if (!weighted) w <- rep(1.0,n)
 
   ## get an initial point for optimization
   if (ctrl$trace > 0) cat("\n Initialization...")
   par0 <- initializePLN(Y, X, O, w, ctrl) # Theta, M, S
-
   ## ===========================================
+
   ## OPTIMIZATION
   ##
   par0 <- c(par0$Theta, par0$M, par0$S)
@@ -74,9 +75,10 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
     "ftol_rel"    = ctrl$ftol_rel,
     "ftol_abs"    = ctrl$ftol_abs,
     "xtol_rel"    = ctrl$xtol_rel,
-    "xtol_abs"    = c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, n*p)),
-    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, n*p)),
-    "weighted"    = weighted
+    "xtol_abs"    = c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, ifelse(ctrl$covariance == "spherical", n, n*p))),
+    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, ifelse(ctrl$covariance == "spherical", n, n*p))),
+    "weighted"    = weighted,
+    "covariance"  = ctrl$covariance
   )
 
   optim_out <- optimization_PLN(par0, Y, X, O, w, opts)
@@ -128,7 +130,11 @@ initializePLN <- function(Y, X, O, w, control) {
     LMs   <- lapply(1:p, function(j) lm.wfit(X, log(1 + Y[,j]), w, offset =  O[,j]) )
     Theta <- do.call(rbind, lapply(LMs, coefficients))
     M     <- do.call(cbind, lapply(LMs, residuals))
-    S <- matrix(10 * control$lbvar, n, p)
+    if (control$covariance == "spherical") {
+      S <- matrix(10 * control$lbvar, n, 1)
+    } else {
+      S <- matrix(10 * control$lbvar, n, p)
+    }
     init <- list(Theta = Theta, M = M, S = S)
   }
 

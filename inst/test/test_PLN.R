@@ -31,6 +31,14 @@ test_that("Check PLN weights",  {
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
+test_that("Test different covariance models",  {
+  tol <- 1e-4
+
+  model_full <- PLN(Abundance ~ 1, data = trichoptera, covariance = "full", control = list(trace = 0))
+  model_spherical <- PLN(Abundance ~ 1, data = trichoptera, covariance = "spherical", control = list(trace = 0))
+
+})
+
 ## timings (weight/no weights -> 6/7% slower)
 # res <- microbenchmark::microbenchmark(
 #    noweights = PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0)),

@@ -49,7 +49,7 @@ PLNfit <-
     private = list(
       Theta      = NA, # the p x d model parameters for the covariable
       Sigma      = NA, # the p x p covariance matrix
-      S          = NA, # the n x p variational parameters for the variances
+      S          = NA, # the variational parameters for the variances
       M          = NA, # the n x p variational parameters for the means
       R2         = NA, # approximated goodness of fit criterion
       J          = NA, # approximated loglikelihood
@@ -62,7 +62,7 @@ PLNfit <-
       q = function() {ncol(private$M)},
       p = function() {nrow(private$Theta)},
       d = function() {ncol(private$Theta)},
-    ## model_par and var_par allow write access for bootstrapping purposes
+      ## model_par and var_par allow write access for bootstrapping purposes
       model_par = function(value) {
         if (!missing(value)) {
           if (is.list(value) & all(names(value) %in% c("Sigma", "Theta"))) {
