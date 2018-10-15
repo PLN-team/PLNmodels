@@ -17,10 +17,11 @@
 ##'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
 ##'  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
 ##'  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
-##'  \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
+##'  \item{"maxtime"}{stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)}
+##'  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
 ##'     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
-##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "MMA".}
-##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
+##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
+##'  \item{"lower_bound"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-4.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 ##'  \item{"inception"}{Set up the intialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previsous fit), which often speed up the inference.}
 ##' }
@@ -28,18 +29,20 @@
 ##' @rdname PLN
 ##' @include PLNfit-class.R
 ##' @examples
-##' ## See the vignette
+##' data(trichoptera)
+##' myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 ##' @seealso The class  \code{\link[=PLNfit]{PLNfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset model.weights terms
 ##' @export
-PLN <- function(formula, data, subset, weights, covariance = c("full", "spherical", "diagonal"), control = list()) {
+PLN <- function(formula, data, subset, weights, covariance = c("full", "spherical"), control = list()) {
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
-  ## define default control parameters for optim and overwrite by user defined parameters
-  args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y))
-  args$ctrl$covariance <- match.arg(covariance)
+  ## define default control parameters for optim and eventually overwrite them by user-defined parameters
+  args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X),
+    weighted = !missing(weights), covariance = match.arg(covariance)
+  )
 
   ## call to the fitting function
   res <- do.call(PLN_internal, args)
@@ -51,46 +54,25 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
   ## ===========================================
   ## INITIALIZATION
   ##
-  ## problem dimensions
-  n  <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-
-  ## check weights
-  weighted <- ifelse(is.null(w), FALSE, TRUE)
-  if (!weighted) w <- rep(1.0,n)
-
-  ## get an initial point for optimization
   if (ctrl$trace > 0) cat("\n Initialization...")
   par0 <- initializePLN(Y, X, O, w, ctrl) # Theta, M, S
-  ## ===========================================
 
+  ## ===========================================
   ## OPTIMIZATION
   ##
-  par0 <- c(par0$Theta, par0$M, par0$S)
-
-  if (ctrl$trace > 0) cat("\n Adjusting the standard PLN model")
-  if (ctrl$trace > 0 & weighted) cat(" (weigthed)")
-  opts <- list(
-    "algorithm"   = ctrl$method,
-    "maxeval"     = ctrl$maxeval,
-    "ftol_rel"    = ctrl$ftol_rel,
-    "ftol_abs"    = ctrl$ftol_abs,
-    "xtol_rel"    = ctrl$xtol_rel,
-    "xtol_abs"    = c(rep(0, p*d), rep(0, p*n), rep(ctrl$xtol_abs, ifelse(ctrl$covariance == "spherical", n, n*p))),
-    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(ctrl$lbvar, ifelse(ctrl$covariance == "spherical", n, n*p))),
-    "weighted"    = weighted,
-    "covariance"  = ctrl$covariance
-  )
-
-  optim_out <- optimization_PLN(par0, Y, X, O, w, opts)
+  if (ctrl$trace > 0) cat("\n Adjusting PLN model with", ctrl$covariance,"covariance model")
+  if (ctrl$trace > 0 & ctrl$weighted) cat(" (with observation weigths)")
+  optimizer <- switch(ctrl$covariance, "spherical" = optimization_PLN_spherical, optimization_PLN)
+  optim_out <- optimizer(unlist(par0), Y, X, O, w, ctrl)
   optim_out$message <- statusToMessage(optim_out$status)
+
   ## ===========================================
   ## POST-TREATMENT
   ##
-
-  rownames(optim_out$Theta) <- colnames(Y)
-  colnames(optim_out$Theta) <- colnames(X)
+  rownames(optim_out$Theta) <- colnames(Y); colnames(optim_out$Theta) <- colnames(X)
   rownames(optim_out$Sigma) <- colnames(optim_out$Sigma) <- colnames(Y)
-  dimnames(optim_out$S) <- dimnames(optim_out$M) <- dimnames(Y)
+  dimnames(optim_out$M) <- dimnames(Y)
+  rownames(optim_out$S) <- rownames(Y)
 
   myPLN <- PLNfit$new(
     Theta = optim_out$Theta,
@@ -131,9 +113,9 @@ initializePLN <- function(Y, X, O, w, control) {
     Theta <- do.call(rbind, lapply(LMs, coefficients))
     M     <- do.call(cbind, lapply(LMs, residuals))
     if (control$covariance == "spherical") {
-      S <- matrix(10 * control$lbvar, n, 1)
+      S <- matrix(10 * max(control$lower_bound), n, 1)
     } else {
-      S <- matrix(10 * control$lbvar, n, p)
+      S <- matrix(10 * max(control$lower_bound), n, p)
     }
     init <- list(Theta = Theta, M = M, S = S)
   }

@@ -43,7 +43,11 @@ extract_model <- function(call, envir) {
   O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
   w <- model.weights(frame)
-  if (!is.null(w)) stopifnot(all(w > 0) && length(w) == nrow(Y))
+  if (is.null(w)) {
+    w <- rep(1.0, nrow(Y))
+  } else {
+    stopifnot(all(w > 0) && length(w) == nrow(Y))
+  }
 
   list(Y = Y, X = X, O = O, w = w)
 }
@@ -115,20 +119,27 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths
 ## -----------------------------------------------------------------
 ##  Series of setter to default parameters for user's main functions
 ##
-PLN_param <- function(control, n, p) {
+## should be ready to pass to nlopt optimizer
+PLN_param <- function(control, n, p, d, weighted = FALSE, covariance = "full") {
+  lbvar <- ifelse(is.null(control$lower_bound), 1e-4, control$lower_bound)
+  xavar <- ifelse(is.null(control$xtol_abs)   , 1e-4, control$xtol_abs)
   ctrl <- list(
-    ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
-    ftol_abs  = 0,
-    xtol_rel  = 1e-4,
-    xtol_abs  = 1e-4,
-    maxeval   = 10000,
-    method    = "CCSAQ",
-    lbvar     = 1e-4,
-    trace     = 1,
-    inception = NULL
+    "algorithm"   = "CCSAQ",
+    "maxeval"     = 10000  ,
+    "maxtime"     = -1     ,
+    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
+    "ftol_abs"    = 0,
+    "xtol_rel"    = 1e-4,
+    "xtol_abs"    = c(rep(0   , p*d), rep(0   , p*n), rep(xavar, ifelse(covariance == "spherical", n, n*p))),
+    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(lbvar, ifelse(covariance == "spherical", n, n*p))),
+    "trace"       = 1,
+    "weighted"    = weighted  ,
+    "covariance"  = covariance,
+    "inception"   = NULL
   )
   ctrl[names(control)] <- control
   ctrl
+
 }
 
 PLNPCA_param <- function(control, n, p, type = c("init", "main")) {

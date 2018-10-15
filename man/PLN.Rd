@@ -4,7 +4,8 @@
 \alias{PLN}
 \title{Poisson lognormal model}
 \usage{
-PLN(formula, data, subset, weights, control = list())
+PLN(formula, data, subset, weights, covariance = c("full", "spherical",
+  "diagonal"), control = list())
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
