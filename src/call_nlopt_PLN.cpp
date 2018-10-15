@@ -5,7 +5,7 @@
 
 #include "utils_optim.h"
 
-double fn_optim_PLN(const std::vector<double> &x, std::vector<double> &grad, void *data) {
+double fn_optim_PLN(const stdvec &x, stdvec &grad, void *data) {
 
   optim_data *dat = reinterpret_cast<optim_data*>(data);
   dat->iterations++; // increase number of iterations
@@ -31,7 +31,7 @@ double fn_optim_PLN(const std::vector<double> &x, std::vector<double> &grad, voi
   return objective;
 }
 
-double fn_optim_PLN_spherical(const std::vector<double> &x, std::vector<double> &grad, void *data) {
+double fn_optim_PLN_spherical(const stdvec &x, stdvec &grad, void *data) {
 
   optim_data *dat = reinterpret_cast<optim_data*>(data);
   dat->iterations++; // increase number of iterations
@@ -58,10 +58,10 @@ double fn_optim_PLN_spherical(const std::vector<double> &x, std::vector<double> 
   return objective;
 }
 
-double fn_optim_PLN_weighted(const std::vector<double> &x, std::vector<double> &grad, void *data) {
+double fn_optim_PLN_weighted(const stdvec &x, stdvec &grad, void *data) {
 
   optim_data *dat = reinterpret_cast<optim_data*>(data);
-  dat->iterations++; // increase number of iterations
+  dat->iterations++;
 
   int n = dat->n, p = dat->p, d = dat->d ;
 
@@ -98,17 +98,16 @@ Rcpp::List optimization_PLN(
   optim_data my_optim_data(Y, X, O, w);
 
   // Initialize the NLOPT optimizer
-  nlopt::opt opt = initNLOPT(par.n_elem, options) ;
-
-  // Perform the optimization
+  nlopt::opt optimizer = initNLOPT(par.n_elem, options) ;
   double f_optimized ;
   stdvec x_optimized = arma::conv_to<stdvec>::from(par);
-  if (Rcpp::as<bool>(options["weighted"])) {
-    opt.set_min_objective(fn_optim_PLN_weighted, &my_optim_data);
-  } else {
-    opt.set_min_objective(fn_optim_PLN, &my_optim_data);
-  }
-  nlopt::result status = opt.optimize(x_optimized, f_optimized);
+  auto &fn_optim = fn_optim_PLN ;
+  if (Rcpp::as<bool>(options["weighted"])) {auto &fn_optim = fn_optim_PLN_weighted ; }
+  // if (Rcpp::as<std::string>(options["model"]) == "homoscedastic") {auto &fn_optim = fn_optim_PLN_spherical ; }
+
+  // Perform the optimization
+  optimizer.set_min_objective(fn_optim, &my_optim_data);
+  nlopt::result status = optimizer.optimize(x_optimized, f_optimized);
 
   // Format the output
   int n = Y.n_rows, p = Y.n_cols, d = X.n_cols;
@@ -124,6 +123,7 @@ Rcpp::List optimization_PLN(
   arma::vec loglik = sum(Y % Z - A + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) +
     + .5 * real(log_det(Omega)) - logfact(Y) + .5 * p;
 
+  // Output returned to R
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
       Rcpp::Named("objective" ) = f_optimized + my_optim_data.KY ,

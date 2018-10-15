@@ -4,7 +4,7 @@ library(testthat)
 data("trichoptera")
 
 test_that("Check PLN initialization",  {
-  tol <- 1e-5
+  tol <- 1e-4
 
   ## use default initialization (LM)
   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
