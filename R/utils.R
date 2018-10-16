@@ -181,54 +181,23 @@ PLNPCA_param <- function(control) {
   ctrl
 }
 
-
-PLNMM_param <- function(control, n, p) {
-  type <- match.arg(type)
-
-  ctrl <- switch(match.arg(type),
-    "init" = list(
-      inception = ifelse(n >= 1.5*p, "PLN", "LM"),
-      ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
-      ftol_abs = 0,
-      xtol_rel = 1e-4,
-      xtol_abs = 1e-4,
-      maxeval  = 10000,
-      method   = "CCSAQ",
-      lbvar    = 1e-4,
-      trace    = 0
-    ),
-    "main" = list(
-      ftol_out  = 1e-5,
-      maxit_out = 50,
-      ftol_rel = 1e-8,
-      ftol_abs = 0,
-      xtol_rel = 1e-4,
-      xtol_abs = 1e-4,
-      maxeval  = 10000,
-      method   = "CCSAQ",
-      lbvar    = 1e-4,
-      trace    = 1,
-      cores    = 1
-    )
-  )
-  ctrl[names(control)] <- control
-  ctrl
-}
-
-PLNnetwork_param <- function(control, n, p) {
+PLNnetwork_param <- function(control, n, p, d) {
+  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
   ctrl <-  list(
-    ftol_out  = 1e-5,
-    maxit_out = 50,
-    penalize.diagonal = FALSE,
-    warm      = FALSE,
-    ftol_abs  = 0,
-    ftol_rel  = 1e-8,
-    xtol_rel  = 1e-4,
-    xtol_abs  = 1e-4,
-    maxeval   = 10000,
-    method    = "CCSAQ",
-    lbvar     = 1e-4,
-    trace = 1
+    "ftol_out"  = 1e-5,
+    "maxit_out" = 50,
+    "penalize_diagonal" = FALSE,
+    "warm"        = FALSE,
+    "algorithm"   = "CCSAQ",
+    "ftol_rel"    = 1e-8    ,
+    "ftol_abs"    = 0       ,
+    "xtol_rel"    = 1e-4    ,
+    "xtol_abs"    = c(rep(0, p*d), rep(0, n*p), rep(xtol_abs, n*p)),
+    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, n*p), rep(lower_bound, n*p)),
+    "maxeval"     = 10000   ,
+    "maxtime"     = -1      ,
+    "trace"       = 1
   )
   ctrl[names(control)] <- control
   ctrl

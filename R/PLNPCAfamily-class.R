@@ -39,7 +39,6 @@ PLNPCAfamily$set("public", "initialize",
   if (control$covariance == "full")
     svdS     <- svd(self$inception$var_par$S, nu=max(ranks), nv=max(ranks))
 
-
   ## instantiate as many models as ranks
   self$models <- lapply(ranks, function(q){
     if (control$covariance == "full") {

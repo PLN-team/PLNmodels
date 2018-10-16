@@ -6,13 +6,13 @@
 ##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param ranks a vector of integer containing the successive ranks (or number of axes to be considered)
-##' @param control_init a list for controling the optimization at initialization. See details.
+##' @param control_init a list for controling the optimization at initialization.  See details of function \code{\link[=PLN]{PLN}}.
 ##' @param control_main a list for controling the main optimization process. See details.
 ##'
 ##' @return an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains
 ##' a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
 ##'
-##' @details The list of parameters \code{control_init} and \code{control_main} control the optimization of the intialization and the main process, with the following entries
+##' @details The list of parameters \code{control_main} controls the optimization of the main process, with the following entries
 ##' \itemize{
 ##'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8}
 ##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0}

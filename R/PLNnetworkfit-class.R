@@ -22,7 +22,7 @@ PLNnetworkfit <-
     inherit = PLNfit,
     public  = list(
       initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, monitoring=list(objective = NA)) {
-        super$initialize(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, monitoring = monitoring)
+        super$initialize(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, covariance = "full", monitoring = monitoring)
         private$lambda <- penalty
         private$Omega  <- Omega
       },
