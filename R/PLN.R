@@ -74,12 +74,13 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
   rownames(optim_out$S) <- rownames(Y)
 
   myPLN <- PLNfit$new(
-    Theta = optim_out$Theta,
-    Sigma = optim_out$Sigma,
-    M     = optim_out$M,
-    S     = optim_out$S,
-    J     = -optim_out$objective,
-    Ji    = optim_out$loglik,
+    Theta      = optim_out$Theta,
+    Sigma      = optim_out$Sigma,
+    M          = optim_out$M,
+    S          = optim_out$S,
+    J          = -optim_out$objective,
+    Ji         = optim_out$loglik,
+    covariance = ctrl$covariance,
     monitoring = optim_out[c("objective", "iterations", "status", "message")]
   )
 
@@ -99,9 +100,14 @@ initializePLN <- function(Y, X, O, w, control) {
   ## User defined (from a previous fit, for instance)
   if (isPLNfit(control$inception)) {
     if (control$trace > 1) cat("\n User defined inceptive PLN model")
-    stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))),
-              isTRUE(all.equal(dim(control$inception$var_par$M), c(n,p))),
-              isTRUE(all.equal(dim(control$inception$var_par$S), c(n,p))))
+    stopifnot(
+      isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))),
+      isTRUE(all.equal(dim(control$inception$var_par$M), c(n,p)))
+    )
+    if (control$inception$model == "full")
+      stopifnot(isTRUE(all.equal(dim(control$inception$var_par$S), c(n,p))))
+    if (control$inception$model == "spherical")
+      stopifnot(isTRUE(all.equal(dim(control$inception$var_par$S), c(n,1))))
     init <- list(Theta = control$inception$model_par$Theta,
                  M     = control$inception$var_par$M,
                  S     = control$inception$var_par$S)

@@ -25,13 +25,14 @@ PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
       ## constructor
-      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, Ji=NA, monitoring=NA) {
+      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, Ji=NA, covariance=NA, monitoring=NA) {
         private$Theta      <- Theta
         private$Sigma      <- Sigma
         private$M          <- M
         private$S          <- S
         private$J          <- J
         private$Ji         <- Ji
+        private$covariance <- covariance
         private$monitoring <- monitoring
       },
       ## "setter" function
@@ -54,6 +55,7 @@ PLNfit <-
       R2         = NA, # approximated goodness of fit criterion
       J          = NA, # approximated loglikelihood
       Ji         = NA, # element-wise approximated loglikelihood
+      covariance = NA, # a string describing the covariance model
       monitoring = NA  # a list with optimization monitoring quantities
     ),
     ## use active bindings to access private members like fields
@@ -89,9 +91,10 @@ PLNfit <-
         }
         list(M = private$M, S = private$S)
       },
+      model = function(){private$covariance},
       optim_par = function() {private$monitoring},
       degrees_freedom = function() {
-        self$p * self$d + self$p * (self$p + 1)/2
+        self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "spherical" = self$p)
       },
       loglik     = function() {private$J },
       loglik_vec = function() {private$Ji},
@@ -154,7 +157,7 @@ function(newdata, newOffsets, newCounts, control = list()) {
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- PLN_param_VE(control, self$n, self$p)
   ## TODO
-  ## we should use the same covarance model and weights as in the original model
+  ## we should use the same covarance model and weights as in the original model
 
   ## Handle missing offsets and covariates
   ## TODO
@@ -162,6 +165,7 @@ function(newdata, newOffsets, newCounts, control = list()) {
   ## Problem dimension
   n <- nrow(newCounts); p <- ncol(newCounts)
 
+  ## TODO Handle covariance model
   ## get an initial point for optimization
   M <- matrix(0, n, p)
   S <- matrix(10 * max(ctrl$lower_bound), n, p)
@@ -285,7 +289,7 @@ PLNfit$set("public", "plot",
 
 PLNfit$set("public", "show",
 function(model = "A Poisson Lognormal fit\n") {
-  cat(model)
+  cat(model,"with",self$model,"covariance model.")
   cat("==================================================================\n")
   print(as.data.frame(t(self$criteria), row.names = ""))
   cat("==================================================================\n")
