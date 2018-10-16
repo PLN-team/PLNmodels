@@ -100,29 +100,34 @@ initializePLN <- function(Y, X, O, w, control) {
   ## User defined (from a previous fit, for instance)
   if (isPLNfit(control$inception)) {
     if (control$trace > 1) cat("\n User defined inceptive PLN model")
-    stopifnot(
-      isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))),
-      isTRUE(all.equal(dim(control$inception$var_par$M), c(n,p)))
-    )
+    ## check the dimensions of the inceptive model
+    stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))))
+    stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
     if (control$inception$model == "full")
       stopifnot(isTRUE(all.equal(dim(control$inception$var_par$S), c(n,p))))
     if (control$inception$model == "spherical")
       stopifnot(isTRUE(all.equal(dim(control$inception$var_par$S), c(n,1))))
+    ## allow initialization of a full covariance model from a spherical one by replicating the covariance
+    if (control$inception$model == "spherical") {
+      if (control$covariance == "spherical")
+        S0 <- control$inception$var_par$S
+      else
+        S0 <- matrix(as.numeric(control$inception$var_par$S), n, p)
+    } else {
+        S0 <- control$inception$var_par$S
+    }
     init <- list(Theta = control$inception$model_par$Theta,
                  M     = control$inception$var_par$M,
-                 S     = control$inception$var_par$S)
-  ## Default LM + log transformation
+                 S     = S0)
+
+    ## Default LM + log transformation
   } else {
     if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
     LMs   <- lapply(1:p, function(j) lm.wfit(X, log(1 + Y[,j]), w, offset =  O[,j]) )
     Theta <- do.call(rbind, lapply(LMs, coefficients))
     M     <- do.call(cbind, lapply(LMs, residuals))
-    if (control$covariance == "spherical") {
-      S <- matrix(10 * max(control$lower_bound), n, 1)
-    } else {
-      S <- matrix(10 * max(control$lower_bound), n, p)
-    }
-    init <- list(Theta = Theta, M = M, S = S)
+    d_cov <- ifelse(control$covariance == "spherical", 1, p)
+    init <- list(Theta = Theta, M = M, S = matrix(10 * max(control$lower_bound), n, d_cov))
   }
 
   init
