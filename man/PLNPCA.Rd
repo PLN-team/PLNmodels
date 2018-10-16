@@ -16,7 +16,7 @@ PLNPCA(formula, data, subset, ranks = 1:5, control_init = list(),
 
 \item{ranks}{a vector of integer containing the successive ranks (or number of axes to be considered)}
 
-\item{control_init}{a list for controling the optimization at initialization. See details.}
+\item{control_init}{a list for controling the optimization at initialization.  See details of function \code{\link[=PLN]{PLN}}.}
 
 \item{control_main}{a list for controling the main optimization process. See details.}
 }
@@ -28,7 +28,7 @@ a collection of models with class \code{\link[=PLNPCAfit]{PLPCAfit}}
 Fit the PCA variants of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \details{
-The list of parameters \code{control_init} and \code{control_main} control the optimization of the intialization and the main process, with the following entries
+The list of parameters \code{control_main} controls the optimization of the main process, with the following entries
 \itemize{
  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8}
  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0}

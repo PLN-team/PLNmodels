@@ -31,7 +31,7 @@ else
 fi
 
 # For debugging
-echo "Using NLOPT_LIBS=$NLOPT_LIBS"
+# echo "Using NLOPT_LIBS=$NLOPT_LIBS"
 
 # Test for linblopt
 echo "#include $PKG_TEST_HEADER" >/dev/null 2>&1

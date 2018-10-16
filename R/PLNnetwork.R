@@ -32,12 +32,13 @@
 ##' The list of parameters \code{control_init} controls the optimization process in the initialization and in the function \code{\link[=PLN]{PLN}}, plus two additional parameters:
 ##' \itemize{
 ##'  \item{"nPenalties"}{an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non NULL}
-##'  \item{"min.ratio"}{the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min.ratio}. Default is 0.01 for high dimensional problem, 0.001 otherwise.}
+##'  \item{"min.ratio"}{the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min.ratio}. Default is 0.1.}
 ##' }
 ##'
 ##' @rdname PLNnetwork
 ##' @examples
-##' ## See the vignette
+##' data(trichoptera)
+##' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 ##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
