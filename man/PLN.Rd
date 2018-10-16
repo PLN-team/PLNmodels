@@ -26,19 +26,19 @@ Fit the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for
 \details{
 The parameter \code{control} is a list controlling the optimization with the following entries
 \itemize{
- \item{"covariance"}{chararcter setting the model for the covariance matrix. Either "full" or "spherical". Default is "full".}
+ \item{"covariance"}{character setting the model for the covariance matrix. Either "full" or "spherical". Default is "full".}
  \item{"trace"}{integer for verbosity.}
  \item{"inception"}{Set up the intialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previsous fit), which often speed up the inference.}
- \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6}
- \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6}
+ \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.}
+ \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0}
  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
+ \item{"lower_bound"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-4.}
  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
  \item{"maxtime"}{stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)}
  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
- \item{"lower_bound"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-4.}
 }
 }
 \examples{

@@ -164,21 +164,23 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE, covariance = "full") {
 }
 
 
-PLNPCA_param <- function(control, n, p) {
+PLNPCA_param <- function(control) {
   ctrl <- list(
-      ftol_rel = 1e-8,
-      ftol_abs = 0,
-      xtol_rel = 1e-4,
-      xtol_abs = 1e-4,
-      maxeval  = 10000,
-      method   = "CCSAQ",
-      lbvar    = 1e-4,
-      trace    = 1,
-      cores    = 1
+      "algorithm"   = "CCSAQ",
+      "ftol_rel"    = 1e-8    ,
+      "ftol_abs"    = 0       ,
+      "xtol_rel"    = 1e-4    ,
+      "xtol_abs"    = 1e-4,
+      "lower_bound" = 1e-4,
+      "maxeval"     = 10000   ,
+      "maxtime"     = -1      ,
+      "trace"       = 1       ,
+      "cores"       = 1
     )
   ctrl[names(control)] <- control
   ctrl
 }
+
 
 PLNMM_param <- function(control, n, p) {
   type <- match.arg(type)

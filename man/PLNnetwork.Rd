@@ -16,7 +16,7 @@ PLNnetwork(formula, data, subset, penalties = NULL,
 
 \item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
 
-\item{control_init}{a list for controling the optimization at initialization. See details.}
+\item{control_init}{a list for controling the optimization of the PLN model used at initialization. See details of function \code{\link[=PLN]{PLN}}.}
 
 \item{control_main}{a list for controling the main optimization process. See details.}
 
@@ -30,7 +30,7 @@ a collection of models with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 Fit the sparse inverse covariance variant of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \details{
-The list of parameters \code{control_init} and \code{control_main} control the optimization of the initialization and the main process.
+The list of parameters \code{control_main} control the optimization of the main process.
 
  The following entries are shared by both \code{control_init} and \code{control_main} and mainly concern the optimization parameters of NLOPT. There values can be different in \code{control_init} and \code{control_main}
  \itemize{
@@ -39,9 +39,10 @@ The list of parameters \code{control_init} and \code{control_main} control the o
  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
- \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
+ \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
     "VAR1", "VAR2". See NLOPTR documentation for further details. Default is "MMA".}
+ \item{"cores"}{integer for number of cores used. Default is 1.}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 }
 

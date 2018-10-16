@@ -7,13 +7,13 @@
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param control a list for controlling the optimization. See details.
 ##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally
-##' @param control_init a list for controling the optimization at initialization. See details.
+##' @param control_init a list for controling the optimization of the PLN model used at initialization. See details of function \code{\link[=PLN]{PLN}}.
 ##' @param control_main a list for controling the main optimization process. See details.
 ##'
 ##' @return an R6 object with class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}, which contains
 ##' a collection of models with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 ##'
-##' @details The list of parameters \code{control_init} and \code{control_main} control the optimization of the initialization and the main process.
+##' @details The list of parameters \code{control_main} control the optimization of the main process.
 ##'
 ##'  The following entries are shared by both \code{control_init} and \code{control_main} and mainly concern the optimization parameters of NLOPT. There values can be different in \code{control_init} and \code{control_main}
 ##'  \itemize{
@@ -22,9 +22,10 @@
 ##'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
 ##'  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
 ##'  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
-##'  \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
+##'  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
 ##'     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
 ##'     "VAR1", "VAR2". See NLOPTR documentation for further details. Default is "MMA".}
+##'  \item{"cores"}{integer for number of cores used. Default is 1.}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 ##' }
 ##'

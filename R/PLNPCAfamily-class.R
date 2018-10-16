@@ -35,17 +35,25 @@ PLNPCAfamily$set("public", "initialize",
 
   if (control$trace > 0) cat("\n Perform SVD to initialize other parameters...")
   svdM     <- svd(self$inception$var_par$M, nu=max(ranks), nv=max(ranks))
-  svdS     <- svd(self$inception$var_par$S, nu=max(ranks), nv=max(ranks))
   svdSigma <- svd(self$inception$model_par$Sigma, nu=max(ranks), nv=0)
+  if (control$covariance == "full")
+    svdS     <- svd(self$inception$var_par$S, nu=max(ranks), nv=max(ranks))
+
 
   ## instantiate as many models as ranks
   self$models <- lapply(ranks, function(q){
+    if (control$covariance == "full") {
+      S0 <- svdS$u[, 1:q, drop=FALSE] %*% diag(svdS$d[1:q], nrow=q, ncol=q) %*% t(svdS$v[1:q, 1:q, drop=FALSE])
+    }
+    else {
+      S0 <- matrix(mean(self$inception$var_par$S), private$n, q)
+    }
     model <- PLNPCAfit$new(
       Theta = self$inception$model_par$Theta,
       Sigma = svdSigma$u[, 1:q, drop=FALSE] %*% diag(svdSigma$d[1:q],nrow=q, ncol=q) %*% t(svdSigma$u[, 1:q, drop=FALSE]),
       B = svdSigma$u[, 1:q, drop=FALSE] %*% sqrt(diag(svdSigma$d[1:q],nrow=q, ncol=q)),
       M = svdM$u[, 1:q, drop=FALSE] %*% diag(svdM$d[1:q], nrow=q, ncol=q) %*% t(svdM$v[1:q, 1:q, drop=FALSE]),
-      S = svdS$u[, 1:q, drop=FALSE] %*% diag(svdS$d[1:q], nrow=q, ncol=q) %*% t(svdS$v[1:q, 1:q, drop=FALSE])
+      S = S0
     )
     return(model)
   })
@@ -61,7 +69,7 @@ PLNPCAfamily$set("public", "optimize",
       model$model_par$Theta  ,
       model$model_par$B,
       model$var_par$M,
-      pmax(model$var_par$S,10*control$lbvar)
+      pmax(model$var_par$S,10*control$lower_bound)
     )
 
     ## ===========================================
@@ -77,19 +85,13 @@ PLNPCAfamily$set("public", "optimize",
     }
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-    opts <- list(
-      "algorithm"   = control$method,
-      "maxeval"     = control$maxeval,
-      "ftol_rel"    = control$ftol_rel,
-      "ftol_abs"    = control$ftol_abs,
-      "xtol_rel"    = control$xtol_rel,
-      "xtol_abs"    = c(rep(0, private$p*(private$d + model$rank) + private$n * model$rank),
-                        rep(control$xtol_abs, private$n*model$rank)),
-      "lower_bound" = c(rep(-Inf, private$p*private$d)  , # Theta
+    opts <- control
+    opts$xtol_abs <- c(rep(0, private$p*(private$d + model$rank) + private$n * model$rank),
+                        rep(control$xtol_abs, private$n*model$rank))
+    opts$lower_bound <- c(rep(-Inf, private$p*private$d), # Theta
                         rep(-Inf, private$p*model$rank) , # B
                         rep(-Inf, private$n*model$rank) , # M
-                        rep(control$lbvar,private$n*model$rank)) # S
-    )
+                        rep(control$lower_bound,private$n*model$rank)) # S
     optim_out <- optimization_PLNPCA(par0, self$responses, self$covariates, self$offsets, model$rank, opts)
 
     ## ===========================================
