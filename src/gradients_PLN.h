@@ -12,4 +12,8 @@ double fn_optim_PLN_spherical(const stdvec &x, stdvec &grad, void *data) ;
 
 double fn_optim_PLN_weighted_spherical(const stdvec &x, stdvec &grad, void *data) ;
 
+double fn_optim_PLN_diagonal(const stdvec &x, stdvec &grad, void *data) ;
+
+double fn_optim_PLN_weighted_diagonal(const stdvec &x, stdvec &grad, void *data) ;
+
 #endif

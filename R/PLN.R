@@ -61,7 +61,10 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
   ##
   if (ctrl$trace > 0) cat("\n Adjusting PLN model with", ctrl$covariance,"covariance model")
   if (ctrl$trace > 0 & ctrl$weighted) cat(" (with observation weigths)")
-  optimizer <- switch(ctrl$covariance, "spherical" = optimization_PLN_spherical, optimization_PLN)
+  optimizer <- switch(ctrl$covariance,
+          "spherical" = optimization_PLN_spherical,
+          "diagonal"  = optimization_PLN_diagonal ,
+          optimization_PLN)
   optim_out <- optimizer(unlist(par0), Y, X, O, w, ctrl)
   optim_out$message <- statusToMessage(optim_out$status)
 

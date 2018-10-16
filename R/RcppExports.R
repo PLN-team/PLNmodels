@@ -5,6 +5,10 @@ optimization_PLN <- function(par, Y, X, O, w, options) {
     .Call('_PLNmodels_optimization_PLN', PACKAGE = 'PLNmodels', par, Y, X, O, w, options)
 }
 
+optimization_PLN_diagonal <- function(par, Y, X, O, w, options) {
+    .Call('_PLNmodels_optimization_PLN_diagonal', PACKAGE = 'PLNmodels', par, Y, X, O, w, options)
+}
+
 optimization_PLN_spherical <- function(par, Y, X, O, w, options) {
     .Call('_PLNmodels_optimization_PLN_spherical', PACKAGE = 'PLNmodels', par, Y, X, O, w, options)
 }
