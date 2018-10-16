@@ -4,8 +4,7 @@
 \alias{PLN}
 \title{Poisson lognormal model}
 \usage{
-PLN(formula, data, subset, weights, covariance = c("full", "spherical"),
-  control = list())
+PLN(formula, data, subset, weights, control = list())
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
@@ -27,6 +26,9 @@ Fit the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for
 \details{
 The parameter \code{control} is a list controlling the optimization with the following entries
 \itemize{
+ \item{"covariance"}{chararcter setting the model for the covariance matrix. Either "full" or "spherical". Default is "full".}
+ \item{"trace"}{integer for verbosity.}
+ \item{"inception"}{Set up the intialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previsous fit), which often speed up the inference.}
  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6}
  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6}
  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
@@ -37,8 +39,6 @@ The parameter \code{control} is a list controlling the optimization with the fol
     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
  \item{"lower_bound"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-4.}
- \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
- \item{"inception"}{Set up the intialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previsous fit), which often speed up the inference.}
 }
 }
 \examples{

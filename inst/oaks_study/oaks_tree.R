@@ -5,6 +5,7 @@ load("inst/oaks_study/oaks_alphitoides.RData")
 
 ## simple PLN
 myPLN <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks)
+myPLN_spherical <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, covariance = "spherical")
 
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks)
@@ -14,7 +15,7 @@ myLDA_orientation <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), gro
 myLDA_orientation$plot_LDA()
 
 ## Dimension reduction with PCA
-myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control.main = list(cores = 10)) # about 50 sec.
+myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control_main = list(cores = 10)) # about 50 sec.
 myPLNPCA <- myPLNPCAs$getBestModel('ICL')
 myPLNPCA$plot_PCA(cols.ind = oaks$treeStatus)
 
@@ -23,9 +24,3 @@ myPLNnets <- PLNnetwork(Abundancies ~ 1 + treeStatus + offset(log(sequencingEffo
 myPLNnets$stability_selection()
 myPLNnet <- myPLNnets$getBestModel("StARS", .9925)
 myPLNnet$plot_network()
-
-## Clustering with mixture model
-myPLNMMs <- PLNMM(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, clusters = 1:5)
-plot(purrr::map_dbl(myPLNMMs$models, ~aricode::NID(.$memberships, oaks$treeStatus)),
-     xlab = "number of components", ylab = "NID",  type = "l")
-

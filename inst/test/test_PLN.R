@@ -35,10 +35,10 @@ test_that("Check PLN weights with spherical covariance",  {
   tol <- 1e-5
 
   ## no weights
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, covariance = "spherical", control = list(trace = 0))
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical", trace = 0))
 
   ## equivalent weigths
-  model2 <- PLN(Abundance ~ 1, data = trichoptera, covariance = "spherical", weights = rep(1.0, nrow(trichoptera)), control = list(trace = 0))
+  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(covariance = "spherical", trace = 0))
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
   expect_equal(model2$model_par, model1$model_par, tolerance = tol)
@@ -46,8 +46,8 @@ test_that("Check PLN weights with spherical covariance",  {
 })
 
 test_that("Test different covariance models",  {
-  model_full      <- PLN(Abundance ~ 1, data = trichoptera, covariance = "full", control = list(trace = 0))
-  model_spherical <- PLN(Abundance ~ 1, data = trichoptera, covariance = "spherical", control = list(trace = 0))
+  model_full      <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "full"     , trace = 0))
+  model_spherical <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical", trace = 0))
 })
 
 ## timings (weight/no weights -> 6/7% slower)
