@@ -61,6 +61,7 @@ nlopt::opt initNLOPT(int n_param, List options) {
   opt.set_ftol_abs(as<double>(options["ftol_abs"]));
   opt.set_ftol_rel(as<double>(options["ftol_rel"]));
   opt.set_maxeval (as<int>   (options["maxeval" ]));
+  opt.set_maxtime (as<double>(options["maxtime" ]));
   opt.set_xtol_abs(as<stdvec>(options["xtol_abs"]));
   opt.set_lower_bounds(as<stdvec>(options["lower_bound"]));
 

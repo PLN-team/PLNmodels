@@ -45,8 +45,7 @@ Rcpp::List optimization_PLN(
   arma::mat Omega = inv_sympd(Sigma);
   arma::mat Z = O + X * Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
-  arma::vec loglik = sum(Y % Z - A + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) +
-    + .5 * real(log_det(Omega)) - logfact(Y) + .5 * p;
+  arma::vec loglik = sum(Y % Z - A + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) + .5 * real(log_det(Omega)) - logfact(Y) + .5 * p;
 
   // Output returned to R
   return Rcpp::List::create(
@@ -101,8 +100,7 @@ Rcpp::List optimization_PLN_spherical(
   // Compute element-wise log-likelihood (without weigths)
   arma::mat Z = O + X * Theta.t() + M;
   arma::mat A = exp (Z.each_col() + .5 * S) ;
-  arma::vec loglik = sum(Y % Z - A, 1) + .5*p*log(S) - (.5 / sigma2) * (sum(M % M, 1) + p * S) -
-    .5 * p * log(sigma2) - logfact(Y) + .5 * p;
+  arma::vec loglik = sum(Y % Z - A, 1) + .5*p*log(S) - (.5 / sigma2) * (sum(M % M, 1) + p * S) - .5 * p * log(sigma2) - logfact(Y) + .5 * p;
 
   // Output returned to R
   return Rcpp::List::create(

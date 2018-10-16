@@ -4,8 +4,8 @@ library(PLNmodels)
 load("inst/oaks_study/oaks_alphitoides.RData")
 
 ## simple PLN
-myPLN <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks)
-myPLN_spherical <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, covariance = "spherical")
+system.time(myPLN <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, control = list(maxtime = 1)))
+system.time(myPLN_spherical <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, control=list(covariance = "spherical")))
 
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks)
