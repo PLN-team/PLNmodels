@@ -188,7 +188,7 @@ PLNnetwork_param <- function(control, n, p, d) {
   ctrl <-  list(
     "ftol_out"  = 1e-5,
     "maxit_out" = 50,
-    "penalize_diagonal" = FALSE,
+    "penalize_diagonal" = TRUE,
     "warm"        = FALSE,
     "algorithm"   = "CCSAQ",
     "ftol_rel"    = 1e-8    ,

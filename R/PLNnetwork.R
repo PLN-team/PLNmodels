@@ -48,6 +48,7 @@ PLNnetwork <- function(formula, data, subset, penalties = NULL, control_init = l
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
+  if (is.null(control_init$trace)) control_init$trace <- 0
   ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
   if (is.null(ctrl_init$inception)) ctrl_init$inception <- ifelse(nrow(args$Y) >= 1.5*ncol(args$Y), "PLN", "LM")
   if (is.null(ctrl_init$nPenalties)) ctrl_init$nPenalties <- 30

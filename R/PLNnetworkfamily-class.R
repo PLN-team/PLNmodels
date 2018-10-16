@@ -16,7 +16,7 @@
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
-#' @importFrom glasso glasso
+#' @importFrom glassoFast glassoFast
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 PLNnetworkfamily <-
   R6Class(classname = "PLNnetworkfamily",
@@ -102,22 +102,33 @@ PLNnetworkfamily$set("public", "optimize",
       cat("\tsparsifying penalty =", penalty, "- iteration:")
     }
 
+    ## shall we penalize the diagonal? in glassoFast
+    if (control$trace > 1) cat("", iter)
+    rho <- matrix(penalty, private$p, private$p)
+    if (!control$penalize_diagonal) diag(rho) <- 0
+
     cond <- FALSE; iter <- 0
     objective   <- numeric(control$maxit_out)
     convergence <- numeric(control$maxit_out)
     while (!cond) {
       iter <- iter + 1
-      if (control$trace > 1) cat("", iter)
-
       ## CALL TO GLASSO TO UPDATE Omega/Sigma
+      # glasso_out <- suppressWarnings(
+      #   glasso::glasso(
+      #     Sigma,
+      #     rho = penalty,
+      #     penalize.diagonal = control$penalize_diagonal,
+      #     start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
+      #   )
+      # )
       glasso_out <- suppressWarnings(
-        glasso(
+        glassoFast::glassoFast(
           Sigma,
-          rho = penalty,
-          penalize.diagonal = control$penalize_diagonal,
+          rho = rho,
           start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
         )
       )
+      if (anyNA(glasso_out$wi)) break
       Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
       Sigma0 <- glasso_out$w
 
