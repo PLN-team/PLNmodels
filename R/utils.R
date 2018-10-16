@@ -142,9 +142,10 @@ PLN_param <- function(control, n, p, d, weighted = FALSE) {
   ctrl
 }
 
-PLN_param_VE <- function(control, n, p, weighted = FALSE, covariance = "full") {
-  lbvar <- ifelse(is.null(control$lower_bound), 1e-4, control$lower_bound)
-  xavar <- ifelse(is.null(control$xtol_abs)   , 1e-4, control$xtol_abs)
+PLN_param_VE <- function(control, n, p, weighted = FALSE) {
+  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
+  covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
   ctrl <- list(
     "algorithm"   = "CCSAQ",
     "maxeval"     = 10000  ,
@@ -152,8 +153,8 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE, covariance = "full") {
     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-4,
-    "xtol_abs"    = c(rep(0   , p*n), rep(xavar, ifelse(covariance == "spherical", n, n*p))),
-    "lower_bound" = c(rep(-Inf, p*n), rep(lbvar, ifelse(covariance == "spherical", n, n*p))),
+    "xtol_abs"    = c(rep(0   , p*n), rep(xtol_abs   , ifelse(covariance == "spherical", n, n*p))),
+    "lower_bound" = c(rep(-Inf, p*n), rep(lower_bound, ifelse(covariance == "spherical", n, n*p))),
     "trace"       = 1,
     "weighted"    = weighted  ,
     "covariance"  = covariance,

@@ -154,21 +154,24 @@ function(newdata, newOffsets, newCounts, control = list()) {
   ## OPTIMIZATION
   ##
 
-  ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- PLN_param_VE(control, self$n, self$p)
   ## TODO
-  ## we should use the same covarance model and weights as in the original model
-
+  ## Handle weigths in the model !!!
   ## Handle missing offsets and covariates
-  ## TODO
 
   ## Problem dimension
-  n <- nrow(newCounts); p <- ncol(newCounts)
+  n <- nrow(newCounts); p <- ncol(newCounts); d <- ncol(newdata)
+
+  ## define default control parameters for optim and overwrite by user defined parameters
+  control$covariance <- self$model
+  ctrl <- PLN_param_VE(control, self$n, self$p, self$d)
 
   ## TODO Handle covariance model
   ## get an initial point for optimization
   M <- matrix(0, n, p)
-  S <- matrix(10 * max(ctrl$lower_bound), n, p)
+  S <- switch(control$covariance,
+              "full" = matrix(10 * max(ctrl$lower_bound), n, p),
+              "spherical" = matrix(10 * max(ctrl$lower_bound), n, 1))
+
   par0 <- c(M, S)
 
   optim.out <- optimization_VEstep_PLN(
@@ -187,7 +190,7 @@ function(newdata, newOffsets, newCounts, control = list()) {
   S <- optim.out$S
 
   rownames(M) <- rownames(S) <- rownames(newdata)
-  colnames(M) <- colnames(S) <- colnames(newCounts)
+  colnames(M) <- colnames(newCounts)
 
   log.lik <- optim.out$loglik
   names(log.lik) <- rownames(newdata)
