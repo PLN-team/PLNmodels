@@ -1,0 +1,87 @@
+---
+title: "PLNmodels <img src=\"../sticker/PLNmodels.png\"/>"
+description: |
+  An R package to analyze multivariate count using the Poisson Log-Normal distribution 
+author:
+  - name: Julien Chiquet 
+    url: http://julien.cremeriefamily.info
+    affiliation: MIA Paris, AgroParistech/INRA
+    affiliation_url: https://www6.inra.fr/mia-paris
+  - name: Mahendra Mariadassou
+    url: https://mahendra-mariadassou.github.io/
+    affiliation: MaIAGE, INRA
+    affiliation_url: http://maiage.jouy.inra.fr/
+  - name: Stéphane Robin
+    url: https://www6.inra.fr/mia-paris/Equipes/Membres/Stephane-Robin
+    affiliation: MIA Paris, AgroParistech/INRA
+    affiliation_url: https://www6.inra.fr/mia-paris
+date: "`r Sys.Date()`"
+journal: 
+  title: "Journal of "
+  publisher: The publisher
+  issue: x
+  volume: x
+  doi: "xxx"
+slug: CMR2018PLNmodels
+output:
+  radix::radix_article:
+    toc: true
+    toc_depth: 3
+    includes: 
+      in_header: altmetrics.html
+bibliography: biblio_PLN.bib
+creative_commons: CC BY-NC
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+<aside>
+<div class='altmetric-embed' data-badge-type='donut' data-doi="10.1038/nature.2012.9872"></div>
+</aside>
+
+# Introduction
+
+# Statistical framework 
+
+## The Poisson log-normal model
+
+The family of models available in the package belongs to the family of probabilistic PCA models, where the observation are not necessarily Gaussian.  In particular, we consider that observations are drawn from a Poisson lognormal distribution.
+
+### A quick view of the mathematical formulation of the model
+
+The Poisson lognormal model relates some $p$-dimensional observation vectors $\mathbf{Y}_i$ to some  $p$-dimensional vectors of Gaussian latent variables $\mathbf{Z}_i$ as follows
+\begin{equation}
+  \label{eq:pca-model}
+  \begin{array}{rcl}
+  \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}{\boldsymbol\mu},\boldsymbol\Sigma) \\
+  \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
+  \end{array}
+\end{equation}
+
+The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying structure of dependence between the $p$ variables.
+
+## Variational Inference 
+
+# PLN variants
+
+## PLN with various covariance structures
+
+## PLN for Principal Component Analysis
+
+## PLN for Discriminant Analysis
+
+## PLN for sparse network inference 
+
+## PLN mixture model for clustering count data
+
+## Acknowledgments {.appendix}
+
+This is a place to recognize people and institutions. It may also be a good place
+to acknowledge and cite software that makes your work possible.
+
+## Author Contributions {.appendix}
+
+We strongly encourage you to include an author contributions statement briefly 
+describing what each author did.
