@@ -1,11 +1,13 @@
 ---
-title: "PLNmodels <img src=\"../sticker/PLNmodels.png\"/>"
+title: 'Poisson Lognormal models for multivariate count data'
 description: |
-  An R package to analyze multivariate count using the Poisson Log-Normal distribution 
+  In many fields of life science, count data is becoming the standard, like abundance table in ecology and micrbiology, or single-cell data in molecular biology. The Poisson lognormal model is a latent model that describes the dependency structure of the data in an underlying Gaussian layer, while the observation layer of the count is Poisson distributed. As such, it offers the flexibility of the multivariate Gaussian distribution while preserving count distributions. <br/>
+  In the R package *PLNmodels*, we implement an efficient varitional strategy for inferring the standard Poisson lognormal model. We derive a series of model by transposing the classical tools from multivariate analysis, mostly tight to the Gaussian assumption of the data, to count data. *PLNmodels* includes variants for Principal Component Analysis, Discriminant Analysis, sparse covariance estimation _a.k.a._ network inference, mixture models and more coming, all designed for multivariate count data. <div class='altmetric-embed' data-badge-type='donut' data-doi="10.1007/s11222-010-9191-2"></div>
+preview: https://github.com/jchiquet/PLNmodels/raw/master/inst/sticker/PLNmodels.png
 author:
   - name: Julien Chiquet 
     url: http://julien.cremeriefamily.info
-    affiliation: MIA Paris, AgroParistech/INRA
+    affiliation: MIA Paris, INRA
     affiliation_url: https://www6.inra.fr/mia-paris
   - name: Mahendra Mariadassou
     url: https://mahendra-mariadassou.github.io/
@@ -13,20 +15,18 @@ author:
     affiliation_url: http://maiage.jouy.inra.fr/
   - name: Stéphane Robin
     url: https://www6.inra.fr/mia-paris/Equipes/Membres/Stephane-Robin
-    affiliation: MIA Paris, AgroParistech/INRA
+    affiliation: MIA Paris, INRA
     affiliation_url: https://www6.inra.fr/mia-paris
 date: "`r Sys.Date()`"
 journal: 
-  title: "Journal of "
-  publisher: The publisher
+  title: "Journal of something"
   issue: x
   volume: x
-  doi: "xxx"
+  doi: ""
 slug: CMR2018PLNmodels
 output:
   radix::radix_article:
-    toc: true
-    toc_depth: 3
+    toc: false
     includes: 
       in_header: altmetrics.html
 bibliography: biblio_PLN.bib
@@ -34,22 +34,24 @@ creative_commons: CC BY-NC
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 ```
 
-<aside>
-<div class='altmetric-embed' data-badge-type='donut' data-doi="10.1038/nature.2012.9872"></div>
-</aside>
+## Introduction
 
-# Introduction
+blabla
 
-# Statistical framework 
+### Companion data set: oak powldery mildew
 
-## The Poisson log-normal model
+blabla
+
+## Statistical framework 
+
+Two mains inrgedients: The Poisson lognormal distribution and the varitional approximation principle
+
+### The Poisson log-normal model
 
 The family of models available in the package belongs to the family of probabilistic PCA models, where the observation are not necessarily Gaussian.  In particular, we consider that observations are drawn from a Poisson lognormal distribution.
-
-### A quick view of the mathematical formulation of the model
 
 The Poisson lognormal model relates some $p$-dimensional observation vectors $\mathbf{Y}_i$ to some  $p$-dimensional vectors of Gaussian latent variables $\mathbf{Z}_i$ as follows
 \begin{equation}
@@ -62,19 +64,25 @@ The Poisson lognormal model relates some $p$-dimensional observation vectors $\m
 
 The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying structure of dependence between the $p$ variables.
 
-## Variational Inference 
+### Variational Inference 
 
-# PLN variants
+Write this
 
-## PLN with various covariance structures
+### Illlustration of the basic PLN model
 
-## PLN for Principal Component Analysis
+PLN with various covariance structures
 
-## PLN for Discriminant Analysis
+Oak powldery mildew
 
-## PLN for sparse network inference 
+## PLN variants
 
-## PLN mixture model for clustering count data
+### Principal Component Analysis
+
+### Discriminant Analysis
+
+### Sparse network inference 
+
+### Mixture model and clustering
 
 ## Acknowledgments {.appendix}
 
