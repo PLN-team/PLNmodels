@@ -94,7 +94,7 @@ PLNfit <-
       model = function(){private$covariance},
       optim_par = function() {private$monitoring},
       degrees_freedom = function() {
-        self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "spherical" = self$p)
+        self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)
       },
       loglik     = function() {private$J },
       loglik_vec = function() {private$Ji},
@@ -169,7 +169,8 @@ function(newdata, newOffsets, newCounts, control = list()) {
   ## get an initial point for optimization
   M <- matrix(0, n, p)
   S <- switch(control$covariance,
-              "full" = matrix(10 * max(ctrl$lower_bound), n, p),
+              "full"      = matrix(10 * max(ctrl$lower_bound), n, p),
+              "diagonal"  = matrix(10 * max(ctrl$lower_bound), n, p),
               "spherical" = matrix(10 * max(ctrl$lower_bound), n, 1))
 
   par0 <- c(M, S)

@@ -5,11 +5,15 @@ load("inst/oaks_study/oaks_alphitoides.RData")
 
 ## simple PLN
 system.time(myPLN <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, control = list(maxtime = 1)))
+system.time(myPLN_diagonal <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "diagonal")))
 system.time(myPLN_spherical <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "spherical")))
 
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks)
 myLDA_tree$plot_LDA()
+
+myLDA_tree_spherical <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks, control = list(covariance = "diagonal"))
+myLDA_tree_spherical $plot_LDA()
 
 myLDA_orientation <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$orientation, data = oaks)
 myLDA_orientation$plot_LDA()
