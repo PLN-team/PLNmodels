@@ -7,7 +7,7 @@ arma::mat logfact(arma::mat Y) {
   return sum(v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2, 1);
 }
 
-// Convert string to nlopt_alogirthm
+// Convert string to nlopt_algorithm
 //
 // restrict the choices to algorithms meaningful for PLN optimization
 nlopt::algorithm getAlgorithmCode( const std::string algorithm_str) {

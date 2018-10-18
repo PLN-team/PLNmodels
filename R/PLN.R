@@ -67,7 +67,6 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
           optimization_PLN)
   optim_out <- optimizer(unlist(par0), Y, X, O, w, ctrl)
   optim_out$message <- statusToMessage(optim_out$status)
-
   ## ===========================================
   ## POST-TREATMENT
   ##
@@ -106,7 +105,7 @@ initializePLN <- function(Y, X, O, w, control) {
     ## check the dimensions of the inceptive model
     stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))))
     stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
-    if (control$inception$model == "full")
+    if (control$inception$model == "full" | control$inception$model == "diagonal")
       stopifnot(isTRUE(all.equal(dim(control$inception$var_par$S), c(n,p))))
     if (control$inception$model == "spherical")
       stopifnot(isTRUE(all.equal(dim(control$inception$var_par$S), c(n,1))))

@@ -27,6 +27,10 @@ typedef struct optim_data {
     int q                ;
 
     // constructors
+
+    // Empty constructor
+    optim_data() { } ;
+
     // PLN constructor
     optim_data(const arma::mat &responses,
                const arma::mat &covariates,
