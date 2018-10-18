@@ -4,7 +4,7 @@ library(PLNmodels)
 load("inst/oaks_study/oaks_alphitoides.RData")
 
 ## simple PLN
-system.time(myPLN <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, control = list(maxtime = 1)))
+system.time(myPLN <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks))
 system.time(myPLN_diagonal <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "diagonal")))
 system.time(myPLN_spherical <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "spherical")))
 

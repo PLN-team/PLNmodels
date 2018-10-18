@@ -81,7 +81,8 @@ PLNfit <-
       var_par   = function(value) {
         if (!missing(value)) {
           if (is.list(value) & all(names(value) %in% c("S", "M"))) {
-            if (nrow(value$S) == self$n & ncol(value$S) == self$q) {
+            if ((private$covariance == "spherical" & nrow(value$S) == self$n & ncol(value$S) == 1) |
+                (private$covariance != "spherical" & nrow(value$S) == self$n & ncol(value$S) == self$q) ) {
               private$S <- value$S
             }
             if (nrow(value$M) == self$n & ncol(value$M) == self$q) {
@@ -91,15 +92,14 @@ PLNfit <-
         }
         list(M = private$M, S = private$S)
       },
-      model     = function(){private$covariance},
-      optim_par = function() {private$monitoring},
-      degrees_freedom = function() {
-        self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)
-      },
+      degrees_freedom = function() {self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)},
+      model      = function() {private$covariance},
+      optim_par  = function() {private$monitoring},
       loglik     = function() {private$J },
       loglik_vec = function() {private$Ji},
       BIC        = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
-      ICL        = function() {self$BIC - .5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", 1, self$q))},
+      entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", self$q, 1))},
+      ICL        = function() {self$BIC - self$entropy},
       R_squared  = function() {private$R2},
       criteria   = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
@@ -271,7 +271,7 @@ plot.PLNfit <- function(x, type=c("model","variational"), ...) {
 }
 
 PLNfit$set("public", "plot",
-  function(type=c("model","variational")) {
+  function(type=c("model", "variational")) {
     type <- match.arg(type)
     param <- switch(type,
                "model"       = self$model_par,
@@ -281,8 +281,8 @@ PLNfit$set("public", "plot",
     rownames(par2) <- rep(" ", nrow(par2)) ; colnames(par2) <- rep(" ", ncol(par2))
 
     par(mfrow = c(2,2))
-    hist(par1, breaks = sqrt(nrow(par1)), xlab = "", ylab = "", main = paste0(names(param)[1]))
-    hist(par2, breaks = sqrt(nrow(par2)), xlab = "", ylab = "", main = paste0(names(param)[2]))
+    hist(par1           , breaks = sqrt(nrow(par1)), xlab = "", ylab = "", main = paste0(names(param)[1]))
+    hist(par2[par2 != 0], breaks = sqrt(nrow(par2)), xlab = "", ylab = "", main = paste0(names(param)[2]))
     corrplot::corrplot(par1, is.corr = FALSE, method = "color", cl.pos = "n",
                        addgrid=ifelse(type == "model", "grey", NA))
     corrplot::corrplot(par2, is.corr = FALSE, method = "color", cl.pos = "n")
@@ -298,7 +298,8 @@ function(model = "A Poisson Lognormal fit\n") {
   print(as.data.frame(t(self$criteria), row.names = ""))
   cat("==================================================================\n")
   cat("* Useful fields \n")
-  cat("  $model_par, $var_par, $loglik, $BIC, $ICL, $degrees_freedom, $criteria\n")
+  cat("  $model_par, $var_par, $optim_par \n")
+  cat("  $loglik, $BIC, $ICL, $degrees_freedom, $criteria \n")
   cat("* Useful methods\n")
   cat("    $plot(), $predict()\n")
 })
