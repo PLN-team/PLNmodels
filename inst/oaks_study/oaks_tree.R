@@ -12,8 +12,8 @@ system.time(myPLN_spherical <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort
 myLDA_tree <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks)
 myLDA_tree$plot_LDA()
 
-myLDA_tree_spherical <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks, control = list(covariance = "diagonal"))
-myLDA_tree_spherical $plot_LDA()
+myLDA_tree_diagonal <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks, control = list(covariance = "diagonal"))
+myLDA_tree_diagonal $plot_LDA()
 
 myLDA_orientation <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$orientation, data = oaks)
 myLDA_orientation$plot_LDA()
