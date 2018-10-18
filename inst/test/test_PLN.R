@@ -17,18 +17,6 @@ test_that("Check PLN initialization - fully parametrized covariance",  {
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
-test_that("Check PLN initialization - spherical model",  {
-  tol <- 1e-4
-
-  ## use default initialization (LM)
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0, covariance = "spherical"))
-
-  ## initialization with the previous fit
-  model2 <- PLN(Abundance ~ 1, data = trichoptera, control = list(inception = model1, covariance = "spherical", trace = 0))
-
-  expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
-})
-
 test_that("Check PLN initialization - full covariance from spherical model",  {
   tol <- 1e-4
 
