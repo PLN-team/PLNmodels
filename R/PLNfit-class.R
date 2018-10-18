@@ -91,17 +91,17 @@ PLNfit <-
         }
         list(M = private$M, S = private$S)
       },
-      model = function(){private$covariance},
+      model     = function(){private$covariance},
       optim_par = function() {private$monitoring},
       degrees_freedom = function() {
         self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)
       },
       loglik     = function() {private$J },
       loglik_vec = function() {private$Ji},
-      BIC       = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
-      ICL       = function() {self$BIC - .5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)))},
-      R_squared = function() {private$R2},
-      criteria  = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
+      BIC        = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
+      ICL        = function() {self$BIC - .5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", 1, self$q))},
+      R_squared  = function() {private$R2},
+      criteria   = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
   )
 

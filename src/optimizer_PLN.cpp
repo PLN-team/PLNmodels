@@ -41,7 +41,6 @@ void optimizer_PLN::optimize()  {
 Rcpp::List optimizer_PLN::get_output() {
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
-      Rcpp::Named("objective" ) = - accu(loglik),
       Rcpp::Named("Theta" )     = Theta,
       Rcpp::Named("Sigma" )     = Sigma,
       Rcpp::Named("M"         ) = M,

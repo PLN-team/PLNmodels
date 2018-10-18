@@ -12,7 +12,7 @@
 ##'
 ##' @details The parameter \code{control} is a list controlling the optimization with the following entries
 ##' \itemize{
-##'  \item{"covariance"}{character setting the model for the covariance matrix. Either "full" or "spherical". Default is "full".}
+##'  \item{"covariance"}{character setting the model for the covariance matrix. Either "full", "diagonal" or "spherical". Default is "full".}
 ##'  \item{"trace"}{integer for verbosity.}
 ##'  \item{"inception"}{Set up the intialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previsous fit), which often speed up the inference.}
 ##'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.}
@@ -77,10 +77,10 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
     Sigma      = optim_out$Sigma,
     M          = optim_out$M,
     S          = optim_out$S,
-    J          = -optim_out$objective,
+    J          = sum(w * optim_out$loglik),
     Ji         = optim_out$loglik,
     covariance = ctrl$covariance,
-    monitoring = optim_out[c("objective", "iterations", "status", "message")]
+    monitoring = optim_out[c("iterations", "status", "message")]
   )
 
   if (ctrl$trace > 0) cat("\n Computing (pseudo) R2")
