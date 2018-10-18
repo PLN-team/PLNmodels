@@ -292,8 +292,8 @@ PLNfit$set("public", "plot",
 )
 
 PLNfit$set("public", "show",
-function(model = "A Poisson Lognormal fit\n") {
-  cat(model,"with",self$model,"covariance model.")
+function(model = paste("A Poisson Lognormal fit with", self$model, "covariance model.\n")) {
+  cat(model)
   cat("==================================================================\n")
   print(as.data.frame(t(self$criteria), row.names = ""))
   cat("==================================================================\n")
