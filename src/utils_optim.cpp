@@ -7,7 +7,7 @@ arma::mat logfact(arma::mat Y) {
   return sum(v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2, 1);
 }
 
-// Convert string to nlopt_alogirthm
+// Convert string to nlopt_algorithm
 //
 // restrict the choices to algorithms meaningful for PLN optimization
 nlopt::algorithm getAlgorithmCode( const std::string algorithm_str) {
@@ -61,6 +61,7 @@ nlopt::opt initNLOPT(int n_param, List options) {
   opt.set_ftol_abs(as<double>(options["ftol_abs"]));
   opt.set_ftol_rel(as<double>(options["ftol_rel"]));
   opt.set_maxeval (as<int>   (options["maxeval" ]));
+  opt.set_maxtime (as<double>(options["maxtime" ]));
   opt.set_xtol_abs(as<stdvec>(options["xtol_abs"]));
   opt.set_lower_bounds(as<stdvec>(options["lower_bound"]));
 

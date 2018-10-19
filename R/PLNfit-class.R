@@ -25,13 +25,14 @@ PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
       ## constructor
-      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, Ji=NA, monitoring=NA) {
+      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, Ji=NA, covariance=NA, monitoring=NA) {
         private$Theta      <- Theta
         private$Sigma      <- Sigma
         private$M          <- M
         private$S          <- S
         private$J          <- J
         private$Ji         <- Ji
+        private$covariance <- covariance
         private$monitoring <- monitoring
       },
       ## "setter" function
@@ -49,11 +50,12 @@ PLNfit <-
     private = list(
       Theta      = NA, # the p x d model parameters for the covariable
       Sigma      = NA, # the p x p covariance matrix
-      S          = NA, # the n x p variational parameters for the variances
+      S          = NA, # the variational parameters for the variances
       M          = NA, # the n x p variational parameters for the means
       R2         = NA, # approximated goodness of fit criterion
       J          = NA, # approximated loglikelihood
       Ji         = NA, # element-wise approximated loglikelihood
+      covariance = NA, # a string describing the covariance model
       monitoring = NA  # a list with optimization monitoring quantities
     ),
     ## use active bindings to access private members like fields
@@ -62,7 +64,7 @@ PLNfit <-
       q = function() {ncol(private$M)},
       p = function() {nrow(private$Theta)},
       d = function() {ncol(private$Theta)},
-    ## model_par and var_par allow write access for bootstrapping purposes
+      ## model_par and var_par allow write access for bootstrapping purposes
       model_par = function(value) {
         if (!missing(value)) {
           if (is.list(value) & all(names(value) %in% c("Sigma", "Theta"))) {
@@ -79,7 +81,8 @@ PLNfit <-
       var_par   = function(value) {
         if (!missing(value)) {
           if (is.list(value) & all(names(value) %in% c("S", "M"))) {
-            if (nrow(value$S) == self$n & ncol(value$S) == self$q) {
+            if ((private$covariance == "spherical" & nrow(value$S) == self$n & ncol(value$S) == 1) |
+                (private$covariance != "spherical" & nrow(value$S) == self$n & ncol(value$S) == self$q) ) {
               private$S <- value$S
             }
             if (nrow(value$M) == self$n & ncol(value$M) == self$q) {
@@ -89,16 +92,16 @@ PLNfit <-
         }
         list(M = private$M, S = private$S)
       },
-      optim_par = function() {private$monitoring},
-      degrees_freedom = function() {
-        self$p * self$d + self$p * (self$p + 1)/2
-      },
+      degrees_freedom = function() {self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)},
+      model      = function() {private$covariance},
+      optim_par  = function() {private$monitoring},
       loglik     = function() {private$J },
       loglik_vec = function() {private$Ji},
-      BIC       = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
-      ICL       = function() {self$BIC - .5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)))},
-      R_squared = function() {private$R2},
-      criteria  = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
+      BIC        = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
+      entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", self$q, 1))},
+      ICL        = function() {self$BIC - self$entropy},
+      R_squared  = function() {private$R2},
+      criteria   = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
   )
 
@@ -151,39 +154,32 @@ function(newdata, newOffsets, newCounts, control = list()) {
   ## OPTIMIZATION
   ##
 
-  ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- PLN_param(control, self$n, self$p)
-  ## Handle missing offsets and covariates
   ## TODO
+  ## Handle weigths in the model !!!
+  ## Handle missing offsets and covariates
 
   ## Problem dimension
-  n <- nrow(newCounts); p <- ncol(newCounts)
+  n <- nrow(newCounts); p <- ncol(newCounts); d <- ncol(newdata)
 
+  ## define default control parameters for optim and overwrite by user defined parameters
+  control$covariance <- self$model
+  ctrl <- PLN_param_VE(control, self$n, self$p, self$d)
+
+  ## TODO Handle covariance model
   ## get an initial point for optimization
   M <- matrix(0, n, p)
-  S <- matrix(10 * ctrl$lbvar, n, p)
+  S <- switch(control$covariance,
+              "full"      = matrix(10 * max(ctrl$lower_bound), n, p),
+              "diagonal"  = matrix(10 * max(ctrl$lower_bound), n, p),
+              "spherical" = matrix(10 * max(ctrl$lower_bound), n, 1))
+
   par0 <- c(M, S)
-
-  ## Set lower bounds for variance parameters
-  ctrl$lower_bound <- c(rep(-Inf, p*n), rep(ctrl$lbvar, n*p))
-  ctrl$xtol_abs <- c(rep(0, n*p), rep(ctrl$xtol_abs, n*p))
-
-  ## Set parameters for the optimization method
-  opts <- list(
-    "algorithm"   = ctrl$method,
-    "maxeval"     = ctrl$maxeval,
-    "ftol_rel"    = ctrl$ftol_rel,
-    "ftol_abs"    = ctrl$ftol_abs,
-    "xtol_rel"    = ctrl$xtol_rel,
-    "xtol_abs"    = ctrl$xtol_abs,
-    "lower_bound" = ctrl$lower_bound
-  )
 
   optim.out <- optimization_VEstep_PLN(
     par0,
     newCounts, newdata, newOffsets,
     self$model_par$Theta, self$model_par$Sigma,
-    opts
+    ctrl
   )
 
   ## ===========================================
@@ -195,7 +191,7 @@ function(newdata, newOffsets, newCounts, control = list()) {
   S <- optim.out$S
 
   rownames(M) <- rownames(S) <- rownames(newdata)
-  colnames(M) <- colnames(S) <- colnames(newCounts)
+  colnames(M) <- colnames(newCounts)
 
   log.lik <- optim.out$loglik
   names(log.lik) <- rownames(newdata)
@@ -275,7 +271,7 @@ plot.PLNfit <- function(x, type=c("model","variational"), ...) {
 }
 
 PLNfit$set("public", "plot",
-  function(type=c("model","variational")) {
+  function(type=c("model", "variational")) {
     type <- match.arg(type)
     param <- switch(type,
                "model"       = self$model_par,
@@ -285,8 +281,8 @@ PLNfit$set("public", "plot",
     rownames(par2) <- rep(" ", nrow(par2)) ; colnames(par2) <- rep(" ", ncol(par2))
 
     par(mfrow = c(2,2))
-    hist(par1, breaks = sqrt(nrow(par1)), xlab = "", ylab = "", main = paste0(names(param)[1]))
-    hist(par2, breaks = sqrt(nrow(par2)), xlab = "", ylab = "", main = paste0(names(param)[2]))
+    hist(par1           , breaks = sqrt(nrow(par1)), xlab = "", ylab = "", main = paste0(names(param)[1]))
+    hist(par2[par2 != 0], breaks = sqrt(nrow(par2)), xlab = "", ylab = "", main = paste0(names(param)[2]))
     corrplot::corrplot(par1, is.corr = FALSE, method = "color", cl.pos = "n",
                        addgrid=ifelse(type == "model", "grey", NA))
     corrplot::corrplot(par2, is.corr = FALSE, method = "color", cl.pos = "n")
@@ -296,13 +292,14 @@ PLNfit$set("public", "plot",
 )
 
 PLNfit$set("public", "show",
-function(model = "A Poisson Lognormal fit\n") {
+function(model = paste("A Poisson Lognormal fit with", self$model, "covariance model.\n")) {
   cat(model)
   cat("==================================================================\n")
   print(as.data.frame(t(self$criteria), row.names = ""))
   cat("==================================================================\n")
   cat("* Useful fields \n")
-  cat("  $model_par, $var_par, $loglik, $BIC, $ICL, $degrees_freedom, $criteria\n")
+  cat("  $model_par, $var_par, $optim_par \n")
+  cat("  $loglik, $BIC, $ICL, $degrees_freedom, $criteria \n")
   cat("* Useful methods\n")
   cat("    $plot(), $predict()\n")
 })

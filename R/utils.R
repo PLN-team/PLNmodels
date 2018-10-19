@@ -43,7 +43,11 @@ extract_model <- function(call, envir) {
   O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
   w <- model.weights(frame)
-  if (!is.null(w)) stopifnot(all(w > 0) && length(w) == nrow(Y))
+  if (is.null(w)) {
+    w <- rep(1.0, nrow(Y))
+  } else {
+    stopifnot(all(w > 0) && length(w) == nrow(Y))
+  }
 
   list(Y = Y, X = X, O = O, w = w)
 }
@@ -115,115 +119,86 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths
 ## -----------------------------------------------------------------
 ##  Series of setter to default parameters for user's main functions
 ##
-PLN_param <- function(control, n, p) {
+## should be ready to pass to nlopt optimizer
+PLN_param <- function(control, n, p, d, weighted = FALSE) {
+  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
+  covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
   ctrl <- list(
-    ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
-    ftol_abs  = 0,
-    xtol_rel  = 1e-4,
-    xtol_abs  = 1e-4,
-    maxeval   = 10000,
-    method    = "CCSAQ",
-    lbvar     = 1e-4,
-    trace     = 1,
-    inception = NULL
+    "algorithm"   = "CCSAQ",
+    "maxeval"     = 10000  ,
+    "maxtime"     = -1     ,
+    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
+    "ftol_abs"    = 0,
+    "xtol_rel"    = 1e-4,
+    "xtol_abs"    = c(rep(0   , p*d), rep(0   , p*n), rep(xtol_abs   , ifelse(covariance == "spherical", n, n*p))),
+    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(lower_bound, ifelse(covariance == "spherical", n, n*p))),
+    "trace"       = 1,
+    "weighted"    = weighted  ,
+    "covariance"  = covariance,
+    "inception"   = NULL
   )
   ctrl[names(control)] <- control
   ctrl
 }
 
-PLNPCA_param <- function(control, n, p, type = c("init", "main")) {
-  type <- match.arg(type)
+PLN_param_VE <- function(control, n, p, weighted = FALSE) {
+  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
+  covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
+  ctrl <- list(
+    "algorithm"   = "CCSAQ",
+    "maxeval"     = 10000  ,
+    "maxtime"     = -1     ,
+    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
+    "ftol_abs"    = 0,
+    "xtol_rel"    = 1e-4,
+    "xtol_abs"    = c(rep(0   , p*n), rep(xtol_abs   , ifelse(covariance == "spherical", n, n*p))),
+    "lower_bound" = c(rep(-Inf, p*n), rep(lower_bound, ifelse(covariance == "spherical", n, n*p))),
+    "trace"       = 1,
+    "weighted"    = weighted  ,
+    "covariance"  = covariance,
+    "inception"   = NULL
+  )
+  ctrl[names(control)] <- control
+  ctrl
+}
 
-  ctrl <- switch(match.arg(type),
-    "init" = list(
-      inception = ifelse(n >= 1.5*p, "PLN", "LM"),
-      ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
-      ftol_abs = 0,
-      xtol_rel = 1e-4,
-      xtol_abs = 1e-4,
-      maxeval  = 10000,
-      method   = "CCSAQ",
-      lbvar    = 1e-4,
-      trace    = 0
-    ),
-    "main" = list(
-      ftol_rel = 1e-8,
-      ftol_abs = 0,
-      xtol_rel = 1e-4,
-      xtol_abs = 1e-4,
-      maxeval  = 10000,
-      method   = "CCSAQ",
-      lbvar    = 1e-4,
-      trace    = 1,
-      cores    = 1
+
+PLNPCA_param <- function(control) {
+  ctrl <- list(
+      "algorithm"   = "CCSAQ",
+      "ftol_rel"    = 1e-8    ,
+      "ftol_abs"    = 0       ,
+      "xtol_rel"    = 1e-4    ,
+      "xtol_abs"    = 1e-4,
+      "lower_bound" = 1e-4,
+      "maxeval"     = 10000   ,
+      "maxtime"     = -1      ,
+      "trace"       = 1       ,
+      "cores"       = 1
     )
-  )
   ctrl[names(control)] <- control
   ctrl
 }
 
-PLNMM_param <- function(control, n, p, type = c("init", "main")) {
-  type <- match.arg(type)
-
-  ctrl <- switch(match.arg(type),
-    "init" = list(
-      inception = ifelse(n >= 1.5*p, "PLN", "LM"),
-      ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
-      ftol_abs = 0,
-      xtol_rel = 1e-4,
-      xtol_abs = 1e-4,
-      maxeval  = 10000,
-      method   = "CCSAQ",
-      lbvar    = 1e-4,
-      trace    = 0
-    ),
-    "main" = list(
-      ftol_out  = 1e-5,
-      maxit_out = 50,
-      ftol_rel = 1e-8,
-      ftol_abs = 0,
-      xtol_rel = 1e-4,
-      xtol_abs = 1e-4,
-      maxeval  = 10000,
-      method   = "CCSAQ",
-      lbvar    = 1e-4,
-      trace    = 1,
-      cores    = 1
-    )
-  )
-  ctrl[names(control)] <- control
-  ctrl
-}
-
-PLNnetwork_param <- function(control, n, p, type = c("init", "main")) {
-  type <- match.arg(type)
-
-  ctrl <- switch(match.arg(type),
-    "init" = list(
-      inception = ifelse(n >= 1.5*p, "PLN", "LM"),
-      ftol_rel  = ifelse(n < 1.5*p, 1e-6, 1e-8),
-      ftol_abs = 0,
-      xtol_rel = 1e-4,
-      xtol_abs = 1e-4,
-      maxeval  = 10000,
-      method   = "CCSAQ",
-      lbvar    = 1e-4,
-      nPenalties = 30,
-      min.ratio = ifelse(n < 1.5*p, 0.1, 0.05),
-      trace = 0),
-    "main" = list(
-      ftol_out  = 1e-5,
-      maxit_out = 50,
-      penalize.diagonal = FALSE,
-      warm      = FALSE,
-      ftol_abs  = 0,
-      ftol_rel  = 1e-8,
-      xtol_rel  = 1e-4,
-      xtol_abs  = 1e-4,
-      maxeval   = 10000,
-      method    = "CCSAQ",
-      lbvar     = 1e-4,
-      trace = 1)
+PLNnetwork_param <- function(control, n, p, d) {
+  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
+  ctrl <-  list(
+    "ftol_out"  = 1e-5,
+    "maxit_out" = 50,
+    "penalize_diagonal" = TRUE,
+    "warm"        = FALSE,
+    "algorithm"   = "CCSAQ",
+    "ftol_rel"    = 1e-8    ,
+    "ftol_abs"    = 0       ,
+    "xtol_rel"    = 1e-4    ,
+    "xtol_abs"    = c(rep(0, p*d), rep(0, n*p), rep(xtol_abs, n*p)),
+    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, n*p), rep(lower_bound, n*p)),
+    "maxeval"     = 10000   ,
+    "maxtime"     = -1      ,
+    "trace"       = 1
   )
   ctrl[names(control)] <- control
   ctrl

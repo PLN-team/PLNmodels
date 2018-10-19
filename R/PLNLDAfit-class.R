@@ -26,8 +26,8 @@ PLNLDAfit <-
   R6Class(classname = "PLNLDAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(Theta=NA, Mu=NA, Sigma=NA, grouping = NA, M=NA, S=NA, J=NA, monitoring=NA) {
-        super$initialize(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, monitoring = monitoring)
+      initialize = function(Theta=NA, Mu=NA, Sigma=NA, grouping = NA, M=NA, S=NA, J=NA, Ji=NA, covariance=NA, monitoring=NA) {
+        super$initialize(Theta, Sigma, M, S, J, Ji, covariance, monitoring)
         private$grouping <- grouping
         private$Mu <- Mu
         nk <- table(grouping)

@@ -16,7 +16,7 @@
 #' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
-#' @importFrom glasso glasso
+#' @importFrom glassoFast glassoFast
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 PLNnetworkfamily <-
   R6Class(classname = "PLNnetworkfamily",
@@ -81,24 +81,10 @@ PLNnetworkfamily$set("public", "optimize",
   Sigma <- self$inception$model_par$Sigma
   par0  <- c(self$inception$model_par$Theta,
              self$inception$var_par$M,
-             self$inception$var_par$S)
+             rep(max(control$lower_bound), private$n*private$p))
   Omega  <- diag(1/diag(Sigma), nrow = private$p, ncol = private$p)
   Sigma0 <- diag(  diag(Sigma), nrow = private$p, ncol = private$p)
   objective.old <- ifelse(is.na(self$inception$loglik),-Inf,-self$inception$loglik)
-
-  ## set option for call to NLOPT: optim typ, lower bound, tolerance...
-  opts <- list("algorithm"   = control$method,
-               "maxeval"     = control$maxeval,
-               "ftol_rel"    = control$ftol_rel,
-               "ftol_abs"    = control$ftol_abs,
-               "xtol_rel"    = control$xtol_rel,
-               "xtol_abs"    = c(rep(0, private$p*private$d), # Theta
-                                 rep(0, private$n*private$p), # M
-                                 rep(control$xtol_abs, private$n*private$p)), #S
-               "lower_bound" = c(rep(-Inf, private$p*private$d), # Theta
-                                 rep(-Inf, private$n*private$p), # M
-                                 rep(control$lbvar, private$n*private$p)) # S
-               )
 
   ## ===========================================
   ## GO ALONG THE PENALTY GRID (i.e the models)
@@ -116,28 +102,39 @@ PLNnetworkfamily$set("public", "optimize",
       cat("\tsparsifying penalty =", penalty, "- iteration:")
     }
 
+    ## shall we penalize the diagonal? in glassoFast
+    if (control$trace > 1) cat("", iter)
+    rho <- matrix(penalty, private$p, private$p)
+    if (!control$penalize_diagonal) diag(rho) <- 0
+
     cond <- FALSE; iter <- 0
     objective   <- numeric(control$maxit_out)
     convergence <- numeric(control$maxit_out)
     while (!cond) {
       iter <- iter + 1
-      if (control$trace > 1) cat("", iter)
-
       ## CALL TO GLASSO TO UPDATE Omega/Sigma
+      # glasso_out <- suppressWarnings(
+      #   glasso::glasso(
+      #     Sigma,
+      #     rho = penalty,
+      #     penalize.diagonal = control$penalize_diagonal,
+      #     start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
+      #   )
+      # )
       glasso_out <- suppressWarnings(
-        glasso(
+        glassoFast::glassoFast(
           Sigma,
-          rho = penalty,
-          penalize.diagonal = control$penalize.diagonal,
+          rho = rho,
           start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
         )
       )
+      if (anyNA(glasso_out$wi)) break
       Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
       Sigma0 <- glasso_out$w
 
       ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
       logDetOmega <- as.double(determinant(Omega, logarithm = TRUE)$modulus)
-      optim.out <- optimization_PLNnetwork(par0, self$responses, self$covariates, self$offsets, Omega, logDetOmega, opts)
+      optim.out <- optimization_PLNnetwork(par0, self$responses, self$covariates, self$offsets, Omega, logDetOmega, control)
       optim.out$message <- statusToMessage(optim.out$status)
       objective[iter]   <- optim.out$objective + penalty * sum(abs(Omega))
       convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
@@ -196,12 +193,6 @@ NULL
 PLNnetworkfamily$set("public", "stability_selection",
   function(subsamples = NULL, control = list(), mc.cores = 1) {
 
-    ## define default control parameters for optim and overwrite by user defined parameters
-    ctrl_init <- PLNnetwork_param(list(), private$n, private$p, "init")
-    ctrl_init$trace <- 0
-    ctrl_main <- PLNnetwork_param(control, n, p, "main")
-    ctrl_main$trace <- 0
-
     ## select default subsamples according
     if (is.null(subsamples)) {
       subsample.size <- round(ifelse(private$n >= 144, 10*sqrt(private$n), 0.8*private$n))
@@ -219,12 +210,17 @@ PLNnetworkfamily$set("public", "stability_selection",
         M = inception_$var_par$M[subsample, ],
         S = inception_$var_par$S[subsample, ]
       )
+
+      ctrl_init <- PLN_param(list(), inception_$n, inception_$p, inception_$d)
+      ctrl_init$trace <- 0
       ctrl_init$inception <- inception_
       myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
                                     responses  = self$responses [subsample, , drop = FALSE ],
                                     covariates = self$covariates[subsample, , drop = FALSE],
                                     offsets    = self$offsets   [subsample, , drop = FALSE ], control = ctrl_init)
 
+      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d)
+      ctrl_main$trace <- 0
       myPLN$optimize(ctrl_main)
       nets <- do.call(cbind, lapply(myPLN$models, function(model) {
         as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
