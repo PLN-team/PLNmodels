@@ -4,9 +4,9 @@ library(PLNmodels)
 load("inst/oaks_study/oaks_alphitoides.RData")
 
 ## simple PLN
-system.time(myPLN <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks))
-system.time(myPLN_diagonal <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "diagonal")))
-system.time(myPLN_spherical <- PLN(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "spherical")))
+system.time(myPLN <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks))
+system.time(myPLN_diagonal <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "diagonal")))
+system.time(myPLN_spherical <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "spherical")))
 
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks)
@@ -19,9 +19,7 @@ myLDA_orientation <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), gro
 myLDA_orientation$plot_LDA()
 
 ## Dimension reduction with PCA
-system.time(myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30)) # about 50 sec.
-system.time(myPLNPCAs_spherical <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control_init = list(covariance = "spherical"))) # about 50 sec.
-
+system.time(myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30)) # about 250 sec.
 myPLNPCA <- myPLNPCAs$getBestModel('ICL')
 myPLNPCA$plot_PCA(cols.ind = oaks$treeStatus)
 
