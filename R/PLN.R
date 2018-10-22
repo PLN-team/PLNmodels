@@ -61,7 +61,7 @@ PLN_internal <- function(Y, X, O, w, ctrl) {
 
   ## post-treatment
   if (ctrl$trace > 0) cat("\n Post-treatments...")
-  myPLN$postTreatments(Y, X, O)
+  myPLN$postTreatment(Y, X, O)
 
   if (ctrl$trace > 0) cat("\n DONE!\n")
   myPLN

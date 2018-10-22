@@ -50,30 +50,13 @@ PLNfamily$set("public", "initialize",
     if (is.null(rownames(covariates))) rownames(self$covariates) <- 1:private$n
     if (is.null(colnames(covariates)) & private$d > 0) colnames(self$covariates) <- 1:private$d
 
-    ## extract the model used for initializaing the whole family
-    if (ifelse(is.character(control$inception),
-               ifelse(control$inception == "PLN", TRUE, FALSE), FALSE)) {
-        if (control$trace > 0) cat("\n Extract the inceptive model")
-        self$inception <- PLN_internal(self$responses, self$covariates, self$offsets, rep(1,private$n), control)
-    } else {
-      if (control$trace > 0) cat("\n Adjust the inceptive model")
-       ## TODO: add weights properly...
-      par0 <- initializePLN(self$responses, self$covariates, self$offsets, rep(1,private$n), control)
-      Sigma <- crossprod(par0$M)/private$n + diag(colMeans(par0$S), private$p, private$p)
-      self$inception <- PLNfit$new(Theta = par0$Theta, Sigma = Sigma, M = par0$M, S = par0$S)
-    }
 })
 
 ## a method to compute and set fields after optimization
 PLNfamily$set("public", "postTreatment",
 function() {
-  ## Compute R2
-  ## Likelihoods of the null and saturated models
-  lmin <- logLikPoisson(self$responses, nullModelPoisson(self$responses, self$covariates, self$offsets))
-  lmax <- logLikPoisson(self$responses, fullModelPoisson(self$responses))
   for (model in self$models) {
-    loglik <- logLikPoisson(self$responses, model$latent_pos(self$covariates, self$offsets))
-    model$update(R2 = (loglik - lmin) / (lmax - lmin))
+    model$postTreatment(self$responses, self$covariates, self$offsets)
   }
 })
 

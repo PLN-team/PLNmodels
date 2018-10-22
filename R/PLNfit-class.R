@@ -100,6 +100,9 @@ PLNfit <-
 ## PUBLIC METHODS FOR INTERNAL USE
 ## ----------------------------------------------------------------------
 
+## an S3 function to check if an object is a PLNfit
+isPLNfit <- function(Robject) { inherits(Robject, "PLNfit") }
+
 ## The PLN constructor either adjusts a log(transform) linear model to initialize its fields
 ## or take a user defined PLN model.
 #' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
@@ -151,7 +154,10 @@ function(responses, covariates, offsets, weights, control) {
     S          = optim_out$S,
     J          = sum(weights * optim_out$loglik),
     Ji         = optim_out$loglik,
-    monitoring = optim_out[c("iterations", "status", "message")]
+    monitoring = list(
+      iterations = optim_out$iterations,
+      status     = optim_out$status,
+      message    = statusToMessage(optim_out$status))
   )
 })
 
@@ -163,7 +169,7 @@ function(responses, covariates, offsets) {
   private$R2 <- (loglik - lmin) / (lmax - lmin)
 })
 
-PLNfit$set("public", "postTreatments",
+PLNfit$set("public", "postTreatment",
 function(responses, covariates, offsets) {
   ## compute R2
   self$set_R2(responses, covariates, offsets)
@@ -173,8 +179,7 @@ function(responses, covariates, offsets) {
   rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
   dimnames(private$M) <- dimnames(responses)
   rownames(private$S) <- rownames(responses)
-  if (private$covariance != "spherical")
-    colnames(private$S) <- colnames(responses)
+  if (private$covariance != "spherical") colnames(private$S) <- colnames(responses)
 })
 
 #' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
@@ -361,6 +366,3 @@ function(model = paste("A Poisson Lognormal fit with", self$model, "covariance m
 })
 
 PLNfit$set("public", "print", function() self$show())
-
-## an S3 function to check if an object is a PLNfit
-isPLNfit <- function(Robject) { inherits(Robject, "PLNfit") }

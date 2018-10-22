@@ -26,12 +26,17 @@ PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, J=NA, monitoring=NA) {
-        super$initialize(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, monitoring = monitoring)
-        private$B <- B
+      initialize = function(rank, responses, covariates, offsets, control) {
+        ## TODO: add weights properly...
+        super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
+        svdM      <- svd(private$M, nu = max(rank), nv = max(rank))
+        svdSigma  <- svd(crossprod(private$M)/nrow(responses) + diag(colMeans(private$S)), nu = rank, nv = 0)
+        private$M <- svdM$u[, 1:rank, drop=FALSE] %*% diag(svdM$d[1:rank], nrow=rank, ncol=rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
+        private$S <- matrix(max(control$lower_bound), nrow(responses), rank)
+        private$B <- svdSigma$u[, 1:rank, drop = FALSE] %*% sqrt(diag(svdSigma$d[1:rank],nrow = rank, ncol = rank))
       },
-      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, J=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, R2 = R2, monitoring = monitoring)
+      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, J=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(B)) private$B <- B
       },
       setVisualization = function(scale.unit=FALSE) {
@@ -79,6 +84,55 @@ PLNPCAfit <-
 ## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
 ## ----------------------------------------------------------------------
 ## Should only be accessed BY PLNfamily but R6 friend class don't exist
+
+## Call to the C++ optimizer and update of the relevant fields
+PLNPCAfit$set("public", "optimize",
+function(responses, covariates, offsets, control) {
+
+  ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
+  opts <- control
+  opts$xtol_abs <- c(rep(0, self$p*(self$d + self$q) + self$n * self$q),
+                     rep(control$xtol_abs, self$n*self$q))
+  opts$lower_bound <- c(rep(-Inf, self$p*self$d), # Theta
+                        rep(-Inf, self$p*self$q) , # B
+                        rep(-Inf, self$n*self$q) , # M
+                        rep(control$lower_bound,self$n*self$q)) # S
+  optim_out <- optimization_PLNPCA(
+    unlist(c(private$Theta, private$B, private$M, private$S)),
+    responses,
+    covariates,
+    offsets,
+    self$q,
+    opts
+  )
+
+  self$update(
+    B     = optim_out$B,
+    Theta = optim_out$Theta,
+    Sigma = optim_out$Sigma,
+    M     = optim_out$M,
+    S     = optim_out$S,
+    J     = sum(optim_out$loglik),
+    Ji         = optim_out$loglik,
+    monitoring = list(
+      iterations = optim_out$iterations,
+      status     = optim_out$status,
+      message    = statusToMessage(optim_out$status))
+  )
+})
+
+PLNPCAfit$set("public", "postTreatment",
+function(responses, covariates, offsets) {
+  ## compute R2
+  self$set_R2(responses, covariates, offsets)
+  ## Set the name of the matrices according to those of the data matrices
+  rownames(private$Theta) <- rownames(private$B) <- rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
+  colnames(private$Theta) <- colnames(covariates)
+  colnames(private$B) <- colnames(private$M) <- 1:self$q
+  rownames(private$S) <- rownames(responses)
+  rownames(private$M) <- rownames(responses)
+  if (private$covariance != "spherical") colnames(private$S) <- 1:self$q
+})
 
 # Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
 #
