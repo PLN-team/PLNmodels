@@ -55,9 +55,7 @@ PLNfamily$set("public", "initialize",
 ## a method to compute and set fields after optimization
 PLNfamily$set("public", "postTreatment",
 function() {
-  for (model in self$models) {
-    model$postTreatment(self$responses, self$covariates, self$offsets)
-  }
+  for (model in self$models) model$postTreatment(self$responses, self$covariates, self$offsets)
 })
 
 ## ----------------------------------------------------------------------

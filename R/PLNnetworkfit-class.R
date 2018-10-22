@@ -21,10 +21,10 @@ PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, monitoring=list(objective = NA)) {
-        super$initialize(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, covariance = "full", monitoring = monitoring)
+      initialize = function(penalty, responses, covariates, offsets, control) {
+        ## TODO: add weights properly...
+        super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
         private$lambda <- penalty
-        private$Omega  <- Omega
       },
       update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, R2=NA, monitoring=NA) {
         super$update(Theta = Theta, Sigma = Sigma, M, S = S, J = J, R2 = R2, monitoring = monitoring)
@@ -53,6 +53,76 @@ PLNnetworkfit <-
       criteria  = function() {c(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik, density = self$density)}
     )
 )
+
+
+PLNnetworkfit$set("public", "optimize",
+function(responses, covariates, offsets, control) {
+
+  ## shall we penalize the diagonal? in glassoFast
+  rho <- matrix(self$penalty, self$p, self$p)
+  if (!control$penalize_diagonal) diag(rho) <- 0
+
+  cond <- FALSE; iter <- 0
+  objective   <- numeric(control$maxit_out)
+  convergence <- numeric(control$maxit_out)
+  ## start from the standard PLN at initialization
+  par0  <- c(private$Theta, private$M, private$S)
+  Sigma <- private$Sigma
+  objective.old <- -self$loglik
+  while (!cond) {
+    iter <- iter + 1
+    if (control$trace > 1) cat("", iter)
+    ## CALL TO GLASSO TO UPDATE Omega/Sigma
+    glasso_out <- suppressWarnings(
+      glassoFast::glassoFast(
+        Sigma,
+        rho = rho
+        # start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
+      )
+    )
+    if (anyNA(glasso_out$wi)) break
+    Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
+
+    ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
+    logDetOmega <- as.double(determinant(Omega, logarithm = TRUE)$modulus)
+    optim.out <- optimization_PLNnetwork(par0, responses, covariates, offsets, Omega, logDetOmega, control)
+    optim.out$message <- statusToMessage(optim.out$status)
+    objective[iter]   <- optim.out$objective + self$penalty * sum(abs(Omega))
+    convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
+
+    ## Check convergence
+    if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+
+    ## Post-Treatment to update Sigma
+    M <- matrix(optim.out$solution[self$p*self$d               + 1:(self$n*self$p)], self$n,self$p)
+    S <- matrix(optim.out$solution[(self$n + self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
+    Sigma <- crossprod(M)/self$n + diag(colMeans(S), nrow = self$p, ncol = self$p)
+    par0 <- optim.out$solution
+    objective.old <- objective[iter]
+  }
+
+  ## ===========================================
+  ## OUTPUT
+  ## formating parameters for output
+  Theta <- matrix(optim.out$solution[1:(self$p*self$d)], self$p, self$d)
+  # rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
+  # dimnames(S)     <- dimnames(self$responses)
+  # dimnames(M)     <- dimnames(self$responses)
+  # rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
+  ## Optimization ends with a gradient descent step rather than a glasso step.
+  ## Return Sigma from glasso step to ensure that Sigma = solve(Omega)
+  ## Sigma <- Sigma0 ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
+  ## dimnames(Sigma) <- dimnames(Omega)
+
+  self$update(Theta = Theta, Omega = Omega, Sigma = Sigma, M = M, S = S, J = -optim.out$objective,
+    monitoring = list(objective        = objective[1:iter],
+                      convergence      = convergence[1:iter],
+                      outer_iterations = iter,
+                      inner_iterations = optim.out$iterations,
+                      inner_status     = optim.out$status,
+                      inner_message    = optim.out$message))
+
+})
 
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS

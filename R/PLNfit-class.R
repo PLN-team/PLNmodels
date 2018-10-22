@@ -122,13 +122,16 @@ function(responses, covariates, offsets, weights, control) {
     private$Theta <- control$inception$model_par$Theta
     private$M     <- control$inception$var_par$M
     private$S     <- control$inception$var_par$S
-
+    private$Sigma <- control$inception$model_par$Sigma
+    private$J     <- control$inception$loglik
+    private$Ji    <- control$inception$loglik_vec
   } else {
     if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
     LMs   <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset =  offsets[,j]) )
     private$Theta <- do.call(rbind, lapply(LMs, coefficients))
     private$M     <- do.call(cbind, lapply(LMs, residuals))
     private$S     <- matrix(10 * max(control$lower_bound), n, ifelse(control$covariance == "spherical", 1, p))
+    private$Sigma <- crossprod(private$M)/n + diag(colMeans(private$S))
   }
 
 })
@@ -177,9 +180,7 @@ function(responses, covariates, offsets) {
   rownames(private$Theta) <- colnames(responses)
   colnames(private$Theta) <- colnames(covariates)
   rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
-  dimnames(private$M) <- dimnames(responses)
-  rownames(private$S) <- rownames(responses)
-  if (private$covariance != "spherical") colnames(private$S) <- colnames(responses)
+  rownames(private$M) <- rownames(private$S) <- rownames(responses)
 })
 
 #' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.

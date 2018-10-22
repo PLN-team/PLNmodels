@@ -67,9 +67,7 @@ PLNPCAfamily$set("public", "optimize",
 PLNPCAfamily$set("public", "postTreatment",
 function() {
   super$postTreatment()
-  for (model in self$models) {
-    model$setVisualization()
-  }
+  for (model in self$models) model$setVisualization()
 })
 
 PLNPCAfamily$set("public", "plot",

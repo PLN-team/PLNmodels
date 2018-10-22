@@ -123,14 +123,8 @@ function(responses, covariates, offsets, control) {
 
 PLNPCAfit$set("public", "postTreatment",
 function(responses, covariates, offsets) {
-  ## compute R2
-  self$set_R2(responses, covariates, offsets)
-  ## Set the name of the matrices according to those of the data matrices
-  rownames(private$Theta) <- rownames(private$B) <- rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
-  colnames(private$Theta) <- colnames(covariates)
+  super$postTreatment(responses, covariates, offsets)
   colnames(private$B) <- colnames(private$M) <- 1:self$q
-  rownames(private$S) <- rownames(responses)
-  rownames(private$M) <- rownames(responses)
   if (private$covariance != "spherical") colnames(private$S) <- 1:self$q
 })
 
