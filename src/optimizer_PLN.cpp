@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------
 // ABSTRACT CLASS OPTIMIZER_PLN
 //
-// COMMON TO PLW WITH SPHERICAL, DIAGONAL AND FULLY PARAMETRIZED COVARIANCE
+// COMMON TO PLN WITH SPHERICAL, DIAGONAL AND FULLY PARAMETRIZED COVARIANCE
 
 using namespace arma ;
 using namespace Rcpp ;
@@ -149,4 +149,59 @@ void optimizer_PLN_full::export_output () {
   arma::mat A = exp (Z + .5 * S) ;
 
   loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) + .5 * real(log_det(Omega)) - logfact(data.Y) + .5 * p;
+};
+
+// ---------------------------------------------------------------------------
+// CHILD CLASS WITH RANK-CONSTRAINED COVARIANCE
+
+optimizer_PLN_rank::optimizer_PLN_rank (
+  arma::vec par,
+  const arma::mat & Y,
+  const arma::mat & X,
+  const arma::mat & O,
+  const arma::vec & w,
+  Rcpp::List options
+) : optimizer_PLN(par, Y, X, O, w, options) {
+  // if (Rcpp::as<bool>(options["weighted"])) {
+    fn_optim = &fn_optim_PLN_rank ;
+  // } else {
+  //   fn_optim = &fn_optim_PLN_rank ;
+  // }
+
+  // initialize the rank
+  q = Rcpp::as<int>(options["rank"]);
+
+  // overload the data structure
+  data = optim_data(Y, X, O, q) ;
+
+};
+
+void optimizer_PLN_rank::export_output () {
+
+  // model and variational parameters
+  Theta = arma::mat(&parameter[0]          , p,d);
+  B     = arma::mat(&parameter[p*d]        , p,q) ;
+  M     = arma::mat(&parameter[p*(d+q)]    , n,q);
+  S     = arma::mat(&parameter[p*(d+q)+n*q], n,q);
+  Sigma = B * (M.t()* M + diagmat(sum(S, 0)) ) * B.t() / n ;
+
+  // element-wise log-likelihood
+  arma::mat Z = data.O + data.X * Theta.t() + M * B.t();
+  arma::mat A = exp (Z + .5 * S * (B % B).t() ) ;
+
+  loglik = arma::sum(data.Y % Z - A, 1) - .5 * sum(M % M + S - log(S) - 1, 1) - logfact(data.Y);
+};
+
+// override mother's method for getting output
+Rcpp::List optimizer_PLN_rank::get_output() {
+  return Rcpp::List::create(
+      Rcpp::Named("status"    ) = (int) status,
+      Rcpp::Named("Theta" )     = Theta,
+      Rcpp::Named("Sigma" )     = Sigma,
+      Rcpp::Named("B")          = B    ,
+      Rcpp::Named("M"         ) = M,
+      Rcpp::Named("S"         ) = S,
+      Rcpp::Named("iterations") = data.iterations,
+      Rcpp::Named("loglik"    ) = loglik
+    );
 };

@@ -29,6 +29,10 @@ Rcpp::List optimization_PLN (
   if (Rcpp::as<std::string>(options["covariance"]) == "full")
     myPLN = new optimizer_PLN_full(par, Y, X, O, w, options) ;
 
+  // RANK-CONSTRAINED COVARIANCE (PCA)
+  if (Rcpp::as<std::string>(options["covariance"]) == "rank")
+    myPLN = new optimizer_PLN_rank(par, Y, X, O, w, options) ;
+
   // Perform the optimization
   myPLN->optimize() ;
 

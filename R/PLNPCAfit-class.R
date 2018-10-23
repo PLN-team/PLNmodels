@@ -97,12 +97,22 @@ function(responses, covariates, offsets, control) {
                         rep(-Inf, self$p*self$q) , # B
                         rep(-Inf, self$n*self$q) , # M
                         rep(control$lower_bound,self$n*self$q)) # S
-  optim_out <- optimization_PLNPCA(
-    unlist(c(private$Theta, private$B, private$M, private$S)),
+  opts$rank <- self$q
+  opts$covariance <- "rank"
+  # optim_out <- optimization_PLNPCA(
+  #   c(private$Theta, private$B, private$M, private$S),
+  #   responses,
+  #   covariates,
+  #   offsets,
+  #   self$q,
+  #   opts
+  # )
+  optim_out <- optimization_PLN(
+    c(private$Theta, private$B, private$M, private$S),
     responses,
     covariates,
     offsets,
-    self$q,
+    rep(1,self$n),
     opts
   )
 

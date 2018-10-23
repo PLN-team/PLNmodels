@@ -42,7 +42,7 @@ class optimizer_PLN {
 
   public:
 
-    // Constructor
+    // Constructors
     optimizer_PLN() {} ;
 
     optimizer_PLN(
@@ -64,7 +64,7 @@ class optimizer_PLN {
     virtual void export_output() =0;
 
     // export the output an Rcpp::List understandable by R
-    Rcpp::List get_output() ;
+    virtual Rcpp::List get_output() ;
 
 };
 
@@ -118,3 +118,44 @@ class optimizer_PLN_full: public optimizer_PLN {
 
     void export_output() ;
 };
+
+// RANK-CONSTRAINED COVARIANCE (PCA)
+class optimizer_PLN_rank: public optimizer_PLN {
+  public:
+    optimizer_PLN_rank(
+      arma::vec par,
+      const arma::mat & Y,
+      const arma::mat & X,
+      const arma::mat & O,
+      const arma::vec & w,
+      Rcpp::List options
+    ) ;
+
+    // override Mothes'class defnition (one additional parameter to send back)
+    Rcpp::List get_output() ;
+
+  protected:
+
+    // Rank
+    int q ;
+
+    // matrix of scores
+    arma::mat B ;
+
+    void export_output() ;
+};
+
+// // SPARSE INVERSE COVARIANCE (PCA)
+// class optimizer_PLN_sparse: public optimizer_PLN {
+//   public:
+//     optimizer_PLN_sparse(
+//       arma::vec par,
+//       const arma::mat & Y,
+//       const arma::mat & X,
+//       const arma::mat & O,
+//       const arma::vec & w,
+//       Rcpp::List options
+//     ) ;
+//
+//     void export_output() ;
+// };
