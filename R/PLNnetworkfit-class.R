@@ -38,6 +38,7 @@ PLNnetworkfit <-
     ),
     active = list(
       penalty         = function() {private$lambda},
+### TODO: understand what is happening when penalize_diagonal = FALSE
       n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
       degrees_freedom = function() {self$p * self$d + self$n_edges},
       pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
@@ -103,18 +104,13 @@ function(responses, covariates, offsets, control) {
 
   ## ===========================================
   ## OUTPUT
-  ## formating parameters for output
-  Theta <- matrix(optim.out$solution[1:(self$p*self$d)], self$p, self$d)
-  # rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
-  # dimnames(S)     <- dimnames(self$responses)
-  # dimnames(M)     <- dimnames(self$responses)
-  # rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
-  ## Optimization ends with a gradient descent step rather than a glasso step.
-  ## Return Sigma from glasso step to ensure that Sigma = solve(Omega)
-  ## Sigma <- Sigma0 ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
-  ## dimnames(Sigma) <- dimnames(Omega)
-
-  self$update(Theta = Theta, Omega = Omega, Sigma = Sigma, M = M, S = S, J = -optim.out$objective,
+  self$update(
+    Theta = matrix(optim.out$solution[1:(self$p*self$d)], self$p, self$d),
+    Omega = Omega,
+    Sigma = Sigma,
+    M = M,
+    S = S,
+    J = -optim.out$objective,
     monitoring = list(objective        = objective[1:iter],
                       convergence      = convergence[1:iter],
                       outer_iterations = iter,
@@ -122,6 +118,13 @@ function(responses, covariates, offsets, control) {
                       inner_status     = optim.out$status,
                       inner_message    = optim.out$message))
 
+})
+
+PLNnetworkfit$set("public", "postTreatment",
+function(responses, covariates, offsets) {
+  super$postTreatment(responses, covariates, offsets)
+  dimnames(private$Omega) <- dimnames(private$Sigma)
+  colnames(private$S) <- 1:self$p
 })
 
 ## ----------------------------------------------------------------------

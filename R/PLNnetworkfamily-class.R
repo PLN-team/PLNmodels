@@ -64,44 +64,33 @@ PLNnetworkfamily$set("public", "initialize",
     ## instantiate as many models as penalties
     private$params <- sort(penalties, decreasing = TRUE)
     self$models <- lapply(private$params, function(penalty) {
-      PLNnetworkfit$new(penalty = penalty, responses, covariates, offsets, control)
+      PLNnetworkfit$new(penalty, responses, covariates, offsets, control)
     })
 
 })
 
-# One (coordinate-descent) optimization for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
-# the same starting point (inception model from \code{\link[=PLNfit-class]{PLNfit}}) for all models.
-#
 PLNnetworkfamily$set("public", "optimize",
   function(control) {
 
-  ## ===========================================
-  ## INITIALISATION
+  ## Go along the penalty grid (i.e the models)
+  for (m in seq_along(self$models))  {
 
-  ## start from the standard PLN (a.k.a. inception)
-  # Sigma <- self$inception$model_par$Sigma
-  # par0  <- c(self$inception$model_par$Theta,
-  #            self$inception$var_par$M,
-  #            rep(max(control$lower_bound), private$n*private$p))
-  # Omega  <- diag(1/diag(Sigma), nrow = private$p, ncol = private$p)
-  # Sigma0 <- diag(  diag(Sigma), nrow = private$p, ncol = private$p)
-  # objective.old <- ifelse(is.na(self$inception$loglik),-Inf,-self$inception$loglik)
-
-  ## ===========================================
-  ## GO ALONG THE PENALTY GRID (i.e the models)
-  for (model in self$models)  {
-
-    ## ===========================================
-    ## OPTIMISATION
     if (control$trace == 1) {
-      cat("\tsparsifying penalty =", model$penalty, "\r")
+      cat("\tsparsifying penalty =", self$models[[m]]$penalty, "\r")
       flush.console()
     }
     if (control$trace > 1) {
-      cat("\tsparsifying penalty =", model$penalty, "- iteration:")
+      cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
     }
-
-    model$optimize(self$responses, self$covariates, self$offsets, control)
+    self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, control)
+    ## Save time by starting the optimization process of model m+1  with values of model m
+    if (m < length(self$penalties))
+      self$models[[m + 1]]$update(
+          Theta = self$models[[m]]$model_par$Theta,
+          Sigma = self$models[[m]]$model_par$Sigma,
+          M     = self$models[[m]]$var_par$M,
+          S     = self$models[[m]]$var_par$S
+        )
 
     if (control$trace > 1) {
       cat("\r                                                                                    \r")
