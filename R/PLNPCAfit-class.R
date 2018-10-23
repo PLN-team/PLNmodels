@@ -34,6 +34,7 @@ PLNPCAfit <-
         private$M <- svdM$u[, 1:rank, drop=FALSE] %*% diag(svdM$d[1:rank], nrow=rank, ncol=rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
         private$S <- matrix(max(control$lower_bound), nrow(responses), rank)
         private$B <- svdSigma$u[, 1:rank, drop = FALSE] %*% sqrt(diag(svdSigma$d[1:rank],nrow = rank, ncol = rank))
+        private$covariance <- "rank"
       },
       update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, J=NA, Ji=NA, R2=NA, monitoring=NA) {
         super$update(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, Ji = Ji, R2 = R2, monitoring = monitoring)
@@ -64,7 +65,7 @@ PLNPCAfit <-
       corr_circle = function() {
         corr <- t(t(private$svdBM$v[, 1:self$rank]) * private$svdBM$d[1:self$rank]^2)
         corr <- corr/sqrt(rowSums(corr^2))
-        rownames(corr) <- rownames(private$B)
+        rownames(corr) <- rownames(private$Sigma)
         corr
       },
       scores     = function() {
@@ -74,7 +75,7 @@ PLNPCAfit <-
       },
       rotation   = function() {
         rotation <- private$svdBM$v[, 1:self$rank]
-        rownames(rotation) <- rownames(private$B)
+        rownames(rotation) <- rownames(private$Sigma)
         rotation
       }
     )
@@ -98,15 +99,6 @@ function(responses, covariates, offsets, control) {
                         rep(-Inf, self$n*self$q) , # M
                         rep(control$lower_bound,self$n*self$q)) # S
   opts$rank <- self$q
-  opts$covariance <- "rank"
-  # optim_out <- optimization_PLNPCA(
-  #   c(private$Theta, private$B, private$M, private$S),
-  #   responses,
-  #   covariates,
-  #   offsets,
-  #   self$q,
-  #   opts
-  # )
   optim_out <- optimization_PLN(
     c(private$Theta, private$B, private$M, private$S),
     responses,
@@ -135,7 +127,9 @@ PLNPCAfit$set("public", "postTreatment",
 function(responses, covariates, offsets) {
   super$postTreatment(responses, covariates, offsets)
   colnames(private$B) <- colnames(private$M) <- 1:self$q
+  rownames(private$B) <- colnames(private$responses)
   if (private$covariance != "spherical") colnames(private$S) <- 1:self$q
+  self$setVisualization()
 })
 
 # Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.

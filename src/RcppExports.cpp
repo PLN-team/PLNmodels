@@ -56,28 +56,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// optimization_PLNPCA
-Rcpp::List optimization_PLNPCA(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const int rank, Rcpp::List options);
-RcppExport SEXP _PLNmodels_optimization_PLNPCA(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP rankSEXP, SEXP optionsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const int >::type rank(rankSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimization_PLNPCA(par, Y, X, O, rank, options));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optimization_VEstep_PLN", (DL_FUNC) &_PLNmodels_optimization_VEstep_PLN, 7},
     {"_PLNmodels_optimization_PLN", (DL_FUNC) &_PLNmodels_optimization_PLN, 6},
     {"_PLNmodels_optimization_PLNnetwork", (DL_FUNC) &_PLNmodels_optimization_PLNnetwork, 7},
-    {"_PLNmodels_optimization_PLNPCA", (DL_FUNC) &_PLNmodels_optimization_PLNPCA, 6},
     {NULL, NULL, 0}
 };
 

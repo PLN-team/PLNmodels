@@ -44,11 +44,7 @@ PLNPCAfamily$set("public", "initialize",
 
 PLNPCAfamily$set("public", "optimize",
   function(control) {
-
-  ## OPTIMISATION
-  ## call to the optimize method of each PLNPCAfit
-  self$models <- mclapply(self$models, function(model) {
-
+    self$models <- mclapply(self$models, function(model) {
     if (control$trace == 1) {
       cat("\t Rank approximation =",model$rank, "\r")
       flush.console()
@@ -57,17 +53,9 @@ PLNPCAfamily$set("public", "optimize",
       cat(" Rank approximation =",model$rank)
       cat("\n\t conservative convex separable approximation for gradient descent")
     }
-
     model$optimize(self$responses, self$covariates, self$offsets, control)
     model
-
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
-})
-
-PLNPCAfamily$set("public", "postTreatment",
-function() {
-  super$postTreatment()
-  for (model in self$models) model$setVisualization()
 })
 
 PLNPCAfamily$set("public", "plot",

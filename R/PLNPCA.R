@@ -48,7 +48,6 @@ PLNPCA <- function(formula, data, subset, ranks = 1:5,  control_init = list(), c
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
-  if (is.null(ctrl_init$inception)) ctrl_init$inception <- ifelse(nrow(args$Y) >= 1.5*ncol(args$Y), "PLN", "LM")
   ctrl_main <- PLNPCA_param(control_main)
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank

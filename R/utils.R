@@ -168,16 +168,17 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
 
 PLNPCA_param <- function(control) {
   ctrl <- list(
-      "algorithm"   = "CCSAQ",
+      "algorithm"   = "CCSAQ" ,
       "ftol_rel"    = 1e-8    ,
       "ftol_abs"    = 0       ,
       "xtol_rel"    = 1e-4    ,
-      "xtol_abs"    = 1e-4,
-      "lower_bound" = 1e-4,
+      "xtol_abs"    = 1e-4    ,
+      "lower_bound" = 1e-4    ,
       "maxeval"     = 10000   ,
       "maxtime"     = -1      ,
       "trace"       = 1       ,
-      "cores"       = 1
+      "cores"       = 1       ,
+      "covariance"  = "rank"
     )
   ctrl[names(control)] <- control
   ctrl

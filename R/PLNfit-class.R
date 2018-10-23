@@ -131,7 +131,11 @@ function(responses, covariates, offsets, weights, control) {
     private$Theta <- do.call(rbind, lapply(LMs, coefficients))
     private$M     <- do.call(cbind, lapply(LMs, residuals))
     private$S     <- matrix(10 * max(control$lower_bound), n, ifelse(control$covariance == "spherical", 1, p))
-    private$Sigma <- crossprod(private$M)/n + diag(colMeans(private$S))
+    if (control$covariance == "spherical") {
+      private$Sigma <- diag(crossprod(private$M)/n)
+    } else  {
+      private$Sigma <- crossprod(private$M)/n + diag(colMeans(private$S))
+    }
   }
 
 })

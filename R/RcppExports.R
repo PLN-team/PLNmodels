@@ -13,7 +13,3 @@ optimization_PLNnetwork <- function(par, Y, X, O, Omega, log_det_Omega, options)
     .Call('_PLNmodels_optimization_PLNnetwork', PACKAGE = 'PLNmodels', par, Y, X, O, Omega, log_det_Omega, options)
 }
 
-optimization_PLNPCA <- function(par, Y, X, O, rank, options) {
-    .Call('_PLNmodels_optimization_PLNPCA', PACKAGE = 'PLNmodels', par, Y, X, O, rank, options)
-}
-
