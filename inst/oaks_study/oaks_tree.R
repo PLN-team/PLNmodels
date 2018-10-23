@@ -26,5 +26,5 @@ myPLNPCA$plot_PCA(cols.ind = oaks$treeStatus)
 ## Network inference with sparce covariance estimation
 myPLNnets <- PLNnetwork(Abundancies ~ 1 + treeStatus + offset(log(sequencingEffort)), data = oaks)
 myPLNnets$stability_selection()
-myPLNnet <- myPLNnets$getBestModel("StARS", .9825)
+myPLNnet <- myPLNnets$getBestModel("StARS", .985)
 myPLNnet$plot_network()

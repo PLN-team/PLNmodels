@@ -52,37 +52,16 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   args$X <- cbind(covar, design_group)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X))
+  ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X))
+  ## create the LDA object
+  myLDA <- PLNLDAfit$new(grouping, args$Y, args$X, args$O, args$w, ctrl)
 
-  ## call to the fitting function
-  myPLN <- do.call(PLN_internal, args)
-
-  ## extract group means
-  if (ncol(covar) > 0) {
-    proj_orth_X <- (diag(myPLN$n) - covar %*% solve(crossprod(covar)) %*% t(covar))
-    P <- proj_orth_X %*% myPLN$latent_pos(args$X, matrix(0, myPLN$n, myPLN$q))
-    Mu <- t(rowsum(P, grouping) / tabulate(grouping))
-  } else {
-    Mu <- myPLN$model_par$Theta
-  }
-  colnames(Mu) <- colnames(design_group)
+  if (ctrl$trace > 0) cat("\n Performing discriminant Analysis...")
+  myLDA$optimize(args$X, covar, design_group, ctrl)
 
   ## vizualization for discriminant analysis
-  if (args$ctrl$trace > 0) cat("\n Performing discriminant Analysis...")
-  myLDA <- PLNLDAfit$new(
-    Theta      = myPLN$model_par$Theta,
-    Sigma      = myPLN$model_par$Sigma,
-    M          = myPLN$var_par$M,
-    S          = myPLN$var_par$S,
-    J          = myPLN$loglik,
-    Ji         = myPLN$loglik_vec,
-    covariance = myPLN$model,
-    monitoring = myPLN$optim_par,
-    Mu         = Mu,
-    grouping   = grouping
-  )
-  myLDA$setVisualization()
+  myLDA$postTreatment(args$Y, args$X, args$O)
 
-  if (args$ctrl$trace > 0) cat("\n DONE!\n")
+  if (ctrl$trace > 0) cat("\n DONE!\n")
   myLDA
 }

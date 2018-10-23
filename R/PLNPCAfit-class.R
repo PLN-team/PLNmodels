@@ -127,7 +127,7 @@ PLNPCAfit$set("public", "postTreatment",
 function(responses, covariates, offsets) {
   super$postTreatment(responses, covariates, offsets)
   colnames(private$B) <- colnames(private$M) <- 1:self$q
-  rownames(private$B) <- colnames(private$responses)
+  rownames(private$B) <- colnames(responses)
   if (private$covariance != "spherical") colnames(private$S) <- 1:self$q
   self$setVisualization()
 })
