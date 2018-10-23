@@ -26,8 +26,8 @@ PLNnetworkfit <-
         super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
         private$lambda <- penalty
       },
-      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M, S = S, J = J, R2 = R2, monitoring = monitoring)
+      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, M, S = S, J = J, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(penalty)) private$lambda <- penalty
         if (!anyNA(Omega))   private$Omega  <- Omega
       }
@@ -73,50 +73,43 @@ function(responses, covariates, offsets, control) {
   while (!cond) {
     iter <- iter + 1
     if (control$trace > 1) cat("", iter)
+
     ## CALL TO GLASSO TO UPDATE Omega/Sigma
-    glasso_out <- suppressWarnings(
-      glassoFast::glassoFast(
-        Sigma,
-        rho = rho
-        # start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
-      )
-    )
+    glasso_out <- glassoFast::glassoFast(Sigma, rho = rho)
     if (anyNA(glasso_out$wi)) break
     Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-    logDetOmega <- as.double(determinant(Omega, logarithm = TRUE)$modulus)
-    optim.out <- optimization_PLNnetwork(par0, responses, covariates, offsets, Omega, logDetOmega, control)
-    optim.out$message <- statusToMessage(optim.out$status)
-    objective[iter]   <- optim.out$objective + self$penalty * sum(abs(Omega))
-    convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
+    control$Omega <- Omega
+    optim.out <- optimization_PLN(par0, responses, covariates, offsets, rep(1,self$n), control)
 
     ## Check convergence
+    objective[iter]   <- -sum(optim.out$loglik) + self$penalty * sum(abs(Omega))
+    convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
     if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
 
-    ## Post-Treatment to update Sigma
-    M <- matrix(optim.out$solution[self$p*self$d               + 1:(self$n*self$p)], self$n,self$p)
-    S <- matrix(optim.out$solution[(self$n + self$d)*self$p + 1:(self$n*self$p)], self$n,self$p)
-    Sigma <- crossprod(M)/self$n + diag(colMeans(S), nrow = self$p, ncol = self$p)
-    par0 <- optim.out$solution
+    ## Prepare next iterate
+    Sigma <- optim.out$Sigma
+    par0  <- c(optim.out$Theta, optim.out$M, optim.out$S)
     objective.old <- objective[iter]
   }
 
   ## ===========================================
   ## OUTPUT
   self$update(
-    Theta = matrix(optim.out$solution[1:(self$p*self$d)], self$p, self$d),
+    Theta = optim.out$Theta,
     Omega = Omega,
-    Sigma = Sigma,
-    M = M,
-    S = S,
-    J = -optim.out$objective,
+    Sigma = optim.out$Sigma,
+    M = optim.out$M,
+    S = optim.out$S,
+    J  = sum(optim.out$loglik),
+    Ji = optim.out$loglik,
     monitoring = list(objective        = objective[1:iter],
                       convergence      = convergence[1:iter],
                       outer_iterations = iter,
                       inner_iterations = optim.out$iterations,
                       inner_status     = optim.out$status,
-                      inner_message    = optim.out$message))
+                      inner_message    = statusToMessage(optim.out$status)))
 
 })
 

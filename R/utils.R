@@ -200,7 +200,8 @@ PLNnetwork_param <- function(control, n, p, d) {
     "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, n*p), rep(lower_bound, n*p)),
     "maxeval"     = 10000   ,
     "maxtime"     = -1      ,
-    "trace"       = 1
+    "trace"       = 1       ,
+    "covariance"  = "sparse"
   )
   ctrl[names(control)] <- control
   ctrl

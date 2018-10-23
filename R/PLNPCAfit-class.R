@@ -104,7 +104,7 @@ function(responses, covariates, offsets, control) {
     responses,
     covariates,
     offsets,
-    rep(1,self$n),
+    rep(1,self$n), ## TODO -- handle weights correctly
     opts
   )
 
