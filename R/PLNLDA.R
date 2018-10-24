@@ -53,13 +53,15 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X))
-  ## create the LDA object
+
+  ## Initialize LDA by adjusting a PLN
   myLDA <- PLNLDAfit$new(grouping, args$Y, args$X, args$O, args$w, ctrl)
 
+  ## Compute the group means
   if (ctrl$trace > 0) cat("\n Performing discriminant Analysis...")
   myLDA$optimize(args$X, covar, design_group, ctrl)
 
-  ## vizualization for discriminant analysis
+  ## Post-treatment: prepare LDA vizualization
   myLDA$postTreatment(args$Y, args$X, args$O)
 
   if (ctrl$trace > 0) cat("\n DONE!\n")

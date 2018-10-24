@@ -54,11 +54,11 @@ PLNPCA <- function(formula, data, subset, ranks = 1:5,  control_init = list(), c
   if (ctrl_main$trace > 0) cat("\n Initialization...")
   myPLN <- PLNPCAfamily$new(ranks = ranks, responses = args$Y, covariates = args$X, offsets = args$O, control = ctrl_init)
 
-  ## Now adjust the PLN models
+  ## Adjust the PLN models
   if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.\n")
   myPLN$optimize(ctrl_main)
 
-  ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
+  ## Post-treatments: pseudo-R2, rearrange criteria and prepare PCA visualization
   if (ctrl_main$trace > 0) cat("\n Post-treatments")
   myPLN$postTreatment()
 

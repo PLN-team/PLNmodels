@@ -54,16 +54,16 @@ PLNnetwork <- function(formula, data, subset, penalties = NULL, control_init = l
   if (is.null(ctrl_init$min.ratio)) ctrl_init$min.ratio   <- .1
   ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y),ncol(args$X))
 
-  ## Instantiate the collection of PLN models
+  ## Instantiate the collection of models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
   myPLN <- PLNnetworkfamily$new(penalties = penalties, responses = args$Y, covariates = args$X, offsets = args$O, control = ctrl_init)
 
-  ## Main optimization
+  ## Optimization
   if (ctrl_main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")
   if (ctrl_main$trace) cat("\tJoint optimization alternating gradient descent and graphical-lasso\n")
   myPLN$optimize(ctrl_main)
 
-  ## Post-treatments: compute pseudo-R2
+  ## Post-treatments
   if (ctrl_main$trace > 0) cat("\n Post-treatments")
   myPLN$postTreatment()
 
