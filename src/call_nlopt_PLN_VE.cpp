@@ -3,7 +3,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::plugins(cpp11)]]
 
-#include "utils_optim.h"
+#include "utils.h"
 
 double fn_optim_VEstep_PLN(const std::vector<double> &x, std::vector<double> &grad, void *data) {
 

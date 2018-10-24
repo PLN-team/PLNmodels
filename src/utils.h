@@ -1,5 +1,5 @@
-#ifndef _utils_optim_H
-#define _utils_optim_H
+#ifndef _utils_H
+#define _utils_H
 
 #include "RcppArmadillo.h"
 #include <nlopt.hpp>

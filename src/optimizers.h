@@ -1,8 +1,8 @@
 #ifndef _optimizers_H
 #define _optimizers_H
 
-#include "utils_optim.h"
-#include "gradients_PLN.h"
+#include "utils.h"
+#include "gradients.h"
 
 // ---------------------------------------------------------------------------
 // ABSTRACT CLASS OPTIMIZER_PLN
