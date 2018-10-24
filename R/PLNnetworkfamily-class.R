@@ -52,9 +52,10 @@ PLNnetworkfamily$set("public", "initialize",
     ## Get an appropriate grid of penalties
     if (is.null(penalties)) {
       if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
-      myPLN <- PLN_internal(responses, covariates, offsets, rep(1, nrow(responses)), control)
-      control$inception <- myPLN
+      myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), control)
+      myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
       max_pen <- max(abs(myPLN$model_par$Sigma))
+      control$inception <- myPLN
       penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min.ratio), len = control$nPenalties)
     } else {
       if (control$trace > 1) cat("\nPenalties already set by the user")

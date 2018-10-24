@@ -41,27 +41,20 @@ PLN <- function(formula, data, subset, weights, control = list()) {
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and eventually overwrite them by user-defined parameters
-  args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X), weighted = !missing(weights))
-
-  ## call to the fitting function
-  res <- do.call(PLN_internal, args)
-  res
-}
-
-PLN_internal <- function(Y, X, O, w, ctrl) {
+  ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X), weighted = !missing(weights))
 
   ## initialization
   if (ctrl$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNfit$new(Y, X, O, w, ctrl)
+  myPLN <- PLNfit$new(args$Y, args$X, args$O, args$w, ctrl)
 
   ## optimization
   if (ctrl$trace > 0) cat("\n Adjusting a PLN model with", ctrl$covariance,"covariance model")
   if (ctrl$trace > 0 & ctrl$weighted) cat(" (with observation weigths)")
-  myPLN$optimize(Y, X, O, w, ctrl)
+  myPLN$optimize(args$Y, args$X, args$O, args$w, ctrl)
 
   ## post-treatment
   if (ctrl$trace > 0) cat("\n Post-treatments...")
-  myPLN$postTreatment(Y, X, O)
+  myPLN$postTreatment(args$Y, args$X, args$O) ## TODO: this should include the weights !!!
 
   if (ctrl$trace > 0) cat("\n DONE!\n")
   myPLN
