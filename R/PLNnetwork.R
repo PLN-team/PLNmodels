@@ -5,6 +5,7 @@
 ##' @param formula an object of class "formula": a symbolic description of the model to be fitted.
 ##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
+##' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
 ##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally
 ##' @param control_init a list for controling the optimization of the PLN model used at initialization. See details.
 ##' @param control_main a list for controling the main optimization process. See details.
@@ -42,21 +43,21 @@
 ##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNnetwork <- function(formula, data, subset, penalties = NULL, control_init = list(), control_main = list()) {
+PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control_init = list(), control_main = list()) {
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
   if (is.null(control_init$trace)) control_init$trace <- 0
-  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
+  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X), weighted = !missing(weights))
   if (is.null(ctrl_init$nPenalties)) ctrl_init$nPenalties <- 30
   if (is.null(ctrl_init$min.ratio)) ctrl_init$min.ratio   <- .1
-  ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y),ncol(args$X))
+  ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y),ncol(args$X), weighted = !missing(weights))
 
   ## Instantiate the collection of models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNnetworkfamily$new(penalties = penalties, responses = args$Y, covariates = args$X, offsets = args$O, control = ctrl_init)
+  myPLN <- PLNnetworkfamily$new(penalties, args$Y, args$X, args$O, args$w, ctrl_init)
 
   ## Optimization
   if (ctrl_main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")

@@ -64,6 +64,8 @@ test_that("Check PLN weights with diagonal covariance",  {
   ## equivalent weigths
   model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(covariance = "diagonal", trace = 0))
 
+  model3 <- PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(covariance = "diagonal", trace = 0))
+
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
 })
 

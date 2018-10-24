@@ -2,7 +2,7 @@
 
 .softmax <- function(x) {
   b <- max(x)
-  exp(x-b) / sum(exp(x-b))
+  exp(x - b) / sum(exp(x - b))
 }
 
 .logfactorial <- function(n) { # Ramanujan's formula
@@ -10,21 +10,22 @@
   return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)
 }
 
-logLikPoisson <- function(responses, lambda) {
-  loglik <- sum(responses * lambda, na.rm = TRUE) - sum(exp(lambda)) - sum(.logfactorial(responses))
+logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) {
+  loglik <- rowSums(responses * lambda, na.rm = TRUE) - rowSums(exp(lambda)) - rowSums(.logfactorial(responses))
+  loglik <- sum(loglik * weights)
   loglik
 }
 
 ##' @importFrom stats glm.fit
-nullModelPoisson <- function(responses, covariates, offsets) {
+nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
   Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
-    coefficients(glm.fit(covariates, responses[, j], offset = offsets[,j], family = stats::poisson()))))
+    coefficients(glm.fit(covariates, responses[, j], weights = weights, offset = offsets[, j], family = stats::poisson()))))
   lambda <- offsets + tcrossprod(covariates, Theta)
   lambda
 }
 
-fullModelPoisson <- function(responses) {
-  lambda <- log(responses)
+fullModelPoisson <- function(responses, weights = rep(1, nrow(responses))) {
+  lambda <- log(sweep(responses, 1, weights, "*"))
   lambda
 }
 
@@ -166,7 +167,7 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
 }
 
 
-PLNPCA_param <- function(control) {
+PLNPCA_param <- function(control, weighted = FALSE) {
   ctrl <- list(
       "algorithm"   = "CCSAQ" ,
       "ftol_rel"    = 1e-8    ,
@@ -178,15 +179,16 @@ PLNPCA_param <- function(control) {
       "maxtime"     = -1      ,
       "trace"       = 1       ,
       "cores"       = 1       ,
+      "weighted"    = weighted  ,
       "covariance"  = "rank"
     )
   ctrl[names(control)] <- control
   ctrl
 }
 
-PLNnetwork_param <- function(control, n, p, d) {
-  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
+PLNnetwork_param <- function(control, n, p, d, weighted = FALSE) {
+  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4, control$lower_bound)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4, control$xtol_abs)
   ctrl <-  list(
     "ftol_out"  = 1e-5,
     "maxit_out" = 50,
@@ -201,6 +203,7 @@ PLNnetwork_param <- function(control, n, p, d) {
     "maxeval"     = 10000   ,
     "maxtime"     = -1      ,
     "trace"       = 1       ,
+    "weighted"    = weighted,
     "covariance"  = "sparse"
   )
   ctrl[names(control)] <- control

@@ -44,7 +44,7 @@ PLNfit <-
       S          = NA, # the variational parameters for the variances
       M          = NA, # the variational parameters for the means
       R2         = NA, # approximated goodness of fit criterion
-      J          = NA, # approximated loglikelihood
+      J          = NA, # approximated weighted loglikelihood
       Ji         = NA, # element-wise approximated loglikelihood
       covariance = NA, # a string describing the covariance model
       monitoring = NA  # a list with optimization monitoring quantities
@@ -169,17 +169,17 @@ function(responses, covariates, offsets, weights, control) {
 })
 
 PLNfit$set("public", "set_R2",
-function(responses, covariates, offsets) {
-  loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets))
-  lmin   <- logLikPoisson(responses, nullModelPoisson(responses, covariates, offsets))
-  lmax   <- logLikPoisson(responses, fullModelPoisson(responses))
+function(responses, covariates, offsets, weights) {
+  loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets), weights)
+  lmin   <- logLikPoisson(responses, nullModelPoisson(responses, covariates, offsets, weights))
+  lmax   <- logLikPoisson(responses, fullModelPoisson(responses, weights))
   private$R2 <- (loglik - lmin) / (lmax - lmin)
 })
 
 PLNfit$set("public", "postTreatment",
-function(responses, covariates, offsets) {
+function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
   ## compute R2
-  self$set_R2(responses, covariates, offsets)
+  self$set_R2(responses, covariates, offsets, weights)
   ## Set the name of the matrices according to those of the data matrices
   rownames(private$Theta) <- colnames(responses)
   colnames(private$Theta) <- colnames(covariates)

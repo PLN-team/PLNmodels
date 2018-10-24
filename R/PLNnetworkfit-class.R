@@ -21,9 +21,8 @@ PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(penalty, responses, covariates, offsets, control) {
-        ## TODO: add weights properly...
-        super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
+      initialize = function(penalty, responses, covariates, offsets, weights, control) {
+        super$initialize(responses, covariates, offsets, weights, control)
         private$lambda <- penalty
       },
       update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, Ji=NA, R2=NA, monitoring=NA) {
@@ -57,7 +56,7 @@ PLNnetworkfit <-
 
 
 PLNnetworkfit$set("public", "optimize",
-function(responses, covariates, offsets, control) {
+function(responses, covariates, offsets, weights, control) {
 
   ## shall we penalize the diagonal? in glassoFast
   rho <- matrix(self$penalty, self$p, self$p)
@@ -81,10 +80,10 @@ function(responses, covariates, offsets, control) {
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
     control$Omega <- Omega
-    optim.out <- optimization_PLN(par0, responses, covariates, offsets, rep(1,self$n), control)
+    optim.out <- optimization_PLN(par0, responses, covariates, offsets, weights, control)
 
     ## Check convergence
-    objective[iter]   <- -sum(optim.out$loglik) + self$penalty * sum(abs(Omega))
+    objective[iter]   <- -sum(weights * optim.out$loglik) + self$penalty * sum(abs(Omega))
     convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
     if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
 
@@ -114,8 +113,8 @@ function(responses, covariates, offsets, control) {
 })
 
 PLNnetworkfit$set("public", "postTreatment",
-function(responses, covariates, offsets) {
-  super$postTreatment(responses, covariates, offsets)
+function(responses, covariates, offsets, weights) {
+  super$postTreatment(responses, covariates, offsets, weights)
   dimnames(private$Omega) <- dimnames(private$Sigma)
   colnames(private$S) <- 1:self$p
 })

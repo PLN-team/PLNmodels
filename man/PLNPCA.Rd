@@ -4,8 +4,8 @@
 \alias{PLNPCA}
 \title{Poisson lognormal model towards Principal Component Analysis}
 \usage{
-PLNPCA(formula, data, subset, ranks = 1:5, control_init = list(),
-  control_main = list())
+PLNPCA(formula, data, subset, weights, ranks = 1:5,
+  control_init = list(), control_main = list())
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
@@ -13,6 +13,8 @@ PLNPCA(formula, data, subset, ranks = 1:5, control_init = list(),
 \item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.}
 
 \item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
+
+\item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
 
 \item{ranks}{a vector of integer containing the successive ranks (or number of axes to be considered)}
 

@@ -45,14 +45,14 @@ PLNnetworkfamily <-
 )
 
 PLNnetworkfamily$set("public", "initialize",
-  function(penalties, responses, covariates, offsets, control) {
+  function(penalties, responses, covariates, offsets, weights, control) {
 
     ## initialize fields shared by the super class
-    super$initialize(responses, covariates, offsets, control)
+    super$initialize(responses, covariates, offsets, weights, control)
     ## Get an appropriate grid of penalties
     if (is.null(penalties)) {
       if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
-      myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), control)
+      myPLN <- PLNfit$new(responses, covariates, offsets, weights, control)
       myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
       max_pen <- max(abs(myPLN$model_par$Sigma))
       control$inception <- myPLN
@@ -65,7 +65,7 @@ PLNnetworkfamily$set("public", "initialize",
     ## instantiate as many models as penalties
     private$params <- sort(penalties, decreasing = TRUE)
     self$models <- lapply(private$params, function(penalty) {
-      PLNnetworkfit$new(penalty, responses, covariates, offsets, control)
+      PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, control)
     })
 
 })
@@ -83,7 +83,7 @@ PLNnetworkfamily$set("public", "optimize",
     if (control$trace > 1) {
       cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
     }
-    self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, control)
+    self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
     ## Save time by starting the optimization of model m+1  with optimal parameters of model m
     if (m < length(self$penalties))
       self$models[[m + 1]]$update(
@@ -136,11 +136,12 @@ PLNnetworkfamily$set("public", "stability_selection",
       ctrl_init$trace <- 0
       ctrl_init$inception <- inception_
       myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
-                                    responses  = self$responses [subsample, , drop = FALSE ],
+                                    responses  = self$responses [subsample, , drop = FALSE],
                                     covariates = self$covariates[subsample, , drop = FALSE],
-                                    offsets    = self$offsets   [subsample, , drop = FALSE ], control = ctrl_init)
+                                    offsets    = self$offsets   [subsample, , drop = FALSE],
+                                    weights    = self$weights   [subsample], control = ctrl_init)
 
-      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d)
+      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d, !all(self$weights == 1))
       ctrl_main$trace <- 0
       myPLN$optimize(ctrl_main)
       nets <- do.call(cbind, lapply(myPLN$models, function(model) {

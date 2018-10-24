@@ -26,9 +26,8 @@ PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(rank, responses, covariates, offsets, control) {
-        ## TODO: add weights properly...
-        super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
+      initialize = function(rank, responses, covariates, offsets, weights, control) {
+        super$initialize(responses, covariates, offsets, weights, control)
         svdM      <- svd(private$M, nu = max(rank), nv = max(rank))
         svdSigma  <- svd(crossprod(private$M)/nrow(responses) + diag(colMeans(private$S)), nu = rank, nv = 0)
         private$M <- svdM$u[, 1:rank, drop=FALSE] %*% diag(svdM$d[1:rank], nrow=rank, ncol=rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
@@ -88,7 +87,7 @@ PLNPCAfit <-
 
 ## Call to the C++ optimizer and update of the relevant fields
 PLNPCAfit$set("public", "optimize",
-function(responses, covariates, offsets, control) {
+function(responses, covariates, offsets, weights, control) {
 
   ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
   opts <- control
@@ -101,11 +100,7 @@ function(responses, covariates, offsets, control) {
   opts$rank <- self$q
   optim_out <- optimization_PLN(
     c(private$Theta, private$B, private$M, private$S),
-    responses,
-    covariates,
-    offsets,
-    rep(1,self$n), ## TODO -- handle weights correctly
-    opts
+    responses, covariates, offsets, weights, opts
   )
 
   self$update(
@@ -124,8 +119,8 @@ function(responses, covariates, offsets, control) {
 })
 
 PLNPCAfit$set("public", "postTreatment",
-function(responses, covariates, offsets) {
-  super$postTreatment(responses, covariates, offsets)
+function(responses, covariates, offsets, weights) {
+  super$postTreatment(responses, covariates, offsets, weights)
   colnames(private$B) <- colnames(private$M) <- 1:self$q
   rownames(private$B) <- colnames(responses)
   if (private$covariance != "spherical") colnames(private$S) <- 1:self$q

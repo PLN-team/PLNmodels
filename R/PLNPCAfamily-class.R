@@ -27,16 +27,16 @@ PLNPCAfamily <-
 )
 
 PLNPCAfamily$set("public", "initialize",
-  function(ranks, responses, covariates, offsets, control) {
+  function(ranks, responses, covariates, offsets, weights, control) {
 
   ## initialize the required fields
-  super$initialize(responses, covariates, offsets, control)
+  super$initialize(responses, covariates, offsets, weights, control)
   private$params <- ranks
 
   ## instantiate as many models as ranks
   control$inception <-
   self$models <- lapply(ranks, function(rank){
-    model <- PLNPCAfit$new(rank, responses, covariates, offsets, control)
+    model <- PLNPCAfit$new(rank, responses, covariates, offsets, weights, control)
     model
   })
 
@@ -53,7 +53,7 @@ PLNPCAfamily$set("public", "optimize",
       cat(" Rank approximation =",model$rank)
       cat("\n\t conservative convex separable approximation for gradient descent")
     }
-    model$optimize(self$responses, self$covariates, self$offsets, control)
+    model$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
     model
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
 })
@@ -74,4 +74,5 @@ function() {
   cat(" - Best model (regarding BIC): rank =", self$getBestModel("BIC")$rank, "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
   cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })
+
 PLNPCAfamily$set("public", "print", function() self$show())

@@ -5,6 +5,7 @@ PLNfamily <-
       responses  = NULL, # the Y matrix
       covariates = NULL, # the X matrix
       offsets    = NULL, # the O matrix
+      weights    = NULL, # the vector of obervation weights
       inception  = NULL, # the basic model in the collection (no regularization, nor sparsity, nor rank)
       models     = NULL  # the collection of fitted models
     ),
@@ -34,12 +35,13 @@ PLNfamily <-
 isPLNfamily <- function(Robject) {all.equal(rev(class(Robject))[1:2], c('R6','PLNfamily'))}
 
 PLNfamily$set("public", "initialize",
-  function(responses, covariates, offsets, control) {
+  function(responses, covariates, offsets, weights, control) {
 
     ## set data matrice and dimension
     self$responses  <- responses
     self$covariates <- covariates
     self$offsets    <- offsets
+    self$weights    <- weights
     private$n <- nrow(responses)
     private$p <- ncol(responses)
     private$d <- ncol(covariates)
@@ -55,7 +57,7 @@ PLNfamily$set("public", "initialize",
 ## a method to compute and set fields after optimization
 PLNfamily$set("public", "postTreatment",
 function() {
-  for (model in self$models) model$postTreatment(self$responses, self$covariates, self$offsets)
+  for (model in self$models) model$postTreatment(self$responses, self$covariates, self$offsets, self$weights)
 })
 
 ## ----------------------------------------------------------------------
