@@ -39,10 +39,10 @@ PLNfit <-
       }
     ),
     private = list(
-      Theta      = NA, # the p x d model parameters for the covariable
-      Sigma      = NA, # the p x p covariance matrix
+      Theta      = NA, # the model parameters for the covariable
+      Sigma      = NA, # the covariance matrix
       S          = NA, # the variational parameters for the variances
-      M          = NA, # the n x p variational parameters for the means
+      M          = NA, # the variational parameters for the means
       R2         = NA, # approximated goodness of fit criterion
       J          = NA, # approximated loglikelihood
       Ji         = NA, # element-wise approximated loglikelihood
