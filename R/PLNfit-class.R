@@ -11,6 +11,7 @@
 #' @field model_par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field optim_par a list with parameters useful for monitoring the optimization
+#' @field model character: the model used for the coavariance (either "spherical", "diagonal" or "full")
 #' @field loglik variational lower bound of the loglikelihood
 #' @field loglik_vec element-wise variational lower bound of the loglikelihood
 #' @field BIC variational lower bound of the BIC
@@ -24,17 +25,7 @@
 PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
-      ## constructor
-      initialize = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, Ji=NA, covariance=NA, monitoring=NA) {
-        private$Theta      <- Theta
-        private$Sigma      <- Sigma
-        private$M          <- M
-        private$S          <- S
-        private$J          <- J
-        private$Ji         <- Ji
-        private$covariance <- covariance
-        private$monitoring <- monitoring
-      },
+      ## constructor: function initialize, see below
       ## "setter" function
       update = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, Ji=NA, R2=NA, monitoring=NA) {
         if (!anyNA(Theta))      private$Theta  <- Theta
@@ -48,12 +39,12 @@ PLNfit <-
       }
     ),
     private = list(
-      Theta      = NA, # the p x d model parameters for the covariable
-      Sigma      = NA, # the p x p covariance matrix
+      Theta      = NA, # the model parameters for the covariable
+      Sigma      = NA, # the covariance matrix
       S          = NA, # the variational parameters for the variances
-      M          = NA, # the n x p variational parameters for the means
+      M          = NA, # the variational parameters for the means
       R2         = NA, # approximated goodness of fit criterion
-      J          = NA, # approximated loglikelihood
+      J          = NA, # approximated weighted loglikelihood
       Ji         = NA, # element-wise approximated loglikelihood
       covariance = NA, # a string describing the covariance model
       monitoring = NA  # a list with optimization monitoring quantities
@@ -105,13 +96,96 @@ PLNfit <-
     )
   )
 
+## ----------------------------------------------------------------------
+## PUBLIC METHODS FOR INTERNAL USE
+## ----------------------------------------------------------------------
+
 ## an S3 function to check if an object is a PLNfit
 isPLNfit <- function(Robject) { inherits(Robject, "PLNfit") }
 
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
-## ----------------------------------------------------------------------
-## Should only be accessed by PLNfamily but R6 friend class doesn't exist
+## The PLN constructor either adjusts a log(transform) linear model to initialize its fields
+## or take a user defined PLN model.
+#' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
+PLNfit$set("public", "initialize",
+function(responses, covariates, offsets, weights, control) {
+
+  ## problem dimensions
+  n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
+
+  ## initialize the covariance model
+  private$covariance <- control$covariance
+
+  if (isPLNfit(control$inception)) {
+    if (control$trace > 1) cat("\n User defined inceptive PLN model")
+    stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))))
+    stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
+    private$Theta <- control$inception$model_par$Theta
+    private$M     <- control$inception$var_par$M
+    private$S     <- control$inception$var_par$S
+    private$Sigma <- control$inception$model_par$Sigma
+    private$J     <- control$inception$loglik
+    private$Ji    <- control$inception$loglik_vec
+  } else {
+    if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
+    LMs   <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset =  offsets[,j]) )
+    private$Theta <- do.call(rbind, lapply(LMs, coefficients))
+    private$M     <- do.call(cbind, lapply(LMs, residuals))
+    private$S     <- matrix(10 * max(control$lower_bound), n, ifelse(control$covariance == "spherical", 1, p))
+    if (control$covariance == "spherical") {
+      private$Sigma <- diag(crossprod(private$M)/n)
+    } else  {
+      private$Sigma <- crossprod(private$M)/n + diag(colMeans(private$S))
+    }
+  }
+
+})
+
+## Call to the C++ optimizer and update of the relevant fields
+PLNfit$set("public", "optimize",
+function(responses, covariates, offsets, weights, control) {
+
+  optim_out <- optimization_PLN(
+    unlist(c(private$Theta, private$M, private$S)),
+    responses,
+    covariates,
+    offsets,
+    weights,
+    control
+  )
+  optim_out$message <- statusToMessage(optim_out$status)
+
+  self$update(
+    Theta      = optim_out$Theta,
+    Sigma      = optim_out$Sigma,
+    M          = optim_out$M,
+    S          = optim_out$S,
+    J          = sum(weights * optim_out$loglik),
+    Ji         = optim_out$loglik,
+    monitoring = list(
+      iterations = optim_out$iterations,
+      status     = optim_out$status,
+      message    = statusToMessage(optim_out$status))
+  )
+})
+
+PLNfit$set("public", "set_R2",
+function(responses, covariates, offsets, weights) {
+  loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets), weights)
+  lmin   <- logLikPoisson(responses, nullModelPoisson(responses, covariates, offsets, weights))
+  lmax   <- logLikPoisson(responses, fullModelPoisson(responses, weights))
+  private$R2 <- (loglik - lmin) / (lmax - lmin)
+})
+
+PLNfit$set("public", "postTreatment",
+function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
+  ## compute R2
+  self$set_R2(responses, covariates, offsets, weights)
+  ## Set the name of the matrices according to those of the data matrices
+  rownames(private$Theta) <- colnames(responses)
+  colnames(private$Theta) <- colnames(covariates)
+  rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
+  rownames(private$M) <- rownames(private$S) <- rownames(responses)
+})
 
 #' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
 #'
@@ -124,14 +198,6 @@ PLNfit$set("public", "latent_pos",
 function(covariates, offsets) {
   latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
   latentPos
-})
-
-PLNfit$set("public", "set_R2",
-function(responses, covariates, offsets) {
-  loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets))
-  lmin   <- logLikPoisson(responses, nullModelPoisson(responses, covariates, offsets))
-  lmax   <- logLikPoisson(responses, fullModelPoisson(responses))
-  private$R2 <- (loglik - lmin) / (lmax - lmin)
 })
 
 #' Result of the VE step of the optimization procedure: optimal variational parameters (M, S)
@@ -305,4 +371,3 @@ function(model = paste("A Poisson Lognormal fit with", self$model, "covariance m
 })
 
 PLNfit$set("public", "print", function() self$show())
-

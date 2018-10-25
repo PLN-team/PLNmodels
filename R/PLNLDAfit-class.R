@@ -26,11 +26,23 @@ PLNLDAfit <-
   R6Class(classname = "PLNLDAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(Theta=NA, Mu=NA, Sigma=NA, grouping = NA, M=NA, S=NA, J=NA, Ji=NA, covariance=NA, monitoring=NA) {
-        super$initialize(Theta, Sigma, M, S, J, Ji, covariance, monitoring)
+      initialize = function(grouping, responses, covariates, offsets, weights, control) {
+        super$initialize(responses, covariates, offsets, weights, control)
         private$grouping <- grouping
+        super$optimize(responses, covariates, offsets, weights, control)
+      },
+      optimize = function(X, covar, design_group, control) {
+        ## extract group means
+        if (ncol(covar) > 0) {
+          proj_orth_X <- (diag(self$n) - covar %*% solve(crossprod(covar)) %*% t(covar))
+          P <- proj_orth_X %*% self$latent_pos(X, matrix(0, self$n, self$q))
+          Mu <- t(rowsum(P, private$grouping) / tabulate(private$grouping))
+        } else {
+          Mu <- private$Theta
+        }
+        colnames(Mu) <- colnames(design_group)
         private$Mu <- Mu
-        nk <- table(grouping)
+        nk <- table(private$grouping)
         Mu_bar <- as.vector(Mu %*% nk / self$n)
         private$B <- Mu %*% diag(nk) %*% t(Mu) / self$n - Mu_bar %o% Mu_bar
       },
@@ -75,6 +87,14 @@ PLNLDAfit <-
       }
     )
 )
+
+PLNLDAfit$set("public", "postTreatment",
+function(responses, covariates, offsets) {
+  super$postTreatment(responses, covariates, offsets)
+  rownames(private$B) <- colnames(private$B) <- colnames(responses)
+  if (private$covariance != "spherical") colnames(private$S) <- 1:self$q
+  self$setVisualization()
+})
 
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS

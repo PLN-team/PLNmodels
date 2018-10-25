@@ -26,6 +26,8 @@ Fields are accessed via active binding and cannot be changed by the user.
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
+\item{\code{model}}{character: the model used for the coavariance (either "spherical", "diagonal" or "full")}
+
 \item{\code{loglik}}{variational lower bound of the loglikelihood}
 
 \item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}

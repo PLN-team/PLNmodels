@@ -45,15 +45,17 @@ PLNnetworkfamily <-
 )
 
 PLNnetworkfamily$set("public", "initialize",
-  function(penalties, responses, covariates, offsets, control) {
+  function(penalties, responses, covariates, offsets, weights, control) {
 
     ## initialize fields shared by the super class
-    super$initialize(responses, covariates, offsets, control)
-
+    super$initialize(responses, covariates, offsets, weights, control)
     ## Get an appropriate grid of penalties
     if (is.null(penalties)) {
       if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
-      max_pen <- max(abs(self$inception$model_par$Sigma))
+      myPLN <- PLNfit$new(responses, covariates, offsets, weights, control)
+      myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
+      max_pen <- max(abs(myPLN$model_par$Sigma))
+      control$inception <- myPLN
       penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min.ratio), len = control$nPenalties)
     } else {
       if (control$trace > 1) cat("\nPenalties already set by the user")
@@ -63,114 +65,33 @@ PLNnetworkfamily$set("public", "initialize",
     ## instantiate as many models as penalties
     private$params <- sort(penalties, decreasing = TRUE)
     self$models <- lapply(private$params, function(penalty) {
-      PLNnetworkfit$new(penalty = penalty)
+      PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, control)
     })
 
 })
 
-# One (coordinate-descent) optimization for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
-# the same starting point (inception model from \code{\link[=PLNfit-class]{PLNfit}}) for all models.
-#
 PLNnetworkfamily$set("public", "optimize",
   function(control) {
 
-  ## ===========================================
-  ## INITIALISATION
-
-  ## start from the standard PLN (a.k.a. inception)
-  Sigma <- self$inception$model_par$Sigma
-  par0  <- c(self$inception$model_par$Theta,
-             self$inception$var_par$M,
-             rep(max(control$lower_bound), private$n*private$p))
-  Omega  <- diag(1/diag(Sigma), nrow = private$p, ncol = private$p)
-  Sigma0 <- diag(  diag(Sigma), nrow = private$p, ncol = private$p)
-  objective.old <- ifelse(is.na(self$inception$loglik),-Inf,-self$inception$loglik)
-
-  ## ===========================================
-  ## GO ALONG THE PENALTY GRID (i.e the models)
+  ## Go along the penalty grid (i.e the models)
   for (m in seq_along(self$models))  {
 
-    penalty <- self$models[[m]]$penalty
-
-    ## ===========================================
-    ## OPTIMISATION
     if (control$trace == 1) {
-      cat("\tsparsifying penalty =", penalty, "\r")
+      cat("\tsparsifying penalty =", self$models[[m]]$penalty, "\r")
       flush.console()
     }
     if (control$trace > 1) {
-      cat("\tsparsifying penalty =", penalty, "- iteration:")
+      cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
     }
-
-    ## shall we penalize the diagonal? in glassoFast
-    if (control$trace > 1) cat("", iter)
-    rho <- matrix(penalty, private$p, private$p)
-    if (!control$penalize_diagonal) diag(rho) <- 0
-
-    cond <- FALSE; iter <- 0
-    objective   <- numeric(control$maxit_out)
-    convergence <- numeric(control$maxit_out)
-    while (!cond) {
-      iter <- iter + 1
-      ## CALL TO GLASSO TO UPDATE Omega/Sigma
-      # glasso_out <- suppressWarnings(
-      #   glasso::glasso(
-      #     Sigma,
-      #     rho = penalty,
-      #     penalize.diagonal = control$penalize_diagonal,
-      #     start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
-      #   )
-      # )
-      glasso_out <- suppressWarnings(
-        glassoFast::glassoFast(
-          Sigma,
-          rho = rho,
-          start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
+    self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
+    ## Save time by starting the optimization of model m+1  with optimal parameters of model m
+    if (m < length(self$penalties))
+      self$models[[m + 1]]$update(
+          Theta = self$models[[m]]$model_par$Theta,
+          Sigma = self$models[[m]]$model_par$Sigma,
+          M     = self$models[[m]]$var_par$M,
+          S     = self$models[[m]]$var_par$S
         )
-      )
-      if (anyNA(glasso_out$wi)) break
-      Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
-      Sigma0 <- glasso_out$w
-
-      ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-      logDetOmega <- as.double(determinant(Omega, logarithm = TRUE)$modulus)
-      optim.out <- optimization_PLNnetwork(par0, self$responses, self$covariates, self$offsets, Omega, logDetOmega, control)
-      optim.out$message <- statusToMessage(optim.out$status)
-      objective[iter]   <- optim.out$objective + penalty * sum(abs(Omega))
-      convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
-
-      ## Check convergence
-      if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
-
-      ## Post-Treatment to update Sigma
-      M <- matrix(optim.out$solution[private$p*private$d               + 1:(private$n*private$p)], private$n,private$p)
-      S <- matrix(optim.out$solution[(private$n + private$d)*private$p + 1:(private$n*private$p)], private$n,private$p)
-      Sigma <- crossprod(M)/private$n + diag(colMeans(S), nrow = private$p, ncol = private$p)
-      par0 <- optim.out$solution
-      objective.old <- objective[iter]
-    }
-
-    ## ===========================================
-    ## OUTPUT
-    ## formating parameters for output
-    Theta <- matrix(optim.out$solution[1:(private$p*private$d)], private$p, private$d)
-    rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
-    dimnames(S)     <- dimnames(self$responses)
-    dimnames(M)     <- dimnames(self$responses)
-    rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
-    ## Optimization ends with a gradient descent step rather than a glasso step.
-    ## Return Sigma from glasso step to ensure that Sigma = solve(Omega)
-    ## Sigma <- Sigma0 ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
-    ## dimnames(Sigma) <- dimnames(Omega)
-
-    self$models[[m]]$update(
-      Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S, J = -optim.out$objective,
-          monitoring = list(objective        = objective[1:iter],
-                            convergence      = convergence[1:iter],
-                            outer_iterations = iter,
-                            inner_iterations = optim.out$iterations,
-                            inner_status     = optim.out$status,
-                            inner_message    = optim.out$message))
 
     if (control$trace > 1) {
       cat("\r                                                                                    \r")
@@ -215,11 +136,12 @@ PLNnetworkfamily$set("public", "stability_selection",
       ctrl_init$trace <- 0
       ctrl_init$inception <- inception_
       myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
-                                    responses  = self$responses [subsample, , drop = FALSE ],
+                                    responses  = self$responses [subsample, , drop = FALSE],
                                     covariates = self$covariates[subsample, , drop = FALSE],
-                                    offsets    = self$offsets   [subsample, , drop = FALSE ], control = ctrl_init)
+                                    offsets    = self$offsets   [subsample, , drop = FALSE],
+                                    weights    = self$weights   [subsample], control = ctrl_init)
 
-      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d)
+      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d, !all(self$weights == 1))
       ctrl_main$trace <- 0
       myPLN$optimize(ctrl_main)
       nets <- do.call(cbind, lapply(myPLN$models, function(model) {

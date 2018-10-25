@@ -4,7 +4,7 @@
 \alias{PLNnetwork}
 \title{Poisson lognormal model towards sparse network inference}
 \usage{
-PLNnetwork(formula, data, subset, penalties = NULL,
+PLNnetwork(formula, data, subset, weights, penalties = NULL,
   control_init = list(), control_main = list())
 }
 \arguments{
@@ -13,6 +13,8 @@ PLNnetwork(formula, data, subset, penalties = NULL,
 \item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.}
 
 \item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
+
+\item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
 
 \item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
 

@@ -1,4 +1,4 @@
-#include "gradients_PLN.h"
+#include "gradients.h"
 
 double fn_optim_PLN(const stdvec &x, stdvec &grad, void *data) {
 
@@ -157,6 +157,117 @@ double fn_optim_PLN_weighted_diagonal(const stdvec &x, stdvec &grad, void *data)
   arma::vec grd_S     = vectorise(.5 * (dat->w * pow(diag_Sigma, -1) + diagmat(dat->w) * A - diagmat(dat->w) * pow(S,-1) ) );
 
   grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
+
+  return objective;
+}
+
+double fn_optim_PLN_rank(const std::vector<double> &x, std::vector<double> &grad, void *data) {
+
+  optim_data *dat = reinterpret_cast<optim_data*>(data);
+  dat->iterations++;
+
+  int n = dat->n, p = dat->p, d = dat->d, q = dat->q ;
+
+  arma::mat Theta(&x[0]      , p,d) ;
+  arma::mat B(&x[p*d]        , p,q) ;
+  arma::mat M(&x[p*(d+q)]    , n,q) ;
+  arma::mat S(&x[p*(d+q)+n*q], n,q) ;
+
+  arma::mat Z = dat->O + dat->X * Theta.t() + M * B.t();
+  arma::mat A = exp (Z + .5 * S * (B%B).t() ) ;
+
+  arma::vec grd_Theta = vectorise((A-dat->Y).t() * dat->X);
+  arma::vec grd_B     = vectorise((A-dat->Y).t() * M + (A.t() * S) % B) ;
+  arma::vec grd_M     = vectorise((A-dat->Y) * B + M) ;
+  arma::vec grd_S     = .5 * vectorise(1 - 1/S + A * (B%B) );
+
+  grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_B), join_vert(grd_M, grd_S))) ;
+
+  double objective = accu(A - dat->Y % Z) + .5 * accu(M % M + S - log(S) - 1) ;
+
+  return objective;
+}
+
+double fn_optim_PLN_weighted_rank(const std::vector<double> &x, std::vector<double> &grad, void *data) {
+
+  optim_data *dat = reinterpret_cast<optim_data*>(data);
+  dat->iterations++;
+
+  int n = dat->n, p = dat->p, d = dat->d, q = dat->q ;
+
+  arma::mat Theta(&x[0]      , p,d) ;
+  arma::mat B(&x[p*d]        , p,q) ;
+  arma::mat M(&x[p*(d+q)]    , n,q) ;
+  arma::mat S(&x[p*(d+q)+n*q], n,q) ;
+
+  arma::mat Z = dat->O + dat->X * Theta.t() + M * B.t();
+  arma::mat A = exp (Z + .5 * S * (B%B).t() ) ;
+
+  arma::vec grd_Theta = vectorise(trans(A - dat->Y) * (dat->X.each_col() % dat->w));
+  arma::vec grd_B     = vectorise((diagmat(dat->w) * (A - dat->Y)).t() * M + (A.t() * (S.each_col() % dat->w)) % B) ;
+  arma::vec grd_M     = vectorise(diagmat(dat->w) * ((A-dat->Y) * B + M)) ;
+  arma::vec grd_S     = .5 * vectorise(diagmat(dat->w) * (1 - 1/S + A * (B%B) ));
+
+  grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_B), join_vert(grd_M, grd_S))) ;
+
+  double objective = accu(diagmat(dat->w) * (A - dat->Y % Z)) + .5 * accu(diagmat(dat->w) * (M % M + S - log(S) - 1)) ;
+
+  return objective;
+}
+
+double fn_optim_PLN_sparse(const std::vector<double> &x, std::vector<double> &grad, void *data) {
+
+  optim_data *dat = reinterpret_cast<optim_data*>(data);
+  dat->iterations++;
+
+  int n = dat->n, p = dat->p, d = dat->d ;
+
+  arma::mat Theta(&x[0]      , p,d) ;
+  arma::mat     M(&x[p*d]    , n,p) ;
+  arma::mat     S(&x[p*(d+n)], n,p) ;
+
+  arma::mat nSigma = M.t() * M ; nSigma.diag() += sum(S, 0);
+  arma::mat Z = dat->O + dat->X * Theta.t() + M;
+  arma::mat A = exp (Z + .5 * S) ;
+
+  double objective = accu(A - dat->Y % Z - .5*log(S)) -.5*(n*dat->log_det_Omega + n*p - trace(dat->Omega*nSigma)) ;
+
+  arma::vec grd_Theta = vectorise((A - dat->Y).t() * dat->X);
+  arma::vec grd_M     = vectorise(M * dat->Omega + A - dat->Y) ;
+  arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(dat->Omega).t() + A - 1/S));
+
+  if (!grad.empty()) {
+    grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M),grd_S)) ;
+  }
+
+  return objective;
+}
+
+double fn_optim_PLN_weighted_sparse(const std::vector<double> &x, std::vector<double> &grad, void *data) {
+
+  optim_data *dat = reinterpret_cast<optim_data*>(data);
+  dat->iterations++;
+
+  int n = dat->n, p = dat->p, d = dat->d ;
+
+  arma::mat Theta(&x[0]      , p,d) ;
+  arma::mat     M(&x[p*d]    , n,p) ;
+  arma::mat     S(&x[p*(d+n)], n,p) ;
+  double w_bar = accu(dat->w) ;
+
+  arma::mat nSigma = M.t() * (M.each_col() % dat->w) + diagmat(sum(S.each_col() % dat->w, 0));
+  arma::mat Z = dat->O + dat->X * Theta.t() + M;
+  arma::mat A = exp (Z + .5 * S) ;
+
+  double objective = accu(diagmat(dat->w) * (A - dat->Y % Z - .5*log(S))) -.5*(w_bar*dat->log_det_Omega + w_bar*p - trace(dat->Omega*nSigma)) ;
+
+  arma::vec grd_Theta = vectorise(trans(A - dat->Y) * (dat->X.each_col() % dat->w));
+  arma::vec grd_M     = vectorise(diagmat(dat->w) * (M * dat->Omega + A - dat->Y));
+  arma::vec grd_S     = vectorise(.5 * (dat->w *  diagvec(dat->Omega).t() + diagmat(dat->w) * A - diagmat(dat->w) * pow(S,-1)));
+
+  if (!grad.empty()) {
+    grad = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M),grd_S)) ;
+  }
 
   return objective;
 }

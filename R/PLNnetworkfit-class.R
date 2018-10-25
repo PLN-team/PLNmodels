@@ -21,13 +21,12 @@ PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, monitoring=list(objective = NA)) {
-        super$initialize(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, covariance = "full", monitoring = monitoring)
+      initialize = function(penalty, responses, covariates, offsets, weights, control) {
+        super$initialize(responses, covariates, offsets, weights, control)
         private$lambda <- penalty
-        private$Omega  <- Omega
       },
-      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M, S = S, J = J, R2 = R2, monitoring = monitoring)
+      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, M, S = S, J = J, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(penalty)) private$lambda <- penalty
         if (!anyNA(Omega))   private$Omega  <- Omega
       }
@@ -38,6 +37,7 @@ PLNnetworkfit <-
     ),
     active = list(
       penalty         = function() {private$lambda},
+### TODO: understand what is happening when penalize_diagonal = FALSE
       n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
       degrees_freedom = function() {self$p * self$d + self$n_edges},
       pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
@@ -53,6 +53,71 @@ PLNnetworkfit <-
       criteria  = function() {c(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik, density = self$density)}
     )
 )
+
+
+PLNnetworkfit$set("public", "optimize",
+function(responses, covariates, offsets, weights, control) {
+
+  ## shall we penalize the diagonal? in glassoFast
+  rho <- matrix(self$penalty, self$p, self$p)
+  if (!control$penalize_diagonal) diag(rho) <- 0
+
+  cond <- FALSE; iter <- 0
+  objective   <- numeric(control$maxit_out)
+  convergence <- numeric(control$maxit_out)
+  ## start from the standard PLN at initialization
+  par0  <- c(private$Theta, private$M, private$S)
+  Sigma <- private$Sigma
+  objective.old <- -self$loglik
+  while (!cond) {
+    iter <- iter + 1
+    if (control$trace > 1) cat("", iter)
+
+    ## CALL TO GLASSO TO UPDATE Omega/Sigma
+    glasso_out <- glassoFast::glassoFast(Sigma, rho = rho)
+    if (anyNA(glasso_out$wi)) break
+    Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
+
+    ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
+    control$Omega <- Omega
+    optim.out <- optimization_PLN(par0, responses, covariates, offsets, weights, control)
+
+    ## Check convergence
+    objective[iter]   <- -sum(weights * optim.out$loglik) + self$penalty * sum(abs(Omega))
+    convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
+    if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+
+    ## Prepare next iterate
+    Sigma <- optim.out$Sigma
+    par0  <- c(optim.out$Theta, optim.out$M, optim.out$S)
+    objective.old <- objective[iter]
+  }
+
+  ## ===========================================
+  ## OUTPUT
+  self$update(
+    Theta = optim.out$Theta,
+    Omega = Omega,
+    Sigma = optim.out$Sigma,
+    M = optim.out$M,
+    S = optim.out$S,
+    J  = sum(optim.out$loglik),
+    Ji = optim.out$loglik,
+    monitoring = list(objective        = objective[1:iter],
+                      convergence      = convergence[1:iter],
+                      outer_iterations = iter,
+                      inner_iterations = optim.out$iterations,
+                      inner_status     = optim.out$status,
+                      inner_message    = statusToMessage(optim.out$status)))
+
+})
+
+PLNnetworkfit$set("public", "postTreatment",
+function(responses, covariates, offsets, weights) {
+  super$postTreatment(responses, covariates, offsets, weights)
+  dimnames(private$Omega) <- dimnames(private$Sigma)
+  colnames(private$S) <- 1:self$p
+})
 
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS

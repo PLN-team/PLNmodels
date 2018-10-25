@@ -5,6 +5,7 @@
 ##' @param formula an object of class "formula": a symbolic description of the model to be fitted.
 ##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
+##' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
 ##' @param ranks a vector of integer containing the successive ranks (or number of axes to be considered)
 ##' @param control_init a list for controling the optimization at initialization.  See details of function \code{\link[=PLN]{PLN}}.
 ##' @param control_main a list for controling the main optimization process. See details.
@@ -41,28 +42,27 @@
 ##' @seealso The classes \code{\link[=PLNPCAfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNPCA <- function(formula, data, subset, ranks = 1:5,  control_init = list(), control_main = list()) {
+PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control_init = list(), control_main = list()) {
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
-  if (is.null(ctrl_init$inception)) ctrl_init$inception <- ifelse(nrow(args$Y) >= 1.5*ncol(args$Y), "PLN", "LM")
-  ctrl_main <- PLNPCA_param(control_main)
+  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X), weighted = !missing(weights))
+  ctrl_main <- PLNPCA_param(control_main, weighted = !missing(weights))
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank
   if (ctrl_main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNPCAfamily$new(ranks = ranks, responses = args$Y, covariates = args$X, offsets = args$O, control = ctrl_init)
+  myPCA <- PLNPCAfamily$new(ranks, args$Y, args$X, args$O, args$w, ctrl_init)
 
-  ## Now adjust the PLN models
+  ## Adjust the PLN models
   if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.\n")
-  myPLN$optimize(ctrl_main)
+  myPCA$optimize(ctrl_main)
 
-  ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
+  ## Post-treatments: pseudo-R2, rearrange criteria and prepare PCA visualization
   if (ctrl_main$trace > 0) cat("\n Post-treatments")
-  myPLN$postTreatment()
+  myPCA$postTreatment()
 
   if (ctrl_main$trace > 0) cat("\n DONE!\n")
-  myPLN
+  myPCA
 }

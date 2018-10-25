@@ -1,5 +1,5 @@
-#ifndef _utils_optim_H
-#define _utils_optim_H
+#ifndef _utils_H
+#define _utils_H
 
 #include "RcppArmadillo.h"
 #include <nlopt.hpp>
@@ -34,19 +34,6 @@ typedef struct optim_data {
     // PLN constructor
     optim_data(const arma::mat &responses,
                const arma::mat &covariates,
-               const arma::mat &offsets
-    ) : Y(responses), X(covariates), O(offsets)
-      {
-        n = Y.n_rows ;
-        p = Y.n_cols ;
-        d = X.n_cols ;
-        iterations = 0 ;
-        KYi = logfact(Y);
-        KY  = accu(KYi) ;
-      } ;
-    // weighted PLN constructor
-    optim_data(const arma::mat &responses,
-               const arma::mat &covariates,
                const arma::mat &offsets,
                const arma::mat &weights
     ) : Y(responses), X(covariates), O(offsets), w(weights)
@@ -58,12 +45,13 @@ typedef struct optim_data {
         KYi = logfact(Y) ;
         KY = accu(w % KYi) ;
       } ;
-    // PLNPCA constructor
+    // Rank-Constrained constructor
     optim_data(const arma::mat &responses,
                const arma::mat &covariates,
                const arma::mat &offsets,
+               const arma::mat &weights,
                const int rank
-    ) : Y(responses), X(covariates), O(offsets), q(rank)
+    ) : Y(responses), X(covariates), O(offsets), w(weights), q(rank)
       {
         n = Y.n_rows ;
         p = Y.n_cols ;
@@ -72,13 +60,13 @@ typedef struct optim_data {
         KYi = logfact(Y) ;
         KY = accu(KYi) ;
       } ;
-    // PLNnetwork constructor
+    // Sparse covariance constructor
     optim_data(const arma::mat &responses,
                const arma::mat &covariates,
                const arma::mat &offsets,
-               const arma::mat covinv,
-               const double log_det
-    ) : Y(responses), X(covariates), O(offsets), Omega(covinv), log_det_Omega(log_det)
+               const arma::mat &weights,
+               const arma::mat covinv
+    ) : Y(responses), X(covariates), O(offsets), w(weights), Omega(covinv), log_det_Omega(real(log_det(covinv)))
       {
         n = Y.n_rows ;
         p = Y.n_cols ;

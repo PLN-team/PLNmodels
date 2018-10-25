@@ -1,8 +1,8 @@
-#ifndef _optimizer_PLN_H
-#define _optimizer_PLN_H
+#ifndef _optimizers_H
+#define _optimizers_H
 
-#include "utils_optim.h"
-#include "gradients_PLN.h"
+#include "utils.h"
+#include "gradients.h"
 
 // ---------------------------------------------------------------------------
 // ABSTRACT CLASS OPTIMIZER_PLN
@@ -42,7 +42,7 @@ class optimizer_PLN {
 
   public:
 
-    // Constructor
+    // Constructors
     optimizer_PLN() {} ;
 
     optimizer_PLN(
@@ -64,11 +64,9 @@ class optimizer_PLN {
     virtual void export_output() =0;
 
     // export the output an Rcpp::List understandable by R
-    Rcpp::List get_output() ;
+    virtual Rcpp::List get_output() ;
 
 };
-
-#endif
 
 // ---------------------------------------------------------------------------
 // CHILD CLASSES of OPTIMIZER_PLN
@@ -118,3 +116,46 @@ class optimizer_PLN_full: public optimizer_PLN {
 
     void export_output() ;
 };
+
+// RANK-CONSTRAINED COVARIANCE (PCA)
+class optimizer_PLN_rank: public optimizer_PLN {
+  public:
+    optimizer_PLN_rank(
+      arma::vec par,
+      const arma::mat & Y,
+      const arma::mat & X,
+      const arma::mat & O,
+      const arma::vec & w,
+      Rcpp::List options
+    ) ;
+
+    void export_output() ;
+
+    // override Mother's method definition (one additional parameter to send back)
+    Rcpp::List get_output() ;
+
+  protected:
+
+    // Rank
+    int q ;
+
+    // matrix of scores
+    arma::mat B ;
+};
+
+// SPARSE INVERSE COVARIANCE (PCA)
+class optimizer_PLN_sparse: public optimizer_PLN {
+  public:
+    optimizer_PLN_sparse(
+      arma::vec par,
+      const arma::mat & Y,
+      const arma::mat & X,
+      const arma::mat & O,
+      const arma::vec & w,
+      Rcpp::List options
+    ) ;
+
+    void export_output() ;
+};
+
+#endif
