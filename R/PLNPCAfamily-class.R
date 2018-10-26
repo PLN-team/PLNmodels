@@ -34,7 +34,6 @@ PLNPCAfamily$set("public", "initialize",
   private$params <- ranks
 
   ## instantiate as many models as ranks
-  control$inception <-
   self$models <- lapply(ranks, function(rank){
     model <- PLNPCAfit$new(rank, responses, covariates, offsets, weights, control)
     model

@@ -24,33 +24,36 @@ PLNMMfamily <-
     inherit = PLNfamily,
      active = list(
        clusters = function() private$params
-     ),
-    public  = list(
-      initialize = function(clusters, responses, covariates, offsets, control) {
+     )
+)
 
-        control$inception <- "PLN"
-        super$initialize(responses, covariates, offsets, control)
-        private$params <- clusters
+PLNMMfamily$sset("public", "initialize",
+  function(clusters, responses, covariates, offsets, control) {
 
-        if (control$trace > 0) cat("\n Perform GMM on the inceptive model for initializing...")
+    ## initialize the required fields
+    super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
+    private$params <- clusters
 
-        data0 <- self$inception$var_par$M + tcrossprod(covariates, self$inception$model_par$Theta)
-        initMclust <- hc(data0, "EII")
+    if (control$trace > 0) cat("\n Perform GMM on the inceptive model for initializing...")
+    myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), control)
+    myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
 
-        ## instantiate as many PLNMMfit as choices for the number of components
-        self$models <- lapply(clusters, function(k) {
-          mclust_out <- mclust::Mclust(
-            data           = data0,
-            G              = k,
-            modelNames     = "EII",
-            initialization = list(hcPairs = initMclust),
-            verbose        = FALSE)
-          ## each PLNMMfit will itself instantiate as many PLNmodels
-          ## as the current choice of number of components
-          PLNMMfit$new(inception = self$inception, tau = mclust_out$z)
-        })
-      }
-    )
+    data0 <- myPLN$var_par$M + tcrossprod(covariates, myPLN$model_par$Theta)
+    initMclust <- hc(data0, "EII")
+
+    ## instantiate as many PLNMMfit as choices for the number of components
+    self$models <- lapply(clusters, function(k) {
+      mclust_out <- mclust::Mclust(
+        data           = data0,
+        G              = k,
+        modelNames     = "EII",
+        initialization = list(hcPairs = initMclust),
+        verbose        = FALSE)
+      ## each PLNMMfit will itself instantiate as many PLNmodels
+      ## as the current choice of number of components
+      PLNMMfit$new(inception = myPLN, tau = mclust_out$z)
+    })
+  }
 )
 
 PLNMMfamily$set("public", "optimize",
