@@ -10,12 +10,14 @@ r_check_args: --as-cran
 cache: packages
 warnings_are_errors: false
 
+
 addons:
   apt:
     packages:
     - libnlopt-dev
 
 brew_packages:
+  - gcc
   - nlopt
 
 r_packages:
