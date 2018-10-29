@@ -35,8 +35,8 @@ PLNPCAfit <-
         private$B <- svdSigma$u[, 1:rank, drop = FALSE] %*% sqrt(diag(svdSigma$d[1:rank],nrow = rank, ncol = rank))
         private$covariance <- "rank"
       },
-      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, J=NA, Ji=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M = M, S = S, J = J, Ji = Ji, R2 = R2, monitoring = monitoring)
+      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, M = M, S = S, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(B)) private$B <- B
       },
       setVisualization = function(scale.unit=FALSE) {
@@ -109,8 +109,7 @@ function(responses, covariates, offsets, weights, control) {
     Sigma = optim_out$Sigma,
     M     = optim_out$M,
     S     = optim_out$S,
-    J     = sum(optim_out$loglik),
-    Ji         = optim_out$loglik,
+    Ji    = optim_out$loglik,
     monitoring = list(
       iterations = optim_out$iterations,
       status     = optim_out$status,

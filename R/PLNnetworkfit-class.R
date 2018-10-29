@@ -25,8 +25,8 @@ PLNnetworkfit <-
         super$initialize(responses, covariates, offsets, weights, control)
         private$lambda <- penalty
       },
-      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, J=NA, Ji=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M, S = S, J = J, Ji = Ji, R2 = R2, monitoring = monitoring)
+      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, M, S = S, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(penalty)) private$lambda <- penalty
         if (!anyNA(Omega))   private$Omega  <- Omega
       }
@@ -101,7 +101,6 @@ function(responses, covariates, offsets, weights, control) {
     Sigma = optim.out$Sigma,
     M = optim.out$M,
     S = optim.out$S,
-    J  = sum(optim.out$loglik),
     Ji = optim.out$loglik,
     monitoring = list(objective        = objective[1:iter],
                       convergence      = convergence[1:iter],
