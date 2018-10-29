@@ -27,12 +27,11 @@ PLNfit <-
     public = list(
       ## constructor: function initialize, see below
       ## "setter" function
-      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, J=NA, Ji=NA, R2=NA, monitoring=NA) {
+      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, Ji=NA, R2=NA, monitoring=NA) {
         if (!anyNA(Theta))      private$Theta  <- Theta
         if (!anyNA(Sigma))      private$Sigma  <- Sigma
         if (!anyNA(M))          private$M      <- M
         if (!anyNA(S))          private$S      <- S
-        if (!anyNA(J))          private$J      <- J
         if (!anyNA(Ji))         private$Ji     <- Ji
         if (!anyNA(R2))         private$R2     <- R2
         if (!anyNA(monitoring)) private$monitoring <- monitoring
@@ -44,7 +43,6 @@ PLNfit <-
       S          = NA, # the variational parameters for the variances
       M          = NA, # the variational parameters for the means
       R2         = NA, # approximated goodness of fit criterion
-      J          = NA, # approximated weighted loglikelihood
       Ji         = NA, # element-wise approximated loglikelihood
       covariance = NA, # a string describing the covariance model
       monitoring = NA  # a list with optimization monitoring quantities
@@ -86,7 +84,7 @@ PLNfit <-
       degrees_freedom = function() {self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)},
       model      = function() {private$covariance},
       optim_par  = function() {private$monitoring},
-      loglik     = function() {private$J },
+      loglik     = function() {sum(private$Ji)},
       loglik_vec = function() {private$Ji},
       BIC        = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
       entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", self$q, 1))},
@@ -123,7 +121,6 @@ function(responses, covariates, offsets, weights, control) {
     private$M     <- control$inception$var_par$M
     private$S     <- control$inception$var_par$S
     private$Sigma <- control$inception$model_par$Sigma
-    private$J     <- control$inception$loglik
     private$Ji    <- control$inception$loglik_vec
   } else {
     if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
@@ -159,7 +156,6 @@ function(responses, covariates, offsets, weights, control) {
     Sigma      = optim_out$Sigma,
     M          = optim_out$M,
     S          = optim_out$S,
-    J          = sum(weights * optim_out$loglik),
     Ji         = optim_out$loglik,
     monitoring = list(
       iterations = optim_out$iterations,

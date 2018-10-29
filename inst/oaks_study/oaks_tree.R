@@ -28,3 +28,4 @@ myPLNnets <- PLNnetwork(Abundancies ~ 1 + treeStatus + offset(log(sequencingEffo
 myPLNnets$stability_selection()
 myPLNnet <- myPLNnets$getBestModel("StARS", .985)
 myPLNnet$plot_network()
+
