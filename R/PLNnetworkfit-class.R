@@ -8,6 +8,8 @@
 #' @field penalty the level of sparsity in the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
+#' @field latent a matrix: values of the latent vector (Z in the model)
+#' @field fitted a matrix: the fitted values (Y hat)
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field loglik variational lower bound of the loglikelihood
 #' @field BIC variational lower bound of the BIC
@@ -25,8 +27,8 @@ PLNnetworkfit <-
         super$initialize(responses, covariates, offsets, weights, control)
         private$lambda <- penalty
       },
-      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Ji=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M, S = S, Ji = Ji, R2 = R2, monitoring = monitoring)
+      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, M, S = S, Z = Z, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(penalty)) private$lambda <- penalty
         if (!anyNA(Omega))   private$Omega  <- Omega
       }
@@ -101,6 +103,7 @@ function(responses, covariates, offsets, weights, control) {
     Sigma = optim.out$Sigma,
     M = optim.out$M,
     S = optim.out$S,
+    Z = optim.out$Z,
     Ji = optim.out$loglik,
     monitoring = list(objective        = objective[1:iter],
                       convergence      = convergence[1:iter],

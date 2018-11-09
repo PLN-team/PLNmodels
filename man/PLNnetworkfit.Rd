@@ -23,6 +23,10 @@ See the documentation for \code{\link[=plot_network]{plot_network}} + methods in
 
 \item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 
+\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+
+\item{\code{fitted}}{a matrix: the fitted values (Y hat)}
+
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
 \item{\code{loglik}}{variational lower bound of the loglikelihood}

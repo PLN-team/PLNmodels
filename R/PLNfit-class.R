@@ -10,6 +10,8 @@
 #'
 #' @field model_par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
+#' @field latent a matrix: values of the latent vector (Z in the model)
+#' @field fitted a matrix: the fitted values (Y hat)
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field model character: the model used for the coavariance (either "spherical", "diagonal" or "full")
 #' @field loglik variational lower bound of the loglikelihood
@@ -27,11 +29,12 @@ PLNfit <-
     public = list(
       ## constructor: function initialize, see below
       ## "setter" function
-      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, Ji=NA, R2=NA, monitoring=NA) {
+      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, monitoring=NA) {
         if (!anyNA(Theta))      private$Theta  <- Theta
         if (!anyNA(Sigma))      private$Sigma  <- Sigma
         if (!anyNA(M))          private$M      <- M
         if (!anyNA(S))          private$S      <- S
+        if (!anyNA(Z))          private$Z      <- Z
         if (!anyNA(Ji))         private$Ji     <- Ji
         if (!anyNA(R2))         private$R2     <- R2
         if (!anyNA(monitoring)) private$monitoring <- monitoring
@@ -42,6 +45,7 @@ PLNfit <-
       Sigma      = NA, # the covariance matrix
       S          = NA, # the variational parameters for the variances
       M          = NA, # the variational parameters for the means
+      Z          = NA, # the matrix of latent variable
       R2         = NA, # approximated goodness of fit criterion
       Ji         = NA, # element-wise approximated loglikelihood
       covariance = NA, # a string describing the covariance model
@@ -54,6 +58,7 @@ PLNfit <-
       p = function() {nrow(private$Theta)},
       d = function() {ncol(private$Theta)},
       ## model_par and var_par allow write access for bootstrapping purposes
+### TODO: remove this as it is REDUNDANT WITH the public accessor "update"
       model_par = function(value) {
         if (!missing(value)) {
           if (is.list(value) & all(names(value) %in% c("Sigma", "Theta"))) {
@@ -81,6 +86,8 @@ PLNfit <-
         }
         list(M = private$M, S = private$S)
       },
+      latent     = function() {private$Z},
+      fitted     = function() {exp(private$Z + .5 * private$S)},
       degrees_freedom = function() {self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)},
       model      = function() {private$covariance},
       optim_par  = function() {private$monitoring},
@@ -156,6 +163,7 @@ function(responses, covariates, offsets, weights, control) {
     Sigma      = optim_out$Sigma,
     M          = optim_out$M,
     S          = optim_out$S,
+    Z          = optim_out$Z,
     Ji         = optim_out$loglik,
     monitoring = list(
       iterations = optim_out$iterations,

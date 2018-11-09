@@ -39,6 +39,7 @@ class optimizer_PLN {
     arma::mat Sigma ;
     arma::mat M     ;
     arma::mat S     ;
+    arma::mat Z     ;
 
   public:
 
