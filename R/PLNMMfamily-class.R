@@ -27,7 +27,7 @@ PLNMMfamily <-
      )
 )
 
-PLNMMfamily$sset("public", "initialize",
+PLNMMfamily$set("public", "initialize",
   function(clusters, responses, covariates, offsets, control) {
 
     ## initialize the required fields
@@ -58,10 +58,11 @@ PLNMMfamily$sset("public", "initialize",
 
 PLNMMfamily$set("public", "optimize",
   function(control) {
-
+browser()
   ## set option for call to NLOPT: optim type, lower bound, tolerance...
   opts <- list("algorithm"   = control$method,
                "maxeval"     = control$maxeval,
+               "maxtile"     = control$maxtime,
                "ftol_rel"    = control$ftol_rel,
                "ftol_abs"    = control$ftol_abs,
                "xtol_rel"    = control$xtol_rel,
@@ -71,7 +72,8 @@ PLNMMfamily$set("public", "optimize",
                "lower_bound" = c(rep(-Inf, private$p*(private$d)), # Theta_k
                                  rep(-Inf, private$n*private$p), # Mk
                                  rep(control$lbvar, private$n*private$p)), # Sk
-               "weighted"    = TRUE
+               "weighted"    = TRUE,
+               "covariance" = control$covariance
   )
 
   ## ===========================================

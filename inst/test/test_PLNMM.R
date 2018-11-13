@@ -6,7 +6,7 @@ data("iris")
 lambda <- exp(as.matrix(iris[, 1:4]))
 count <- matrix(rpois (nrow(iris) * 4, lambda), nrow(iris), 4)
 
-myPLN <- PLNMM(count ~ 1, clusters = 1:5)
+myPLN <- PLNMM(count ~ 1, clusters = 2:3)
 myPLN$plot("ICL")
 bestModel <- myPLN$getModel(3)
 

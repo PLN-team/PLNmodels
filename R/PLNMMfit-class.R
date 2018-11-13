@@ -67,28 +67,10 @@ PLNMMfit <-
 
 PLNMMfit$set("public", "optimize",
 function(responses, covariates, offsets, tau, opts) {
+  browser()
   for (k_ in seq.int(self$k)) {
-    optim_out <- optimization_PLN(
-      c(self$components[[k_]]$model_par$Theta, self$components[[k_]]$var_par$M, self$components[[k_]]$var_par$S),
-      responses,
-      covariates,
-      offsets,
-      tau[, k_],
-      opts
-    )
-    self$components[[k_]]$update(
-      Theta = optim_out$Theta,
-      Sigma = optim_out$Sigma,
-      M     = optim_out$M,
-      S     = optim_out$S,
-      J     = -optim_out$objective,
-      Ji    = optim_out$loglik,
-      monitoring = optim_out[c("objective", "iterations", "status", "message")]
-    )
+    self$components[[k_]]$optimize(responses, covariates, offsets, tau[, k_], opts)
   }
-
-
-
 })
 
 ## ----------------------------------------------------------------------

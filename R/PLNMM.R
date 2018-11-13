@@ -43,18 +43,12 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
   if (xint == 0L) args$X <- cbind(1, args$X)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y),ncol(args$X), FALSE)
-  ctrl_main <- PLNMM_param(control_main, nrow(args$Y), ncol(args$Y), "main")
+  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X), FALSE)
+  ctrl_main <- PLNMM_param(control_main, nrow(args$Y), ncol(args$Y), ncol(args$X))
 
   ## Instantiate the collection of PLN models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNMMfamily$new(
-    clusters   = clusters,
-    responses  = args$Y,
-    covariates = args$X,
-    offsets    = args$O,
-    control    = ctrl_init
-  )
+  myPLN <- PLNMMfamily$new(clusters, args$Y, args$X, args$O, ctrl_init)
 
   ## Now adjust the PLN models
   if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")
