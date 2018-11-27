@@ -45,14 +45,14 @@ PLNnetworkfamily <-
 )
 
 PLNnetworkfamily$set("public", "initialize",
-  function(penalties, responses, covariates, offsets, weights, control) {
+  function(penalties, responses, covariates, offsets, weights, model, control) {
 
     ## initialize fields shared by the super class
     super$initialize(responses, covariates, offsets, weights, control)
     ## Get an appropriate grid of penalties
     if (is.null(penalties)) {
       if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
-      myPLN <- PLNfit$new(responses, covariates, offsets, weights, control)
+      myPLN <- PLNfit$new(responses, covariates, offsets, weights, model, control)
       myPLN$optimize(responses, covariates, offsets, weights, control)
       max_pen <- max(abs(myPLN$model_par$Sigma))
       control$inception <- myPLN
@@ -65,7 +65,7 @@ PLNnetworkfamily$set("public", "initialize",
     ## instantiate as many models as penalties
     private$params <- sort(penalties, decreasing = TRUE)
     self$models <- lapply(private$params, function(penalty) {
-      PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, control)
+      PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, model, control)
     })
 
 })
@@ -139,6 +139,7 @@ PLNnetworkfamily$set("public", "stability_selection",
                                     responses  = self$responses [subsample, , drop = FALSE],
                                     covariates = self$covariates[subsample, , drop = FALSE],
                                     offsets    = self$offsets   [subsample, , drop = FALSE],
+                                    model      = private$model,
                                     weights    = self$weights   [subsample], control = ctrl_init)
 
       ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d, !all(self$weights == 1))

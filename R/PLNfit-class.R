@@ -40,6 +40,7 @@ PLNfit <-
       }
     ),
     private = list(
+      model      = NA, # the formula call for the model as specified by the user
       Theta      = NA, # the model parameters for the covariable
       Sigma      = NA, # the covariance matrix
       S          = NA, # the variational parameters for the variances
@@ -62,7 +63,7 @@ PLNfit <-
       latent     = function() {private$Z},
       fitted     = function() {exp(private$Z + .5 * private$S)},
       degrees_freedom = function() {self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)},
-      model      = function() {private$covariance},
+      vcov_model = function() {private$covariance},
       optim_par  = function() {private$monitoring},
       loglik     = function() {sum(private$Ji)},
       loglik_vec = function() {private$Ji},
@@ -85,11 +86,13 @@ isPLNfit <- function(Robject) { inherits(Robject, "PLNfit") }
 ## or take a user defined PLN model.
 #' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
 PLNfit$set("public", "initialize",
-function(responses, covariates, offsets, weights, control) {
+function(responses, covariates, offsets, weights, model, control) {
 
   ## problem dimensions
   n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
 
+  ## save the formula call as specified by the user
+  private$model      <- model
   ## initialize the covariance model
   private$covariance <- control$covariance
 
@@ -181,9 +184,9 @@ function(covariates, offsets) {
 #'
 #' @name PLNfit_VEstep
 #'
-#' @param newdata A data frame in which to look for covariates.
-#' @param newOffsets A matrix in which to look for offsets.
-#' @param newCounts A matrix in which to look for counts.
+#' @param X A matrix of covariates.
+#' @param O A matrix of offsets.
+#' @param Y A matrix of counts.
 #' @param control a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.
 #' @return A list with three components:
 #'            the matrix M of variational means,
@@ -191,56 +194,29 @@ function(covariates, offsets) {
 #'            the vector log.lik of (variational) log-likelihood of each new observation
 #'
 PLNfit$set("public", "VEstep",
-function(newdata, newOffsets, newCounts, control = list()) {
-  ## ===========================================
-  ## OPTIMIZATION
-  ##
+function(X, O, Y, control = list()) {
 
-  ## TODO
-  ## Handle weigths in the model !!!
-  ## Handle missing offsets and covariates
-
-  ## Problem dimension
-  n <- nrow(newCounts); p <- ncol(newCounts); d <- ncol(newdata)
+  # problem dimension
+  n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  control$covariance <- self$model
-  ctrl <- PLN_param_VE(control, self$n, self$p, self$d)
+  control$covariance <- self$vcov_model
+  ctrl <- PLN_param_VE(control, n, p, d)
 
-  ## TODO Handle covariance model
-  ## get an initial point for optimization
-  M <- matrix(0, n, p)
-  S <- switch(control$covariance,
-              "full"      = matrix(10 * max(ctrl$lower_bound), n, p),
-              "diagonal"  = matrix(10 * max(ctrl$lower_bound), n, p),
-              "spherical" = matrix(10 * max(ctrl$lower_bound), n, 1))
-
-  par0 <- c(M, S)
-
+  ## Optimisaiton
   optim.out <- optimization_VEstep_PLN(
-    par0,
-    newCounts, newdata, newOffsets,
+    c(rep(0, n*p),
+      rep(10 * max(ctrl$lower_bound), ifelse(control$covariance == "spherical", n, n*p))
+    ),
+    Y, X, O,
     self$model_par$Theta, self$model_par$Sigma,
     ctrl
   )
 
-  ## ===========================================
-  ## POST-TREATMENT
-  ##
-  optim.out$message <- statusToMessage(optim.out$status)
-
-  M <- optim.out$M
-  S <- optim.out$S
-
-  rownames(M) <- rownames(S) <- rownames(newdata)
-  colnames(M) <- colnames(newCounts)
-
-  log.lik <- optim.out$loglik
-  names(log.lik) <- rownames(newdata)
-
-  return(list(M       = M,
-              S       = S,
-              log.lik = log.lik))
+  ## Output
+  list(M       = optim.out$M,
+       S       = optim.out$S,
+       log.lik = setNames(optim.out$loglik, rownames(Y)))
 })
 
 ## ----------------------------------------------------------------------
@@ -253,33 +229,32 @@ function(newdata, newOffsets, newCounts, control = list()) {
 #' @name predict.PLNfit
 #'
 #' @param object an R6 object with class PLNfit
-#' @param newdata A data frame in which to look for variables with which to predict.
-#' @param newOffsets A matrix in which to look for offsets with which to predict.
+#' @param newdata A data frame in which to look for variables and offsets with which to predict.
 #' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
 #'                   the alternative "response" is on the scale of the response variable (i.e. average count)
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
 #' @export
-predict.PLNfit <- function(object, newdata, newOffsets, type = c("link", "response"), ...) {
+predict.PLNfit <- function(object, newdata, type = c("link", "response"), control = list(), ...) {
   stopifnot(isPLNfit(object))
-  object$predict(newdata, newOffsets, type)
+  object$predict(newdata, type, parent.frame(), control)
 }
 
 PLNfit$set("public", "predict",
-  function(newdata, newOffsets, type = c("link", "response")) {
+  function(newdata, type = c("link", "response"), envir = parent.frame(), control = list()) {
+
     type = match.arg(type)
-    ## Are matrix conformable?
-    stopifnot(ncol(newdata)    == ncol(private$Theta),
-              nrow(newdata)    == nrow(newOffsets),
-              ncol(newOffsets) == nrow(private$Theta))
-    ## Mean latent positions in the parameter space
-    EZ <- tcrossprod(newdata, private$Theta) + newOffsets
-    results <- switch(type,
-                      link     = EZ,
-                      response = exp(EZ))
-    ## output formatting
-    rownames(results) <- rownames(newdata); colnames(results) <- rownames(private$Theta)
+    ## Extract the model matrices from the new data set with initial formula
+    args <- extract_model(call("PLN", formula = private$model, data = newdata), envir)
+
+    ## A VEstep is need to recover the variational covariance
+    S <- self$VEstep(args$X, args$O, args$Y, control)$S
+
+    ## mean latent positions in the parameter space
+    EZ <- tcrossprod(args$X, private$Theta) + args$O + .5 * S
+    results <- switch(type, link = EZ, response = exp(EZ))
     attr(results, "type") <- type
+
     results
   }
 )
@@ -312,7 +287,6 @@ vcov.PLNfit <- function(object, ...) {
   object$model_par$Sigma
 }
 
-
 #' Display the model parameters of a PLNfit in a matrix fashion
 #'
 #' @name plot.PLNfit
@@ -322,14 +296,14 @@ vcov.PLNfit <- function(object, ...) {
 #' @param ... additional parameters for S3 compatibility. Not used
 #'
 #' @export
-plot.PLNfit <- function(x, type=c("model","variational"), ...) {
+plot.PLNfit <- function(x, type = c("model","variational"), ...) {
   stopifnot(isPLNfit(x))
   x$plot(type)
 }
 
 #' @importFrom corrplot corrplot
 PLNfit$set("public", "plot",
-  function(type=c("model", "variational")) {
+  function(type = c("model", "variational")) {
     type <- match.arg(type)
     param <- switch(type,
                "model"       = self$model_par,

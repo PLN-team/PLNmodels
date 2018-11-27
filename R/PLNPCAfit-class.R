@@ -28,8 +28,8 @@ PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(rank, responses, covariates, offsets, weights, control) {
-        super$initialize(responses, covariates, offsets, weights, control)
+      initialize = function(rank, responses, covariates, offsets, weights, model, control) {
+        super$initialize(responses, covariates, offsets, weights, model, control)
         svdM      <- svd(private$M, nu = max(rank), nv = max(rank))
         svdSigma  <- svd(crossprod(private$M)/nrow(responses) + diag(colMeans(private$S)), nu = rank, nv = 0)
         private$M <- svdM$u[, 1:rank, drop=FALSE] %*% diag(svdM$d[1:rank], nrow=rank, ncol=rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])

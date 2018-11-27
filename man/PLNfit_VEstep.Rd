@@ -5,11 +5,11 @@
 \title{Result of the VE step of the optimization procedure: optimal variational parameters (M, S)
 and corresponding log likelihood values of new observations for fixed model parameters (Sigma, Theta)}
 \arguments{
-\item{newdata}{A data frame in which to look for covariates.}
+\item{X}{A matrix of covariates.}
 
-\item{newOffsets}{A matrix in which to look for offsets.}
+\item{O}{A matrix of offsets.}
 
-\item{newCounts}{A matrix in which to look for counts.}
+\item{Y}{A matrix of counts.}
 
 \item{control}{a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.}
 }

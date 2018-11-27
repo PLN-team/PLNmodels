@@ -26,8 +26,8 @@ PLNLDAfit <-
   R6Class(classname = "PLNLDAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(grouping, responses, covariates, offsets, weights, control) {
-        super$initialize(responses, covariates, offsets, weights, control)
+      initialize = function(grouping, responses, covariates, offsets, weights, model, control) {
+        super$initialize(responses, covariates, offsets, weights, model, control)
         private$grouping <- grouping
         super$optimize(responses, covariates, offsets, weights, control)
       },
@@ -250,16 +250,13 @@ PLNLDAfit$set("public", "predict",
                 type = match.arg(type)
                 ## Problem dimensions
                 n.new <- nrow(newCounts); groups <- levels(private$grouping); K <- length(groups)
-                ## Are matrix conformable?
-                # stopifnot(ncol(newdata)    == ncol(private$Theta) - K,
-                #           nrow(newdata)    == nrow(newOffsets),
-                #           ncol(newOffsets) == nrow(private$Theta))
+### TODO: use model formula as in PLNfit.predict
                 ## Compute conditional log-likelihoods of new data, using previously estimated parameters
                 cond.log.lik <- matrix(0, n.new, K)
                 for (k in 1:K) { ## One VE-step to estimate the conditional (variational) likelihood of each group
                   grouping <- factor(rep(groups[k], n.new), levels = groups)
                   X <- cbind(newdata, model.matrix( ~ grouping + 0))
-                  cond.log.lik[, k] <- self$VEstep(X, newOffsets, newCounts, control)$log.lik
+                  cond.log.lik[, k] <- self$VEstep(X, newOffsets, newCounts, control = control)$log.lik
                 }
                 ## Compute posterior probabilities
                 log.prior <- rep(1, n.new) %o% log( table(private$grouping) / self$n)

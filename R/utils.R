@@ -49,8 +49,7 @@ extract_model <- function(call, envir) {
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-
-  list(Y = Y, X = X, O = O, w = w)
+  list(Y = Y, X = X, O = O, w = w, model = call$formula)
 }
 
 edge_to_node <- function(x, n = max(x)) {
@@ -125,7 +124,7 @@ PLN_param <- function(control, n, p, d, weighted = FALSE) {
   lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
-  covariance  <- ifelse(is.null(control$inception), covariance, control$inception$model)
+  covariance  <- ifelse(is.null(control$inception), covariance, control$inception$vcov_model)
   ctrl <- list(
     "algorithm"   = "CCSAQ",
     "maxeval"     = 10000  ,

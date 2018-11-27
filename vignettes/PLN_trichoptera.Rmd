@@ -40,13 +40,13 @@ The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent 
 We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. 
 
 ```{r responses_trichoptera}
-str(trichoptera$Abundance)
+class(trichoptera$Abundance)
 ```
 
 
 It seems also natural to add an offset corresponding to the total count per night.
 ```{r offset_trichopera}
-TotalCount <- matrix(
+trichoptera$TotalCount <- matrix(
   rowSums(trichoptera$Abundance),
   nrow = nrow(trichoptera$Abundance),
   ncol = ncol(trichoptera$Abundance)
@@ -68,7 +68,7 @@ Note the use of the `formula` object to specify the model: the vector $\boldsymb
 myPLN
 ```
 
-Let us try this a bit:
+Let us try tto access the most common fields:
 
 ```{r fields-access}
 myPLN$loglik
@@ -78,20 +78,35 @@ myPLN$R_squared
 myPLN$criteria
 ```
 
-Complementary information comes with the `plot` method:
-```{r plot_model, fig.width=7, fig.height=5}
-myPLN$plot("model")
+We can also reach the matrix of regression parameters and the variance/covariance matrix of the latent variable $Z$ with the traditional function found in `R` for (g)lm manipulation:
+
+```{r coef vcov}
+coef(myPLN)
+vcov(myPLN)
 ```
 
+One can have a glance to these quantities with the ` plot` method: 
+Complementary information comes with the `plot` method:
+```{r plot_model, fig.width=7, fig.height=5}
+plot(myPLN)
+```
+
+You can also check the variational parameter if you need (and understand what they represent):
+
 ```{r plot_var, fig.width=7, fig.height=5}
-myPLN$plot("variational")
+plot(myPLN, "variational")
 ```
 
 It is also possible to use observation weights like in standard (generalized) linear models:
 
 ```{r weighted, fig.width=7, fig.height=5}
-myPLN_weighted <- PLN(trichoptera$Abundance ~ 1 + offset(log(TotalCount)), weights = runif(nrow(TotalCount)))
-myPLN_weighted$plot("model")
-myPLN_weighted$plot("variational")
+myPLN_weighted <- PLN(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera, weights = runif(nrow(trichoptera)))
+plot(myPLN_weighted, "model")
+```
+
+The prediction method can be use to predict new responses from a new table of data (with both covariates and offset if needed.)
+
+```{r prediction}
+predict(myPLN, newdata = trichoptera[1:10, ], type = "response")
 ```
 

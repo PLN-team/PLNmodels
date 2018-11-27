@@ -23,8 +23,8 @@ PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(penalty, responses, covariates, offsets, weights, control) {
-        super$initialize(responses, covariates, offsets, weights, control)
+      initialize = function(penalty, responses, covariates, offsets, weights, model, control) {
+        super$initialize(responses, covariates, offsets, weights, model, control)
         private$lambda <- penalty
       },
       update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, Ji=NA, R2=NA, monitoring=NA) {
