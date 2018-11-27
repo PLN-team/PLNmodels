@@ -1,6 +1,6 @@
 #' An R6 Class to represent a PLNfit in a standard, general framework
 #'
-#' @description The function \code{\link{PLN}} produces a collection of models which are instances of object with class \code{PLNfit}.
+#' @description The function \code{\link{PLN}} fit a model which is an instance of a object with class \code{PLNfit} .
 #' Objects produced by the functions \code{\link{PLNnetwork}}, \code{\link{PLNPCA}} and \code{\link{PLNLDA}} also enjoy the method of \code{\link{PLNfit}}
 #' by inheritance.
 #'
@@ -58,34 +58,8 @@ PLNfit <-
       p = function() {nrow(private$Theta)},
       d = function() {ncol(private$Theta)},
       ## model_par and var_par allow write access for bootstrapping purposes
-### TODO: remove this as it is REDUNDANT WITH the public accessor "update"
-      model_par = function(value) {
-        if (!missing(value)) {
-          if (is.list(value) & all(names(value) %in% c("Sigma", "Theta"))) {
-            if (nrow(value$Theta) == self$p & ncol(value$Theta) == self$d) {
-              private$Theta <- value$Theta
-            }
-            if (nrow(value$Sigma) == self$q & ncol(value$Sigma) == self$q) {
-              private$Sigma <- value$Sigma
-            }
-          }
-        }
-        list(Theta = private$Theta, Sigma = private$Sigma)
-      },
-      var_par   = function(value) {
-        if (!missing(value)) {
-          if (is.list(value) & all(names(value) %in% c("S", "M"))) {
-            if ((private$covariance == "spherical" & nrow(value$S) == self$n & ncol(value$S) == 1) |
-                (private$covariance != "spherical" & nrow(value$S) == self$n & ncol(value$S) == self$q) ) {
-              private$S <- value$S
-            }
-            if (nrow(value$M) == self$n & ncol(value$M) == self$q) {
-              private$M <- value$M
-            }
-          }
-        }
-        list(M = private$M, S = private$S)
-      },
+      model_par  = function() { list(Theta = private$Theta, Sigma = private$Sigma)},
+      var_par    = function() {list(M = private$M, S = private$S)},
       latent     = function() {private$Z},
       fitted     = function() {exp(private$Z + .5 * private$S)},
       degrees_freedom = function() {self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)},
@@ -149,14 +123,13 @@ PLNfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
 
   optim_out <- optimization_PLN(
-    unlist(c(private$Theta, private$M, private$S)),
+    c(private$Theta, private$M, private$S),
     responses,
     covariates,
     offsets,
     weights,
     control
   )
-  optim_out$message <- statusToMessage(optim_out$status)
 
   self$update(
     Theta      = optim_out$Theta,
@@ -368,7 +341,7 @@ function(model = paste("A Poisson Lognormal fit with", self$model, "covariance m
   print(as.data.frame(t(self$criteria), row.names = ""))
   cat("==================================================================\n")
   cat("* Useful fields \n")
-  cat("  $model_par, $var_par, $optim_par \n")
+  cat("  $model_par, $fitted, $latent, $var_par, $optim_par \n")
   cat("  $loglik, $BIC, $ICL, $degrees_freedom, $criteria \n")
   cat("* Useful methods\n")
   cat("    $plot(), $predict()\n")
