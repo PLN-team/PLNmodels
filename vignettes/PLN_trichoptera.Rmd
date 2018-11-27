@@ -10,7 +10,6 @@ vignette: >
 ---
 
 This vignette intends to illustrate the basical use of the `PLN` function and the methods accompaning the R6 Classes `PLNfamily` and `PLNfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. 
-
 ```{r data_load}
 library(PLNmodels)
 data(trichoptera)

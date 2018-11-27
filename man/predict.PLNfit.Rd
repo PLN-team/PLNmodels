@@ -5,15 +5,14 @@
 \title{Predict counts of a new sample}
 \usage{
 \method{predict}{PLNfit}(object, newdata, type = c("link", "response"),
-  control = list(), ...)
+  ...)
 }
 \arguments{
 \item{object}{an R6 object with class PLNfit}
 
-\item{newdata}{A data frame in which to look for variables and offsets with which to predict.}
+\item{newdata}{A data frame in which to look for variables and offsets with which to predict}
 
-\item{type}{The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
-the alternative "response" is on the scale of the response variable (i.e. average count)}
+\item{type}{The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }

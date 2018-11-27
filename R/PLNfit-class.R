@@ -229,32 +229,26 @@ function(X, O, Y, control = list()) {
 #' @name predict.PLNfit
 #'
 #' @param object an R6 object with class PLNfit
-#' @param newdata A data frame in which to look for variables and offsets with which to predict.
-#' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
-#'                   the alternative "response" is on the scale of the response variable (i.e. average count)
+#' @param newdata A data frame in which to look for variables and offsets with which to predict
+#' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
 #' @export
-predict.PLNfit <- function(object, newdata, type = c("link", "response"), control = list(), ...) {
+predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
   stopifnot(isPLNfit(object))
-  object$predict(newdata, type, parent.frame(), control)
+  object$predict(newdata, type, parent.frame())
 }
 
 PLNfit$set("public", "predict",
-  function(newdata, type = c("link", "response"), envir = parent.frame(), control = list()) {
-
+  function(newdata, type = c("link", "response"), envir = parent.frame()) {
     type = match.arg(type)
     ## Extract the model matrices from the new data set with initial formula
     args <- extract_model(call("PLN", formula = private$model, data = newdata), envir)
-
-    ## A VEstep is need to recover the variational covariance
-    S <- self$VEstep(args$X, args$O, args$Y, control)$S
-
     ## mean latent positions in the parameter space
-    EZ <- tcrossprod(args$X, private$Theta) + args$O + .5 * S
+    EZ <- args$O + tcrossprod(args$X, private$Theta)
+    EZ <- sweep(EZ, 2, .5 * diag(self$model_par$Sigma), "+")
     results <- switch(type, link = EZ, response = exp(EZ))
     attr(results, "type") <- type
-
     results
   }
 )
