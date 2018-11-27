@@ -13,14 +13,14 @@ The function \code{\link{PLN}} fit a model which is an instance of a object with
 Objects produced by the functions \code{\link{PLNnetwork}}, \code{\link{PLNPCA}} and \code{\link{PLNLDA}} also enjoy the method of \code{\link{PLNfit}}
 by inheritance.
 
-This class comes with a set of methods, some of them being useful for the user: plot_model, plot_variational_par
+This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods: plot, print, coef, vcov and predict
 
 Fields are accessed via active binding and cannot be changed by the user.
 }
 \section{Fields}{
 
 \describe{
-\item{\code{model_par}}{a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model}
+\item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
 
 \item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 

@@ -4,11 +4,11 @@
 #' Objects produced by the functions \code{\link{PLNnetwork}}, \code{\link{PLNPCA}} and \code{\link{PLNLDA}} also enjoy the method of \code{\link{PLNfit}}
 #' by inheritance.
 #'
-#' This class comes with a set of methods, some of them being useful for the user: plot_model, plot_variational_par
+#' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods: plot, print, coef, vcov and predict
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'
-#' @field model_par a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model
+#' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field latent a matrix: values of the latent vector (Z in the model)
 #' @field fitted a matrix: the fitted values (Y hat)
@@ -23,7 +23,6 @@
 #' @field criteria a vector with loglik, BIC, ICL, R_squared and degrees of freedom
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
-#' @importFrom corrplot corrplot
 PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
@@ -299,6 +298,21 @@ coef.PLNfit <- function(object, ...) {
   object$model_par$Theta
 }
 
+#' Extracts model covariance from objects returned by \code{\link[=PLN]{PLN}} and its variants
+#'
+#' @name vcov.PLNfit
+#'
+#' @param object an R6 object with class PLNfit
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A matrix of variance/covariance extracted from the PLNfit model.
+#'
+#' @export
+vcov.PLNfit <- function(object, ...) {
+  stopifnot(isPLNfit(object))
+  object$model_par$Sigma
+}
+
+
 #' Display the model parameters of a PLNfit in a matrix fashion
 #'
 #' @name plot.PLNfit
@@ -313,6 +327,7 @@ plot.PLNfit <- function(x, type=c("model","variational"), ...) {
   x$plot(type)
 }
 
+#' @importFrom corrplot corrplot
 PLNfit$set("public", "plot",
   function(type=c("model", "variational")) {
     type <- match.arg(type)
@@ -335,16 +350,16 @@ PLNfit$set("public", "plot",
 )
 
 PLNfit$set("public", "show",
-function(model = paste("A Poisson Lognormal fit with", self$model, "covariance model.\n")) {
+function(model = paste("A multivariate Poisson Lognormal fit with", self$model, "covariance model.\n")) {
   cat(model)
   cat("==================================================================\n")
   print(as.data.frame(t(self$criteria), row.names = ""))
   cat("==================================================================\n")
   cat("* Useful fields \n")
-  cat("  $model_par, $fitted, $latent, $var_par, $optim_par \n")
-  cat("  $loglik, $BIC, $ICL, $degrees_freedom, $criteria \n")
-  cat("* Useful methods\n")
-  cat("    $plot(), $predict()\n")
+  cat("    $model_par, $fitted, $latent, $var_par, $optim_par \n")
+  cat("    $loglik, $BIC, $ICL, $loglik_vec, $degrees_freedom, $criteria \n")
+  cat("* Useful S3 methods\n")
+  cat("    plot(), print(), vcov(), coef(), predict()\n")
 })
 
 PLNfit$set("public", "print", function() self$show())
