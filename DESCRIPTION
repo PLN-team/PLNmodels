@@ -6,7 +6,7 @@ Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
   person("Mahendra", "Mariadassou", role = "aut", email = "mahendra.mariadassou@inra.fr"),
-  person("Stéphane", "Robin", role ="aut", email = "stephane.robininra.fr")
+  person("Stéphane", "Robin", role ="ctb", email = "stephane.robininra.fr")
   )
 Maintainer: Julien Chiquet <julien.chiquet@inra.fr>
 Description: The Poisson-lognormal model and variants can be used for 
