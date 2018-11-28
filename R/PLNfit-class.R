@@ -166,33 +166,33 @@ function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
   rownames(private$M) <- rownames(private$S) <- rownames(responses)
 })
 
-#' Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
-#'
-#' @name PLNfit_latent_pos
-#'
-#' @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
-#'
+# Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
+#
+# @name PLNfit_latent_pos
+#
+# @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
+# @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
+#
 PLNfit$set("public", "latent_pos",
 function(covariates, offsets) {
   latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
   latentPos
 })
 
-#' Result of the VE step of the optimization procedure: optimal variational parameters (M, S)
-#' and corresponding log likelihood values of new observations for fixed model parameters (Sigma, Theta)
-#'
-#' @name PLNfit_VEstep
-#'
-#' @param X A matrix of covariates.
-#' @param O A matrix of offsets.
-#' @param Y A matrix of counts.
-#' @param control a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.
-#' @return A list with three components:
-#'            the matrix M of variational means,
-#'            the matrix S of variational variances
-#'            the vector log.lik of (variational) log-likelihood of each new observation
-#'
+# Result of the VE step of the optimization procedure: optimal variational parameters (M, S)
+# and corresponding log likelihood values of new observations for fixed model parameters (Sigma, Theta)
+#
+# @name PLNfit_VEstep
+#
+# @param X A matrix of covariates.
+# @param O A matrix of offsets.
+# @param Y A matrix of counts.
+# @param control a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.
+# @return A list with three components:
+#            the matrix M of variational means,
+#            the matrix S of variational variances
+#            the vector log.lik of (variational) log-likelihood of each new observation
+#
 PLNfit$set("public", "VEstep",
 function(X, O, Y, control = list()) {
 

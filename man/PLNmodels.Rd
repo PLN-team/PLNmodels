@@ -44,9 +44,6 @@ See the main function \code{\link{PLNLDA}} and the associated methods for manipu
 Also try vignette("PLNLDA_trichoptera", package="PLNmodels") for an overview.
 }
 
-\references{
-Julien Chiquet, Mahendra Mariadassou and Stéphane Robin. Variational inference for probabilistic Poisson PCA, to appear in the Annals of Applied Statistics <https://arxiv.org/abs/1703.06633>
-}
 \author{
 Julien Chiquet \email{julien.chiquet@inra.fr}
 

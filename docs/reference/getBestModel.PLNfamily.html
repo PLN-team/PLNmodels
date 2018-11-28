@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot the individual map of a specified axis for a <code>PLNPCAfit</code> object — PLNPCAfit_plot_individual_map • PLNmodels</title>
+<title>Best model extraction from a collection of PLNfit — getBestModel.PLNfamily • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Plot the individual map of a specified axis for a <code>PLNPCAfit</code> object — PLNPCAfit_plot_individual_map" />
+<meta property="og:title" content="Best model extraction from a collection of PLNfit — getBestModel.PLNfamily" />
 
-<meta property="og:description" content="Plot the individual map of a specified axis for a PLNPCAfit object" />
+<meta property="og:description" content="Best model extraction from a collection of PLNfit" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -101,42 +101,37 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot the individual map of a specified axis for a <code>PLNPCAfit</code> object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNPCAfit-class.R'><code>R/PLNPCAfit-class.R</code></a></small>
-    <div class="hidden name"><code>PLNPCAfit_plot_individual_map.Rd</code></div>
+    <h1>Best model extraction from a collection of PLNfit</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNfamily-class.R'><code>R/PLNfamily-class.R</code></a></small>
+    <div class="hidden name"><code>getBestModel.PLNfamily.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Plot the individual map of a specified axis for a <code>PLNPCAfit</code> object</p>
+    <p>Best model extraction from a collection of PLNfit</p>
     
     </div>
 
+    <pre class="usage"><span class='fu'>getBestModel.PLNfamily</span>(<span class='no'>object</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"ICL"</span>, <span class='st'>"EBIC"</span>, <span class='st'>"loglik"</span>,
+  <span class='st'>"R_squared"</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>axes</th>
-      <td><p>numeric, the axes to use for the plot. Default it c(1,2)</p></td>
+      <th>object</th>
+      <td><p>an R6 object with class PLNfamily</p></td>
     </tr>
     <tr>
-      <th>main</th>
-      <td><p>character, the title. Default is "Individual Factor Map"</p></td>
-    </tr>
-    <tr>
-      <th>plot</th>
-      <td><p>logical. Should the plot be displayed or sent back as a ggplot object</p></td>
-    </tr>
-    <tr>
-      <th>cols</th>
-      <td><p>a character, factor or numeric to defined the color associated with the observations. Default is "gray"</p></td>
+      <th>crit</th>
+      <td><p>a character for the criterion used to performed the selection. Either
+"BIC", "EBIC", "ICL", "loglik", "R_squared". Default is "BIC".</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>displays a individual map for thecorresponding axes and/or sends back a ggplot2 object</p>
+    <p>Send back a object with class <code><a href='PLNfit.html'>PLNfit</a></code>.</p>
     
 
   </div>

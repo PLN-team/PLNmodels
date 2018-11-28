@@ -34,10 +34,9 @@
 ##' @author Mahendra Mariadassou \email{mahendra.mariadassou@@inra.fr}
 ##' @author Stéphane Robin \email{stephane.robin@@inra.fr}
 ##'
-##' @references Julien Chiquet, Mahendra Mariadassou and Stéphane Robin. Variational inference for probabilistic Poisson PCA, to appear in the Annals of Applied Statistics <https://arxiv.org/abs/1703.06633>
 ##' @import methods R6 parallel Matrix
-##' @import RcppArmadillo
 ##' @importFrom Rcpp sourceCpp
+##' @import RcppArmadillo
 ##' @importFrom reshape2 melt
 ##' @import dplyr
 ##' @importFrom tidyr gather

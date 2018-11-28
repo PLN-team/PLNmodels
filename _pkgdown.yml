@@ -8,7 +8,7 @@ navbar:
   left:
     - text: "Home"
       href: index.html
-    - text: "articles"
+    - text: "Articles and Vignettes"
       href: "articles/index.html"
     - text: "Reference"
       href: "reference/index.html"
@@ -25,38 +25,41 @@ reference:
     - '`PLNLDA`'
     - '`PLNPCA`'
     - '`PLNnetwork`'
-- title: 'Class PLN fit and methods'
+- title: 'Collections (families) of PLN fits'
   desc: >
     Class and methods associated to the PLNfit object. Any PLN variant in the
     packake inherits from this class.
   contents:
-    - '`PLNfit`'
-    - '`PLNfit_VEstep`'
-    - '`PLNfit_latent_pos`'
-    - '`PLNfamily_getBestModel`'
-    - '`PLNfamily_getModel`'
-    - '`PLNfamily_predict`'
+    - '`getBestModel.PLNfamily`'
+    - '`getModel.PLNfamily`'
+    - '`predict.PLNfamily`'
     - '`plot.PLNfamily`'
+- title: 'Representation of the Poisson lognormal fit'
+  desc: >
+    Class and methods associated to the PLNfit object. Any PLN variant in the
+    packake inherits from this class (PLNPCAfit, PLNnetworkfit, PLNLDAfit).
+  contents:
+    - '`PLNfit`'
     - '`plot.PLNfit`'
     - '`coef.PLNfit`'
     - '`vcov.PLNfit`'
     - '`predict.PLNfit`'
-- title: 'Class for PLN LDA fit and methods'
+- title: 'Representation of a Linear discriminant analysis under the PLN distribution'
   desc: >
     Class and methods associated to the PLNLDAfit object.
   contents:
-  - starts_with('PLNLDA')
+  - starts_with('PLNLDAfit')
   - '`predict.PLNLDAfit`'
 - title: 'Class for PLN PCA fit and methods'
   desc: >
     Class and methods associated to the PLNPCAfit object.
   contents:
-  - starts_with('PLNPCA')
+  - starts_with('PLNPCAfit')
 - title: 'Class for PLN network fit and methods'
   desc: >
     Class and methods associated to the PLNnetworkfit object.
   contents:
-  - starts_with('PLNnetwork')
+  - starts_with('PLNnetworkfit')
   - '`coefficient_path`'
   - '`stability_selection`'
   - '`plot_network`'
@@ -69,12 +72,12 @@ reference:
   contents:
     - '`trichoptera`'
 
-
 articles:
 - title: All vignettes
-  desc: ~
+  desc: >
+    More coming...
   contents:
-  - '`PLNLDA_trichoptera`'
-  - '`PLNPCA_trichoptera`'
   - '`PLN_trichoptera`'
+  - '`PLNPCA_trichoptera`'
+  - '`PLNLDA_trichoptera`'
   - '`PLNnetwork_trichoptera`'
