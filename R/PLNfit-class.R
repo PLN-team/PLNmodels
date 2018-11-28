@@ -203,7 +203,7 @@ function(X, O, Y, control = list()) {
   control$covariance <- self$vcov_model
   ctrl <- PLN_param_VE(control, n, p, d)
 
-  ## Optimisaiton
+  ## optimisaiton
   optim.out <- optimization_VEstep_PLN(
     c(rep(0, n*p),
       rep(10 * max(ctrl$lower_bound), ifelse(control$covariance == "spherical", n, n*p))
@@ -213,7 +213,7 @@ function(X, O, Y, control = list()) {
     ctrl
   )
 
-  ## Output
+  ## output
   list(M       = optim.out$M,
        S       = optim.out$S,
        log.lik = setNames(optim.out$loglik, rownames(Y)))
@@ -222,7 +222,7 @@ function(X, O, Y, control = list()) {
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS
 ## ----------------------------------------------------------------------
-## For each R6 method I define an S3 method and only document the latter
+## For each R6 method we define an S3 method and only document the latter
 
 #' Predict counts of a new sample
 #'
@@ -241,13 +241,17 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
 
 PLNfit$set("public", "predict",
   function(newdata, type = c("link", "response"), envir = parent.frame()) {
+    ##
     type = match.arg(type)
+
     ## Extract the model matrices from the new data set with initial formula
     args <- extract_model(call("PLN", formula = private$model, data = newdata), envir)
+
     ## mean latent positions in the parameter space
     EZ <- args$O + tcrossprod(args$X, private$Theta)
     EZ <- sweep(EZ, 2, .5 * diag(self$model_par$Sigma), "+")
     results <- switch(type, link = EZ, response = exp(EZ))
+
     attr(results, "type") <- type
     results
   }

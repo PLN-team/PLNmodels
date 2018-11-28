@@ -1,0 +1,80 @@
+templates:
+  params:
+    bootswatch: readable
+
+navbar:
+  title: "PLNmodels"
+  type: inverse
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "articles"
+      href: "articles/index.html"
+    - text: "Reference"
+      href: "reference/index.html"
+  right:
+    - icon: fa-github
+      href: https://github.com/jchiquet/PLNmodels
+
+reference:
+- title: 'Top-level fitting functions'
+  desc: >
+    Set of functions to fit variants of the Poisson lognormal model
+  contents:
+    - '`PLN`'
+    - '`PLNLDA`'
+    - '`PLNPCA`'
+    - '`PLNnetwork`'
+- title: 'Class PLN fit and methods'
+  desc: >
+    Class and methods associated to the PLNfit object. Any PLN variant in the
+    packake inherits from this class.
+  contents:
+    - '`PLNfit`'
+    - '`PLNfit_VEstep`'
+    - '`PLNfit_latent_pos`'
+    - '`PLNfamily_getBestModel`'
+    - '`PLNfamily_getModel`'
+    - '`PLNfamily_predict`'
+    - '`plot.PLNfamily`'
+    - '`plot.PLNfit`'
+    - '`coef.PLNfit`'
+    - '`vcov.PLNfit`'
+    - '`predict.PLNfit`'
+- title: 'Class for PLN LDA fit and methods'
+  desc: >
+    Class and methods associated to the PLNLDAfit object.
+  contents:
+  - starts_with('PLNLDA')
+  - '`predict.PLNLDAfit`'
+- title: 'Class for PLN PCA fit and methods'
+  desc: >
+    Class and methods associated to the PLNPCAfit object.
+  contents:
+  - starts_with('PLNPCA')
+- title: 'Class for PLN network fit and methods'
+  desc: >
+    Class and methods associated to the PLNnetworkfit object.
+  contents:
+  - starts_with('PLNnetwork')
+  - '`coefficient_path`'
+  - '`stability_selection`'
+  - '`plot_network`'
+- title: 'Other functions'
+  desc: ~
+  contents:
+    - '`rPLN`'
+- title: Data set
+  desc: ~
+  contents:
+    - '`trichoptera`'
+
+
+articles:
+- title: All vignettes
+  desc: ~
+  contents:
+  - '`PLNLDA_trichoptera`'
+  - '`PLNPCA_trichoptera`'
+  - '`PLN_trichoptera`'
+  - '`PLNnetwork_trichoptera`'
