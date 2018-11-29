@@ -4,7 +4,7 @@
 \alias{getModel.PLNPCAfamily}
 \title{Model extraction from a collection of PLNPCA models}
 \usage{
-getModel.PLNPCAfamily(object, var, index = NULL)
+\method{getModel}{PLNPCAfamily}(object, var, index = NULL)
 }
 \arguments{
 \item{object}{an R6 object with class PLNfamily}

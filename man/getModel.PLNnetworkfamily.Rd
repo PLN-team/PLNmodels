@@ -4,7 +4,7 @@
 \alias{getModel.PLNnetworkfamily}
 \title{Model extraction from a collection of PLNnetwork models}
 \usage{
-getModel.PLNnetworkfamily(object, var, index = NULL)
+\method{getModel}{PLNnetworkfamily}(object, var, index = NULL)
 }
 \arguments{
 \item{object}{an R6 object with class PLNfamily}

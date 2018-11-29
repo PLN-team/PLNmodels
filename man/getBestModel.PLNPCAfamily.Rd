@@ -4,8 +4,8 @@
 \alias{getBestModel.PLNPCAfamily}
 \title{Best model extraction from a collection of PLNPCAfit}
 \usage{
-getBestModel.PLNPCAfamily(x, crit = c("ICL", "BIC", "R_squared"),
-  stability = 0.9)
+\method{getBestModel}{PLNPCAfamily}(x, crit = c("ICL", "BIC",
+  "R_squared"))
 }
 \arguments{
 \item{x}{an object with classi PLNPCAfamilly}

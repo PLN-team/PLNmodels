@@ -4,8 +4,8 @@
 \alias{getBestModel.PLNnetworkfamily}
 \title{Best model extraction from a collection of PLNnetworkfit}
 \usage{
-getBestModel.PLNnetworkfamily(x, crit = c("BIC", "loglik", "R_squared",
-  "EBIC", "StARS"), stability = 0.9)
+\method{getBestModel}{PLNnetworkfamily}(x, crit = c("BIC", "loglik",
+  "R_squared", "EBIC", "StARS"), stability = 0.9)
 }
 \arguments{
 \item{x}{an object with classi PLNnetworkfamilly}

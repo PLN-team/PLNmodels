@@ -107,36 +107,36 @@
 ##  Initialization...
 ##  Adjusting 30 PLN with sparse inverse covariance estimation
 ##  Joint optimization alternating gradient descent and graphical-lasso
-##  sparsifying penalty = 7.391434 
-    sparsifying penalty = 6.827252 
-    sparsifying penalty = 6.306133 
-    sparsifying penalty = 5.824792 
-    sparsifying penalty = 5.38019 
-    sparsifying penalty = 4.969525 
-    sparsifying penalty = 4.590205 
-    sparsifying penalty = 4.239839 
-    sparsifying penalty = 3.916216 
-    sparsifying penalty = 3.617294 
-    sparsifying penalty = 3.341189 
-    sparsifying penalty = 3.086159 
-    sparsifying penalty = 2.850595 
-    sparsifying penalty = 2.633012 
-    sparsifying penalty = 2.432036 
-    sparsifying penalty = 2.246401 
-    sparsifying penalty = 2.074935 
-    sparsifying penalty = 1.916557 
-    sparsifying penalty = 1.770268 
-    sparsifying penalty = 1.635145 
-    sparsifying penalty = 1.510336 
-    sparsifying penalty = 1.395053 
-    sparsifying penalty = 1.28857 
-    sparsifying penalty = 1.190214 
-    sparsifying penalty = 1.099366 
-    sparsifying penalty = 1.015453 
-    sparsifying penalty = 0.9379441 
-    sparsifying penalty = 0.8663516 
-    sparsifying penalty = 0.8002237 
-    sparsifying penalty = 0.7391434 
+##  sparsifying penalty = 7.288053 
+    sparsifying penalty = 6.731762 
+    sparsifying penalty = 6.217932 
+    sparsifying penalty = 5.743323 
+    sparsifying penalty = 5.30494 
+    sparsifying penalty = 4.900018 
+    sparsifying penalty = 4.526004 
+    sparsifying penalty = 4.180538 
+    sparsifying penalty = 3.861441 
+    sparsifying penalty = 3.566701 
+    sparsifying penalty = 3.294458 
+    sparsifying penalty = 3.042994 
+    sparsifying penalty = 2.810725 
+    sparsifying penalty = 2.596185 
+    sparsifying penalty = 2.39802 
+    sparsifying penalty = 2.214982 
+    sparsifying penalty = 2.045914 
+    sparsifying penalty = 1.889751 
+    sparsifying penalty = 1.745508 
+    sparsifying penalty = 1.612275 
+    sparsifying penalty = 1.489211 
+    sparsifying penalty = 1.375541 
+    sparsifying penalty = 1.270547 
+    sparsifying penalty = 1.173567 
+    sparsifying penalty = 1.08399 
+    sparsifying penalty = 1.00125 
+    sparsifying penalty = 0.9248255 
+    sparsifying penalty = 0.8542343 
+    sparsifying penalty = 0.7890314 
+    sparsifying penalty = 0.7288053 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model: the vector <span class="math inline">\(\boldsymbol\mu\)</span> of main effects in the mathematical formulation (one per column species) is specified in the call with the formula <code>~ 1</code>.</p>
@@ -147,9 +147,9 @@
 ## --------------------------------------------------------
 ##  Task: Network Inference 
 ## ========================================================
-##  - 30 penalties considered: from 0.7391434 to 7.391434 
+##  - 30 penalties considered: from 0.7288053 to 7.288053 
 ##     use $penalties to see all values and access specific lambdas 
-##  - Best model (regarding BIC): lambda = 1.92</code></pre>
+##  - Best model (regarding BIC): lambda = 1.89</code></pre>
 <p>Complementary information comes with the <code>plot</code> method:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">models<span class="op">$</span><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>()</a></code></pre></div>
 <p><img src="PLNnetwork_trichoptera_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>

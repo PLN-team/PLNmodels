@@ -56,8 +56,6 @@ PLNPCAfamily$set("public", "optimize",
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
 })
 
-#' @export
-isPLNPCAfamily <- function(Robject) {inherits(Robject, "PLNPCAfamily")}
 
 #' Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)
 #'
@@ -88,9 +86,9 @@ plot.PLNPCAfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), annotate 
 #' @return  Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
 #'
 #' @export
-getBestModel.PLNPCAfamily <- function(x, crit = c("ICL", "BIC", "R_squared"), stability = 0.9) {
+getBestModel.PLNPCAfamily <- function(x, crit = c("ICL", "BIC", "R_squared")) {
   stopifnot(isPLNPCAfamily(x))
-  x$getBestModel(match.arg(crit), stability)
+  x$getBestModel(match.arg(crit))
 }
 
 PLNPCAfamily$set("public", "getBestModel",

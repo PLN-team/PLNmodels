@@ -198,8 +198,6 @@ function(precision = TRUE, corr = TRUE) {
   }) %>% bind_rows()
 })
 
-isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
-
 #' Best model extraction from a collection of PLNnetworkfit
 #'
 #' @name getBestModel.PLNnetworkfamily
