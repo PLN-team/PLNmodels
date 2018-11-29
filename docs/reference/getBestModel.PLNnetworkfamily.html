@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot a summary of the current <code>PLNLDAfit</code> object — PLNLDAfit_plot_LDA • PLNmodels</title>
+<title>Best model extraction from a collection of PLNnetworkfit — getBestModel.PLNnetworkfamily • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Plot a summary of the current <code>PLNLDAfit</code> object — PLNLDAfit_plot_LDA" />
+<meta property="og:title" content="Best model extraction from a collection of PLNnetworkfit — getBestModel.PLNnetworkfamily" />
 
-<meta property="og:description" content="Plot a summary of the current PLNLDAfit object" />
+<meta property="og:description" content="Best model extraction from a collection of PLNnetworkfit" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -101,38 +101,39 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot a summary of the current <code>PLNLDAfit</code> object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNLDAfit-class.R'><code>R/PLNLDAfit-class.R</code></a></small>
-    <div class="hidden name"><code>PLNLDAfit_plot_LDA.Rd</code></div>
+    <h1>Best model extraction from a collection of PLNnetworkfit</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfamily-class.R'><code>R/PLNnetworkfamily-class.R</code></a></small>
+    <div class="hidden name"><code>getBestModel.PLNnetworkfamily.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Plot a summary of the current <code>PLNLDAfit</code> object</p>
+    <p>Best model extraction from a collection of PLNnetworkfit</p>
     
     </div>
 
+    <pre class="usage"><span class='fu'>getBestModel.PLNnetworkfamily</span>(<span class='no'>x</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"loglik"</span>, <span class='st'>"R_squared"</span>,
+  <span class='st'>"EBIC"</span>, <span class='st'>"StARS"</span>), <span class='kw'>stability</span> <span class='kw'>=</span> <span class='fl'>0.9</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>axes</th>
-      <td><p>numeric a vector of axes to be considered. The default is 1:min(3,rank).</p></td>
+      <th>crit</th>
+      <td><p>a character for the criterion used to performed the selection. Either
+"BIC", "EBIC", "StARS", "R_squared". Default is <code>BIC</code>. If StARS
+(Stability Approach to Regularization Selection) is chosen and stability selection
+ was not yet performed, the function will call the method stability_selection with default argument.</p></td>
     </tr>
     <tr>
-      <th>plot</th>
-      <td><p>logical. Should the plot be displayed or sent back (ggplot object)</p></td>
-    </tr>
-    <tr>
-      <th>var.cols</th>
-      <td><p>a character, factor or numeric to define the color associated with the variables. Default is "gray"</p></td>
+      <th>stability</th>
+      <td><p>a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is <code>0.9</code>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a plot with a matrix-like layout with size nb.axes x nb.axes, displaying individual maps and correlation circles for the corresponding axes</p>
+    <p>Send back a object with class <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code>.</p>
     
 
   </div>

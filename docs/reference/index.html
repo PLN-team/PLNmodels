@@ -145,8 +145,8 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-class-pln-fit-and-methods" class="hasAnchor"><a href="#section-class-pln-fit-and-methods" class="anchor"></a>Class PLN fit and methods</h2>
-          <p class="section-desc"><p>Class and methods associated to the PLNfit object. Any PLN variant in the packake inherits from this class.</p></p>
+          <h2 id="section-representation-of-the-poisson-lognormal-fit" class="hasAnchor"><a href="#section-representation-of-the-poisson-lognormal-fit" class="anchor"></a>Representation of the Poisson lognormal fit</h2>
+          <p class="section-desc"><p>Class and methods associated to the PLNfit object. Any PLN variant in the packake inherits from this class (PLNPCAfit, PLNnetworkfit, PLNLDAfit).</p></p>
         </th>
       </tr>
       <tr>
@@ -155,12 +155,6 @@
           <p><code><a href="PLNfit.html">PLNfit</a></code> </p>
         </td>
         <td><p>An R6 Class to represent a PLNfit in a standard, general framework</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.PLNfamily.html">plot(<i>&lt;PLNfamily&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Display the criteria associated with a collection of PLN fits (a PLNfamily)</p></td>
       </tr><tr>
         
         <td>
@@ -189,17 +183,11 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-class-for-pln-lda-fit-and-methods" class="hasAnchor"><a href="#section-class-for-pln-lda-fit-and-methods" class="anchor"></a>Class for PLN LDA fit and methods</h2>
+          <h2 id="section-representation-of-a-linear-discriminant-analysis-under-the-pln-distribution" class="hasAnchor"><a href="#section-representation-of-a-linear-discriminant-analysis-under-the-pln-distribution" class="anchor"></a>Representation of a Linear discriminant analysis under the PLN distribution</h2>
           <p class="section-desc"><p>Class and methods associated to the PLNLDAfit object.</p></p>
         </th>
       </tr>
       <tr>
-        
-        <td>
-          <p><code><a href="PLNLDA.html">PLNLDA()</a></code> </p>
-        </td>
-        <td><p>Poisson lognormal model towards Linear Disciminant Analysis</p></td>
-      </tr><tr>
         
         <td>
           <p><code><a href="PLNLDAfit.html">PLNLDAfit</a></code> </p>
@@ -240,18 +228,6 @@
       <tr>
         
         <td>
-          <p><code><a href="PLNPCA.html">PLNPCA()</a></code> </p>
-        </td>
-        <td><p>Poisson lognormal model towards Principal Component Analysis</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="PLNPCAfamily.html">PLNPCAfamily</a></code> </p>
-        </td>
-        <td><p>An R6 Class to represent a collection of PLNPCAfit</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="PLNPCAfit.html">PLNPCAfit</a></code> </p>
         </td>
         <td><p>An R6 Class to represent a PLNfit in a PCA framework</p></td>
@@ -273,6 +249,18 @@
           <p><code><a href="PLNPCAfit_plot_individual_map.html">PLNPCAfit_plot_individual_map</a></code> </p>
         </td>
         <td><p>Plot the individual map of a specified axis for a <code>PLNPCAfit</code> object</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="PLNPCAfamily.html">PLNPCAfamily</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a collection of PLNPCAfit</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.PLNPCAfamily.html">plot(<i>&lt;PLNPCAfamily&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -284,9 +272,9 @@
       <tr>
         
         <td>
-          <p><code><a href="PLNnetwork.html">PLNnetwork()</a></code> </p>
+          <p><code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code> </p>
         </td>
-        <td><p>Poisson lognormal model towards sparse network inference</p></td>
+        <td><p>An R6 Class to represent a PLNfit in a sparse inverse covariance framework</p></td>
       </tr><tr>
         
         <td>
@@ -296,15 +284,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="PLNnetworkfamily_getBestModel.html">PLNnetworkfamily_getBestModel</a></code> </p>
+          <p><code><a href="plot.PLNnetworkfamily.html">plot(<i>&lt;PLNnetworkfamily&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Best model extraction from a collection of PLNnetworkfit</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code> </p>
-        </td>
-        <td><p>An R6 Class to represent a PLNfit in a sparse inverse covariance framework</p></td>
+        <td><p>Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</p></td>
       </tr><tr>
         
         <td>
@@ -360,8 +342,8 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#section-top-level-fitting-functions">Top-level fitting functions</a></li>
-      <li><a href="#section-class-pln-fit-and-methods">Class PLN fit and methods</a></li>
-      <li><a href="#section-class-for-pln-lda-fit-and-methods">Class for PLN LDA fit and methods</a></li>
+      <li><a href="#section-representation-of-the-poisson-lognormal-fit">Representation of the Poisson lognormal fit</a></li>
+      <li><a href="#section-representation-of-a-linear-discriminant-analysis-under-the-pln-distribution">Representation of a Linear discriminant analysis under the PLN distribution</a></li>
       <li><a href="#section-class-for-pln-pca-fit-and-methods">Class for PLN PCA fit and methods</a></li>
       <li><a href="#section-class-for-pln-network-fit-and-methods">Class for PLN network fit and methods</a></li>
       <li><a href="#section-other-functions">Other functions</a></li>
@@ -372,7 +354,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Julien Chiquet, Mahendra Mariadassou, Stéphane Robin.</p>
+  <p>Developed by Julien Chiquet, Mahendra Mariadassou.</p>
 </div>
 
 <div class="pkgdown">

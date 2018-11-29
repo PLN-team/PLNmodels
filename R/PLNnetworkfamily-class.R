@@ -3,8 +3,8 @@
 #' @description The function \code{\link{PLNnetwork}} produces an instance of this class.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=PLNfamily_getBestModel]{getBestModel}},
-#' \code{\link[=PLNfamily_getModel]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
+#' See the documentation for \code{\link[=getBestModel.PLNfamily]{getBestModel}},
+#' \code{\link[=getModel.PLNfamily]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
 #' and \code{\link[=predict.PLNfit]{predict}}.
 #'
 #' @field responses the matrix of responses common to every models
@@ -198,9 +198,11 @@ function(precision = TRUE, corr = TRUE) {
   }) %>% bind_rows()
 })
 
+isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
+
 #' Best model extraction from a collection of PLNnetworkfit
 #'
-#' @name PLNnetworkfamily_getBestModel
+#' @name getBestModel.PLNnetworkfamily
 #'
 #' @param crit a character for the criterion used to performed the selection. Either
 #' "BIC", "EBIC", "StARS", "R_squared". Default is \code{BIC}. If StARS
@@ -208,9 +210,14 @@ function(precision = TRUE, corr = TRUE) {
 #'  was not yet performed, the function will call the method stability_selection with default argument.
 #' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
 #' @return  Send back a object with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}.
-NULL
+#' @export
+getBestModel.PLNnetworkfamily <- function(x, crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9) {
+  stopifnot(isPLNnetworkfamily(x))
+  x$getBestModel(match.arg(crit), stability)
+}
+
 PLNnetworkfamily$set("public", "getBestModel",
-function(crit = c("BIC", "ICL", "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9){
+function(crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9){
   crit <- match.arg(crit)
   if (crit == "StARS") {
     if (is.null(private$stab_path)) self$stability_selection()
@@ -220,18 +227,59 @@ function(crit = c("BIC", "ICL", "loglik", "R_squared", "EBIC", "StARS"), stabili
       pull(param) %>% min() %>% match(self$penalties)
     model <- self$models[[id_stars]]$clone()
   } else {
-    model <- super$getBestModel(crit)
+    stopifnot(!anyNA(self$criteria[[crit]]))
+    id <- 1
+    if (length(self$criteria[[crit]]) > 1) {
+      id <- which.max(self$criteria[[crit]])
+    }
+    model <- self$models[[id]]$clone()
   }
   model
 })
+
+#' Model extraction from a collection of PLNnetwork models
+#'
+#' @name getModel.PLNnetworkfamily
+#'
+#' @param object an R6 object with class PLNfamily
+#' @param var value of the parameter (penalty for sparse network) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
+#' @param index Integer index of the model to be returned. Only the first value is taken into account.
+#'
+#' @return Sends back a object with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}.
+#'
+#' @export
+getModel.PLNnetworkfamily <- function(object, var, index = NULL) {
+  stopifnot(isPLNnetworkfamily(object))
+  object$getModel(var, index = NULL)
+}
+
 
 ## ----------------------------------------------------------------------
 ## PUBLIC PLOTTING METHODS
 ## ----------------------------------------------------------------------
 
+#' Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily)
+#'
+#' @name plot.PLNnetworkfamily
+#'
+#' @param x an R6 object with class PLNfamily
+#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
+#' Default is  c("loglik", "pen_loglik", "BIC", "EBIC").
+#' @param log.x logical: should the x-axis be repsented in log-scale? Default is \code{TRUE}.
+#' @param annotate logical: should the value of approximated R squared be added to the plot? Default is \code{TRUE}.
+#' @param ... additional parameters for S3 compatibility. Not used
+#'
+#' @return Produces a plot  representing the evolution of the criteria of the different models considered,
+#' highlighting the best model in terms of BIC and EBIC.
+#'
 #' @export
+plot.PLNnetworkfamily <- function(x, criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE, annotate = TRUE,...) {
+  stopifnot(isPLNnetworkfamily(x))
+  x$plot(criteria, annotate)
+}
+
 PLNnetworkfamily$set("public", "plot",
-function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE) {
+function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE, annotate) {
   vlines <- sapply(intersect(criteria, c("BIC", "EBIC")) , function(crit) self$getBestModel(crit)$penalty)
   p <- super$plot(criteria, FALSE) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
   if (log.x) p <- p + ggplot2::coord_trans(x = "log10")

@@ -3,8 +3,8 @@
 #' @description The function \code{\link{PLNPCA}} produces an instance of this class.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=PLNfamily_getBestModel]{getBestModel}},
-#' \code{\link[=PLNfamily_getModel]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
+#' See the documentation for \code{\link[=getBestModel.PLNfamily]{getBestModel}},
+#' \code{\link[=getModel.PLNfamily]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
 #' and \code{\link[=predict.PLNfit]{predict}}.
 #'
 #' @field responses the matrix of responses common to every models
@@ -38,7 +38,6 @@ PLNPCAfamily$set("public", "initialize",
     model <- PLNPCAfit$new(rank, responses, covariates, offsets, weights, model, control)
     model
   })
-
 })
 
 PLNPCAfamily$set("public", "optimize",
@@ -57,10 +56,71 @@ PLNPCAfamily$set("public", "optimize",
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
 })
 
+isPLNPCAfamily <- function(Robject) {inherits(Robject, "PLNPCAfamily")}
+
+#' Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)
+#'
+#' @name plot.PLNPCAfamily
+#'
+#' @param x an R6 object with class PLNfamily
+#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared").
+#' Default is  c("loglik", "BIC", "ICL").
+#' @param annotate logical: should the value of approximated R squared be added to the plot?
+#' @param ... additional parameters for S3 compatibility. Not used
+#'
+#' @return Produces a plot  representing the evolution of the criteria of the different models considered,
+#' highlighting the best model in terms of BIC and ICL.
+#'
+#' @export
+plot.PLNPCAfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), annotate = TRUE, ...) {
+  stopifnot(isPLNfamily(x))
+  x$plot(criteria, annotate)
+}
+
+#' Best model extraction from a collection of PLNPCAfit
+#'
+#' @name getBestModel.PLNPCAfamily
+#'
+#' @param crit a character for the criterion used to performed the selection. Either
+#' "BIC", "ICL", "R_squared". Default is \code{ICL}.
+#' @return  Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
+#' @export
+getBestModel.PLNPCAfamily <- function(x, crit = c("ICL", "BIC", "R_squared"), stability = 0.9) {
+  stopifnot(isPLNPCAfamily(x))
+  x$getBestModel(match.arg(crit), stability)
+}
+
+#' Model extraction from a collection of PLNPCA models
+#'
+#' @name getModel.PLNPCAfamily
+#'
+#' @param object an R6 object with class PLNfamily
+#' @param var value of the parameter (rank for PCA) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
+#' @param index Integer index of the model to be returned. Only the first value is taken into account.
+#'
+#' @return Sends back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
+#'
+#' @export
+getModel.PLNPCAfamily <- function(object, var, index = NULL) {
+  stopifnot(isPLNPCAfamily(object))
+  object$getModel(var, index = NULL)
+}
+
+PLNPCAfamily$set("public", "getBestModel",
+function(crit = c("BIC", "ICL", "R_squared")){
+  crit <- match.arg(crit)
+  stopifnot(!anyNA(self$criteria[[crit]]))
+  id <- 1
+  if (length(self$criteria[[crit]]) > 1) {
+    id <- which.max(self$criteria[[crit]])
+  }
+  self$models[[id]]$clone()
+})
+
 PLNPCAfamily$set("public", "plot",
-function(criteria = c("loglik", "BIC", "ICL")) {
-  vlines <- sapply(criteria, function(crit) self$getBestModel(crit)$rank)
-  p <- super$plot(criteria) + xlab("rank") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
+function(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE) {
+  vlines <- sapply(intersect(criteria, c("BIC", "ICL")) , function(crit) self$getBestModel(crit)$rank)
+  p <- super$plot(criteria, annotate) + xlab("rank") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
   p
 })
 

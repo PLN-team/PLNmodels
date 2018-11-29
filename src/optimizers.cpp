@@ -28,14 +28,14 @@ optimizer_PLN::optimizer_PLN(
   // Initialize NLOPT
   optimizer = initNLOPT(par.n_elem, options)   ;
   parameter = arma::conv_to<stdvec>::from(par) ;
-};
+}
 
 // FUNCTION THAT CALL NLOPT
 void optimizer_PLN::optimize()  {
   double objective ; // value of objective function at optimum
   optimizer.set_min_objective(fn_optim, &data);
   status = optimizer.optimize(parameter, objective);
-};
+}
 
 // CREATE THE RCPP::LIST FOR R
 Rcpp::List optimizer_PLN::get_output() {
@@ -49,7 +49,7 @@ Rcpp::List optimizer_PLN::get_output() {
       Rcpp::Named("iterations") = data.iterations,
       Rcpp::Named("loglik"    ) = loglik
     );
-};
+}
 
 // ---------------------------------------------------------------------------
 // CHILD CLASS WITH SPHERICAL COVARIANCE
@@ -67,7 +67,7 @@ optimizer_PLN_spherical::optimizer_PLN_spherical(
   } else {
     fn_optim = &fn_optim_PLN_spherical ;
   }
-};
+}
 
 void optimizer_PLN_spherical::export_output() {
 
@@ -82,7 +82,7 @@ void optimizer_PLN_spherical::export_output() {
   // element-wise log-likelihood
   arma::mat A = exp (Z.each_col() + .5 * S) ;
   loglik = sum(data.Y % Z - A, 1) + .5*p*log(S) - (.5 / sigma2) * (sum(M % M, 1) + p * S) - .5 * p * log(sigma2) - logfact(data.Y) + .5 * p;
-};
+}
 
 // ---------------------------------------------------------------------------
 // CHILD CLASS WITH DIAGONAL COVARIANCE
@@ -100,7 +100,7 @@ optimizer_PLN_diagonal::optimizer_PLN_diagonal (
   } else {
     fn_optim = &fn_optim_PLN_diagonal ;
   }
-};
+}
 
 void optimizer_PLN_diagonal::export_output() {
 
@@ -115,7 +115,7 @@ void optimizer_PLN_diagonal::export_output() {
   //element-wise log-likelihood
   arma::mat A = exp (Z + .5 * S) ;
   loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M.each_row() / diag_Sigma) % M + (S.each_row() / diag_Sigma) ), 1) - .5 * accu(log(diag_Sigma)) - logfact(data.Y) + .5 * p;
-};
+}
 
 // ---------------------------------------------------------------------------
 // CHILD CLASS WITH FULLY PARAMETRIZED COVARIANCE
@@ -133,7 +133,7 @@ optimizer_PLN_full::optimizer_PLN_full (
   } else {
     fn_optim = &fn_optim_PLN ;
   }
-};
+}
 
 void optimizer_PLN_full::export_output () {
 
@@ -148,7 +148,7 @@ void optimizer_PLN_full::export_output () {
   arma::mat Omega = inv_sympd(Sigma);
   arma::mat A = exp (Z + .5 * S) ;
   loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) + .5 * real(log_det(Omega)) - logfact(data.Y) + .5 * p;
-};
+}
 
 // ---------------------------------------------------------------------------
 // CHILD CLASS WITH RANK-CONSTRAINED COVARIANCE
@@ -173,7 +173,7 @@ optimizer_PLN_rank::optimizer_PLN_rank (
   // overload the data structure
   data = optim_data(Y, X, O, w, q) ;
 
-};
+}
 
 void optimizer_PLN_rank::export_output () {
 
@@ -188,7 +188,7 @@ void optimizer_PLN_rank::export_output () {
   // element-wise log-likelihood
   arma::mat A = exp (Z + .5 * S * (B % B).t() ) ;
   loglik = arma::sum(data.Y % Z - A, 1) - .5 * sum(M % M + S - log(S) - 1, 1) - logfact(data.Y);
-};
+}
 
 // override mother's method for getting output
 Rcpp::List optimizer_PLN_rank::get_output() {
@@ -203,7 +203,7 @@ Rcpp::List optimizer_PLN_rank::get_output() {
       Rcpp::Named("iterations") = data.iterations,
       Rcpp::Named("loglik"    ) = loglik
     );
-};
+}
 
 // ---------------------------------------------------------------------------
 // CHILD CLASS WITH SPARSE INVERSE COVARIANCE
@@ -227,7 +227,7 @@ optimizer_PLN_sparse::optimizer_PLN_sparse (
   // overload the data structure
   data = optim_data(Y, X, O, w, Omega) ;
 
-};
+}
 
 void optimizer_PLN_sparse::export_output () {
 
@@ -241,4 +241,4 @@ void optimizer_PLN_sparse::export_output () {
   // element-wise log-likelihood
   arma::mat A = exp (Z + .5 * S) ;
   loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M * data.Omega) % M + S * diagmat(data.Omega)), 1) + .5 * data.log_det_Omega - logfact(data.Y) + .5 * p;
-};
+}

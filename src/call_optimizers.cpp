@@ -5,8 +5,12 @@
 
 #include "optimizers.h"
 
+// ---------------------------------------------------------------------------------------
+// SPHERICAL COVARIANCE
+//
+//
 // [[Rcpp::export]]
-Rcpp::List optimization_PLN (
+Rcpp::List optim_spherical (
     arma::vec par,
     const arma::mat & Y,
     const arma::mat & X,
@@ -14,37 +18,119 @@ Rcpp::List optimization_PLN (
     const arma::vec & w,
     Rcpp::List options) {
 
-  // Initialize the optimizer
-  optimizer_PLN *myPLN ;
-
-  // SPHERICAL COVARIANCE
-  if (Rcpp::as<std::string>(options["covariance"]) == "spherical")
-    myPLN = new optimizer_PLN_spherical(par, Y, X, O, w, options) ;
-
-  // DIAGONAL COVARIANCE
-  if (Rcpp::as<std::string>(options["covariance"]) == "diagonal")
-    myPLN = new optimizer_PLN_diagonal(par, Y, X, O, w, options) ;
-
-  // FULLY PARAMETRIZED COVARIANCE
-  if (Rcpp::as<std::string>(options["covariance"]) == "full")
-    myPLN = new optimizer_PLN_full(par, Y, X, O, w, options) ;
-
-  // RANK-CONSTRAINED COVARIANCE (PCA)
-  if (Rcpp::as<std::string>(options["covariance"]) == "rank")
-    myPLN = new optimizer_PLN_rank(par, Y, X, O, w, options) ;
-
-  // SPARSE INVERSE COVARIANCE (aka 'NETWORK')
-  if (Rcpp::as<std::string>(options["covariance"]) == "sparse")
-    myPLN = new optimizer_PLN_sparse(par, Y, X, O, w, options) ;
+  // Initialization
+  optimizer_PLN_spherical myPLN = optimizer_PLN_spherical(par, Y, X, O, w, options) ;
 
   // Perform the optimization
-  myPLN->optimize() ;
+  myPLN.optimize() ;
 
   // Format the output
-  myPLN->export_output() ;
+  myPLN.export_output() ;
 
   // Output returned to R
-  return(myPLN->get_output());
-
+  return(myPLN.get_output());
 }
 
+// ---------------------------------------------------------------------------------------
+// DIAGONAL COVARIANCE
+//
+//
+// [[Rcpp::export]]
+Rcpp::List optim_diagonal (
+    arma::vec par,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
+    const arma::vec & w,
+    Rcpp::List options) {
+
+  // Initialize
+  optimizer_PLN_diagonal myPLN = optimizer_PLN_diagonal(par, Y, X, O, w, options) ;
+
+  // Perform the optimization
+  myPLN.optimize() ;
+
+  // Format the output
+  myPLN.export_output() ;
+
+  // Output returned to R
+  return(myPLN.get_output());
+}
+
+// ---------------------------------------------------------------------------------------
+// FULLY PARAMETRIZED COVARIANCE
+//
+//
+// [[Rcpp::export]]
+Rcpp::List optim_full (
+    arma::vec par,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
+    const arma::vec & w,
+    Rcpp::List options) {
+
+  // Initialize
+  optimizer_PLN_full myPLN = optimizer_PLN_full(par, Y, X, O, w, options) ;
+
+  // Perform the optimization
+  myPLN.optimize() ;
+
+  // Format the output
+  myPLN.export_output() ;
+
+  // Output returned to R
+  return(myPLN.get_output());
+}
+
+// ---------------------------------------------------------------------------------------
+// RANK-CONSTRAINED COVARIANCE (PCA)
+//
+//
+// [[Rcpp::export]]
+Rcpp::List optim_rank (
+    arma::vec par,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
+    const arma::vec & w,
+    Rcpp::List options) {
+
+  // Initialize
+  optimizer_PLN_rank myPLN = optimizer_PLN_rank(par, Y, X, O, w, options) ;
+
+  // Perform the optimization
+  myPLN.optimize() ;
+
+  // Format the output
+  myPLN.export_output() ;
+
+  // Output returned to R
+  return(myPLN.get_output());
+}
+
+// ---------------------------------------------------------------------------------------
+// SPARSE INVERSE COVARIANCE (aka 'NETWORK')
+//
+//
+// [[Rcpp::export]]
+Rcpp::List optim_sparse (
+    arma::vec par,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
+    const arma::vec & w,
+    Rcpp::List options) {
+
+  // Initialize
+  optimizer_PLN_sparse myPLN = optimizer_PLN_sparse(par, Y, X, O, w, options) ;
+
+  // Perform the optimization
+  myPLN.optimize() ;
+
+  // Format the output
+  myPLN.export_output() ;
+
+  // Output returned to R
+  return(myPLN.get_output());
+}

@@ -95,7 +95,7 @@ typedef struct optim_data {
 } optim_data ;
 
 // Convert string to nlopt_alogirthm
-nlopt::algorithm getAlgorithmCode( const std::string) ;
+nlopt::algorithm getAlgorithmCode(const std::string &) ;
 
 nlopt::opt initNLOPT(int, Rcpp::List) ;
 

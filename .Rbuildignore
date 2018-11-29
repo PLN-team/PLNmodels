@@ -1,3 +1,6 @@
+^\.travis\.yml$
+^_pkgdown\.yml$
+^docs$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.git$
@@ -7,6 +10,6 @@
 ^LICENSE$
 ^.editorconfig$
 ^src/Makevars$
-.travis.yml
 ^README.Rmd
 ^appveyor\.yml$
+

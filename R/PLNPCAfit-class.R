@@ -101,7 +101,7 @@ function(responses, covariates, offsets, weights, control) {
                         rep(-Inf, self$n*self$q) , # M
                         rep(control$lower_bound,self$n*self$q)) # S
   opts$rank <- self$q
-  optim_out <- optimization_PLN(
+  optim_out <- optim_rank(
     c(private$Theta, private$B, private$M, private$S),
     responses, covariates, offsets, weights, opts
   )

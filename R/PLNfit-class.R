@@ -49,6 +49,7 @@ PLNfit <-
       R2         = NA, # approximated goodness of fit criterion
       Ji         = NA, # element-wise approximated loglikelihood
       covariance = NA, # a string describing the covariance model
+      optimizer  = NA, # link to the function that performs the optimization
       monitoring = NA  # a list with optimization monitoring quantities
     ),
     ## use active bindings to access private members like fields
@@ -95,6 +96,14 @@ function(responses, covariates, offsets, weights, model, control) {
   private$model      <- model
   ## initialize the covariance model
   private$covariance <- control$covariance
+  private$optimizer  <-
+    switch(control$covariance,
+      "spherical" = optim_spherical,
+      "diagonal"  = optim_diagonal ,
+      "full"      = optim_full     ,
+      "rank"      = optim_rank     ,
+      "sparse"    = optim_sparse
+    )
 
   if (isPLNfit(control$inception)) {
     if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -124,7 +133,7 @@ function(responses, covariates, offsets, weights, model, control) {
 PLNfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
 
-  optim_out <- optimization_PLN(
+  optim_out <- private$optimizer(
     c(private$Theta, private$M, private$S),
     responses,
     covariates,
@@ -322,7 +331,7 @@ PLNfit$set("public", "plot",
 )
 
 PLNfit$set("public", "show",
-function(model = paste("A multivariate Poisson Lognormal fit with", self$model, "covariance model.\n")) {
+function(model = paste("A multivariate Poisson Lognormal fit with", private$covariance, "covariance model.\n")) {
   cat(model)
   cat("==================================================================\n")
   print(as.data.frame(t(self$criteria), row.names = ""))

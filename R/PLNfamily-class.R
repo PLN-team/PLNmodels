@@ -64,49 +64,6 @@ function() {
 ## an S3 function to check if an object is a PLNfit
 isPLNfamily <- function(Robject) {all.equal(rev(class(Robject))[1:2], c('R6','PLNfamily'))}
 
-#' Best model extraction from a collection of PLNfit
-#'
-#' @name getBestModel.PLNfamily
-#'
-#' @param object an R6 object with class PLNfamily
-#' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "EBIC", "ICL", "loglik", "R_squared". Default is "BIC".
-#'
-#' @return  Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
-#'
-#' @export
-getBestModel.PLNfamily <- function(object, crit = c("BIC", "ICL", "EBIC", "loglik", "R_squared")) {
-  stopifnot(isPLNfamily(object))
-  object$getBestModel(crit)
-}
-
-PLNfamily$set("public", "getBestModel",
-function(crit = c("BIC", "ICL", "EBIC", "loglik", "R_squared")){
-  crit <- match.arg(crit)
-  stopifnot(!anyNA(self$criteria[[crit]]))
-  if (length(self$criteria[[crit]]) > 1) {
-    id <- which.max(self$criteria[[crit]])
-  } else {id <- 1}
-    model <- self$models[[id]]$clone()
-    return(model)
-})
-
-#' Model extraction from a collection of PLN models
-#'
-#' @name getModel.PLNfamily
-#'
-#' @param object an R6 object with class PLNfamily
-#' @param var value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
-#' @param index Integer index of the model to be returned. Only the first value is taken into account.
-#'
-#' @return Sends back a object with class \code{\link[=PLNfit]{PLNfit}}.
-#'
-#' @export
-getModel.PLNfamily <- function(object, var, index = NULL) {
-  stopifnot(isPLNfamily(object))
-  object$getModel(var, index = NULL)
-}
-
 PLNfamily$set("public", "getModel",
 function(var, index = NULL) {
   ## Extraction by index
@@ -128,26 +85,8 @@ function(var, index = NULL) {
   }
 })
 
-#' Display the criteria associated with a collection of PLN fits (a PLNfamily)
-#'
-#' @name plot.PLNfamily
-#'
-#' @param x an R6 object with class PLNfamily
-#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik")
-#' @param ... additional parameters for S3 compatibility. Not used
-#' The two last are only available por PLNnetworkfamily. Default is c("loglik", "BIC", "ICL")
-#'
-#' @return Produces a plot  representing the evolution of the criteria of the different models considered,
-#' highlighting the best model in terms of ICL for PLNPCA and EBIC for PLNnetwork.
-#'
-#' @export
-plot.PLNfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), ...) {
-  stopifnot(isPLNfamily(x))
-  x$plot(criteria)
-}
-
 PLNfamily$set("public", "plot",
-function(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE) {
+function(criteria, annotate = TRUE) {
   stopifnot(!anyNA(self$criteria[criteria]))
   dplot <- self$criteria %>%
     dplyr::select(c("param", criteria)) %>%
@@ -170,22 +109,4 @@ function() {
 })
 PLNfamily$set("public", "print", function() self$show())
 
-
-# #' Predict counts of new samples for all fits in the family
-# #'
-# #' @name PLNfamily_predict
-# #'
-# #' @param newdata    A optional data frame in which to look for variables with which to predict. If omitted, the family-level covariates are used.
-# #' @param newOffsets A optional matrix in which to look for offsets with which to predict. If omitted, the family-level offsets are used.
-# #' @param type       The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
-# #'                   the alternative "response" is on the scale of the response variable (i.e. average count)
-# #' @return A list of matrices (one per fit) of predicted log-counts (if type = "link")
-# #'         or predicted counts (if type = "response").
-# #'
-# PLNfamily$set("public", "predict",
-# function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", "response")) {
-#   lapply(self$models, function(model) {
-#     model$predict(newdata, newOffsets, type)
-#   })
-# })
 

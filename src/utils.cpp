@@ -10,7 +10,7 @@ arma::mat logfact(arma::mat Y) {
 // Convert string to nlopt_algorithm
 //
 // restrict the choices to algorithms meaningful for PLN optimization
-nlopt::algorithm getAlgorithmCode( const std::string algorithm_str) {
+nlopt::algorithm getAlgorithmCode( const std::string & algorithm_str) {
 
     nlopt::algorithm algorithm;
 

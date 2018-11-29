@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot a summary of the current <code>PLNLDAfit</code> object — PLNLDAfit_plot_LDA • PLNmodels</title>
+<title>Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily) — plot.PLNPCAfamily • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Plot a summary of the current <code>PLNLDAfit</code> object — PLNLDAfit_plot_LDA" />
+<meta property="og:title" content="Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily) — plot.PLNPCAfamily" />
 
-<meta property="og:description" content="Plot a summary of the current PLNLDAfit object" />
+<meta property="og:description" content="Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -101,38 +101,46 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot a summary of the current <code>PLNLDAfit</code> object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNLDAfit-class.R'><code>R/PLNLDAfit-class.R</code></a></small>
-    <div class="hidden name"><code>PLNLDAfit_plot_LDA.Rd</code></div>
+    <h1>Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNPCAfamily-class.R'><code>R/PLNPCAfamily-class.R</code></a></small>
+    <div class="hidden name"><code>plot.PLNPCAfamily.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Plot a summary of the current <code>PLNLDAfit</code> object</p>
+    <p>Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)</p>
     
     </div>
 
+    <pre class="usage"><span class='co'># S3 method for PLNPCAfamily</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>criteria</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"ICL"</span>), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>axes</th>
-      <td><p>numeric a vector of axes to be considered. The default is 1:min(3,rank).</p></td>
+      <th>x</th>
+      <td><p>an R6 object with class PLNfamily</p></td>
     </tr>
     <tr>
-      <th>plot</th>
-      <td><p>logical. Should the plot be displayed or sent back (ggplot object)</p></td>
+      <th>criteria</th>
+      <td><p>vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared").
+Default is  c("loglik", "BIC", "ICL").</p></td>
     </tr>
     <tr>
-      <th>var.cols</th>
-      <td><p>a character, factor or numeric to define the color associated with the variables. Default is "gray"</p></td>
+      <th>...</th>
+      <td><p>additional parameters for S3 compatibility. Not used</p></td>
+    </tr>
+    <tr>
+      <th>annotate</th>
+      <td><p>logical: should the value of approximated R squared be added to the plot?</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a plot with a matrix-like layout with size nb.axes x nb.axes, displaying individual maps and correlation circles for the corresponding axes</p>
+    <p>Produces a plot  representing the evolution of the criteria of the different models considered,
+highlighting the best model in terms of BIC and ICL.</p>
     
 
   </div>

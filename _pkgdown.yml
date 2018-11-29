@@ -25,15 +25,6 @@ reference:
     - '`PLNLDA`'
     - '`PLNPCA`'
     - '`PLNnetwork`'
-- title: 'Collections (families) of PLN fits'
-  desc: >
-    Class and methods associated to the PLNfit object. Any PLN variant in the
-    packake inherits from this class.
-  contents:
-    - '`getBestModel.PLNfamily`'
-    - '`getModel.PLNfamily`'
-    - '`predict.PLNfamily`'
-    - '`plot.PLNfamily`'
 - title: 'Representation of the Poisson lognormal fit'
   desc: >
     Class and methods associated to the PLNfit object. Any PLN variant in the
@@ -55,11 +46,15 @@ reference:
     Class and methods associated to the PLNPCAfit object.
   contents:
   - starts_with('PLNPCAfit')
+  - '`PLNPCAfamily`'
+  - '`plot.PLNPCAfamily`'
 - title: 'Class for PLN network fit and methods'
   desc: >
     Class and methods associated to the PLNnetworkfit object.
   contents:
   - starts_with('PLNnetworkfit')
+  - '`PLNnetworkfamily`'
+  - '`plot.PLNnetworkfamily`'
   - '`coefficient_path`'
   - '`stability_selection`'
   - '`plot_network`'

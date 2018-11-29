@@ -82,7 +82,7 @@ function(responses, covariates, offsets, weights, control) {
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
     control$Omega <- Omega
-    optim.out <- optimization_PLN(par0, responses, covariates, offsets, weights, control)
+    optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, control)
 
     ## Check convergence
     objective[iter]   <- -sum(weights * optim.out$loglik) + self$penalty * sum(abs(Omega))
