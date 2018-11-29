@@ -56,6 +56,7 @@ PLNPCAfamily$set("public", "optimize",
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
 })
 
+#' @export
 isPLNPCAfamily <- function(Robject) {inherits(Robject, "PLNPCAfamily")}
 
 #' Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)
@@ -81,14 +82,28 @@ plot.PLNPCAfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), annotate 
 #'
 #' @name getBestModel.PLNPCAfamily
 #'
+#' @param x an object with classi PLNPCAfamilly
 #' @param crit a character for the criterion used to performed the selection. Either
 #' "BIC", "ICL", "R_squared". Default is \code{ICL}.
 #' @return  Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
+#'
 #' @export
 getBestModel.PLNPCAfamily <- function(x, crit = c("ICL", "BIC", "R_squared"), stability = 0.9) {
   stopifnot(isPLNPCAfamily(x))
   x$getBestModel(match.arg(crit), stability)
 }
+
+PLNPCAfamily$set("public", "getBestModel",
+function(crit = c("BIC", "ICL", "R_squared")){
+  crit <- match.arg(crit)
+  stopifnot(!anyNA(self$criteria[[crit]]))
+  id <- 1
+  if (length(self$criteria[[crit]]) > 1) {
+    id <- which.max(self$criteria[[crit]])
+  }
+  model <- self$models[[id]]$clone()
+  model
+})
 
 #' Model extraction from a collection of PLNPCA models
 #'
@@ -105,17 +120,6 @@ getModel.PLNPCAfamily <- function(object, var, index = NULL) {
   stopifnot(isPLNPCAfamily(object))
   object$getModel(var, index = NULL)
 }
-
-PLNPCAfamily$set("public", "getBestModel",
-function(crit = c("BIC", "ICL", "R_squared")){
-  crit <- match.arg(crit)
-  stopifnot(!anyNA(self$criteria[[crit]]))
-  id <- 1
-  if (length(self$criteria[[crit]]) > 1) {
-    id <- which.max(self$criteria[[crit]])
-  }
-  self$models[[id]]$clone()
-})
 
 PLNPCAfamily$set("public", "plot",
 function(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE) {

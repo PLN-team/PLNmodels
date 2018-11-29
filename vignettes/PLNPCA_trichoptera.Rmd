@@ -80,8 +80,8 @@ The critetion $J$ represents the variational lower bound of the likelihood: in t
 From this plot, we can see that the best model in terms of BIC or ICL is obtained for $q=4$ axes. We may extract the corresponding model with the method `getBestModel("ICL")`. A model with a specific number of axes can be extracted with the `getModel(q)` method. 
 
 ```{r}
-myPCA.ICL <- getBestModel(models.nocov, "ICL") # if no criteria is specified, the best BIC is used
-myPCA.q3  <- getModel(models.nocov, 3) 
+myPCA.ICL <- models.nocov$getBestModel("ICL") # if no criteria is specified, the best BIC is used
+myPCA.q3  <- models.nocov$getModel(3) 
 ```
 
 The variables `myPCA.ICL` and `myPCA.q3` are other `R6Class` objects of class `PLNPCAfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_PCA` method provides the individual maps and correlation circles as in usual PCA. If an additional classification exist for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument of the function.
@@ -121,7 +121,7 @@ Again, the best model is obtained for $q=3$ classes.
 
 ```{r}
 models.cov
-myPCA.cov <- getBestModel(models.cov, "ICL")
+myPCA.cov <- models.cov$getBestModel("ICL")
 ```
 
 The `show/print` method lists a few summary statistics and useful methods / fields.

@@ -8,6 +8,8 @@ getBestModel.PLNPCAfamily(x, crit = c("ICL", "BIC", "R_squared"),
   stability = 0.9)
 }
 \arguments{
+\item{x}{an object with classi PLNPCAfamilly}
+
 \item{crit}{a character for the criterion used to performed the selection. Either
 "BIC", "ICL", "R_squared". Default is \code{ICL}.}
 }

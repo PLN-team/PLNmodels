@@ -8,6 +8,8 @@ getBestModel.PLNnetworkfamily(x, crit = c("BIC", "loglik", "R_squared",
   "EBIC", "StARS"), stability = 0.9)
 }
 \arguments{
+\item{x}{an object with classi PLNnetworkfamilly}
+
 \item{crit}{a character for the criterion used to performed the selection. Either
 "BIC", "EBIC", "StARS", "R_squared". Default is \code{BIC}. If StARS
 (Stability Approach to Regularization Selection) is chosen and stability selection

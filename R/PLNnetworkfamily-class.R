@@ -204,6 +204,7 @@ isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
 #'
 #' @name getBestModel.PLNnetworkfamily
 #'
+#' @param x an object with classi PLNnetworkfamilly
 #' @param crit a character for the criterion used to performed the selection. Either
 #' "BIC", "EBIC", "StARS", "R_squared". Default is \code{BIC}. If StARS
 #' (Stability Approach to Regularization Selection) is chosen and stability selection
