@@ -202,7 +202,7 @@ function(precision = TRUE, corr = TRUE) {
 #'
 #' @name getBestModel.PLNnetworkfamily
 #'
-#' @param x an object with classi PLNnetworkfamilly
+#' @param Robject an object with class PLNnetworkfamilly
 #' @param crit a character for the criterion used to performed the selection. Either
 #' "BIC", "EBIC", "StARS", "R_squared". Default is \code{BIC}. If StARS
 #' (Stability Approach to Regularization Selection) is chosen and stability selection
@@ -210,9 +210,9 @@ function(precision = TRUE, corr = TRUE) {
 #' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
 #' @return  Send back a object with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}.
 #' @export
-getBestModel.PLNnetworkfamily <- function(x, crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9) {
-  stopifnot(isPLNnetworkfamily(x))
-  x$getBestModel(match.arg(crit), stability)
+getBestModel.PLNnetworkfamily <- function(Robject, crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9) {
+  stopifnot(isPLNnetworkfamily(Robject))
+  Robject$getBestModel(match.arg(crit), stability)
 }
 
 PLNnetworkfamily$set("public", "getBestModel",

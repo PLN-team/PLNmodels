@@ -4,11 +4,11 @@
 \alias{getBestModel.PLNPCAfamily}
 \title{Best model extraction from a collection of PLNPCAfit}
 \usage{
-\method{getBestModel}{PLNPCAfamily}(x, crit = c("ICL", "BIC",
-  "R_squared"))
+\method{getBestModel}{PLNPCAfamily}(Robject, crit = c("ICL", "BIC",
+  "R_squared"), ...)
 }
 \arguments{
-\item{x}{an object with classi PLNPCAfamilly}
+\item{Robject}{an object with classi PLNPCAfamilly}
 
 \item{crit}{a character for the criterion used to performed the selection. Either
 "BIC", "ICL", "R_squared". Default is \code{ICL}.}

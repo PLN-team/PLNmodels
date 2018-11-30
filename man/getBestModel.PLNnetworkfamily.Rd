@@ -4,11 +4,11 @@
 \alias{getBestModel.PLNnetworkfamily}
 \title{Best model extraction from a collection of PLNnetworkfit}
 \usage{
-\method{getBestModel}{PLNnetworkfamily}(x, crit = c("BIC", "loglik",
-  "R_squared", "EBIC", "StARS"), stability = 0.9)
+\method{getBestModel}{PLNnetworkfamily}(Robject, crit = c("BIC",
+  "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9)
 }
 \arguments{
-\item{x}{an object with classi PLNnetworkfamilly}
+\item{Robject}{an object with class PLNnetworkfamilly}
 
 \item{crit}{a character for the criterion used to performed the selection. Either
 "BIC", "EBIC", "StARS", "R_squared". Default is \code{BIC}. If StARS

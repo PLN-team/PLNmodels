@@ -80,15 +80,15 @@ plot.PLNPCAfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), annotate 
 #'
 #' @name getBestModel.PLNPCAfamily
 #'
-#' @param x an object with classi PLNPCAfamilly
+#' @param Robject an object with classi PLNPCAfamilly
 #' @param crit a character for the criterion used to performed the selection. Either
 #' "BIC", "ICL", "R_squared". Default is \code{ICL}.
 #' @return  Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
 #'
 #' @export
-getBestModel.PLNPCAfamily <- function(x, crit = c("ICL", "BIC", "R_squared")) {
-  stopifnot(isPLNPCAfamily(x))
-  x$getBestModel(match.arg(crit))
+getBestModel.PLNPCAfamily <- function(Robject, crit = c("ICL", "BIC", "R_squared"), ...) {
+  stopifnot(isPLNPCAfamily(Robject))
+  Robject$getBestModel(match.arg(crit))
 }
 
 PLNPCAfamily$set("public", "getBestModel",

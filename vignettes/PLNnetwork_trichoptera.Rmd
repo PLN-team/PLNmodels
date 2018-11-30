@@ -58,7 +58,7 @@ models
 ```
 Complementary information comes with the `plot` method:
 ```{r, fig.width=7, fig.height=5}
-models$plot()
+plot(models)
 ```
 
 The critetion $J$ represents the variational lower bound of the likelihood: in this case, we can see that it is strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) $R^2$ which is displayed for each value of penalty. Generally, smoothness of these criteria is an good indicator to check that the optimization process went well.
@@ -83,9 +83,9 @@ ggplot(path, aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + geom_li
 If we want to select one network, we may extract best model according to BIC or StARS with the method `getBestModel()`. A model with a specific penalty level can be extracted with the `getModel(lambda)` method. 
 
 ```{r}
-model.BIC   <- models$getBestModel("BIC")   # if no criteria is specified, the best BIC is used
-model.StARS <- models$getBestModel("StARS") # if StARS is requested, stabiltiy selection is performed if needed 
-model.pen   <- models$getModel(models$penalties[20]) # give some sparsity
+model.BIC   <- getBestModel(models, "BIC")   # if no criteria is specified, the best BIC is used
+model.StARS <- getBestModel(models, "StARS") # if StARS is requested, stabiltiy selection is performed if needed 
+model.pen   <- getModel(models, models$penalties[20]) # give some sparsity
 ```
 
 The variables `model.BIC`, `model.StARS` and `model.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network, with various options.
