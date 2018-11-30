@@ -12,6 +12,8 @@
 
 \item{crit}{a character for the criterion used to performed the selection. Either
 "BIC", "ICL", "R_squared". Default is \code{ICL}.}
+
+\item{...}{not use.}
 }
 \value{
 Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.

@@ -4,10 +4,10 @@
 \alias{getModel.PLNnetworkfamily}
 \title{Model extraction from a collection of PLNnetwork models}
 \usage{
-\method{getModel}{PLNnetworkfamily}(object, var, index = NULL)
+\method{getModel}{PLNnetworkfamily}(Robject, var, index = NULL)
 }
 \arguments{
-\item{object}{an R6 object with class PLNfamily}
+\item{Robject}{an R6 object with class PLNfamily}
 
 \item{var}{value of the parameter (penalty for sparse network) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
 

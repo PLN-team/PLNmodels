@@ -3,9 +3,8 @@
 #' @description The function \code{\link{PLNPCA}} produces an instance of this class.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=getBestModel.PLNfamily]{getBestModel}},
-#' \code{\link[=getModel.PLNfamily]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
-#' and \code{\link[=predict.PLNfit]{predict}}.
+#' See the documentation for \code{\link[=getBestModel.PLNPCAfamily]{getBestModel}},
+#' \code{\link[=getModel.PLNPCAfamily]{getModel}} and  \code{\link[=plot.PLNPCAfamily]{plot}}.
 #'
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
@@ -83,6 +82,7 @@ plot.PLNPCAfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), annotate 
 #' @param Robject an object with classi PLNPCAfamilly
 #' @param crit a character for the criterion used to performed the selection. Either
 #' "BIC", "ICL", "R_squared". Default is \code{ICL}.
+#' @param ... not use.
 #' @return  Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
 #'
 #' @export
@@ -107,16 +107,16 @@ function(crit = c("BIC", "ICL", "R_squared")){
 #'
 #' @name getModel.PLNPCAfamily
 #'
-#' @param object an R6 object with class PLNfamily
+#' @param Robject an R6 object with class PLNfamily
 #' @param var value of the parameter (rank for PCA) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
 #' @param index Integer index of the model to be returned. Only the first value is taken into account.
 #'
 #' @return Sends back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
 #'
 #' @export
-getModel.PLNPCAfamily <- function(object, var, index = NULL) {
-  stopifnot(isPLNPCAfamily(object))
-  object$getModel(var, index = NULL)
+getModel.PLNPCAfamily <- function(Robject, var, index = NULL) {
+  stopifnot(isPLNPCAfamily(Robject))
+  Robject$getModel(var, index = NULL)
 }
 
 PLNPCAfamily$set("public", "plot",

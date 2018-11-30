@@ -145,8 +145,8 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-representation-of-the-poisson-lognormal-fit" class="hasAnchor"><a href="#section-representation-of-the-poisson-lognormal-fit" class="anchor"></a>Representation of the Poisson lognormal fit</h2>
-          <p class="section-desc"><p>Class and methods associated to the PLNfit object. Any PLN variant in the packake inherits from this class (PLNPCAfit, PLNnetworkfit, PLNLDAfit).</p></p>
+          <h2 id="section-definition-and-manipulation-of-a-poisson-lognormal-fit" class="hasAnchor"><a href="#section-definition-and-manipulation-of-a-poisson-lognormal-fit" class="anchor"></a>Definition and manipulation of a Poisson lognormal fit</h2>
+          <p class="section-desc"><p>Description of the PLNfit object and methods for its manipulation. Any PLN variant in the packake inherits from this class (PLNPCAfit, PLNnetworkfit, PLNLDAfit).</p></p>
         </th>
       </tr>
       <tr>
@@ -155,12 +155,6 @@
           <p><code><a href="PLNfit.html">PLNfit</a></code> </p>
         </td>
         <td><p>An R6 Class to represent a PLNfit in a standard, general framework</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.PLNfit.html">plot(<i>&lt;PLNfit&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Display the model parameters of a PLNfit in a matrix fashion</p></td>
       </tr><tr>
         
         <td>
@@ -183,8 +177,8 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-representation-of-a-linear-discriminant-analysis-under-the-pln-distribution" class="hasAnchor"><a href="#section-representation-of-a-linear-discriminant-analysis-under-the-pln-distribution" class="anchor"></a>Representation of a Linear discriminant analysis under the PLN distribution</h2>
-          <p class="section-desc"><p>Class and methods associated to the PLNLDAfit object.</p></p>
+          <h2 id="section-definition-and-manipulation-of-a-linear-discriminant-fit-with-poisson-lognormal-distribution" class="hasAnchor"><a href="#section-definition-and-manipulation-of-a-linear-discriminant-fit-with-poisson-lognormal-distribution" class="anchor"></a>Definition and manipulation of a Linear discriminant fit with Poisson lognormal distribution</h2>
+          <p class="section-desc"><p>Description of the PLNLDAfit object and methods for its manipulation.</p></p>
         </th>
       </tr>
       <tr>
@@ -221,8 +215,8 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-class-for-pln-pca-fit-and-methods" class="hasAnchor"><a href="#section-class-for-pln-pca-fit-and-methods" class="anchor"></a>Class for PLN PCA fit and methods</h2>
-          <p class="section-desc"><p>Class and methods associated to the PLNPCAfit object.</p></p>
+          <h2 id="section-definition-and-manipulation-of-a-poisson-lognormal-pca-fit" class="hasAnchor"><a href="#section-definition-and-manipulation-of-a-poisson-lognormal-pca-fit" class="anchor"></a>Definition and manipulation of a Poisson Lognormal PCA fit</h2>
+          <p class="section-desc"><p>Description of the PLNPCAfit and PLNPCAfamily objects and methods for their manipulation.</p></p>
         </th>
       </tr>
       <tr>
@@ -261,12 +255,24 @@
           <p><code><a href="plot.PLNPCAfamily.html">plot(<i>&lt;PLNPCAfamily&gt;</i>)</a></code> </p>
         </td>
         <td><p>Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="getBestModel.PLNPCAfamily.html">getBestModel(<i>&lt;PLNPCAfamily&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Best model extraction from a collection of PLNPCAfit</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="getModel.PLNPCAfamily.html">getModel(<i>&lt;PLNPCAfamily&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Model extraction from a collection of PLNPCA models</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-class-for-pln-network-fit-and-methods" class="hasAnchor"><a href="#section-class-for-pln-network-fit-and-methods" class="anchor"></a>Class for PLN network fit and methods</h2>
-          <p class="section-desc"><p>Class and methods associated to the PLNnetworkfit object.</p></p>
+          <h2 id="section-definition-and-manipulation-of-a-sparse-poisson-lognormal-fit" class="hasAnchor"><a href="#section-definition-and-manipulation-of-a-sparse-poisson-lognormal-fit" class="anchor"></a>Definition and manipulation of a sparse Poisson lognormal fit</h2>
+          <p class="section-desc"><p>Description of the PLNnetworkfit and PLNnetworkfamily objects and methods for their manipulation.</p></p>
         </th>
       </tr>
       <tr>
@@ -287,6 +293,18 @@
           <p><code><a href="plot.PLNnetworkfamily.html">plot(<i>&lt;PLNnetworkfamily&gt;</i>)</a></code> </p>
         </td>
         <td><p>Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="getBestModel.PLNnetworkfamily.html">getBestModel(<i>&lt;PLNnetworkfamily&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Best model extraction from a collection of PLNnetworkfit</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="getModel.PLNnetworkfamily.html">getModel(<i>&lt;PLNnetworkfamily&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Model extraction from a collection of PLNnetwork models</p></td>
       </tr><tr>
         
         <td>
@@ -342,10 +360,10 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#section-top-level-fitting-functions">Top-level fitting functions</a></li>
-      <li><a href="#section-representation-of-the-poisson-lognormal-fit">Representation of the Poisson lognormal fit</a></li>
-      <li><a href="#section-representation-of-a-linear-discriminant-analysis-under-the-pln-distribution">Representation of a Linear discriminant analysis under the PLN distribution</a></li>
-      <li><a href="#section-class-for-pln-pca-fit-and-methods">Class for PLN PCA fit and methods</a></li>
-      <li><a href="#section-class-for-pln-network-fit-and-methods">Class for PLN network fit and methods</a></li>
+      <li><a href="#section-definition-and-manipulation-of-a-poisson-lognormal-fit">Definition and manipulation of a Poisson lognormal fit</a></li>
+      <li><a href="#section-definition-and-manipulation-of-a-linear-discriminant-fit-with-poisson-lognormal-distribution">Definition and manipulation of a Linear discriminant fit with Poisson lognormal distribution</a></li>
+      <li><a href="#section-definition-and-manipulation-of-a-poisson-lognormal-pca-fit">Definition and manipulation of a Poisson Lognormal PCA fit</a></li>
+      <li><a href="#section-definition-and-manipulation-of-a-sparse-poisson-lognormal-fit">Definition and manipulation of a sparse Poisson lognormal fit</a></li>
       <li><a href="#section-other-functions">Other functions</a></li>
       <li><a href="#section-data-set">Data set</a></li>
     </ul>

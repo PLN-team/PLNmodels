@@ -96,7 +96,9 @@ Note the use of the `formula` object to specify the model: the vector $\boldsymb
 myPLN
 ```
 
-Let us try tto access the most common fields:
+#### Field access to a PLN output
+
+Let us try to access the most common fields:
 
 ```{r fields-access}
 myPLN$loglik
@@ -109,28 +111,25 @@ myPLN$criteria
 We can also reach the matrix of regression parameters and the variance/covariance matrix of the latent variable $Z$ with the traditional function found in `R` for (g)lm manipulation:
 
 ```{r coef vcov}
-coef(myPLN)
-vcov(myPLN)
+head(coef(myPLN))
+head(vcov(myPLN))
 ```
 
-One can have a glance to these quantities with the ` plot` method: 
-Complementary information comes with the `plot` method:
-```{r plot_model, fig.width=7, fig.height=5}
-plot(myPLN)
+Consider plotting the parameters with the nice `corrplot` package, _e.g._ the the covariance matrix:
+```{r plot covariance, fig.width=7, fig.height=5}
+corrplot::corrplot(vcov(myPLN), is.corr = FALSE)
 ```
 
-You can also check the variational parameter if you need (and understand what they represent):
-
-```{r plot_var, fig.width=7, fig.height=5}
-plot(myPLN, "variational")
-```
+#### Observation weights
 
 It is also possible to use observation weights like in standard (generalized) linear models:
 
 ```{r weighted, fig.width=7, fig.height=5}
 myPLN_weighted <- PLN(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera, weights = runif(nrow(trichoptera)))
-plot(myPLN_weighted, "model")
+corrplot::corrplot(vcov(myPLN) - vcov(myPLN_weighted), is.corr = FALSE)
 ```
+
+#### Make prediction with new data
 
 The prediction method can be use to predict new responses from a new table of data (with both covariates and offset if needed.)
 

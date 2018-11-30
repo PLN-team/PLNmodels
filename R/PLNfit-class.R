@@ -4,7 +4,9 @@
 #' Objects produced by the functions \code{\link{PLNnetwork}}, \code{\link{PLNPCA}} and \code{\link{PLNLDA}} also enjoy the method of \code{\link{PLNfit}}
 #' by inheritance.
 #'
-#' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods: plot, print, coef, vcov and predict
+#' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
+#' See the documentation for \code{\link[=coef.PLNfit]{coef}},
+#' \code{\link[=vcov.PLNfit]{vcov.PLNfit}} and  \code{\link[=predict.PLNfit]{predict}}.
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'
@@ -250,7 +252,6 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
 
 PLNfit$set("public", "predict",
   function(newdata, type = c("link", "response"), envir = parent.frame()) {
-    ##
     type = match.arg(type)
 
     ## Extract the model matrices from the new data set with initial formula
@@ -293,42 +294,6 @@ vcov.PLNfit <- function(object, ...) {
   stopifnot(isPLNfit(object))
   object$model_par$Sigma
 }
-
-#' Display the model parameters of a PLNfit in a matrix fashion
-#'
-#' @name plot.PLNfit
-#'
-#' @param x an R6 object with class PLNfit
-#' @param type character. Should the variational or the model parameters be plotted? default is "model".
-#' @param ... additional parameters for S3 compatibility. Not used
-#'
-#' @export
-plot.PLNfit <- function(x, type = c("model","variational"), ...) {
-  stopifnot(isPLNfit(x))
-  x$plot(type)
-}
-
-#' @importFrom corrplot corrplot
-PLNfit$set("public", "plot",
-  function(type = c("model", "variational")) {
-    type <- match.arg(type)
-    param <- switch(type,
-               "model"       = self$model_par,
-               "variational" = self$var_par)
-    par1 <- param[[1]]; par2 <- param[[2]]
-    rownames(par1) <- rep(" ", nrow(par1)) ; colnames(par1) <- rep(" ", ncol(par1))
-    rownames(par2) <- rep(" ", nrow(par2)) ; colnames(par2) <- rep(" ", ncol(par2))
-
-    par(mfrow = c(2,2))
-    hist(par1           , breaks = sqrt(nrow(par1)), xlab = "", ylab = "", main = paste0(names(param)[1]))
-    hist(par2[par2 != 0], breaks = sqrt(nrow(par2)), xlab = "", ylab = "", main = paste0(names(param)[2]))
-    corrplot::corrplot(par1, is.corr = FALSE, method = "color", cl.pos = "n",
-                       addgrid=ifelse(type == "model", "grey", NA))
-    corrplot::corrplot(par2, is.corr = FALSE, method = "color", cl.pos = "n")
-    title(main = paste0("\n",type," parameters"), outer = TRUE)
-    par(mfrow = c(1,1))
-  }
-)
 
 PLNfit$set("public", "show",
 function(model = paste("A multivariate Poisson Lognormal fit with", private$covariance, "covariance model.\n")) {

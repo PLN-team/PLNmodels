@@ -69,10 +69,10 @@ isPLNPCAfamily     <- function(Robject) {inherits(Robject, "PLNPCAfamily"    )}
 ## S3 methods declared generic for children of PLNfamily
 
 #' @export
-getModel     <- function(Robject, var , ...) {UseMethod("getModel"    , Robject)}
+getBestModel <- function(Robject, crit, ...) {UseMethod("getBestModel", Robject)}
 
 #' @export
-getBestModel <- function(Robject, crit, ...) {UseMethod("getBestModel", Robject)}
+getModel     <- function(Robject, var , index) {UseMethod("getModel"    , Robject)}
 
 PLNfamily$set("public", "getModel",
 function(var, index = NULL) {
@@ -117,6 +117,7 @@ function() {
   cat("COLLECTION OF", length(self$models), "POISSON LOGNORMAL MODELS\n")
   cat("--------------------------------------------------------\n")
 })
+
 PLNfamily$set("public", "print", function() self$show())
 
 

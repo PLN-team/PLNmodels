@@ -112,15 +112,16 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>getBestModel.PLNnetworkfamily</span>(<span class='no'>x</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"loglik"</span>, <span class='st'>"R_squared"</span>,
-  <span class='st'>"EBIC"</span>, <span class='st'>"StARS"</span>), <span class='kw'>stability</span> <span class='kw'>=</span> <span class='fl'>0.9</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for PLNnetworkfamily</span>
+<span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"BIC"</span>,
+  <span class='st'>"loglik"</span>, <span class='st'>"R_squared"</span>, <span class='st'>"EBIC"</span>, <span class='st'>"StARS"</span>), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>an object with classi PLNnetworkfamilly</p></td>
+      <th>Robject</th>
+      <td><p>an object with class PLNnetworkfamilly</p></td>
     </tr>
     <tr>
       <th>crit</th>
@@ -130,8 +131,8 @@
  was not yet performed, the function will call the method stability_selection with default argument.</p></td>
     </tr>
     <tr>
-      <th>stability</th>
-      <td><p>a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is <code>0.9</code>.</p></td>
+      <th>...</th>
+      <td><p>additional parameters for StARS criterion. stability, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is <code>0.9</code>.</p></td>
     </tr>
     </table>
     

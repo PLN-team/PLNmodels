@@ -69,7 +69,7 @@
       <h1>Analyze of the Trichopetra data set with the multivariate Poisson log-normal model</h1>
                         <h4 class="author">Julien Chiquet</h4>
             
-            <h4 class="date">2018-11-29</h4>
+            <h4 class="date">2018-11-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLN_trichoptera.Rmd"><code>vignettes/PLN_trichoptera.Rmd</code></a></small>
       <div class="hidden name"><code>PLN_trichoptera.Rmd</code></div>
@@ -176,173 +176,127 @@
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">myPLN</a></code></pre></div>
 <pre><code>## A multivariate Poisson Lognormal fit with full covariance model.
 ## ==================================================================
-##  degrees_freedom    loglik       BIC       ICL R_squared
-##              170 -1051.523 -1382.327 -2205.476 0.9221581
+##  degrees_freedom   loglik       BIC       ICL R_squared
+##              170 -1051.51 -1382.315 -2206.456 0.9221898
 ## ==================================================================
 ## * Useful fields 
 ##     $model_par, $fitted, $latent, $var_par, $optim_par 
 ##     $loglik, $BIC, $ICL, $loglik_vec, $degrees_freedom, $criteria 
 ## * Useful S3 methods
 ##     plot(), print(), vcov(), coef(), predict()</code></pre>
-<p>Let us try tto access the most common fields:</p>
+<div id="field-access-to-a-pln-output" class="section level4">
+<h4 class="hasAnchor">
+<a href="#field-access-to-a-pln-output" class="anchor"></a>Field access to a PLN output</h4>
+<p>Let us try to access the most common fields:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">myPLN<span class="op">$</span>loglik</a></code></pre></div>
-<pre><code>## [1] -1051.523</code></pre>
+<pre><code>## [1] -1051.51</code></pre>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">myPLN<span class="op">$</span>BIC</a></code></pre></div>
-<pre><code>## [1] -1382.327</code></pre>
+<pre><code>## [1] -1382.315</code></pre>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">myPLN<span class="op">$</span>ICL</a></code></pre></div>
-<pre><code>## [1] -2205.476</code></pre>
+<pre><code>## [1] -2206.456</code></pre>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">myPLN<span class="op">$</span>R_squared</a></code></pre></div>
-<pre><code>## [1] 0.9221581</code></pre>
+<pre><code>## [1] 0.9221898</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">myPLN<span class="op">$</span>criteria</a></code></pre></div>
 <pre><code>## degrees_freedom          loglik             BIC             ICL 
-##     170.0000000   -1051.5226431   -1382.3273685   -2205.4759919 
+##     170.0000000   -1051.5101453   -1382.3148706   -2206.4559594 
 ##       R_squared 
-##       0.9221581</code></pre>
+##       0.9221898</code></pre>
 <p>We can also reach the matrix of regression parameters and the variance/covariance matrix of the latent variable <span class="math inline">\(Z\)</span> with the traditional function found in <code>R</code> for (g)lm manipulation:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myPLN)</a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myPLN))</a></code></pre></div>
 <pre><code>##     (Intercept)
-## Che  -8.1771636
-## Hyc  -8.2720330
-## Hym  -2.9790535
-## Hys  -7.0826553
-## Psy  -0.5471443
-## Aga  -4.0920004
-## Glo  -6.3375199
-## Ath  -6.0438619
-## Cea  -7.0904021
-## Ced  -3.6370388
-## Set  -4.3973882
-## All  -4.9249428
-## Han  -4.8095742
-## Hfo  -6.1363132
-## Hsp  -4.2087467
-## Hve  -6.8519214
-## Sta  -2.8823772</code></pre>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/vcov">vcov</a></span>(myPLN)</a></code></pre></div>
-<pre><code>##              Che          Hyc         Hym         Hys           Psy
-## Che  2.526943821 -0.008766847  0.36031011  0.44488873 -0.0178503405
-## Hyc -0.008766847  1.902243345  0.11243423  0.27150206 -0.1465022830
-## Hym  0.360310110  0.112434233  1.24491633  0.86550751 -0.1189614951
-## Hys  0.444888729  0.271502063  0.86550751  2.66256535 -0.1471699986
-## Psy -0.017850341 -0.146502283 -0.11896150 -0.14717000  0.0762956125
-## Aga  0.309093537 -0.132641681  0.51320701  0.42485679  0.0017174141
-## Glo  0.089534266  0.171768746  0.20984215  0.34248317 -0.0501346752
-## Ath  0.352284734  0.111800187  0.38574277  0.60821330 -0.0485513144
-## Cea -0.009648310  0.005598876 -0.02198392 -0.01665962  0.0002951239
-## Ced  0.337944061  0.222694387  0.50831046  0.68165077 -0.0985530830
-## Set -0.058243480  0.475956294 -0.18107123  0.13911592 -0.0915502406
-## All  0.272202604 -0.263369260  0.68060802  0.36900506 -0.0045477407
-## Han -0.183094343  0.624244051  0.21214536  0.13942156 -0.2886518696
-## Hfo -0.363454696  0.558899753 -0.39475034 -0.18442640 -0.1457208982
-## Hsp -0.441603834  0.670898194 -0.33082111 -0.17393283 -0.1916849623
-## Hve  0.312937253 -0.131488389  0.16050977  0.24085875  0.0457337397
-## Sta  0.364110206  0.256692815  0.47884110  0.61511632 -0.1214901682
-##              Aga          Glo         Ath           Cea          Ced
-## Che  0.309093537  0.089534266  0.35228473 -0.0096483095  0.337944061
-## Hyc -0.132641681  0.171768746  0.11180019  0.0055988760  0.222694387
-## Hym  0.513207009  0.209842150  0.38574277 -0.0219839180  0.508310458
-## Hys  0.424856789  0.342483169  0.60821330 -0.0166596205  0.681650767
-## Psy  0.001717414 -0.050134675 -0.04855131  0.0002951239 -0.098553083
-## Aga  1.105061747 -0.064458720  0.19666849 -0.0229611075  0.218272861
-## Glo -0.064458720  1.116395228  0.22501026  0.0017078339  0.226857206
-## Ath  0.196668490  0.225010265  1.37436638 -0.0069778902  0.443579139
-## Cea -0.022961107  0.001707834 -0.00697789  0.0457288742 -0.007879721
-## Ced  0.218272861  0.226857206  0.44357914 -0.0078797206  0.958561361
-## Set -0.302423468  0.292600038  0.09862479  0.0155772732  0.195579052
-## All  0.594343491 -0.078102129  0.08709951 -0.0254132747  0.079516738
-## Han -0.172900632 -0.185471772 -0.19371102  0.0043478685  0.057719543
-## Hfo -0.814913215  0.299772996 -0.15684672  0.0277621211 -0.130830922
-## Hsp -0.780631501  0.252766980 -0.21366654  0.0256586000 -0.109882215
-## Hve  0.187105657  0.087998787  0.24178383 -0.0071775059  0.204557390
-## Sta  0.440110499  0.017845843  0.30970541 -0.0141566701  0.435225619
-##             Set          All          Han         Hfo        Hsp
-## Che -0.05824348  0.272202604 -0.183094343 -0.36345470 -0.4416038
-## Hyc  0.47595629 -0.263369260  0.624244051  0.55889975  0.6708982
-## Hym -0.18107123  0.680608021  0.212145360 -0.39475034 -0.3308211
-## Hys  0.13911592  0.369005057  0.139421560 -0.18442640 -0.1739328
-## Psy -0.09155024 -0.004547741 -0.288651870 -0.14572090 -0.1916850
-## Aga -0.30242347  0.594343491 -0.172900632 -0.81491322 -0.7806315
-## Glo  0.29260004 -0.078102129 -0.185471772  0.29977300  0.2527670
-## Ath  0.09862479  0.087099505 -0.193711021 -0.15684672 -0.2136665
-## Cea  0.01557727 -0.025413275  0.004347868  0.02776212  0.0256586
-## Ced  0.19557905  0.079516738  0.057719543 -0.13083092 -0.1098822
-## Set  1.58118971 -0.683405836 -0.041055722  0.80791060  0.7639750
-## All -0.68340584  1.810303800  0.030584943 -0.74358695 -0.6578244
-## Han -0.04105572  0.030584943  3.639184443  0.61967402  0.9826900
-## Hfo  0.80791060 -0.743586954  0.619674016  2.72233314  1.6206205
-## Hsp  0.76397500 -0.657824432  0.982690029  1.62062050  2.4953222
-## Hve -0.04051538  0.146438756 -0.599498234 -0.34296863 -0.4804726
-## Sta  0.05580528  0.199630876  0.462782356 -0.25550777 -0.1923335
-##              Hve         Sta
-## Che  0.312937253  0.36411021
-## Hyc -0.131488389  0.25669281
-## Hym  0.160509765  0.47884110
-## Hys  0.240858749  0.61511632
-## Psy  0.045733740 -0.12149017
-## Aga  0.187105657  0.44011050
-## Glo  0.087998787  0.01784584
-## Ath  0.241783831  0.30970541
-## Cea -0.007177506 -0.01415667
-## Ced  0.204557390  0.43522562
-## Set -0.040515376  0.05580528
-## All  0.146438756  0.19963088
-## Han -0.599498234  0.46278236
-## Hfo -0.342968629 -0.25550777
-## Hsp -0.480472577 -0.19233348
-## Hve  1.352512855  0.14422486
-## Sta  0.144224855  1.02954195</code></pre>
-<p>One can have a glance to these quantities with the <code>plot</code> method: Complementary information comes with the <code>plot</code> method:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myPLN)</a></code></pre></div>
-<p><img src="PLN_trichoptera_files/figure-html/plot_model-1.png" width="672"></p>
-<p>You can also check the variational parameter if you need (and understand what they represent):</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myPLN, <span class="st">"variational"</span>)</a></code></pre></div>
-<p><img src="PLN_trichoptera_files/figure-html/plot_var-1.png" width="672"></p>
+## Che  -8.1758298
+## Hyc  -8.2744787
+## Hym  -2.9772947
+## Hys  -7.0796789
+## Psy  -0.5474232
+## Aga  -4.0847848</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/vcov">vcov</a></span>(myPLN))</a></code></pre></div>
+<pre><code>##              Che          Hyc        Hym        Hys          Psy
+## Che  2.529411630 -0.009215819  0.3608248  0.4456460 -0.017828260
+## Hyc -0.009215819  1.904770704  0.1122405  0.2713985 -0.146608736
+## Hym  0.360824767  0.112240470  1.2444463  0.8655513 -0.119049174
+## Hys  0.445645970  0.271398472  0.8655513  2.6630245 -0.147258127
+## Psy -0.017828260 -0.146608736 -0.1190492 -0.1472581  0.076400186
+## Aga  0.309176363 -0.132056606  0.5132818  0.4249472  0.001460571
+##              Aga         Glo        Ath           Cea         Ced
+## Che  0.309176363  0.08967007  0.3529761 -0.0096244584  0.33855803
+## Hyc -0.132056606  0.17213745  0.1107066  0.0061427294  0.22211907
+## Hym  0.513281846  0.21093572  0.3856579 -0.0220993692  0.50858370
+## Hys  0.424947172  0.34358064  0.6081444 -0.0163858378  0.68180081
+## Psy  0.001460571 -0.05034021 -0.0482931  0.0001489324 -0.09851714
+## Aga  1.101594941 -0.06348399  0.1970657 -0.0232824207  0.21877611
+##             Set          All        Han        Hfo        Hsp         Hve
+## Che -0.05757445  0.272225949 -0.1832409 -0.3648007 -0.4456994  0.31316162
+## Hyc  0.47519597 -0.262949138  0.6232133  0.5619772  0.6742406 -0.13143686
+## Hym -0.17746749  0.680104380  0.2112184 -0.3927239 -0.3332357  0.16073332
+## Hys  0.14137099  0.368994973  0.1370348 -0.1810007 -0.1758623  0.24125481
+## Psy -0.09159351 -0.004782389 -0.2886270 -0.1467597 -0.1926013  0.04573748
+## Aga -0.29992163  0.593052437 -0.1715424 -0.8146111 -0.7807331  0.18647370
+##            Sta
+## Che  0.3644900
+## Hyc  0.2560327
+## Hym  0.4785195
+## Hys  0.6142688
+## Psy -0.1214552
+## Aga  0.4398710</code></pre>
+<p>Consider plotting the parameters with the nice <code>corrplot</code> package, <em>e.g.</em> the the covariance matrix:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">corrplot<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/vcov">vcov</a></span>(myPLN), <span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<p><img src="PLN_trichoptera_files/figure-html/plot%20covariance-1.png" width="672"></p>
+</div>
+<div id="observation-weights" class="section level4">
+<h4 class="hasAnchor">
+<a href="#observation-weights" class="anchor"></a>Observation weights</h4>
 <p>It is also possible to use observation weights like in standard (generalized) linear models:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">myPLN_weighted &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCount)), <span class="dt">data =</span> trichoptera, <span class="dt">weights =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Uniform">runif</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(trichoptera)))</a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">myPLN_weighted &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCount)), <span class="dt">data =</span> trichoptera, <span class="dt">weights =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Uniform">runif</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(trichoptera)))</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ##  Adjusting a PLN model with full covariance model (with observation weigths)
 ##  Post-treatments...
 ##  DONE!</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myPLN_weighted, <span class="st">"model"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">corrplot<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/vcov">vcov</a></span>(myPLN) <span class="op">-</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/vcov">vcov</a></span>(myPLN_weighted), <span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <p><img src="PLN_trichoptera_files/figure-html/weighted-1.png" width="672"></p>
+</div>
+<div id="make-prediction-with-new-data" class="section level4">
+<h4 class="hasAnchor">
+<a href="#make-prediction-with-new-data" class="anchor"></a>Make prediction with new data</h4>
 <p>The prediction method can be use to predict new responses from a new table of data (with both covariates and offset if needed.)</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myPLN, <span class="dt">newdata =</span> trichoptera[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, ], <span class="dt">type =</span> <span class="st">"response"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myPLN, <span class="dt">newdata =</span> trichoptera[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, ], <span class="dt">type =</span> <span class="st">"response"</span>)</a></code></pre></div>
 <pre><code>##            Che         Hyc        Hym        Hys        Psy       Aga
-## 1  0.028828355 0.019185212  2.7475250 0.09217404  17.431856 0.8418329
-## 2  0.012923056 0.008600267  1.2316491 0.04131940   7.814280 0.3773734
-## 3  0.037775086 0.025139243  3.6002051 0.12077977  22.841742 1.1030914
-## 4  0.190863593 0.127019332 18.1905101 0.61025569 115.410908 5.5735144
-## 5  0.078532416 0.052263163  7.4846370 0.25109479  47.486780 2.2932690
-## 6  0.017893462 0.011908062  1.7053603 0.05721147  10.819773 0.5225170
-## 7  0.007952650 0.005292472  0.7579379 0.02542732   4.808788 0.2322298
-## 8  0.033798761 0.022493007  3.2212362 0.10806611  20.437348 0.9869765
-## 9  0.011928975 0.007938708  1.1369069 0.03814098   7.213182 0.3483447
-## 10 0.003976325 0.002646236  0.3789690 0.01271366   2.404394 0.1161149
+## 1  0.028902473 0.019162548  2.7517148 0.09247002  17.427906 0.8464607
+## 2  0.012956281 0.008590108  1.2335273 0.04145208   7.812510 0.3794479
+## 3  0.037872205 0.025109546  3.6056952 0.12116761  22.836566 1.1091554
+## 4  0.191354301 0.126869284 18.2182495 0.61221530 115.384757 5.6041534
+## 5  0.078734322 0.052201424  7.4960506 0.25190109  47.476020 2.3058756
+## 6  0.017939466 0.011893995  1.7079609 0.05739518  10.817321 0.5253894
+## 7  0.007973096 0.005286220  0.7590937 0.02550897   4.807698 0.2335064
+## 8  0.033885658 0.022466436  3.2261484 0.10841313  20.432717 0.9924022
+## 9  0.011959644 0.007929330  1.1386406 0.03826346   7.211547 0.3502596
+## 10 0.003986548 0.002643110  0.3795469 0.01275449   2.403849 0.1167532
 ##           Glo        Ath         Cea       Ced       Set        All
-## 1  0.08963347 0.13677981 0.024717549 1.2331079 0.7870233 0.52074486
-## 2  0.04018052 0.06131509 0.011080281 0.5527725 0.3528035 0.23343735
-## 3  0.11745075 0.17922872 0.032388513 1.6157965 1.0312719 0.68235534
-## 4  0.59343537 0.90557670 0.163647224 8.1640245 5.2106367 3.44769012
-## 5  0.24417393 0.37260708 0.067334014 3.3591559 2.1439599 1.41858083
-## 6  0.05563457 0.08489782 0.015341927 0.7653773 0.4884972 0.32322095
-## 7  0.02472647 0.03773236 0.006818634 0.3401677 0.2171099 0.14365376
-## 8  0.10508751 0.16036254 0.028979196 1.4457127 0.9227169 0.61052846
-## 9  0.03708971 0.05659854 0.010227951 0.5102515 0.3256648 0.21548063
-## 10 0.01236324 0.01886618 0.003409317 0.1700838 0.1085549 0.07182688
-##          Han        Hfo       Hsp         Hve        Sta
-## 1  1.4583620 0.24466857 1.5011180 0.060303258  2.7174382
-## 2  0.6537485 0.10967901 0.6729150 0.027032495  1.2181619
-## 3  1.9109571 0.32060019 1.9669822 0.079018062  3.5607810
-## 4  9.6553623 1.61987466 9.9384365 0.399249158 17.9913148
-## 5  3.9727793 0.66651093 4.0892525 0.164274393  7.4026764
-## 6  0.9051902 0.15186325 0.9317284 0.037429609  1.6866858
-## 7  0.4023068 0.06749478 0.4141015 0.016635382  0.7496381
-## 8  1.7098037 0.28685280 1.7599315 0.070700372  3.1859620
-## 9  0.6034601 0.10124217 0.6211523 0.024953072  1.1244572
-## 10 0.2011534 0.03374739 0.2070508 0.008317691  0.3748191
+## 1  0.08990476 0.13708859 0.024689075 1.2364050 0.7881118 0.52121546
+## 2  0.04030213 0.06145351 0.011067517 0.5542505 0.3532915 0.23364831
+## 3  0.11780624 0.17963332 0.032351202 1.6201169 1.0326982 0.68297198
+## 4  0.59523152 0.90762100 0.163458706 8.1858537 5.2178436 3.45080582
+## 5  0.24491297 0.37344822 0.067256447 3.3681377 2.1469252 1.41986281
+## 6  0.05580295 0.08508947 0.015324254 0.7674238 0.4891728 0.32351305
+## 7  0.02480131 0.03781754 0.006810779 0.3410772 0.2174102 0.14378358
+## 8  0.10540558 0.16072455 0.028945813 1.4495783 0.9239931 0.61108020
+## 9  0.03720197 0.05672631 0.010216169 0.5116159 0.3261152 0.21567536
+## 10 0.01240066 0.01890877 0.003405390 0.1705386 0.1087051 0.07189179
+##          Han        Hfo       Hsp        Hve        Sta
+## 1  1.4599041 0.24851394 1.4869731 0.06045391  2.7185867
+## 2  0.6544398 0.11140280 0.6665742 0.02710003  1.2186768
+## 3  1.9129778 0.32563896 1.9484475 0.07921546  3.5622860
+## 4  9.6655720 1.64533367 9.8447876 0.40024655 17.9989186
+## 5  3.9769801 0.67698625 4.0507199 0.16468478  7.4058050
+## 6  0.9061474 0.15425003 0.9229488 0.03752311  1.6873986
+## 7  0.4027322 0.06855557 0.4101995 0.01667694  0.7499549
+## 8  1.7116117 0.29136117 1.7433478 0.07087699  3.1873085
+## 9  0.6040982 0.10283335 0.6152992 0.02501541  1.1249324
+## 10 0.2013661 0.03427778 0.2050997 0.00833847  0.3749775
 ## attr(,"type")
 ## [1] "response"</code></pre>
+</div>
 </div>
 </div>
   </div>

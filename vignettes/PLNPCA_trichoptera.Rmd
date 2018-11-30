@@ -121,7 +121,7 @@ Again, the best model is obtained for $q=3$ classes.
 
 ```{r}
 models.cov
-myPCA.cov <- models.cov$getBestModel("ICL")
+myPCA.cov <- getBestModel(models.cov, "ICL")
 ```
 
 The `show/print` method lists a few summary statistics and useful methods / fields.

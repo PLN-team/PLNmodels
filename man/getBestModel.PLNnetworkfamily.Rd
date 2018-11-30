@@ -5,7 +5,7 @@
 \title{Best model extraction from a collection of PLNnetworkfit}
 \usage{
 \method{getBestModel}{PLNnetworkfamily}(Robject, crit = c("BIC",
-  "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9)
+  "loglik", "R_squared", "EBIC", "StARS"), ...)
 }
 \arguments{
 \item{Robject}{an object with class PLNnetworkfamilly}
@@ -15,7 +15,7 @@
 (Stability Approach to Regularization Selection) is chosen and stability selection
  was not yet performed, the function will call the method stability_selection with default argument.}
 
-\item{stability}{a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.}
+\item{...}{additional parameters for StARS criterion. stability, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.}
 }
 \value{
 Send back a object with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}.

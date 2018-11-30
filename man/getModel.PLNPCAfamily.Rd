@@ -4,10 +4,10 @@
 \alias{getModel.PLNPCAfamily}
 \title{Model extraction from a collection of PLNPCA models}
 \usage{
-\method{getModel}{PLNPCAfamily}(object, var, index = NULL)
+\method{getModel}{PLNPCAfamily}(Robject, var, index = NULL)
 }
 \arguments{
-\item{object}{an R6 object with class PLNfamily}
+\item{Robject}{an R6 object with class PLNfamily}
 
 \item{var}{value of the parameter (rank for PCA) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
 

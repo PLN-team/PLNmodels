@@ -13,7 +13,9 @@ The function \code{\link{PLN}} fit a model which is an instance of a object with
 Objects produced by the functions \code{\link{PLNnetwork}}, \code{\link{PLNPCA}} and \code{\link{PLNLDA}} also enjoy the method of \code{\link{PLNfit}}
 by inheritance.
 
-This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods: plot, print, coef, vcov and predict
+This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
+See the documentation for \code{\link[=coef.PLNfit]{coef}},
+\code{\link[=vcov.PLNfit]{vcov.PLNfit}} and  \code{\link[=predict.PLNfit]{predict}}.
 
 Fields are accessed via active binding and cannot be changed by the user.
 }

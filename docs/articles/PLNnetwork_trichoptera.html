@@ -69,7 +69,7 @@
       <h1>Analyzing the Trichopetra data set with Poisson log-normal Network inference</h1>
                         <h4 class="author">Julien Chiquet</h4>
             
-            <h4 class="date">2018-11-29</h4>
+            <h4 class="date">2018-11-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNnetwork_trichoptera.Rmd"><code>vignettes/PLNnetwork_trichoptera.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork_trichoptera.Rmd</code></div>
@@ -107,36 +107,36 @@
 ##  Initialization...
 ##  Adjusting 30 PLN with sparse inverse covariance estimation
 ##  Joint optimization alternating gradient descent and graphical-lasso
-##  sparsifying penalty = 7.288053 
-    sparsifying penalty = 6.731762 
-    sparsifying penalty = 6.217932 
-    sparsifying penalty = 5.743323 
-    sparsifying penalty = 5.30494 
-    sparsifying penalty = 4.900018 
-    sparsifying penalty = 4.526004 
-    sparsifying penalty = 4.180538 
-    sparsifying penalty = 3.861441 
-    sparsifying penalty = 3.566701 
-    sparsifying penalty = 3.294458 
-    sparsifying penalty = 3.042994 
-    sparsifying penalty = 2.810725 
-    sparsifying penalty = 2.596185 
-    sparsifying penalty = 2.39802 
-    sparsifying penalty = 2.214982 
-    sparsifying penalty = 2.045914 
-    sparsifying penalty = 1.889751 
-    sparsifying penalty = 1.745508 
-    sparsifying penalty = 1.612275 
-    sparsifying penalty = 1.489211 
-    sparsifying penalty = 1.375541 
-    sparsifying penalty = 1.270547 
-    sparsifying penalty = 1.173567 
-    sparsifying penalty = 1.08399 
-    sparsifying penalty = 1.00125 
-    sparsifying penalty = 0.9248255 
-    sparsifying penalty = 0.8542343 
-    sparsifying penalty = 0.7890314 
-    sparsifying penalty = 0.7288053 
+##  sparsifying penalty = 7.391434 
+    sparsifying penalty = 6.827252 
+    sparsifying penalty = 6.306133 
+    sparsifying penalty = 5.824792 
+    sparsifying penalty = 5.38019 
+    sparsifying penalty = 4.969525 
+    sparsifying penalty = 4.590205 
+    sparsifying penalty = 4.239839 
+    sparsifying penalty = 3.916216 
+    sparsifying penalty = 3.617294 
+    sparsifying penalty = 3.341189 
+    sparsifying penalty = 3.086159 
+    sparsifying penalty = 2.850595 
+    sparsifying penalty = 2.633012 
+    sparsifying penalty = 2.432036 
+    sparsifying penalty = 2.246401 
+    sparsifying penalty = 2.074935 
+    sparsifying penalty = 1.916557 
+    sparsifying penalty = 1.770268 
+    sparsifying penalty = 1.635145 
+    sparsifying penalty = 1.510336 
+    sparsifying penalty = 1.395053 
+    sparsifying penalty = 1.28857 
+    sparsifying penalty = 1.190214 
+    sparsifying penalty = 1.099366 
+    sparsifying penalty = 1.015453 
+    sparsifying penalty = 0.9379441 
+    sparsifying penalty = 0.8663516 
+    sparsifying penalty = 0.8002237 
+    sparsifying penalty = 0.7391434 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model: the vector <span class="math inline">\(\boldsymbol\mu\)</span> of main effects in the mathematical formulation (one per column species) is specified in the call with the formula <code>~ 1</code>.</p>
@@ -147,11 +147,11 @@
 ## --------------------------------------------------------
 ##  Task: Network Inference 
 ## ========================================================
-##  - 30 penalties considered: from 0.7288053 to 7.288053 
+##  - 30 penalties considered: from 0.7391434 to 7.391434 
 ##     use $penalties to see all values and access specific lambdas 
-##  - Best model (regarding BIC): lambda = 1.89</code></pre>
+##  - Best model (regarding BIC): lambda = 1.92</code></pre>
 <p>Complementary information comes with the <code>plot</code> method:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">models<span class="op">$</span><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(models)</a></code></pre></div>
 <p><img src="PLNnetwork_trichoptera_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
 <p>The critetion <span class="math inline">\(J\)</span> represents the variational lower bound of the likelihood: in this case, we can see that it is strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of penalty. Generally, smoothness of these criteria is an good indicator to check that the optimization process went well.</p>
 <p>We can represent the coefficient path (i.e., value of the edge in the network according to the penalty level) to see if some edges clearly come off.</p>
@@ -167,12 +167,12 @@
 <h4 class="hasAnchor">
 <a href="#model-selection-issue" class="anchor"></a>Model selection issue</h4>
 <p>If we want to select one network, we may extract best model according to BIC or StARS with the method <code>getBestModel()</code>. A model with a specific penalty level can be extracted with the <code>getModel(lambda)</code> method.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">model.BIC   &lt;-<span class="st"> </span>models<span class="op">$</span><span class="kw">getBestModel</span>(<span class="st">"BIC"</span>)   <span class="co"># if no criteria is specified, the best BIC is used</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">model.StARS &lt;-<span class="st"> </span>models<span class="op">$</span><span class="kw">getBestModel</span>(<span class="st">"StARS"</span>) <span class="co"># if StARS is requested, stabiltiy selection is performed if needed </span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">model.BIC   &lt;-<span class="st"> </span><span class="kw">getBestModel</span>(models, <span class="st">"BIC"</span>)   <span class="co"># if no criteria is specified, the best BIC is used</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">model.StARS &lt;-<span class="st"> </span><span class="kw">getBestModel</span>(models, <span class="st">"StARS"</span>) <span class="co"># if StARS is requested, stabiltiy selection is performed if needed </span></a></code></pre></div>
 <pre><code>## 
 ## Stability Selection for PLNnetwork: 
 ## subsampling: ++++++++++++++++++++</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">model.pen   &lt;-<span class="st"> </span>models<span class="op">$</span><span class="kw">getModel</span>(models<span class="op">$</span>penalties[<span class="dv">20</span>]) <span class="co"># give some sparsity</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">model.pen   &lt;-<span class="st"> </span><span class="kw">getModel</span>(models, models<span class="op">$</span>penalties[<span class="dv">20</span>]) <span class="co"># give some sparsity</span></a></code></pre></div>
 <p>The variables <code>model.BIC</code>, <code>model.StARS</code> and <code>model.pen</code> are other <code>R6Class</code> objects of class <code>PLNnetworkfit</code> which in turns owns a couple of methods, mostly for vizualization purposes. The <code>plot_network</code> method provides a quick representation of the inferred network, with various options.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">model.BIC<span class="op">$</span><span class="kw"><a href="../reference/plot_network.html">plot_network</a></span>(<span class="dt">type =</span> <span class="st">"support"</span>, <span class="dt">output =</span> <span class="st">"corrplot"</span>)</a></code></pre></div>
 <p><img src="PLNnetwork_trichoptera_files/figure-html/support_network-1.png" width="672"></p>

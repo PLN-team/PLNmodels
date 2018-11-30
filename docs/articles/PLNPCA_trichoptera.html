@@ -69,7 +69,7 @@
       <h1>Analyzing the Trichopetra data set with Poisson log-normal PCA</h1>
                         <h4 class="author">Julien Chiquet</h4>
             
-            <h4 class="date">2018-11-29</h4>
+            <h4 class="date">2018-11-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNPCA_trichoptera.Rmd"><code>vignettes/PLNPCA_trichoptera.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA_trichoptera.Rmd</code></div>
@@ -144,8 +144,8 @@
 <p><img src="PLNPCA_trichoptera_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
 <p>The critetion <span class="math inline">\(J\)</span> represents the variational lower bound of the likelihood: in this case, we can see that it is strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of <span class="math inline">\(q\)</span> (see the paper for details on how ot is computed). Generally, smoothness of these criteria is an good indicator to check that the optimization process went well.</p>
 <p>From this plot, we can see that the best model in terms of BIC or ICL is obtained for <span class="math inline">\(q=4\)</span> axes. We may extract the corresponding model with the method <code>getBestModel("ICL")</code>. A model with a specific number of axes can be extracted with the <code>getModel(q)</code> method.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">myPCA.ICL &lt;-<span class="st"> </span>models.nocov<span class="op">$</span><span class="kw">getBestModel</span>(<span class="st">"ICL"</span>) <span class="co"># if no criteria is specified, the best BIC is used</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">myPCA.q3  &lt;-<span class="st"> </span>models.nocov<span class="op">$</span><span class="kw">getModel</span>(<span class="dv">3</span>) </a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">myPCA.ICL &lt;-<span class="st"> </span><span class="kw">getBestModel</span>(models.nocov, <span class="st">"ICL"</span>) <span class="co"># if no criteria is specified, the best BIC is used</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">myPCA.q3  &lt;-<span class="st"> </span><span class="kw">getModel</span>(models.nocov, <span class="dv">3</span>)</a></code></pre></div>
 <p>The variables <code>myPCA.ICL</code> and <code>myPCA.q3</code> are other <code>R6Class</code> objects of class <code>PLNPCAfit</code> which in turns owns a couple of methods, mostly for vizualization purposes. The <code>plot_PCA</code> method provides the individual maps and correlation circles as in usual PCA. If an additional classification exist for the observations – which is the case here with the available classification of the trapping nights – , it can be passed as an argument of the function.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">myPCA.ICL<span class="op">$</span><span class="kw">plot_PCA</span>(<span class="dt">cols =</span> trichoptera<span class="op">$</span>Group)</a></code></pre></div>
 <p><img src="PLNPCA_trichoptera_files/figure-html/unnamed-chunk-5-1.png" width="768"></p>
@@ -187,7 +187,7 @@
 ##  - Ranks considered: from 1 to 5 
 ##  - Best model (regarding BIC): rank = 3 - R2 = 0.73 
 ##  - Best model (regarding ICL): rank = 3 - R2 = 0.73</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">myPCA.cov &lt;-<span class="st"> </span>models.cov<span class="op">$</span><span class="kw">getBestModel</span>(<span class="st">"ICL"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">myPCA.cov &lt;-<span class="st"> </span><span class="kw">getBestModel</span>(models.cov, <span class="st">"ICL"</span>)</a></code></pre></div>
 <p>The <code>show/print</code> method lists a few summary statistics and useful methods / fields.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">myPCA.cov</a></code></pre></div>
 <pre><code>## Poisson Lognormal with rank constrained for PCA (rank = 3)

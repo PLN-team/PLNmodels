@@ -112,20 +112,25 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>getBestModel.PLNPCAfamily</span>(<span class='no'>x</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"ICL"</span>, <span class='st'>"BIC"</span>, <span class='st'>"R_squared"</span>),
-  <span class='kw'>stability</span> <span class='kw'>=</span> <span class='fl'>0.9</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for PLNPCAfamily</span>
+<span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"ICL"</span>, <span class='st'>"BIC"</span>,
+  <span class='st'>"R_squared"</span>), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
+      <th>Robject</th>
       <td><p>an object with classi PLNPCAfamilly</p></td>
     </tr>
     <tr>
       <th>crit</th>
       <td><p>a character for the criterion used to performed the selection. Either
 "BIC", "ICL", "R_squared". Default is <code>ICL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>not use.</p></td>
     </tr>
     </table>
     

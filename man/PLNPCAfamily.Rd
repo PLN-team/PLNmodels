@@ -12,9 +12,8 @@ PLNPCAfamily
 The function \code{\link{PLNPCA}} produces an instance of this class.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=getBestModel.PLNfamily]{getBestModel}},
-\code{\link[=getModel.PLNfamily]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
-and \code{\link[=predict.PLNfit]{predict}}.
+See the documentation for \code{\link[=getBestModel.PLNPCAfamily]{getBestModel}},
+\code{\link[=getModel.PLNPCAfamily]{getModel}} and  \code{\link[=plot.PLNPCAfamily]{plot}}.
 }
 \section{Fields}{
 
