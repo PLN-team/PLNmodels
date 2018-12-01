@@ -84,4 +84,3 @@ function() {
   cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })
 
-PLNPCAfamily$set("public", "print", function() self$show())

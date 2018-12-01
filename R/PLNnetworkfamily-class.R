@@ -276,5 +276,3 @@ function() {
     cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
 })
 
-PLNnetworkfamily$set("public", "print", function() self$show())
-

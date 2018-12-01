@@ -254,5 +254,3 @@ function() {
   cat("* Additional methods for LDA\n")
   cat("    $plot_LDA(), $plot_correlation_circle(), $plot_individual_map() \n")
 })
-
-PLNLDAfit$set("public", "print", function() self$show())
