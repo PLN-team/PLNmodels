@@ -6,7 +6,7 @@
 
 ## Auxiliary functions to check the given class of an objet
 isPLNfit           <- function(Robject) {inherits(Robject, "PLNfit"          )}
-isPLNLDAfi         <- function(Robject) {inherits(Robject, "PLNLDAfit"       )}
+isPLNLDAfit        <- function(Robject) {inherits(Robject, "PLNLDAfit"       )}
 isPLNfamily        <- function(Robject) {inherits(Robject, 'PLNfamily'       )}
 isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
 isPLNPCAfamily     <- function(Robject) {inherits(Robject, "PLNPCAfamily"    )}
@@ -95,11 +95,29 @@ predict.PLNLDAfit <- function(object, newdata, newOffsets, newCounts,
 
 ## S3 methods declared generic for children of PLNfamily
 
+#' Best model extraction from a collection of models
+#'
+#' @param Robject an object with class PLNPCAfamilly ot PLNnetworkfamily
+#' @param crit a character for the criterion used to performed the selection. Either
+#' "BIC", "ICL", "EBIC", "StARS", "R_squared". Default is \code{ICL} for PLNPCA, and \code{BIC} for PLNnetwork.
+#'  If StARS (Stability Approach to Regularization Selection) is chosen and stability selection
+#'  was not yet performed, the function will call the method stability_selection with default argument.
+#' @param ... additional parameters for StARS criterion (only for PLNnetwork). stability, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
+#' @return  Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}} or \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
+#'
 #' @export
 getBestModel <- function(Robject, crit, ...) {UseMethod("getBestModel", Robject)}
 
+#' Model extraction from a collection of models
+#'
+#' @param Robject an R6 object with class PLNPCAfamily or PLNnetworkfamily
+#' @param var value of the parameter (rank for PLNPCA, sparisty for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
+#' @param index Integer index of the model to be returned. Only the first value is taken into account.
+#'
+#' @return Sends back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}} or \code{\link[=PLNPCAfit]{PLNnetworkfit}}.
+#'
 #' @export
-getModel     <- function(Robject, var , index) {UseMethod("getModel"    , Robject)}
+getModel <- function(Robject, var , index) {UseMethod("getModel"    , Robject)}
 
 ## =========================================================================================
 ##
@@ -126,32 +144,14 @@ plot.PLNPCAfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), annotate 
   x$plot(criteria, annotate)
 }
 
-#' Model extraction from a collection of PLNPCA models
-#'
-#' @name getModel.PLNPCAfamily
-#'
-#' @param Robject an R6 object with class PLNfamily
-#' @param var value of the parameter (rank for PCA) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
-#' @param index Integer index of the model to be returned. Only the first value is taken into account.
-#'
-#' @return Sends back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
-#'
+#' @describeIn getModel Model extraction for PLNPCAfamily
 #' @export
 getModel.PLNPCAfamily <- function(Robject, var, index = NULL) {
   stopifnot(isPLNPCAfamily(Robject))
   Robject$getModel(var, index = NULL)
 }
 
-#' Best model extraction from a collection of PLNPCAfit
-#'
-#' @name getBestModel.PLNPCAfamily
-#'
-#' @param Robject an object with classi PLNPCAfamilly
-#' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "ICL", "R_squared". Default is \code{ICL}.
-#' @param ... not use.
-#' @return  Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
-#'
+#' @describeIn getBestModel Model extraction for PLNPCAfamily
 #' @export
 getBestModel.PLNPCAfamily <- function(Robject, crit = c("ICL", "BIC", "R_squared"), ...) {
   stopifnot(isPLNPCAfamily(Robject))
@@ -183,33 +183,14 @@ plot.PLNnetworkfamily <- function(x, criteria = c("loglik", "pen_loglik", "BIC",
   x$plot(criteria, annotate)
 }
 
-#' Model extraction from a collection of PLNnetwork models
-#'
-#' @name getModel.PLNnetworkfamily
-#'
-#' @param Robject an R6 object with class PLNfamily
-#' @param var value of the parameter (penalty for sparse network) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
-#' @param index Integer index of the model to be returned. Only the first value is taken into account.
-#'
-#' @return Sends back a object with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}.
-#'
+#' @describeIn getModel Model extraction for PLNnetworkfamily
 #' @export
 getModel.PLNnetworkfamily <- function(Robject, var, index = NULL) {
   stopifnot(isPLNnetworkfamily(Robject))
   Robject$getModel(var, index = NULL)
 }
 
-#' Best model extraction from a collection of PLNnetworkfit
-#'
-#' @name getBestModel.PLNnetworkfamily
-#'
-#' @param Robject an object with class PLNnetworkfamilly
-#' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "EBIC", "StARS", "R_squared". Default is \code{BIC}. If StARS
-#' (Stability Approach to Regularization Selection) is chosen and stability selection
-#'  was not yet performed, the function will call the method stability_selection with default argument.
-#' @param ... additional parameters for StARS criterion. stability, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
-#' @return  Send back a object with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}.
+#' @describeIn getBestModel Model extraction for PLNnetworkfamily
 #' @export
 getBestModel.PLNnetworkfamily <- function(Robject, crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"), ...) {
   stopifnot(isPLNnetworkfamily(Robject))
