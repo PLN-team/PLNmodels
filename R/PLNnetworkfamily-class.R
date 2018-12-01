@@ -167,7 +167,6 @@ PLNnetworkfamily$set("public", "stability_selection",
   }
 )
 
-
 #' Extract the regularization path of a PLNnetwork fit
 #'
 #' @name coefficient_path
@@ -197,25 +196,6 @@ function(precision = TRUE, corr = TRUE) {
   }) %>% bind_rows()
 })
 
-#' Best model extraction from a collection of PLNnetworkfit
-#'
-#' @name getBestModel.PLNnetworkfamily
-#'
-#' @param Robject an object with class PLNnetworkfamilly
-#' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "EBIC", "StARS", "R_squared". Default is \code{BIC}. If StARS
-#' (Stability Approach to Regularization Selection) is chosen and stability selection
-#'  was not yet performed, the function will call the method stability_selection with default argument.
-#' @param ... additional parameters for StARS criterion. stability, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
-#' @return  Send back a object with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}.
-#' @export
-getBestModel.PLNnetworkfamily <- function(Robject, crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"), ...) {
-  stopifnot(isPLNnetworkfamily(Robject))
-  stability <- list(...)[["stability"]]
-  if (is.null(stability)) stability <- 0.9
-  Robject$getBestModel(match.arg(crit), stability)
-}
-
 PLNnetworkfamily$set("public", "getBestModel",
 function(crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9){
   crit <- match.arg(crit)
@@ -236,47 +216,6 @@ function(crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"), stability = 0.
   }
   model
 })
-
-#' Model extraction from a collection of PLNnetwork models
-#'
-#' @name getModel.PLNnetworkfamily
-#'
-#' @param Robject an R6 object with class PLNfamily
-#' @param var value of the parameter (penalty for sparse network) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
-#' @param index Integer index of the model to be returned. Only the first value is taken into account.
-#'
-#' @return Sends back a object with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}.
-#'
-#' @export
-getModel.PLNnetworkfamily <- function(Robject, var, index = NULL) {
-  stopifnot(isPLNnetworkfamily(Robject))
-  Robject$getModel(var, index = NULL)
-}
-
-
-## ----------------------------------------------------------------------
-## PUBLIC PLOTTING METHODS
-## ----------------------------------------------------------------------
-
-#' Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily)
-#'
-#' @name plot.PLNnetworkfamily
-#'
-#' @param x an R6 object with class PLNfamily
-#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
-#' Default is  c("loglik", "pen_loglik", "BIC", "EBIC").
-#' @param log.x logical: should the x-axis be repsented in log-scale? Default is \code{TRUE}.
-#' @param annotate logical: should the value of approximated R squared be added to the plot? Default is \code{TRUE}.
-#' @param ... additional parameters for S3 compatibility. Not used
-#'
-#' @return Produces a plot  representing the evolution of the criteria of the different models considered,
-#' highlighting the best model in terms of BIC and EBIC.
-#'
-#' @export
-plot.PLNnetworkfamily <- function(x, criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE, annotate = TRUE,...) {
-  stopifnot(isPLNnetworkfamily(x))
-  x$plot(criteria, annotate)
-}
 
 PLNnetworkfamily$set("public", "plot",
 function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE, annotate) {
@@ -310,7 +249,6 @@ function(stability = 0.9, log.x = TRUE) {
   p
 })
 
-
 #' @export
 PLNnetworkfamily$set("public", "plot_objective",
 function() {
@@ -337,5 +275,6 @@ function() {
   if (!anyNA(self$criteria$BIC))
     cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
 })
+
 PLNnetworkfamily$set("public", "print", function() self$show())
 

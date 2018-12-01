@@ -57,23 +57,6 @@ function() {
   for (model in self$models) model$postTreatment(self$responses, self$covariates, self$offsets, self$weights)
 })
 
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR THE USERS
-## ----------------------------------------------------------------------
-
-## Functions to check if an object is a PLNfamily, PLNPCAfamily, PLNnetworksfamily
-isPLNfamily        <- function(Robject) {inherits(Robject, 'PLNfamily'       )}
-isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
-isPLNPCAfamily     <- function(Robject) {inherits(Robject, "PLNPCAfamily"    )}
-
-## S3 methods declared generic for children of PLNfamily
-
-#' @export
-getBestModel <- function(Robject, crit, ...) {UseMethod("getBestModel", Robject)}
-
-#' @export
-getModel     <- function(Robject, var , index) {UseMethod("getModel"    , Robject)}
-
 PLNfamily$set("public", "getModel",
 function(var, index = NULL) {
   ## Extraction by index

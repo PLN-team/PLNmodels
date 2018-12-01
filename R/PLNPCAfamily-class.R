@@ -55,42 +55,6 @@ PLNPCAfamily$set("public", "optimize",
   }, mc.cores = control$cores, mc.allow.recursive = FALSE)
 })
 
-
-#' Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)
-#'
-#' @name plot.PLNPCAfamily
-#'
-#' @param x an R6 object with class PLNfamily
-#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared").
-#' Default is  c("loglik", "BIC", "ICL").
-#' @param annotate logical: should the value of approximated R squared be added to the plot?
-#' @param ... additional parameters for S3 compatibility. Not used
-#'
-#' @return Produces a plot  representing the evolution of the criteria of the different models considered,
-#' highlighting the best model in terms of BIC and ICL.
-#'
-#' @export
-plot.PLNPCAfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), annotate = TRUE, ...) {
-  stopifnot(isPLNfamily(x))
-  x$plot(criteria, annotate)
-}
-
-#' Best model extraction from a collection of PLNPCAfit
-#'
-#' @name getBestModel.PLNPCAfamily
-#'
-#' @param Robject an object with classi PLNPCAfamilly
-#' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "ICL", "R_squared". Default is \code{ICL}.
-#' @param ... not use.
-#' @return  Send back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
-#'
-#' @export
-getBestModel.PLNPCAfamily <- function(Robject, crit = c("ICL", "BIC", "R_squared"), ...) {
-  stopifnot(isPLNPCAfamily(Robject))
-  Robject$getBestModel(match.arg(crit))
-}
-
 PLNPCAfamily$set("public", "getBestModel",
 function(crit = c("BIC", "ICL", "R_squared")){
   crit <- match.arg(crit)
@@ -102,22 +66,6 @@ function(crit = c("BIC", "ICL", "R_squared")){
   model <- self$models[[id]]$clone()
   model
 })
-
-#' Model extraction from a collection of PLNPCA models
-#'
-#' @name getModel.PLNPCAfamily
-#'
-#' @param Robject an R6 object with class PLNfamily
-#' @param var value of the parameter (rank for PCA) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
-#' @param index Integer index of the model to be returned. Only the first value is taken into account.
-#'
-#' @return Sends back a object with class \code{\link[=PLNPCAfit]{PLNPCAfit}}.
-#'
-#' @export
-getModel.PLNPCAfamily <- function(Robject, var, index = NULL) {
-  stopifnot(isPLNPCAfamily(Robject))
-  Robject$getModel(var, index = NULL)
-}
 
 PLNPCAfamily$set("public", "plot",
 function(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE) {

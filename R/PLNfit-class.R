@@ -82,9 +82,6 @@ PLNfit <-
 ## PUBLIC METHODS FOR INTERNAL USE
 ## ----------------------------------------------------------------------
 
-## an S3 function to check if an object is a PLNfit
-isPLNfit <- function(Robject) { inherits(Robject, "PLNfit") }
-
 ## The PLN constructor either adjusts a log(transform) linear model to initialize its fields
 ## or take a user defined PLN model.
 #' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
@@ -203,7 +200,6 @@ function(covariates, offsets) {
 #            the matrix M of variational means,
 #            the matrix S of variational variances
 #            the vector log.lik of (variational) log-likelihood of each new observation
-#
 PLNfit$set("public", "VEstep",
 function(X, O, Y, control = list()) {
 
@@ -230,26 +226,7 @@ function(X, O, Y, control = list()) {
        log.lik = setNames(optim.out$loglik, rownames(Y)))
 })
 
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR THE USERS
-## ----------------------------------------------------------------------
-## For each R6 method we define an S3 method and only document the latter
-
-#' Predict counts of a new sample
-#'
-#' @name predict.PLNfit
-#'
-#' @param object an R6 object with class PLNfit
-#' @param newdata A data frame in which to look for variables and offsets with which to predict
-#' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)
-#' @param ... additional parameters for S3 compatibility. Not used
-#' @return A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
-#' @export
-predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
-  stopifnot(isPLNfit(object))
-  object$predict(newdata, type, parent.frame())
-}
-
+# Predict counts of a new sample
 PLNfit$set("public", "predict",
   function(newdata, type = c("link", "response"), envir = parent.frame()) {
     type = match.arg(type)
@@ -266,34 +243,6 @@ PLNfit$set("public", "predict",
     results
   }
 )
-
-#' Extracts model coefficients from objects returned by \code{\link[=PLN]{PLN}} and its variants
-#'
-#' @name coef.PLNfit
-#'
-#' @param object an R6 object with class PLNfit
-#' @param ... additional parameters for S3 compatibility. Not used
-#' @return A matrix of coefficients extracted from the PLNfit model.
-#'
-#' @export
-coef.PLNfit <- function(object, ...) {
-  stopifnot(isPLNfit(object))
-  object$model_par$Theta
-}
-
-#' Extracts model covariance from objects returned by \code{\link[=PLN]{PLN}} and its variants
-#'
-#' @name vcov.PLNfit
-#'
-#' @param object an R6 object with class PLNfit
-#' @param ... additional parameters for S3 compatibility. Not used
-#' @return A matrix of variance/covariance extracted from the PLNfit model.
-#'
-#' @export
-vcov.PLNfit <- function(object, ...) {
-  stopifnot(isPLNfit(object))
-  object$model_par$Sigma
-}
 
 PLNfit$set("public", "show",
 function(model = paste("A multivariate Poisson Lognormal fit with", private$covariance, "covariance model.\n")) {

@@ -83,11 +83,6 @@ PLNPCAfit <-
     )
 )
 
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
-## ----------------------------------------------------------------------
-## Should only be accessed BY PLNfamily but R6 friend class don't exist
-
 ## Call to the C++ optimizer and update of the relevant fields
 PLNPCAfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
@@ -275,4 +270,3 @@ function() {
   cat("* Additional methods for PCA\n")
   cat("    $plot_PCA(), $plot_correlation_circle(), $plot_individual_map() \n")
 })
-
