@@ -5,12 +5,15 @@
 status](https://travis-ci.org/jchiquet/PLNmodels.svg?branch=master)](https://travis-ci.org/jchiquet/PLNmodels)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/jchiquet/PLNmodels?branch=master&svg=true)](https://ci.appveyor.com/project/jchiquet/PLNmodels)
+[![Codacy
+Badge](https://api.codacy.com/project/badge/Grade/c031ad73ccdb4c88ba11dfd74fab1255)](https://www.codacy.com/app/jchiquet/PLNmodels?utm_source=github.com&utm_medium=referral&utm_content=jchiquet/PLNmodels&utm_campaign=Badge_Grade)
 
 > The Poisson lognormal model and variants can be used for a variety of
 > multivariate problems when count data are at play (including PCA for
 > count data and network inference). This package implements an
 > efficient algorithm to fit such models accompanied with a set of
-> functions for vizualisation and diagnostic.
+> functions for vizualisation and diagnostic. Learn more in the
+> vignettes: `vignette(package = "PLNmodels")`.
 
 ## Installation
 
@@ -19,34 +22,28 @@ Status](https://ci.appveyor.com/api/projects/status/github/jchiquet/PLNmodels?br
 Installation requires a system version of
 [nlopt 2.4-2](https://nlopt.readthedocs.io/)
 
-  - On Debian or Ubuntu use `libnlopt-dev`:
-
-<!-- end list -->
+On **Debian** or **Ubuntu** use `libnlopt-dev`:
 
 ``` bash
 sudo apt-get install libnlopt-dev
 ```
 
-  - On Fedora or similar use `NLopt-devel`:
-
-<!-- end list -->
+On **Fedora** or similar use `NLopt-devel`:
 
 ``` bash
 sudo yum install NLopt-devel
 ```
 
-  - With Mac OS X, install `nlopt` via [homebrew](https://brew.sh/)
-
-<!-- end list -->
+With **Mac OS X**, install `nlopt` via [homebrew](https://brew.sh/)
 
 ``` bash
 brew install nlopt
 ```
 
-  - On Windows, the package now builds and installs correctly, by
-    [including static libraries](https://github.com/rwinlib/nlopt) on
-    compilation. However, I just test it with appveyor so I have never
-    run PLNmodels on Windows: any feedbacks welcomed\!
+On **Windows**, the package now builds and installs correctly by
+[including static libraries](https://github.com/rwinlib/nlopt) on
+compilation. For the binary version of the package, [check this
+link](https://ci.appveyor.com/project/jchiquet/plnmodels/build/artifacts)
 
 ### R Package installation
 

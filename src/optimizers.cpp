@@ -15,17 +15,15 @@ optimizer_PLN::optimizer_PLN(
           const arma::mat & X,
           const arma::mat & O,
           const arma::vec & w,
-          Rcpp::List options) {
+          Rcpp::List options) : data(optim_data(Y, X, O, w)) {
 
   // problem dimension
   n = Y.n_rows ;
   p = Y.n_cols ;
   d = X.n_cols ;
 
-  // Create data structure
-  data = optim_data(Y, X, O, w);
-
   // Initialize NLOPT
+  fn_optim = NULL ;
   optimizer = initNLOPT(par.n_elem, options)   ;
   parameter = arma::conv_to<stdvec>::from(par) ;
 }
