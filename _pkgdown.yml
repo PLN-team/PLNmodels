@@ -25,7 +25,7 @@ reference:
     - '`PLNLDA`'
     - '`PLNPCA`'
     - '`PLNnetwork`'
-- title: 'Definition and manipulation of a Poisson lognormal fit'
+- title: 'Manipulation of a Poisson lognormal fit'
   desc: >
     Description of the PLNfit object and methods for its manipulation. Any PLN variant in the
     packake inherits from this class (PLNPCAfit, PLNnetworkfit, PLNLDAfit).
@@ -34,13 +34,13 @@ reference:
     - '`coef.PLNfit`'
     - '`vcov.PLNfit`'
     - '`predict.PLNfit`'
-- title: 'Definition and manipulation of a Linear discriminant fit with Poisson lognormal distribution'
+- title: 'Manipulation of a Linear discriminant fit with Poisson lognormal distribution'
   desc: >
     Description of the PLNLDAfit object and methods for its manipulation.
   contents:
   - starts_with('PLNLDAfit')
   - '`predict.PLNLDAfit`'
-- title: 'Definition and manipulation of a Poisson Lognormal PCA fit'
+- title: 'Manipulation of a Poisson Lognormal PCA fit'
   desc: >
     Description of the PLNPCAfit and PLNPCAfamily objects and methods for their manipulation.
   contents:
@@ -49,7 +49,7 @@ reference:
   - '`plot.PLNPCAfamily`'
   - '`getBestModel.PLNPCAfamily`'
   - '`getModel.PLNPCAfamily`'
-- title: 'Definition and manipulation of a sparse Poisson lognormal fit'
+- title: 'Manipulation of a sparse Poisson lognormal fit'
   desc: >
     Description of the PLNnetworkfit and PLNnetworkfamily objects and methods for their manipulation.
   contents:

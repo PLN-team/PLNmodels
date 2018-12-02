@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9003</span>
       </span>
     </div>
 
@@ -69,7 +69,7 @@
       <h1>Analyzing the Trichopetra data set with Poisson log-normal Network inference</h1>
                         <h4 class="author">Julien Chiquet</h4>
             
-            <h4 class="date">2018-11-30</h4>
+            <h4 class="date">2018-12-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNnetwork_trichoptera.Rmd"><code>vignettes/PLNnetwork_trichoptera.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork_trichoptera.Rmd</code></div>
@@ -166,13 +166,13 @@
 <div id="model-selection-issue" class="section level4">
 <h4 class="hasAnchor">
 <a href="#model-selection-issue" class="anchor"></a>Model selection issue</h4>
-<p>If we want to select one network, we may extract best model according to BIC or StARS with the method <code>getBestModel()</code>. A model with a specific penalty level can be extracted with the <code>getModel(lambda)</code> method.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">model.BIC   &lt;-<span class="st"> </span><span class="kw">getBestModel</span>(models, <span class="st">"BIC"</span>)   <span class="co"># if no criteria is specified, the best BIC is used</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">model.StARS &lt;-<span class="st"> </span><span class="kw">getBestModel</span>(models, <span class="st">"StARS"</span>) <span class="co"># if StARS is requested, stabiltiy selection is performed if needed </span></a></code></pre></div>
+<p>If we want to select one network, we may extract best model according to BIC or StARS with the method <code><a href="../reference/getBestModel.html">getBestModel()</a></code>. A model with a specific penalty level can be extracted with the <code><a href="../reference/getModel.html">getModel(lambda)</a></code> method.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">model.BIC   &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(models, <span class="st">"BIC"</span>)   <span class="co"># if no criteria is specified, the best BIC is used</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">model.StARS &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(models, <span class="st">"StARS"</span>) <span class="co"># if StARS is requested, stabiltiy selection is performed if needed </span></a></code></pre></div>
 <pre><code>## 
 ## Stability Selection for PLNnetwork: 
 ## subsampling: ++++++++++++++++++++</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">model.pen   &lt;-<span class="st"> </span><span class="kw">getModel</span>(models, models<span class="op">$</span>penalties[<span class="dv">20</span>]) <span class="co"># give some sparsity</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">model.pen   &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getModel.html">getModel</a></span>(models, models<span class="op">$</span>penalties[<span class="dv">20</span>]) <span class="co"># give some sparsity</span></a></code></pre></div>
 <p>The variables <code>model.BIC</code>, <code>model.StARS</code> and <code>model.pen</code> are other <code>R6Class</code> objects of class <code>PLNnetworkfit</code> which in turns owns a couple of methods, mostly for vizualization purposes. The <code>plot_network</code> method provides a quick representation of the inferred network, with various options.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">model.BIC<span class="op">$</span><span class="kw"><a href="../reference/plot_network.html">plot_network</a></span>(<span class="dt">type =</span> <span class="st">"support"</span>, <span class="dt">output =</span> <span class="st">"corrplot"</span>)</a></code></pre></div>
 <p><img src="PLNnetwork_trichoptera_files/figure-html/support_network-1.png" width="672"></p>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot the individual map of a specified axis for a <code>PLNPCAfit</code> object — PLNPCAfit_plot_individual_map • PLNmodels</title>
+<title>Best model extraction from a collection of models — getBestModel • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Plot the individual map of a specified axis for a <code>PLNPCAfit</code> object — PLNPCAfit_plot_individual_map" />
+<meta property="og:title" content="Best model extraction from a collection of models — getBestModel" />
 
-<meta property="og:description" content="Plot the individual map of a specified axis for a PLNPCAfit object" />
+<meta property="og:description" content="Best model extraction from a collection of models" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -101,42 +101,57 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot the individual map of a specified axis for a <code>PLNPCAfit</code> object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNPCAfit-class.R'><code>R/PLNPCAfit-class.R</code></a></small>
-    <div class="hidden name"><code>PLNPCAfit_plot_individual_map.Rd</code></div>
+    <h1>Best model extraction from a collection of models</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/S3methods.R'><code>R/S3methods.R</code></a></small>
+    <div class="hidden name"><code>getBestModel.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Plot the individual map of a specified axis for a <code>PLNPCAfit</code> object</p>
+    <p>Best model extraction from a collection of models</p>
     
     </div>
 
+    <pre class="usage"><span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='no'>crit</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for PLNPCAfamily</span>
+<span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"ICL"</span>, <span class='st'>"BIC"</span>,
+  <span class='st'>"R_squared"</span>), <span class='no'>...</span>)
+
+<span class='co'># S3 method for PLNnetworkfamily</span>
+<span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"BIC"</span>,
+  <span class='st'>"loglik"</span>, <span class='st'>"R_squared"</span>, <span class='st'>"EBIC"</span>, <span class='st'>"StARS"</span>), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>axes</th>
-      <td><p>numeric, the axes to use for the plot. Default it c(1,2)</p></td>
+      <th>Robject</th>
+      <td><p>an object with class PLNPCAfamilly ot PLNnetworkfamily</p></td>
     </tr>
     <tr>
-      <th>main</th>
-      <td><p>character, the title. Default is "Individual Factor Map"</p></td>
+      <th>crit</th>
+      <td><p>a character for the criterion used to performed the selection. Either
+"BIC", "ICL", "EBIC", "StARS", "R_squared". Default is <code>ICL</code> for PLNPCA, and <code>BIC</code> for PLNnetwork.
+ If StARS (Stability Approach to Regularization Selection) is chosen and stability selection
+ was not yet performed, the function will call the method stability_selection with default argument.</p></td>
     </tr>
     <tr>
-      <th>plot</th>
-      <td><p>logical. Should the plot be displayed or sent back as a ggplot object</p></td>
-    </tr>
-    <tr>
-      <th>cols</th>
-      <td><p>a character, factor or numeric to defined the color associated with the observations. Default is "gray"</p></td>
+      <th>...</th>
+      <td><p>additional parameters for StARS criterion (only for PLNnetwork). stability, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is <code>0.9</code>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>displays a individual map for thecorresponding axes and/or sends back a ggplot2 object</p>
+    <p>Send back a object with class <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> or <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code></p>
+    
+    <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
+
+    <ul>
+<li><p><code>PLNPCAfamily</code>: Model extraction for PLNPCAfamily</p></li>
+<li><p><code>PLNnetworkfamily</code>: Model extraction for PLNnetworkfamily</p></li>
+</ul>
     
 
   </div>
@@ -146,6 +161,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#methods-by-class-">Methods (by class)</a></li>
           </ul>
 
   </div>
