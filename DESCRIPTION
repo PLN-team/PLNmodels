@@ -55,6 +55,7 @@ Collate:
     'PLNPCAfamily-S3methods.R'
     'PLNfamily-class.R'
     'PLNPCAfamily-class.R'
+    'PLNPCAfit-S3methods.R'
     'PLNPCAfit-class.R'
     'PLNfamily-S3methods.R'
     'PLNfit-S3methods.R'

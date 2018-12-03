@@ -137,19 +137,6 @@ function(covariates, offsets) {
   latentPos
 })
 
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR THE USERS
-## ----------------------------------------------------------------------
-
-#' Plot the individual map of a specified axis for a \code{PLNPCAfit} object
-#'
-#' @name PLNPCAfit_plot_individual_map
-#' @param axes numeric, the axes to use for the plot. Default it c(1,2)
-#' @param main character, the title. Default is "Individual Factor Map"
-#' @param plot logical. Should the plot be displayed or sent back as a ggplot object
-#' @param cols a character, factor or numeric to defined the color associated with the observations. Default is "gray"
-#' @return displays a individual map for thecorresponding axes and/or sends back a ggplot2 object
-NULL
 PLNPCAfit$set("public", "plot_individual_map",
   function(axes=1:min(2,self$rank), main="Individual Factor Map", plot=TRUE, cols="gray65") {
 
@@ -164,15 +151,6 @@ PLNPCAfit$set("public", "plot_individual_map",
     invisible(p)
 })
 
-#' Plot the correlation circle of a specified axis for a \code{PLNPCAfit} object
-#'
-#' @name PLNPCAfit_plot_correlation_circle
-#' @param axes numeric, the axes to use for the plot. Default it c(1,2)
-#' @param main character, the title. Default is "Variable Factor map"
-#' @param plot logical. Should the plot be displayed or sent back (ggplot object)
-#' @param cols a character, factor or numeric to defined the color associated with the variable. Default is "gray"
-#' @return displays a correlation circle for the corresponding axes and/or sends back a ggplot2 object
-NULL
 PLNPCAfit$set("public", "plot_correlation_circle",
   function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "gray65", plot=TRUE) {
 
@@ -186,6 +164,10 @@ PLNPCAfit$set("public", "plot_correlation_circle",
     if (plot) print(p)
     invisible(p)
 })
+
+## ----------------------------------------------------------------------
+## PUBLIC METHODS FOR THE USERS
+## ----------------------------------------------------------------------
 
 #' Plot a summary of the current \code{PLNPCAfit} object
 #'

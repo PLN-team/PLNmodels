@@ -130,14 +130,14 @@ myPCA.cov
 ```
 
 
-Suppose that we want to give a closer look to the first two axes. This can be done thanks to the two methods `plot_individual_map` and `plot_correlation_circle` :
+Suppose that we want to give a closer look to the first two axes. This can be done thanks to the two methods `plot_individual_map` and `plot_correlation_circle`:
 
 ```{r, fig.height=7, fig.width=7}
-myPCA.cov$plot_individual_map(axes=c(1,2), cols=trichoptera$Group)
+plot(myPCA.cov, map = "individual", cols = trichoptera$Group)
 ```
 
 ```{r, fig.height=7, fig.width=7}
-myPCA.cov$plot_correlation_circle(axes=c(1,2))
+plot(myPCA.cov, map = "variable")
 ```
 
 ### Data structure of a `PLNPCAfit` model
