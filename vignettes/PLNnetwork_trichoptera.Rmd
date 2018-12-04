@@ -91,21 +91,20 @@ model.pen   <- getModel(models, models$penalties[20]) # give some sparsity
 The variables `model.BIC`, `model.StARS` and `model.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network, with various options.
 
 ```{r support_network, fig.width=7, fig.height=7}
-model.BIC$plot_network(type = "support", output = "corrplot")
+plot(model.BIC, type = "support", output = "corrplot")
 ```
 
 ```{r partial_corr_network, fig.width=7, fig.height=7}
 par(mfrow = c(1, 3))
-model.BIC$plot_network()
-model.StARS$plot_network()
-model.pen$plot_network()
+plot(model.BIC)
+plot(model.StARS)
+plot(model.pen)
 ```
 
-Additional information about the optimization process comes with the `plot_objective` method:
-```{r, fig.width=7, fig.height=5}
-models$plot_objective()
-```
-
+<!-- Additional information about the optimization process comes with the `plot_objective` method: -->
+<!-- ```{r, fig.width=7, fig.height=5} -->
+<!-- models$plot_objective() -->
+<!-- ``` -->
 
 ## References
 

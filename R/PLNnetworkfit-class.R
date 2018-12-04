@@ -121,10 +121,6 @@ function(responses, covariates, offsets, weights) {
   colnames(private$S) <- 1:self$p
 })
 
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR THE USERS
-## ----------------------------------------------------------------------
-
 #' @importFrom Matrix Matrix
 PLNnetworkfit$set("public", "latent_network",
   function(type = c("partial_cor", "support", "precision")) {
@@ -143,16 +139,15 @@ PLNnetworkfit$set("public", "latent_network",
   }
 )
 
-#' Plot the network (support of the inverse covariance) for a \code{PLNnetworkfit} object
-#'
-#' @name plot_network
-#' @param plot logical. Should the plot be displayed or sent back as an igraph object
-#' @param remove.isolated if \code{TRUE}, isolated node are remove before plotting.
-#' @param layout an optional igraph layout
-#' @return displays a graph (via igraph for small graph and corrplot for large ones) and/or sends back an igraph object
-NULL
+# Plot the network (support of the inverse covariance) for a \code{PLNnetworkfit} object
 PLNnetworkfit$set("public", "plot_network",
-  function(type = c("partial_cor", "support"), output = c("igraph", "corrplot"), edge.color = c("#F8766D", "#00BFC4"), remove.isolated = FALSE, node.labels = NULL, layout = layout_in_circle) {
+  function(type            = c("partial_cor", "support"),
+           output          = c("igraph", "corrplot"),
+           edge.color      = c("#F8766D", "#00BFC4"),
+           remove.isolated = FALSE,
+           node.labels     = NULL,
+           layout          = layout_in_circle,
+           plot = TRUE) {
 
     type <- match.arg(type)
     output <- match.arg(output)
@@ -184,14 +179,18 @@ PLNnetworkfit$set("public", "plot_network",
       if (remove.isolated) {
         G <- delete.vertices(G, which(degree(G) == 0))
       }
-      plot(G, layout = layout)
+      if (plot) plot(G, layout = layout)
     }
     if (output == "corrplot") {
-      if (ncol(net) > 100)
-        colnames(net) <- rownames(net) <- rep(" ", ncol(net))
-      G <- net
-      diag(net) <- 0
-      corrplot(as.matrix(net), method = "color", is.corr = FALSE, tl.pos = "td", cl.pos = "n", tl.cex = 0.5, type = "upper")
+      if (plot) {
+        if (ncol(net) > 100)
+          colnames(net) <- rownames(net) <- rep(" ", ncol(net))
+        G <- net
+        diag(net) <- 0
+        corrplot(as.matrix(net), method = "color", is.corr = FALSE, tl.pos = "td", cl.pos = "n", tl.cex = 0.5, type = "upper")
+      } else  {
+        G <- net
+      }
     }
     invisible(G)
 })
@@ -200,6 +199,6 @@ PLNnetworkfit$set("public", "show",
 function() {
   super$show(paste0("Poisson Lognormal with sparse inverse covariance (penalty = ", format(self$penalty,digits = 3),")\n"))
   cat("* Additional methods for network\n")
-  cat("    $latent_network(), $plot_network()\n")
+  cat("    plot()\n")
   cat("    $coefficient_path(), $density_path()\n")
 })

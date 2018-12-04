@@ -56,13 +56,13 @@ reference:
     Description of the PLNnetworkfit and PLNnetworkfamily objects and methods for their manipulation.
   contents:
   - starts_with('PLNnetworkfit')
+  - '`plot.PLNnetworkfit`'
   - '`PLNnetworkfamily`'
   - '`plot.PLNnetworkfamily`'
   - '`getBestModel.PLNnetworkfamily`'
   - '`getModel.PLNnetworkfamily`'
   - '`coefficient_path`'
   - '`stability_selection`'
-  - '`plot_network`'
 - title: 'Other functions'
   desc: ~
   contents:
