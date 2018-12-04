@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute the stability path by stability selection — stability_selection • PLNmodels</title>
+<title>PCA vizualiation (individual and/or variable factor map(s)) for a <code>PLNPCAfit</code> object — plot.PLNPCAfit • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Compute the stability path by stability selection — stability_selection" />
+<meta property="og:title" content="PCA vizualiation (individual and/or variable factor map(s)) for a <code>PLNPCAfit</code> object — plot.PLNPCAfit" />
 
-<meta property="og:description" content="Compute the stability path by stability selection" />
+<meta property="og:description" content="PCA vizualiation (individual and/or variable factor map(s)) for a PLNPCAfit object" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -101,44 +101,67 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute the stability path by stability selection</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfamily-S3methods.R'><code>R/PLNnetworkfamily-S3methods.R</code></a></small>
-    <div class="hidden name"><code>stability_selection.Rd</code></div>
+    <h1>PCA vizualiation (individual and/or variable factor map(s)) for a <code>PLNPCAfit</code> object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNPCAfit-S3methods.R'><code>R/PLNPCAfit-S3methods.R</code></a></small>
+    <div class="hidden name"><code>plot.PLNPCAfit.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Compute the stability path by stability selection</p>
+    <p>PCA vizualiation (individual and/or variable factor map(s)) for a <code>PLNPCAfit</code> object</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>stability_selection</span>(<span class='no'>Robject</span>, <span class='kw'>subsamples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>control</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
-  <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for PLNPCAfit</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>map</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"both"</span>, <span class='st'>"individual"</span>, <span class='st'>"variable"</span>),
+  <span class='kw'>nb_axes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Extremes'>min</a></span>(<span class='fl'>3</span>, <span class='no'>x</span>$<span class='no'>rank</span>), <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq.int</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Extremes'>min</a></span>(<span class='fl'>2</span>, <span class='no'>x</span>$<span class='no'>rank</span>)),
+  <span class='kw'>ind_cols</span> <span class='kw'>=</span> <span class='st'>"gray65"</span>, <span class='kw'>var_cols</span> <span class='kw'>=</span> <span class='st'>"gray65"</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>main</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>Robject</th>
-      <td><p>an object with class PLNnetworkfamily, i.e. an output from <code><a href='PLNnetwork.html'>PLNnetwork</a></code></p></td>
+      <th>x</th>
+      <td><p>an R6 object with class PLNPCAfit</p></td>
     </tr>
     <tr>
-      <th>subsamples</th>
-      <td><p>a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size <code>10*sqrt(n)</code> if <code>n &gt;= 144</code> and <code>0.8*n</code> otherwise following Liu et al. (2010) recommandations.</p></td>
+      <th>map</th>
+      <td><p>the type of output for the PCA vizualization: either "individual", "variable" or "both". Default is "both".</p></td>
     </tr>
     <tr>
-      <th>control</th>
-      <td><p>a list controling the main optimization process in each call to PLNnetwork. See <code><a href='PLNnetwork.html'>PLNnetwork</a></code> for details.</p></td>
+      <th>nb_axes</th>
+      <td><p>scalar: the number of axes to be considered when map = "both". The default is min(3,rank).</p></td>
     </tr>
     <tr>
-      <th>mc.cores</th>
-      <td><p>the number of cores to used. Default is 1.</p></td>
+      <th>axes</th>
+      <td><p>numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))</p></td>
+    </tr>
+    <tr>
+      <th>ind_cols</th>
+      <td><p>a character, factor or numeric to define the color associated with the individuals. Default is "gray65"</p></td>
+    </tr>
+    <tr>
+      <th>var_cols</th>
+      <td><p>a character, factor or numeric to define the color associated with the variables. Default is "gray65"</p></td>
+    </tr>
+    <tr>
+      <th>plot</th>
+      <td><p>logical. Should the plot be displayed or sent back as ggplot object</p></td>
+    </tr>
+    <tr>
+      <th>main</th>
+      <td><p>character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Not used (S3 compatibility).</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the initial Robject with class PLNnetworkfamily</p>
+    <p>displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a ggplot2 or gtable object</p>
     
 
   </div>

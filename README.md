@@ -1,4 +1,3 @@
-
 # PLNmodels: Poisson lognormal models <img src="man/figures/logo.png" align="right" width="155" height="180"/>
 
 [![Travis-CI build
@@ -12,8 +11,7 @@ Badge](https://api.codacy.com/project/badge/Grade/c031ad73ccdb4c88ba11dfd74fab12
 > multivariate problems when count data are at play (including PCA for
 > count data and network inference). This package implements an
 > efficient algorithm to fit such models accompanied with a set of
-> functions for vizualisation and diagnostic. Learn more in the
-> vignettes: `vignette(package = "PLNmodels")`.
+> functions for vizualisation and diagnostic.
 
 ## Installation
 
@@ -65,7 +63,9 @@ data(trichoptera)
 The main fitting functions work with the usual `R formula` notations,
 with mutivariate responses on the left hand side. You probably want to
 start by one of them. Check the corresponding vignette and documentation
-page.
+page. There is a dedicated vignettes for each model in the package (See
+`vignette(package = "PLNmodels")` or
+<http://jchiquet.github.io/PLNmodels/articles/>).
 
 ### Unpenalized Poisson lognormal model (aka PLN)
 

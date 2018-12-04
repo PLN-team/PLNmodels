@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jchiquet/PLNmodels?branch=master&svg=true)](https://ci.appveyor.com/project/jchiquet/PLNmodels)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c031ad73ccdb4c88ba11dfd74fab1255)](https://www.codacy.com/app/jchiquet/PLNmodels?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jchiquet/PLNmodels&amp;utm_campaign=Badge_Grade)
 
-> The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA for count data and network inference). This package implements an efficient algorithm to fit such models accompanied with a set of functions for vizualisation and diagnostic. Learn more in the vignettes: `vignette(package = "PLNmodels")`.
+> The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA for count data and network inference). This package implements an efficient algorithm to fit such models accompanied with a set of functions for vizualisation and diagnostic. 
 
 ## Installation
 
@@ -60,7 +60,7 @@ library(PLNmodels)
 data(trichoptera)
 ```
 
-The main fitting functions work with the usual `R formula` notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page.
+The main fitting functions work with the usual `R formula` notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See `vignette(package = "PLNmodels")` or http://jchiquet.github.io/PLNmodels/articles/).
 
 ### Unpenalized Poisson lognormal model (aka PLN)
 

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9501</span>
       </span>
     </div>
 
@@ -41,10 +41,10 @@
   <a href="../index.html">Home</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles and Vignettes</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="../articles/index.html">Articles and Vignettes</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -69,7 +69,7 @@
       <h1>Analyzing the Trichopetra data set with the Poisson log-normal LDA model</h1>
                         <h4 class="author">Julien Chiquet</h4>
             
-            <h4 class="date">2018-12-01</h4>
+            <h4 class="date">2018-12-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNLDA_trichoptera.Rmd"><code>vignettes/PLNLDA_trichoptera.Rmd</code></a></small>
       <div class="hidden name"><code>PLNLDA_trichoptera.Rmd</code></div>
@@ -105,10 +105,10 @@
 ##     print(), vcov(), coef(), predict()
 ## * Additional fields for LDA
 ##     $percent_var, $corr_circle, $scores 
-## * Additional methods for LDA
-##     $plot_LDA(), $plot_correlation_circle(), $plot_individual_map()</code></pre>
+## * Additional S3 methods for LDA
+##     plot.PLNLDAfit(), predict.PLNLDAfit()</code></pre>
 <p>Essentially, the most important methodis the <code>plot</code> method: we separate well the different groups</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">myLDA_nocov<span class="op">$</span><span class="kw">plot_LDA</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myLDA_nocov)</a></code></pre></div>
 <p><img src="PLNLDA_trichoptera_files/figure-html/plot_model-1.png" width="672"></p>
 <p>If new samples become available, we can predict their class</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">Y &lt;-<span class="st"> </span>trichoptera<span class="op">$</span>Abundance</a>
@@ -141,7 +141,7 @@
 <pre><code>## 
 ##  Performing discriminant Analysis...
 ##  DONE!</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">myLDA_cov<span class="op">$</span><span class="kw">plot_LDA</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myLDA_cov)</a></code></pre></div>
 <p><img src="PLNLDA_trichoptera_files/figure-html/plot_model_cov-1.png" width="672"></p>
 <p>And again try to predict class based on the counts and some covariates</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">Y &lt;-<span class="st"> </span>trichoptera<span class="op">$</span>Abundance</a>

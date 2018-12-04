@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9501</span>
       </span>
     </div>
 
@@ -41,10 +41,10 @@
   <a href="../index.html">Home</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles and Vignettes</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="../articles/index.html">Articles and Vignettes</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -69,7 +69,7 @@
       <h1>Analyzing the Trichopetra data set with Poisson log-normal Network inference</h1>
                         <h4 class="author">Julien Chiquet</h4>
             
-            <h4 class="date">2018-12-01</h4>
+            <h4 class="date">2018-12-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNnetwork_trichoptera.Rmd"><code>vignettes/PLNnetwork_trichoptera.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork_trichoptera.Rmd</code></div>
@@ -148,20 +148,20 @@
 ##  Task: Network Inference 
 ## ========================================================
 ##  - 30 penalties considered: from 0.7288053 to 7.288053 
-##     use $penalties to see all values and access specific lambdas 
-##  - Best model (regarding BIC): lambda = 1.89</code></pre>
+##  - Best model (regarding BIC): lambda = 1.89 
+##  - Best model (regarding EBIC): lambda = 1.89</code></pre>
 <p>Complementary information comes with the <code>plot</code> method:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(models)</a></code></pre></div>
 <p><img src="PLNnetwork_trichoptera_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
 <p>The critetion <span class="math inline">\(J\)</span> represents the variational lower bound of the likelihood: in this case, we can see that it is strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of penalty. Generally, smoothness of these criteria is an good indicator to check that the optimization process went well.</p>
 <p>We can represent the coefficient path (i.e., value of the edge in the network according to the penalty level) to see if some edges clearly come off.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">path &lt;-<span class="st"> </span>models<span class="op">$</span><span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(<span class="dt">corr =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(path, <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/coord_trans.html">coord_trans</a></span>(<span class="dt">x=</span><span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</a></code></pre></div>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(models, <span class="dt">corr =</span> <span class="ot">FALSE</span>), <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/coord_trans.html">coord_trans</a></span>(<span class="dt">x=</span><span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</a></code></pre></div>
 <p><img src="PLNnetwork_trichoptera_files/figure-html/path_coeff-1.png" width="672"></p>
 <p>An alternative and more intuitive view consiste in plotting the values of the partial correlation along the path.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">path &lt;-<span class="st"> </span>models<span class="op">$</span><span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(<span class="dt">corr =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(path, <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/coord_trans.html">coord_trans</a></span>(<span class="dt">x=</span><span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(models, <span class="dt">corr =</span> <span class="ot">TRUE</span>), <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/coord_trans.html">coord_trans</a></span>(<span class="dt">x =</span> <span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</a></code></pre></div>
 <p><img src="PLNnetwork_trichoptera_files/figure-html/path_corr-1.png" width="672"></p>
 <div id="model-selection-issue" class="section level4">
 <h4 class="hasAnchor">
@@ -173,17 +173,20 @@
 ## Stability Selection for PLNnetwork: 
 ## subsampling: ++++++++++++++++++++</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">model.pen   &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getModel.html">getModel</a></span>(models, models<span class="op">$</span>penalties[<span class="dv">20</span>]) <span class="co"># give some sparsity</span></a></code></pre></div>
+<p>Note that, at this point, stability selection is automatically performed, and so the stability path is now available from the <code>plot</code> function:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(models, <span class="st">"stability"</span>)</a></code></pre></div>
+<p><img src="PLNnetwork_trichoptera_files/figure-html/plot%20stability-1.png" width="672"></p>
 <p>The variables <code>model.BIC</code>, <code>model.StARS</code> and <code>model.pen</code> are other <code>R6Class</code> objects of class <code>PLNnetworkfit</code> which in turns owns a couple of methods, mostly for vizualization purposes. The <code>plot_network</code> method provides a quick representation of the inferred network, with various options.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">model.BIC<span class="op">$</span><span class="kw"><a href="../reference/plot_network.html">plot_network</a></span>(<span class="dt">type =</span> <span class="st">"support"</span>, <span class="dt">output =</span> <span class="st">"corrplot"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model.BIC, <span class="dt">type =</span> <span class="st">"support"</span>, <span class="dt">output =</span> <span class="st">"corrplot"</span>)</a></code></pre></div>
 <p><img src="PLNnetwork_trichoptera_files/figure-html/support_network-1.png" width="672"></p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/par">par</a></span>(<span class="dt">mfrow =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">model.BIC<span class="op">$</span><span class="kw"><a href="../reference/plot_network.html">plot_network</a></span>()</a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">model.StARS<span class="op">$</span><span class="kw"><a href="../reference/plot_network.html">plot_network</a></span>()</a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">model.pen<span class="op">$</span><span class="kw"><a href="../reference/plot_network.html">plot_network</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/par">par</a></span>(<span class="dt">mfrow =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">3</span>))</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model.BIC)</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model.StARS)</a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model.pen)</a></code></pre></div>
 <p><img src="PLNnetwork_trichoptera_files/figure-html/partial_corr_network-1.png" width="672"></p>
-<p>Additional information about the optimization process comes with the <code>plot_objective</code> method:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">models<span class="op">$</span><span class="kw">plot_objective</span>()</a></code></pre></div>
-<p><img src="PLNnetwork_trichoptera_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
+<p>Additional information about the optimization process comes with the option “diagnostic” in the <code>plot</code> method:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(models, <span class="st">"diagnostic"</span>)</a></code></pre></div>
+<p><img src="PLNnetwork_trichoptera_files/figure-html/diagnostic-1.png" width="672"></p>
 </div>
 </div>
 </div>

@@ -34,7 +34,7 @@
 
 <meta property="og:description" content="The function PLNnetwork produces a collection of models which are instances of object with class PLNnetworkfit.
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for plot_network + methods inherited from PLNfit." />
+See the documentation for plot.PLNnetworkfit + methods inherited from PLNfit." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -67,7 +67,7 @@ See the documentation for plot_network + methods inherited from PLNfit." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9501</span>
       </span>
     </div>
 
@@ -77,10 +77,10 @@ See the documentation for plot_network + methods inherited from PLNfit." />
   <a href="../index.html">Home</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles and Vignettes</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="../articles/index.html">Articles and Vignettes</a>
 </li>
       </ul>
       
@@ -112,7 +112,7 @@ See the documentation for plot_network + methods inherited from PLNfit." />
     
     <p>The function <code><a href='PLNnetwork.html'>PLNnetwork</a></code> produces a collection of models which are instances of object with class <code>PLNnetworkfit</code>.</p>
 <p>This class comes with a set of methods, some of them being useful for the user:
-See the documentation for <code><a href='plot_network.html'>plot_network</a></code> + methods inherited from PLNfit.</p>
+See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot.PLNnetworkfit</a></code> + methods inherited from PLNfit.</p>
     
     </div>
 
@@ -133,10 +133,13 @@ See the documentation for <code><a href='plot_network.html'>plot_network</a></co
     <dt><code>fitted</code></dt><dd><p>a matrix: the fitted values (Y hat)</p></dd>
     <dt><code>optim_par</code></dt><dd><p>a list with parameters useful for monitoring the optimization</p></dd>
     <dt><code>loglik</code></dt><dd><p>variational lower bound of the loglikelihood</p></dd>
+    <dt><code>pen_loglik</code></dt><dd><p>variational lower bound of the l1-penalized loglikelihood</p></dd>
     <dt><code>BIC</code></dt><dd><p>variational lower bound of the BIC</p></dd>
+    <dt><code>EBIC</code></dt><dd><p>variational lower bound of the EBIC</p></dd>
     <dt><code>ICL</code></dt><dd><p>variational lower bound of the ICL</p></dd>
     <dt><code>R_squared</code></dt><dd><p>approximated goodness-of-fit criterion</p></dd>
     <dt><code>degrees_freedom</code></dt><dd><p>number of parameters in the current PLN model</p></dd>
+    <dt><code>density</code></dt><dd><p>proportion of non-null edges in the network</p></dd>
     <dt><code>criteria</code></dt><dd><p>a vector with loglik, BIC, ICL, R_squared and degrees of freedom</p></dd>
 </dl>
     

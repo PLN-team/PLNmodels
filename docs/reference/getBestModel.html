@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Best model extraction from a collection of models — getBestModel • PLNmodels</title>
+<title>Best model extraction from a collection of models — getBestModel.PLNPCAfamily • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="Best model extraction from a collection of models — getBestModel" />
+<meta property="og:title" content="Best model extraction from a collection of models — getBestModel.PLNPCAfamily" />
 
 <meta property="og:description" content="Best model extraction from a collection of models" />
 
@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9501</span>
       </span>
     </div>
 
@@ -75,10 +75,10 @@
   <a href="../index.html">Home</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles and Vignettes</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="../articles/index.html">Articles and Vignettes</a>
 </li>
       </ul>
       
@@ -102,7 +102,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Best model extraction from a collection of models</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/S3methods.R'><code>R/S3methods.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNPCAfamily-S3methods.R'><code>R/PLNPCAfamily-S3methods.R</code></a>, <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNfamily-S3methods.R'><code>R/PLNfamily-S3methods.R</code></a>, <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfamily-S3methods.R'><code>R/PLNnetworkfamily-S3methods.R</code></a></small>
     <div class="hidden name"><code>getBestModel.Rd</code></div>
     </div>
 
@@ -112,11 +112,11 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='no'>crit</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for PLNPCAfamily</span>
+    <pre class="usage"><span class='co'># S3 method for PLNPCAfamily</span>
 <span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"ICL"</span>, <span class='st'>"BIC"</span>,
   <span class='st'>"R_squared"</span>), <span class='no'>...</span>)
+
+<span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='no'>crit</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for PLNnetworkfamily</span>
 <span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"BIC"</span>,
@@ -144,7 +144,7 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Send back a object with class <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> or <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code></p>
+    <p>Send back an object with class <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> or <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code></p>
     
     <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
 

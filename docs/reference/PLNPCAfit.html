@@ -34,8 +34,8 @@
 
 <meta property="og:description" content="The function PLNPCA produces a collection of models which are instances of object with class PLNPCAfit.
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for plot_PCA, plot_individual_map
-and plot_correlation_circle" />
+See the documentation for the methods inherited by  PLNfit and the
+plot.PLNPCAfit methods for PCA vizualization" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -68,7 +68,7 @@ and plot_correlation_circle" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9501</span>
       </span>
     </div>
 
@@ -78,10 +78,10 @@ and plot_correlation_circle" />
   <a href="../index.html">Home</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles and Vignettes</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="../articles/index.html">Articles and Vignettes</a>
 </li>
       </ul>
       
@@ -113,8 +113,8 @@ and plot_correlation_circle" />
     
     <p>The function <code><a href='PLNPCA.html'>PLNPCA</a></code> produces a collection of models which are instances of object with class <code>PLNPCAfit</code>.</p>
 <p>This class comes with a set of methods, some of them being useful for the user:
-See the documentation for <code><a href='PLNPCAfit_plot_PCA.html'>plot_PCA</a></code>, <code><a href='PLNPCAfit_plot_individual_map.html'>plot_individual_map</a></code>
-and <code><a href='PLNPCAfit_plot_correlation_circle.html'>plot_correlation_circle</a></code></p>
+See the documentation for the methods inherited by  <code><a href='PLNfit.html'>PLNfit</a></code> and the
+<code><a href='plot.PLNPCAfit.html'>plot.PLNPCAfit</a></code> methods for PCA vizualization</p>
     
     </div>
 
@@ -142,7 +142,8 @@ and <code><a href='PLNPCAfit_plot_correlation_circle.html'>plot_correlation_circ
     <dt><code>degrees_freedom</code></dt><dd><p>number of parameters in the current PLN model</p></dd>
     <dt><code>percent_var</code></dt><dd><p>the percent of variance explained by each axis</p></dd>
     <dt><code>corr_circle</code></dt><dd><p>a matrix of correlations to plot the correlation circles</p></dd>
-    <dt><code>scores</code></dt><dd><p>a matrix of scores to plot the individual factor maps</p></dd>
+    <dt><code>scores</code></dt><dd><p>a matrix of scores to plot the individual factor maps (a.k.a. principal comonents)</p></dd>
+    <dt><code>rotation</code></dt><dd><p>a matrix of rotation of the latent space</p></dd>
 </dl>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute the stability path by stability selection — stability_selection • PLNmodels</title>
+<title>Extract and plot the network (aprtial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object — plot.PLNnetworkfit • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Compute the stability path by stability selection — stability_selection" />
+<meta property="og:title" content="Extract and plot the network (aprtial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object — plot.PLNnetworkfit" />
 
-<meta property="og:description" content="Compute the stability path by stability selection" />
+<meta property="og:description" content="Extract and plot the network (aprtial correlation, support or inverse covariance) from a PLNnetworkfit object" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -101,44 +101,67 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute the stability path by stability selection</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfamily-S3methods.R'><code>R/PLNnetworkfamily-S3methods.R</code></a></small>
-    <div class="hidden name"><code>stability_selection.Rd</code></div>
+    <h1>Extract and plot the network (aprtial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfit-S3methods.R'><code>R/PLNnetworkfit-S3methods.R</code></a></small>
+    <div class="hidden name"><code>plot.PLNnetworkfit.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Compute the stability path by stability selection</p>
+    <p>Extract and plot the network (aprtial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>stability_selection</span>(<span class='no'>Robject</span>, <span class='kw'>subsamples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>control</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
-  <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for PLNnetworkfit</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"partial_cor"</span>, <span class='st'>"support"</span>),
+  <span class='kw'>output</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"igraph"</span>, <span class='st'>"corrplot"</span>), <span class='kw'>edge.color</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"#F8766D"</span>,
+  <span class='st'>"#00BFC4"</span>), <span class='kw'>remove.isolated</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>node.labels</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>layout</span> <span class='kw'>=</span> <span class='no'>layout_in_circle</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>Robject</th>
-      <td><p>an object with class PLNnetworkfamily, i.e. an output from <code><a href='PLNnetwork.html'>PLNnetwork</a></code></p></td>
+      <th>x</th>
+      <td><p>an R6 object with class PLNnetworkfit</p></td>
     </tr>
     <tr>
-      <th>subsamples</th>
-      <td><p>a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size <code>10*sqrt(n)</code> if <code>n &gt;= 144</code> and <code>0.8*n</code> otherwise following Liu et al. (2010) recommandations.</p></td>
+      <th>type</th>
+      <td><p>character. Value of the weigth of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is <code>"partial_cor"</code>.</p></td>
     </tr>
     <tr>
-      <th>control</th>
-      <td><p>a list controling the main optimization process in each call to PLNnetwork. See <code><a href='PLNnetwork.html'>PLNnetwork</a></code> for details.</p></td>
+      <th>output</th>
+      <td><p>the type of output used: either 'igraph' or 'corrplot'. Default is 'igraph'.</p></td>
     </tr>
     <tr>
-      <th>mc.cores</th>
-      <td><p>the number of cores to used. Default is 1.</p></td>
+      <th>edge.color</th>
+      <td><p>2D numeric. Color for positive/negative edges. Default is c("#F8766D", "#00BFC4"). Only relevant for igraph output.</p></td>
+    </tr>
+    <tr>
+      <th>remove.isolated</th>
+      <td><p>if <code>TRUE</code>, isolated node are remove before plotting. Only relevant for igraph output.</p></td>
+    </tr>
+    <tr>
+      <th>node.labels</th>
+      <td><p>vector of character. The labels of the nodes. The Default will use the column names ot the response matrix.</p></td>
+    </tr>
+    <tr>
+      <th>layout</th>
+      <td><p>an optional igraph layout. Only relevant for igraph output.</p></td>
+    </tr>
+    <tr>
+      <th>plot</th>
+      <td><p>logical. Should the final network be displayed or only sent back to the user. Default is <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Not used (S3 compatibility).</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the initial Robject with class PLNnetworkfamily</p>
+    <p>Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionaly displays a graph (via igraph or corrplot for large ones)</p>
     
 
   </div>

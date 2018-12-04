@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily) — plot.PLNnetworkfamily • PLNmodels</title>
+<title>Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily) — plot.PLNnetworkfamily • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily) — plot.PLNnetworkfamily" />
+<meta property="og:title" content="Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily) — plot.PLNnetworkfamily" />
 
-<meta property="og:description" content="Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily)" />
+<meta property="og:description" content="Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9501</span>
       </span>
     </div>
 
@@ -75,10 +75,10 @@
   <a href="../index.html">Home</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles and Vignettes</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="../articles/index.html">Articles and Vignettes</a>
 </li>
       </ul>
       
@@ -101,20 +101,21 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/S3methods.R'><code>R/S3methods.R</code></a></small>
+    <h1>Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfamily-S3methods.R'><code>R/PLNnetworkfamily-S3methods.R</code></a></small>
     <div class="hidden name"><code>plot.PLNnetworkfamily.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</p>
+    <p>Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</p>
     
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNnetworkfamily</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>criteria</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"pen_loglik"</span>,
-  <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>), <span class='kw'>log.x</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>annotate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"criteria"</span>, <span class='st'>"stability"</span>,
+  <span class='st'>"diagnostic"</span>), <span class='kw'>criteria</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"pen_loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>),
+  <span class='kw'>log.x</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>stability</span> <span class='kw'>=</span> <span class='fl'>0.9</span>, <span class='kw'>annotate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -124,17 +125,25 @@
       <td><p>an R6 object with class PLNfamily</p></td>
     </tr>
     <tr>
+      <th>type</th>
+      <td><p>a character, either "criteria", "stability" or "diagnostic" for the type of plot.</p></td>
+    </tr>
+    <tr>
       <th>criteria</th>
       <td><p>vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
-Default is  c("loglik", "pen_loglik", "BIC", "EBIC").</p></td>
+Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when type equals "criteria".</p></td>
     </tr>
     <tr>
       <th>log.x</th>
       <td><p>logical: should the x-axis be repsented in log-scale? Default is <code>TRUE</code>.</p></td>
     </tr>
     <tr>
+      <th>stability</th>
+      <td><p>scalar: the targeted level of stability in stability plot. Default is .9.</p></td>
+    </tr>
+    <tr>
       <th>annotate</th>
-      <td><p>logical: should the value of approximated R squared be added to the plot? Default is <code>TRUE</code>.</p></td>
+      <td><p>logical: should the value of approximated R squared be added to the plot of criteria? Default is <code>TRUE</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>

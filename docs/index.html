@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9501</span>
       </span>
     </div>
 
@@ -45,10 +45,10 @@
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="articles/index.html">Articles and Vignettes</a>
+  <a href="reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="reference/index.html">Reference</a>
+  <a href="articles/index.html">Articles and Vignettes</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -75,7 +75,7 @@
 </h1></div>
 
 <blockquote>
-<p>The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA for count data and network inference). This package implements an efficient algorithm to fit such models accompanied with a set of functions for vizualisation and diagnostic. Learn more in the vignettes: <code>vignette(package = "PLNmodels")</code>.</p>
+<p>The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA for count data and network inference). This package implements an efficient algorithm to fit such models accompanied with a set of functions for vizualisation and diagnostic.</p>
 </blockquote>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -106,7 +106,7 @@
 <p>The package comes with a ecological data to present the functionality</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a></code></pre></div>
-<p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page.</p>
+<p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <code>vignette(package = "PLNmodels")</code> or <a href="http://jchiquet.github.io/PLNmodels/articles/" class="uri">http://jchiquet.github.io/PLNmodels/articles/</a>).</p>
 <div id="unpenalized-poisson-lognormal-model-aka-pln" class="section level3">
 <h3 class="hasAnchor">
 <a href="#unpenalized-poisson-lognormal-model-aka-pln" class="anchor"></a>Unpenalized Poisson lognormal model (aka PLN)</h3>

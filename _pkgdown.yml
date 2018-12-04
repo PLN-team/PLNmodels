@@ -8,10 +8,10 @@ navbar:
   left:
     - text: "Home"
       href: index.html
-    - text: "Articles and Vignettes"
-      href: "articles/index.html"
     - text: "Reference"
       href: "reference/index.html"
+    - text: "Articles and Vignettes"
+      href: "articles/index.html"
   right:
     - icon: fa-github
       href: https://github.com/jchiquet/PLNmodels
@@ -25,7 +25,7 @@ reference:
     - '`PLNLDA`'
     - '`PLNPCA`'
     - '`PLNnetwork`'
-- title: 'Manipulation of a Poisson lognormal fit'
+- title: 'Poisson lognormal fit'
   desc: >
     Description of the PLNfit object and methods for its manipulation. Any PLN variant in the
     packake inherits from this class (PLNPCAfit, PLNnetworkfit, PLNLDAfit).
@@ -34,14 +34,14 @@ reference:
     - '`coef.PLNfit`'
     - '`vcov.PLNfit`'
     - '`predict.PLNfit`'
-- title: 'Manipulation of a Linear discriminant fit with Poisson lognormal distribution'
+- title: 'Linear discriminant analysis via a Poisson lognormal fit'
   desc: >
     Description of the PLNLDAfit object and methods for its manipulation.
   contents:
   - starts_with('PLNLDAfit')
   - '`plot.PLNLDAfit`'
   - '`predict.PLNLDAfit`'
-- title: 'Manipulation of a Poisson Lognormal PCA fit'
+- title: 'Poisson Lognormal PCA fit'
   desc: >
     Description of the PLNPCAfit and PLNPCAfamily objects and methods for their manipulation.
   contents:
@@ -51,7 +51,7 @@ reference:
   - '`plot.PLNPCAfamily`'
   - '`getBestModel.PLNPCAfamily`'
   - '`getModel.PLNPCAfamily`'
-- title: 'Manipulation of a sparse Poisson lognormal fit'
+- title: 'Sparse Poisson lognormal fit and network'
   desc: >
     Description of the PLNnetworkfit and PLNnetworkfamily objects and methods for their manipulation.
   contents:

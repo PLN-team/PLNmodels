@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9501</span>
       </span>
     </div>
 
@@ -73,10 +73,10 @@
   <a href="../index.html">Home</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles and Vignettes</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="../articles/index.html">Articles and Vignettes</a>
 </li>
       </ul>
       
@@ -145,7 +145,7 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-definition-and-manipulation-of-a-poisson-lognormal-fit" class="hasAnchor"><a href="#section-definition-and-manipulation-of-a-poisson-lognormal-fit" class="anchor"></a>Definition and manipulation of a Poisson lognormal fit</h2>
+          <h2 id="section-poisson-lognormal-fit" class="hasAnchor"><a href="#section-poisson-lognormal-fit" class="anchor"></a>Poisson lognormal fit</h2>
           <p class="section-desc"><p>Description of the PLNfit object and methods for its manipulation. Any PLN variant in the packake inherits from this class (PLNPCAfit, PLNnetworkfit, PLNLDAfit).</p></p>
         </th>
       </tr>
@@ -177,7 +177,7 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-definition-and-manipulation-of-a-linear-discriminant-fit-with-poisson-lognormal-distribution" class="hasAnchor"><a href="#section-definition-and-manipulation-of-a-linear-discriminant-fit-with-poisson-lognormal-distribution" class="anchor"></a>Definition and manipulation of a Linear discriminant fit with Poisson lognormal distribution</h2>
+          <h2 id="section-linear-discriminant-analysis-via-a-poisson-lognormal-fit" class="hasAnchor"><a href="#section-linear-discriminant-analysis-via-a-poisson-lognormal-fit" class="anchor"></a>Linear discriminant analysis via a Poisson lognormal fit</h2>
           <p class="section-desc"><p>Description of the PLNLDAfit object and methods for its manipulation.</p></p>
         </th>
       </tr>
@@ -190,21 +190,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="PLNLDAfit_plot_LDA.html">PLNLDAfit_plot_LDA</a></code> </p>
+          <p><code><a href="plot.PLNLDAfit.html">plot(<i>&lt;PLNLDAfit&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Plot a summary of the current <code>PLNLDAfit</code> object</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="PLNLDAfit_plot_correlation_circle.html">PLNLDAfit_plot_correlation_circle</a></code> </p>
-        </td>
-        <td><p>Plot the correlation circle of a specified axis for a <code>PLNLDAfit</code> object</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="PLNLDAfit_plot_individual_map.html">PLNLDAfit_plot_individual_map</a></code> </p>
-        </td>
-        <td><p>Plot the individual map of a specified axis for a <code>PLNLDAfit</code> object</p></td>
+        <td><p>LDA vizualiation (individual and/or variable factor map(s)) for a <code>PLNPCAfit</code> object</p></td>
       </tr><tr>
         
         <td>
@@ -215,7 +203,7 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-definition-and-manipulation-of-a-poisson-lognormal-pca-fit" class="hasAnchor"><a href="#section-definition-and-manipulation-of-a-poisson-lognormal-pca-fit" class="anchor"></a>Definition and manipulation of a Poisson Lognormal PCA fit</h2>
+          <h2 id="section-poisson-lognormal-pca-fit" class="hasAnchor"><a href="#section-poisson-lognormal-pca-fit" class="anchor"></a>Poisson Lognormal PCA fit</h2>
           <p class="section-desc"><p>Description of the PLNPCAfit and PLNPCAfamily objects and methods for their manipulation.</p></p>
         </th>
       </tr>
@@ -228,21 +216,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="PLNPCAfit_plot_PCA.html">PLNPCAfit_plot_PCA</a></code> </p>
+          <p><code><a href="plot.PLNPCAfit.html">plot(<i>&lt;PLNPCAfit&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Plot a summary of the current <code>PLNPCAfit</code> object</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="PLNPCAfit_plot_correlation_circle.html">PLNPCAfit_plot_correlation_circle</a></code> </p>
-        </td>
-        <td><p>Plot the correlation circle of a specified axis for a <code>PLNPCAfit</code> object</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="PLNPCAfit_plot_individual_map.html">PLNPCAfit_plot_individual_map</a></code> </p>
-        </td>
-        <td><p>Plot the individual map of a specified axis for a <code>PLNPCAfit</code> object</p></td>
+        <td><p>PCA vizualiation (individual and/or variable factor map(s)) for a <code>PLNPCAfit</code> object</p></td>
       </tr><tr>
         
         <td>
@@ -271,7 +247,7 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-definition-and-manipulation-of-a-sparse-poisson-lognormal-fit" class="hasAnchor"><a href="#section-definition-and-manipulation-of-a-sparse-poisson-lognormal-fit" class="anchor"></a>Definition and manipulation of a sparse Poisson lognormal fit</h2>
+          <h2 id="section-sparse-poisson-lognormal-fit-and-network" class="hasAnchor"><a href="#section-sparse-poisson-lognormal-fit-and-network" class="anchor"></a>Sparse Poisson lognormal fit and network</h2>
           <p class="section-desc"><p>Description of the PLNnetworkfit and PLNnetworkfamily objects and methods for their manipulation.</p></p>
         </th>
       </tr>
@@ -284,6 +260,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="plot.PLNnetworkfit.html">plot(<i>&lt;PLNnetworkfit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Extract and plot the network (aprtial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="PLNnetworkfamily.html">PLNnetworkfamily</a></code> </p>
         </td>
         <td><p>An R6 Class to represent a collection of PLNnetworkfit</p></td>
@@ -292,7 +274,7 @@
         <td>
           <p><code><a href="plot.PLNnetworkfamily.html">plot(<i>&lt;PLNnetworkfamily&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</p></td>
+        <td><p>Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</p></td>
       </tr><tr>
         
         <td>
@@ -308,21 +290,15 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="coefficient_path.html">coefficient_path</a></code> </p>
+          <p><code><a href="coefficient_path.html">coefficient_path()</a></code> </p>
         </td>
         <td><p>Extract the regularization path of a PLNnetwork fit</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="stability_selection.html">stability_selection</a></code> </p>
+          <p><code><a href="stability_selection.html">stability_selection()</a></code> </p>
         </td>
         <td><p>Compute the stability path by stability selection</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_network.html">plot_network</a></code> </p>
-        </td>
-        <td><p>Plot the network (support of the inverse covariance) for a <code>PLNnetworkfit</code> object</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -360,10 +336,10 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#section-top-level-fitting-functions">Top-level fitting functions</a></li>
-      <li><a href="#section-definition-and-manipulation-of-a-poisson-lognormal-fit">Definition and manipulation of a Poisson lognormal fit</a></li>
-      <li><a href="#section-definition-and-manipulation-of-a-linear-discriminant-fit-with-poisson-lognormal-distribution">Definition and manipulation of a Linear discriminant fit with Poisson lognormal distribution</a></li>
-      <li><a href="#section-definition-and-manipulation-of-a-poisson-lognormal-pca-fit">Definition and manipulation of a Poisson Lognormal PCA fit</a></li>
-      <li><a href="#section-definition-and-manipulation-of-a-sparse-poisson-lognormal-fit">Definition and manipulation of a sparse Poisson lognormal fit</a></li>
+      <li><a href="#section-poisson-lognormal-fit">Poisson lognormal fit</a></li>
+      <li><a href="#section-linear-discriminant-analysis-via-a-poisson-lognormal-fit">Linear discriminant analysis via a Poisson lognormal fit</a></li>
+      <li><a href="#section-poisson-lognormal-pca-fit">Poisson Lognormal PCA fit</a></li>
+      <li><a href="#section-sparse-poisson-lognormal-fit-and-network">Sparse Poisson lognormal fit and network</a></li>
       <li><a href="#section-other-functions">Other functions</a></li>
       <li><a href="#section-data-set">Data set</a></li>
     </ul>
