@@ -12,8 +12,8 @@ PLNPCAfit
 The function \code{\link{PLNPCA}} produces a collection of models which are instances of object with class \code{PLNPCAfit}.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNPCAfit_plot_PCA]{plot_PCA}}, \code{\link[=PLNPCAfit_plot_individual_map]{plot_individual_map}}
-and \code{\link[=PLNPCAfit_plot_correlation_circle]{plot_correlation_circle}}
+See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}} and the
+\code{\link[=plot.PLNPCAfit]{plot.PLNPCAfit}} methods for PCA vizualization
 }
 \section{Fields}{
 

@@ -5,7 +5,7 @@
 ## =========================================================================================
 
 ## Auxiliary functions to check the given class of an objet
-isPLNfamily        <- function(Robject) {inherits(Robject, 'PLNfamily'       )}
+isPLNfamily <- function(Robject) {inherits(Robject, 'PLNfamily'       )}
 
 ## S3 methods declared generic for children of PLNfamily
 

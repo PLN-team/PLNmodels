@@ -2,23 +2,35 @@
 % Please edit documentation in R/PLNPCAfit-S3methods.R
 \name{plot.PLNPCAfit}
 \alias{plot.PLNPCAfit}
-\title{Plot the individual or variable factor map for a \code{PLNPCAfit} object}
+\title{PCA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object}
 \usage{
-\method{plot}{PLNPCAfit}(x, map = c("individual", "variable"),
-  axes = 1:min(2, x$rank), plot = TRUE, ...)
+\method{plot}{PLNPCAfit}(x, map = c("both", "individual", "variable"),
+  nb_axes = min(3, x$rank), axes = seq.int(min(2, x$rank)),
+  ind_cols = "gray65", var_cols = "gray65", plot = TRUE,
+  main = NULL, ...)
 }
 \arguments{
 \item{x}{an R6 object with class PLNPCAfit}
 
-\item{axes}{numeric, the axes to use for the plot. Default it c(1,2)}
+\item{map}{the type of output for the PCA vizualization: either "individual", "variable" or "both". Default is "both".}
 
-\item{plot}{logical. Should the plot be displayed or sent back (ggplot object)}
+\item{nb_axes}{scalar: the number of axes to be considered when map = "both". The default is min(3,rank).}
 
-\item{...}{additional parameters: cols, main.}
+\item{axes}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
+
+\item{ind_cols}{a character, factor or numeric to define the color associated with the individuals. Default is "gray65"}
+
+\item{var_cols}{a character, factor or numeric to define the color associated with the variables. Default is "gray65"}
+
+\item{plot}{logical. Should the plot be displayed or sent back as ggplot object}
+
+\item{main}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+
+\item{...}{Not used (S3 compatibility).}
 }
 \value{
-displays a individual or variable map for the corresponding axes and/or sends back a ggplot2 object
+displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a ggplot2 or gtable object
 }
 \description{
-Plot the individual or variable factor map for a \code{PLNPCAfit} object
+PCA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object
 }

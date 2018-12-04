@@ -3,8 +3,8 @@
 #' @description The function \code{\link{PLNPCA}} produces a collection of models which are instances of object with class \code{PLNPCAfit}.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=PLNPCAfit_plot_PCA]{plot_PCA}}, \code{\link[=PLNPCAfit_plot_individual_map]{plot_individual_map}}
-#' and \code{\link[=PLNPCAfit_plot_correlation_circle]{plot_correlation_circle}}
+#' See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}} and the
+#' \code{\link[=plot.PLNPCAfit]{plot.PLNPCAfit}} methods for PCA vizualization
 #'
 #' @field rank the dimension of the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
@@ -138,7 +138,7 @@ function(covariates, offsets) {
 })
 
 PLNPCAfit$set("public", "plot_individual_map",
-  function(axes=1:min(2,self$rank), main="Individual Factor Map", plot=TRUE, cols="gray65") {
+  function(axes=1:min(2,self$rank), main = "Individual Factor Map", plot = TRUE, cols = "gray65") {
 
     .scores <- data.frame(self$scores[,axes, drop = FALSE])
     colnames(.scores) <- paste("a",1:ncol(.scores),sep = "")
@@ -165,58 +165,45 @@ PLNPCAfit$set("public", "plot_correlation_circle",
     invisible(p)
 })
 
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR THE USERS
-## ----------------------------------------------------------------------
-
-#' Plot a summary of the current \code{PLNPCAfit} object
-#'
-#' @name PLNPCAfit_plot_PCA
-#' @param axes numeric a vector of axes to be considered. The default is 1:min(3,rank).
-#' @param plot logical. Should the plot be displayed or sent back (ggplot object)
-#' @param cols.ind a character, factor or numeric to define the color associated with the individuals. Default is "gray"
-#' @param var.cols a character, factor or numeric to define the color associated with the variables. Default is "gray"
 #' @importFrom gridExtra grid.arrange arrangeGrob
 #' @importFrom grid textGrob
-#' @return a plot with a matrix-like layout with size nb.axes x nb.axes, displaying individual maps and correlation circles for the corresponding axes
-NULL
 PLNPCAfit$set("public", "plot_PCA",
-  function(cols.ind = "gray", var.cols = "gray", plot=TRUE, axes=1:min(3,self$rank)) {
+  function(nb_axes = min(3, self$rank), ind_cols = "gray65", var_cols = "gray65", plot = TRUE) {
 
-    nb.axes <- length(axes)
-    if (nb.axes > 1) {
+    axes <- 1:nb_axes
+    if (nb_axes > 1) {
       pairs.axes <- combn(axes, 2, simplify = FALSE)
 
       ## get back all individual maps
       ind.plot <- lapply(pairs.axes, function(pair) {
-        ggobj <- self$plot_individual_map(axes=pair, plot=FALSE, main="", cols=cols.ind) + theme(legend.position="none")
+        ggobj <- self$plot_individual_map(axes = pair, plot = FALSE, main = "", cols = ind_cols) + theme(legend.position = "none")
         return(ggplotGrob(ggobj))
       })
 
       ## get back all correlation circle
       cor.plot <- lapply(pairs.axes, function(pair) {
-        ggobj <- self$plot_correlation_circle(axes=pair, plot=FALSE, main="", cols = var.cols)
+        ggobj <- self$plot_correlation_circle(axes = pair, plot = FALSE, main = "", cols = var_cols)
         return(ggplotGrob(ggobj))
       })
 
       ## plot that appear on the diagonal
-      crit <- setNames(c(self$loglik, self$BIC, self$ICL), c("loglikelihood", "BIC", "ICL"))
+      crit <- setNames(c(self$loglik, self$BIC, self$ICL), c("loglik", "BIC", "ICL"))
       criteria.text <- paste("Model Selection\n\n", paste(names(crit), round(crit, 2), sep=" = ", collapse="\n"))
       percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percent_var[axes],3), "%"), collapse="\n"))
 
       diag.grobs <- list(textGrob(percentV.text, just="left"),
-                         g_legend(self$plot_individual_map(plot=FALSE, cols=cols.ind) + guides(colour = guide_legend(nrow = 4, title="classification"))),
+                         g_legend(self$plot_individual_map(plot=FALSE, cols=ind_cols) + guides(colour = guide_legend(nrow = 4, title="classification"))),
                          textGrob(criteria.text, just="left"))
-      if (nb.axes > 3)
-        diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb.axes-3))
+      if (nb_axes > 3)
+        diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb_axes - 3))
 
 
-      grobs <- vector("list", nb.axes^2)
+      grobs <- vector("list", nb_axes^2)
       i.cor <- 1; i.ind <- 1; i.dia <- 1
       ind <- 0
-      for (i in 1:nb.axes) {
-        for (j in 1:nb.axes) {
-          ind <- ind+1
+      for (i in 1:nb_axes) {
+        for (j in 1:nb_axes) {
+          ind <- ind + 1
           if (j > i) { ## upper triangular  -> cor plot
             grobs[[ind]] <- cor.plot[[i.ind]]
             i.ind <- i.ind + 1
@@ -229,7 +216,7 @@ PLNPCAfit$set("public", "plot_PCA",
           }
         }
       }
-      p <- arrangeGrob(grobs=grobs, ncol=nb.axes)
+      p <- arrangeGrob(grobs = grobs, ncol = nb_axes)
     } else {
       p <- arrangeGrob(grobs = list(
         self$plot_individual_map(plot = FALSE),
