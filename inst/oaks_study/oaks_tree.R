@@ -15,7 +15,8 @@ plot(myLDA_tree, "individual")
 
 myLDA_tree_diagonal <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks, control = list(covariance = "diagonal"))
 plot(myLDA_tree_diagonal)
-plot(myLDA_tree, "variable") ## TODO: add color for arrows to check
+otu.family <- factor(rep(c("fungi", "E. aphiltoides", "bacteria"), c(47, 1, 66)))
+plot(myLDA_tree, "variable", var_cols = otu.family) ## TODO: add color for arrows to check
 
 ## One dimensional check of plot
 myLDA_orientation <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$orientation, data = oaks)

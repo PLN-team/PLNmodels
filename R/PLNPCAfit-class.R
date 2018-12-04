@@ -140,7 +140,7 @@ function(covariates, offsets) {
 })
 
 PLNPCAfit$set("public", "plot_individual_map",
-  function(axes=1:min(2,self$rank), main = "Individual Factor Map", plot = TRUE, cols = "gray65") {
+  function(axes=1:min(2,self$rank), main = "Individual Factor Map", plot = TRUE, cols = "default") {
 
     .scores <- data.frame(self$scores[,axes, drop = FALSE])
     colnames(.scores) <- paste("a",1:ncol(.scores),sep = "")
@@ -154,14 +154,16 @@ PLNPCAfit$set("public", "plot_individual_map",
 })
 
 PLNPCAfit$set("public", "plot_correlation_circle",
-  function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "gray65", plot=TRUE) {
+  function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "default", plot=TRUE) {
 
     ## data frame with correlations between variables and PCs
     correlations <- as.data.frame(self$corr_circle[, axes, drop = FALSE])
     colnames(correlations) <- paste0("axe", 1:length(axes))
+    correlations$labels <- cols
+    correlations$names  <- rownames(correlations)
     axes_label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
-    p <- get_ggplot_corr_circle(correlations, axes_label, main, cols)
+    p <- get_ggplot_corr_circle(correlations, axes_label, main)
 
     if (plot) print(p)
     invisible(p)
@@ -170,7 +172,7 @@ PLNPCAfit$set("public", "plot_correlation_circle",
 #' @importFrom gridExtra grid.arrange arrangeGrob
 #' @importFrom grid textGrob
 PLNPCAfit$set("public", "plot_PCA",
-  function(nb_axes = min(3, self$rank), ind_cols = "gray65", var_cols = "gray65", plot = TRUE) {
+  function(nb_axes = min(3, self$rank), ind_cols = "ind_cols", var_cols = "var_cols", plot = TRUE) {
 
     axes <- 1:nb_axes
     if (nb_axes > 1) {
@@ -193,9 +195,9 @@ PLNPCAfit$set("public", "plot_PCA",
       criteria.text <- paste("Model Selection\n\n", paste(names(crit), round(crit, 2), sep=" = ", collapse="\n"))
       percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percent_var[axes],3), "%"), collapse="\n"))
 
-      diag.grobs <- list(textGrob(percentV.text, just="left"),
+      diag.grobs <- list(textGrob(percentV.text),
                          g_legend(self$plot_individual_map(plot=FALSE, cols=ind_cols) + guides(colour = guide_legend(nrow = 4, title="classification"))),
-                         textGrob(criteria.text, just="left"))
+                         textGrob(criteria.text))
       if (nb_axes > 3)
         diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb_axes - 3))
 

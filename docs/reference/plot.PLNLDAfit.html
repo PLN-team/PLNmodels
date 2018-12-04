@@ -115,7 +115,7 @@
     <pre class="usage"><span class='co'># S3 method for PLNLDAfit</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>map</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"both"</span>, <span class='st'>"individual"</span>, <span class='st'>"variable"</span>),
   <span class='kw'>nb_axes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Extremes'>min</a></span>(<span class='fl'>3</span>, <span class='no'>x</span>$<span class='no'>rank</span>), <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq.int</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Extremes'>min</a></span>(<span class='fl'>2</span>, <span class='no'>x</span>$<span class='no'>rank</span>)),
-  <span class='kw'>var_cols</span> <span class='kw'>=</span> <span class='st'>"gray65"</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>var_cols</span> <span class='kw'>=</span> <span class='st'>"var_colors"</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -138,7 +138,7 @@
     </tr>
     <tr>
       <th>var_cols</th>
-      <td><p>a character, factor or numeric to define the color associated with the variables. Default is "gray65"</p></td>
+      <td><p>a character or factor to define the color associated with the variables. By default, all variables receive the default color of the current palette.</p></td>
     </tr>
     <tr>
       <th>plot</th>

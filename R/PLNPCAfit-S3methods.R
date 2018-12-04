@@ -15,8 +15,8 @@ isPLNPCAfit <- function(Robject) {inherits(Robject, "PLNPCAfit"       )}
 #' @param map the type of output for the PCA vizualization: either "individual", "variable" or "both". Default is "both".
 #' @param nb_axes scalar: the number of axes to be considered when map = "both". The default is min(3,rank).
 #' @param axes numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))
-#' @param ind_cols a character, factor or numeric to define the color associated with the individuals. Default is "gray65"
-#' @param var_cols a character, factor or numeric to define the color associated with the variables. Default is "gray65"
+#' @param ind_cols a character, factor or numeric to define the color associated with the individuals. By default, all variables receive the default color of the current palette.
+#' @param var_cols a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.
 #' @param plot logical. Should the plot be displayed or sent back as ggplot object
 #' @param main character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.
 #' @param ... Not used (S3 compatibility).
@@ -29,8 +29,8 @@ plot.PLNPCAfit <-
            map      = c("both", "individual", "variable"),
            nb_axes  = min(3, x$rank),
            axes     = seq.int(min(2,x$rank)),
-           ind_cols = "gray65",
-           var_cols = "gray65",
+           ind_cols = "ind_colors",
+           var_cols = "var_colors",
            plot     = TRUE,
            main = NULL,
            ...) {
