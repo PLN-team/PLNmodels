@@ -9,3 +9,6 @@ TotalCount <- matrix(
 )
 
 system.time(models <- PLNPCA(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera, ranks = 1:8))
+
+plot(getBestModel(models), ind_cols = trichoptera$Group)
+plot(getBestModel(models), "variable")

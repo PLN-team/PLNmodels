@@ -7,6 +7,53 @@
 ## Auxiliary functions to check the given class of an objet
 isPLNLDAfit <- function(Robject) {inherits(Robject, "PLNLDAfit"       )}
 
+#' LDA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object
+#'
+#' @name plot.PLNLDAfit
+#'
+#' @param x an R6 object with class PLNPCAfit
+#' @param map the type of output for the PCA vizualization: either "individual", "variable" or "both". Default is "both".
+#' @param nb_axes scalar: the number of axes to be considered when map = "both". The default is min(3,rank).
+#' @param axes numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))
+#' @param var_cols a character, factor or numeric to define the color associated with the variables. Default is "gray65"
+#' @param plot logical. Should the plot be displayed or sent back as ggplot object
+#' @param main character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.
+#' @param ... Not used (S3 compatibility).
+#'
+#' @return displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a ggplot2 or gtable object
+#'
+#' @export
+plot.PLNLDAfit <-
+  function(x,
+           map      = c("both", "individual", "variable"),
+           nb_axes  = min(3, x$rank),
+           axes     = seq.int(min(2,x$rank)),
+           var_cols = "gray65",
+           plot     = TRUE,
+           main = NULL,
+           ...) {
+
+    stopifnot(isPLNLDAfit(x))
+
+    map <- match.arg(map)
+
+    if (is.null(main)) {
+      if (map == "individual")
+        main <- "Individual factor map"
+      if (map == "variable")
+        main <- "Variable factor map"
+    }
+
+    if (map == "individual")
+      p <- x$plot_individual_map(main = main, plot = plot)
+    if (map == "variable")
+      p <- x$plot_correlation_circle(cols = var_cols, main = main, plot = plot)
+    if (map == "both")
+      p <- x$plot_LDA(nb_axes = nb_axes, var_cols = var_cols, plot = plot)
+
+    invisible(p)
+}
+
 #' Predict group of new samples
 #'
 #' @name predict.PLNLDAfit

@@ -39,12 +39,14 @@ reference:
     Description of the PLNLDAfit object and methods for its manipulation.
   contents:
   - starts_with('PLNLDAfit')
+  - '`plot.PLNLDAfit`'
   - '`predict.PLNLDAfit`'
 - title: 'Manipulation of a Poisson Lognormal PCA fit'
   desc: >
     Description of the PLNPCAfit and PLNPCAfamily objects and methods for their manipulation.
   contents:
   - starts_with('PLNPCAfit')
+  - '`plot.PLNPCAfit`'
   - '`PLNPCAfamily`'
   - '`plot.PLNPCAfamily`'
   - '`getBestModel.PLNPCAfamily`'

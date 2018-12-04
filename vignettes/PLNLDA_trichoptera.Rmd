@@ -35,7 +35,7 @@ myLDA_nocov
 
 Essentially, the most important methodis the `plot` method: we separate well the different groups
 ```{r plot_model, fig.width=7, fig.height=5}
-myLDA_nocov$plot_LDA()
+plot(myLDA_nocov)
 ```
 
 If new samples become available, we can predict their class
@@ -61,7 +61,7 @@ myLDA_cov <- PLNLDA(Abundance ~ Wind + 0, grouping = grouping, data = trichopter
 ```
 
 ```{r plot_model_cov, fig.width=7, fig.height=5}
-myLDA_cov$plot_LDA()
+plot(myLDA_cov)
 ```
 
 And again try to predict class based on the counts and some covariates

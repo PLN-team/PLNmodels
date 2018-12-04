@@ -10,18 +10,21 @@ system.time(myPLN_spherical <- PLN(Abundancies ~ 0 + treeStatus + offset(log(seq
 
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks)
-myLDA_tree$plot_LDA()
+plot(myLDA_tree)
+plot(myLDA_tree, "individual")
 
 myLDA_tree_diagonal <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks, control = list(covariance = "diagonal"))
-myLDA_tree_diagonal $plot_LDA()
+plot(myLDA_tree_diagonal)
+plot(myLDA_tree, "variable") ## TODO: add color for arrows to check
 
+## One dimensional check of plot
 myLDA_orientation <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$orientation, data = oaks)
-myLDA_orientation$plot_LDA()
+plot(myLDA_orientation)
 
 ## Dimension reduction with PCA
 system.time(myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30)) # about 250 sec.
-myPLNPCA <- myPLNPCAs$getBestModel('ICL')
-myPLNPCA$plot_PCA(cols.ind = oaks$treeStatus)
+myPLNPCA <-
+plot(getBestModel(myPLNPCAs), ind_cols = oaks$treeStatus)
 
 ## Network inference with sparce covariance estimation
 myPLNnets <- PLNnetwork(Abundancies ~ 1 + treeStatus + offset(log(sequencingEffort)), data = oaks)

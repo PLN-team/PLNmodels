@@ -3,8 +3,9 @@
 #' @description The function \code{\link{PLNLDA}} produces an instance of an object with class \code{PLNPLDAfit}.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=PLNLDAfit_plot_LDA]{plot_LDA}}, \code{\link[=PLNLDAfit_plot_individual_map]{plot_individual_map}}
-#' and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
+#' See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}}, the
+#' \code{\link[=plot.PLNLDAfit]{plot.PLNPCAfit}} method for LDA vizualization and
+#' \code{\link[=predict.PLNLDAfit]{predict.PLNPCAfit}} method for prediction
 #'
 #' @field rank the dimension of the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), B (latent loadings), P (latent position) and Mu (group means)
@@ -96,21 +97,13 @@ function(responses, covariates, offsets) {
   self$setVisualization()
 })
 
-#' Plot the individual map of a specified axis for a \code{PLNLDAfit} object
-#'
-#' @name PLNLDAfit_plot_individual_map
-#' @param axes numeric, the axes to use for the plot. Default it c(1,2)
-#' @param main character, the title. Default is "Individual Factor Map"
-#' @param plot logical. Should the plot be displayed or sent back as a ggplot object
-#' @param cols a character, factor or numeric to defined the color associated with the observations. Default is "gray"
-#' @return displays a individual map for thecorresponding axes and/or sends back a ggplot2 object
-NULL
+# Plot the individual map of a specified axis for a \code{PLNLDAfit} object
 PLNLDAfit$set("public", "plot_individual_map",
-  function(axes=1:min(2,self$rank), main="Individual Factor Map", plot=TRUE, cols = private$grouping) {
+  function(axes = 1:min(2,self$rank), main = "Individual Factor Map", plot = TRUE) {
 
     .scores <- data.frame(self$scores[,axes, drop = FALSE])
     colnames(.scores) <- paste("a",1:ncol(.scores),sep = "")
-    .scores$labels <- cols
+    .scores$labels <- private$grouping
     .scores$names <- rownames(private$M)
     axes_label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
@@ -119,15 +112,7 @@ PLNLDAfit$set("public", "plot_individual_map",
     invisible(p)
 })
 
-#' Plot the correlation circle of a specified axis for a \code{PLNLDAfit} object
-#'
-#' @name PLNLDAfit_plot_correlation_circle
-#' @param axes numeric, the axes to use for the plot. Default it c(1,2)
-#' @param main character, the title. Default is "Variable Factor map"
-#' @param plot logical. Should the plot be displayed or sent back (ggplot object)
-#' @param cols a character, factor or numeric to defined the color associated with the variable. Default is "gray"
-#' @return displays a correlation circle for the corresponding axes and/or sends back a ggplot2 object
-NULL
+# Plot the correlation circle of a specified axis for a \code{PLNLDAfit} object
 PLNLDAfit$set("public", "plot_correlation_circle",
   function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "gray65", plot=TRUE) {
 
@@ -142,30 +127,23 @@ PLNLDAfit$set("public", "plot_correlation_circle",
     invisible(p)
 })
 
-#' Plot a summary of the current \code{PLNLDAfit} object
-#'
-#' @name PLNLDAfit_plot_LDA
-#' @param axes numeric a vector of axes to be considered. The default is 1:min(3,rank).
-#' @param plot logical. Should the plot be displayed or sent back (ggplot object)
-#' @param var.cols a character, factor or numeric to define the color associated with the variables. Default is "gray"
-#' @return a plot with a matrix-like layout with size nb.axes x nb.axes, displaying individual maps and correlation circles for the corresponding axes
-NULL
+# Plot a summary of the current \code{PLNLDAfit} object
 PLNLDAfit$set("public", "plot_LDA",
-  function(var.cols = "gray", plot=TRUE, axes=1:min(3, self$rank)) {
+  function(nb_axes = min(3, self$rank), var_cols = "gray65", plot = TRUE) {
 
-    nb.axes <- length(axes)
-    if (nb.axes > 1) {
+    axes <- 1:nb_axes
+    if (nb_axes > 1) {
       pairs.axes <- combn(axes, 2, simplify = FALSE)
 
       ## get back all individual maps
       ind.plot <- lapply(pairs.axes, function(pair) {
-        ggobj <- self$plot_individual_map(axes = pair, plot=FALSE, main="") + theme(legend.position="none")
+        ggobj <- self$plot_individual_map(axes = pair, plot = FALSE, main="") + theme(legend.position="none")
         return(ggplotGrob(ggobj))
       })
 
       ## get back all correlation circle
       cor.plot <- lapply(pairs.axes, function(pair) {
-        ggobj <- self$plot_correlation_circle(axes=pair, plot=FALSE, main="", cols = var.cols)
+        ggobj <- self$plot_correlation_circle(axes = pair, plot = FALSE, main = "", cols = var_cols)
         return(ggplotGrob(ggobj))
       })
 
@@ -177,15 +155,15 @@ PLNLDAfit$set("public", "plot_LDA",
       diag.grobs <- list(textGrob(percentV.text, just="left"),
                          g_legend(self$plot_individual_map(plot=FALSE) + guides(colour = guide_legend(nrow = 4, title="classification"))),
                          textGrob(criteria.text, just="left"))
-      if (nb.axes > 3)
-        diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb.axes-3))
+      if (nb_axes > 3)
+        diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb_axes-3))
 
 
-      grobs <- vector("list", nb.axes^2)
+      grobs <- vector("list", nb_axes^2)
       i.cor <- 1; i.ind <- 1; i.dia <- 1
       ind <- 0
-      for (i in 1:nb.axes) {
-        for (j in 1:nb.axes) {
+      for (i in 1:nb_axes) {
+        for (j in 1:nb_axes) {
           ind <- ind+1
           if (j > i) { ## upper triangular  -> cor plot
             grobs[[ind]] <- cor.plot[[i.ind]]
@@ -199,7 +177,7 @@ PLNLDAfit$set("public", "plot_LDA",
           }
         }
       }
-      p <- arrangeGrob(grobs = grobs, ncol = nb.axes)
+      p <- arrangeGrob(grobs = grobs, ncol = nb_axes)
     } else {
       p <- arrangeGrob(grobs = list(
         self$plot_individual_map(plot = FALSE),
