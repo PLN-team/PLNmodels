@@ -3,7 +3,7 @@
 #' @description The function \code{\link{PLNnetwork}} produces a collection of models which are instances of object with class \code{PLNnetworkfit}.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=plot_network]{plot_network}} + methods inherited from PLNfit.
+#' See the documentation for \code{\link[=plot.PLNnetworkfit]{plot.PLNnetworkfit}} + methods inherited from PLNfit.
 #'
 #' @field penalty the level of sparsity in the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.
@@ -12,10 +12,13 @@
 #' @field fitted a matrix: the fitted values (Y hat)
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field loglik variational lower bound of the loglikelihood
+#' @field pen_loglik variational lower bound of the l1-penalized loglikelihood
 #' @field BIC variational lower bound of the BIC
+#' @field EBIC variational lower bound of the EBIC
 #' @field ICL variational lower bound of the ICL
 #' @field R_squared approximated goodness-of-fit criterion
 #' @field degrees_freedom number of parameters in the current PLN model
+#' @field density proportion of non-null edges in the network
 #' @field criteria a vector with loglik, BIC, ICL, R_squared and degrees of freedom
 #' @include PLNnetworkfit-class.R
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}
@@ -198,7 +201,8 @@ PLNnetworkfit$set("public", "plot_network",
 PLNnetworkfit$set("public", "show",
 function() {
   super$show(paste0("Poisson Lognormal with sparse inverse covariance (penalty = ", format(self$penalty,digits = 3),")\n"))
-  cat("* Additional methods for network\n")
-  cat("    plot()\n")
-  cat("    $coefficient_path(), $density_path()\n")
+  cat("* Additional fields for sparse network\n")
+  cat("    $EBIC, $density, $penalty \n")
+  cat("* Additional S3 methods for network\n")
+  cat("    plot.PLNnetworkfit() \n")
 })

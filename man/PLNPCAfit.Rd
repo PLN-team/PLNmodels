@@ -46,7 +46,9 @@ See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}
 
 \item{\code{corr_circle}}{a matrix of correlations to plot the correlation circles}
 
-\item{\code{scores}}{a matrix of scores to plot the individual factor maps}
+\item{\code{scores}}{a matrix of scores to plot the individual factor maps (a.k.a. principal comonents)}
+
+\item{\code{rotation}}{a matrix of rotation of the latent space}
 }}
 
 \seealso{

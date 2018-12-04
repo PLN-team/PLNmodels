@@ -1,6 +1,6 @@
 ## =========================================================================================
 ##
-## PUBLIC S3 METHODS FOR PLNPCAfit
+## PUBLIC S3 METHODS FOR PLNnetworkfit
 ##
 ## =========================================================================================
 
@@ -12,14 +12,13 @@ isPLNnetworkfit <- function(Robject) {inherits(Robject, "PLNnetworkfit")}
 #' @name plot.PLNnetworkfit
 #'
 #' @param x an R6 object with class PLNnetworkfit
-#' @param plot logical. Should the plot be displayed or sent back as an igraph object
 #' @param type character. Value of the weigth of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is \code{"partial_cor"}.
 #' @param output the type of output used: either 'igraph' or 'corrplot'. Default is 'igraph'.
 #' @param edge.color 2D numeric. Color for positive/negative edges. Default is c("#F8766D", "#00BFC4"). Only relevant for igraph output.
 #' @param node.labels vector of character. The labels of the nodes. The Default will use the column names ot the response matrix.
 #' @param remove.isolated if \code{TRUE}, isolated node are remove before plotting. Only relevant for igraph output.
 #' @param layout an optional igraph layout. Only relevant for igraph output.
-#' @param plot logical. Should the final network be plotted or only sent back to the user. Default is \code{TRUE}.
+#' @param plot logical. Should the final network be displayed or only sent back to the user. Default is \code{TRUE}.
 #' @param ... Not used (S3 compatibility).
 #'
 #' @return Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionaly displays a graph (via igraph or corrplot for large ones)

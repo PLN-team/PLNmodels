@@ -20,7 +20,8 @@
 #' @field degrees_freedom number of parameters in the current PLN model
 #' @field percent_var the percent of variance explained by each axis
 #' @field corr_circle a matrix of correlations to plot the correlation circles
-#' @field scores a matrix of scores to plot the individual factor maps
+#' @field scores a matrix of scores to plot the individual factor maps (a.k.a. principal comonents)
+#' @field rotation a matrix of rotation of the latent space
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}
@@ -80,6 +81,7 @@ PLNPCAfit <-
         rownames(rotation) <- rownames(private$Sigma)
         rotation
       }
+### Why not sending back the rotation matrix ?
     )
 )
 
@@ -236,6 +238,6 @@ function() {
   super$show(paste0("Poisson Lognormal with rank constrained for PCA (rank = ",self$rank,")\n"))
   cat("* Additional fields for PCA\n")
   cat("    $percent_var, $corr_circle, $scores, $rotation \n")
-  cat("* Additional methods for PCA\n")
-  cat("    $plot_PCA(), $plot_correlation_circle(), $plot_individual_map() \n")
+  cat("* Additional S3 methods for PCA\n")
+  cat("    plot.PLNPCAfit() \n")
 })

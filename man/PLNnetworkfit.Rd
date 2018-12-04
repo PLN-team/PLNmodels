@@ -12,7 +12,7 @@ PLNnetworkfit
 The function \code{\link{PLNnetwork}} produces a collection of models which are instances of object with class \code{PLNnetworkfit}.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=plot_network]{plot_network}} + methods inherited from PLNfit.
+See the documentation for \code{\link[=plot.PLNnetworkfit]{plot.PLNnetworkfit}} + methods inherited from PLNfit.
 }
 \section{Fields}{
 
@@ -31,13 +31,19 @@ See the documentation for \code{\link[=plot_network]{plot_network}} + methods in
 
 \item{\code{loglik}}{variational lower bound of the loglikelihood}
 
+\item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood}
+
 \item{\code{BIC}}{variational lower bound of the BIC}
+
+\item{\code{EBIC}}{variational lower bound of the EBIC}
 
 \item{\code{ICL}}{variational lower bound of the ICL}
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
 \item{\code{degrees_freedom}}{number of parameters in the current PLN model}
+
+\item{\code{density}}{proportion of non-null edges in the network}
 
 \item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and degrees of freedom}
 }}

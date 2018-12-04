@@ -24,11 +24,9 @@
 
 \item{layout}{an optional igraph layout. Only relevant for igraph output.}
 
-\item{plot}{logical. Should the plot be displayed or sent back as an igraph object}
+\item{plot}{logical. Should the final network be displayed or only sent back to the user. Default is \code{TRUE}.}
 
 \item{...}{Not used (S3 compatibility).}
-
-\item{plot}{logical. Should the final network be plotted or only sent back to the user. Default is \code{TRUE}.}
 }
 \value{
 Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionaly displays a graph (via igraph or corrplot for large ones)
