@@ -67,26 +67,32 @@ We can represent the coefficient path (i.e., value of the edge in the network ac
 
 ```{r path_coeff, fig.width=7, fig.height=7}
 library(ggplot2)
-path <- models$coefficient_path(corr = FALSE)
-ggplot(path, aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + geom_line(show.legend = FALSE) +  coord_trans(x="log10") + theme_bw()
+ggplot(coefficient_path(models, corr = FALSE), aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + 
+  geom_line(show.legend = FALSE) +  coord_trans(x="log10") + theme_bw()
 ```
 
 An alternative and more intuitive view consiste in plotting the values of the partial correlation along the path.
 
 ```{r path_corr, fig.width=7, fig.height=7}
-path <- models$coefficient_path(corr = TRUE)
-ggplot(path, aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + geom_line(show.legend = FALSE) + coord_trans(x="log10") + theme_bw()
+ggplot(coefficient_path(models, corr = TRUE), aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + 
+    geom_line(show.legend = FALSE) + coord_trans(x = "log10") + theme_bw()
 ```
 
 #### Model selection issue
 
 If we want to select one network, we may extract best model according to BIC or StARS with the method `getBestModel()`. A model with a specific penalty level can be extracted with the `getModel(lambda)` method. 
 
-```{r}
+```{r extract models}
 model.BIC   <- getBestModel(models, "BIC")   # if no criteria is specified, the best BIC is used
 model.StARS <- getBestModel(models, "StARS") # if StARS is requested, stabiltiy selection is performed if needed 
 model.pen   <- getModel(models, models$penalties[20]) # give some sparsity
 ```
+
+Note that, at this point, stability selection is automatically performed, and so the stability path is now available from the ` plot` function:
+```{r plot stability, fig.width=7, fig.height=5}
+plot(models, "stability")
+```
+
 
 The variables `model.BIC`, `model.StARS` and `model.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network, with various options.
 
@@ -101,10 +107,10 @@ plot(model.StARS)
 plot(model.pen)
 ```
 
-<!-- Additional information about the optimization process comes with the `plot_objective` method: -->
-<!-- ```{r, fig.width=7, fig.height=5} -->
-<!-- models$plot_objective() -->
-<!-- ``` -->
+Additional information about the optimization process comes with the option "diagnostic" in the `plot` method:
+```{r diagnostic, fig.width=7, fig.height=5}
+plot(models, "diagnostic")
+```
 
 ## References
 

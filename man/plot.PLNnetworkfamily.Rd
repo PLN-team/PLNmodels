@@ -2,20 +2,25 @@
 % Please edit documentation in R/PLNnetworkfamily-S3methods.R
 \name{plot.PLNnetworkfamily}
 \alias{plot.PLNnetworkfamily}
-\title{Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily)}
+\title{Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)}
 \usage{
-\method{plot}{PLNnetworkfamily}(x, criteria = c("loglik", "pen_loglik",
-  "BIC", "EBIC"), log.x = TRUE, annotate = TRUE, ...)
+\method{plot}{PLNnetworkfamily}(x, type = c("criteria", "stability",
+  "diagnostic"), criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
+  log.x = TRUE, stability = 0.9, annotate = TRUE, ...)
 }
 \arguments{
 \item{x}{an R6 object with class PLNfamily}
 
+\item{type}{a character, either "criteria", "stability" or "diagnostic" for the type of plot.}
+
 \item{criteria}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
-Default is  c("loglik", "pen_loglik", "BIC", "EBIC").}
+Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when type equals "criteria".}
 
 \item{log.x}{logical: should the x-axis be repsented in log-scale? Default is \code{TRUE}.}
 
-\item{annotate}{logical: should the value of approximated R squared be added to the plot? Default is \code{TRUE}.}
+\item{stability}{scalar: the targeted level of stability in stability plot. Default is .9.}
+
+\item{annotate}{logical: should the value of approximated R squared be added to the plot of criteria? Default is \code{TRUE}.}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
@@ -24,5 +29,5 @@ Produces a plot  representing the evolution of the criteria of the different mod
 highlighting the best model in terms of BIC and EBIC.
 }
 \description{
-Display the criteria associated with a collection of PLNnetwork fits (a PLNnetworkfamily)
+Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)
 }

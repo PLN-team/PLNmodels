@@ -101,15 +101,7 @@ PLNnetworkfamily$set("public", "optimize",
 
 })
 
-#' Compute the stability path by stability selection
-#'
-#' @name stability_selection
-#' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
-#' @param control a list controling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.
-#' @param mc.cores the number of cores to used. Default is 1.
-#'
-##' @return the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the PLNnetwork object
-NULL
+# Compute the stability path by stability selection
 PLNnetworkfamily$set("public", "stability_selection",
   function(subsamples = NULL, control = list(), mc.cores = 1) {
 
@@ -167,14 +159,7 @@ PLNnetworkfamily$set("public", "stability_selection",
   }
 )
 
-#' Extract the regularization path of a PLNnetwork fit
-#'
-#' @name coefficient_path
-#' @param precision a logical, should the coefficients of the precision matrix Omega or the covariance matrice Sigma be sent back. Default is \code{TRUE}.
-#' @param corr a logical, should the correlation (partial in case  precision = TRUE) be sent back. Default is \code{TRUE}.
-#'
-#' @return  Send back a tibble/data.frame.
-NULL
+# Extract the regularization path of a PLNnetwork fit
 PLNnetworkfamily$set("public", "coefficient_path",
 function(precision = TRUE, corr = TRUE) {
   lapply(self$penalties, function(x) {
@@ -225,9 +210,9 @@ function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE, anno
   p
 })
 
-#' @export
 PLNnetworkfamily$set("public", "plot_stars",
 function(stability = 0.9, log.x = TRUE) {
+  if (anyNA(self$stability)) stop("stability selection has not yet been performed! Use stability_selection()")
   dplot <- self$criteria %>% select(param, density, stability) %>%
     rename(Penalty = param) %>%
     gather(key = "Metric", value = "Value", stability:density)
@@ -249,7 +234,6 @@ function(stability = 0.9, log.x = TRUE) {
   p
 })
 
-#' @export
 PLNnetworkfamily$set("public", "plot_objective",
 function() {
   objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
@@ -268,11 +252,10 @@ function() {
   super$show()
   cat(" Task: Network Inference \n")
   cat("========================================================\n")
-  cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties),
-      "\n", "   use $penalties to see all values and access specific lambdas", "\n")
+  cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties), "\n")
+  cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
+  cat(" - Best model (regarding EBIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
   if (!anyNA(self$criteria$stability))
     cat(" - Best model (regarding StARS): lambda =", format(self$getBestModel("StARS")$penalty, digits = 3), "\n")
-  if (!anyNA(self$criteria$BIC))
-    cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
 })
-
+2
