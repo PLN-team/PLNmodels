@@ -1,6 +1,4 @@
-library(PLNmodels)
-
-library(testthat)
+context("test-plnlda")
 
 data("trichoptera")
 
