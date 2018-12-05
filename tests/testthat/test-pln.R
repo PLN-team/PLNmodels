@@ -2,7 +2,7 @@ context("test-pln")
 
 data("trichoptera")
 
-test_that("Check PLN initialization - fully parametrized covariance",  {
+test_that("Check consistency of initialization - fully parametrized covariance",  {
   tol <- 1e-4
 
   ## use default initialization (LM)
@@ -16,7 +16,7 @@ test_that("Check PLN initialization - fully parametrized covariance",  {
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
-test_that("Check PLN initialization - diagonal parametrized covariance",  {
+test_that("Check consistency of initialization - diagonal covariance",  {
   tol <- 1e-4
 
   ## use default initialization (LM)
@@ -30,7 +30,7 @@ test_that("Check PLN initialization - diagonal parametrized covariance",  {
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
-test_that("Check PLN weights",  {
+test_that("Check consistency of observation weights - fully parameterized covariance",  {
   tol <- 1e-2
 
   ## no weights
@@ -39,10 +39,12 @@ test_that("Check PLN weights",  {
   ## equivalent weigths
   model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(trace = 0))
 
-  expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
+  expect_equal(model2$loglik, model1$loglik, tolerance = tol)
+
+
 })
 
-test_that("Check PLN weights with spherical covariance",  {
+test_that("Check consistency of observation weights - diagonal covariance",  {
   tol <- 1e-2
 
   ## no weights
@@ -54,7 +56,7 @@ test_that("Check PLN weights with spherical covariance",  {
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
 })
 
-test_that("Check PLN weights with diagonal covariance",  {
+test_that("Check consistency of observation weights - spherical covariance",  {
   tol <- 1e-2
 
   ## no weights
@@ -68,9 +70,11 @@ test_that("Check PLN weights with diagonal covariance",  {
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
 })
 
-test_that("Test different covariance models",  {
+test_that("Routine comparison between the different covariance models",  {
   model_full      <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "full"     , trace = 0))
+  model_diagonal  <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal" , trace = 0))
   model_spherical <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical", trace = 0))
-  expect_gte(model_full$loglik, model_spherical$loglik)
+  expect_gte(model_full$loglik  , model_diagonal$loglik)
+  expect_gte(model_full$diagonal, model_spherical$loglik)
 })
 
