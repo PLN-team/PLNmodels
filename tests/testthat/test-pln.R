@@ -2,6 +2,20 @@ context("test-pln")
 
 data("trichoptera")
 
+test_that("Check that PLN is running and robust",  {
+
+  expect_is(PLN(Abundance ~ 1, data = trichoptera), "PLNfit")
+
+  expect_is(PLN(Abundance ~ 0, data = trichoptera), "PLNfit")
+
+  expect_is(PLN(trichoptera$Abundance ~ 1), "PLNfit")
+
+  expect_equal(PLN(trichoptera$Abundance ~ 1 + trichoptera$Wind)$fitted,
+               PLN(Abundance ~ Wind, data = trichoptera)$fitted)
+
+  ## add more
+})
+
 test_that("Check consistency of initialization - fully parametrized covariance",  {
   tol <- 1e-4
 
@@ -64,7 +78,6 @@ test_that("Check consistency of observation weights - spherical covariance",  {
 
   ## equivalent weigths
   model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(covariance = "diagonal", trace = 0))
-
   model3 <- PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(covariance = "diagonal", trace = 0))
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
@@ -75,6 +88,5 @@ test_that("Routine comparison between the different covariance models",  {
   model_diagonal  <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal" , trace = 0))
   model_spherical <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical", trace = 0))
   expect_gte(model_full$loglik  , model_diagonal$loglik)
-  expect_gte(model_full$diagonal, model_spherical$loglik)
+  expect_gte(model_diagonal$loglik, model_spherical$loglik)
 })
-

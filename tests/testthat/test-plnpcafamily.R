@@ -1,6 +1,5 @@
-context("test-plcpca")
+context("test-plnpcafamily")
 
-## get data with some offset
 data(trichoptera)
 trichoptera$TotalCount <-
   matrix(
@@ -9,10 +8,13 @@ trichoptera$TotalCount <-
     ncol = ncol(trichoptera$Abundance)
   )
 
-test_that("PLNPCA runs", {
+
+test_that("PLNPCAfamily methods", {
 
   models <- PLNPCA(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera)
-  expect_is(models, "PLNPCAfamily")
+
+  ## this is more PLNPCAfamilyfit testing
+  expect_equal(getBestModel(models), getBestModel(models, "ICL"))
   ## add some...
 })
 

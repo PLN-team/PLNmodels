@@ -1,6 +1,7 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2018-12-08: coverage updated
 #  - 2018-09-12: added checck for OS X
 #  - 2018-09-11: warning as error set to false
 #  - 2018-06-29: first try
@@ -28,8 +29,8 @@ matrix:
     - os: linux
       r: release
       after_success:
-      - Rscript -e 'covr::codecov(quiet=FALSE)'
-      env: NB='w/ covr' ## Just a label
+      - Rscript -e 'covr::codecov()'
+      env: NB='with covr'
     - os: linux
       r: devel
     - os: osx

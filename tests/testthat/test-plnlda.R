@@ -2,6 +2,22 @@ context("test-plnlda")
 
 data("trichoptera")
 
+test_that("Check that PLN is running and robust",  {
+
+  model1 <- PLNLDA(trichoptera$Abundance ~ 0, grouping = trichoptera$Group)
+
+  expect_is(model1, "PLNLDAfit")
+  expect_is(model1, "PLNfit")
+
+
+  model2 <- PLNLDA(Abundance ~ 0, grouping = trichoptera$Group, data = trichoptera)
+
+  expect_equal(PLNLDA(trichoptera$Abundance ~ 0, grouping = trichoptera$Group)$fitted,
+               PLNLDA(Abundance ~ 0, grouping = trichoptera$Group, data = trichoptera)$fitted)
+
+  ## add more
+})
+
 test_that("Check PLNLDA initialization",  {
   tol <- 1e-5
 
