@@ -49,3 +49,39 @@ vcov.PLNfit <- function(object, ...) {
   stopifnot(isPLNfit(object))
   object$model_par$Sigma
 }
+
+#' Extracts (one-data) Fisher information matrix of Theta from objects returned by \code{\link[=PLN]{PLN}} and its variants
+#'
+#' @name fisher.PLNfit
+#'
+#' @param object an R6 object with class PLNfit
+#' @param type Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
+#' Fisher information matrix
+#' @param X Required. The covariate matrix used to fit the model.
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
+#' Theta is a matrix of size d \times p.
+#'
+#' @export
+fisher.PLNfit <- function(object, type = c("wald", "louis"), X = NULL, ...) {
+  stopifnot(isPLNfit(object))
+  object$fisher(type, X)
+}
+
+#' Compute univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate)
+#' Fisher information matrix. See \code{\link[=fisher.PLNfit]{fisher}} for more details on the approximations.
+#'
+#' @name standard_error.PLNfit
+#'
+#' @param object an R6 object with class PLNfit
+#' @param type Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
+#' Fisher information matrix
+#' @param X Required. The covariate matrix used to fit the model.
+#'
+#' @return A p \times d positive matrix (same size as Theta) with standard errors.
+#' @export
+#'
+standard_error.PLNfit <- function(object, type = c("wald", "louis"), X = NULL, ...) {
+  stopifnot(isPLNfit(object))
+  object$standard_error(type, X)
+}
