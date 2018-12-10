@@ -21,16 +21,7 @@ See `?PLNmodels::trichoptera` for details.
 
 ### A discriminant analysis for the Trichopetra data set
 
-We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The classification corresponds to the consecutive night groups caught.  It seems natural to add an offset corresponding to the total count per night, so a 15th column with a $49 \times 17$ of offset. It corresponds to the matrix $\mathbf{O}$ in our model: 
-```{r offset_trichopera}
-trichoptera$TotalCounts <- matrix(
-  rowSums(trichoptera$Abundance),
-  nrow = nrow(trichoptera$Abundance),
-  ncol = ncol(trichoptera$Abundance)
-)
-```
-
-The model can be fitted with the function `PLNLDA` as follows:
+We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The classification corresponds to the consecutive night groups caught.  It seems natural to add an offset corresponding to the total count per night. The model can be fitted with the function `PLNLDA` as follows:
 
 ```{r}
 myLDA_nocov <- PLNLDA(Abundance ~ 0 + offset(log(TotalCounts)), grouping = grouping, data = trichoptera)
@@ -55,8 +46,6 @@ and asses that we recover the correct class in most (but not all) cases:
 ```{r check_predicted_class}
 table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
 ```
-
-
 
 ### Accounting for other covariates 
 

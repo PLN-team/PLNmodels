@@ -4,9 +4,10 @@
 \name{trichoptera}
 \alias{trichoptera}
 \title{Trichoptera data set}
-\format{A data frame with 49 rows and 3 variables (matrices):
+\format{A data frame with 49 rows and 14 variables (matrices):
 \describe{
-  \item{Abundance}{a 49 x 17 matrix of abundancies (49 trapping nights and 17 trichoptera species).}
+  \item{Abundance}{a 49 x 17 matrix of abundancies (49 trapping nights and 17 trichoptera species)}
+  \item{TotalCounts}{a 49 x 17 matrix of total counts that can be used for offsets)}
   \item{T_max}{Maximal temperature in Celsius}
   \item{T_evening}{Evening Temperature in Celsius}
   \item{T_min}{Minimal temperature in Celsius}

@@ -46,7 +46,7 @@ In the PLN network, we penalized the inverse covariance $\boldsymbol\Sigma^{-1} 
 We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The model can be fitted with the function `PLNNetwork` for a series of penalties contorling the number of edges in the network as follows:
 
 ```{r}
-models <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+models <- PLNnetwork(Abundance ~ 1 + offset(log(TotalCounts)), data = trichoptera)
 ```
 
 Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`.
