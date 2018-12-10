@@ -20,10 +20,14 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
-vignettes/*.bib
+vignettes/*_cache/
+vignettes/cache/
 
 # doc files
 inst/doc/*
+inst/radix_article/*_cache/
+inst/radix_article/cache/
+
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth

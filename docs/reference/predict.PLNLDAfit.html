@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9601</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9605</span>
       </span>
     </div>
 
@@ -113,8 +113,8 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNLDAfit</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='no'>newdata</span>, <span class='no'>newOffsets</span>, <span class='no'>newCounts</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"posterior"</span>, <span class='st'>"response"</span>), <span class='kw'>control</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='no'>newdata</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"posterior"</span>,
+  <span class='st'>"response"</span>), <span class='kw'>control</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -125,15 +125,7 @@
     </tr>
     <tr>
       <th>newdata</th>
-      <td><p>A data frame in which to look for variables with which to predict.</p></td>
-    </tr>
-    <tr>
-      <th>newOffsets</th>
-      <td><p>A matrix in which to look for offsets with which to predict.</p></td>
-    </tr>
-    <tr>
-      <th>newCounts</th>
-      <td><p>A matrix in which to look for counts with to predict</p></td>
+      <td><p>A data frame in which to look for variables, offsets and counts  with which to predict.</p></td>
     </tr>
     <tr>
       <th>type</th>

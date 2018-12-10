@@ -1,0 +1,68 @@
+---
+title: "Supervized classification of multivariate count table with the Poisson discriminant Analysis"
+author: "PLN team"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{PLNLDA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette intends to illustrate the basical use of the `PLNLDA` function and the methods accompaning the R6 Class `PLNLDAfit`. We will illustrate our point with an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. 
+
+```{r data_load}
+library(PLNmodels)
+data(trichoptera)
+grouping <- trichoptera$Group
+```
+
+Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](PLNmodels_introduction.html).
+
+### A discriminant analysis for the Trichopetra data set
+
+We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The classification corresponds to the consecutive night groups caught.  It seems natural to add an offset corresponding to the total count per night. The model can be fitted with the function `PLNLDA` as follows:
+
+```{r}
+myLDA_nocov <- PLNLDA(Abundance ~ 0 + offset(log(TotalCounts)), grouping = grouping, data = trichoptera)
+```
+
+The `myLDA_nocov` variable is an `R6` object with class `PLNLDAfit`, which comes with a couple of methods, as recalled when printing such an object:
+
+```{r show-method}
+myLDA_nocov
+```
+
+Essentially, the most important methodis the `plot` method: we separate well the different groups
+```{r plot_model, fig.width=7, fig.height=5}
+plot(myLDA_nocov)
+```
+
+If new samples become available, we can predict their class
+```{r predict_class}
+predicted.class <- predict(myLDA_nocov, newdata = trichoptera,  type = "response")
+```
+and asses that we recover the correct class in most (but not all) cases:
+```{r check_predicted_class}
+table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
+```
+
+### Accounting for other covariates 
+
+It is possible (experimental) to correct for other covariates before finding the LDA axis that separate well the grouping :
+```{r, warning=FALSE}
+myLDA_cov <- PLNLDA(Abundance ~ Wind + 0 + offset(log(TotalCounts)), grouping = grouping, data = trichoptera)
+```
+
+```{r plot_model_cov, fig.width=7, fig.height=5}
+plot(myLDA_cov)
+```
+
+And again try to predict class based on the counts and some covariates
+```{r predict_class_cov}
+predicted.class_cov <- predict(myLDA_cov, newdata = trichoptera, type = "response")
+```
+and asses that we recover the correct class in most (but not all) cases:
+```{r check_predicted_class_cov}
+table(predicted.class_cov, trichoptera$Group, dnn = c("predicted", "true"))
+```

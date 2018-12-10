@@ -232,11 +232,15 @@ PLNfit$set("public", "predict",
     type = match.arg(type)
 
     ## Extract the model matrices from the new data set with initial formula
-    args <- extract_model(call("PLN", formula = private$model, data = newdata), envir)
+    X <- model.matrix(formula(private$model)[-2], newdata)
+    O <- model.offset(model.frame(formula(private$model)[-2], newdata))
 
     ## mean latent positions in the parameter space
-    EZ <- args$O + tcrossprod(args$X, private$Theta)
+    EZ <- tcrossprod(X, private$Theta)
+    if (!is.null(O)) EZ <- EZ + O
     EZ <- sweep(EZ, 2, .5 * diag(self$model_par$Sigma), "+")
+    colnames(EZ) <- colnames(private$Sigma)
+
     results <- switch(type, link = EZ, response = exp(EZ))
 
     attr(results, "type") <- type

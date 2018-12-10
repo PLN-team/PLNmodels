@@ -73,11 +73,16 @@ reference:
     - '`trichoptera`'
 
 articles:
+- title: Introduction
+  desc: >
+    A vignette introducing the PLN model and the compnion data set
+  contents:
+  - '`PLNmodels_introduction`'
 - title: All vignettes
   desc: >
-    Best presentation and more coming ...
+    Vignettes specific to each top-level functions
   contents:
-  - '`PLN_trichoptera`'
-  - '`PLNPCA_trichoptera`'
-  - '`PLNLDA_trichoptera`'
-  - '`PLNnetwork_trichoptera`'
+  - '`PLN`'
+  - '`PLNPCA`'
+  - '`PLNLDA`'
+  - '`PLNnetwork`'

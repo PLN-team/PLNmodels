@@ -71,7 +71,7 @@ contiguous nights between summer 1959 and summer 1960." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9601</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9605</span>
       </span>
     </div>
 
@@ -128,8 +128,9 @@ contiguous nights between summer 1959 and summer 1960.</p>
         
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>A data frame with 49 rows and 3 variables (matrices):</p><dl class='dl-horizontal'>
-  <dt>Abundance</dt><dd><p>a 49 x 17 matrix of abundancies (49 trapping nights and 17 trichoptera species).</p></dd>
+    <p>A data frame with 49 rows and 14 variables (matrices):</p><dl class='dl-horizontal'>
+  <dt>Abundance</dt><dd><p>a 49 x 17 matrix of abundancies (49 trapping nights and 17 trichoptera species)</p></dd>
+  <dt>TotalCounts</dt><dd><p>a 49 x 17 matrix of total counts that can be used for offsets)</p></dd>
   <dt>T_max</dt><dd><p>Maximal temperature in Celsius</p></dd>
   <dt>T_evening</dt><dd><p>Evening Temperature in Celsius</p></dd>
   <dt>T_min</dt><dd><p>Minimal temperature in Celsius</p></dd>
@@ -156,8 +157,8 @@ See a data description at <a href='http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf'>h
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/str'>str</a></span>(<span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 'data.frame':	49 obs. of  13 variables:
-#&gt;  $ Abundance          : 'AsIs' num [1:49, 1:17] 0 0 0 0 0 0 0 0 0 0 ...
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/str'>str</a></span>(<span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 'data.frame':	49 obs. of  14 variables:
+#&gt;  $ Abundance          : num [1:49, 1:17] 0 0 0 0 0 0 0 0 0 0 ...
 #&gt;   ..- attr(*, "dimnames")=List of 2
 #&gt;   .. ..$ : chr  "1" "2" "3" "4" ...
 #&gt;   .. ..$ : chr  "Che" "Hyc" "Hym" "Hys" ...
@@ -172,7 +173,11 @@ See a data description at <a href='http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf'>h
 #&gt;  $ Precipitation_night: num  0 0 0 0 0 0 1.6 0 1.6 0 ...
 #&gt;  $ Cloudiness_average : num  17 27 13 52 34 36 97 48 77 28 ...
 #&gt;  $ Precipitation_total: num  0 0 0 0 0 0 1.6 0.1 1.7 0 ...
-#&gt;  $ Group              : Factor w/ 12 levels "1","2","3","4",..: 1 1 1 1 1 1 1 1 1 1 ...</div><div class='input'>## also see the package vignettes
+#&gt;  $ Group              : Factor w/ 12 levels "1","2","3","4",..: 1 1 1 1 1 1 1 1 1 1 ...
+#&gt;  $ TotalCounts        : num [1:49, 1:17] 29 13 38 192 79 18 8 34 12 4 ...
+#&gt;   ..- attr(*, "dimnames")=List of 2
+#&gt;   .. ..$ : chr  "1" "2" "3" "4" ...
+#&gt;   .. ..$ : chr  "Che" "Hyc" "Hym" "Hys" ...</div><div class='input'>## also see the package vignettes
 
 </div></pre>
   </div>
