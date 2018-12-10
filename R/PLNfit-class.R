@@ -230,7 +230,7 @@ function(X, O, Y, control = list()) {
 PLNfit$set("public", "predict",
   function(newdata, type = c("link", "response"), envir = parent.frame()) {
     type = match.arg(type)
-browser()
+
     ## Extract the model matrices from the new data set with initial formula
     X <- model.matrix(formula(private$model)[-2], newdata)
     O <- model.offset(model.frame(formula(private$model)[-2], newdata))
