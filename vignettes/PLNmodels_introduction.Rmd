@@ -1,47 +1,17 @@
 ---
-title: 'Poisson Lognormal models for multivariate count data'
-description: |
-  In many fields of life science, count data is becoming the standard, like abundance table in ecology and micrbiology, or single-cell data in molecular biology. The Poisson lognormal model is a latent model that describes the dependency structure of the data in an underlying Gaussian layer, while the observation layer of the count is Poisson distributed. As such, it offers the flexibility of the multivariate Gaussian distribution while preserving count distributions. <br/>
-  In the R package *PLNmodels*, we implement an efficient varitional strategy for inferring the standard Poisson lognormal model. We derive a series of model by transposing the classical tools from multivariate analysis, mostly tight to the Gaussian assumption of the data, to count data. *PLNmodels* includes variants for Principal Component Analysis, Discriminant Analysis, sparse covariance estimation _a.k.a._ network inference, mixture models and more coming, all designed for multivariate count data. <div class='altmetric-embed' data-badge-type='donut' data-doi="10.1007/s11222-010-9191-2"></div>
-preview: https://github.com/jchiquet/PLNmodels/raw/master/inst/sticker/PLNmodels.png
-author:
-  - name: Julien Chiquet 
-    url: http://julien.cremeriefamily.info
-    affiliation: MIA Paris, INRA
-    affiliation_url: https://www6.inra.fr/mia-paris
-  - name: Mahendra Mariadassou
-    url: https://mahendra-mariadassou.github.io/
-    affiliation: MaIAGE, INRA
-    affiliation_url: http://maiage.jouy.inra.fr/
-  - name: Stéphane Robin
-    url: https://www6.inra.fr/mia-paris/Equipes/Membres/Stephane-Robin
-    affiliation: MIA Paris, INRA
-    affiliation_url: https://www6.inra.fr/mia-paris
+title: "PLNmodels: motivations and mathematical background"
+author: "Julien Chiquet"
 date: "`r Sys.Date()`"
-journal: 
-  title: "Journal of something"
-  issue: x
-  volume: x
-  doi: ""
-slug: PLNmodels
-output:
-  radix::radix_article:
-    toc: false
-    includes: 
-      in_header: altmetrics.html
-bibliography: biblio_PLN.bib
-creative_commons: CC BY-NC
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{PLNarticle}
+  %\VignetteIndexEntry{PLNmodels-background}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
-```
+This vignette provides motivations and mathematical insights for all the statistical models used in the package **PLNmodels**.
 
-## Introduction
+## Motivations
 
 In **PLNmodels**, the top-level functions (`PLN`, `PLNPCA`, `PLNLDA`, `PLNnetwork`) are dedicted to several common tasks in multivariate analysis (regression, dimension reduction, clustering, structure inference). However, while most tools commonly used for performing multivariate analysis (e.g., kmean clustering or standard PCA) assume a multivariate Gaussian distribution of the data, the family of models used in **PLNmodels**  -- based on the multivariate Poisson Lognormal (PLN) dsitribution -- are specific to tables of counts. Such data are common in many application fields such as ecology (abundance table), or genomics (single cell data). These data often comes with some external knowledge (via covariates and offsets) which should be taken into account during the fits. We first review a simple dataset from ecology that fulfills all these characteristics.
 
@@ -54,21 +24,21 @@ library(PLNmodels)
 data(trichoptera)
 ```
 
-Additional details are available to the user by  `?PLNmodels::trichoptera`: 
- 
-The `data.frame` `trichoptera` includes 49 rows (the observations - or trapping nights) and 14 columns. 
+Additional details are available to the user by  `?PLNmodels::trichoptera`:
+
+The `data.frame` `trichoptera` includes 49 rows (the observations - or trapping nights) and 14 columns.
 
 ```{r trichoptera description}
 colnames(trichoptera)
 ```
 
-The columns are all univariate covariates expect the `Abundance` column, which is a $49 \times 17$ matrix of abundancies for each 17 species during the 49 trapping nights. It corresponds to the matrix $\mathbf{Y}$ in our model: 
+The columns are all univariate covariates expect the `Abundance` column, which is a $49 \times 17$ matrix of abundancies for each 17 species during the 49 trapping nights. It corresponds to the matrix $\mathbf{Y}$ in our model:
 
 ```{r responses_trichoptera}
 trichoptera$Abundance[1:5, ]
 ```
 
-It seems natural to use an offset term for each observation that corresponds to the total counts per night, in order to correct for the sampling effort. It can be specified by a $49 \times 17$ matrix of offsets (the matrix $\mathbf{O}$ in our model) 
+It seems natural to use an offset term for each observation that corresponds to the total counts per night, in order to correct for the sampling effort. It can be specified by a $49 \times 17$ matrix of offsets (the matrix $\mathbf{O}$ in our model)
 
 ```{r offset_trichopera}
 trichoptera$TotalCounts[1:5, ]
@@ -80,10 +50,6 @@ The matrix $49 \times 12$ entries remaings corresponds to the matrix $\mathbf{X}
 ```{r covariates_trichoptera}
 head(trichoptera[, -c(1,14)])
 ```
-
-### A more throughout example: oak powldery mildew
-
-## Statistical Framework
 
 ### The multivariate Poisson Lognormal model (the PLN model)
 
@@ -111,24 +77,4 @@ where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters. At t
   - the $n\times p$ matrix of counts $\mathbf{Y}$
   - the $n\times p$ matrix of covariates $\mathbf{X}$
   - the $n\times p$ matrix of offsets $\mathbf{O}$
-
-### PLN inference: a variational approach
-
-## Variants of the PLN model
-
-### PLNPCA: probabilistic Principal component analysis for counts
-
-### PLNLDA: discriminant analysis for counts
-
-### PLNnetwork: sparse inverse covariance estimation
-
-## Acknowledgments {.appendix}
-
-This is a place to recognize people and institutions. It may also be a good place
-to acknowledge and cite software that makes your work possible.
-
-## Author Contributions {.appendix}
-
-We strongly encourage you to include an author contributions statement briefly 
-describing what each author did.
 

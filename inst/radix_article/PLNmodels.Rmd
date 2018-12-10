@@ -1,0 +1,92 @@
+---
+title: 'PLNmodels: an R package for analyzing multivariate count data with Poisson Lognormal models'
+description: |
+  In many fields of life science, count data is becoming the standard, like abundance table in ecology and microbiology, or single-cell data in molecular biology. The Poisson lognormal model is a latent model that describes the dependency structure of the data in an underlying Gaussian layer, while the observation layer of the count is Poisson distributed. As such, it offers the flexibility of the multivariate Gaussian distribution while preserving count distributions. <br/>
+  In the R package **PLNmodels**, we implement an efficient varitional strategy for inferring the standard Poisson lognormal model. We derive a series of model by transposing the classical tools from multivariate analysis, mostly tight to the Gaussian assumption of the data, to count data. **PLNmodels** includes variants for Principal Component Analysis, Discriminant Analysis, sparse inverse covariance estimation _a.k.a._ network inference and more coming, all designed for multivariate count data. <div class='altmetric-embed' data-badge-type='donut' data-doi="10.1007/s11222-010-9191-2"></div>
+preview: https://github.com/jchiquet/PLNmodels/raw/master/inst/sticker/PLNmodels.png
+author:
+  - name: Julien Chiquet 
+    url: http://julien.cremeriefamily.info
+    affiliation: MIA Paris, INRA
+    affiliation_url: https://www6.inra.fr/mia-paris
+  - name: Mahendra Mariadassou
+    url: https://mahendra-mariadassou.github.io/
+    affiliation: MaIAGE, INRA
+    affiliation_url: http://maiage.jouy.inra.fr/
+  - name: Stéphane Robin
+    url: https://www6.inra.fr/mia-paris/Equipes/Membres/Stephane-Robin
+    affiliation: MIA Paris, INRA
+    affiliation_url: https://www6.inra.fr/mia-paris
+date: "`r Sys.Date()`"
+journal: 
+  title: "Journal of something"
+  issue: x
+  volume: x
+  doi: ""
+slug: PLNmodels
+output:
+  radix::radix_article:
+    toc: true
+bibliography: biblio_PLN.bib
+creative_commons: CC BY-NC
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+## Introduction
+
+bla
+
+### A more throughout example: oak powldery mildew
+
+## Statistical Framework
+
+### The multivariate Poisson Lognormal model (the PLN model)
+
+The multivariate Poisson lognormal model (in short PLN) is the building block for all the multivariate models found in the **PLNmodels** package. the PLN model relates some $p$-dimensional observation vectors $\mathbf{Y}_i$ to some  $p$-dimensional vectors of Gaussian latent variables $\mathbf{Z}_i$ as follows
+\begin{equation}
+  \label{eq:pln-model}
+  \begin{array}{rcl}
+  \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma) \\
+  \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} &   \mathbf{Y}_i | \mathbf{Z}_i\sim\mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right)
+  \end{array}
+\end{equation}
+
+The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying structure of dependence between the $p$ variables.
+
+### Extending the PLN model to account for covariates and offsets
+
+This model generalizes naturally to a formulation closer to a multivariate generalize linear model, where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$. We also let the possibility to add some offsets for the $d$ variables and in each sample., that is $\mathbf{o}_i$. Hence, model \eqref{eq:pln-model} generalizes to
+
+\begin{equation}
+  \label{eq:pln-model-glm}
+  \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma) \\
+\end{equation}
+where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters. At the end of the day, the data matrices available to feed the model are
+
+  - the $n\times p$ matrix of counts $\mathbf{Y}$
+  - the $n\times p$ matrix of covariates $\mathbf{X}$
+  - the $n\times p$ matrix of offsets $\mathbf{O}$
+
+### PLN inference: a variational approach
+
+## Variants of the PLN model
+
+### PLNPCA: probabilistic Principal component analysis for counts
+
+### PLNLDA: discriminant analysis for counts
+
+### PLNnetwork: sparse inverse covariance estimation
+
+## Acknowledgments {.appendix}
+
+This is a place to recognize people and institutions. It may also be a good place
+to acknowledge and cite software that makes your work possible.
+
+## Author Contributions {.appendix}
+
+We strongly encourage you to include an author contributions statement briefly 
+describing what each author did.
+

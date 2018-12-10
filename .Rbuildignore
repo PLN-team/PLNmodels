@@ -13,4 +13,5 @@
 ^src/Makevars$
 ^README.Rmd
 ^appveyor\.yml$
-
+^vignettes/*_cache/
+^vignettes/cache/
