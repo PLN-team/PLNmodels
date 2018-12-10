@@ -244,7 +244,8 @@ PLNfit$set("public", "predict",
   }
 )
 
-#' Compute the Fisher information matrix of Theta using one of two approximations scheme
+#' Compute the (one-data) Fisher information matrix of Theta using one of two approximations scheme
+#' @name fisher
 #'
 #' @param type Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
 #' Fisher information matrix
@@ -254,17 +255,20 @@ PLNfit$set("public", "predict",
 #' Theta is a matrix of size d \times p.
 #' @export
 #'
+#' @importFrom tidyr crossing
+#'
 #' @examples
 #' \dontrun{
 #' data(trichoptera)
 #' myPLN <- PLN(Abundance ~ 1 + offset(log(TotalCounts)), trichoptera)
-#' myPLN$fisher
+#' X <- X <- extract_model(call("PLN", formula = myPLN$model, data = trichoptera), parent.frame())
+#' myPLN$fisher(X = X)
 #' }
 PLNfit$set("public", "fisher",
   function(type = c("wald", "louis"), X = NULL) {
     type = match.arg(type)
     A <- self$fitted
-    X <- self$
+    n <- self$n
     if (type == "louis") {
       ## TODO check how to adapt for PLNPCA
       ## A = A + A \odot A \odot (exp(S) - 1_{n \times p})
@@ -272,14 +276,39 @@ PLNfit$set("public", "fisher",
     }
     result <- bdiag(lapply(1:self$p, function(i) {
       ## t(X) %*% diag(A[, i]) %*% X
-      crossprod(X, A[, i] * X)
+      crossprod(X, A[, i] * X) / n
     }))
     ## set proper names
-    element.names <- expand.grid(species    = rownames(private$Theta),
-                                 covariates = colnames(private$Theta)) %>%
+    element.names <- tidyr::crossing(species    = rownames(private$Theta),
+                                     covariates = colnames(private$Theta)) %>%
       apply(1, paste0, collapse = "_")
-    rownames(result) <- colnames(result) <- element.names
+    rownames(result) <- element.names
     return(result)
+  }
+)
+
+#' Compute univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate)
+#' Fisher information matrix. See \code{\link[=fisher]{fisher}} for more details on the approximations.
+#'
+#' @param type Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
+#' Fisher information matrix
+#' @param X Required. The covariate matrix used to fit the model.
+#'
+#' @return A p \times d positive matrix (same size as Theta) with standard errors.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data(trichoptera)
+#' myPLN <- PLN(Abundance ~ 1 + offset(log(TotalCounts)), trichoptera)
+#' myPLN$standard_error(X = X)
+#' }
+PLNfit$set("public", "standard_error",
+  function(type = c("wald", "louis"), X = NULL) {
+    fim <- self$n * self$fisher(type, X) ## Fisher Information matrix I_n(\Theta) = n * I(\Theta)
+    stderr <- fim %>% solve %>% diag %>% matrix(nrow = self$d) %>% t()
+    dimnames(stderr) <- dimnames(self$private$Theta)
+    return(stderr)
   }
 )
 
