@@ -60,7 +60,7 @@ vcov.PLNfit <- function(object, ...) {
 #' @param X Required. The covariate matrix used to fit the model.
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
-#' Theta is a matrix of size d \times p.
+#' Theta is a matrix of size d * p.
 #'
 #' @export
 fisher.PLNfit <- function(object, type = c("wald", "louis"), X = NULL, ...) {
@@ -78,7 +78,7 @@ fisher.PLNfit <- function(object, type = c("wald", "louis"), X = NULL, ...) {
 #' Fisher information matrix
 #' @param X Required. The covariate matrix used to fit the model.
 #'
-#' @return A p \times d positive matrix (same size as Theta) with standard errors.
+#' @return A p * d positive matrix (same size as Theta) with standard errors.
 #' @export
 #'
 standard_error.PLNfit <- function(object, type = c("wald", "louis"), X = NULL, ...) {

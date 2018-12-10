@@ -235,25 +235,26 @@ PLNPCAfit$set("public", "plot_PCA",
   }
 )
 
-#' Compute the (one-data) Fisher information matrix of Theta using one of two approximations scheme.
-#'
-#' @param type Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
-#' Fisher information matrix
-#' @param X Required. The covariate matrix used to fit the model.
-#'
-#' @return A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
-#' Theta is a matrix of size d \times p.
-#' @export
-#'
-#' @importFrom tidyr crossing
-#'
-#' @examples
-#' \dontrun{
-#' data(trichoptera)
-#' myPLNPCA <- PLNPCA(Abundance ~ 1 + offset(log(TotalCounts)), trichoptera)
-#' X <-
-#' myPLNPCA$fisher
-#' }
+# Compute the (one-data) Fisher information matrix of Theta using one of two approximations scheme.
+# @name PLNPCAfit_fisher
+#
+# @param type Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
+# Fisher information matrix
+# @param X Required. The covariate matrix used to fit the model.
+#
+# @return A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
+# Theta is a matrix of size d * p.
+# @export
+#
+# @importFrom tidyr crossing
+#
+# @examples
+# \dontrun{
+# data(trichoptera)
+# myPLNPCA <- PLNPCA(Abundance ~ 1 + offset(log(TotalCounts)), trichoptera)
+# X <-
+# myPLNPCA$fisher
+# }
 PLNPCAfit$set("public", "fisher",
   function(type = c("wald", "louis"), X = NULL) {
     type = match.arg(type)
