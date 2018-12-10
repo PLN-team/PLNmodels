@@ -2,17 +2,17 @@
 % Please edit documentation in R/PLNfit-S3methods.R
 \name{fisher.PLNfit}
 \alias{fisher.PLNfit}
-\title{Extracts (one-data) Fisher information matrix of Theta from objects returned by \code{\link[=PLN]{PLN}} and its variants}
+\title{Extracts (one-data) Fisher information matrix of Theta from objects returned by \code{\link[=PLN]{PLN}} and its variants.
+Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval)
+or louis (anticonservative).}
 \usage{
-fisher.PLNfit(object, type = c("wald", "louis"), X = NULL, ...)
+fisher.PLNfit(object, type = c("wald", "louis"), ...)
 }
 \arguments{
 \item{object}{an R6 object with class PLNfit}
 
-\item{type}{Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
+\item{type}{Either `wald` (default) or `louis`. Approxomation scheme used to compute the
 Fisher information matrix}
-
-\item{X}{Required. The covariate matrix used to fit the model.}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
@@ -21,5 +21,7 @@ A block-diagonal matrix with p (number of species) blocks of size d (number of c
 Theta is a matrix of size d * p.
 }
 \description{
-Extracts (one-data) Fisher information matrix of Theta from objects returned by \code{\link[=PLN]{PLN}} and its variants
+Extracts (one-data) Fisher information matrix of Theta from objects returned by \code{\link[=PLN]{PLN}} and its variants.
+Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval)
+or louis (anticonservative).
 }

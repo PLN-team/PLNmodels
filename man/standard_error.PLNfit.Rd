@@ -2,10 +2,10 @@
 % Please edit documentation in R/PLNfit-S3methods.R
 \name{standard_error.PLNfit}
 \alias{standard_error.PLNfit}
-\title{Compute univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate)
+\title{Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate)
 Fisher information matrix. See \code{\link[=fisher.PLNfit]{fisher}} for more details on the approximations.}
 \usage{
-standard_error.PLNfit(object, type = c("wald", "louis"), X = NULL, ...)
+standard_error.PLNfit(object, type = c("wald", "louis"), ...)
 }
 \arguments{
 \item{object}{an R6 object with class PLNfit}
@@ -13,12 +13,12 @@ standard_error.PLNfit(object, type = c("wald", "louis"), X = NULL, ...)
 \item{type}{Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
 Fisher information matrix}
 
-\item{X}{Required. The covariate matrix used to fit the model.}
+\item{...}{additional parameters for S3 compatibility. Not used}
 }
 \value{
 A p * d positive matrix (same size as Theta) with standard errors.
 }
 \description{
-Compute univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate)
+Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate)
 Fisher information matrix. See \code{\link[=fisher.PLNfit]{fisher}} for more details on the approximations.
 }
