@@ -1,17 +1,47 @@
 ---
-title: "PLNmodels: motivation and mathematical background"
-author: "Julien Chiquet"
+title: 'Poisson Lognormal models for multivariate count data'
+description: |
+  In many fields of life science, count data is becoming the standard, like abundance table in ecology and micrbiology, or single-cell data in molecular biology. The Poisson lognormal model is a latent model that describes the dependency structure of the data in an underlying Gaussian layer, while the observation layer of the count is Poisson distributed. As such, it offers the flexibility of the multivariate Gaussian distribution while preserving count distributions. <br/>
+  In the R package *PLNmodels*, we implement an efficient varitional strategy for inferring the standard Poisson lognormal model. We derive a series of model by transposing the classical tools from multivariate analysis, mostly tight to the Gaussian assumption of the data, to count data. *PLNmodels* includes variants for Principal Component Analysis, Discriminant Analysis, sparse covariance estimation _a.k.a._ network inference, mixture models and more coming, all designed for multivariate count data. <div class='altmetric-embed' data-badge-type='donut' data-doi="10.1007/s11222-010-9191-2"></div>
+preview: https://github.com/jchiquet/PLNmodels/raw/master/inst/sticker/PLNmodels.png
+author:
+  - name: Julien Chiquet 
+    url: http://julien.cremeriefamily.info
+    affiliation: MIA Paris, INRA
+    affiliation_url: https://www6.inra.fr/mia-paris
+  - name: Mahendra Mariadassou
+    url: https://mahendra-mariadassou.github.io/
+    affiliation: MaIAGE, INRA
+    affiliation_url: http://maiage.jouy.inra.fr/
+  - name: Stéphane Robin
+    url: https://www6.inra.fr/mia-paris/Equipes/Membres/Stephane-Robin
+    affiliation: MIA Paris, INRA
+    affiliation_url: https://www6.inra.fr/mia-paris
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+journal: 
+  title: "Journal of something"
+  issue: x
+  volume: x
+  doi: ""
+slug: PLNmodels
+output:
+  radix::radix_article:
+    toc: false
+    includes: 
+      in_header: altmetrics.html
+bibliography: biblio_PLN.bib
+creative_commons: CC BY-NC
 vignette: >
-  %\VignetteIndexEntry{PLNbackground}
+  %\VignetteIndexEntry{PLNarticle}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette describes the mathematical formulation behind the series of statistical models used in the package **PLNmodels**. 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
 
-## Motivation
+## Introduction
 
 In **PLNmodels**, the top-level functions (`PLN`, `PLNPCA`, `PLNLDA`, `PLNnetwork`) are dedicted to several common tasks in multivariate analysis (regression, dimension reduction, clustering, structure inference). However, while most tools commonly used for performing multivariate analysis (e.g., kmean clustering or standard PCA) assume a multivariate Gaussian distribution of the data, the family of models used in **PLNmodels**  -- based on the multivariate Poisson Lognormal (PLN) dsitribution -- are specific to tables of counts. Such data are common in many application fields such as ecology (abundance table), or genomics (single cell data). These data often comes with some external knowledge (via covariates and offsets) which should be taken into account during the fits. We first review a simple dataset from ecology that fulfills all these characteristics.
 
@@ -51,7 +81,11 @@ The matrix $49 \times 12$ entries remaings corresponds to the matrix $\mathbf{X}
 head(trichoptera[, -c(1,14)])
 ```
 
-## The multivariate Poisson Lognormal model (the PLN model)
+### A more throughout example: oak powldery mildew
+
+## Statistical Framework
+
+### The multivariate Poisson Lognormal model (the PLN model)
 
 The multivariate Poisson lognormal model (in short PLN) is the building block for all the multivariate models found in the **PLNmodels** package. the PLN model relates some $p$-dimensional observation vectors $\mathbf{Y}_i$ to some  $p$-dimensional vectors of Gaussian latent variables $\mathbf{Z}_i$ as follows
 \begin{equation}
@@ -78,21 +112,23 @@ where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters. At t
   - the $n\times p$ matrix of covariates $\mathbf{X}$
   - the $n\times p$ matrix of offsets $\mathbf{O}$
 
-### 
-
 ### PLN inference: a variational approach
 
 ## Variants of the PLN model
 
-### PLNPCA: a variant for probabilistic Principal component analysis for counts
+### PLNPCA: probabilistic Principal component analysis for counts
 
-### PLNLDA: a variant for discriminant analysis  for counts
+### PLNLDA: discriminant analysis for counts
 
-### PLNnetwork: a variant for sparse inverse covariance estimation
+### PLNnetwork: sparse inverse covariance estimation
 
-## Reference
+## Acknowledgments {.appendix}
 
-```{r bib, include=FALSE}
-# create a bib file for the R packages used in this document
-writeLines(enc2utf8(toBibtex(citation("PLNmodels"))), "PLNmodels.bib", useBytes = TRUE)
-```
+This is a place to recognize people and institutions. It may also be a good place
+to acknowledge and cite software that makes your work possible.
+
+## Author Contributions {.appendix}
+
+We strongly encourage you to include an author contributions statement briefly 
+describing what each author did.
+
