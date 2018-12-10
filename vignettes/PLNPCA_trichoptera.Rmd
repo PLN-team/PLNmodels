@@ -50,7 +50,7 @@ str(trichoptera$Abundance)
 
 It seems also natural to add an offset corresponding to the total count per night.
 ```{r offset_trichopera}
-TotalCount <- matrix(
+trichoptera$TotalCounts <- matrix(
   rowSums(trichoptera$Abundance),
   nrow = nrow(trichoptera$Abundance),
   ncol = ncol(trichoptera$Abundance)
@@ -60,7 +60,7 @@ TotalCount <- matrix(
 The model can be fitted with the function `PLNPCA` for a series of values for $q$ as follows:
 
 ```{r}
-models.nocov <- PLNPCA(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera, ranks = 1:5)
+models.nocov <- PLNPCA(Abundance ~ 1 + offset(log(TotalCounts)), data = trichoptera, ranks = 1:5)
 ```
 
 Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`.
@@ -114,7 +114,7 @@ where $\mathbf{X}_i$ is a vector of $d$ covariate for observations $i$. The $p \
 
 In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the minimal temperature, the wind and the average cloudiness This can be done thanks to the model formula:
 ```{r}
-models.cov <- PLNPCA(Abundance ~ 1 + offset(log(TotalCount)) + T_min + Wind + Cloudiness_average, data = trichoptera, ranks = 1:5)
+models.cov <- PLNPCA(Abundance ~ 1 + offset(log(TotalCounts)) + T_min + Wind + Cloudiness_average, data = trichoptera, ranks = 1:5)
 ```
 
 Again, the best model is obtained for $q=3$ classes.

@@ -73,7 +73,7 @@ head(trichoptera[, -1])
 
 It seems natural to add an offset corresponding to the total count per night, so a 15th column with a $49 \times 17$ of offset. It corresponds to the matrix $\mathbf{O}$ in our model: 
 ```{r offset_trichopera}
-trichoptera$TotalCount <- matrix(
+trichoptera$TotalCounts <- matrix(
   rowSums(trichoptera$Abundance),
   nrow = nrow(trichoptera$Abundance),
   ncol = ncol(trichoptera$Abundance)
@@ -85,7 +85,7 @@ trichoptera$TotalCount <- matrix(
 The model can be fitted with the function `PLN` as follows:
 
 ```{r}
-myPLN <- PLN(Abundance ~ 1 + offset(log(TotalCount)), trichoptera)
+myPLN <- PLN(Abundance ~ 1 + offset(log(TotalCounts)), trichoptera)
 ```
 
 Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`. We use the function offset with a log transform of the total count. Abundace is a variable in ther data frame `trichoptera` correspondings to a matrix of 17 columns.
@@ -125,7 +125,7 @@ corrplot::corrplot(vcov(myPLN), is.corr = FALSE)
 It is also possible to use observation weights like in standard (generalized) linear models:
 
 ```{r weighted, fig.width=7, fig.height=5}
-myPLN_weighted <- PLN(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera, weights = runif(nrow(trichoptera)))
+myPLN_weighted <- PLN(Abundance ~ 1 + offset(log(TotalCounts)), data = trichoptera, weights = runif(nrow(trichoptera)))
 corrplot::corrplot(vcov(myPLN) - vcov(myPLN_weighted), is.corr = FALSE)
 ```
 
