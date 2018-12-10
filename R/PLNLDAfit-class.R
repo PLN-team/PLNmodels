@@ -195,29 +195,28 @@ PLNLDAfit$set("public", "plot_LDA",
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS
 ## ----------------------------------------------------------------------
-
 PLNLDAfit$set("public", "predict",
   function(newdata, type = c("posterior", "response"), control = list(), envir = parent.frame()) {
     type = match.arg(type)
 
     args <- extract_model(call("PLNLDA", formula = private$model, data = newdata), envir)
-    newdata <- args$X
-    newOffsets <- args$O
-    newCounts  <- args$Y
 
     ## Problem dimensions
-    n.new <- nrow(newCounts); groups <- levels(private$grouping); K <- length(groups)
+    n.new  <- nrow(args$Y)
+    groups <- levels(private$grouping)
+    K <- length(groups)
 
     ## Compute conditional log-likelihoods of new data, using previously estimated parameters
     cond.log.lik <- matrix(0, n.new, K)
     for (k in 1:K) { ## One VE-step to estimate the conditional (variational) likelihood of each group
       grouping <- factor(rep(groups[k], n.new), levels = groups)
-      X <- cbind(newdata, model.matrix( ~ grouping + 0))
-      cond.log.lik[, k] <- self$VEstep(X, newOffsets, newCounts, control = control)$log.lik
+      X <- cbind(args$X, model.matrix( ~ grouping + 0))
+      cond.log.lik[, k] <- self$VEstep(X, args$O, args$Y, control = control)$log.lik
     }
     ## Compute posterior probabilities
     log.prior <- rep(1, n.new) %o% log( table(private$grouping) / self$n)
     log.posterior <- cond.log.lik + log.prior
+
     ## format output
     res <- log.posterior
     rownames(res) <- rownames(newdata)
