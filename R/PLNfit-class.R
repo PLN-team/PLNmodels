@@ -245,7 +245,7 @@ PLNfit$set("public", "predict",
 )
 
 #' Compute the (one-data) Fisher information matrix of Theta using one of two approximations scheme
-#' @name fisher
+#' @name PLNfit_fisher
 #'
 #' @param type Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
 #' Fisher information matrix
@@ -288,7 +288,9 @@ PLNfit$set("public", "fisher",
 )
 
 #' Compute univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate)
-#' Fisher information matrix. See \code{\link[=fisher]{fisher}} for more details on the approximations.
+#' Fisher information matrix. See \code{\link[=PLNfit_fisher]{fisher}} for more details on the approximations.
+#'
+#' @name PLNfit_standard_error
 #'
 #' @param type Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
 #' Fisher information matrix
