@@ -1,6 +1,6 @@
 ---
-title: "Analyzing the Trichopetra data set with the Poisson log-normal LDA model"
-author: "Julien Chiquet"
+title: "Supervized classification of multivariate count table with the Poisson discriminant Analysis"
+author: "PLN team"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette intends to illustrate the basical use of the `PLNLDA` function and the methods accompaning the R6 Class `PLNLDAfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
+This vignette intends to illustrate the basical use of the `PLNLDA` function and the methods accompaning the R6 Class `PLNLDAfit`. We will illustrate our point with an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. 
 
 ```{r data_load}
 library(PLNmodels)
@@ -17,7 +17,7 @@ data(trichoptera)
 grouping <- trichoptera$Group
 ```
 
-See `?PLNmodels::trichoptera` for details. 
+Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](PLNmodels_introduction.html).
 
 ### A discriminant analysis for the Trichopetra data set
 

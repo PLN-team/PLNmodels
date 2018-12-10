@@ -1,5 +1,5 @@
 ---
-title: "Analyzing the Trichopetra data set with Poisson log-normal PCA"
+title: "Dimension reduction of multivariate count table with the probabilistic Poisson PCA"
 author: "Julien Chiquet"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -11,14 +11,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette intends to illustrate the basical use of the `PLNPCA` function and the methods accompaning the R6 Classes `PLNPCAfamily` and `PLNPCAfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
+This vignette intends to illustrate the basical use of the `PLNPCA` function and the methods accompaning the R6 Classes `PLNPCAfamily` and `PLNPCAfit`. We will illustrate our point with an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. 
 
 ```{r data_load}
 library(PLNmodels)
 data(trichoptera)
+grouping <- trichoptera$Group
 ```
 
-See `?PLNmodels::trichoptera` for details. 
+Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](PLNmodels_introduction.html).
 
 ## Poisson log-normal models
 
