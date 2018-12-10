@@ -12,8 +12,8 @@ PLNPCAfit
 The function \code{\link{PLNPCA}} produces a collection of models which are instances of object with class \code{PLNPCAfit}.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNPCAfit_plot_PCA]{plot_PCA}}, \code{\link[=PLNPCAfit_plot_individual_map]{plot_individual_map}}
-and \code{\link[=PLNPCAfit_plot_correlation_circle]{plot_correlation_circle}}
+See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}} and the
+\code{\link[=plot.PLNPCAfit]{plot.PLNPCAfit}} methods for PCA vizualization
 }
 \section{Fields}{
 
@@ -23,6 +23,10 @@ and \code{\link[=PLNPCAfit_plot_correlation_circle]{plot_correlation_circle}}
 \item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)}
 
 \item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
+
+\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+
+\item{\code{fitted}}{a matrix: the fitted values (Y hat)}
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
@@ -42,7 +46,9 @@ and \code{\link[=PLNPCAfit_plot_correlation_circle]{plot_correlation_circle}}
 
 \item{\code{corr_circle}}{a matrix of correlations to plot the correlation circles}
 
-\item{\code{scores}}{a matrix of scores to plot the individual factor maps}
+\item{\code{scores}}{a matrix of scores to plot the individual factor maps (a.k.a. principal comonents)}
+
+\item{\code{rotation}}{a matrix of rotation of the latent space}
 }}
 
 \seealso{

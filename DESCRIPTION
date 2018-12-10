@@ -1,12 +1,12 @@
 Package: PLNmodels
 Type: Package
 Title: Poisson Lognormal Models
-Version: 0.5.5001
+Version: 0.5.9601
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
   person("Mahendra", "Mariadassou", role = "aut", email = "mahendra.mariadassou@inra.fr"),
-  person("Stéphane", "Robin", role ="aut", email = "stephane.robininra.fr")
+  person("Stéphane", "Robin", role ="ctb", email = "stephane.robininra.fr")
   )
 Maintainer: Julien Chiquet <julien.chiquet@inra.fr>
 Description: The Poisson-lognormal model and variants can be used for 
@@ -20,7 +20,7 @@ License: GPL (>= 3)
 SystemRequirements: libnlopt: libnlopt-dev (deb) or NLopt-devel (rpm).
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Depends: R (>= 3.4)
 Imports: 
   igraph,
@@ -43,20 +43,31 @@ Imports:
   mclust,
   magrittr,
   curl (>= 1.0)
-Suggests: knitr, rmarkdown
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat,
+    covr
 VignetteBuilder: knitr
 Collate: 
     'PLNfit-class.R'
     'PLN.R'
     'PLNLDA.R'
+    'PLNLDAfit-S3methods.R'
     'PLNLDAfit-class.R'
     'PLNPCA.R'
+    'PLNPCAfamily-S3methods.R'
     'PLNfamily-class.R'
     'PLNPCAfamily-class.R'
+    'PLNPCAfit-S3methods.R'
     'PLNPCAfit-class.R'
+    'PLNfamily-S3methods.R'
+    'PLNfit-S3methods.R'
     'PLNmodels-package.R'
     'PLNnetwork.R'
+    'PLNnetworkfamily-S3methods.R'
     'PLNnetworkfamily-class.R'
+    'PLNnetworkfit-S3methods.R'
     'PLNnetworkfit-class.R'
     'RcppExports.R'
     'plot_utils.R'

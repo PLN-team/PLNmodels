@@ -3,15 +3,20 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.path = "man/figures/"
+)
 ```
 
-# PLNmodels: Poisson lognormal models <img src="inst/sticker/PLNmodels.png" align="right" width="155" height="180"/>
+# PLNmodels: Poisson lognormal models <img src="man/figures/logo.png" align="right" width="155" height="180"/>
 
 [![Travis-CI build status](https://travis-ci.org/jchiquet/PLNmodels.svg?branch=master)](https://travis-ci.org/jchiquet/PLNmodels)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jchiquet/PLNmodels?branch=master&svg=true)](https://ci.appveyor.com/project/jchiquet/PLNmodels)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c031ad73ccdb4c88ba11dfd74fab1255)](https://www.codacy.com/app/jchiquet/PLNmodels?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jchiquet/PLNmodels&amp;utm_campaign=Badge_Grade)
+[![Coverage status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/jchiquet/PLNmodels?branch=master)
 
-> The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA for count data and network inference). This package implements an efficient algorithm to fit such models accompanied with a set of functions for vizualisation and diagnostic. Learn more in the vignettes: `vignette(package = "PLNmodels")`.
+> The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA for count data and network inference). This package implements an efficient algorithm to fit such models accompanied with a set of functions for vizualisation and diagnostic. 
 
 ## Installation
 
@@ -19,25 +24,25 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Installation requires a system version of [nlopt 2.4-2](https://nlopt.readthedocs.io/) 
 
-- On Debian or Ubuntu use `libnlopt-dev`:
+On **Debian** or **Ubuntu** use `libnlopt-dev`:
 
 ```{bash apt, eval = FALSE}
 sudo apt-get install libnlopt-dev
 ```
 
-- On Fedora or similar use `NLopt-devel`:
+On **Fedora** or similar use `NLopt-devel`:
 
 ```{bash yum, eval = FALSE}
 sudo yum install NLopt-devel
 ```
 
-- With Mac OS X, install `nlopt` via [homebrew](https://brew.sh/)
+With **Mac OS X**, install `nlopt` via [homebrew](https://brew.sh/)
 
 ```{bash brew, eval = FALSE}
 brew install nlopt
 ```
 
-- On Windows, the package now builds and installs correctly, by [including static libraries](https://github.com/rwinlib/nlopt) on compilation. However, I just test it with appveyor so I have never run PLNmodels on Windows: any feedbacks welcomed!
+On **Windows**, the package now builds and installs correctly by [including static libraries](https://github.com/rwinlib/nlopt) on compilation. For the binary version of the package, [check this link](https://ci.appveyor.com/project/jchiquet/plnmodels/build/artifacts)
 
 ### R Package installation
 
@@ -45,6 +50,41 @@ brew install nlopt
 ## w/o vignettes
 devtools::install_github("jchiquet/PLNmodels")
 devtools::install_github("jchiquet/PLNmodels", build_vignettes = TRUE)
+```
+
+## Usage and main fitting functions
+
+The package comes with a ecological data to present the functionality 
+
+```{r load PLNmodels}
+library(PLNmodels)
+data(trichoptera)
+```
+
+The main fitting functions work with the usual `R formula` notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See `vignette(package = "PLNmodels")` or http://jchiquet.github.io/PLNmodels/articles/).
+
+### Unpenalized Poisson lognormal model (aka PLN)
+
+```{r PLN, eval = FALSE}
+myPLN <- PLN(Abundance ~ 1, data = trichoptera)
+```
+
+### Rank Contraint Poisson lognormal for Poisson Principal Component Analysis (ala PLNPCA)
+
+```{r PLNPCA, eval = FALSE}
+myPCA <- PLNPCA(Abundance ~ 1, data = trichoptera, ranks = 1:8)
+```
+
+### Poisson lognormal discriminant analysis (aka PLNLDA)
+
+```{r PLNLDA, eval = FALSE}
+myLDA <- PLNLDA(Abundance ~ 1, grouping = trichoptera$Group, data = trichoptera)
+```
+
+### Sparse Poisson lognormal model for sparse covariance inference for counts (aka PLNnetwork)
+
+```{r PLNnetwork, eval = FALSE}
+myPLNnetwork <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 ```
 
 ## References

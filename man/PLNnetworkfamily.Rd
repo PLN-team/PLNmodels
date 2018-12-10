@@ -12,9 +12,8 @@ PLNnetworkfamily
 The function \code{\link{PLNnetwork}} produces an instance of this class.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNfamily_getBestModel]{getBestModel}},
-\code{\link[=PLNfamily_getModel]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
-and \code{\link[=predict.PLNfit]{predict}}.
+See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestModel}},
+\code{\link[=getModel.PLNnetworkfamily]{getModel}} and  \code{\link[=plot.PLNnetworkfamily]{plot}}.
 }
 \section{Fields}{
 

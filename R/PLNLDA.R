@@ -4,8 +4,8 @@
 ##'
 ##' @param formula an object of class "formula": a symbolic description of the model to be fitted.
 ##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
-##' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
+##' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
 ##' @param grouping a factor specifying the class of each observation used for discriminant analysis.
 ##' @param control a list for controling the optimization process. See details.
 ##'
@@ -52,37 +52,18 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   args$X <- cbind(covar, design_group)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  args$ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X))
+  ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X))
 
-  ## call to the fitting function
-  myPLN <- do.call(PLN_internal, args)
+  ## Initialize LDA by adjusting a PLN
+  myLDA <- PLNLDAfit$new(grouping, args$Y, args$X, args$O, args$w, args$model, ctrl)
 
-  ## extract group means
-  if (ncol(covar) > 0) {
-    proj_orth_X <- (diag(myPLN$n) - covar %*% solve(crossprod(covar)) %*% t(covar))
-    P <- proj_orth_X %*% myPLN$latent_pos(args$X, matrix(0, myPLN$n, myPLN$q))
-    Mu <- t(rowsum(P, grouping) / tabulate(grouping))
-  } else {
-    Mu <- myPLN$model_par$Theta
-  }
-  colnames(Mu) <- colnames(design_group)
+  ## Compute the group means
+  if (ctrl$trace > 0) cat("\n Performing discriminant Analysis...")
+  myLDA$optimize(args$X, covar, design_group, ctrl)
 
-  ## vizualization for discriminant analysis
-  if (args$ctrl$trace > 0) cat("\n Performing discriminant Analysis...")
-  myLDA <- PLNLDAfit$new(
-    Theta      = myPLN$model_par$Theta,
-    Sigma      = myPLN$model_par$Sigma,
-    M          = myPLN$var_par$M,
-    S          = myPLN$var_par$S,
-    J          = myPLN$loglik,
-    Ji         = myPLN$loglik_vec,
-    covariance = myPLN$model,
-    monitoring = myPLN$optim_par,
-    Mu         = Mu,
-    grouping   = grouping
-  )
-  myLDA$setVisualization()
+  ## Post-treatment: prepare LDA vizualization
+  myLDA$postTreatment(args$Y, args$X, args$O)
 
-  if (args$ctrl$trace > 0) cat("\n DONE!\n")
+  if (ctrl$trace > 0) cat("\n DONE!\n")
   myLDA
 }

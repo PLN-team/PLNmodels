@@ -1,6 +1,7 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2018-12-08: coverage updated
 #  - 2018-09-12: added checck for OS X
 #  - 2018-09-11: warning as error set to false
 #  - 2018-06-29: first try
@@ -10,23 +11,26 @@ r_check_args: --as-cran
 cache: packages
 warnings_are_errors: false
 
+
 addons:
   apt:
     packages:
     - libnlopt-dev
 
 brew_packages:
+  - gcc
   - nlopt
+
+r_packages:
+  - covr
 
 matrix:
   include:
     - os: linux
       r: release
-      r_github_packages:
-      - jimhester/covr
       after_success:
-      - Rscript -e 'covr::codecov(quiet=FALSE)'
-      env: NB='w/ covr' ## Just a label
+      - Rscript -e 'covr::codecov()'
+      env: NB='with covr'
     - os: linux
       r: devel
     - os: osx

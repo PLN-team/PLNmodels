@@ -9,22 +9,30 @@
 PLNfit
 }
 \description{
-The function \code{\link{PLN}} produces a collection of models which are instances of object with class \code{PLNfit}.
+The function \code{\link{PLN}} fit a model which is an instance of a object with class \code{PLNfit} .
 Objects produced by the functions \code{\link{PLNnetwork}}, \code{\link{PLNPCA}} and \code{\link{PLNLDA}} also enjoy the method of \code{\link{PLNfit}}
 by inheritance.
 
-This class comes with a set of methods, some of them being useful for the user: plot_model, plot_variational_par
+This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
+See the documentation for \code{\link[=coef.PLNfit]{coef}},
+\code{\link[=vcov.PLNfit]{vcov.PLNfit}} and  \code{\link[=predict.PLNfit]{predict}}.
 
 Fields are accessed via active binding and cannot be changed by the user.
 }
 \section{Fields}{
 
 \describe{
-\item{\code{model_par}}{a list with two matrices, B and Theta, which are the estimated parameters of the pPCA model}
+\item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
 
 \item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 
+\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+
+\item{\code{fitted}}{a matrix: the fitted values (Y hat)}
+
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
+
+\item{\code{model}}{character: the model used for the coavariance (either "spherical", "diagonal" or "full")}
 
 \item{\code{loglik}}{variational lower bound of the loglikelihood}
 

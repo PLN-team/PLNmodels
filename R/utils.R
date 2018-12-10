@@ -2,7 +2,7 @@
 
 .softmax <- function(x) {
   b <- max(x)
-  exp(x-b) / sum(exp(x-b))
+  exp(x - b) / sum(exp(x - b))
 }
 
 .logfactorial <- function(n) { # Ramanujan's formula
@@ -10,21 +10,22 @@
   return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)
 }
 
-logLikPoisson <- function(responses, lambda) {
-  loglik <- sum(responses * lambda, na.rm = TRUE) - sum(exp(lambda)) - sum(.logfactorial(responses))
+logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) {
+  loglik <- rowSums(responses * lambda, na.rm = TRUE) - rowSums(exp(lambda)) - rowSums(.logfactorial(responses))
+  loglik <- sum(loglik * weights)
   loglik
 }
 
 ##' @importFrom stats glm.fit
-nullModelPoisson <- function(responses, covariates, offsets) {
+nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
   Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
-    coefficients(glm.fit(covariates, responses[, j], offset = offsets[,j], family = stats::poisson()))))
+    coefficients(glm.fit(covariates, responses[, j], weights = weights, offset = offsets[, j], family = stats::poisson()))))
   lambda <- offsets + tcrossprod(covariates, Theta)
   lambda
 }
 
-fullModelPoisson <- function(responses) {
-  lambda <- log(responses)
+fullModelPoisson <- function(responses, weights = rep(1, nrow(responses))) {
+  lambda <- log(sweep(responses, 1, weights, "*"))
   lambda
 }
 
@@ -48,8 +49,7 @@ extract_model <- function(call, envir) {
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-
-  list(Y = Y, X = X, O = O, w = w)
+  list(Y = Y, X = X, O = O, w = w, model = call$formula)
 }
 
 edge_to_node <- function(x, n = max(x)) {
@@ -124,6 +124,7 @@ PLN_param <- function(control, n, p, d, weighted = FALSE) {
   lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
+  covariance  <- ifelse(is.null(control$inception), covariance, control$inception$vcov_model)
   ctrl <- list(
     "algorithm"   = "CCSAQ",
     "maxeval"     = 10000  ,
@@ -165,26 +166,28 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
 }
 
 
-PLNPCA_param <- function(control) {
+PLNPCA_param <- function(control, weighted = FALSE) {
   ctrl <- list(
-      "algorithm"   = "CCSAQ",
+      "algorithm"   = "CCSAQ" ,
       "ftol_rel"    = 1e-8    ,
       "ftol_abs"    = 0       ,
       "xtol_rel"    = 1e-4    ,
-      "xtol_abs"    = 1e-4,
-      "lower_bound" = 1e-4,
+      "xtol_abs"    = 1e-4    ,
+      "lower_bound" = 1e-4    ,
       "maxeval"     = 10000   ,
       "maxtime"     = -1      ,
       "trace"       = 1       ,
-      "cores"       = 1
+      "cores"       = 1       ,
+      "weighted"    = weighted  ,
+      "covariance"  = "rank"
     )
   ctrl[names(control)] <- control
   ctrl
 }
 
-PLNnetwork_param <- function(control, n, p, d) {
-  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
+PLNnetwork_param <- function(control, n, p, d, weighted = FALSE) {
+  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4, control$lower_bound)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4, control$xtol_abs)
   ctrl <-  list(
     "ftol_out"  = 1e-5,
     "maxit_out" = 50,
@@ -198,7 +201,9 @@ PLNnetwork_param <- function(control, n, p, d) {
     "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, n*p), rep(lower_bound, n*p)),
     "maxeval"     = 10000   ,
     "maxtime"     = -1      ,
-    "trace"       = 1
+    "trace"       = 1       ,
+    "weighted"    = weighted,
+    "covariance"  = "sparse"
   )
   ctrl[names(control)] <- control
   ctrl
@@ -206,18 +211,18 @@ PLNnetwork_param <- function(control, n, p, d) {
 
 statusToMessage <- function(status) {
     message <- switch( status,
-        "1"  = "NLOPT_SUCCESS: Generic success return value.",
-        "2"  = "NLOPT_STOPVAL_REACHED: Optimization stopped because stopval (above) was reached.",
-        "3"  = "NLOPT_FTOL_REACHED: Optimization stopped because ftol_rel or ftol_abs (above) was reached.",
-        "4"  = "NLOPT_XTOL_REACHED: Optimization stopped because xtol_rel or xtol_abs (above) was reached.",
-        "5"  = "NLOPT_MAXEVAL_REACHED: Optimization stopped because maxeval (above) was reached.",
-        "6"  = "NLOPT_MAXTIME_REACHED: Optimization stopped because maxtime (above) was reached.",
-        "-1" = "NLOPT_FAILURE: Generic failure code.",
-        "-2" = "NLOPT_INVALID_ARGS: Invalid arguments (e.g. lower bounds are bigger than upper bounds, an unknown algorithm was specified, etcetera).",
-        "-3" = "NLOPT_OUT_OF_MEMORY: Ran out of memory.",
-        "-4" = "NLOPT_ROUNDOFF_LIMITED: Roundoff errors led to a breakdown of the optimization algorithm. In this case, the returned minimum may still be useful.",
-        "-5" = "Halted because of a forced termination: the user called nlopt_force_stop(opt) on the optimization's nlopt_opt object opt from the user's objective function.",
-        "Return status not recognized."
+        "1"  = "success",
+        "2"  = "stopval was reached",
+        "3"  = "ftol_rel or ftol_abs was reached",
+        "4"  = "xtol_rel or xtol_abs was reached",
+        "5"  = "maxeval was reached",
+        "6"  = "maxtime was reached",
+        "-1" = "failure",
+        "-2" = "invalid arguments",
+        "-3" = "out of memory.",
+        "-4" = "roundoff errors led to a breakdown of the optimization algorithm",
+        "-5" = "forced termination:",
+        "Return status not recognized"
     )
     message
 }

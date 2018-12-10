@@ -5,8 +5,9 @@ citEntry(entry = "article",
   author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
   title = "Variational inference for probabilistic Poisson PCA",
   journal = "The Annals of Applied Statistics",
-  year = "to appear",
-  url = "https://www.e-publications.org/ims/submission/AOAS/user/submissionFile/30718?confirm=96ec6f5a",
+  year = "2018",
+  volume = "12", pages = "2674--2698",
+  url = "http://dx.doi.org/10.1214/18-AOAS1177",
   textVersion = "J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, to appear."
 )
 

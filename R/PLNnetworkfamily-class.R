@@ -3,9 +3,8 @@
 #' @description The function \code{\link{PLNnetwork}} produces an instance of this class.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=PLNfamily_getBestModel]{getBestModel}},
-#' \code{\link[=PLNfamily_getModel]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
-#' and \code{\link[=predict.PLNfit]{predict}}.
+#' See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestModel}},
+#' \code{\link[=getModel.PLNnetworkfamily]{getModel}} and  \code{\link[=plot.PLNnetworkfamily]{plot}}.
 #'
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
@@ -45,15 +44,17 @@ PLNnetworkfamily <-
 )
 
 PLNnetworkfamily$set("public", "initialize",
-  function(penalties, responses, covariates, offsets, control) {
+  function(penalties, responses, covariates, offsets, weights, model, control) {
 
     ## initialize fields shared by the super class
-    super$initialize(responses, covariates, offsets, control)
-
+    super$initialize(responses, covariates, offsets, weights, control)
     ## Get an appropriate grid of penalties
     if (is.null(penalties)) {
       if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
-      max_pen <- max(abs(self$inception$model_par$Sigma))
+      myPLN <- PLNfit$new(responses, covariates, offsets, weights, model, control)
+      myPLN$optimize(responses, covariates, offsets, weights, control)
+      max_pen <- max(abs(myPLN$model_par$Sigma))
+      control$inception <- myPLN
       penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min.ratio), len = control$nPenalties)
     } else {
       if (control$trace > 1) cat("\nPenalties already set by the user")
@@ -63,114 +64,33 @@ PLNnetworkfamily$set("public", "initialize",
     ## instantiate as many models as penalties
     private$params <- sort(penalties, decreasing = TRUE)
     self$models <- lapply(private$params, function(penalty) {
-      PLNnetworkfit$new(penalty = penalty)
+      PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, model, control)
     })
 
 })
 
-# One (coordinate-descent) optimization for each \code{\link[=PLNnetworkfit-class]{PLNnetworkfit}} model, using
-# the same starting point (inception model from \code{\link[=PLNfit-class]{PLNfit}}) for all models.
-#
 PLNnetworkfamily$set("public", "optimize",
   function(control) {
 
-  ## ===========================================
-  ## INITIALISATION
-
-  ## start from the standard PLN (a.k.a. inception)
-  Sigma <- self$inception$model_par$Sigma
-  par0  <- c(self$inception$model_par$Theta,
-             self$inception$var_par$M,
-             rep(max(control$lower_bound), private$n*private$p))
-  Omega  <- diag(1/diag(Sigma), nrow = private$p, ncol = private$p)
-  Sigma0 <- diag(  diag(Sigma), nrow = private$p, ncol = private$p)
-  objective.old <- ifelse(is.na(self$inception$loglik),-Inf,-self$inception$loglik)
-
-  ## ===========================================
-  ## GO ALONG THE PENALTY GRID (i.e the models)
+  ## Go along the penalty grid (i.e the models)
   for (m in seq_along(self$models))  {
 
-    penalty <- self$models[[m]]$penalty
-
-    ## ===========================================
-    ## OPTIMISATION
     if (control$trace == 1) {
-      cat("\tsparsifying penalty =", penalty, "\r")
+      cat("\tsparsifying penalty =", self$models[[m]]$penalty, "\r")
       flush.console()
     }
     if (control$trace > 1) {
-      cat("\tsparsifying penalty =", penalty, "- iteration:")
+      cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
     }
-
-    ## shall we penalize the diagonal? in glassoFast
-    if (control$trace > 1) cat("", iter)
-    rho <- matrix(penalty, private$p, private$p)
-    if (!control$penalize_diagonal) diag(rho) <- 0
-
-    cond <- FALSE; iter <- 0
-    objective   <- numeric(control$maxit_out)
-    convergence <- numeric(control$maxit_out)
-    while (!cond) {
-      iter <- iter + 1
-      ## CALL TO GLASSO TO UPDATE Omega/Sigma
-      # glasso_out <- suppressWarnings(
-      #   glasso::glasso(
-      #     Sigma,
-      #     rho = penalty,
-      #     penalize.diagonal = control$penalize_diagonal,
-      #     start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
-      #   )
-      # )
-      glasso_out <- suppressWarnings(
-        glassoFast::glassoFast(
-          Sigma,
-          rho = rho,
-          start = ifelse(control$warm, "warm", "cold"), w.init = Sigma0, wi.init = Omega
+    self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
+    ## Save time by starting the optimization of model m+1  with optimal parameters of model m
+    if (m < length(self$penalties))
+      self$models[[m + 1]]$update(
+          Theta = self$models[[m]]$model_par$Theta,
+          Sigma = self$models[[m]]$model_par$Sigma,
+          M     = self$models[[m]]$var_par$M,
+          S     = self$models[[m]]$var_par$S
         )
-      )
-      if (anyNA(glasso_out$wi)) break
-      Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
-      Sigma0 <- glasso_out$w
-
-      ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-      logDetOmega <- as.double(determinant(Omega, logarithm = TRUE)$modulus)
-      optim.out <- optimization_PLNnetwork(par0, self$responses, self$covariates, self$offsets, Omega, logDetOmega, control)
-      optim.out$message <- statusToMessage(optim.out$status)
-      objective[iter]   <- optim.out$objective + penalty * sum(abs(Omega))
-      convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
-
-      ## Check convergence
-      if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
-
-      ## Post-Treatment to update Sigma
-      M <- matrix(optim.out$solution[private$p*private$d               + 1:(private$n*private$p)], private$n,private$p)
-      S <- matrix(optim.out$solution[(private$n + private$d)*private$p + 1:(private$n*private$p)], private$n,private$p)
-      Sigma <- crossprod(M)/private$n + diag(colMeans(S), nrow = private$p, ncol = private$p)
-      par0 <- optim.out$solution
-      objective.old <- objective[iter]
-    }
-
-    ## ===========================================
-    ## OUTPUT
-    ## formating parameters for output
-    Theta <- matrix(optim.out$solution[1:(private$p*private$d)], private$p, private$d)
-    rownames(Theta) <- colnames(self$responses); colnames(Theta) <- colnames(self$covariates)
-    dimnames(S)     <- dimnames(self$responses)
-    dimnames(M)     <- dimnames(self$responses)
-    rownames(Omega) <- colnames(Omega) <- colnames(self$responses)
-    ## Optimization ends with a gradient descent step rather than a glasso step.
-    ## Return Sigma from glasso step to ensure that Sigma = solve(Omega)
-    ## Sigma <- Sigma0 ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
-    ## dimnames(Sigma) <- dimnames(Omega)
-
-    self$models[[m]]$update(
-      Omega = Omega, Sigma = Sigma, Theta = Theta, M = M, S = S, J = -optim.out$objective,
-          monitoring = list(objective        = objective[1:iter],
-                            convergence      = convergence[1:iter],
-                            outer_iterations = iter,
-                            inner_iterations = optim.out$iterations,
-                            inner_status     = optim.out$status,
-                            inner_message    = optim.out$message))
 
     if (control$trace > 1) {
       cat("\r                                                                                    \r")
@@ -181,15 +101,7 @@ PLNnetworkfamily$set("public", "optimize",
 
 })
 
-#' Compute the stability path by stability selection
-#'
-#' @name stability_selection
-#' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
-#' @param control a list controling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.
-#' @param mc.cores the number of cores to used. Default is 1.
-#'
-##' @return the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the PLNnetwork object
-NULL
+# Compute the stability path by stability selection
 PLNnetworkfamily$set("public", "stability_selection",
   function(subsamples = NULL, control = list(), mc.cores = 1) {
 
@@ -215,11 +127,13 @@ PLNnetworkfamily$set("public", "stability_selection",
       ctrl_init$trace <- 0
       ctrl_init$inception <- inception_
       myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
-                                    responses  = self$responses [subsample, , drop = FALSE ],
+                                    responses  = self$responses [subsample, , drop = FALSE],
                                     covariates = self$covariates[subsample, , drop = FALSE],
-                                    offsets    = self$offsets   [subsample, , drop = FALSE ], control = ctrl_init)
+                                    offsets    = self$offsets   [subsample, , drop = FALSE],
+                                    model      = private$model,
+                                    weights    = self$weights   [subsample], control = ctrl_init)
 
-      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d)
+      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d, !all(self$weights == 1))
       ctrl_main$trace <- 0
       myPLN$optimize(ctrl_main)
       nets <- do.call(cbind, lapply(myPLN$models, function(model) {
@@ -245,15 +159,7 @@ PLNnetworkfamily$set("public", "stability_selection",
   }
 )
 
-
-#' Extract the regularization path of a PLNnetwork fit
-#'
-#' @name coefficient_path
-#' @param precision a logical, should the coefficients of the precision matrix Omega or the covariance matrice Sigma be sent back. Default is \code{TRUE}.
-#' @param corr a logical, should the correlation (partial in case  precision = TRUE) be sent back. Default is \code{TRUE}.
-#'
-#' @return  Send back a tibble/data.frame.
-NULL
+# Extract the regularization path of a PLNnetwork fit
 PLNnetworkfamily$set("public", "coefficient_path",
 function(precision = TRUE, corr = TRUE) {
   lapply(self$penalties, function(x) {
@@ -275,19 +181,8 @@ function(precision = TRUE, corr = TRUE) {
   }) %>% bind_rows()
 })
 
-#' Best model extraction from a collection of PLNnetworkfit
-#'
-#' @name PLNnetworkfamily_getBestModel
-#'
-#' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "EBIC", "StARS", "R_squared". Default is \code{BIC}. If StARS
-#' (Stability Approach to Regularization Selection) is chosen and stability selection
-#'  was not yet performed, the function will call the method stability_selection with default argument.
-#' @param stability a scalar, indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
-#' @return  Send back a object with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}.
-NULL
 PLNnetworkfamily$set("public", "getBestModel",
-function(crit = c("BIC", "ICL", "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9){
+function(crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"), stability = 0.9){
   crit <- match.arg(crit)
   if (crit == "StARS") {
     if (is.null(private$stab_path)) self$stability_selection()
@@ -297,27 +192,27 @@ function(crit = c("BIC", "ICL", "loglik", "R_squared", "EBIC", "StARS"), stabili
       pull(param) %>% min() %>% match(self$penalties)
     model <- self$models[[id_stars]]$clone()
   } else {
-    model <- super$getBestModel(crit)
+    stopifnot(!anyNA(self$criteria[[crit]]))
+    id <- 1
+    if (length(self$criteria[[crit]]) > 1) {
+      id <- which.max(self$criteria[[crit]])
+    }
+    model <- self$models[[id]]$clone()
   }
   model
 })
 
-## ----------------------------------------------------------------------
-## PUBLIC PLOTTING METHODS
-## ----------------------------------------------------------------------
-
-#' @export
 PLNnetworkfamily$set("public", "plot",
-function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE) {
+function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE, annotate) {
   vlines <- sapply(intersect(criteria, c("BIC", "EBIC")) , function(crit) self$getBestModel(crit)$penalty)
   p <- super$plot(criteria, FALSE) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
   if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
   p
 })
 
-#' @export
 PLNnetworkfamily$set("public", "plot_stars",
 function(stability = 0.9, log.x = TRUE) {
+  if (anyNA(self$stability)) stop("stability selection has not yet been performed! Use stability_selection()")
   dplot <- self$criteria %>% select(param, density, stability) %>%
     rename(Penalty = param) %>%
     gather(key = "Metric", value = "Value", stability:density)
@@ -339,8 +234,6 @@ function(stability = 0.9, log.x = TRUE) {
   p
 })
 
-
-#' @export
 PLNnetworkfamily$set("public", "plot_objective",
 function() {
   objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
@@ -359,12 +252,10 @@ function() {
   super$show()
   cat(" Task: Network Inference \n")
   cat("========================================================\n")
-  cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties),
-      "\n", "   use $penalties to see all values and access specific lambdas", "\n")
+  cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties), "\n")
+  cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
+  cat(" - Best model (regarding EBIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
   if (!anyNA(self$criteria$stability))
     cat(" - Best model (regarding StARS): lambda =", format(self$getBestModel("StARS")$penalty, digits = 3), "\n")
-  if (!anyNA(self$criteria$BIC))
-    cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
 })
-PLNnetworkfamily$set("public", "print", function() self$show())
-
+2

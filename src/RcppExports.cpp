@@ -6,71 +6,6 @@
 
 using namespace Rcpp;
 
-// optimization_PLN
-Rcpp::List optimization_PLN(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, Rcpp::List options);
-RcppExport SEXP _PLNmodels_optimization_PLN(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP optionsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimization_PLN(par, Y, X, O, w, options));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optimization_PLN_spherical
-Rcpp::List optimization_PLN_spherical(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, Rcpp::List options);
-RcppExport SEXP _PLNmodels_optimization_PLN_spherical(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP optionsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimization_PLN_spherical(par, Y, X, O, w, options));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optimization_PLNnetwork
-Rcpp::List optimization_PLNnetwork(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& Omega, const double log_det_Omega, Rcpp::List options);
-RcppExport SEXP _PLNmodels_optimization_PLNnetwork(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP OmegaSEXP, SEXP log_det_OmegaSEXP, SEXP optionsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< const double >::type log_det_Omega(log_det_OmegaSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimization_PLNnetwork(par, Y, X, O, Omega, log_det_Omega, options));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optimization_PLNPCA
-Rcpp::List optimization_PLNPCA(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const int rank, Rcpp::List options);
-RcppExport SEXP _PLNmodels_optimization_PLNPCA(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP rankSEXP, SEXP optionsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const int >::type rank(rankSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimization_PLNPCA(par, Y, X, O, rank, options));
-    return rcpp_result_gen;
-END_RCPP
-}
 // optimization_VEstep_PLN
 Rcpp::List optimization_VEstep_PLN(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& Theta, const arma::mat& Sigma, Rcpp::List options);
 RcppExport SEXP _PLNmodels_optimization_VEstep_PLN(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP ThetaSEXP, SEXP SigmaSEXP, SEXP optionsSEXP) {
@@ -88,13 +23,94 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// optim_spherical
+Rcpp::List optim_spherical(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, Rcpp::List options);
+RcppExport SEXP _PLNmodels_optim_spherical(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP optionsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_spherical(par, Y, X, O, w, options));
+    return rcpp_result_gen;
+END_RCPP
+}
+// optim_diagonal
+Rcpp::List optim_diagonal(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, Rcpp::List options);
+RcppExport SEXP _PLNmodels_optim_diagonal(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP optionsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_diagonal(par, Y, X, O, w, options));
+    return rcpp_result_gen;
+END_RCPP
+}
+// optim_full
+Rcpp::List optim_full(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, Rcpp::List options);
+RcppExport SEXP _PLNmodels_optim_full(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP optionsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_full(par, Y, X, O, w, options));
+    return rcpp_result_gen;
+END_RCPP
+}
+// optim_rank
+Rcpp::List optim_rank(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, Rcpp::List options);
+RcppExport SEXP _PLNmodels_optim_rank(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP optionsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_rank(par, Y, X, O, w, options));
+    return rcpp_result_gen;
+END_RCPP
+}
+// optim_sparse
+Rcpp::List optim_sparse(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, Rcpp::List options);
+RcppExport SEXP _PLNmodels_optim_sparse(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP optionsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_sparse(par, Y, X, O, w, options));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_PLNmodels_optimization_PLN", (DL_FUNC) &_PLNmodels_optimization_PLN, 6},
-    {"_PLNmodels_optimization_PLN_spherical", (DL_FUNC) &_PLNmodels_optimization_PLN_spherical, 6},
-    {"_PLNmodels_optimization_PLNnetwork", (DL_FUNC) &_PLNmodels_optimization_PLNnetwork, 7},
-    {"_PLNmodels_optimization_PLNPCA", (DL_FUNC) &_PLNmodels_optimization_PLNPCA, 6},
     {"_PLNmodels_optimization_VEstep_PLN", (DL_FUNC) &_PLNmodels_optimization_VEstep_PLN, 7},
+    {"_PLNmodels_optim_spherical", (DL_FUNC) &_PLNmodels_optim_spherical, 6},
+    {"_PLNmodels_optim_diagonal", (DL_FUNC) &_PLNmodels_optim_diagonal, 6},
+    {"_PLNmodels_optim_full", (DL_FUNC) &_PLNmodels_optim_full, 6},
+    {"_PLNmodels_optim_rank", (DL_FUNC) &_PLNmodels_optim_rank, 6},
+    {"_PLNmodels_optim_sparse", (DL_FUNC) &_PLNmodels_optim_sparse, 6},
     {NULL, NULL, 0}
 };
 

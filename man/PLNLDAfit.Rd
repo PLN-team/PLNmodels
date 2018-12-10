@@ -12,8 +12,9 @@ PLNLDAfit
 The function \code{\link{PLNLDA}} produces an instance of an object with class \code{PLNPLDAfit}.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNLDAfit_plot_LDA]{plot_LDA}}, \code{\link[=PLNLDAfit_plot_individual_map]{plot_individual_map}}
-and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
+See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}}, the
+\code{\link[=plot.PLNLDAfit]{plot.PLNPCAfit}} method for LDA vizualization and
+\code{\link[=predict.PLNLDAfit]{predict.PLNPCAfit}} method for prediction
 }
 \section{Fields}{
 

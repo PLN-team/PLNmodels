@@ -1,0 +1,83 @@
+templates:
+  params:
+    bootswatch: readable
+
+navbar:
+  title: "PLNmodels"
+  type: inverse
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Reference"
+      href: "reference/index.html"
+    - text: "Articles and Vignettes"
+      href: "articles/index.html"
+  right:
+    - icon: fa-github
+      href: https://github.com/jchiquet/PLNmodels
+
+reference:
+- title: 'Top-level fitting functions'
+  desc: >
+    Set of functions to fit variants of the Poisson lognormal model
+  contents:
+    - '`PLN`'
+    - '`PLNLDA`'
+    - '`PLNPCA`'
+    - '`PLNnetwork`'
+- title: 'Poisson lognormal fit'
+  desc: >
+    Description of the PLNfit object and methods for its manipulation. Any PLN variant in the
+    packake inherits from this class (PLNPCAfit, PLNnetworkfit, PLNLDAfit).
+  contents:
+    - '`PLNfit`'
+    - '`coef.PLNfit`'
+    - '`vcov.PLNfit`'
+    - '`predict.PLNfit`'
+- title: 'Linear discriminant analysis via a Poisson lognormal fit'
+  desc: >
+    Description of the PLNLDAfit object and methods for its manipulation.
+  contents:
+  - starts_with('PLNLDAfit')
+  - '`plot.PLNLDAfit`'
+  - '`predict.PLNLDAfit`'
+- title: 'Poisson Lognormal PCA fit'
+  desc: >
+    Description of the PLNPCAfit and PLNPCAfamily objects and methods for their manipulation.
+  contents:
+  - starts_with('PLNPCAfit')
+  - '`plot.PLNPCAfit`'
+  - '`PLNPCAfamily`'
+  - '`plot.PLNPCAfamily`'
+  - '`getBestModel.PLNPCAfamily`'
+  - '`getModel.PLNPCAfamily`'
+- title: 'Sparse Poisson lognormal fit and network'
+  desc: >
+    Description of the PLNnetworkfit and PLNnetworkfamily objects and methods for their manipulation.
+  contents:
+  - starts_with('PLNnetworkfit')
+  - '`plot.PLNnetworkfit`'
+  - '`PLNnetworkfamily`'
+  - '`plot.PLNnetworkfamily`'
+  - '`getBestModel.PLNnetworkfamily`'
+  - '`getModel.PLNnetworkfamily`'
+  - '`coefficient_path`'
+  - '`stability_selection`'
+- title: 'Other functions'
+  desc: ~
+  contents:
+    - '`rPLN`'
+- title: Data set
+  desc: ~
+  contents:
+    - '`trichoptera`'
+
+articles:
+- title: All vignettes
+  desc: >
+    Best presentation and more coming ...
+  contents:
+  - '`PLN_trichoptera`'
+  - '`PLNPCA_trichoptera`'
+  - '`PLNLDA_trichoptera`'
+  - '`PLNnetwork_trichoptera`'
