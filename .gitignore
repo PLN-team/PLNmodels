@@ -20,7 +20,6 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
-vignettes/*.bib
 vignettes/*_cache/
 vignettes/cache/
 
