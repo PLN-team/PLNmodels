@@ -52,7 +52,7 @@ PLNfit <-
       Ji         = NA, # element-wise approximated loglikelihood
       FIM        = NA, # Fisher information matrix of Theta, computed using of two approximation scheme
       FIM_type   = NA, # Either "wald" or "louis". Approximation scheme used to compute FIM
-      std_err    = NA, # element-wise standard error for the elements of Theta computed
+      .std_err   = NA, # element-wise standard error for the elements of Theta computed
                        # from the Fisher information matrix
       covariance = NA, # a string describing the covariance model
       optimizer  = NA, # link to the function that performs the optimization
@@ -65,8 +65,8 @@ PLNfit <-
       p = function() {nrow(private$Theta)},
       d = function() {ncol(private$Theta)},
       model_par  = function() { list(Theta = private$Theta, Sigma = private$Sigma)},
-      fisher     = function() { list(mat = private$FIM, type = FIM_type) },
-      std_err    = function() { private$std_err },
+      fisher     = function() { list(mat = private$FIM, type = private$FIM_type) },
+      std_err    = function() { private$.std_err },
       var_par    = function() {list(M = private$M, S = private$S)},
       latent     = function() {private$Z},
       fitted     = function() {exp(private$Z + .5 * private$S)},
@@ -182,7 +182,7 @@ function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type
   private$FIM <- self$compute_fisher(type, X = covariates)
   private$FIM_type <- type
   ## compute and store matrix of standard errors
-  private$std_err <- self$compute_standard_error(type, X = covariates)
+  private$.std_err <- self$compute_standard_error()
 })
 
 # Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
@@ -283,9 +283,9 @@ PLNfit$set("public", "compute_fisher",
 # Compute univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate)
 # Fisher information matrix. See \code{\link[=PLNfit_fisher]{fisher}} for more details on the approximations.
 PLNfit$set("public", "compute_standard_error",
-  function(type = c("wald", "louis"), X = NULL) {
-    fim <- self$n * self$fisher(type, X) ## Fisher Information matrix I_n(\Theta) = n * I(\Theta)
-    stderr <- fim %>% solve %>% diag %>% matrix(nrow = self$d) %>% t() %>% sqrt()
+  function() {
+    fim <- self$n * self$fisher$mat ## Fisher Information matrix I_n(\Theta) = n * I(\Theta)
+    stderr <- fim %>% solve %>% diag %>% sqrt %>% matrix(nrow = self$d) %>% t()
     dimnames(stderr) <- dimnames(self$model_par$Theta)
     return(stderr)
   }

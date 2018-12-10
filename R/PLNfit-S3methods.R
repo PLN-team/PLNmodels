@@ -64,6 +64,7 @@ vcov.PLNfit <- function(object, ...) {
 #' Theta is a matrix of size d * p.
 #'
 #' @export
+#'
 fisher.PLNfit <- function(object, type = c("wald", "louis"), ...) {
   stopifnot(isPLNfit(object))
   type <- match.arg(type)
@@ -86,11 +87,13 @@ fisher.PLNfit <- function(object, type = c("wald", "louis"), ...) {
 #' @return A p * d positive matrix (same size as Theta) with standard errors.
 #' @export
 #'
-standard_error.PLNfit <- function(object, type = c("wald", "louis"), ...) {
+standard_error <- function(object, type = c("wald", "louis"), ...) {
   stopifnot(isPLNfit(object))
   type <- match.arg(type)
   if (type != object$fisher$type) {
     stop(paste("Standard errors were not computed using the", type, "approximation. Try another approximation scheme."))
   }
-  object$std_error
+  object$std_err
 }
+
+## TODO: define fisher and standard_error methods
