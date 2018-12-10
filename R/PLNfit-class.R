@@ -234,10 +234,10 @@ PLNfit$set("public", "predict",
     ## Extract the model matrices from the new data set with initial formula
     X <- model.matrix(formula(private$model)[-2], newdata)
     O <- model.offset(model.frame(formula(private$model)[-2], newdata))
-    if (is.null(O)) O <- matrix(0, nrow(X), self$p)
 
     ## mean latent positions in the parameter space
-    EZ <- O + tcrossprod(X, private$Theta)
+    EZ <- tcrossprod(X, private$Theta)
+    if (!is.null(O)) EZ <- EZ + O
     EZ <- sweep(EZ, 2, .5 * diag(self$model_par$Sigma), "+")
     colnames(EZ) <- colnames(private$Sigma)
 
