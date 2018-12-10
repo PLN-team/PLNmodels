@@ -3,7 +3,7 @@ title: "Dimension reduction of multivariate count table with the probabilistic P
 author: "Julien Chiquet"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: PLNmodels.bib
+bibliography: PLNvignettes.bib
 link-citations: yes
 vignette: >
   %\VignetteIndexEntry{PLNPCA}
@@ -147,7 +147,3 @@ That is all for now!
 
 ## References
 
-```{r bib, include=FALSE}
-# create a bib file for the R packages used in this document
-writeLines(enc2utf8(toBibtex(citation("PLNmodels"))), "PLNmodels.bib", useBytes = TRUE)
-```

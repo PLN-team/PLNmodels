@@ -2,8 +2,9 @@ pandoc: 2.3.1
 pkgdown: 1.2.0
 pkgdown_sha: ~
 articles:
-  PLNLDA_trichoptera: PLNLDA_trichoptera.html
-  PLNPCA_trichoptera: PLNPCA_trichoptera.html
-  PLN_trichoptera: PLN_trichoptera.html
-  PLNnetwork_trichoptera: PLNnetwork_trichoptera.html
+  PLN: PLN.html
+  PLNLDA: PLNLDA.html
+  PLNPCA: PLNPCA.html
+  PLNmodels_introduction: PLNmodels_introduction.html
+  PLNnetwork: PLNnetwork.html
 
