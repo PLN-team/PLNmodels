@@ -309,7 +309,7 @@ PLNfit$set("public", "standard_error",
   function(type = c("wald", "louis"), X = NULL) {
     fim <- self$n * self$fisher(type, X) ## Fisher Information matrix I_n(\Theta) = n * I(\Theta)
     stderr <- fim %>% solve %>% diag %>% matrix(nrow = self$d) %>% t()
-    dimnames(stderr) <- dimnames(self$private$Theta)
+    dimnames(stderr) <- dimnames(self$model_par$Theta)
     return(stderr)
   }
 )
