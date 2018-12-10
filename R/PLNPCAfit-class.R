@@ -255,7 +255,7 @@ PLNPCAfit$set("public", "plot_PCA",
 # X <-
 # myPLNPCA$fisher
 # }
-PLNPCAfit$set("public", "fisher",
+PLNPCAfit$set("private", "fisher",
   function(type = c("wald", "louis"), X = NULL) {
     type = match.arg(type)
     if (type == "louis") {
