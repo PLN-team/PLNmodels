@@ -25,9 +25,12 @@ test_that("Check prediction",  {
   model1 <- PLN(Abundance ~ 1, data = trichoptera, subset = 1:30)
   model2 <- PLN(Abundance ~ Pressure + Humidity, data = trichoptera, subset = 1:30)
 
+  newdata <- trichoptera[31:49, ]
+  newdata$Abundance <- NULL
+
   expect_gt(
-    mean((trichoptera$Abundance[31:49, ] - predict(model1, trichoptera[31:49, ], type = "response"))^2),
-    mean((trichoptera$Abundance[31:49, ] - predict(model2, trichoptera[31:49, ], type = "response"))^2)
+    mean((trichoptera$Abundance[31:49, ] - predict(model1, newdata = newdata, type = "response"))^2),
+    mean((trichoptera$Abundance[31:49, ] - predict(model2, newdata = newdata, type = "response"))^2)
   )
 })
 
