@@ -134,6 +134,8 @@ corrplot::corrplot(vcov(myPLN) - vcov(myPLN_weighted), is.corr = FALSE)
 The prediction method can be use to predict new responses from a new table of data (with both covariates and offset if needed.)
 
 ```{r prediction}
-predict(myPLN, newdata = trichoptera[1:10, ], type = "response")
+newdata <- trichoptera[1:10, ]
+newdata$Abundance <- NULL
+predict(myPLN, newdata = newdata, type = "response")
 ```
 
