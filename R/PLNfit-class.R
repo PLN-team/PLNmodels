@@ -244,6 +244,45 @@ PLNfit$set("public", "predict",
   }
 )
 
+#' Compute the Fisher information matrix of Theta using one of two approximations scheme
+#'
+#' @param type Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
+#' Fisher information matrix
+#' @param X Required. The covariate matrix used to fit the model.
+#'
+#' @return A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
+#' Theta is a matrix of size d \times p.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data(trichoptera)
+#' myPLN <- PLN(Abundance ~ 1 + offset(log(TotalCounts)), trichoptera)
+#' myPLN$fisher
+#' }
+PLNfit$set("public", "fisher",
+  function(type = c("wald", "louis"), X = NULL) {
+    type = match.arg(type)
+    A <- self$fitted
+    X <- self$
+    if (type == "louis") {
+      ## TODO check how to adapt for PLNPCA
+      ## A = A + A \odot A \odot (exp(S) - 1_{n \times p})
+      A <- A + A * A * (exp(self$var_par$S) - 1)
+    }
+    result <- bdiag(lapply(1:self$p, function(i) {
+      ## t(X) %*% diag(A[, i]) %*% X
+      crossprod(X, A[, i] * X)
+    }))
+    ## set proper names
+    element.names <- expand.grid(species    = rownames(private$Theta),
+                                 covariates = colnames(private$Theta)) %>%
+      apply(1, paste0, collapse = "_")
+    rownames(result) <- colnames(result) <- element.names
+    return(result)
+  }
+)
+
 PLNfit$set("public", "show",
 function(model = paste("A multivariate Poisson Lognormal fit with", private$covariance, "covariance model.\n")) {
   cat(model)
