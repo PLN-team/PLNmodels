@@ -232,7 +232,7 @@ PLNfit$set("public", "predict",
     type = match.arg(type)
 
     ## Extract the model matrices from the new data set with initial formula
-    O <- model.frame(formula(private$model)[-2], newdata)
+    O <- model.offset(model.frame(formula(private$model)[-2], newdata))
     X <- model.matrix(formula(private$model)[-2], newdata)
 
     ## mean latent positions in the parameter space

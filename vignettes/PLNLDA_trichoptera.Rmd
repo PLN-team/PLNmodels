@@ -21,10 +21,19 @@ See `?PLNmodels::trichoptera` for details.
 
 ### A discriminant analysis for the Trichopetra data set
 
-We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The classification corresponds to the consecutive night groups caught. The model can be fitted with the function `PLNLDA` as follows:
+We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The classification corresponds to the consecutive night groups caught.  It seems natural to add an offset corresponding to the total count per night, so a 15th column with a $49 \times 17$ of offset. It corresponds to the matrix $\mathbf{O}$ in our model: 
+```{r offset_trichopera}
+trichoptera$TotalCounts <- matrix(
+  rowSums(trichoptera$Abundance),
+  nrow = nrow(trichoptera$Abundance),
+  ncol = ncol(trichoptera$Abundance)
+)
+```
+
+The model can be fitted with the function `PLNLDA` as follows:
 
 ```{r}
-myLDA_nocov <- PLNLDA(Abundance ~ 0, grouping = grouping, data = trichoptera)
+myLDA_nocov <- PLNLDA(Abundance ~ 0 + offset(log(TotalCounts)), grouping = grouping, data = trichoptera)
 ```
 
 The `myLDA_nocov` variable is an `R6` object with class `PLNLDAfit`, which comes with a couple of methods, as recalled when printing such an object:
@@ -40,11 +49,7 @@ plot(myLDA_nocov)
 
 If new samples become available, we can predict their class
 ```{r predict_class}
-Y <- trichoptera$Abundance
-predicted.class <- myLDA_nocov$predict(newCounts = Y, 
-                                       newdata = matrix(0, nrow(Y), 0), 
-                                       newOffsets = matrix(0, nrow(Y), ncol(Y)), 
-                                       type = "response")
+predicted.class <- predict(myLDA_nocov, newdata = trichoptera,  type = "response")
 ```
 and asses that we recover the correct class in most (but not all) cases:
 ```{r check_predicted_class}
@@ -57,7 +62,7 @@ table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
 
 It is possible (experimental) to correct for other covariates before finding the LDA axis that separate well the grouping :
 ```{r, warning=FALSE}
-myLDA_cov <- PLNLDA(Abundance ~ Wind + 0, grouping = grouping, data = trichoptera)
+myLDA_cov <- PLNLDA(Abundance ~ Wind + 0 + offset(log(TotalCounts)), grouping = grouping, data = trichoptera)
 ```
 
 ```{r plot_model_cov, fig.width=7, fig.height=5}
@@ -66,11 +71,7 @@ plot(myLDA_cov)
 
 And again try to predict class based on the counts and some covariates
 ```{r predict_class_cov}
-Y <- trichoptera$Abundance
-predicted.class_cov <- myLDA_cov$predict(newCounts = Y, 
-                                       newdata = model.matrix( ~ Wind + 0, trichoptera), 
-                                       newOffsets = matrix(0, nrow(Y), ncol(Y)), 
-                                       type = "response")
+predicted.class_cov <- predict(myLDA_cov, newdata = trichoptera, type = "response")
 ```
 and asses that we recover the correct class in most (but not all) cases:
 ```{r check_predicted_class_cov}

@@ -69,8 +69,8 @@ plot.PLNLDAfit <-
 #' @return A matrix of predicted scores for each group (if type = "score") or a vector of predicted
 #'         groups (if type = "response").
 #' @export
-predict.PLNLDAfit <- function(object, newdata, newOffsets, newCounts,
+predict.PLNLDAfit <- function(object, newdata,
                               type = c("posterior", "response"), control = list(), ...) {
   stopifnot(isPLNLDAfit(object))
-  object$predict(newdata, newOffsets, newCounts, type, control)
+  object$predict(newdata, type, control)
 }
