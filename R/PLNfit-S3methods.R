@@ -52,12 +52,12 @@ vcov.PLNfit <- function(object, ...) {
 
 #' Generic function for the Fisher information matrix of Theta
 #'
-#' @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{Y = X\Theta + E}. Useful to create confidence intervals and (multivariate) confidence regions under a Gaussian approximation of \eqn{\hat{\Theta}}. Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
+#' @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{Y = X\Theta + E} Useful to create confidence intervals and (multivariate) confidence regions under a Gaussian approximation of \eqn{\Theta}. Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
 #'
 #' @param x An `R` object. Currently there are methods for \code{\link{PLNfit}} (and its variants) objects.
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return The fisher information matrix of Theta in generalized linear models.
+#' @return The fisher information matrix of \eqn{\Theta} in generalized linear models.
 #' @export
 #'
 fisher <- function (x, ...) {
@@ -66,7 +66,7 @@ fisher <- function (x, ...) {
 
 #' Fisher information matrix for Theta
 #'
-#' @description Extracts Fisher information matrix of Theta from objects returned by \code{\link[=PLN]{PLN}} and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
+#' @description Extracts Fisher information matrix of \eqn{\Theta} from objects returned by \code{\link[=PLN]{PLN}} and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
 #'
 #' @name fisher.PLNfit
 #'
@@ -75,7 +75,7 @@ fisher <- function (x, ...) {
 #' Fisher information matrix
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
-#' Theta is a matrix of size d * p.
+#' \eqn{\Theta} is a matrix of size d * p.
 #'
 #' @seealso \code{\link[=standard_error.PLNfit]{standard_error}} for standard errors
 #'
@@ -92,12 +92,12 @@ fisher.PLNfit <- function(object, type = c("wald", "louis"), ...) {
 
 #' Component-wise standard errors of Theta
 #'
-#' @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{Y = X\Theta + E}. Useful to compute Z-scores and p-values under a gaussian/student approximation of \eqn{\hat{\Theta}}
+#' @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{Y = X\Theta + E} Useful to compute Z-scores and p-values under a gaussian/student approximation of \eqn{\Theta}
 #'
 #' @param x An `R` object. Currently there are methods for \code{\link{PLNfit}} (and its variants) objects.
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return The standard errors associated with coefficients of \eqn{\hat{\Theta}}
+#' @return The standard errors associated with coefficients of \eqn{\Theta}
 #' @export
 #'
 standard_error <- function (x, ...) {
@@ -117,10 +117,10 @@ standard_error <- function (x, ...) {
 #'
 #' @seealso \code{\link[=fisher.PLNfit]{fisher}} for the complete Fisher information matrix
 #'
-#' @return A p * d positive matrix (same size as Theta) with standard errors.
+#' @return A p * d positive matrix (same size as \eqn{\Theta}) with standard errors for the coefficients of \eqn{\Theta}
 #' @export
 #'
-standard_error <- function(object, type = c("wald", "louis"), ...) {
+standard_error.PLNfit <- function(object, type = c("wald", "louis"), ...) {
   stopifnot(isPLNfit(object))
   type <- match.arg(type)
   if (type != object$fisher$type) {
