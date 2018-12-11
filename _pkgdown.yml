@@ -6,12 +6,23 @@ navbar:
   title: "PLNmodels"
   type: inverse
   left:
+    - icon: fa-home
     - text: "Home"
       href: index.html
     - text: "Reference"
       href: "reference/index.html"
-    - text: "Articles and Vignettes"
-      href: "articles/index.html"
+    - text: "Article"
+      href: "https://raw.githubusercontent.com/jchiquet/PLNmodels/master/vignettes/article/PLNmodels.html"
+    - text: "Vignettes"
+      menu:
+      - text: "PLN: Multivariate Poisson regression"
+        href: articles/PLN.html
+      - text: "PLNPCA: Dimension Reduction"
+        href: articles/PLNPCA.html
+      - text: "PLNLDA: Discriminant Analysis"
+        href: articles/PLNLDA.html
+      - text: "PLNnetwork: sparse structure inference"
+        href: articles/PLNnetwork.html
   right:
     - icon: fa-github
       href: https://github.com/jchiquet/PLNmodels
@@ -72,17 +83,3 @@ reference:
   contents:
     - '`trichoptera`'
 
-articles:
-- title: Introduction
-  desc: >
-    A vignette introducing the PLN model and the compnion data set
-  contents:
-  - '`PLNmodels_introduction`'
-- title: All vignettes
-  desc: >
-    Vignettes specific to each top-level functions
-  contents:
-  - '`PLN`'
-  - '`PLNPCA`'
-  - '`PLNLDA`'
-  - '`PLNnetwork`'

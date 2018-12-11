@@ -38,13 +38,40 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
+  <a>
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../index.html">Home</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles and Vignettes</a>
+  <a href="https://raw.githubusercontent.com/jchiquet/PLNmodels/master/vignettes/article/PLNmodels.html">Article</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Vignettes
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="../articles/PLN.html">PLN: Multivariate Poisson regression</a>
+    </li>
+    <li>
+      <a href="../articles/PLNPCA.html">PLNPCA: Dimension Reduction</a>
+    </li>
+    <li>
+      <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
+    </li>
+    <li>
+      <a href="../articles/PLNnetwork.html">PLNnetwork: sparse structure inference</a>
+    </li>
+  </ul>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -69,7 +96,7 @@
       <h1>Dimension reduction of multivariate count table with the probabilistic Poisson PCA</h1>
                         <h4 class="author">Julien Chiquet</h4>
             
-            <h4 class="date">2018-12-10</h4>
+            <h4 class="date">2018-12-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNPCA.Rmd"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -82,7 +109,7 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3">grouping &lt;-<span class="st"> </span>trichoptera<span class="op">$</span>Group</a></code></pre></div>
-<p>Mathematical background and a full description of the trichoptera data set can be found in <a href="PLNmodels_introduction.html">the introductory vignette</a>.</p>
+<p>Mathematical background and a full description of the trichoptera data set can be found in <a href="../article/PLNmodels.html">the introductory vignette</a>.</p>
 <div id="poisson-log-normal-models" class="section level2">
 <h2 class="hasAnchor">
 <a href="#poisson-log-normal-models" class="anchor"></a>Poisson log-normal models</h2>
@@ -104,7 +131,7 @@
 <div id="a-model-with-latent-main-effects-for-the-trichopetra-data-set" class="section level3">
 <h3 class="hasAnchor">
 <a href="#a-model-with-latent-main-effects-for-the-trichopetra-data-set" class="anchor"></a>A model with latent main effects for the Trichopetra data set</h3>
-<p>We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations <span class="math inline">\(\mathbf{Y}\)</span> corresponds to the abundance of each species in each trapping night. It seems also natural to add an offset corresponding to the total count per night. The model can be fitted with the function <code>PLNPCA</code> for a series of values for <span class="math inline">\(q\)</span> as follows:</p>
+<p>The model can be fitted with the function <code>PLNPCA</code> for a series of values for <span class="math inline">\(q\)</span> as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">models.nocov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNPCA.html">PLNPCA</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)), <span class="dt">data =</span> trichoptera, <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
@@ -154,7 +181,7 @@
 \end{equation}\]</span></p>
 <p>where <span class="math inline">\(\mathbf{X}_i\)</span> is a vector of <span class="math inline">\(d\)</span> covariate for observations <span class="math inline">\(i\)</span>. The <span class="math inline">\(p \times d\)</span> matrix <span class="math inline">\(\boldsymbol\Theta\)</span> entails the associated parameters.</p>
 <p>In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the minimal temperature, the wind and the average cloudiness This can be done thanks to the model formula:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">models.cov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNPCA.html">PLNPCA</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)) <span class="op">+</span><span class="st"> </span>T_min <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Cloudiness_average, <span class="dt">data =</span> trichoptera, <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">models.cov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNPCA.html">PLNPCA</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)) <span class="op">+</span><span class="st"> </span>Temperature <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Cloudiness, <span class="dt">data =</span> trichoptera, <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ## 
@@ -174,15 +201,15 @@
 ##  Task: Principal Component Analysis
 ## ========================================================
 ##  - Ranks considered: from 1 to 5 
-##  - Best model (regarding BIC): rank = 3 - R2 = 0.73 
-##  - Best model (regarding ICL): rank = 3 - R2 = 0.73</code></pre>
+##  - Best model (regarding BIC): rank = 3 - R2 = 0.72 
+##  - Best model (regarding ICL): rank = 3 - R2 = 0.72</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">myPCA.cov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(models.cov, <span class="st">"ICL"</span>)</a></code></pre></div>
 <p>The <code>show/print</code> method lists a few summary statistics and useful methods / fields.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">myPCA.cov</a></code></pre></div>
 <pre><code>## Poisson Lognormal with rank constrained for PCA (rank = 3)
 ## ==================================================================
-##  degrees_freedom    loglik       BIC       ICL R_squared
-##              119 -963.6623 -1195.226 -1270.007 0.7339339
+##  degrees_freedom    loglik      BIC       ICL R_squared
+##              119 -969.9663 -1201.53 -1272.231 0.7225657
 ## ==================================================================
 ## * Useful fields 
 ##     $model_par, $fitted, $latent, $var_par, $optim_par 
@@ -207,35 +234,35 @@
 <li>the regression coefficient matrix</li>
 </ul>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myPCA.cov))</a></code></pre></div>
-<pre><code>##     (Intercept)       T_min        Wind Cloudiness_average
-## Che -19.4092492  0.62860393 -0.79222483       -0.022023416
-## Hyc -18.1052394  0.43620807  0.13965231        0.037719587
-## Hym  -2.6382806 -0.10549199 -0.20558352        0.022250198
-## Hys  -7.8044916 -0.03381157 -0.56867780        0.018272206
-## Psy  -0.2588776 -0.00864431  0.03612101       -0.002650577
-## Aga  -2.5488638 -0.12639033 -0.02919774        0.008379871</code></pre>
+<pre><code>##     (Intercept)   Temperature        Wind   Cloudiness
+## Che -11.9427905  0.1712045069 -0.51436500 -0.002415588
+## Hyc  -2.4116095 -0.4828805473  0.93021388  0.026529585
+## Hym  -0.1510534 -0.1498317040 -0.16634245  0.006624564
+## Hys  -8.9185602  0.0353271612 -0.61609810  0.015433309
+## Psy  -0.3475084  0.0003380401  0.04517291 -0.003302406
+## Aga  -1.2432510 -0.1147197338  0.02500181 -0.006332164</code></pre>
 <ul>
 <li>the rotation matrix (in the latent space)</li>
 </ul>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(myPCA.cov<span class="op">$</span>rotation)</a></code></pre></div>
-<pre><code>##            [,1]        [,2]        [,3]
-## Che  0.50536480 -0.10892115 -0.14831942
-## Hyc -0.59440290 -0.12252759 -0.30965163
-## Hym -0.02673406 -0.03325373 -0.14447329
-## Hys -0.11356574  0.18406229 -0.33371737
-## Psy  0.03795112  0.03630391  0.04166303
-## Aga  0.05104475 -0.04612667 -0.42855257</code></pre>
+<pre><code>##            [,1]         [,2]        [,3]
+## Che  0.07775912 -0.055740470  0.28280354
+## Hyc -0.77220439  0.001727029  0.12263384
+## Hym  0.02797187 -0.017185812  0.13965403
+## Hys -0.05513104 -0.238732934  0.27471076
+## Psy  0.03948576 -0.026702883 -0.06320128
+## Aga  0.12462928 -0.015889099  0.41686140</code></pre>
 <ul>
 <li>the principal components values (or scores)</li>
 </ul>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(myPCA.cov<span class="op">$</span>scores)</a></code></pre></div>
-<pre><code>##        [,1]       [,2]       [,3]
-## 1 -3.195751  0.3600483 -0.2449149
-## 2  1.954188 -1.0312855  0.4784672
-## 3  4.190046 -1.6800055  1.5903460
-## 4  4.980261 -0.3997048  2.1878175
-## 5  3.413255  0.1883234  0.5911391
-## 6  4.549632 -0.7701306  0.5130351</code></pre>
+<pre><code>##        [,1]        [,2]       [,3]
+## 1 -1.879244 0.006662777 -0.3991140
+## 2  4.362950 1.711984021 -0.4568452
+## 3  4.766439 2.877115550 -1.8258400
+## 4  6.132710 1.190054166 -2.4654709
+## 5  4.295106 0.338612367 -0.9784539
+## 6  6.461842 1.184831786 -0.6936815</code></pre>
 <p>That is all for now!</p>
 </div>
 </div>
@@ -269,7 +296,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
       </footer>
 </div>
