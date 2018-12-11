@@ -69,9 +69,7 @@ PLNfit <-
       std_err    = function() { private$.std_err },
       var_par    = function() {list(M = private$M, S = private$S)},
       latent     = function() {private$Z},
-      fitted     = function() {
-        exp(private$Z + .5 * switch(private$covariance, "spherical" = private$S %*% rbind(rep(1, self$p)), private$S))
-      },
+      fitted     = function() {exp(private$Z + .5 * switch(private$covariance, "spherical" = private$S %*% rbind(rep(1, self$p)), private$S))},
       degrees_freedom = function() {self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)},
       vcov_model = function() {private$covariance},
       optim_par  = function() {private$monitoring},
@@ -278,7 +276,7 @@ PLNfit$set("public", "compute_fisher",
       ## Hack to make sure that species is first and varies slowest
       apply(1, paste0, collapse = "_")
     rownames(result) <- element.names
-    return(result)
+    result
   }
 )
 
@@ -286,10 +284,14 @@ PLNfit$set("public", "compute_fisher",
 # Fisher information matrix. See \code{\link[=PLNfit_fisher]{fisher}} for more details on the approximations.
 PLNfit$set("public", "compute_standard_error",
   function() {
-    fim <- self$n * self$fisher$mat ## Fisher Information matrix I_n(\Theta) = n * I(\Theta)
-    stderr <- fim %>% solve %>% diag %>% sqrt %>% matrix(nrow = self$d) %>% t()
-    dimnames(stderr) <- dimnames(self$model_par$Theta)
-    return(stderr)
+    if (self$d > 0) {
+      fim <- self$n * self$fisher$mat ## Fisher Information matrix I_n(\Theta) = n * I(\Theta)
+      stderr <- fim %>% solve %>% diag %>% sqrt %>% matrix(nrow = self$d) %>% t()
+      dimnames(stderr) <- dimnames(self$model_par$Theta)
+    } else {
+      stderr <- NULL
+    }
+    stderr
   }
 )
 
