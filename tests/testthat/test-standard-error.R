@@ -50,7 +50,7 @@ test_that("Check internal consistency of Fisher matrix for PLN models with no co
 
 
 test_that("Check temporal consistency of Fisher matrix for PLN models with no covariates",  {
-  tol <- 1e-4
+  tol <- 1e-3
 
   ## Fit model without covariates
   myPLN <- PLN(Abundance ~ 1 + offset(log(TotalCounts)), data = trichoptera)
