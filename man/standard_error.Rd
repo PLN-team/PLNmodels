@@ -15,5 +15,5 @@ standard_error(x, ...)
 The standard errors associated with coefficients of \eqn{\Theta}
 }
 \description{
-Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{Y = X\Theta + E} Useful to compute Z-scores and p-values under a gaussian/student approximation of \eqn{\Theta}
+Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{g(E[Y|X]) = X\Theta} Useful to compute Z-scores and p-values under a gaussian/student approximation of \eqn{\Theta}
 }

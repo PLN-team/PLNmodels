@@ -52,7 +52,7 @@ vcov.PLNfit <- function(object, ...) {
 
 #' Generic function for the Fisher information matrix of Theta
 #'
-#' @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{Y = X\Theta + E} Useful to create confidence intervals and (multivariate) confidence regions under a Gaussian approximation of \eqn{\Theta}. Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
+#' @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{g(E[Y|X]) = X\Theta} Useful to create confidence intervals and (multivariate) confidence regions under a Gaussian approximation of \eqn{\Theta}. Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
 #'
 #' @param x An `R` object. Currently there are methods for \code{\link{PLNfit}} (and its variants) objects.
 #' @param ... Further arguments passed to or from other methods.
@@ -92,7 +92,7 @@ fisher.PLNfit <- function(object, type = c("wald", "louis"), ...) {
 
 #' Component-wise standard errors of Theta
 #'
-#' @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{Y = X\Theta + E} Useful to compute Z-scores and p-values under a gaussian/student approximation of \eqn{\Theta}
+#' @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{g(E[Y|X]) = X\Theta} Useful to compute Z-scores and p-values under a gaussian/student approximation of \eqn{\Theta}
 #'
 #' @param x An `R` object. Currently there are methods for \code{\link{PLNfit}} (and its variants) objects.
 #' @param ... Further arguments passed to or from other methods.

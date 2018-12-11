@@ -15,5 +15,5 @@ fisher(x, ...)
 The fisher information matrix of \eqn{\Theta} in generalized linear models.
 }
 \description{
-Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{Y = X\Theta + E} Useful to create confidence intervals and (multivariate) confidence regions under a Gaussian approximation of \eqn{\Theta}. Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
+Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{g(E[Y|X]) = X\Theta} Useful to create confidence intervals and (multivariate) confidence regions under a Gaussian approximation of \eqn{\Theta}. Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
 }
