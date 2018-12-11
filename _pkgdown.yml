@@ -12,7 +12,7 @@ navbar:
     - text: "Reference"
       href: "reference/index.html"
     - text: "Article"
-      href: "https://raw.githubusercontent.com/jchiquet/PLNmodels/master/vignettes/article/PLNmodels.html"
+      href: "articles/article/PLNmodels.html"
     - text: "Vignettes"
       menu:
       - text: "PLN: Multivariate Poisson regression"
