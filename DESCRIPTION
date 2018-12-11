@@ -5,7 +5,8 @@ Version: 0.5.9605
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
-  person("Mahendra", "Mariadassou", role = "aut", email = "mahendra.mariadassou@inra.fr"),
+  person("Mahendra", "Mariadassou", role = "aut", email = "mahendra.mariadassou@inra.fr", 
+      comment = c(ORCID = "0000-0003-2986-354X")),
   person("Stéphane", "Robin", role ="ctb", email = "stephane.robininra.fr")
   )
 Maintainer: Julien Chiquet <julien.chiquet@inra.fr>

@@ -49,3 +49,82 @@ vcov.PLNfit <- function(object, ...) {
   stopifnot(isPLNfit(object))
   object$model_par$Sigma
 }
+
+#' Generic function for the Fisher information matrix of Theta
+#'
+#' @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{g(E[Y|X]) = X\Theta} Useful to create confidence intervals and (multivariate) confidence regions under a Gaussian approximation of \eqn{\Theta}. Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
+#'
+#' @param x An `R` object. Currently there are methods for \code{\link{PLNfit}} (and its variants) objects.
+#' @param ... Further arguments passed to or from other methods.
+#'
+#' @return The fisher information matrix of \eqn{\Theta} in generalized linear models.
+#' @export
+#'
+fisher <- function (x, ...) {
+  UseMethod("fisher", x)
+}
+
+#' Fisher information matrix for Theta
+#'
+#' @description Extracts Fisher information matrix of \eqn{\Theta} from objects returned by \code{\link[=PLN]{PLN}} and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
+#'
+#' @name fisher.PLNfit
+#'
+#' @param object an R6 object with class PLNfit
+#' @param type Either `wald` (default) or `louis`. Approxomation scheme used to compute the
+#' Fisher information matrix
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
+#' \eqn{\Theta} is a matrix of size d * p.
+#'
+#' @seealso \code{\link[=standard_error.PLNfit]{standard_error}} for standard errors
+#'
+#' @export
+#'
+fisher.PLNfit <- function(object, type = c("wald", "louis"), ...) {
+  stopifnot(isPLNfit(object))
+  type <- match.arg(type)
+  if (type != object$fisher$type) {
+    stop(paste("Fisher information was not computed using the", type, "approximation. Try another approximation scheme."))
+  }
+  object$fisher$mat
+}
+
+#' Component-wise standard errors of Theta
+#'
+#' @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{g(E[Y|X]) = X\Theta} Useful to compute Z-scores and p-values under a gaussian/student approximation of \eqn{\Theta}
+#'
+#' @param x An `R` object. Currently there are methods for \code{\link{PLNfit}} (and its variants) objects.
+#' @param ... Further arguments passed to or from other methods.
+#'
+#' @return The standard errors associated with coefficients of \eqn{\Theta}
+#' @export
+#'
+standard_error <- function (x, ...) {
+  UseMethod("standard_error", x)
+}
+
+#' Component-wise standard errors of Theta
+#'
+#' @description Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate) Fisher information matrix. See \code{\link[=fisher.PLNfit]{fisher}} for more details on the approximations.
+#'
+#' @name standard_error.PLNfit
+#'
+#' @param object an R6 object with class PLNfit
+#' @param type Either `Wald` (default) or `Louis`. Approxomation scheme used to compute the
+#' Fisher information matrix
+#' @param ... additional parameters for S3 compatibility. Not used
+#'
+#' @seealso \code{\link[=fisher.PLNfit]{fisher}} for the complete Fisher information matrix
+#'
+#' @return A p * d positive matrix (same size as \eqn{\Theta}) with standard errors for the coefficients of \eqn{\Theta}
+#' @export
+#'
+standard_error.PLNfit <- function(object, type = c("wald", "louis"), ...) {
+  stopifnot(isPLNfit(object))
+  type <- match.arg(type)
+  if (type != object$fisher$type) {
+    stop(paste("Standard errors were not computed using the", type, "approximation. Try another approximation scheme."))
+  }
+  object$std_err
+}
