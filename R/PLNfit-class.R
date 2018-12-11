@@ -50,6 +50,10 @@ PLNfit <-
       Z          = NA, # the matrix of latent variable
       R2         = NA, # approximated goodness of fit criterion
       Ji         = NA, # element-wise approximated loglikelihood
+      FIM        = NA, # Fisher information matrix of Theta, computed using of two approximation scheme
+      FIM_type   = NA, # Either "wald" or "louis". Approximation scheme used to compute FIM
+      .std_err   = NA, # element-wise standard error for the elements of Theta computed
+                       # from the Fisher information matrix
       covariance = NA, # a string describing the covariance model
       optimizer  = NA, # link to the function that performs the optimization
       monitoring = NA  # a list with optimization monitoring quantities
@@ -60,8 +64,9 @@ PLNfit <-
       q = function() {ncol(private$M)},
       p = function() {nrow(private$Theta)},
       d = function() {ncol(private$Theta)},
-      ## model_par and var_par allow write access for bootstrapping purposes
       model_par  = function() { list(Theta = private$Theta, Sigma = private$Sigma)},
+      fisher     = function() { list(mat = private$FIM, type = private$FIM_type) },
+      std_err    = function() { private$.std_err },
       var_par    = function() {list(M = private$M, S = private$S)},
       latent     = function() {private$Z},
       fitted     = function() {exp(private$Z + .5 * private$S)},
@@ -164,7 +169,7 @@ function(responses, covariates, offsets, weights) {
 })
 
 PLNfit$set("public", "postTreatment",
-function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
+function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis")) {
   ## compute R2
   self$set_R2(responses, covariates, offsets, weights)
   ## Set the name of the matrices according to those of the data matrices
@@ -172,6 +177,12 @@ function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
   colnames(private$Theta) <- colnames(covariates)
   rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
   rownames(private$M) <- rownames(private$S) <- rownames(responses)
+  ## compute and store Fisher Information matrix
+  type <- match.arg(type)
+  private$FIM <- self$compute_fisher(type, X = covariates)
+  private$FIM_type <- type
+  ## compute and store matrix of standard errors
+  private$.std_err <- self$compute_standard_error()
 })
 
 # Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
@@ -245,6 +256,42 @@ PLNfit$set("public", "predict",
 
     attr(results, "type") <- type
     results
+  }
+)
+
+# Compute the (one-data) Fisher information matrix of Theta using one of two approximations scheme (wald or fisher)
+PLNfit$set("public", "compute_fisher",
+  function(type = c("wald", "louis"), X = NULL) {
+    type = match.arg(type)
+    A <- self$fitted
+    n <- self$n
+    if (type == "louis") {
+      ## TODO check how to adapt for PLNPCA
+      ## A = A + A \odot A \odot (exp(S) - 1_{n \times p})
+      A <- A + A * A * (exp(self$var_par$S) - 1)
+    }
+    result <- bdiag(lapply(1:self$p, function(i) {
+      ## t(X) %*% diag(A[, i]) %*% X
+      crossprod(X, A[, i] * X) / n
+    }))
+    ## set proper names
+    element.names <- expand.grid(covariates = colnames(private$Theta),
+                                 species    = rownames(private$Theta)) %>% rev() %>%
+      ## Hack to make sure that species is first and varies slowest
+      apply(1, paste0, collapse = "_")
+    rownames(result) <- element.names
+    return(result)
+  }
+)
+
+# Compute univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate)
+# Fisher information matrix. See \code{\link[=PLNfit_fisher]{fisher}} for more details on the approximations.
+PLNfit$set("public", "compute_standard_error",
+  function() {
+    fim <- self$n * self$fisher$mat ## Fisher Information matrix I_n(\Theta) = n * I(\Theta)
+    stderr <- fim %>% solve %>% diag %>% sqrt %>% matrix(nrow = self$d) %>% t()
+    dimnames(stderr) <- dimnames(self$model_par$Theta)
+    return(stderr)
   }
 )
 

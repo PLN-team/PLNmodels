@@ -235,6 +235,17 @@ PLNPCAfit$set("public", "plot_PCA",
   }
 )
 
+# Compute the (one-data) Fisher information matrix of Theta using one of two approximations scheme.
+PLNPCAfit$set("private", "compute_fisher",
+  function(type = c("wald", "louis"), X = NULL) {
+    type = match.arg(type)
+    if (type == "louis") {
+      stop("Louis approximation scheme not available yet for object of class PLNPLCA, use `type = \"wald\"' instead.")
+    }
+    super$fisher(type = "wald", X = X)
+  }
+)
+
 PLNPCAfit$set("public", "show",
 function() {
   super$show(paste0("Poisson Lognormal with rank constrained for PCA (rank = ",self$rank,")\n"))
