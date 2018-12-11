@@ -5,8 +5,8 @@
 #' by inheritance.
 #'
 #' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-#' See the documentation for \code{\link[=coef.PLNfit]{coef}},
-#' \code{\link[=vcov.PLNfit]{vcov.PLNfit}} and  \code{\link[=predict.PLNfit]{predict}}.
+#' See the documentation for \code{\link[=coef.PLNfit]{coef}}, \code{\link[=vcov.PLNfit]{vcov.PLNfit}},
+#' \code{\link[=predict.PLNfit]{predict}}, \code{\link[=fisher.PLNfit]{fisher}} and \code{\link[=standard_error.PLNfit]{standard_error}}.
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'

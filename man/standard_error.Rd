@@ -2,18 +2,29 @@
 % Please edit documentation in R/PLNfit-S3methods.R
 \name{standard_error}
 \alias{standard_error}
+\alias{standard_error.PLNfit}
 \title{Component-wise standard errors of Theta}
 \usage{
-standard_error(x, ...)
+standard_error(object, type)
+
+\method{standard_error}{PLNfit}(object, type = c("wald", "louis"))
 }
 \arguments{
-\item{x}{An `R` object. Currently there are methods for \code{\link{PLNfit}} (and its variants) objects.}
+\item{object}{an R6 object with class PLNfit}
 
-\item{...}{Further arguments passed to or from other methods.}
+\item{type}{Either `Wald` (default) or `Louis`. Approximation scheme used to compute the Fisher information matrix}
 }
 \value{
-The standard errors associated with coefficients of \eqn{\Theta}
+A p * d positive matrix (same size as \eqn{\Theta}) with standard errors for the coefficients of \eqn{\Theta}
 }
 \description{
-Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{g(E[Y|X]) = X\Theta} Useful to compute Z-scores and p-values under a gaussian/student approximation of \eqn{\Theta}
+Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate) Fisher information matrix. See \code{\link[=fisher.PLNfit]{fisher}} for more details on the approximations.
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{PLNfit}: Component-wise standard errors of Theta in PLNfit
+}}
+
+\seealso{
+\code{\link[=fisher.PLNfit]{fisher}} for the complete Fisher information matrix
 }

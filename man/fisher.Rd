@@ -2,18 +2,31 @@
 % Please edit documentation in R/PLNfit-S3methods.R
 \name{fisher}
 \alias{fisher}
-\title{Generic function for the Fisher information matrix of Theta}
+\alias{fisher.PLNfit}
+\title{Fisher information matrix for Theta}
 \usage{
-fisher(x, ...)
+fisher(object, type)
+
+\method{fisher}{PLNfit}(object, type = c("wald", "louis"))
 }
 \arguments{
-\item{x}{An `R` object. Currently there are methods for \code{\link{PLNfit}} (and its variants) objects.}
+\item{object}{an R6 object with class PLNfit}
 
-\item{...}{Further arguments passed to or from other methods.}
+\item{type}{Either `wald` (default) or `louis`. Approxomation scheme used to compute the
+Fisher information matrix}
 }
 \value{
-The fisher information matrix of \eqn{\Theta} in generalized linear models.
+A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
+\eqn{\Theta} is a matrix of size d * p.
 }
 \description{
-Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{g(E[Y|X]) = X\Theta} Useful to create confidence intervals and (multivariate) confidence regions under a Gaussian approximation of \eqn{\Theta}. Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
+Extracts Fisher information matrix of \eqn{\Theta} from objects returned by \code{\link[=PLN]{PLN}} and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{PLNfit}: Fisher information matrix for PLNfit
+}}
+
+\seealso{
+\code{\link[=standard_error.PLNfit]{standard_error}} for standard errors
 }
