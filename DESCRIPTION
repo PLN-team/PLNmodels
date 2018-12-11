@@ -1,7 +1,7 @@
 Package: PLNmodels
 Type: Package
 Title: Poisson Lognormal Models
-Version: 0.6.001
+Version: 0.6.1001
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -16,7 +16,7 @@ Description: The Poisson-lognormal model and variants can be used for
     implements efficients variational algorithms to fit such models accompanied with a set of
     functions for vizualisation and diagnostic.
 URL: https://github.com/jchiquet/PLNmodels (dev version)
-BugReports: https://github.com/jchiqut/PLNmodels/issues
+BugReports: https://github.com/jchiquet/PLNmodels/issues
 License: GPL (>= 3)
 SystemRequirements: libnlopt: libnlopt-dev (deb) or NLopt-devel (rpm).
 Encoding: UTF-8
