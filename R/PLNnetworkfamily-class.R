@@ -172,7 +172,11 @@ function(precision = TRUE, corr = TRUE) {
     if (corr) {
       G <- ifelse(precision, -1, 1) * G / tcrossprod(sqrt(diag(G)))
     }
-    G %>% melt(value.name = "Coeff", varnames = c("Node1", "Node2")) %>%
+    setNames(
+      cbind(
+        expand.grid(colnames(G), rownames(G)),
+        as.vector(G)), c("Node1", "Node2", "Coeff")
+      ) %>%
       mutate(Penalty = x,
              Node1   = as.character(Node1),
              Node2   = as.character(Node2),
