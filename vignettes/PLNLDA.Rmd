@@ -17,7 +17,7 @@ data(trichoptera)
 grouping <- trichoptera$Group
 ```
 
-Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](PLNmodels_introduction.html).
+Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](../article/PLNmodels.html).
 
 ### A discriminant analysis for the Trichopetra data set
 

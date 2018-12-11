@@ -3,7 +3,7 @@ title: "Analyzing multivariate count table with sparse Poisson log-normal models
 author: "Julien Chiquet"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: PLNvignettes.bib
+bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
   %\VignetteIndexEntry{PLNnetwork}
@@ -23,7 +23,7 @@ data(trichoptera)
 grouping <- trichoptera$Group
 ```
 
-Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](PLNmodels_introduction.html).
+Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](../article/PLNmodels.html).
 
 ## Sparse Poisson log-normal models
 

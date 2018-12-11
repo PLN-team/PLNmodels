@@ -3,7 +3,7 @@ title: "Dimension reduction of multivariate count table with the probabilistic P
 author: "Julien Chiquet"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: PLNvignettes.bib
+bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
   %\VignetteIndexEntry{PLNPCA}
@@ -19,7 +19,7 @@ data(trichoptera)
 grouping <- trichoptera$Group
 ```
 
-Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](PLNmodels_introduction.html).
+Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](../article/PLNmodels.html).
 
 ## Poisson log-normal models
 
@@ -100,7 +100,7 @@ where $\mathbf{X}_i$ is a vector of $d$ covariate for observations $i$. The $p \
 
 In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the minimal temperature, the wind and the average cloudiness This can be done thanks to the model formula:
 ```{r}
-models.cov <- PLNPCA(Abundance ~ 1 + offset(log(TotalCounts)) + T_min + Wind + Cloudiness_average, data = trichoptera, ranks = 1:5)
+models.cov <- PLNPCA(Abundance ~ 1 + offset(log(TotalCounts)) + Temperature + Wind + Cloudiness, data = trichoptera, ranks = 1:5)
 ```
 
 Again, the best model is obtained for $q=3$ classes.
