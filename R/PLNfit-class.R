@@ -69,7 +69,9 @@ PLNfit <-
       std_err    = function() { private$.std_err },
       var_par    = function() {list(M = private$M, S = private$S)},
       latent     = function() {private$Z},
-      fitted     = function() {exp(private$Z + .5 * private$S)},
+      fitted     = function() {
+        exp(private$Z + .5 * switch(private$covariance, "spherical" = private$S %*% rbind(rep(1, self$p)), private$S))
+      },
       degrees_freedom = function() {self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)},
       vcov_model = function() {private$covariance},
       optim_par  = function() {private$monitoring},
