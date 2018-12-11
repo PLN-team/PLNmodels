@@ -65,20 +65,47 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9601</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9605</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a>
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../index.html">Home</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles and Vignettes</a>
+  <a href="https://raw.githubusercontent.com/jchiquet/PLNmodels/master/vignettes/article/PLNmodels.html">Article</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Vignettes
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/PLN.html">PLN: Multivariate Poisson regression</a>
+    </li>
+    <li>
+      <a href="../articles/PLNPCA.html">PLNPCA: Dimension Reduction</a>
+    </li>
+    <li>
+      <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
+    </li>
+    <li>
+      <a href="../articles/PLNnetwork.html">PLNnetwork: sparse structure inference</a>
+    </li>
+  </ul>
 </li>
       </ul>
       
@@ -113,8 +140,8 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNLDAfit</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='no'>newdata</span>, <span class='no'>newOffsets</span>, <span class='no'>newCounts</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"posterior"</span>, <span class='st'>"response"</span>), <span class='kw'>control</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='no'>newdata</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"posterior"</span>,
+  <span class='st'>"response"</span>), <span class='kw'>control</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -125,15 +152,7 @@
     </tr>
     <tr>
       <th>newdata</th>
-      <td><p>A data frame in which to look for variables with which to predict.</p></td>
-    </tr>
-    <tr>
-      <th>newOffsets</th>
-      <td><p>A matrix in which to look for offsets with which to predict.</p></td>
-    </tr>
-    <tr>
-      <th>newCounts</th>
-      <td><p>A matrix in which to look for counts with to predict</p></td>
+      <td><p>A data frame in which to look for variables, offsets and counts  with which to predict.</p></td>
     </tr>
     <tr>
       <th>type</th>
@@ -174,7 +193,7 @@ the alternative "response" is the group with maximal posterior probability.</p><
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
       </footer>
    </div>

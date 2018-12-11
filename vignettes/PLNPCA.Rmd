@@ -1,9 +1,9 @@
 ---
-title: "Analyzing the Trichopetra data set with Poisson log-normal PCA"
+title: "Dimension reduction of multivariate count table with the probabilistic Poisson PCA"
 author: "Julien Chiquet"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: PLNmodels.bib
+bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
   %\VignetteIndexEntry{PLNPCA}
@@ -11,14 +11,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette intends to illustrate the basical use of the `PLNPCA` function and the methods accompaning the R6 Classes `PLNPCAfamily` and `PLNPCAfit`. To this end, let us consider an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence.
+This vignette intends to illustrate the basical use of the `PLNPCA` function and the methods accompaning the R6 Classes `PLNPCAfamily` and `PLNPCAfit`. We will illustrate our point with an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. 
 
 ```{r data_load}
 library(PLNmodels)
 data(trichoptera)
+grouping <- trichoptera$Group
 ```
 
-See `?PLNmodels::trichoptera` for details. 
+Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](../article/PLNmodels.html).
 
 ## Poisson log-normal models
 
@@ -41,21 +42,6 @@ The parameter ${\boldsymbol\mu}$ corresponds to the main effects, $\mathbf{B}$ t
 The dimension of the latent space $q$ corresponds to the number of axes in the PCA or, in other words, to the rank of $\mathbf{B}\mathbf{B}^\intercal$.
 
 ### A model with latent main effects for the Trichopetra data set
-
-We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night.
-
-```{r responses_trichoptera}
-str(trichoptera$Abundance)
-```
-
-It seems also natural to add an offset corresponding to the total count per night.
-```{r offset_trichopera}
-trichoptera$TotalCounts <- matrix(
-  rowSums(trichoptera$Abundance),
-  nrow = nrow(trichoptera$Abundance),
-  ncol = ncol(trichoptera$Abundance)
-)
-```
 
 The model can be fitted with the function `PLNPCA` for a series of values for $q$ as follows:
 
@@ -114,7 +100,7 @@ where $\mathbf{X}_i$ is a vector of $d$ covariate for observations $i$. The $p \
 
 In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the minimal temperature, the wind and the average cloudiness This can be done thanks to the model formula:
 ```{r}
-models.cov <- PLNPCA(Abundance ~ 1 + offset(log(TotalCounts)) + T_min + Wind + Cloudiness_average, data = trichoptera, ranks = 1:5)
+models.cov <- PLNPCA(Abundance ~ 1 + offset(log(TotalCounts)) + Temperature + Wind + Cloudiness, data = trichoptera, ranks = 1:5)
 ```
 
 Again, the best model is obtained for $q=3$ classes.
@@ -161,7 +147,3 @@ That is all for now!
 
 ## References
 
-```{r bib, include=FALSE}
-# create a bib file for the R packages used in this document
-writeLines(enc2utf8(toBibtex(citation("PLNmodels"))), "PLNmodels.bib", useBytes = TRUE)
-```

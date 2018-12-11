@@ -4,17 +4,13 @@
 \alias{predict.PLNLDAfit}
 \title{Predict group of new samples}
 \usage{
-\method{predict}{PLNLDAfit}(object, newdata, newOffsets, newCounts,
-  type = c("posterior", "response"), control = list(), ...)
+\method{predict}{PLNLDAfit}(object, newdata, type = c("posterior",
+  "response"), control = list(), ...)
 }
 \arguments{
 \item{object}{an R6 object with class PLNLDAfit}
 
-\item{newdata}{A data frame in which to look for variables with which to predict.}
-
-\item{newOffsets}{A matrix in which to look for offsets with which to predict.}
-
-\item{newCounts}{A matrix in which to look for counts with to predict}
+\item{newdata}{A data frame in which to look for variables, offsets and counts  with which to predict.}
 
 \item{type}{The type of prediction required. The default are posterior probabilities for each group (in log-scale),
 the alternative "response" is the group with maximal posterior probability.}

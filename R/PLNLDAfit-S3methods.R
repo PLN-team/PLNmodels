@@ -59,9 +59,7 @@ plot.PLNLDAfit <-
 #' @name predict.PLNLDAfit
 #'
 #' @param object an R6 object with class PLNLDAfit
-#' @param newdata A data frame in which to look for variables with which to predict.
-#' @param newOffsets A matrix in which to look for offsets with which to predict.
-#' @param newCounts A matrix in which to look for counts with to predict
+#' @param newdata A data frame in which to look for variables, offsets and counts  with which to predict.
 #' @param type The type of prediction required. The default are posterior probabilities for each group (in log-scale),
 #'             the alternative "response" is the group with maximal posterior probability.
 #' @param control a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.
@@ -69,8 +67,8 @@ plot.PLNLDAfit <-
 #' @return A matrix of predicted scores for each group (if type = "score") or a vector of predicted
 #'         groups (if type = "response").
 #' @export
-predict.PLNLDAfit <- function(object, newdata, newOffsets, newCounts,
+predict.PLNLDAfit <- function(object, newdata,
                               type = c("posterior", "response"), control = list(), ...) {
   stopifnot(isPLNLDAfit(object))
-  object$predict(newdata, newOffsets, newCounts, type, control)
+  object$predict(newdata, type, control, parent.frame())
 }
