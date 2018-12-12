@@ -16,7 +16,6 @@ vignette: >
 knitr::opts_chunk$set(
   echo = TRUE,
   rows.print = 5,
-  layout = "l-page",
   message = FALSE,
   warning = FALSE)
 ```
