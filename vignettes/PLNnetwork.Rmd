@@ -2,7 +2,10 @@
 title: "Analyzing multivariate count table with sparse Poisson log-normal models"
 author: "Julien Chiquet"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
 bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
@@ -12,22 +15,40 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  rows.print = 5,
+  message = FALSE, 
+  warning = FALSE)
 ```
 
-This vignette intends to illustrate the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`.  We will illustrate our point with an ecological data set concerning abundances of Trichopetera species, coupled with some meteological factors that may influence the presence their presence. 
+## Preliminaries
+
+This vignette intends to illustrate the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`.
+
+
+### Requirements
+
+The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:
+
+```{r requirement}
+library(tidyverse)
+library(rmarkdown)
+library(corrplot)
+library(PLNmodels)
+```
+
+### Data set
+
+We illustrate our point with the trichoptera data set, a full description of which can be found in [the corresponding vignette](Trichoptera.html).
 
 ```{r data_load}
-library(PLNmodels)
 data(trichoptera)
-grouping <- trichoptera$Group
 ```
 
-Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](../article/PLNmodels.html).
+The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$TotalCounts`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
 
-## Sparse Poisson log-normal models
-
-### A quick view of the mathematical formulation of the model
+### Sparse Poisson log-normal models
 
 The Poisson lognormal model relates some $p$-dimensional observation vectors $\mathbf{Y}_i$ to some  $p$-dimensional vectors of Gaussian latent variables $\mathbf{Z}_i$ as follows
 \begin{equation} 
@@ -41,6 +62,10 @@ The Poisson lognormal model relates some $p$-dimensional observation vectors $\m
 The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying structure of dependence between the $p$ variables. 
 
 In the PLN network, we penalized the inverse covariance $\boldsymbol\Sigma^{-1} = \boldsymbol\Theta$ by a $\ell_1$ penalty to induce sparsity and select important direct relationships between entities. Hence, the support of $\boldsymbol\Theta$ correspond to a network of underlying interactions. All mathematical details can be found in @PLNnetwork.
+
+## Analysis of trichoptera data with a PLNnetwork model
+
+In the package, the sparse PLN model is adjusted with the function `PLNnetowkr`, which we review in this section
 
 ### A model with latent main effects for the Trichopetra data set
 
