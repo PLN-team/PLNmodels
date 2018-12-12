@@ -19,7 +19,7 @@ data(trichoptera)
 grouping <- trichoptera$Group
 ```
 
-Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](../article/PLNmodels.html).
+Mathematical background and a full description of the trichoptera data set can be found in [the introductory vignette](article/PLNmodels.html).
 
 ## Poisson log-normal models
 

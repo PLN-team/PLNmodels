@@ -2,7 +2,7 @@
 title: 'PLNmodels: an R package for analyzing multivariate count data'
 description: |
   In many fields of life science, count data is becoming the standard, like abundance table in ecology and microbiology, or single-cell data in molecular biology. The Poisson lognormal model is a latent model that describes the dependency structure of the data in an underlying Gaussian layer, while the observation layer of the count is Poisson distributed. As such, it offers the flexibility of the multivariate Gaussian distribution while preserving count distributions. <br/>
-  In the R package **PLNmodels**, we implement an efficient variational strategy for inferring the standard Poisson lognormal model. We derive a series of model by transposing the classical tools from multivariate analysis, mostly tight to the Gaussian assumption of the data, to count data. **PLNmodels** includes variants for Principal Component Analysis, Discriminant Analysis, sparse inverse covariance estimation _a.k.a._ network inference and more coming, all designed for multivariate count data. <div class='altmetric-embed' data-badge-type='donut' data-doi="10.1007/s11222-010-9191-2"></div>
+  &emsp; In the `R` package **PLNmodels** we implement an efficient variational strategy for inferring the multivariate Poisson lognormal model. We derive a series of models by transposing the classical tools of multivariate analysis, mostly tight to the Gaussian assumption of the data, to count data. **PLNmodels** includes variants for Principal Component Analysis, Discriminant Analysis, sparse covariance estimation (_a.k.a._ network inference), and hopefully more coming, all designed for multivariate count data. <div class='altmetric-embed' data-badge-type='donut' data-doi="10.1007/s11222-010-9191-2"></div>
 preview: https://github.com/jchiquet/PLNmodels/raw/master/inst/sticker/PLNmodels.png
 author:
   - name: Julien Chiquet 
@@ -201,11 +201,6 @@ where `Y` stands for the matrix of observed counts, `X1` and `X2` are two vector
 
 All PLN variants found are avatars of model \eqref{eq:pln-model} (or its glm-like version \eqref{eq:pln-model-glm}). The general idea is to impose some additional constraints in the model that will 
 
-#### Sparse covariance estimation and network
-
-In the PLN network, we penalized the inverse covariance $\boldsymbol\Sigma^{-1} = \boldsymbol\Theta$ by a $\ell_1$ penalty to induce sparsity and select important direct relationships between entities. Hence, the support of $\boldsymbol\Theta$ correspond to a network of underlying interactions. All mathematical details can be found in @PLNnetwork.
-
-
 #### Principal Component Analysis
 
 The model can be written in a hierachical framework where a sample of $p$-dimensional observation vectors $\mathbf{Y}_i$ is related to some  $q$-dimensional vectors of latent variables $\mathbf{W}_i$ as follows
@@ -222,6 +217,10 @@ The parameter ${\boldsymbol\mu}$ corresponds to the main effects, $\mathbf{B}$ t
 
 The dimension of the latent space $q$ corresponds to the number of axes in the PCA or, in other words, to the rank of $\mathbf{B}\mathbf{B}^\intercal$.
 
+#### Sparse covariance estimation and network
+
+In the PLN network, we penalized the inverse covariance $\boldsymbol\Sigma^{-1} = \boldsymbol\Theta$ by a $\ell_1$ penalty to induce sparsity and select important direct relationships between entities. Hence, the support of $\boldsymbol\Theta$ correspond to a network of underlying interactions. All mathematical details can be found in @PLNnetwork.
+
 #### Discriminant Analysis
 
 [...]
@@ -232,16 +231,13 @@ A few words
 
 ## Step-by-step analysis of an ecological dataset
 
-
 ### Multivariate Regression with `PLN`
-
-### Discriminant Analysis with `PLNLDA`
 
 ### Dimension Reduction with `PLNPCA`
 
 ### Structure / Network inference with `PLNnetwork`
 
-### Dimension Reduction
+### Discriminant Analysis with `PLNLDA`
 
 ## Acknowledgments {.appendix}
 
