@@ -44,6 +44,8 @@ library(plotly)
 library(gridExtra)
 ```
 
+!!! Work in Progress !!!
+
 ## Introduction
 
 In many fields of life science, count data is becoming the standard, like abundance table in ecology and microbiology, or single-cell data in molecular biology. Even if not explicitly stated, most of the standard tools of multivariate analysis (Principal component analysis, Linear Discriminant Analysis, multivariate linear regression or Gaussian Graphical Models, see e.g. [@MKB79]), assume a multivariate Gaussian distribution of the data. The goal of **PLNmodels** is to offer a set of functions based on the multivariate Poisson Lognormal (in short PLN) models to perform standard tasks of multivariate analysis with table of counts, thus in a non-Gaussian setting. For now, the top-level functions found in the package allow the user to perform the following analyses
