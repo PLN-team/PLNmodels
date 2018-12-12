@@ -69,7 +69,7 @@ The main fitting functions work with the usual `R formula` notations, with mutiv
 myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 ```
 
-### Rank Contraint Poisson lognormal for Poisson Principal Component Analysis (ala PLNPCA)
+### Rank Contraint Poisson lognormal for Poisson Principal Component Analysis (aka PLNPCA)
 
 ```{r PLNPCA, eval = FALSE}
 myPCA <- PLNPCA(Abundance ~ 1, data = trichoptera, ranks = 1:8)

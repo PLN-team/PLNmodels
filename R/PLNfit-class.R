@@ -64,13 +64,16 @@ PLNfit <-
       q = function() {ncol(private$M)},
       p = function() {nrow(private$Theta)},
       d = function() {ncol(private$Theta)},
-      model_par  = function() { list(Theta = private$Theta, Sigma = private$Sigma)},
-      fisher     = function() { list(mat = private$FIM, type = private$FIM_type) },
-      std_err    = function() { private$.std_err },
+      model_par  = function() {list(Theta = private$Theta, Sigma = private$Sigma)},
+      fisher     = function() {list(mat = private$FIM, type = private$FIM_type) },
+      std_err    = function() {private$.std_err },
       var_par    = function() {list(M = private$M, S = private$S)},
       latent     = function() {private$Z},
       fitted     = function() {exp(private$Z + .5 * switch(private$covariance, "spherical" = private$S %*% rbind(rep(1, self$p)), private$S))},
-      degrees_freedom = function() {self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)},
+      degrees_freedom = function() {
+        res <- self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)
+        as.integer(res)
+      },
       vcov_model = function() {private$covariance},
       optim_par  = function() {private$monitoring},
       loglik     = function() {sum(private$Ji)},
@@ -79,7 +82,7 @@ PLNfit <-
       entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", self$q, 1))},
       ICL        = function() {self$BIC - self$entropy},
       R_squared  = function() {private$R2},
-      criteria   = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
+      criteria   = function() {data.frame(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
   )
 
@@ -303,13 +306,13 @@ PLNfit$set("public", "show",
 function(model = paste("A multivariate Poisson Lognormal fit with", private$covariance, "covariance model.\n")) {
   cat(model)
   cat("==================================================================\n")
-  print(as.data.frame(t(self$criteria), row.names = ""))
+  print(as.data.frame(self$criteria, row.names = ""))
   cat("==================================================================\n")
   cat("* Useful fields \n")
   cat("    $model_par, $fitted, $latent, $var_par, $optim_par \n")
   cat("    $loglik, $BIC, $ICL, $loglik_vec, $degrees_freedom, $criteria \n")
   cat("* Useful S3 methods\n")
-  cat("    print(), vcov(), coef(), predict()\n")
+  cat("    print(), vcov(), coef(), standard_error(), predict(), fisher()\n")
 })
 
 PLNfit$set("public", "print", function() self$show())
