@@ -29,6 +29,7 @@ The packages required to run the vignette are the following:
 ```{r packages}
 library(PLNmodels)
 library(tidyverse)
+library(GGally)
 library(corrplot)
 library(rmarkdown)
 ```
@@ -99,7 +100,7 @@ A first glance at the pairs plot between the covariates shows no particular stro
 
 ```{r pairs, fig.dim = c(7, 7), cache = TRUE, fig.cap ="Pairs plot of the covariates in the trichoptera data set"}
 select(trichoptera, -TotalCounts, -Abundance) %>% 
-GGally::ggpairs(columns = 1:6, mapping = aes(colour = Group))
+ggpairs(columns = 1:6, mapping = aes(colour = Group))
 ```
 
 ## References

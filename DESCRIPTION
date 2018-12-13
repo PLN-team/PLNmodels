@@ -1,7 +1,7 @@
 Package: PLNmodels
 Type: Package
 Title: Poisson Lognormal Models
-Version: 0.6.1002
+Version: 0.6.1003
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -47,6 +47,8 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
+    tidyverse,
+    GGally,
     testthat,
     covr
 VignetteBuilder: knitr
