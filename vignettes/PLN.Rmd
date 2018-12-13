@@ -6,11 +6,12 @@ output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 4
+bibliography: article/PLNreferences.bib
+link-citations: yes
 vignette: >
   %\VignetteIndexEntry{PLN}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: article/PLNreferences.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -25,7 +26,7 @@ knitr::opts_chunk$set(
 
 This vignette illustrates the use of the `PLN` function and the methods accompaning the R6 class `PLNfit`. 
 
-From the statistical point of view, the function `PLN` adjusts a multivariate Poisson lognormal model to a table of counts. `PLN` is the building block for all the multivariate models found in the `PLNmodels` package: having a basic understanding of both  the mathematical background and the associated set of `R` functions is good place to start. 
+From the statistical point of view, the function `PLN` adjusts a multivariate Poisson lognormal model to a table of counts, possibly after correcting for effects of offsets and covariates. `PLN` is the building block for all the multivariate models found in the `PLNmodels` package: having a basic understanding of both the mathematical background and the associated set of `R` functions is good place to start. 
 
 ### Requirements
 
@@ -59,7 +60,7 @@ The multivariate Poisson lognormal model (in short PLN, see [@AiH89]) relates so
   \end{array}
 \end{equation}
 
-The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying structure of dependence between the $p$ variables. Model \eqref{eq:pln-model} generalizes naturally to a formulation closer to a multivariate generalized linear model, where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$. We also let the possibility to add some offsets for the $d$ variables and in each sample., that is $\mathbf{o}_i$. Hence, previous model generalizes to
+The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying residual structure of dependence between the $p$ variables. This model generalizes naturally to a formulation closer to a multivariate generalized linear model, where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$. We also let the possibility to add some offsets for the $p$ variables in in each sample, that is $\mathbf{o}_i$. Hence, previous model generalizes to
 
 \begin{equation}
   \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
@@ -70,23 +71,25 @@ where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters. When
   - the $n\times p$ matrix of design  $\mathbf{X}$
   - the $n\times p$ matrix of offsets $\mathbf{O}$
 
+Inference in PLN then focuses on regression parameters $\boldsymbol\Theta$ and covariance matrix $\boldsymbol\Sigma$. Technically speaking, we adopt in  **PLNmodels** a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach.
+
 ## Analysis of trichoptera data with a PLN model
 
-In the package, the standard PLN model is adjusted with the function `PLN`. We now review the basic usage of this function.
+In the package, the standard PLN model is adjusted with the function `PLN`. We now review the basic usage of this function on a the trichoptera data set.
 
 ### A PLN model with latent main effects
 
 #### Adjusting a fit
 
-In order to become familiar with the function `PLN` and its outputs, we first fit a simple PLN model with just an intercept for each species: 
+In order to become familiar with the function `PLN` and its outputs, let us first fit a simple PLN model with just an intercept for each species: 
 
 ```{r simple PLN}
 myPLN <- PLN(Abundance ~ 1, trichoptera)
 ```
 
-Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`. `Abundace` is a variable in the data frame `trichoptera` correspondings to a matrix of 17 columns.
+Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1` in the right-hand-side of the formula. `Abundance` is a variable in the data frame `trichoptera` correspondings to a matrix of 17 columns and the _response_ in the model, occurring on the left-hand-side of the formula.
 
-`myPLN` is an `R6` object with class `PLNfit`, which comes with a couple of methods, as recalled when printing such an object:
+`myPLN` is an `R6` object with class `PLNfit`, which comes with a couple of methods, as recalled when printing/showing such an object in the `R` console:
 
 ```{r show-method}
 myPLN
@@ -94,26 +97,32 @@ myPLN
 
 #### Field access
 
-Accessing public fields of the PLNfit object is done like with a traditional list:
+Accessing public fields of the PLNfit object can be done jsut like with a traditional list, _e.g._,
 
 ```{r fields-access}
 c(myPLN$loglik, myPLN$BIC, myPLN$ICL, myPLN$R_squared)
 myPLN$criteria
 ```
 
-#### Fitted value and model parameters
+#### GLM-like interface
 
-One can access either the fitted value for the count or for the latent Gaussian vector (either $\hat{\mathbf{Y}}$ or $\hat{\mathbf{Z}}$ in the model), and check that the algorithm basically learnt correctly of the data^[We use a log-log scale in our plot in order not to give higher count values an excessive importance in the fit]:
+We provide a set of S3-methods for `PLNfit` that mimic the standard (g)lm-like interface of `R::stats`, which we present now.
+
+One can access either the fitted value for the counts (`Abundance` -- $\hat{\mathbf{Y}}$) or for the latent Gaussian vector ($\hat{\mathbf{Z}}$), and check that the algorithm basically learnt correctly from the data^[We use a log-log scale in our plot in order not to give an excessive importance to the higher counts in the fit]:
 
 ```{r fitted, fig.cap = "fitted value vs. observation", fig.dim=c(7,5)}
-plot(myPLN$fitted, trichoptera$Abundance, log = "xy", xlab = "fitted", ylab = "data")
+plot(fitted(myPLN), trichoptera$Abundance, log = "xy", xlab = "fitted", ylab = "data")
 ```
 
-We can also reach the matrix of regression parameters $\mathbf{\Theta}$ and the residual variance/covariance matrix $\boldsymbol{\Sigma}$ of the latent variable with the traditional functions found in `R` for (g)lm manipulation.
+We can also reach the matrix of regression parameters $\mathbf{\Theta}$ and the residual variance/covariance matrix $\boldsymbol{\Sigma}$ of the latent variable with the traditional functions found in `R` for (g)lm manipulation. 
 
-For the regression coefficent, we use
+For the regression coefficents, we can use the `coef` (or `coefficients`) method. Approximated standard errors of the coefficients are also accessible via `standard_error`:
+
 ```{r coef}
-coef(myPLN)
+data.frame(
+  rbind(t(coef(myPLN)), t(standard_error(myPLN))), 
+  row.names = c("effect", "stderr")
+ ) %>% paged_table()
 ```
 
 The residual covariance matrix better displays as an image matrix: 
@@ -122,22 +131,16 @@ The residual covariance matrix better displays as an image matrix:
 corrplot(vcov(myPLN), is.corr = FALSE)
 ```
 
-#### Testing significanty of the regression parameters
-
-It will be soon possible to perform significancy tests thanks to the availability of an (approximated) standard error of the coefficiens, accessible via
-
-```{r stderr}
-standard_error(myPLN)
-## equivalently myPLN$std_err
-```
-
 #### Observation weights
 
 It is also possible to use observation weights like in standard (G)LM:
 
 ```{r weighted, fig.width=7, fig.height=5}
 myPLN_weighted <- PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)))
-plot(myPLN$fitted, myPLN_weighted$fitted, log = "xy", xlab = "unweigthed", ylab = "random weighted")
+plot(
+  fitted(myPLN), fitted(myPLN_weighted),
+  log = "xy", xlab = "unweigthed", ylab = "random weights"
+  )
 ```
 
 <!-- #### Optimization diagnostic -->
@@ -163,10 +166,12 @@ plot(myPLN$fitted, myPLN_weighted$fitted, log = "xy", xlab = "unweigthed", ylab 
 For ecological count data, it is generally a good advice to include sampling effort via offsets whenever available, otherwise samples are not necessarily comparable
 
 ```{r PLN offset}
-myPLN_offsets <- PLN(Abundance ~ 1 + offset(log(TotalCounts)), data = trichoptera)
+myPLN_offsets <- 
+  PLN(Abundance ~ 1 + offset(log(TotalCounts)), 
+      data = trichoptera, control = list(trace = 0))
 ```
 
-Note that we use the function offset with a log transform of the total count since it acts in the latent layer of the model. Obviously the omdel with offsets is better since the loglikelihood is higher with the same number of parameters:
+Note that we use the function offset with a log-transform of the total counts since it acts in the latent layer of the model. Obviously the model with offsets is better since the log-likelihood is higher with the same number of parameters:
 
 ```{r compare w/wo offset}
 rbind(
@@ -180,7 +185,7 @@ Let us try to correct for the wind effect in our model:
 myPLN_wind <- PLN(Abundance ~ 1 + Wind + offset(log(TotalCounts)), data = trichoptera)
 ```
 
-When we compare the model, the gain is clear in terms of loglikelihood. However, the BIC chose not to include this variable:
+When we compare the models, the gain is clear in terms of log-likelihood. However, the BIC choses not to include this variable:
 
 ```{r compare models}
 rbind(
@@ -191,7 +196,7 @@ rbind(
 
 ### Covariance models (full, diagonal, spherical)
 
-It is also possible to change the model use for modelling the residual covariance matrix, and thus control he number of parameters. By default, the residual covariance is fully parameterized (this $p \times (p+1)/2$ parameters). We can chose to only model the variances of the species and not the covariances, by means of an diagonal matrix. In an extreme situation, we may also chose and homoscedastic model, with a single variance parameter for the whole matrix $\boldsymbol\Sigma$. This can be controlled with the `control` arguments, a lsit controlling various aspects of the underlying optimization process:
+It is possible to change the model use for modelling the residual covariance matrix $\boldsymbol\Sigma$, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence $p \times (p+1)/2$ parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix $\boldsymbol\Sigma_D$ with $p$ parameters. In an extreme situation, we may also chose an homoscedastic model with a single variance parameter for the whole matrix $\boldsymbol\Sigma = \sigma \mathbf{I}_p$. This can be tuned in `PLN` with the `control` argument, a list controlling various aspects of the underlying optimization process:
 
 ```{r covariances models}
 myPLN_full <- 
@@ -211,7 +216,7 @@ myPLN_spherical <-
   )
 ```
 
-So it seems that the gain brought by passing from a diagonal to a fully parameterized model is not worth having so many additional parameters:
+It seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:
 
 ```{r compare covariances}
 as.data.frame(

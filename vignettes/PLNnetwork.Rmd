@@ -26,7 +26,6 @@ knitr::opts_chunk$set(
 
 This vignette intends to illustrate the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`.
 
-
 ### Requirements
 
 The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:

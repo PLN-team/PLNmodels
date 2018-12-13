@@ -1,6 +1,6 @@
 ---
 title: "Dimension reduction of multivariate count data with the Poisson PCA"
-author: "Julien Chiquet"
+author: "PLN team"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
@@ -13,7 +13,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
