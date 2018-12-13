@@ -28,8 +28,6 @@ Fields are accessed via active binding and cannot be changed by the user.
 
 \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
-\item{\code{fitted}}{a matrix: the fitted values (Y hat)}
-
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
 \item{\code{model}}{character: the model used for the coavariance (either "spherical", "diagonal" or "full")}

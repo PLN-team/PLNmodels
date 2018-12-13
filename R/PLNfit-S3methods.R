@@ -36,6 +36,20 @@ coef.PLNfit <- function(object, ...) {
   object$model_par$Theta
 }
 
+#' Extracts model fitted values from objects returned by \code{\link[=PLN]{PLN}} and its variants
+#'
+#' @name fitted.PLNfit
+#'
+#' @param object an R6 object with class PLNfit
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A matrix of Fitted values extracted from the object object.
+#'
+#' @export
+fitted.PLNfit <- function(object, ...) {
+  stopifnot(isPLNfit(object))
+  exp(object$latent + .5 * switch(object$vcov_model, "spherical" = object$var_par$S %*% rbind(rep(1, object$p)), object$var_par$S))
+}
+
 #' Extracts model covariance from objects returned by \code{\link[=PLN]{PLN}} and its variants
 #'
 #' @name vcov.PLNfit

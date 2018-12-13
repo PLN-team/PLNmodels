@@ -13,7 +13,6 @@
 #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field latent a matrix: values of the latent vector (Z in the model)
-#' @field fitted a matrix: the fitted values (Y hat)
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field model character: the model used for the coavariance (either "spherical", "diagonal" or "full")
 #' @field loglik variational lower bound of the loglikelihood
@@ -69,7 +68,6 @@ PLNfit <-
       std_err    = function() {private$.std_err },
       var_par    = function() {list(M = private$M, S = private$S)},
       latent     = function() {private$Z},
-      fitted     = function() {exp(private$Z + .5 * switch(private$covariance, "spherical" = private$S %*% rbind(rep(1, self$p)), private$S))},
       degrees_freedom = function() {
         res <- self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)
         as.integer(res)
@@ -266,7 +264,7 @@ PLNfit$set("public", "predict",
 PLNfit$set("public", "compute_fisher",
   function(type = c("wald", "louis"), X = NULL) {
     type = match.arg(type)
-    A <- self$fitted
+    A <- fitted(self)
     n <- self$n
     if (type == "louis") {
       ## TODO check how to adapt for PLNPCA
@@ -309,10 +307,10 @@ function(model = paste("A multivariate Poisson Lognormal fit with", private$cova
   print(as.data.frame(self$criteria, row.names = ""))
   cat("==================================================================\n")
   cat("* Useful fields \n")
-  cat("    $model_par, $fitted, $latent, $var_par, $optim_par \n")
+  cat("    $model_par, $latent, $var_par, $optim_par \n")
   cat("    $loglik, $BIC, $ICL, $loglik_vec, $degrees_freedom, $criteria \n")
   cat("* Useful S3 methods\n")
-  cat("    print(), vcov(), coef(), standard_error(), predict(), fisher()\n")
+  cat("    print(), coef(), vcov(), fitted(), standard_error(), fisher() \n")
 })
 
 PLNfit$set("public", "print", function() self$show())

@@ -2,6 +2,7 @@
 
 S3method(coef,PLNfit)
 S3method(fisher,PLNfit)
+S3method(fitted,PLNfit)
 S3method(getBestModel,PLNPCAfamily)
 S3method(getBestModel,PLNnetworkfamily)
 S3method(getModel,PLNPCAfamily)
