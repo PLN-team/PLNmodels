@@ -62,7 +62,7 @@ We thus rely on a not so common use of the `data.frame` structure, where a colum
 
 ### Table of counts (abundancies)
 
-The `Abundance` column is a $49 \times 17$ matrix of abundancies (or counts) for each 17 species during the 49 trapping nights.
+The `Abundance` column is a $49 \times 17$ matrix of abundancies (or counts) for the 17 species found during the 49 trapping nights.
 
 ```{r responses_trichoptera}
 trichoptera$Abundance %>% head() %>% knitr::kable()
@@ -88,7 +88,7 @@ A common issue with (microbiological) ecological data is the compositionality pr
 trichoptera$TotalCounts %>% head() %>% knitr::kable()
 ```
 
-Offsets are stored in matrix $\mathbf{O}$ in the mathematical model and variable `O` in the `R` environment.
+Offsets are denoted by $\mathbf{O}$ when the mathematical model in other vignettes, and by `O` in the `R` environment.
 
 ### Covariates (external meteorological effect, groups)
 
@@ -100,7 +100,7 @@ select(trichoptera, -TotalCounts, -Abundance) %>% head() %>% knitr::kable()
 
 The design matrix arising from the covariates is denoted by $\mathbf{X}$ in our mathematical model and `X` within the `R` environment.
 
-A first glance at the pairs plot between the covariates shows no particular strong structure regarding the trichoptera groups.
+A first glance at the pairs plot between the covariates shows no particular structure regarding the trichoptera groups.
 
 ```{r pairs, fig.dim = c(7, 7), cache = TRUE, fig.cap ="Pairs plot of the covariates in the trichoptera data set"}
 select(trichoptera, -TotalCounts, -Abundance) %>% 

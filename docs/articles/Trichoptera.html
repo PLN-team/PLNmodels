@@ -152,7 +152,7 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 <div id="table-of-counts-abundancies" class="section level3">
 <h3 class="hasAnchor">
 <a href="#table-of-counts-abundancies" class="anchor"></a>Table of counts (abundancies)</h3>
-<p>The <code>Abundance</code> column is a <span class="math inline">\(49 \times 17\)</span> matrix of abundancies (or counts) for each 17 species during the 49 trapping nights.</p>
+<p>The <code>Abundance</code> column is a <span class="math inline">\(49 \times 17\)</span> matrix of abundancies (or counts) for the 17 species found during the 49 trapping nights.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">trichoptera<span class="op">$</span>Abundance <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -446,7 +446,7 @@ log-counts in the trichoptera data set
 </tr>
 </tbody>
 </table>
-<p>Offsets are stored in matrix <span class="math inline">\(\mathbf{O}\)</span> in the mathematical model and variable <code>O</code> in the <code>R</code> environment.</p>
+<p>Offsets are denoted by <span class="math inline">\(\mathbf{O}\)</span> when the mathematical model in other vignettes, and by <code>O</code> in the <code>R</code> environment.</p>
 </div>
 <div id="covariates-external-meteorological-effect-groups" class="section level3">
 <h3 class="hasAnchor">
@@ -521,7 +521,7 @@ log-counts in the trichoptera data set
 </tbody>
 </table>
 <p>The design matrix arising from the covariates is denoted by <span class="math inline">\(\mathbf{X}\)</span> in our mathematical model and <code>X</code> within the <code>R</code> environment.</p>
-<p>A first glance at the pairs plot between the covariates shows no particular strong structure regarding the trichoptera groups.</p>
+<p>A first glance at the pairs plot between the covariates shows no particular structure regarding the trichoptera groups.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>TotalCounts, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/GGally/topics/ggpairs">ggpairs</a></span>(<span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">colour =</span> Group))</a></code></pre></div>
 <div class="figure">
