@@ -181,7 +181,7 @@ rbind(
 ```
 
 Let us try to correct for the wind effect in our model:
-```{r PLN group}
+```{r PLN wind}
 myPLN_wind <- PLN(Abundance ~ 1 + Wind + offset(log(TotalCounts)), data = trichoptera)
 ```
 
