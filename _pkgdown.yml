@@ -11,8 +11,8 @@ navbar:
       href: index.html
     - text: "Reference"
       href: "reference/index.html"
-    - text: "Article"
-      href: "articles/article/PLNmodels.html"
+#    - text: "Article"
+#      href: "articles/article/PLNmodels.html"
     - text: "Vignettes"
       menu:
       - text: "The trichoptera data set"

@@ -29,12 +29,13 @@ PLNfit <-
     public = list(
       ## constructor: function initialize, see below
       ## "setter" function
-      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, monitoring=NA) {
+      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
         if (!anyNA(Theta))      private$Theta  <- Theta
         if (!anyNA(Sigma))      private$Sigma  <- Sigma
         if (!anyNA(M))          private$M      <- M
         if (!anyNA(S))          private$S      <- S
         if (!anyNA(Z))          private$Z      <- Z
+        if (!anyNA(A))          private$A      <- A
         if (!anyNA(Ji))         private$Ji     <- Ji
         if (!anyNA(R2))         private$R2     <- R2
         if (!anyNA(monitoring)) private$monitoring <- monitoring
@@ -47,6 +48,7 @@ PLNfit <-
       S          = NA, # the variational parameters for the variances
       M          = NA, # the variational parameters for the means
       Z          = NA, # the matrix of latent variable
+      A          = NA, # the matrix of expected counts
       R2         = NA, # approximated goodness of fit criterion
       Ji         = NA, # element-wise approximated loglikelihood
       FIM        = NA, # Fisher information matrix of Theta, computed using of two approximation scheme
@@ -68,6 +70,7 @@ PLNfit <-
       std_err    = function() {private$.std_err },
       var_par    = function() {list(M = private$M, S = private$S)},
       latent     = function() {private$Z},
+      fitted     = function() {private$A},
       degrees_freedom = function() {
         res <- self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)
         as.integer(res)
@@ -153,6 +156,7 @@ function(responses, covariates, offsets, weights, control) {
     M          = optim_out$M,
     S          = optim_out$S,
     Z          = optim_out$Z,
+    A          = optim_out$A,
     Ji         = optim_out$loglik,
     monitoring = list(
       iterations = optim_out$iterations,
@@ -263,8 +267,8 @@ PLNfit$set("public", "predict",
 # Compute the (one-data) Fisher information matrix of Theta using one of two approximations scheme (wald or fisher)
 PLNfit$set("public", "compute_fisher",
   function(type = c("wald", "louis"), X = NULL) {
-    type = match.arg(type)
-    A <- fitted(self)
+    type <- match.arg(type)
+    A <- private$A
     n <- self$n
     if (type == "louis") {
       ## TODO check how to adapt for PLNPCA

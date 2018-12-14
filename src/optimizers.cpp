@@ -43,6 +43,7 @@ Rcpp::List optimizer_PLN::get_output() {
       Rcpp::Named("Sigma" )     = Sigma,
       Rcpp::Named("M"         ) = M,
       Rcpp::Named("S"         ) = S,
+      Rcpp::Named("A"         ) = A,
       Rcpp::Named("Z"         ) = Z,
       Rcpp::Named("iterations") = data.iterations,
       Rcpp::Named("loglik"    ) = loglik
@@ -78,7 +79,7 @@ void optimizer_PLN_spherical::export_output() {
   Sigma = arma::eye(p,p) * sigma2;
 
   // element-wise log-likelihood
-  arma::mat A = exp (Z.each_col() + .5 * S) ;
+  A = exp (Z.each_col() + .5 * S) ;
   loglik = sum(data.Y % Z - A, 1) + .5*p*log(S) - (.5 / sigma2) * (sum(M % M, 1) + p * S) - .5 * p * log(sigma2) - logfact(data.Y) + .5 * p;
 }
 
@@ -111,7 +112,7 @@ void optimizer_PLN_diagonal::export_output() {
   Sigma = diagmat(diag_Sigma) ;
 
   //element-wise log-likelihood
-  arma::mat A = exp (Z + .5 * S) ;
+  A = exp (Z + .5 * S) ;
   loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M.each_row() / diag_Sigma) % M + (S.each_row() / diag_Sigma) ), 1) - .5 * accu(log(diag_Sigma)) - logfact(data.Y) + .5 * p;
 }
 
@@ -144,7 +145,7 @@ void optimizer_PLN_full::export_output () {
 
   // element-wise log-likelihood
   arma::mat Omega = inv_sympd(Sigma);
-  arma::mat A = exp (Z + .5 * S) ;
+  A = exp (Z + .5 * S) ;
   loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) + .5 * real(log_det(Omega)) - logfact(data.Y) + .5 * p;
 }
 
@@ -184,7 +185,7 @@ void optimizer_PLN_rank::export_output () {
   Sigma = B * (M.t()* M + diagmat(sum(S, 0)) ) * B.t() / n ;
 
   // element-wise log-likelihood
-  arma::mat A = exp (Z + .5 * S * (B % B).t() ) ;
+  A = exp (Z + .5 * S * (B % B).t() ) ;
   loglik = arma::sum(data.Y % Z - A, 1) - .5 * sum(M % M + S - log(S) - 1, 1) - logfact(data.Y);
 }
 
@@ -192,9 +193,10 @@ void optimizer_PLN_rank::export_output () {
 Rcpp::List optimizer_PLN_rank::get_output() {
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
-      Rcpp::Named("Theta" )     = Theta,
-      Rcpp::Named("Sigma" )     = Sigma,
-      Rcpp::Named("B")          = B    ,
+      Rcpp::Named("Theta"     ) = Theta,
+      Rcpp::Named("Sigma"     ) = Sigma,
+      Rcpp::Named("B"         ) = B    ,
+      Rcpp::Named("A"         ) = A    ,
       Rcpp::Named("M"         ) = M,
       Rcpp::Named("S"         ) = S,
       Rcpp::Named("Z"         ) = Z,
@@ -237,6 +239,6 @@ void optimizer_PLN_sparse::export_output () {
   Sigma = (M.t() * (M.each_col() % data.w) + diagmat(sum(S.each_col() % data.w, 0))) / accu(data.w) ;
 
   // element-wise log-likelihood
-  arma::mat A = exp (Z + .5 * S) ;
+  A = exp (Z + .5 * S) ;
   loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M * data.Omega) % M + S * diagmat(data.Omega)), 1) + .5 * data.log_det_Omega - logfact(data.Y) + .5 * p;
 }

@@ -40,6 +40,7 @@ class optimizer_PLN {
     arma::mat M     ;
     arma::mat S     ;
     arma::mat Z     ;
+    arma::mat A     ;
 
   public:
 

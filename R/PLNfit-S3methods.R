@@ -47,7 +47,7 @@ coef.PLNfit <- function(object, ...) {
 #' @export
 fitted.PLNfit <- function(object, ...) {
   stopifnot(isPLNfit(object))
-  exp(object$latent + .5 * switch(object$vcov_model, "spherical" = object$var_par$S %*% rbind(rep(1, object$p)), object$var_par$S))
+  object$fitted
 }
 
 #' Extracts model covariance from objects returned by \code{\link[=PLN]{PLN}} and its variants

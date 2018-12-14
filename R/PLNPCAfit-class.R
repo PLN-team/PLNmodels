@@ -10,7 +10,6 @@
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
 #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
 #' @field latent a matrix: values of the latent vector (Z in the model)
-#' @field fitted a matrix: the fitted values (Y hat)
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field loglik variational lower bound of the loglikelihood
 #' @field BIC variational lower bound of the BIC
@@ -38,8 +37,8 @@ PLNPCAfit <-
         private$B <- svdSigma$u[, 1:rank, drop = FALSE] %*% sqrt(diag(svdSigma$d[1:rank],nrow = rank, ncol = rank))
         private$covariance <- "rank"
       },
-      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, Z=NA, Ji=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M = M, S = S, Z = Z, Ji = Ji, R2 = R2, monitoring = monitoring)
+      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, M = M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(B)) private$B <- B
       },
       setVisualization = function(scale.unit=FALSE) {
@@ -60,7 +59,6 @@ PLNPCAfit <-
         par$B <- private$B
         par
       },
-      fitted = function() {exp(private$Z + tcrossprod(private$S, private$B^2))},
       percent_var = function() {
         eigen.val <- private$svdBM$d[1:self$rank]^2
         round(eigen.val/sum(eigen.val),4)
@@ -109,6 +107,7 @@ function(responses, covariates, offsets, weights, control) {
     Sigma = optim_out$Sigma,
     M     = optim_out$M,
     S     = optim_out$S,
+    A     = optim_out$A,
     Z     = optim_out$Z,
     Ji    = optim_out$loglik,
     monitoring = list(
