@@ -215,6 +215,20 @@ gridExtra::grid.arrange(
 )
 ```
 
+We can check that the fitted value of the counts -- even with this low-rank covariance matrix -- are close the the observed ones:
+
+```{r fitted, fig.cap = "fitted value vs. observation", fig.dim=c(7,5)}
+data.frame(
+  fitted   = as.vector(fitted(myPCA_cov)),
+  observed = as.vector(trichoptera$Abundance)
+) %>% 
+  ggplot(aes(x = observed, y = fitted)) + 
+    geom_point(size = .5, alpha =.25 ) + 
+    scale_x_log10(limits = c(1,1000)) + 
+    scale_y_log10(limits = c(1,1000)) + 
+    theme_bw() + annotation_logticks()
+```
+
 
 ## References
 
