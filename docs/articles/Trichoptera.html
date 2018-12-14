@@ -90,8 +90,7 @@
 <!--/.navbar -->
 
       
-      </header><link href="Trichoptera_files/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
-<script src="Trichoptera_files/pagedtable-1.1/js/pagedtable.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Description of the Trichoptera data set</h1>
@@ -114,8 +113,7 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(GGally)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(corrplot)</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rmarkdown)</a></code></pre></div>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(corrplot)</a></code></pre></div>
 </div>
 <div id="the-trichopterata-data-set" class="section level2">
 <h2 class="hasAnchor">
@@ -155,12 +153,144 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 <h3 class="hasAnchor">
 <a href="#table-of-counts-abundancies" class="anchor"></a>Table of counts (abundancies)</h3>
 <p>The <code>Abundance</code> column is a <span class="math inline">\(49 \times 17\)</span> matrix of abundancies (or counts) for each 17 species during the 49 trapping nights.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">trichoptera<span class="op">$</span>Abundance <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</a></code></pre></div>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Che"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Hyc"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Hym"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Hys"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Psy"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Aga"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Glo"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["Ath"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["Cea"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["Ced"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["Set"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["All"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["Han"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["Hfo"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["Hsp"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["Hve"],"name":[16],"type":["dbl"],"align":["right"]},{"label":["Sta"],"name":[17],"type":["dbl"],"align":["right"]}],"data":[{"1":"0","2":"0","3":"5","4":"0","5":"17","6":"0","7":"0","8":"0","9":"0","10":"2","11":"0","12":"1","13":"0","14":"1","15":"2","16":"0","17":"1","_rn_":"1"},{"1":"0","2":"0","3":"3","4":"0","5":"8","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"2","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"2"},{"1":"0","2":"0","3":"1","4":"0","5":"32","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"4","13":"0","14":"0","15":"1","16":"0","17":"0","_rn_":"3"},{"1":"0","2":"0","3":"3","4":"0","5":"176","6":"4","7":"0","8":"0","9":"0","10":"1","11":"0","12":"3","13":"0","14":"0","15":"3","16":"0","17":"2","_rn_":"4"},{"1":"0","2":"0","3":"4","4":"0","5":"69","6":"2","7":"0","8":"0","9":"0","10":"0","11":"0","12":"1","13":"0","14":"0","15":"1","16":"0","17":"2","_rn_":"5"},{"1":"0","2":"0","3":"2","4":"0","5":"14","6":"1","7":"0","8":"0","9":"0","10":"0","11":"0","12":"1","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"6"},{"1":"0","2":"0","3":"2","4":"0","5":"4","6":"0","7":"0","8":"0","9":"0","10":"2","11":"0","12":"0","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"7"},{"1":"0","2":"0","3":"1","4":"0","5":"29","6":"1","7":"0","8":"0","9":"0","10":"0","11":"0","12":"0","13":"0","14":"0","15":"0","16":"0","17":"3","_rn_":"8"},{"1":"0","2":"0","3":"4","4":"0","5":"8","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"0","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"9"},{"1":"0","2":"0","3":"2","4":"0","5":"2","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"0","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"10"},{"1":"0","2":"0","3":"1","4":"0","5":"3","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"0","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"11"},{"1":"0","2":"0","3":"0","4":"0","5":"3","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"0","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"12"},{"1":"1","2":"0","3":"1","4":"0","5":"40","6":"2","7":"0","8":"1","9":"0","10":"2","11":"0","12":"1","13":"0","14":"0","15":"0","16":"1","17":"0","_rn_":"13"},{"1":"0","2":"0","3":"4","4":"0","5":"20","6":"2","7":"1","8":"0","9":"0","10":"1","11":"0","12":"0","13":"0","14":"0","15":"1","16":"0","17":"4","_rn_":"14"},{"1":"0","2":"0","3":"3","4":"0","5":"500","6":"19","7":"0","8":"2","9":"0","10":"17","11":"5","12":"2","13":"0","14":"0","15":"2","16":"1","17":"49","_rn_":"15"},{"1":"0","2":"0","3":"2","4":"0","5":"142","6":"9","7":"0","8":"0","9":"0","10":"3","11":"3","12":"2","13":"0","14":"0","15":"0","16":"0","17":"11","_rn_":"16"},{"1":"0","2":"0","3":"2","4":"0","5":"44","6":"1","7":"0","8":"0","9":"1","10":"4","11":"3","12":"0","13":"0","14":"0","15":"0","16":"0","17":"3","_rn_":"17"},{"1":"0","2":"0","3":"3","4":"1","5":"31","6":"4","7":"0","8":"0","9":"0","10":"1","11":"7","12":"0","13":"0","14":"0","15":"0","16":"0","17":"4","_rn_":"18"},{"1":"0","2":"0","3":"6","4":"0","5":"30","6":"6","7":"0","8":"0","9":"0","10":"2","11":"5","12":"0","13":"0","14":"0","15":"0","16":"0","17":"7","_rn_":"19"},{"1":"0","2":"1","3":"7","4":"0","5":"71","6":"5","7":"1","8":"1","9":"0","10":"5","11":"18","12":"0","13":"0","14":"1","15":"5","16":"0","17":"12","_rn_":"20"},{"1":"0","2":"0","3":"5","4":"0","5":"20","6":"0","7":"0","8":"0","9":"0","10":"5","11":"1","12":"0","13":"0","14":"0","15":"0","16":"0","17":"4","_rn_":"21"},{"1":"0","2":"0","3":"3","4":"0","5":"5","6":"0","7":"0","8":"0","9":"0","10":"2","11":"0","12":"0","13":"0","14":"0","15":"2","16":"0","17":"1","_rn_":"22"},{"1":"0","2":"0","3":"0","4":"1","5":"8","6":"0","7":"0","8":"0","9":"0","10":"1","11":"0","12":"0","13":"0","14":"1","15":"4","16":"0","17":"2","_rn_":"23"},{"1":"0","2":"0","3":"1","4":"0","5":"2","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"0","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"24"},{"1":"0","2":"0","3":"3","4":"0","5":"10","6":"1","7":"1","8":"0","9":"0","10":"0","11":"2","12":"0","13":"0","14":"2","15":"7","16":"0","17":"1","_rn_":"25"},{"1":"0","2":"0","3":"1","4":"0","5":"9","6":"0","7":"0","8":"0","9":"0","10":"1","11":"2","12":"1","13":"3","14":"3","15":"14","16":"0","17":"6","_rn_":"26"},{"1":"0","2":"0","3":"1","4":"0","5":"14","6":"0","7":"0","8":"0","9":"0","10":"5","11":"3","12":"0","13":"7","14":"0","15":"10","16":"0","17":"4","_rn_":"27"},{"1":"0","2":"0","3":"0","4":"0","5":"2","6":"0","7":"0","8":"1","9":"0","10":"0","11":"0","12":"0","13":"0","14":"1","15":"3","16":"0","17":"1","_rn_":"28"},{"1":"0","2":"0","3":"0","4":"0","5":"4","6":"0","7":"0","8":"0","9":"0","10":"0","11":"1","12":"0","13":"0","14":"0","15":"3","16":"0","17":"1","_rn_":"29"},{"1":"0","2":"1","3":"0","4":"0","5":"1173","6":"2","7":"3","8":"1","9":"2","10":"9","11":"71","12":"0","13":"27","14":"69","15":"227","16":"1","17":"13","_rn_":"30"},{"1":"0","2":"0","3":"12","4":"0","5":"2671","6":"1","7":"4","8":"1","9":"3","10":"7","11":"49","12":"1","13":"15","14":"52","15":"161","16":"1","17":"2","_rn_":"31"},{"1":"0","2":"0","3":"7","4":"0","5":"33","6":"4","7":"0","8":"0","9":"0","10":"0","11":"0","12":"3","13":"33","14":"1","15":"0","16":"0","17":"7","_rn_":"32"},{"1":"0","2":"0","3":"12","4":"0","5":"62","6":"8","7":"0","8":"0","9":"0","10":"3","11":"1","12":"15","13":"23","14":"0","15":"5","16":"0","17":"6","_rn_":"33"},{"1":"0","2":"0","3":"15","4":"0","5":"220","6":"20","7":"0","8":"0","9":"0","10":"2","11":"0","12":"5","13":"27","14":"0","15":"5","16":"0","17":"33","_rn_":"34"},{"1":"0","2":"0","3":"6","4":"0","5":"29","6":"6","7":"0","8":"0","9":"0","10":"3","11":"0","12":"2","13":"3","14":"0","15":"0","16":"0","17":"17","_rn_":"35"},{"1":"0","2":"0","3":"4","4":"0","5":"60","6":"3","7":"0","8":"0","9":"0","10":"0","11":"0","12":"0","13":"2","14":"0","15":"0","16":"0","17":"21","_rn_":"36"},{"1":"0","2":"0","3":"18","4":"1","5":"21","6":"2","7":"0","8":"0","9":"0","10":"2","11":"1","12":"2","13":"5","14":"0","15":"0","16":"0","17":"11","_rn_":"37"},{"1":"0","2":"0","3":"4","4":"0","5":"3","6":"0","7":"0","8":"0","9":"0","10":"4","11":"0","12":"0","13":"1","14":"0","15":"0","16":"0","17":"3","_rn_":"38"},{"1":"0","2":"0","3":"5","4":"0","5":"5","6":"0","7":"0","8":"0","9":"0","10":"1","11":"0","12":"0","13":"1","14":"0","15":"0","16":"0","17":"2","_rn_":"39"},{"1":"0","2":"0","3":"1","4":"0","5":"18","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"1","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"40"},{"1":"0","2":"0","3":"4","4":"0","5":"49","6":"0","7":"0","8":"0","9":"0","10":"3","11":"0","12":"1","13":"0","14":"0","15":"0","16":"2","17":"11","_rn_":"41"},{"1":"0","2":"0","3":"3","4":"1","5":"33","6":"0","7":"0","8":"2","9":"0","10":"1","11":"0","12":"0","13":"2","14":"0","15":"0","16":"0","17":"11","_rn_":"42"},{"1":"0","2":"0","3":"3","4":"0","5":"71","6":"1","7":"0","8":"0","9":"0","10":"11","11":"1","12":"0","13":"3","14":"0","15":"0","16":"0","17":"5","_rn_":"43"},{"1":"0","2":"0","3":"6","4":"1","5":"28","6":"1","7":"2","8":"1","9":"0","10":"3","11":"0","12":"1","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"44"},{"1":"0","2":"0","3":"5","4":"1","5":"37","6":"3","7":"1","8":"2","9":"0","10":"7","11":"1","12":"1","13":"0","14":"0","15":"0","16":"1","17":"3","_rn_":"45"},{"1":"1","2":"0","3":"4","4":"0","5":"103","6":"1","7":"1","8":"0","9":"0","10":"2","11":"10","12":"2","13":"0","14":"2","15":"3","16":"2","17":"18","_rn_":"46"},{"1":"0","2":"0","3":"2","4":"0","5":"11","6":"0","7":"0","8":"1","9":"0","10":"1","11":"1","12":"0","13":"0","14":"0","15":"0","16":"0","17":"0","_rn_":"47"},{"1":"1","2":"0","3":"0","4":"0","5":"17","6":"0","7":"0","8":"1","9":"1","10":"2","11":"0","12":"0","13":"3","14":"0","15":"0","16":"0","17":"6","_rn_":"48"},{"1":"0","2":"1","3":"2","4":"0","5":"27","6":"0","7":"0","8":"0","9":"0","10":"1","11":"4","12":"0","13":"36","14":"0","15":"11","16":"0","17":"4","_rn_":"49"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[5],"max":[5]},"pages":{}}}
-  </script>
-</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">trichoptera<span class="op">$</span>Abundance <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">Che</th>
+<th align="right">Hyc</th>
+<th align="right">Hym</th>
+<th align="right">Hys</th>
+<th align="right">Psy</th>
+<th align="right">Aga</th>
+<th align="right">Glo</th>
+<th align="right">Ath</th>
+<th align="right">Cea</th>
+<th align="right">Ced</th>
+<th align="right">Set</th>
+<th align="right">All</th>
+<th align="right">Han</th>
+<th align="right">Hfo</th>
+<th align="right">Hsp</th>
+<th align="right">Hve</th>
+<th align="right">Sta</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">17</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">8</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">32</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">176</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">69</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">14</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
 <p>In all other vignettes and journal papers associated with <strong>PLNmodels</strong>, the count table is denoted by <span class="math inline">\(\mathbf{Y}\)</span> in the mathematical model and <code>Y</code> in the <code>R</code> environment.</p>
 <p>A basic representation of the matrix of counts (here transposed and log-transformed), shows the typical huge dispersion between low and highly abundant species.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(</a>
@@ -178,24 +308,218 @@ log-counts in the trichoptera data set
 <h3 class="hasAnchor">
 <a href="#offsets-and-the-compositionality-issue" class="anchor"></a>Offsets and the compositionality issue</h3>
 <p>A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by a <span class="math inline">\(49 \times 17\)</span> matrix of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The corresponding column is named <code>TotalCounts</code> in the data frame:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">trichoptera<span class="op">$</span>TotalCounts <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</a></code></pre></div>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Che"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Hyc"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Hym"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Hys"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Psy"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Aga"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Glo"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["Ath"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["Cea"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["Ced"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["Set"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["All"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["Han"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["Hfo"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["Hsp"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["Hve"],"name":[16],"type":["dbl"],"align":["right"]},{"label":["Sta"],"name":[17],"type":["dbl"],"align":["right"]}],"data":[{"1":"29","2":"29","3":"29","4":"29","5":"29","6":"29","7":"29","8":"29","9":"29","10":"29","11":"29","12":"29","13":"29","14":"29","15":"29","16":"29","17":"29","_rn_":"1"},{"1":"13","2":"13","3":"13","4":"13","5":"13","6":"13","7":"13","8":"13","9":"13","10":"13","11":"13","12":"13","13":"13","14":"13","15":"13","16":"13","17":"13","_rn_":"2"},{"1":"38","2":"38","3":"38","4":"38","5":"38","6":"38","7":"38","8":"38","9":"38","10":"38","11":"38","12":"38","13":"38","14":"38","15":"38","16":"38","17":"38","_rn_":"3"},{"1":"192","2":"192","3":"192","4":"192","5":"192","6":"192","7":"192","8":"192","9":"192","10":"192","11":"192","12":"192","13":"192","14":"192","15":"192","16":"192","17":"192","_rn_":"4"},{"1":"79","2":"79","3":"79","4":"79","5":"79","6":"79","7":"79","8":"79","9":"79","10":"79","11":"79","12":"79","13":"79","14":"79","15":"79","16":"79","17":"79","_rn_":"5"},{"1":"18","2":"18","3":"18","4":"18","5":"18","6":"18","7":"18","8":"18","9":"18","10":"18","11":"18","12":"18","13":"18","14":"18","15":"18","16":"18","17":"18","_rn_":"6"},{"1":"8","2":"8","3":"8","4":"8","5":"8","6":"8","7":"8","8":"8","9":"8","10":"8","11":"8","12":"8","13":"8","14":"8","15":"8","16":"8","17":"8","_rn_":"7"},{"1":"34","2":"34","3":"34","4":"34","5":"34","6":"34","7":"34","8":"34","9":"34","10":"34","11":"34","12":"34","13":"34","14":"34","15":"34","16":"34","17":"34","_rn_":"8"},{"1":"12","2":"12","3":"12","4":"12","5":"12","6":"12","7":"12","8":"12","9":"12","10":"12","11":"12","12":"12","13":"12","14":"12","15":"12","16":"12","17":"12","_rn_":"9"},{"1":"4","2":"4","3":"4","4":"4","5":"4","6":"4","7":"4","8":"4","9":"4","10":"4","11":"4","12":"4","13":"4","14":"4","15":"4","16":"4","17":"4","_rn_":"10"},{"1":"4","2":"4","3":"4","4":"4","5":"4","6":"4","7":"4","8":"4","9":"4","10":"4","11":"4","12":"4","13":"4","14":"4","15":"4","16":"4","17":"4","_rn_":"11"},{"1":"3","2":"3","3":"3","4":"3","5":"3","6":"3","7":"3","8":"3","9":"3","10":"3","11":"3","12":"3","13":"3","14":"3","15":"3","16":"3","17":"3","_rn_":"12"},{"1":"49","2":"49","3":"49","4":"49","5":"49","6":"49","7":"49","8":"49","9":"49","10":"49","11":"49","12":"49","13":"49","14":"49","15":"49","16":"49","17":"49","_rn_":"13"},{"1":"33","2":"33","3":"33","4":"33","5":"33","6":"33","7":"33","8":"33","9":"33","10":"33","11":"33","12":"33","13":"33","14":"33","15":"33","16":"33","17":"33","_rn_":"14"},{"1":"600","2":"600","3":"600","4":"600","5":"600","6":"600","7":"600","8":"600","9":"600","10":"600","11":"600","12":"600","13":"600","14":"600","15":"600","16":"600","17":"600","_rn_":"15"},{"1":"172","2":"172","3":"172","4":"172","5":"172","6":"172","7":"172","8":"172","9":"172","10":"172","11":"172","12":"172","13":"172","14":"172","15":"172","16":"172","17":"172","_rn_":"16"},{"1":"58","2":"58","3":"58","4":"58","5":"58","6":"58","7":"58","8":"58","9":"58","10":"58","11":"58","12":"58","13":"58","14":"58","15":"58","16":"58","17":"58","_rn_":"17"},{"1":"51","2":"51","3":"51","4":"51","5":"51","6":"51","7":"51","8":"51","9":"51","10":"51","11":"51","12":"51","13":"51","14":"51","15":"51","16":"51","17":"51","_rn_":"18"},{"1":"56","2":"56","3":"56","4":"56","5":"56","6":"56","7":"56","8":"56","9":"56","10":"56","11":"56","12":"56","13":"56","14":"56","15":"56","16":"56","17":"56","_rn_":"19"},{"1":"127","2":"127","3":"127","4":"127","5":"127","6":"127","7":"127","8":"127","9":"127","10":"127","11":"127","12":"127","13":"127","14":"127","15":"127","16":"127","17":"127","_rn_":"20"},{"1":"35","2":"35","3":"35","4":"35","5":"35","6":"35","7":"35","8":"35","9":"35","10":"35","11":"35","12":"35","13":"35","14":"35","15":"35","16":"35","17":"35","_rn_":"21"},{"1":"13","2":"13","3":"13","4":"13","5":"13","6":"13","7":"13","8":"13","9":"13","10":"13","11":"13","12":"13","13":"13","14":"13","15":"13","16":"13","17":"13","_rn_":"22"},{"1":"17","2":"17","3":"17","4":"17","5":"17","6":"17","7":"17","8":"17","9":"17","10":"17","11":"17","12":"17","13":"17","14":"17","15":"17","16":"17","17":"17","_rn_":"23"},{"1":"3","2":"3","3":"3","4":"3","5":"3","6":"3","7":"3","8":"3","9":"3","10":"3","11":"3","12":"3","13":"3","14":"3","15":"3","16":"3","17":"3","_rn_":"24"},{"1":"27","2":"27","3":"27","4":"27","5":"27","6":"27","7":"27","8":"27","9":"27","10":"27","11":"27","12":"27","13":"27","14":"27","15":"27","16":"27","17":"27","_rn_":"25"},{"1":"40","2":"40","3":"40","4":"40","5":"40","6":"40","7":"40","8":"40","9":"40","10":"40","11":"40","12":"40","13":"40","14":"40","15":"40","16":"40","17":"40","_rn_":"26"},{"1":"44","2":"44","3":"44","4":"44","5":"44","6":"44","7":"44","8":"44","9":"44","10":"44","11":"44","12":"44","13":"44","14":"44","15":"44","16":"44","17":"44","_rn_":"27"},{"1":"8","2":"8","3":"8","4":"8","5":"8","6":"8","7":"8","8":"8","9":"8","10":"8","11":"8","12":"8","13":"8","14":"8","15":"8","16":"8","17":"8","_rn_":"28"},{"1":"9","2":"9","3":"9","4":"9","5":"9","6":"9","7":"9","8":"9","9":"9","10":"9","11":"9","12":"9","13":"9","14":"9","15":"9","16":"9","17":"9","_rn_":"29"},{"1":"1599","2":"1599","3":"1599","4":"1599","5":"1599","6":"1599","7":"1599","8":"1599","9":"1599","10":"1599","11":"1599","12":"1599","13":"1599","14":"1599","15":"1599","16":"1599","17":"1599","_rn_":"30"},{"1":"2980","2":"2980","3":"2980","4":"2980","5":"2980","6":"2980","7":"2980","8":"2980","9":"2980","10":"2980","11":"2980","12":"2980","13":"2980","14":"2980","15":"2980","16":"2980","17":"2980","_rn_":"31"},{"1":"88","2":"88","3":"88","4":"88","5":"88","6":"88","7":"88","8":"88","9":"88","10":"88","11":"88","12":"88","13":"88","14":"88","15":"88","16":"88","17":"88","_rn_":"32"},{"1":"135","2":"135","3":"135","4":"135","5":"135","6":"135","7":"135","8":"135","9":"135","10":"135","11":"135","12":"135","13":"135","14":"135","15":"135","16":"135","17":"135","_rn_":"33"},{"1":"327","2":"327","3":"327","4":"327","5":"327","6":"327","7":"327","8":"327","9":"327","10":"327","11":"327","12":"327","13":"327","14":"327","15":"327","16":"327","17":"327","_rn_":"34"},{"1":"66","2":"66","3":"66","4":"66","5":"66","6":"66","7":"66","8":"66","9":"66","10":"66","11":"66","12":"66","13":"66","14":"66","15":"66","16":"66","17":"66","_rn_":"35"},{"1":"90","2":"90","3":"90","4":"90","5":"90","6":"90","7":"90","8":"90","9":"90","10":"90","11":"90","12":"90","13":"90","14":"90","15":"90","16":"90","17":"90","_rn_":"36"},{"1":"63","2":"63","3":"63","4":"63","5":"63","6":"63","7":"63","8":"63","9":"63","10":"63","11":"63","12":"63","13":"63","14":"63","15":"63","16":"63","17":"63","_rn_":"37"},{"1":"15","2":"15","3":"15","4":"15","5":"15","6":"15","7":"15","8":"15","9":"15","10":"15","11":"15","12":"15","13":"15","14":"15","15":"15","16":"15","17":"15","_rn_":"38"},{"1":"14","2":"14","3":"14","4":"14","5":"14","6":"14","7":"14","8":"14","9":"14","10":"14","11":"14","12":"14","13":"14","14":"14","15":"14","16":"14","17":"14","_rn_":"39"},{"1":"20","2":"20","3":"20","4":"20","5":"20","6":"20","7":"20","8":"20","9":"20","10":"20","11":"20","12":"20","13":"20","14":"20","15":"20","16":"20","17":"20","_rn_":"40"},{"1":"70","2":"70","3":"70","4":"70","5":"70","6":"70","7":"70","8":"70","9":"70","10":"70","11":"70","12":"70","13":"70","14":"70","15":"70","16":"70","17":"70","_rn_":"41"},{"1":"53","2":"53","3":"53","4":"53","5":"53","6":"53","7":"53","8":"53","9":"53","10":"53","11":"53","12":"53","13":"53","14":"53","15":"53","16":"53","17":"53","_rn_":"42"},{"1":"95","2":"95","3":"95","4":"95","5":"95","6":"95","7":"95","8":"95","9":"95","10":"95","11":"95","12":"95","13":"95","14":"95","15":"95","16":"95","17":"95","_rn_":"43"},{"1":"43","2":"43","3":"43","4":"43","5":"43","6":"43","7":"43","8":"43","9":"43","10":"43","11":"43","12":"43","13":"43","14":"43","15":"43","16":"43","17":"43","_rn_":"44"},{"1":"62","2":"62","3":"62","4":"62","5":"62","6":"62","7":"62","8":"62","9":"62","10":"62","11":"62","12":"62","13":"62","14":"62","15":"62","16":"62","17":"62","_rn_":"45"},{"1":"149","2":"149","3":"149","4":"149","5":"149","6":"149","7":"149","8":"149","9":"149","10":"149","11":"149","12":"149","13":"149","14":"149","15":"149","16":"149","17":"149","_rn_":"46"},{"1":"16","2":"16","3":"16","4":"16","5":"16","6":"16","7":"16","8":"16","9":"16","10":"16","11":"16","12":"16","13":"16","14":"16","15":"16","16":"16","17":"16","_rn_":"47"},{"1":"31","2":"31","3":"31","4":"31","5":"31","6":"31","7":"31","8":"31","9":"31","10":"31","11":"31","12":"31","13":"31","14":"31","15":"31","16":"31","17":"31","_rn_":"48"},{"1":"86","2":"86","3":"86","4":"86","5":"86","6":"86","7":"86","8":"86","9":"86","10":"86","11":"86","12":"86","13":"86","14":"86","15":"86","16":"86","17":"86","_rn_":"49"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[5],"max":[5]},"pages":{}}}
-  </script>
-</div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">trichoptera<span class="op">$</span>TotalCounts <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">Che</th>
+<th align="right">Hyc</th>
+<th align="right">Hym</th>
+<th align="right">Hys</th>
+<th align="right">Psy</th>
+<th align="right">Aga</th>
+<th align="right">Glo</th>
+<th align="right">Ath</th>
+<th align="right">Cea</th>
+<th align="right">Ced</th>
+<th align="right">Set</th>
+<th align="right">All</th>
+<th align="right">Han</th>
+<th align="right">Hfo</th>
+<th align="right">Hsp</th>
+<th align="right">Hve</th>
+<th align="right">Sta</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+<td align="right">29</td>
+</tr>
+<tr class="even">
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+</tr>
+<tr class="odd">
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+<td align="right">38</td>
+</tr>
+<tr class="even">
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+<td align="right">192</td>
+</tr>
+<tr class="odd">
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+<td align="right">79</td>
+</tr>
+<tr class="even">
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+</tr>
+</tbody>
+</table>
 <p>Offsets are stored in matrix <span class="math inline">\(\mathbf{O}\)</span> in the mathematical model and variable <code>O</code> in the <code>R</code> environment.</p>
 </div>
 <div id="covariates-external-meteorological-effect-groups" class="section level3">
 <h3 class="hasAnchor">
 <a href="#covariates-external-meteorological-effect-groups" class="anchor"></a>Covariates (external meteorological effect, groups)</h3>
 <p>Additional information was collected during the sampling, which corresponds to external covariates the effect of which may or may not be taken into account in the model (depending on the question at play). In the trichoptera data set, those covariates correspond to meteorological factors plus a categorical variable indicating the family of the caughts specimens.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>TotalCounts, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</a></code></pre></div>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Temperature"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Wind"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Pressure"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Humidity"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Cloudiness"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Precipitation"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Group"],"name":[7],"type":["fctr"],"align":["left"]}],"data":[{"1":"18.7","2":"-2.3","3":"998.5","4":"60","5":"19","6":"0.0","7":"1","_rn_":"1"},{"1":"19.8","2":"-2.7","3":"999.5","4":"63","5":"0","6":"0.0","7":"1","_rn_":"2"},{"1":"22.0","2":"-0.7","3":"997.2","4":"73","5":"6","6":"0.0","7":"1","_rn_":"3"},{"1":"23.0","2":"2.3","3":"991.1","4":"71","5":"81","6":"0.0","7":"1","_rn_":"4"},{"1":"22.5","2":"2.3","3":"990.1","4":"62","5":"50","6":"0.0","7":"1","_rn_":"5"},{"1":"23.9","2":"-2.0","3":"990.1","4":"64","5":"50","6":"0.0","7":"1","_rn_":"6"},{"1":"15.0","2":"-4.7","3":"995.9","4":"93","5":"100","6":"1.6","7":"1","_rn_":"7"},{"1":"17.2","2":"-1.0","3":"997.2","4":"84","5":"19","6":"0.0","7":"1","_rn_":"8"},{"1":"15.4","2":"-2.7","3":"997.2","4":"88","5":"69","6":"1.6","7":"1","_rn_":"9"},{"1":"14.1","2":"-3.7","3":"1001.0","4":"75","5":"6","6":"0.0","7":"1","_rn_":"10"},{"1":"15.7","2":"-7.0","3":"1001.2","4":"66","5":"0","6":"0.0","7":"1","_rn_":"11"},{"1":"15.6","2":"-9.0","3":"999.3","4":"60","5":"6","6":"0.0","7":"1","_rn_":"12"},{"1":"22.2","2":"-2.3","3":"995.2","4":"74","5":"19","6":"0.0","7":"2","_rn_":"13"},{"1":"22.3","2":"-2.0","3":"993.2","4":"64","5":"0","6":"0.0","7":"2","_rn_":"14"},{"1":"24.5","2":"6.0","3":"994.1","4":"62","5":"50","6":"0.1","7":"2","_rn_":"15"},{"1":"25.2","2":"-0.3","3":"994.9","4":"72","5":"19","6":"0.0","7":"2","_rn_":"16"},{"1":"26.2","2":"4.7","3":"992.6","4":"60","5":"88","6":"1.1","7":"2","_rn_":"17"},{"1":"22.6","2":"-1.7","3":"998.2","4":"82","5":"0","6":"0.0","7":"3","_rn_":"18"},{"1":"24.5","2":"-3.3","3":"994.3","4":"70","5":"13","6":"0.0","7":"3","_rn_":"19"},{"1":"20.7","2":"1.3","3":"990.9","4":"84","5":"44","6":"0.0","7":"3","_rn_":"20"},{"1":"21.0","2":"-2.7","3":"990.4","4":"90","5":"88","6":"0.5","7":"3","_rn_":"21"},{"1":"19.7","2":"-1.3","3":"992.7","4":"93","5":"81","6":"12.3","7":"3","_rn_":"22"},{"1":"17.6","2":"-5.0","3":"989.6","4":"69","5":"88","6":"0.0","7":"4","_rn_":"23"},{"1":"16.6","2":"-2.3","3":"997.2","4":"76","5":"19","6":"0.0","7":"4","_rn_":"24"},{"1":"18.2","2":"-1.7","3":"1004.7","4":"86","5":"25","6":"0.0","7":"4","_rn_":"25"},{"1":"22.3","2":"-1.7","3":"1001.9","4":"77","5":"6","6":"0.0","7":"4","_rn_":"26"},{"1":"28.5","2":"-1.3","3":"996.2","4":"69","5":"13","6":"0.0","7":"5","_rn_":"27"},{"1":"23.8","2":"-6.3","3":"998.8","4":"74","5":"0","6":"0.0","7":"5","_rn_":"28"},{"1":"27.3","2":"-2.0","3":"996.2","4":"65","5":"13","6":"0.0","7":"5","_rn_":"29"},{"1":"30.0","2":"5.0","3":"994.7","4":"42","5":"13","6":"0.0","7":"5","_rn_":"30"},{"1":"30.0","2":"3.3","3":"992.7","4":"46","5":"25","6":"0.0","7":"6","_rn_":"31"},{"1":"16.5","2":"-1.3","3":"996.3","4":"87","5":"63","6":"2.9","7":"7","_rn_":"32"},{"1":"22.2","2":"-1.7","3":"994.4","4":"70","5":"13","6":"0.0","7":"7","_rn_":"33"},{"1":"21.3","2":"2.7","3":"992.7","4":"65","5":"44","6":"0.0","7":"7","_rn_":"34"},{"1":"19.6","2":"-3.3","3":"996.8","4":"62","5":"81","6":"0.0","7":"8","_rn_":"35"},{"1":"20.0","2":"2.0","3":"990.2","4":"84","5":"88","6":"0.6","7":"8","_rn_":"36"},{"1":"19.8","2":"0.7","3":"989.1","4":"79","5":"100","6":"0.3","7":"8","_rn_":"37"},{"1":"17.4","2":"-1.0","3":"993.2","4":"80","5":"88","6":"0.4","7":"8","_rn_":"38"},{"1":"16.3","2":"-2.0","3":"991.1","4":"67","5":"100","6":"5.4","7":"9","_rn_":"39"},{"1":"17.0","2":"-2.0","3":"995.9","4":"72","5":"25","6":"0.0","7":"9","_rn_":"40"},{"1":"18.6","2":"-4.0","3":"1001.1","4":"66","5":"13","6":"0.0","7":"9","_rn_":"41"},{"1":"21.0","2":"-3.7","3":"1002.7","4":"60","5":"31","6":"0.0","7":"9","_rn_":"42"},{"1":"24.8","2":"-3.0","3":"1001.1","4":"46","5":"6","6":"0.0","7":"9","_rn_":"43"},{"1":"22.7","2":"-5.3","3":"995.3","4":"53","5":"0","6":"0.0","7":"10","_rn_":"44"},{"1":"24.0","2":"-4.3","3":"993.2","4":"58","5":"0","6":"0.0","7":"10","_rn_":"45"},{"1":"27.1","2":"-1.0","3":"991.8","4":"64","5":"0","6":"0.0","7":"10","_rn_":"46"},{"1":"22.1","2":"-1.0","3":"993.3","4":"88","5":"94","6":"9.9","7":"10","_rn_":"47"},{"1":"21.5","2":"-4.3","3":"995.1","4":"82","5":"31","6":"0.0","7":"11","_rn_":"48"},{"1":"20.1","2":"-1.3","3":"993.0","4":"67","5":"88","6":"0.0","7":"12","_rn_":"49"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[5],"max":[5]},"pages":{}}}
-  </script>
-</div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>TotalCounts, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">Temperature</th>
+<th align="right">Wind</th>
+<th align="right">Pressure</th>
+<th align="right">Humidity</th>
+<th align="right">Cloudiness</th>
+<th align="right">Precipitation</th>
+<th align="left">Group</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">18.7</td>
+<td align="right">-2.3</td>
+<td align="right">998.5</td>
+<td align="right">60</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="right">19.8</td>
+<td align="right">-2.7</td>
+<td align="right">999.5</td>
+<td align="right">63</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="right">22.0</td>
+<td align="right">-0.7</td>
+<td align="right">997.2</td>
+<td align="right">73</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="right">23.0</td>
+<td align="right">2.3</td>
+<td align="right">991.1</td>
+<td align="right">71</td>
+<td align="right">81</td>
+<td align="right">0</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="right">22.5</td>
+<td align="right">2.3</td>
+<td align="right">990.1</td>
+<td align="right">62</td>
+<td align="right">50</td>
+<td align="right">0</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="right">23.9</td>
+<td align="right">-2.0</td>
+<td align="right">990.1</td>
+<td align="right">64</td>
+<td align="right">50</td>
+<td align="right">0</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
 <p>The design matrix arising from the covariates is denoted by <span class="math inline">\(\mathbf{X}\)</span> in our mathematical model and <code>X</code> within the <code>R</code> environment.</p>
 <p>A first glance at the pairs plot between the covariates shows no particular strong structure regarding the trichoptera groups.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>TotalCounts, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span></a>

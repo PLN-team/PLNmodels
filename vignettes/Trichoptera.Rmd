@@ -6,6 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 4
+    df_print: paged
 bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
@@ -33,7 +34,6 @@ library(PLNmodels)
 library(tidyverse)
 library(GGally)
 library(corrplot)
-library(rmarkdown)
 ```
 
 ## The trichopterata data set 
@@ -64,8 +64,8 @@ We thus rely on a not so common use of the `data.frame` structure, where a colum
 
 The `Abundance` column is a $49 \times 17$ matrix of abundancies (or counts) for each 17 species during the 49 trapping nights.
 
-```{r responses_trichoptera, out.width='100%'}
-trichoptera$Abundance %>% as.data.frame() %>% paged_table()
+```{r responses_trichoptera}
+trichoptera$Abundance %>% head() %>% knitr::kable()
 ```
 
 In all other vignettes and journal papers associated with **PLNmodels**, the count table is denoted by $\mathbf{Y}$ in the mathematical model and `Y` in the `R` environment.
@@ -85,7 +85,7 @@ corrplot(
 A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by a $49 \times 17$ matrix of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The corresponding column is named `TotalCounts` in the data frame:
 
 ```{r offset_trichopera}
-trichoptera$TotalCounts %>% as.data.frame() %>% paged_table()
+trichoptera$TotalCounts %>% head() %>% knitr::kable()
 ```
 
 Offsets are stored in matrix $\mathbf{O}$ in the mathematical model and variable `O` in the `R` environment.
@@ -95,7 +95,7 @@ Offsets are stored in matrix $\mathbf{O}$ in the mathematical model and variable
 Additional information was collected during the sampling, which corresponds to external covariates the effect of which may or may not be taken into account in the model (depending on the question at play). In the trichoptera data set, those covariates correspond to meteorological factors plus a categorical variable indicating the family of the caughts specimens.
 
 ```{r covariates_trichoptera}
-select(trichoptera, -TotalCounts, -Abundance) %>% paged_table()
+select(trichoptera, -TotalCounts, -Abundance) %>% head() %>% knitr::kable()
 ```
 
 The design matrix arising from the covariates is denoted by $\mathbf{X}$ in our mathematical model and `X` within the `R` environment.
