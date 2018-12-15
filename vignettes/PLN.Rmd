@@ -49,7 +49,7 @@ The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`)
 
 ### Mathematical background
 
-The multivariate Poisson lognormal model (in short PLN, see [@AiH89]) relates some $p$-dimensional observation vectors $\mathbf{Y}_i$ to some  $p$-dimensional vectors of Gaussian latent variables $\mathbf{Z}_i$ as follows
+The multivariate Poisson lognormal model (in short PLN, see @AiH89) relates some $p$-dimensional observation vectors $\mathbf{Y}_i$ to some  $p$-dimensional vectors of Gaussian latent variables $\mathbf{Z}_i$ as follows
 
 \begin{equation}
   \begin{array}{rcl}
@@ -58,7 +58,11 @@ The multivariate Poisson lognormal model (in short PLN, see [@AiH89]) relates so
   \end{array}
 \end{equation}
 
-The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying residual structure of dependence between the $p$ variables. This model generalizes naturally to a formulation closer to a multivariate generalized linear model, where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ (including a vector of intercepts). We also let the possibility to add some offsets for the $p$ variables in in each sample, that is $\mathbf{o}_i$. Hence, the previous model generalizes to
+The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying residual structure of dependence between the $p$ variables. 
+
+#### Covariates and offsets
+
+This model generalizes naturally to a formulation closer to a multivariate generalized linear model, where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ (including a vector of intercepts). We also let the possibility to add some offsets for the $p$ variables in in each sample, that is $\mathbf{o}_i$. Hence, the previous model generalizes to
 
 \begin{equation}
   \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
@@ -69,7 +73,11 @@ where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters. When
   - the $n\times d$ matrix of design  $\mathbf{X}$
   - the $n\times p$ matrix of offsets $\mathbf{O}$
 
-Inference in PLN then focuses on the regression parameters $\boldsymbol\Theta$ and on the covariance matrix $\boldsymbol\Sigma$. Technically speaking, we adopt in  **PLNmodels** a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of [@Svan02] implemented in the C++ library [@nlopt], which we link to the package.
+Inference in PLN then focuses on the regression parameters $\boldsymbol\Theta$ and on the covariance matrix $\boldsymbol\Sigma$. 
+
+#### Optimization by Variational inference
+
+Technically speaking, we adopt in  **PLNmodels** a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package.
 
 ## Analysis of trichoptera data with a PLN model
 

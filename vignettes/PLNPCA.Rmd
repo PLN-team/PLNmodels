@@ -47,7 +47,7 @@ The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`)
 
 ### Mathematical background
 
-The probabilistic PCA model for multivariate count data that we introduce in @PLNPCA is a variant of the Poisson Lognormal model of [@AiH89], see [the PLN vignette](PLN.html) as a reminder. Indeed, it can viewed as a PLN model with an additional rank constraint on the covariance matrix $\boldsymbol\Sigma$ such that $\mathrm{rank}(\boldsymbol\Sigma)= q$.
+In the vein of @TiB99, we introduce in @PLNPCA a probabilistic PCA model for multivariate count data which is a variant of the Poisson Lognormal model of @AiH89 (see [the PLN vignette](PLN.html) as a reminder). Indeed, it can viewed as a PLN model with an additional rank constraint on the covariance matrix $\boldsymbol\Sigma$ such that $\mathrm{rank}(\boldsymbol\Sigma)= q$.
 
 This PLN-PCA model can be written in a hierachical framework where a sample of $p$-dimensional observation vectors $\mathbf{Y}_i$ is related to some  $q$-dimensional vectors of latent variables $\mathbf{W}_i$ as follows:
 \begin{equation} 
@@ -69,11 +69,15 @@ where the interpretation of PLN-PCA as a rank-constrained PLN model is more obvi
 
 #### Covariates and offsets 
 
-Just like PLN, PLN-PCA generalizesto a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$. The latent layer then reads
+Just like PLN, PLN-PCA generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$. The latent layer then reads
 \begin{equation} 
   \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{B}\mathbf{B}^\top,
 \end{equation}
 where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters.
+
+#### Optimization by Variational inference
+
+Dimension reduction and vizualization is the main objective in (PLN)-PCA. To reach this goal, we need to first estimate the model parameters. Inference in PLN-PCA focuses on the regression parameters $\boldsymbol\Theta$ and on the covariance matrix $\boldsymbol\Sigma$. Technically speaking, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package. Technical details can be found in @PLNPCA.
 
 ## Analysis of trichoptera data with a PLNPCA model
 
@@ -121,7 +125,7 @@ Comprehensive information about `PLNPCAfamily` is available via `?PLNPCAfamily`.
 
 #### Model selection of rank $q$
 
-The `plot` method of `PLNPCAfamily` displays evolution of the criteria mentioned above, and is a good strating point for model selection:
+The `plot` method of `PLNPCAfamily` displays evolution of the criteria mentioned above, and is a good starting point for model selection:
 
 ```{r plot nocov, fig.width=7, fig.height=5}
 plot(PCA_models)
