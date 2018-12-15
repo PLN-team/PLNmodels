@@ -1,6 +1,6 @@
 ---
-title: "Analyzing multivariate count table with sparse Poisson log-normal models"
-author: "Julien Chiquet"
+title: "Sparse structure estimation for multivariate count data with PLN-network"
+author: "PLN team"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
@@ -19,12 +19,13 @@ knitr::opts_chunk$set(
   echo = TRUE,
   rows.print = 5,
   message = FALSE, 
-  warning = FALSE)
+  warning = FALSE,
+  cache = TRUE)
 ```
 
 ## Preliminaries
 
-This vignette intends to illustrate the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`.
+This vignette illustrates the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`.
 
 ### Requirements
 
@@ -32,8 +33,6 @@ The packages required for the analysis are **PLNmodels** plus some others for da
 
 ```{r requirement}
 library(tidyverse)
-library(rmarkdown)
-library(corrplot)
 library(PLNmodels)
 ```
 
@@ -47,94 +46,134 @@ data(trichoptera)
 
 The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$TotalCounts`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
 
-### Sparse Poisson log-normal models
+### Mathematical background
 
-The Poisson lognormal model relates some $p$-dimensional observation vectors $\mathbf{Y}_i$ to some  $p$-dimensional vectors of Gaussian latent variables $\mathbf{Z}_i$ as follows
+The network model for multivariate count data that we introduce in @PLNnetwork is a variant of the Poisson Lognormal model of @AiH89, see [the PLN vignette](PLN.html) as a reminder. Indeed, it can viewed as a PLN model with an additional sparsity constraint on the inverse covariance matrix ${\boldsymbol\Sigma}^{-1}$ by means of the $\ell_1$-norm, such that $\|\boldsymbol\Sigma\|_1 < c$. This model can be viewed as the equivalent of the sparse multivariate Gaussian model [@banerjee2008] for the PLN model.
+
+The PLN-network model relates some $p$-dimensional observation vectors $\mathbf{Y}_i$ to some  $p$-dimensional vectors of Gaussian latent variables $\mathbf{Z}_i$ as follows
 \begin{equation} 
-  \label{eq:pca-model}
   \begin{array}{rcl}
-  \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}{\boldsymbol\mu},\boldsymbol\Sigma) \\
+  \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}{\boldsymbol\mu},\boldsymbol\Sigma) &  \|{\boldsymbol\Sigma}=\|_1 < c \\
   \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
 \end{equation}
 
 The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying structure of dependence between the $p$ variables. 
 
-In the PLN network, we penalized the inverse covariance $\boldsymbol\Sigma^{-1} = \boldsymbol\Theta$ by a $\ell_1$ penalty to induce sparsity and select important direct relationships between entities. Hence, the support of $\boldsymbol\Theta$ correspond to a network of underlying interactions. All mathematical details can be found in @PLNnetwork.
+Compared to the standard PLN model, in PLN-network we penalized the inverse covariance $\boldsymbol\Sigma^{-1}\triangleq \boldsymbol\Omega$ by a $\ell_1$-penalty to induce sparsity and select important direct relationships between entities. Hence, the support of $\boldsymbol\Omega$ correspond to a network of underlying interactions. The sparsity level ($c$ in the above mathematical model), which corresponds to the number of edges in the network, is controlled by a penalty parameter in the optimizatino process sometimes referred to as $\lambda$, because f its natural . All mathematical details can be found in @PLNnetwork.
+
+#### Covariates and offsets 
+
+Just like PLN, PLN-network generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$. The latent layer then reads
+\begin{equation} 
+  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \qquad \|{\boldsymbol\Sigma}=\|_1 < c ,
+\end{equation}
+where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters.
+
+#### Alternating optimization
+
+Regularization via sparsification of $\boldsymbol\Omega$ and vizualization of the consecutive network is the main objective in PLN-network. To reach this goal, we need to first estimate the model parameters. Inference in PLN-network focuses on the regression parameters $\boldsymbol\Theta$, on the covariance matrix $\boldsymbol\Sigma$, and on its inverse $\boldsymbol\Omega$. Technically speaking, we adopt a variational strategy to approximate the $\ell_1$-penalized log-likelihood function and optimize the consecutive sparse variational surrogate with an optimization scheme that alternates between two step
+
+1. a gradient-ascent-step step, performed with the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package.
+2. a penalized log-likelihood step, performed with the graphical-Lasso of @FHT08, implemented in the package **fastglasso** [@glassofast].
+
+More technical details can be found in @PLNnetwork
 
 ## Analysis of trichoptera data with a PLNnetwork model
 
-In the package, the sparse PLN model is adjusted with the function `PLNnetowkr`, which we review in this section
+In the package, the sparse PLN-network model is adjusted with the function `PLNnetwork`, which we review in this section. This function adjusts the model for a series of value of the penalty parameter controling the number of edges in the network. It then provides a collection of objects `PLNnetworkfit`, corresponding to networks with different levels of density, all stored in an object with class `PLNnetworkfamily`. 
 
-### A model with latent main effects for the Trichopetra data set
+### Adjusting a collection of network - a.k.a. a regularization path
 
-We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations $\mathbf{Y}$ corresponds to the abundance of each species in each trapping night. The model can be fitted with the function `PLNNetwork` for a series of penalties contorling the number of edges in the network as follows:
+We fit a collection of models as follows:
 
-```{r}
-models <- PLNnetwork(Abundance ~ 1 + offset(log(TotalCounts)), data = trichoptera)
+```{r simple PLNnetwork}
+network_models <- PLNnetwork(Abundance ~ 1 + offset(log(TotalCounts)), data = trichoptera)
 ```
 
-Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the formula `~ 1`.
+Note the use of the `formula` object to specify the model, similar to the one used in the function `PLN`.
 
-The `models` variable is an `R6` object with class `PLNnetworkfamily`, which comes with a couple of methods. The most basic is the `show/print` method, which send a very basic summary of the estimation process:
+`PLNnetwork` finds an hopefully appropriate set of penalties on its own. This set can be controlled by the user, but use it with care and check details in `?PLNnetwork`. 
 
-```{r}
-models
+### Structure of `PLNnetworkfamily`
+
+The `network_models` variable is an `R6` object with class `PLNnetworkfamily`, which comes with a couple of methods. The most basic is the `show/print` method, which send a very basic summary of the estimation process:
+
+```{r show}
+network_models
 ```
+
+One can also easily access the successive values of the criteria in the collection 
+
+```{r collection criteria}
+network_models$criteria %>% head() %>% knitr::kable()
+```
+
+A diagnostic of the optimization process is available via the `convergence` field:
+
+```{r convergence criteria}
+network_models$convergence %>% head() %>% knitr::kable()
+```
+
+An nicer view of this output comes with the option "diagnostic" in the `plot` method:
+```{r diagnostic, fig.width=7, fig.height=5}
+plot(network_models, "diagnostic")
+```
+
+### Exploring the path of networks
+
+By default, the `plot` method of `PLNnetworkfamily` displays evolution of the criteria mentioned above, and is a good starting point for model selection:
+
 Complementary information comes with the `plot` method:
-```{r, fig.width=7, fig.height=5}
-plot(models)
+```{r plot, fig.width=7, fig.height=5}
+plot(network_models)
 ```
 
-The critetion $J$ represents the variational lower bound of the likelihood: in this case, we can see that it is strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) $R^2$ which is displayed for each value of penalty. Generally, smoothness of these criteria is an good indicator to check that the optimization process went well.
+In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with the number of axes (or subspace dimension), and so is it penalizedcounterpart. Generally, smoothness of these criteria is a good sanity check of optimization process. BIC and its extended-version EBIC are classically used for selecting the correct amount of penalization with sparse methods like the one used in PLN-network. However, we will consider later a more robust, albeit more computationally intensive, way of chosing an appropriate number of edges in the network.
 
-We can represent the coefficient path (i.e., value of the edge in the network according to the penalty level) to see if some edges clearly come off.
+To pursue the analysis, we can represent the coefficient path (i.e., value of the edges in the network according to the penalty level) to see if some edges clearly come off. To this end, we provide the S3 function `coefficient_path`:
 
 ```{r path_coeff, fig.width=7, fig.height=7}
-library(ggplot2)
-ggplot(coefficient_path(models, corr = FALSE), aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + 
-  geom_line(show.legend = FALSE) +  coord_trans(x="log10") + theme_bw()
+coefficient_path(network_models, corr = FALSE) %>% 
+  ggplot(aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + 
+    geom_line(show.legend = FALSE) +  coord_trans(x="log10") + theme_bw()
 ```
 
 An alternative and more intuitive view consiste in plotting the values of the partial correlation along the path.
 
 ```{r path_corr, fig.width=7, fig.height=7}
-ggplot(coefficient_path(models, corr = TRUE), aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + 
+coefficient_path(network_models, corr = TRUE) %>% 
+  ggplot(aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + 
     geom_line(show.legend = FALSE) + coord_trans(x = "log10") + theme_bw()
 ```
 
-#### Model selection issue
+### Model selection issue: choosing a network
 
 If we want to select one network, we may extract best model according to BIC or StARS with the method `getBestModel()`. A model with a specific penalty level can be extracted with the `getModel(lambda)` method. 
 
 ```{r extract models}
-model.BIC   <- getBestModel(models, "BIC")   # if no criteria is specified, the best BIC is used
-model.StARS <- getBestModel(models, "StARS") # if StARS is requested, stabiltiy selection is performed if needed 
-model.pen   <- getModel(models, models$penalties[20]) # give some sparsity
+model_BIC   <- getBestModel(network_models, "BIC")   # if no criteria is specified, the best BIC is used
+model_StARS <- getBestModel(network_models, "StARS") # if StARS is requested, stabiltiy selection is performed if needed 
+model_pen   <- getModel(network_models, network_models$penalties[20]) # give some sparsity
 ```
 
 Note that, at this point, stability selection is automatically performed, and so the stability path is now available from the ` plot` function:
 ```{r plot stability, fig.width=7, fig.height=5}
-plot(models, "stability")
+plot(network_models, "stability")
 ```
 
+### Structure of a `PLNnetworkfit`
 
-The variables `model.BIC`, `model.StARS` and `model.pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network, with various options.
+The variables `model_BIC`, `model_StARS` and `model_pen` are other `R6Class` objects of class `PLNnetworkfit` which in turns owns a couple of methods, mostly for vizualization purposes. The `plot_network` method provides a quick representation of the inferred network, with various options.
 
 ```{r support_network, fig.width=7, fig.height=7}
-plot(model.BIC, type = "support", output = "corrplot")
+plot(model_BIC, type = "support", output = "corrplot")
 ```
 
 ```{r partial_corr_network, fig.width=7, fig.height=7}
-par(mfrow = c(1, 3))
-plot(model.BIC)
-plot(model.StARS)
-plot(model.pen)
-```
-
-Additional information about the optimization process comes with the option "diagnostic" in the `plot` method:
-```{r diagnostic, fig.width=7, fig.height=5}
-plot(models, "diagnostic")
+plot(model_BIC)
+plot(model_StARS)
+plot(model_pen)
 ```
 
 ## References
