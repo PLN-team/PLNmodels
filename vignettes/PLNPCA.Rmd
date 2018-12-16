@@ -219,7 +219,7 @@ gridExtra::grid.arrange(
 )
 ```
 
-We can check that the fitted value of the counts -- even with this low-rank covariance matrix -- are close the the observed ones:
+We can check that the fitted value of the counts -- even with this low-rank covariance matrix -- are close to the observed ones:
 
 ```{r fitted, fig.cap = "fitted value vs. observation", fig.dim=c(7,5)}
 data.frame(

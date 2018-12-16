@@ -5,11 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Analyzing multivariate count table with sparse Poisson log-normal models • PLNmodels</title>
+<title>Sparse structure estimation for multivariate count data with PLN-network • PLNmodels</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Analyzing multivariate count table with sparse Poisson log-normal models">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Sparse structure estimation for multivariate count data with PLN-network">
 <meta property="og:description" content="">
 <meta property="og:image" content="/logo.png">
 <meta name="twitter:card" content="summary">
@@ -93,10 +93,10 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Analyzing multivariate count table with sparse Poisson log-normal models</h1>
-                        <h4 class="author">Julien Chiquet</h4>
+      <h1>Sparse structure estimation for multivariate count data with PLN-network</h1>
+                        <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2018-12-14</h4>
+            <h4 class="date">2018-12-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNnetwork.Rmd"><code>vignettes/PLNnetwork.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -108,15 +108,13 @@
 <div id="preliminaries" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preliminaries" class="anchor"></a>Preliminaries</h2>
-<p>This vignette intends to illustrate the basical use of the <code>PLNnetwork</code> function and the methods accompaning the R6 Classes <code>PLNnetworkfamily</code> and <code>PLNnetworkfit</code>.</p>
+<p>This vignette illustrates the basical use of the <code>PLNnetwork</code> function and the methods accompaning the R6 Classes <code>PLNnetworkfamily</code> and <code>PLNnetworkfit</code>.</p>
 <div id="requirements" class="section level3">
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rmarkdown)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(corrplot)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a></code></pre></div>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
@@ -125,29 +123,45 @@
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a></code></pre></div>
 <p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$TotalCounts</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
 </div>
-<div id="sparse-poisson-log-normal-models" class="section level3">
+<div id="mathematical-background" class="section level3">
 <h3 class="hasAnchor">
-<a href="#sparse-poisson-log-normal-models" class="anchor"></a>Sparse Poisson log-normal models</h3>
-<p>The Poisson lognormal model relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> as follows <span class="math display">\[\begin{equation} 
-  \label{eq:pca-model}
+<a href="#mathematical-background" class="anchor"></a>Mathematical background</h3>
+<p>The network model for multivariate count data that we introduce in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNnetwork">2018</a>)</span> is a variant of the Poisson Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span>, see <a href="PLN.html">the PLN vignette</a> as a reminder. Compare to the standard PLN model we add a sparsity constraint on the inverse covariance matrix <span class="math inline">\({\boldsymbol\Sigma}^{-1}\triangleq \boldsymbol\Omega\)</span> by means of the <span class="math inline">\(\ell_1\)</span>-norm, such that <span class="math inline">\(\|\boldsymbol\Omega\|_1 &lt; c\)</span>. PLN-network is the equivalent of the sparse multivariate Gaussian model <span class="citation">(Banerjee, Ghaoui, and d’Aspremont <a href="#ref-banerjee2008">2008</a>)</span> in the PLN framework. It relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> as follows <span class="math display">\[\begin{equation} 
   \begin{array}{rcl}
-  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}{\boldsymbol\mu},\boldsymbol\Sigma) \\
+  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}\left({\boldsymbol\mu},\boldsymbol\Omega^{-1}\right) &amp;  \|\boldsymbol\Omega\|_1 &lt; c \\
   \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
 \end{equation}\]</span></p>
 <p>The parameter <span class="math inline">\({\boldsymbol\mu}\)</span> corresponds to the main effects and the latent covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> describes the underlying structure of dependence between the <span class="math inline">\(p\)</span> variables.</p>
-<p>In the PLN network, we penalized the inverse covariance <span class="math inline">\(\boldsymbol\Sigma^{-1} = \boldsymbol\Theta\)</span> by a <span class="math inline">\(\ell_1\)</span> penalty to induce sparsity and select important direct relationships between entities. Hence, the support of <span class="math inline">\(\boldsymbol\Theta\)</span> correspond to a network of underlying interactions. All mathematical details can be found in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNnetwork">2018</a>)</span>.</p>
+<p>The <span class="math inline">\(\ell_1\)</span>-penalty on <span class="math inline">\(\boldsymbol\Omega\)</span> induces sparsity and selection of important direct relationships between entities. Hence, the support of <span class="math inline">\(\boldsymbol\Omega\)</span> correspond to a network of underlying interactions. The sparsity level (<span class="math inline">\(c\)</span> in the above mathematical model), which corresponds to the number of edges in the network, is controlled by a penalty parameter in the optimization process sometimes referred to as <span class="math inline">\(\lambda\)</span>. All mathematical details can be found in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNnetwork">2018</a>)</span>.</p>
+<div id="covariates-and-offsets" class="section level4">
+<h4 class="hasAnchor">
+<a href="#covariates-and-offsets" class="anchor"></a>Covariates and offsets</h4>
+<p>Just like PLN, PLN-network generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation} 
+  \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Omega^{-1}\right), \qquad \|\boldsymbol\Omega\|_1 &lt; c ,
+\end{equation}\]</span> where <span class="math inline">\(\boldsymbol\Theta\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression parameters.</p>
+</div>
+<div id="alternating-optimization" class="section level4">
+<h4 class="hasAnchor">
+<a href="#alternating-optimization" class="anchor"></a>Alternating optimization</h4>
+<p>Regularization via sparsification of <span class="math inline">\(\boldsymbol\Omega\)</span> and vizualization of the consecutive network is the main objective in PLN-network. To reach this goal, we need to first estimate the model parameters. Inference in PLN-network focuses on the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and the inverse covariance <span class="math inline">\(\boldsymbol\Omega\)</span>. Technically speaking, we adopt a variational strategy to approximate the <span class="math inline">\(\ell_1\)</span>-penalized log-likelihood function and optimize the consecutive sparse variational surrogate with an optimization scheme that alternates between two step</p>
+<ol style="list-style-type: decimal">
+<li>a gradient-ascent-step, performed with the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02">2002</a>)</span> implemented in the C++ library <span class="citation">(Johnson <a href="#ref-nlopt">2011</a>)</span>, which we link to the package.</li>
+<li>a penalized log-likelihood step, performed with the graphical-Lasso of <span class="citation">Friedman, Hastie, and Tibshirani (<a href="#ref-FHT08">2008</a>)</span>, implemented in the package <strong>fastglasso</strong> <span class="citation">(Sustik and Calderhead <a href="#ref-glassofast">2012</a>)</span>.</li>
+</ol>
+<p>More technical details can be found in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNnetwork">2018</a>)</span></p>
+</div>
 </div>
 </div>
 <div id="analysis-of-trichoptera-data-with-a-plnnetwork-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#analysis-of-trichoptera-data-with-a-plnnetwork-model" class="anchor"></a>Analysis of trichoptera data with a PLNnetwork model</h2>
-<p>In the package, the sparse PLN model is adjusted with the function <code>PLNnetowkr</code>, which we review in this section</p>
-<div id="a-model-with-latent-main-effects-for-the-trichopetra-data-set" class="section level3">
+<p>In the package, the sparse PLN-network model is adjusted with the function <code>PLNnetwork</code>, which we review in this section. This function adjusts the model for a series of value of the penalty parameter controling the number of edges in the network. It then provides a collection of objects with class <code>PLNnetworkfit</code>, corresponding to networks with different levels of density, all stored in an object with class <code>PLNnetworkfamily</code>.</p>
+<div id="adjusting-a-collection-of-network---a-k-a--a-regularization-path" class="section level3">
 <h3 class="hasAnchor">
-<a href="#a-model-with-latent-main-effects-for-the-trichopetra-data-set" class="anchor"></a>A model with latent main effects for the Trichopetra data set</h3>
-<p>We start by adjusting the above model to Trichoptera data set. Here, the matrix of observations <span class="math inline">\(\mathbf{Y}\)</span> corresponds to the abundance of each species in each trapping night. The model can be fitted with the function <code>PLNNetwork</code> for a series of penalties contorling the number of edges in the network as follows:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">models &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNnetwork.html">PLNnetwork</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)), <span class="dt">data =</span> trichoptera)</a></code></pre></div>
+<a href="#adjusting-a-collection-of-network---a-k-a--a-regularization-path" class="anchor"></a>Adjusting a collection of network - a.k.a. a regularization path</h3>
+<p><code>PLNnetwork</code> finds an hopefully appropriate set of penalties on its own. This set can be controlled by the user, but use it with care and check details in <code><a href="../reference/PLNnetwork.html">?PLNnetwork</a></code>. The collection of models is fitted as follows:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">network_models &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNnetwork.html">PLNnetwork</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)), <span class="dt">data =</span> trichoptera)</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ##  Adjusting 30 PLN with sparse inverse covariance estimation
@@ -184,9 +198,14 @@
     sparsifying penalty = 0.3639184 
 ##  Post-treatments
 ##  DONE!</code></pre>
-<p>Note the use of the <code>formula</code> object to specify the model: the vector <span class="math inline">\(\boldsymbol\mu\)</span> of main effects in the mathematical formulation (one per column species) is specified in the call with the formula <code>~ 1</code>.</p>
-<p>The <code>models</code> variable is an <code>R6</code> object with class <code>PLNnetworkfamily</code>, which comes with a couple of methods. The most basic is the <code>show/print</code> method, which send a very basic summary of the estimation process:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">models</a></code></pre></div>
+<p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
+</div>
+<div id="structure-of-plnnetworkfamily" class="section level3">
+<h3 class="hasAnchor">
+<a href="#structure-of-plnnetworkfamily" class="anchor"></a>Structure of <code>PLNnetworkfamily</code>
+</h3>
+<p>The <code>network_models</code> variable is an <code>R6</code> object with class <code>PLNnetworkfamily</code>, which comes with a couple of methods. The most basic is the <code>show/print</code> method, which sends a very basic summary of the estimation process:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">network_models</a></code></pre></div>
 <pre><code>## --------------------------------------------------------
 ## COLLECTION OF 30 POISSON LOGNORMAL MODELS
 ## --------------------------------------------------------
@@ -195,52 +214,254 @@
 ##  - 30 penalties considered: from 0.3639184 to 3.639184 
 ##  - Best model (regarding BIC): lambda = 0.586 
 ##  - Best model (regarding EBIC): lambda = 0.586</code></pre>
-<p>Complementary information comes with the <code>plot</code> method:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(models)</a></code></pre></div>
-<p><img src="PLNnetwork_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
-<p>The critetion <span class="math inline">\(J\)</span> represents the variational lower bound of the likelihood: in this case, we can see that it is strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of penalty. Generally, smoothness of these criteria is an good indicator to check that the optimization process went well.</p>
-<p>We can represent the coefficient path (i.e., value of the edge in the network according to the penalty level) to see if some edges clearly come off.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(models, <span class="dt">corr =</span> <span class="ot">FALSE</span>), <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/coord_trans.html">coord_trans</a></span>(<span class="dt">x=</span><span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</a></code></pre></div>
+<p>One can also easily access the successive values of the criteria in the collection</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">network_models<span class="op">$</span>criteria <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">param</th>
+<th align="right">degrees_freedom</th>
+<th align="right">loglik</th>
+<th align="right">BIC</th>
+<th align="right">ICL</th>
+<th align="right">R_squared</th>
+<th align="right">n_edges</th>
+<th align="right">EBIC</th>
+<th align="right">pen_loglik</th>
+<th align="right">density</th>
+<th align="left">stability</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">3.639184</td>
+<td align="right">17</td>
+<td align="right">-1276.183</td>
+<td align="right">-1309.263</td>
+<td align="right">-2593.837</td>
+<td align="right">0.9639204</td>
+<td align="right">0</td>
+<td align="right">-1309.263</td>
+<td align="right">-1284.740</td>
+<td align="right">0</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">3.361409</td>
+<td align="right">17</td>
+<td align="right">-1267.520</td>
+<td align="right">-1300.600</td>
+<td align="right">-2585.172</td>
+<td align="right">0.9639206</td>
+<td align="right">0</td>
+<td align="right">-1300.600</td>
+<td align="right">-1275.764</td>
+<td align="right">0</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">3.104835</td>
+<td align="right">17</td>
+<td align="right">-1259.423</td>
+<td align="right">-1292.503</td>
+<td align="right">-2577.075</td>
+<td align="right">0.9639216</td>
+<td align="right">0</td>
+<td align="right">-1292.503</td>
+<td align="right">-1267.355</td>
+<td align="right">0</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">2.867846</td>
+<td align="right">17</td>
+<td align="right">-1251.868</td>
+<td align="right">-1284.948</td>
+<td align="right">-2569.531</td>
+<td align="right">0.9639217</td>
+<td align="right">0</td>
+<td align="right">-1284.948</td>
+<td align="right">-1259.491</td>
+<td align="right">0</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">2.648946</td>
+<td align="right">17</td>
+<td align="right">-1244.829</td>
+<td align="right">-1277.910</td>
+<td align="right">-2562.496</td>
+<td align="right">0.9639219</td>
+<td align="right">0</td>
+<td align="right">-1277.910</td>
+<td align="right">-1252.147</td>
+<td align="right">0</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">2.446754</td>
+<td align="right">17</td>
+<td align="right">-1238.280</td>
+<td align="right">-1271.360</td>
+<td align="right">-2555.936</td>
+<td align="right">0.9639224</td>
+<td align="right">0</td>
+<td align="right">-1271.360</td>
+<td align="right">-1245.296</td>
+<td align="right">0</td>
+<td align="left">NA</td>
+</tr>
+</tbody>
+</table>
+<p>A diagnostic of the optimization process is available via the <code>convergence</code> field:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">network_models<span class="op">$</span>convergence <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">param</th>
+<th align="left">degrees_freedom</th>
+<th align="left">objective</th>
+<th align="left">convergence</th>
+<th align="left">outer_iterations</th>
+<th align="left">inner_iterations</th>
+<th align="left">inner_status</th>
+<th align="left">inner_message</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">3.639184</td>
+<td align="left">17</td>
+<td align="left">1284.74047237912</td>
+<td align="left">5.83101404217826e-06</td>
+<td align="left">3</td>
+<td align="left">8</td>
+<td align="left">4</td>
+<td align="left">xtol_rel or xtol_abs was reached</td>
+</tr>
+<tr class="even">
+<td align="right">3.361409</td>
+<td align="left">17</td>
+<td align="left">1275.7638591149</td>
+<td align="left">3.54864947777825e-08</td>
+<td align="left">2</td>
+<td align="left">8</td>
+<td align="left">4</td>
+<td align="left">xtol_rel or xtol_abs was reached</td>
+</tr>
+<tr class="odd">
+<td align="right">3.104835</td>
+<td align="left">17</td>
+<td align="left">1267.35534986844</td>
+<td align="left">1.8854440212233e-07</td>
+<td align="left">2</td>
+<td align="left">7</td>
+<td align="left">3</td>
+<td align="left">ftol_rel or ftol_abs was reached</td>
+</tr>
+<tr class="even">
+<td align="right">2.867846</td>
+<td align="left">17</td>
+<td align="left">1259.49126304149</td>
+<td align="left">2.96565395882498e-08</td>
+<td align="left">2</td>
+<td align="left">8</td>
+<td align="left">4</td>
+<td align="left">xtol_rel or xtol_abs was reached</td>
+</tr>
+<tr class="odd">
+<td align="right">2.648946</td>
+<td align="left">17</td>
+<td align="left">1252.14663365587</td>
+<td align="left">2.64372681871824e-08</td>
+<td align="left">2</td>
+<td align="left">8</td>
+<td align="left">4</td>
+<td align="left">xtol_rel or xtol_abs was reached</td>
+</tr>
+<tr class="even">
+<td align="right">2.446754</td>
+<td align="left">17</td>
+<td align="left">1245.29584506555</td>
+<td align="left">1.05897214276335e-07</td>
+<td align="left">2</td>
+<td align="left">10</td>
+<td align="left">3</td>
+<td align="left">ftol_rel or ftol_abs was reached</td>
+</tr>
+</tbody>
+</table>
+<p>An nicer view of this output comes with the option “diagnostic” in the <code>plot</code> method:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(network_models, <span class="st">"diagnostic"</span>)</a></code></pre></div>
+<p><img src="PLNnetwork_files/figure-html/diagnostic-1.png" width="672"></p>
+</div>
+<div id="exploring-the-path-of-networks" class="section level3">
+<h3 class="hasAnchor">
+<a href="#exploring-the-path-of-networks" class="anchor"></a>Exploring the path of networks</h3>
+<p>By default, the <code>plot</code> method of <code>PLNnetworkfamily</code> displays evolution of the criteria mentioned above, and is a good starting point for model selection:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(network_models)</a></code></pre></div>
+<p><img src="PLNnetwork_files/figure-html/plot-1.png" width="672"></p>
+<p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with a lower level of penalty (meaning more edges in the network). The same holds true for the penalized counterpart of the variational surrogate. Generally, smoothness of these criteria is a good sanity check of optimization process. BIC and its extended-version high-dimensional version EBIC are classically used for selecting the correct amount of penalization with sparse estimator like the one used by PLN-network. However, we will consider later a more robust albeit more computationally intensive strategy to chose the appropriate number of edges in the network.</p>
+<p>To pursue the analysis, we can represent the coefficient path (i.e., value of the edges in the network according to the penalty level) to see if some edges clearly come off. To this end, we provide the S3 function <code>coefficient_path</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(network_models, <span class="dt">corr =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st">  </span><span class="kw">coord_trans</span>(<span class="dt">x=</span><span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>()</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/path_coeff-1.png" width="672"></p>
-<p>An alternative and more intuitive view consiste in plotting the values of the partial correlation along the path.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(models, <span class="dt">corr =</span> <span class="ot">TRUE</span>), <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/coord_trans.html">coord_trans</a></span>(<span class="dt">x =</span> <span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</a></code></pre></div>
+<p>An alternative and more intuitive view consiste in plotting the values of the partial correlations along the path.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(network_models, <span class="dt">corr =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span><span class="kw">coord_trans</span>(<span class="dt">x =</span> <span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>()</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/path_corr-1.png" width="672"></p>
-<div id="model-selection-issue" class="section level4">
-<h4 class="hasAnchor">
-<a href="#model-selection-issue" class="anchor"></a>Model selection issue</h4>
+</div>
+<div id="model-selection-issue-choosing-a-network" class="section level3">
+<h3 class="hasAnchor">
+<a href="#model-selection-issue-choosing-a-network" class="anchor"></a>Model selection issue: choosing a network</h3>
 <p>If we want to select one network, we may extract best model according to BIC or StARS with the method <code><a href="../reference/getBestModel.html">getBestModel()</a></code>. A model with a specific penalty level can be extracted with the <code><a href="../reference/getModel.html">getModel(lambda)</a></code> method.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">model.BIC   &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(models, <span class="st">"BIC"</span>)   <span class="co"># if no criteria is specified, the best BIC is used</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">model.StARS &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(models, <span class="st">"StARS"</span>) <span class="co"># if StARS is requested, stabiltiy selection is performed if needed </span></a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">model_BIC   &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(network_models, <span class="st">"BIC"</span>)   <span class="co"># if no criteria is specified, the best BIC is used</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">model_StARS &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(network_models, <span class="st">"StARS"</span>) <span class="co"># if StARS is requested, stabiltiy selection is performed if needed </span></a></code></pre></div>
 <pre><code>## 
 ## Stability Selection for PLNnetwork: 
 ## subsampling: ++++++++++++++++++++</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">model.pen   &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getModel.html">getModel</a></span>(models, models<span class="op">$</span>penalties[<span class="dv">20</span>]) <span class="co"># give some sparsity</span></a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">model_pen   &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getModel.html">getModel</a></span>(network_models, network_models<span class="op">$</span>penalties[<span class="dv">20</span>]) <span class="co"># give some sparsity</span></a></code></pre></div>
 <p>Note that, at this point, stability selection is automatically performed, and so the stability path is now available from the <code>plot</code> function:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(models, <span class="st">"stability"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(network_models, <span class="st">"stability"</span>)</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot%20stability-1.png" width="672"></p>
-<p>The variables <code>model.BIC</code>, <code>model.StARS</code> and <code>model.pen</code> are other <code>R6Class</code> objects of class <code>PLNnetworkfit</code> which in turns owns a couple of methods, mostly for vizualization purposes. The <code>plot_network</code> method provides a quick representation of the inferred network, with various options.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model.BIC, <span class="dt">type =</span> <span class="st">"support"</span>, <span class="dt">output =</span> <span class="st">"corrplot"</span>)</a></code></pre></div>
-<p><img src="PLNnetwork_files/figure-html/support_network-1.png" width="672"></p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/par">par</a></span>(<span class="dt">mfrow =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model.BIC)</a>
-<a class="sourceLine" id="cb15-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model.StARS)</a>
-<a class="sourceLine" id="cb15-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model.pen)</a></code></pre></div>
-<p><img src="PLNnetwork_files/figure-html/partial_corr_network-1.png" width="672"></p>
-<p>Additional information about the optimization process comes with the option “diagnostic” in the <code>plot</code> method:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(models, <span class="st">"diagnostic"</span>)</a></code></pre></div>
-<p><img src="PLNnetwork_files/figure-html/diagnostic-1.png" width="672"></p>
 </div>
+<div id="structure-of-a-plnnetworkfit" class="section level3">
+<h3 class="hasAnchor">
+<a href="#structure-of-a-plnnetworkfit" class="anchor"></a>Structure of a <code>PLNnetworkfit</code>
+</h3>
+<p>The variables <code>model_BIC</code>, <code>model_StARS</code> and <code>model_pen</code> are other <code>R6Class</code> objects of class <code>PLNnetworkfit</code> which in turns owns a couple of methods, mostly for vizualization purposes. The <code>plot_network</code> method provides a quick representation of the inferred network, with various options.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_BIC, <span class="dt">type =</span> <span class="st">"support"</span>, <span class="dt">output =</span> <span class="st">"corrplot"</span>)</a></code></pre></div>
+<p><img src="PLNnetwork_files/figure-html/support_network-1.png" width="672"></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_BIC)</a></code></pre></div>
+<p><img src="PLNnetwork_files/figure-html/partial_corr_network-1.png" width="672"></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS)</a></code></pre></div>
+<p><img src="PLNnetwork_files/figure-html/partial_corr_network-2.png" width="672"></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_pen)</a></code></pre></div>
+<p><img src="PLNnetwork_files/figure-html/partial_corr_network-3.png" width="672"></p>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
+<div id="ref-AiH89">
+<p>Aitchison, J., and C.H. Ho. 1989. “The Multivariate Poisson-Log Normal Distribution.” <em>Biometrika</em> 76 (4). Oxford University Press: 643–53.</p>
+</div>
+<div id="ref-banerjee2008">
+<p>Banerjee, Onureena, Laurent El Ghaoui, and Alexandre d’Aspremont. 2008. “Model Selection Through Sparse Maximum Likelihood Estimation for Multivariate Gaussian or Binary Data.” <em>Journal of Machine Learning Research</em> 9 (Mar): 485–516.</p>
+</div>
 <div id="ref-PLNnetwork">
 <p>Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018. “Variational Inference for Sparse Network Reconstruction from Count Data.” <em>arXiv Preprint</em>. <a href="https://arxiv.org/abs/1806.03120">https://arxiv.org/abs/1806.03120</a>.</p>
+</div>
+<div id="ref-FHT08">
+<p>Friedman, J., T. Hastie, and R. Tibshirani. 2008. “Sparse Inverse Covariance Estimation with the Graphical Lasso.” <em>Biostatistics</em> 9 (3). Biometrika Trust: 432–41.</p>
+</div>
+<div id="ref-nlopt">
+<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="http://ab-initio.mit.edu/nlopt">http://ab-initio.mit.edu/nlopt</a>.</p>
+</div>
+<div id="ref-glassofast">
+<p>Sustik, Mátyás A, and Ben Calderhead. 2012. “GLASSOFAST: An Efficient Glasso Implementation.” <em>UTCS Technical Report TR-12-29 2012</em>. University of Texas at Austin Austin.</p>
+</div>
+<div id="ref-Svan02">
+<p>Svanberg, Krister. 2002. “A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.” <em>SIAM Journal on Optimization</em> 12 (2). SIAM: 555–73.</p>
 </div>
 </div>
 </div>

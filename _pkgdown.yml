@@ -21,10 +21,10 @@ navbar:
         href: articles/PLN.html
       - text: "PLNPCA: Dimension Reduction"
         href: articles/PLNPCA.html
-      - text: "PLNLDA: Discriminant Analysis"
-        href: articles/PLNLDA.html
       - text: "PLNnetwork: sparse structure inference"
         href: articles/PLNnetwork.html
+      - text: "PLNLDA: Discriminant Analysis"
+        href: articles/PLNLDA.html
   right:
     - icon: fa-github
       href: https://github.com/jchiquet/PLNmodels
