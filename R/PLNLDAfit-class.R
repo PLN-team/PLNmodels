@@ -42,6 +42,7 @@ PLNLDAfit <-
           Mu <- private$Theta
         }
         colnames(Mu) <- colnames(design_group)
+        rownames(Mu) <- rownames(private$Theta)
         private$Mu <- Mu
         nk <- table(private$grouping)
         Mu_bar <- as.vector(Mu %*% nk / self$n)
@@ -84,6 +85,9 @@ PLNLDAfit <-
         scores <- private$P %*% t(t(private$svdLDA$u[, 1:self$rank]) * private$svdLDA$d[1:self$rank])
         rownames(scores) <- rownames(private$M)
         scores
+      },
+      group_means = function() {
+        self$model_par$Mu
       }
     )
 )
@@ -234,7 +238,7 @@ PLNLDAfit$set("public", "show",
 function() {
   super$show(paste0("Linear Discriminant Analysis for Poisson Lognormal distribution\n"))
   cat("* Additional fields for LDA\n")
-  cat("    $percent_var, $corr_map, $scores \n")
+  cat("    $percent_var, $corr_map, $scores, $group_means \n")
   cat("* Additional S3 methods for LDA\n")
   cat("    plot.PLNLDAfit(), predict.PLNLDAfit()\n")
 })
