@@ -8,7 +8,7 @@ get_ggplot_ind_map <- function(scores, axes_label, main) {
       theme_bw() +
       labs(x = axes_label[1], y = axes_label[2])
   } else {
-    p <- ggplot(scores, aes_(x =~a1, group = ~labels, fill = ~labels, colour = ~labels)) +
+    p <- ggplot(scores, aes_(x = ~a1, group = ~labels, fill = ~labels, colour = ~labels)) +
       geom_density(alpha = .4) +
       geom_rug() +
       ggtitle(main) +
@@ -18,16 +18,14 @@ get_ggplot_ind_map <- function(scores, axes_label, main) {
   p
 }
 
-get_ggplot_corr_circle <- function(correlations, axes_label, main) {
+get_ggplot_corr <- function(correlations, axes_label, main) {
   if (length(axes_label) > 1 ) {
     ## data frame with arrows coordinates
-    corcir <- circle(c(0, 0), npoints = 100)
     arrows <- data.frame(x1 = rep(0, nrow(correlations)), y1 = rep(0, nrow(correlations)),
                          x2 = correlations$axe1,  y2 = correlations$axe2,
                          names = correlations$names, labels = correlations$labels)
     ## geom_path will do open circles
     p <- ggplot() + xlim(-1.1, 1.1) + ylim(-1.1, 1.1)  +
-      geom_path(data = corcir, aes_(x = ~x,y = ~y), colour = "gray65") +
       geom_hline(yintercept = 0, colour = "gray65") +
       geom_vline(xintercept = 0, colour = "gray65") +
       geom_segment(data = arrows, aes_(x = ~x1, y = ~y1, xend = ~x2, yend = ~y2, colour = ~labels)) +
@@ -48,6 +46,26 @@ get_ggplot_corr_circle <- function(correlations, axes_label, main) {
                           axis.text.y  = element_blank(),
                           axis.ticks.y = element_blank(), legend.position = "none") + ggtitle(main) +
       labs(x = paste("correlation with", axes_label[1]))
+  }
+  p
+}
+
+get_ggplot_corr_circle <- function(correlations, axes_label, main) {
+  p <- get_ggplot_corr(correlations, axes_label, main)
+  if (length(axes_label) > 1 ) {
+    ## add correlation circle
+    corcir <- circle(c(0, 0), npoints = 100)
+    p <- p + geom_path(data = corcir, aes_(x = ~x,y = ~y), colour = "gray65")
+  }
+  p
+}
+
+get_ggplot_corr_square <- function(correlations, axes_label, main) {
+  p <- get_ggplot_corr(correlations, axes_label, main)
+  if (length(axes_label) > 1 ) {
+    ## add square of size 2 centered at the origin
+    square <- data.frame(x = c(-1, -1, 1, 1, -1), y = c(-1, 1, 1, -1, -1))
+    p <- p + geom_path(data = square, aes_(x = ~x,y = ~y), colour = "gray65")
   }
   p
 }
