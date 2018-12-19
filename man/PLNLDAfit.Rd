@@ -41,7 +41,7 @@ See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}
 
 \item{\code{percent_var}}{the percent of variance explained by each axis}
 
-\item{\code{corr_circle}}{a matrix of correlations to plot the correlation circles}
+\item{\code{corr_map}}{a matrix of correlations to plot the correlation circles}
 
 \item{\code{scores}}{a matrix of scores to plot the individual factor maps}
 }}

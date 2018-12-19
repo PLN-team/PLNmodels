@@ -148,7 +148,7 @@ PLNLDAfit$set("public", "plot_LDA",
 
       ## get back all correlation circle
       cor.plot <- lapply(pairs.axes, function(pair) {
-        ggobj <- self$plot_correlation(axes = pair, plot = FALSE, main = "", cols = var_cols)
+        ggobj <- self$plot_correlation_map(axes = pair, plot = FALSE, main = "", cols = var_cols)
         return(ggplotGrob(ggobj))
       })
 

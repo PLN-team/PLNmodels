@@ -88,8 +88,7 @@ predict.PLNLDAfit <- function(object, newdata,
 #' @export
 coef.PLNLDAfit <- function(object, ...) {
   stopifnot(isPLNLDAfit(object))
-  n.groups <- object$rank + 1
-  n.covariates <- object$d - object$rank
+  n.covariates <- object$d - object$rank - 1
   if (n.covariates == 0) return(NULL)
   object$model_par$Theta[ , 1:n.covariates, drop = FALSE]
 }
