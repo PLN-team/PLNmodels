@@ -20,8 +20,7 @@ knitr::opts_chunk$set(
   rows.print = 5,
   message = FALSE, 
   warning = FALSE, 
-  cache = TRUE, 
-  eval = FALSE)
+  cache = TRUE)
 ```
 
 ## Preliminaries
@@ -120,7 +119,7 @@ Classification and prediction are the main objectives in (PLN-)LDA. To reach thi
 
 In the package, the PLN-LDA model is adjusted with the function `PLNLDA`, which we review in this section. This function adjusts the model and stores it in a object of class `PLNLDAfit` which inherits from the class `PLNfit`, so we strongly recommend the reader to be somehow comfortable with `PLN` and `PLNfit` before using `PLNLDA` (see [the PLN vignette](PLN.html)).
 
-### A model with latent main effects and no covariates for the Trichopetra data set
+### A model with main effects and no covariates
 
 We start by adjusting the above model to the Trichoptera data set. We use `Group`, the catching time spans, as a discrete structure and use log as an offset to capture differences in sampling luck. 
 
@@ -160,10 +159,10 @@ vcov(myLDA_nocov) %>% corrplot::corrplot(is.corr = FALSE)
 coef(myLDA_nocov)
 ```
 
-- the $p \times K$ matrix of group means $\mathbf{M}$
+- the $p \times K$ matrix of group means $\mathbf{M}$ (only 8 first groups heres)
 
 ```{r group-means}
-myLDA_nocov$group_means %>% head() %>% knitr::kable()
+myLDA_nocov$group_means[, 1:8] %>% head() %>% knitr::kable(digits = 2)
 ```
 
 The `PLNLDAfit` class also benefits from two important methods: `plot` and `predict`.
@@ -177,16 +176,16 @@ plot(myLDA_nocov)
 
 By default, `plot` shows the first 3 axis of the LDA when there are 4 or more groups and uses special representations for the edge cases of 3 or less groups. 
 
-`ggplot2`-savvy users who want to make their own representations can extracts the $n \times (K-1)$ matrix of sample scores from the `PLNLDAfit` object...
+`ggplot2`-savvy users who want to make their own representations can extracts the $n \times (K-1)$ matrix of sample scores from the `PLNLDAfit` object (only first 8 axes shown here) ...
 
 ```{r extract-scores}
-myLDA_nocov$scores %>% head %>% knitr::kable()
+myLDA_nocov$scores[, 1:8] %>% head %>% knitr::kable(digits = 2)
 ```
 
 ...or the $p \times (K-1)$ matrix of correlations between scores and (latent) variables
 
 ```{r extract-corr}
-myLDA_nocov$corr_map %>% head %>% knitr::kable()
+myLDA_nocov$corr_map %>% head %>% knitr::kable(digits = 2)
 ```
 
 #### `predict` method
@@ -199,7 +198,7 @@ By default, the `predict` use the argument `type = "posterior"` to output the ma
 predicted.class <- predict(myLDA_nocov, newdata = trichoptera)
 ## equivalent to 
 ## predicted.class <- predict(myLDA_nocov, newdata = trichoptera,  type = "posterior")
-predicted.class %>% head() %>% knitr::kable()
+predicted.class %>% head() %>% knitr::kable(digits = 2)
 ```
 
 Setting `type = "response"`, we can predict the most likely group $\hat{k}$ instead: 
@@ -224,18 +223,16 @@ myLDA_cov <- PLNLDA(Abundance ~ Wind + 0 + offset(log(TotalCounts)), grouping = 
 
 #### Specific fields
 
-All fields of our new `PLNLDA` fit can be accessed as before with similar results. 
-
-The only important difference is the result of `coef`: since we included a covariate in the model, `coef` now returns a 1-column matrix for $\hat{\boldsymbol{\Theta}}$ instead of `NULL`
+All fields of our new `PLNLDA` fit can be accessed as before with similar results. The only important difference is the result of `coef`: since we included a covariate in the model, `coef` now returns a 1-column matrix for $\hat{\boldsymbol{\Theta}}$ instead of `NULL`
 
 ```{r coef-cov}
 coef(myLDA_cov) %>% head %>% knitr::kable()
 ```
 
-The group-specific main effects can still be accessed with `$group_means`
+The group-specific main effects can still be accessed with `$group_means` (only first 8 shown here)
 
-```{r coef-cov}
-myLDA_cov$group_means %>% head %>% knitr::kable()
+```{r group-means-cov}
+myLDA_cov$group_means %>% head %>% knitr::kable(digits = 2)
 ```
 
 #### `plot` method
@@ -246,7 +243,7 @@ Once again, the `plot` method is very useful to get a quick look at the results.
 plot(myLDA_cov)
 ```
 
-#### `predict`
+#### `predict` method
 
 We can again predict the most likely group for each sample :
 
