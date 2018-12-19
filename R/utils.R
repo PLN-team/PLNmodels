@@ -43,6 +43,7 @@ extract_model <- function(call, envir) {
   X <- model.matrix(terms(frame), frame)
   O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
+  if (is.vector(O)) O <- O %o% rep(1, ncol(Y))
   w <- model.weights(frame)
   if (is.null(w)) {
     w <- rep(1.0, nrow(Y))
