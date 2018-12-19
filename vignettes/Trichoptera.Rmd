@@ -38,7 +38,7 @@ library(corrplot)
 
 ## The trichopterata data set 
 
-The order Trichoptera (or caddisflies) are a group of insects with aquatic larvae and terrestrial adults. The ecological data set trichoptera [@trichoptera] describes abundances of Trichopetera species (hereafter the _counts_), accompanied with some meteorological factors (hereafter the _covariates_) that may influence their presence during the sampling^[The original data set is available in the **ade4** package. We consider here a different version where we only keep a subset of the original meteorological features, for illutrative purposes].
+The order Trichoptera (or caddisflies) are a group of insects with aquatic larvae and terrestrial adults. The ecological data set trichoptera [@trichoptera] describes abundances of Trichoptera species (hereafter the _counts_), accompanied with some meteorological factors (hereafter the _covariates_) that may influence their presence during the sampling^[The original data set is available in the **ade4** package. We consider here a different version where we only keep a subset of the original meteorological features, for illutrative purposes].
 
 ```{r trichoptera, echo = FALSE, fig.align='center', fig.cap = "Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001."}
 knitr::include_graphics("figures/macronema_zebratum.jpg")
