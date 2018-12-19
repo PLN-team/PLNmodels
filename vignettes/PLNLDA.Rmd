@@ -158,10 +158,10 @@ vcov(myLDA_nocov) %>% corrplot::corrplot(is.corr = FALSE)
 coef(myLDA_nocov)
 ```
 
-- the $p \times K$ matrix of group means $\mathbf{M}$ (only 8 first groups heres)
+- the $p \times K$ matrix of group means $\mathbf{M}$
 
 ```{r group-means}
-myLDA_nocov$group_means[, 1:8] %>% head() %>% knitr::kable(digits = 2)
+myLDA_nocov$group_means %>% head() %>% knitr::kable(digits = 2)
 ```
 
 The `PLNLDAfit` class also benefits from two important methods: `plot` and `predict`.
@@ -175,10 +175,10 @@ plot(myLDA_nocov)
 
 By default, `plot` shows the first 3 axis of the LDA when there are 4 or more groups and uses special representations for the edge cases of 3 or less groups. 
 
-`ggplot2`-savvy users who want to make their own representations can extracts the $n \times (K-1)$ matrix of sample scores from the `PLNLDAfit` object (only first 8 axes shown here) ...
+`ggplot2`-savvy users who want to make their own representations can extracts the $n \times (K-1)$ matrix of sample scores from the `PLNLDAfit` object ...
 
 ```{r extract-scores}
-myLDA_nocov$scores[, 1:8] %>% head %>% knitr::kable(digits = 2)
+myLDA_nocov$scores %>% head %>% knitr::kable(digits = 2)
 ```
 
 ...or the $p \times (K-1)$ matrix of correlations between scores and (latent) variables
@@ -217,7 +217,9 @@ table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
 
 It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  :
 ```{r, warning=FALSE}
-myLDA_cov <- PLNLDA(Abundance ~ Wind + 0 + offset(log(TotalCounts)), grouping = trichoptera$Group, data = trichoptera)
+myLDA_cov <- PLNLDA(Abundance ~ Wind + 0 + offset(log(TotalCounts)), 
+                    grouping = trichoptera$Group, 
+                    data = trichoptera)
 ```
 
 #### Specific fields
@@ -228,7 +230,7 @@ All fields of our new `PLNLDA` fit can be accessed as before with similar result
 coef(myLDA_cov) %>% head %>% knitr::kable()
 ```
 
-The group-specific main effects can still be accessed with `$group_means` (only first 8 shown here)
+The group-specific main effects can still be accessed with `$group_means`
 
 ```{r group-means-cov}
 myLDA_cov$group_means %>% head %>% knitr::kable(digits = 2)

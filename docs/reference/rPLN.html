@@ -101,10 +101,10 @@
       <a href="../articles/PLNPCA.html">PLNPCA: Dimension Reduction</a>
     </li>
     <li>
-      <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
+      <a href="../articles/PLNnetwork.html">PLNnetwork: sparse structure inference</a>
     </li>
     <li>
-      <a href="../articles/PLNnetwork.html">PLNnetwork: sparse structure inference</a>
+      <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
     </li>
   </ul>
 </li>
@@ -191,9 +191,9 @@
 <span class='co'>## very different abundances</span>
 <span class='no'>mu</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, -<span class='fl'>1</span>), <span class='kw'>each</span> <span class='kw'>=</span> <span class='fl'>5</span>)
 <span class='no'>Sigma</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>0.8</span>, <span class='fl'>10</span>, <span class='fl'>10</span>); <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/diag'>diag</a></span>(<span class='no'>Sigma</span>) <span class='kw'>&lt;-</span> <span class='fl'>1</span>
-<span class='fu'>rPLN</span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='no'>mu</span>, <span class='kw'>Sigma</span> <span class='kw'>=</span> <span class='no'>Sigma</span>, <span class='kw'>depths</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1e3</span>, <span class='fl'>1e5</span>))</div><div class='output co'>#&gt;      [,1]  [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-#&gt; [1,]   80    96   27   46   40    9    4    7    8     7
-#&gt; [2,] 4955 12325 6255 4962 4054  395 1473  869  791   498</div><div class='input'>
+<span class='fu'>rPLN</span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='no'>mu</span>, <span class='kw'>Sigma</span> <span class='kw'>=</span> <span class='no'>Sigma</span>, <span class='kw'>depths</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1e3</span>, <span class='fl'>1e5</span>))</div><div class='output co'>#&gt;       [,1]  [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#&gt; [1,]    50    73   19   51   65    9    5   17    6     4
+#&gt; [2,] 10125 13659 4790 3540 3748  596  794  572  669   816</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

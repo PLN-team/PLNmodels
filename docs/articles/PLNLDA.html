@@ -113,14 +113,14 @@
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
 <a href="#data-set" class="anchor"></a>Data set</h3>
 <p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a></code></pre></div>
 <p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$TotalCounts</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.) In the following, we’re particularly interested in the <code>trichoptera$Group</code> <strong>discrete</strong> covariate which corresponds to disjoint time spans during which the catching took place. The correspondance between group label and time spans is:</p>
 <table class="table">
 <thead><tr class="header">
@@ -196,31 +196,25 @@
 <h3 class="hasAnchor">
 <a href="#mathematical-background" class="anchor"></a>Mathematical background</h3>
 <p>In the vein of <span class="citation">Fisher (<a href="#ref-Fi36">1936</a>)</span> and <span class="citation">Rao (<a href="#ref-Rao48">1948</a>)</span>, we introduce a multi-class LDA model for multivariate count data which is a variant of the Poisson Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span> (see <a href="PLN.html">the PLN vignette</a> as a reminder). Indeed, it can viewed as a PLN model with a discrete group structure in the latent gaussian space.</p>
-This PLN-LDA model can be written in a hierachical framework where a sample of <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> is related to some <span class="math inline">\(p\)</span>-dimensional vectors of latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> and a discrete structure with <span class="math inline">\(K\)</span> groups in the following way:
-<span class="math display">\[\begin{equation} 
+<p>This PLN-LDA model can be written in a hierachical framework where a sample of <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> is related to some <span class="math inline">\(p\)</span>-dimensional vectors of latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> and a discrete structure with <span class="math inline">\(K\)</span> groups in the following way: <span class="math display">\[\begin{equation} 
   \begin{array}{rcl}
     \text{group structure }   &amp; \mathbf{\mu}_i = \mu_{g_i} &amp; g_i \in \{1, \dots, K\}  \\
     \text{latent space }   &amp; \mathbf{Z}_i \quad \text{indep.} &amp; \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i, \boldsymbol{\Sigma})  &amp; \\
     \text{observation space } &amp; Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
-\end{equation}\]</span>
-<p>where <span class="math inline">\(g_i\)</span> denotes the group sample <span class="math inline">\(i\)</span> belongs to.</p>
-The different parameters <span class="math inline">\({\boldsymbol\mu}_k \in\mathbb{R}^p\)</span> corresponds to the group-specific main effects and the variance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span> is shared among groups. An equivalent way of writting this model is the following:
-<span class="math display">\[\begin{equation} 
+\end{equation}\]</span> where <span class="math inline">\(g_i\)</span> denotes the group sample <span class="math inline">\(i\)</span> belongs to.</p>
+<p>The different parameters <span class="math inline">\({\boldsymbol\mu}_k \in\mathbb{R}^p\)</span> corresponds to the group-specific main effects and the variance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span> is shared among groups. An equivalent way of writting this model is the following: <span class="math display">\[\begin{equation} 
   \begin{array}{rcl}
   \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i,\boldsymbol\Sigma) &amp; \boldsymbol{\mu}_i = \mathbf{g}_i^\top \mathbf{M} \\
   \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
   \end{array}
-\end{equation}\]</span>
-<p>where, with a slight abuse of notation, <span class="math inline">\(\mathbf{g}_i\)</span> is a group-indicator vector of length <span class="math inline">\(K\)</span> (<span class="math inline">\(g_{ik} = 1 \Leftrightarrow g_i = k\)</span>) and <span class="math inline">\(\mathbf{M} = [\boldsymbol{\mu}_1^\top, \dots, \boldsymbol{\mu}_K^\top]^\top\)</span> is a <span class="math inline">\(K \times p\)</span> matrix collecting the group-specific main effects.</p>
+\end{equation}\]</span> where, with a slight abuse of notation, <span class="math inline">\(\mathbf{g}_i\)</span> is a group-indicator vector of length <span class="math inline">\(K\)</span> (<span class="math inline">\(g_{ik} = 1 \Leftrightarrow g_i = k\)</span>) and <span class="math inline">\(\mathbf{M} = [\boldsymbol{\mu}_1^\top, \dots, \boldsymbol{\mu}_K^\top]^\top\)</span> is a <span class="math inline">\(K \times p\)</span> matrix collecting the group-specific main effects.</p>
 <div id="covariates-and-offsets" class="section level4">
 <h4 class="hasAnchor">
 <a href="#covariates-and-offsets" class="anchor"></a>Covariates and offsets</h4>
-Just like PLN, PLN-LDA generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of the discrete group structure, <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> and a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads
-<span class="math display">\[\begin{equation} 
+<p>Just like PLN, PLN-LDA generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of the discrete group structure, <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> and a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation} 
   \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{g}_i^\top \mathbf{M} + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma)
-\end{equation}\]</span>
-<p>where <span class="math inline">\(\boldsymbol\Theta\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression parameters.</p>
+\end{equation}\]</span> where <span class="math inline">\(\boldsymbol\Theta\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression parameters.</p>
 </div>
 <div id="prediction" class="section level4">
 <h4 class="hasAnchor">
@@ -232,22 +226,19 @@ Just like PLN, PLN-LDA generalizes to a formulation close to a multivariate gene
 <li>a model with estimated parameters <span class="math inline">\(\hat{\boldsymbol{\Sigma}}\)</span>, <span class="math inline">\(\hat{\boldsymbol{\Theta}}\)</span>, <span class="math inline">\(\hat{\mathbf{M}}\)</span> and group counts <span class="math inline">\((n_1, \dots, n_K)\)</span>
 </li>
 </ul>
-We can predict the observation’s group using Bayes rule as follows: for <span class="math inline">\(k \in {1, \dots, K}\)</span>, compute
-<span class="math display">\[\begin{equation}
+<p>We can predict the observation’s group using Bayes rule as follows: for <span class="math inline">\(k \in {1, \dots, K}\)</span>, compute <span class="math display">\[\begin{equation}
 \begin{aligned}
 f_k(\mathbf{Y}) &amp; = p(\mathbf{Y} | \mathbf{g} = k, \mathbf{o}, \mathbf{x}, \hat{\boldsymbol{\Theta}}, \hat{\boldsymbol{\Sigma}}) \\
                 &amp; = \boldsymbol{\Phi}_{PLN}(\mathbf{Y}; \mathbf{o} + \boldsymbol{\mu}_k + \mathbf{x}^\top \hat{\boldsymbol{\Theta}}, \hat{\boldsymbol{\Sigma}}) \\
 p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}    
 \end{aligned}
-\end{equation}\]</span>
-<p>where <span class="math inline">\(\boldsymbol{\Phi}_{PLN}(\bullet; \boldsymbol{\mu}, \boldsymbol{\Sigma})\)</span> is the density function of a PLN distribution with parameters <span class="math inline">\((\boldsymbol{\mu}, \boldsymbol{\Sigma})\)</span>. <span class="math inline">\(f_k(\mathbf{Y})\)</span> and <span class="math inline">\(p_k\)</span> are respectively plug-in estimates of (i) the probability of observing counts <span class="math inline">\(\mathbf{Y}\)</span> in a sample from group <span class="math inline">\(k\)</span> and (ii) the probability that a sample originates from group <span class="math inline">\(k\)</span>.</p>
-The posterior probability <span class="math inline">\(\hat{\pi}_k(\mathbf{Y})\)</span> that observation <span class="math inline">\(\mathbf{Y}\)</span> belongs to group <span class="math inline">\(k\)</span> and most likely group <span class="math inline">\(\hat{k}(\mathbf{Y})\)</span> can thus be defined as
-<span class="math display">\[\begin{equation}
+\end{equation}\]</span> where <span class="math inline">\(\boldsymbol{\Phi}_{PLN}(\bullet; \boldsymbol{\mu}, \boldsymbol{\Sigma})\)</span> is the density function of a PLN distribution with parameters <span class="math inline">\((\boldsymbol{\mu}, \boldsymbol{\Sigma})\)</span>. <span class="math inline">\(f_k(\mathbf{Y})\)</span> and <span class="math inline">\(p_k\)</span> are respectively plug-in estimates of (i) the probability of observing counts <span class="math inline">\(\mathbf{Y}\)</span> in a sample from group <span class="math inline">\(k\)</span> and (ii) the probability that a sample originates from group <span class="math inline">\(k\)</span>.</p>
+<p>The posterior probability <span class="math inline">\(\hat{\pi}_k(\mathbf{Y})\)</span> that observation <span class="math inline">\(\mathbf{Y}\)</span> belongs to group <span class="math inline">\(k\)</span> and most likely group <span class="math inline">\(\hat{k}(\mathbf{Y})\)</span> can thus be defined as <span class="math display">\[\begin{equation}
 \begin{aligned}
 \hat{\pi}_k(\mathbf{Y}) &amp; = \frac{p_k f_k(\mathbf{Y})}{\sum_{k' = 1}^K p_{k'} f_{k'}(\mathbf{Y})} \\
 \hat{k}(\mathbf{Y})     &amp; = \underset{k \in \{1, \dots, K\}}{\arg\max} \hat{\pi}_k(\mathbf{Y})
 \end{aligned}
-\end{equation}\]</span>
+\end{equation}\]</span></p>
 </div>
 <div id="optimization-by-variational-inference" class="section level4">
 <h4 class="hasAnchor">
@@ -265,9 +256,9 @@ The posterior probability <span class="math inline">\(\hat{\pi}_k(\mathbf{Y})\)<
 <a href="#a-model-with-main-effects-and-no-covariates" class="anchor"></a>A model with main effects and no covariates</h3>
 <p>We start by adjusting the above model to the Trichoptera data set. We use <code>Group</code>, the catching time spans, as a discrete structure and use log as an offset to capture differences in sampling luck.</p>
 <p>The model can be fitted with the function <code>PLNLDA</code> as follows:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myLDA_nocov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNLDA.html">PLNLDA</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)),
-                      <span class="dt">grouping =</span> trichoptera<span class="op">$</span>Group, 
-                      <span class="dt">data =</span> trichoptera)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">myLDA_nocov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNLDA.html">PLNLDA</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)),</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">                      <span class="dt">grouping =</span> trichoptera<span class="op">$</span>Group, </a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">                      <span class="dt">data =</span> trichoptera)</a></code></pre></div>
 <pre><code>## 
 ##  Performing discriminant Analysis...
 ##  DONE!</code></pre>
@@ -277,7 +268,7 @@ The posterior probability <span class="math inline">\(\hat{\pi}_k(\mathbf{Y})\)<
 <a href="#structure-of-plnldafit" class="anchor"></a>Structure of <code>PLNLDAfit</code>
 </h4>
 <p>The <code>myLDA_nocov</code> variable is an <code>R6</code> object with class <code>PLNLDAfit</code>, which comes with a couple of methods. The most basic is the <code>show/print</code> method, which sends a brief summary of the estimation process and available methods:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myLDA_nocov</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">myLDA_nocov</a></code></pre></div>
 <pre><code>## Linear Discriminant Analysis for Poisson Lognormal distribution
 ## ==================================================================
 ##  degrees_freedom    loglik       BIC       ICL R_squared
@@ -301,17 +292,17 @@ The posterior probability <span class="math inline">\(\hat{\pi}_k(\mathbf{Y})\)<
 <ul>
 <li>the <span class="math inline">\(p \times p\)</span> covariance matrix <span class="math inline">\(\hat{\boldsymbol{\Sigma}}\)</span>:</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/vcov">vcov</a></span>(myLDA_nocov) <span class="op">%&gt;%</span><span class="st"> </span>corrplot<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/vcov">vcov</a></span>(myLDA_nocov) <span class="op">%&gt;%</span><span class="st"> </span>corrplot<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <p><img src="PLNLDA_files/figure-html/vcov-1.png" width="700"></p>
 <ul>
 <li>the regression coefficient matrix <span class="math inline">\(\hat{\boldsymbol{\Theta}}\)</span> (in this case <code>NULL</code> as there are no covariates)</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myLDA_nocov)</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myLDA_nocov)</a></code></pre></div>
 <pre><code>## NULL</code></pre>
 <ul>
 <li>the <span class="math inline">\(p \times K\)</span> matrix of group means <span class="math inline">\(\mathbf{M}\)</span> (only 8 first groups heres)</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myLDA_nocov<span class="op">$</span>group_means[, <span class="dv">1</span><span class="op">:</span><span class="dv">8</span>] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">myLDA_nocov<span class="op">$</span>group_means[, <span class="dv">1</span><span class="op">:</span><span class="dv">8</span>] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">grouping1</th>
@@ -392,11 +383,11 @@ The posterior probability <span class="math inline">\(\hat{\pi}_k(\mathbf{Y})\)<
 <h4 class="hasAnchor">
 <a href="#plot-method" class="anchor"></a><code>plot</code> method</h4>
 <p>The <code>plot</code> methods provides easy to interpret graphics which reveals here that the groups are well separated:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myLDA_nocov)</code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myLDA_nocov)</a></code></pre></div>
 <p><img src="PLNLDA_files/figure-html/plot_model-1.png" width="672"></p>
 <p>By default, <code>plot</code> shows the first 3 axis of the LDA when there are 4 or more groups and uses special representations for the edge cases of 3 or less groups.</p>
 <p><code>ggplot2</code>-savvy users who want to make their own representations can extracts the <span class="math inline">\(n \times (K-1)\)</span> matrix of sample scores from the <code>PLNLDAfit</code> object (only first 8 axes shown here) …</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myLDA_nocov<span class="op">$</span>scores[, <span class="dv">1</span><span class="op">:</span><span class="dv">8</span>] <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">myLDA_nocov<span class="op">$</span>scores[, <span class="dv">1</span><span class="op">:</span><span class="dv">8</span>] <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</a></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
 <td align="right">4291830</td>
@@ -460,7 +451,7 @@ The posterior probability <span class="math inline">\(\hat{\pi}_k(\mathbf{Y})\)<
 </tr>
 </tbody></table>
 <p>…or the <span class="math inline">\(p \times (K-1)\)</span> matrix of correlations between scores and (latent) variables</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myLDA_nocov<span class="op">$</span>corr_map <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">myLDA_nocov<span class="op">$</span>corr_map <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</a></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
 <td align="left">Che</td>
@@ -553,10 +544,10 @@ The posterior probability <span class="math inline">\(\hat{\pi}_k(\mathbf{Y})\)<
 <a href="#predict-method" class="anchor"></a><code>predict</code> method</h4>
 <p>The <code>predict</code> method has a slightly different behavior than its siblings in other models of the <strong>PLNmodels</strong>. The goal of <code>predict</code> is to predict the discrete class based on observed <em>species counts</em> (rather than predicting counts from known covariates).</p>
 <p>By default, the <code>predict</code> use the argument <code>type = "posterior"</code> to output the matrix of log-posterior probabilities <span class="math inline">\(\log(\hat{\pi})_k\)</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">predicted.class &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_nocov, <span class="dt">newdata =</span> trichoptera)
-## equivalent to 
-## predicted.class &lt;- predict(myLDA_nocov, newdata = trichoptera,  type = "posterior")
-predicted.class <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">predicted.class &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_nocov, <span class="dt">newdata =</span> trichoptera)</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">## equivalent to </span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="co">## predicted.class &lt;- predict(myLDA_nocov, newdata = trichoptera,  type = "posterior")</span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">predicted.class <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">1</th>
@@ -660,15 +651,15 @@ predicted.class <span class="op">%&gt;%</span><span class="st"> </span><span cla
 </tbody>
 </table>
 <p>Setting <code>type = "response"</code>, we can predict the most likely group <span class="math inline">\(\hat{k}\)</span> instead:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">predicted.class &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_nocov, <span class="dt">newdata =</span> trichoptera,  <span class="dt">type =</span> <span class="st">"response"</span>)
-predicted.class</code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">predicted.class &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_nocov, <span class="dt">newdata =</span> trichoptera,  <span class="dt">type =</span> <span class="st">"response"</span>)</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">predicted.class</a></code></pre></div>
 <pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
 ##  1  1  1  1  1  1  9  2  1  1  1  1  2  3  2  2  2  3  3  3  9  3  4  1  4 
 ## 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 
 ##  4 12  5  4  5  6  7  7  7  8  8  8  8  8  1  9  9  9 10 10 10 10 11 12 
 ## Levels: 1 2 3 4 5 6 7 8 9 10 11 12</code></pre>
 <p>Finally, we can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used dataset for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(predicted.class, trichoptera<span class="op">$</span>Group, <span class="dt">dnn =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"predicted"</span>, <span class="st">"true"</span>))</code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(predicted.class, trichoptera<span class="op">$</span>Group, <span class="dt">dnn =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"predicted"</span>, <span class="st">"true"</span>))</a></code></pre></div>
 <pre><code>##          true
 ## predicted  1  2  3  4  5  6  7  8  9 10 11 12
 ##        1  10  0  0  1  0  0  0  0  1  0  0  0
@@ -689,7 +680,7 @@ predicted.class</code></pre></div>
 <h3 class="hasAnchor">
 <a href="#a-model-with-latent-main-effects-and-meterological-covariates" class="anchor"></a>A model with latent main effects and meterological covariates</h3>
 <p>It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we’re going to use <code>Wind</code> as a covariate and illustrate the main differences with before :</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myLDA_cov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNLDA.html">PLNLDA</a></span>(Abundance <span class="op">~</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)), <span class="dt">grouping =</span> trichoptera<span class="op">$</span>Group, <span class="dt">data =</span> trichoptera)</code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">myLDA_cov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNLDA.html">PLNLDA</a></span>(Abundance <span class="op">~</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)), <span class="dt">grouping =</span> trichoptera<span class="op">$</span>Group, <span class="dt">data =</span> trichoptera)</a></code></pre></div>
 <pre><code>## 
 ##  Performing discriminant Analysis...
 ##  DONE!</code></pre>
@@ -697,7 +688,7 @@ predicted.class</code></pre></div>
 <h4 class="hasAnchor">
 <a href="#specific-fields-1" class="anchor"></a>Specific fields</h4>
 <p>All fields of our new <code>PLNLDA</code> fit can be accessed as before with similar results. The only important difference is the result of <code>coef</code>: since we included a covariate in the model, <code>coef</code> now returns a 1-column matrix for <span class="math inline">\(\hat{\boldsymbol{\Theta}}\)</span> instead of <code>NULL</code></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myLDA_cov) <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myLDA_cov) <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th></th>
@@ -731,7 +722,7 @@ predicted.class</code></pre></div>
 </tbody>
 </table>
 <p>The group-specific main effects can still be accessed with <code>$group_means</code> (only first 8 shown here)</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myLDA_cov<span class="op">$</span>group_means <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">myLDA_cov<span class="op">$</span>group_means <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">grouping1</th>
@@ -839,16 +830,16 @@ predicted.class</code></pre></div>
 <h4 class="hasAnchor">
 <a href="#plot-method-1" class="anchor"></a><code>plot</code> method</h4>
 <p>Once again, the <code>plot</code> method is very useful to get a quick look at the results.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myLDA_cov)</code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myLDA_cov)</a></code></pre></div>
 <p><img src="PLNLDA_files/figure-html/plot_model_cov-1.png" width="672"></p>
 </div>
 <div id="predict-method-1" class="section level4">
 <h4 class="hasAnchor">
 <a href="#predict-method-1" class="anchor"></a><code>predict</code> method</h4>
 <p>We can again predict the most likely group for each sample :</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">predicted.class_cov &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_cov, <span class="dt">newdata =</span> trichoptera, <span class="dt">type =</span> <span class="st">"response"</span>)</code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">predicted.class_cov &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_cov, <span class="dt">newdata =</span> trichoptera, <span class="dt">type =</span> <span class="st">"response"</span>)</a></code></pre></div>
 <p>and check that we recover the correct class in most cases (again, we used the same dataset for model fitting and group prediction only for ease of exposition):</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(predicted.class_cov, trichoptera<span class="op">$</span>Group, <span class="dt">dnn =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"predicted"</span>, <span class="st">"true"</span>))</code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(predicted.class_cov, trichoptera<span class="op">$</span>Group, <span class="dt">dnn =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"predicted"</span>, <span class="st">"true"</span>))</a></code></pre></div>
 <pre><code>##          true
 ## predicted  1  2  3  4  5  6  7  8  9 10 11 12
 ##        1  11  0  0  1  0  0  0  0  1  0  0  0
@@ -871,7 +862,7 @@ predicted.class</code></pre></div>
 <p>Fisher, R. A. 1936. “The Use of Multiple Measurements in Taxonomic Problems.” <em>Annals of Eugenics</em> 7 (2): 179–88.</p>
 </div>
 <div id="ref-nlopt">
-<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="http://ab-initio.mit.edu/nlopt" class="uri">http://ab-initio.mit.edu/nlopt</a>.</p>
+<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="http://ab-initio.mit.edu/nlopt">http://ab-initio.mit.edu/nlopt</a>.</p>
 </div>
 <div id="ref-Rao48">
 <p>Rao, C. Radhakrishna. 1948. “The Utilization of Multiple Measurements in Problems of Biological Classification.” <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 10 (2). [Royal Statistical Society, Wiley]: 159–203.</p>
