@@ -73,6 +73,7 @@ Collate:
     'PLNnetworkfit-S3methods.R'
     'PLNnetworkfit-class.R'
     'RcppExports.R'
+    'mollusk.R'
     'plot_utils.R'
     'trichoptera.R'
     'utils.R'

@@ -82,10 +82,12 @@ corrplot(
 
 ### Offsets and the compositionality issue
 
-A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by a $49 \times 17$ matrix of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The corresponding column is named `TotalCounts` in the data frame:
+A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by an $49$ numeric of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The formula syntax accepts either no offset, a vector or a matrix or specify the offsets term. 
+
+Here, we have a vector whose corresponding column is named `TotalCounts` in in the `trichoptera` data frame:
 
 ```{r offset_trichopera}
-trichoptera$TotalCounts %>% head() %>% knitr::kable()
+trichoptera$TotalCounts
 ```
 
 Offsets are denoted by $\mathbf{O}$ when the mathematical model in other vignettes, and by `O` in the `R` environment.

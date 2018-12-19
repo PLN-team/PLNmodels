@@ -7,10 +7,10 @@
 ##' the trapping nights), have been classified into 12 groups corresponding to
 ##' contiguous nights between summer 1959 and summer 1960.
 ##'
-##' @format A data frame with 49 rows and 9 variables (vectors and matrices):
+##' @format A data frame with 49 rows and 9 variables (8 vectors and 1 matrix):
 ##' \describe{
 ##'   \item{Abundance}{a 49 x 17 matrix of abundancies/counts (49 trapping nights and 17 trichoptera species)}
-##'   \item{TotalCounts}{a 49 x 17 matrix of total counts that can be used for offsets}
+##'   \item{TotalCounts}{a vector of total counts that can be used as a proxy for the sampling effort, and thus as an offsets term}
 ##'   \item{Temperature}{Evening Temperature in Celsius}
 ##'   \item{Wind}{Wind in m/s}
 ##'   \item{Pressure}{Pressure in mm Hg}
