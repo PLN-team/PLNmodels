@@ -66,10 +66,10 @@
       <a href="../articles/PLNPCA.html">PLNPCA: Dimension Reduction</a>
     </li>
     <li>
-      <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
+      <a href="../articles/PLNnetwork.html">PLNnetwork: sparse structure inference</a>
     </li>
     <li>
-      <a href="../articles/PLNnetwork.html">PLNnetwork: sparse structure inference</a>
+      <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
     </li>
   </ul>
 </li>
@@ -96,7 +96,7 @@
       <h1>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2018-12-14</h4>
+            <h4 class="date">2018-12-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNPCA.Rmd"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -126,7 +126,7 @@
 <div id="mathematical-background" class="section level3">
 <h3 class="hasAnchor">
 <a href="#mathematical-background" class="anchor"></a>Mathematical background</h3>
-<p>The probabilistic PCA model for multivariate count data that we introduce in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA">2018</a>)</span> is a variant of the Poisson Lognormal model of <span class="citation">(Aitchison and Ho <a href="#ref-AiH89">1989</a>)</span>, see <a href="PLN.html">the PLN vignette</a> as a reminder. Indeed, it can viewed as a PLN model with an additional rank constraint on the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> such that <span class="math inline">\(\mathrm{rank}(\boldsymbol\Sigma)= q\)</span>.</p>
+<p>In the vein of <span class="citation">Tipping and Bishop (<a href="#ref-TiB99">1999</a>)</span>, we introduce in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA">2018</a>)</span> a probabilistic PCA model for multivariate count data which is a variant of the Poisson Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span> (see <a href="PLN.html">the PLN vignette</a> as a reminder). Indeed, it can viewed as a PLN model with an additional rank constraint on the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> such that <span class="math inline">\(\mathrm{rank}(\boldsymbol\Sigma)= q\)</span>.</p>
 <p>This PLN-PCA model can be written in a hierachical framework where a sample of <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> is related to some <span class="math inline">\(q\)</span>-dimensional vectors of latent variables <span class="math inline">\(\mathbf{W}_i\)</span> as follows: <span class="math display">\[\begin{equation} 
   \begin{array}{rcl}
     \text{latent space }  &amp; \mathbf{W}_i \quad \text{i.i.d.} &amp; \mathbf{W}_i \sim      \mathcal{N}(\mathbf{0}_q, \mathbf{I}_q)  \\
@@ -143,9 +143,14 @@
 <div id="covariates-and-offsets" class="section level4">
 <h4 class="hasAnchor">
 <a href="#covariates-and-offsets" class="anchor"></a>Covariates and offsets</h4>
-<p>Just like PLN, PLN-PCA generalizesto a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation} 
+<p>Just like PLN, PLN-PCA generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation} 
   \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{B}\mathbf{B}^\top,
 \end{equation}\]</span> where <span class="math inline">\(\boldsymbol\Theta\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression parameters.</p>
+</div>
+<div id="optimization-by-variational-inference" class="section level4">
+<h4 class="hasAnchor">
+<a href="#optimization-by-variational-inference" class="anchor"></a>Optimization by Variational inference</h4>
+<p>Dimension reduction and vizualization is the main objective in (PLN)-PCA. To reach this goal, we need to first estimate the model parameters. Inference in PLN-PCA focuses on the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and on the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>. Technically speaking, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02">2002</a>)</span> implemented in the C++ library <span class="citation">(Johnson <a href="#ref-nlopt">2011</a>)</span>, which we link to the package. Technical details can be found in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA">2018</a>)</span>.</p>
 </div>
 </div>
 </div>
@@ -209,50 +214,50 @@
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">34</td>
-<td align="right">-1458.2574</td>
-<td align="right">-1524.418</td>
-<td align="right">-1536.962</td>
-<td align="right">0.4881926</td>
+<td align="right">-1458.2816</td>
+<td align="right">-1524.443</td>
+<td align="right">-1536.801</td>
+<td align="right">0.4881813</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">51</td>
-<td align="right">-1148.6510</td>
-<td align="right">-1247.892</td>
-<td align="right">-1283.207</td>
-<td align="right">0.7129020</td>
+<td align="right">-1147.2993</td>
+<td align="right">-1246.541</td>
+<td align="right">-1277.244</td>
+<td align="right">0.7138389</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">68</td>
-<td align="right">-1057.9243</td>
-<td align="right">-1190.246</td>
-<td align="right">-1248.753</td>
-<td align="right">0.8032759</td>
+<td align="right">-1057.8332</td>
+<td align="right">-1190.155</td>
+<td align="right">-1248.743</td>
+<td align="right">0.8032866</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">85</td>
-<td align="right">-1019.0417</td>
-<td align="right">-1184.444</td>
-<td align="right">-1274.283</td>
-<td align="right">0.8582464</td>
+<td align="right">-1018.7762</td>
+<td align="right">-1184.179</td>
+<td align="right">-1272.926</td>
+<td align="right">0.8587036</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">102</td>
-<td align="right">-1000.4191</td>
-<td align="right">-1198.902</td>
-<td align="right">-1325.409</td>
-<td align="right">0.8945488</td>
+<td align="right">-998.8541</td>
+<td align="right">-1197.337</td>
+<td align="right">-1323.146</td>
+<td align="right">0.8959062</td>
 </tr>
 <tr class="even">
 <td align="right">6</td>
 <td align="right">119</td>
-<td align="right">-993.4222</td>
-<td align="right">-1224.986</td>
-<td align="right">-1418.916</td>
-<td align="right">0.9045287</td>
+<td align="right">-995.7565</td>
+<td align="right">-1227.320</td>
+<td align="right">-1413.938</td>
+<td align="right">0.9065279</td>
 </tr>
 </tbody>
 </table>
@@ -270,42 +275,42 @@
 <tr class="odd">
 <td align="right">1</td>
 <td align="left">34</td>
-<td align="left">583</td>
+<td align="left">529</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="left">51</td>
-<td align="left">829</td>
+<td align="left">1979</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="left">68</td>
-<td align="left">1201</td>
+<td align="left">1190</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="left">85</td>
-<td align="left">1077</td>
+<td align="left">1370</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="left">102</td>
-<td align="left">2784</td>
+<td align="left">3561</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="even">
 <td align="right">6</td>
 <td align="left">119</td>
-<td align="left">3875</td>
+<td align="left">3795</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
@@ -317,7 +322,7 @@
 <h4 class="hasAnchor">
 <a href="#model-selection-of-rank-q" class="anchor"></a>Model selection of rank <span class="math inline">\(q\)</span>
 </h4>
-<p>The <code>plot</code> method of <code>PLNPCAfamily</code> displays evolution of the criteria mentioned above, and is a good strating point for model selection:</p>
+<p>The <code>plot</code> method of <code>PLNPCAfamily</code> displays evolution of the criteria mentioned above, and is a good starting point for model selection:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(PCA_models)</a></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/plot%20nocov-1.png" width="672"></p>
 <p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of <span class="math inline">\(q\)</span> (see <span class="citation">(Chiquet, Mariadassou, and Robin <a href="#ref-PLNPCA">2018</a>)</span> for details on its computation).</p>
@@ -349,27 +354,27 @@
 <tbody>
 <tr class="odd">
 <td>Che</td>
-<td align="right">-7.5933726</td>
+<td align="right">-7.6027089</td>
 </tr>
 <tr class="even">
 <td>Hyc</td>
-<td align="right">-8.0964846</td>
+<td align="right">-8.0825585</td>
 </tr>
 <tr class="odd">
 <td>Hym</td>
-<td align="right">-3.0145976</td>
+<td align="right">-3.0145726</td>
 </tr>
 <tr class="even">
 <td>Hys</td>
-<td align="right">-6.8427557</td>
+<td align="right">-6.8379352</td>
 </tr>
 <tr class="odd">
 <td>Psy</td>
-<td align="right">-0.5356309</td>
+<td align="right">-0.5376936</td>
 </tr>
 <tr class="even">
 <td>Aga</td>
-<td align="right">-3.8197186</td>
+<td align="right">-3.8270087</td>
 </tr>
 </tbody>
 </table>
@@ -385,39 +390,39 @@
 <table class="table"><tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-0.2398240</td>
-<td align="right">0.3049238</td>
-<td align="right">0.1235151</td>
+<td align="right">-0.2409344</td>
+<td align="right">0.3040742</td>
+<td align="right">0.1257673</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-0.4075401</td>
-<td align="right">-0.3390439</td>
-<td align="right">0.0877917</td>
+<td align="right">-0.4089397</td>
+<td align="right">-0.3378059</td>
+<td align="right">0.0829781</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-0.1160992</td>
-<td align="right">-0.0045779</td>
-<td align="right">0.3455504</td>
+<td align="right">-0.1160348</td>
+<td align="right">-0.0086107</td>
+<td align="right">0.3457194</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-0.4118953</td>
-<td align="right">0.1340124</td>
-<td align="right">0.4477868</td>
+<td align="right">-0.4106679</td>
+<td align="right">0.1290199</td>
+<td align="right">0.4493477</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">0.0454967</td>
-<td align="right">0.0508890</td>
-<td align="right">-0.0530133</td>
+<td align="right">0.0458080</td>
+<td align="right">0.0511797</td>
+<td align="right">-0.0522448</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">0.0709703</td>
-<td align="right">0.1531822</td>
-<td align="right">0.3187865</td>
+<td align="right">0.0716347</td>
+<td align="right">0.1462926</td>
+<td align="right">0.3229989</td>
 </tr>
 </tbody></table>
 <ul>
@@ -426,34 +431,34 @@
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">myPCA_ICL<span class="op">$</span>scores <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
-<td align="right">-1.498421</td>
-<td align="right">-0.9958220</td>
-<td align="right">0.5285474</td>
+<td align="right">-1.503059</td>
+<td align="right">-1.0292644</td>
+<td align="right">0.5189760</td>
 </tr>
 <tr class="even">
-<td align="right">3.646540</td>
-<td align="right">-0.1496151</td>
-<td align="right">2.1657194</td>
+<td align="right">3.618307</td>
+<td align="right">-0.1867378</td>
+<td align="right">2.1553626</td>
 </tr>
 <tr class="odd">
-<td align="right">7.299975</td>
-<td align="right">-0.7904986</td>
-<td align="right">-0.3165753</td>
+<td align="right">7.260653</td>
+<td align="right">-0.8025090</td>
+<td align="right">-0.3157388</td>
 </tr>
 <tr class="even">
-<td align="right">6.169429</td>
-<td align="right">0.1673952</td>
-<td align="right">-2.4141300</td>
+<td align="right">6.168861</td>
+<td align="right">0.1912549</td>
+<td align="right">-2.4032830</td>
 </tr>
 <tr class="odd">
-<td align="right">4.454495</td>
-<td align="right">0.8937041</td>
-<td align="right">-1.1186949</td>
+<td align="right">4.457381</td>
+<td align="right">0.9142239</td>
+<td align="right">-1.1023566</td>
 </tr>
 <tr class="even">
-<td align="right">3.904972</td>
-<td align="right">0.7400515</td>
-<td align="right">0.6192861</td>
+<td align="right">3.893861</td>
+<td align="right">0.7418314</td>
+<td align="right">0.6289602</td>
 </tr>
 </tbody></table>
 <p><code>PLNPCAfit</code> also inherits from the methods of <code>PLNfit</code> (see the <a href="articles/PLN.html">appropriate vignette</a>). Most are recalled via the show method:</p>
@@ -461,7 +466,7 @@
 <pre><code>## Poisson Lognormal with rank constrained for PCA (rank = 3)
 ## ==================================================================
 ##  degrees_freedom    loglik       BIC       ICL R_squared
-##               68 -1057.924 -1190.246 -1248.753 0.8032759
+##               68 -1057.833 -1190.155 -1248.743 0.8032866
 ## ==================================================================
 ## * Useful fields 
 ##     $model_par, $latent, $var_par, $optim_par 
@@ -508,7 +513,7 @@
 <a class="sourceLine" id="cb23-4" data-line-number="4">  <span class="dt">ncol =</span> <span class="dv">2</span></a>
 <a class="sourceLine" id="cb23-5" data-line-number="5">)</a></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/maps-1.png" width="672"></p>
-<p>We can check that the fitted value of the counts – even with this low-rank covariance matrix – are close the the observed ones:</p>
+<p>We can check that the fitted value of the counts – even with this low-rank covariance matrix – are close to the observed ones:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(</a>
 <a class="sourceLine" id="cb24-2" data-line-number="2">  <span class="dt">fitted   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(myPCA_cov)),</a>
 <a class="sourceLine" id="cb24-3" data-line-number="3">  <span class="dt">observed =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(trichoptera<span class="op">$</span>Abundance)</a>
@@ -534,6 +539,15 @@ fitted value vs. observation
 </div>
 <div id="ref-PLNPCA">
 <p>Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018. “Variational Inference for Probabilistic Poisson Pca.” <em>The Annals of Applied Statistics</em> 12: 2674–98. <a href="http://dx.doi.org/10.1214/18-AOAS1177">http://dx.doi.org/10.1214/18-AOAS1177</a>.</p>
+</div>
+<div id="ref-nlopt">
+<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="http://ab-initio.mit.edu/nlopt">http://ab-initio.mit.edu/nlopt</a>.</p>
+</div>
+<div id="ref-Svan02">
+<p>Svanberg, Krister. 2002. “A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.” <em>SIAM Journal on Optimization</em> 12 (2). SIAM: 555–73.</p>
+</div>
+<div id="ref-TiB99">
+<p>Tipping, M. E, and C. M Bishop. 1999. “Probabilistic Principal Component Analysis.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 61 (3). Wiley Online Library: 611–22.</p>
 </div>
 </div>
 </div>

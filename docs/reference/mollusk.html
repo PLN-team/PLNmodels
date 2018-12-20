@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fisher information matrix for Theta — fisher • PLNmodels</title>
+<title>Mollusk data set — mollusk • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,10 @@
 
 
 
-<meta property="og:title" content="Fisher information matrix for Theta — fisher" />
+<meta property="og:title" content="Mollusk data set — mollusk" />
 
-<meta property="og:description" content="Extracts Fisher information matrix of \(\Theta\) from objects returned by PLN and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the one-data version (not scaled by the number of observations)." />
+<meta property="og:description" content="This data set gives the abundance of 32 mollusk species in 163 samples.
+For each sample, 4 additional informations (covariates) are knowne." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -128,64 +129,67 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fisher information matrix for Theta</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNfit-S3methods.R'><code>R/PLNfit-S3methods.R</code></a></small>
-    <div class="hidden name"><code>fisher.Rd</code></div>
+    <h1>Mollusk data set</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/mollusk.R'><code>R/mollusk.R</code></a></small>
+    <div class="hidden name"><code>mollusk.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Extracts Fisher information matrix of \(\Theta\) from objects returned by <code><a href='PLN.html'>PLN</a></code> and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).</p>
+    <p>This data set gives the abundance of 32 mollusk species in 163 samples.
+For each sample, 4 additional informations (covariates) are knowne.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>fisher</span>(<span class='no'>object</span>, <span class='no'>type</span>)
+    <pre class="usage"><span class='no'>mollusk</span></pre>
+        
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-<span class='co'># S3 method for PLNfit</span>
-<span class='fu'>fisher</span>(<span class='no'>object</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"wald"</span>, <span class='st'>"louis"</span>))</pre>
+    <p>A data frame with 163 rows and 5 variables (4 vectors and 1 matrix):</p><dl class='dl-horizontal'>
+  <dt>Abundance</dt><dd><p>a 163 x 32 matrix of abundancies/counts (163 samples and 32 mollusk species)</p></dd>
+  <dt>site</dt><dd><p>a factor with 8 levels indicating the sampling site</p></dd>
+  <dt>season</dt><dd><p>a factor with 4 levels indicating the season</p></dd>
+  <dt>method</dt><dd><p>a factor with 2 levels for the method of sampling (wood or string)</p></dd>
+  <dt>duration</dt><dd><p>a numeric with 3 levels for the time of exposure in week</p></dd>
+</dl>
+    <p>This format is convenient for using formula in multivariate analysis (multiple outputs and inputs).
+Original data set has been extracted ade4 and formatted for PLNmodels.</p>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>object</th>
-      <td><p>an R6 object with class PLNfit</p></td>
-    </tr>
-    <tr>
-      <th>type</th>
-      <td><p>Either `wald` (default) or `louis`. Approxomation scheme used to compute the
-Fisher information matrix</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
 
-    <p>A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
-\(\Theta\) is a matrix of size d * p.</p>
+    <p>Data from Richardot-Coulet, Chessel and Bournaud.</p>
     
-    <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <ul>
-<li><p><code>PLNfit</code>: Fisher information matrix for PLNfit</p></li>
-</ul>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='standard_error.html'>standard_error</a></code> for standard errors</p></div>
+    <p>Richardot-Coulet, M., Chessel D. and Bournaud M. (1986) Typological value of the benthos of old beds of a large river. Methodological approach. Archiv fùr Hydrobiologie, 107, 363–383.</p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>mollusk</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/str'>str</a></span>(<span class='no'>mollusk</span>)</div><div class='output co'>#&gt; 'data.frame':	163 obs. of  5 variables:
+#&gt;  $ Abundance: int [1:163, 1:32] 2 2 1 13 19 54 32 6 24 15 ...
+#&gt;   ..- attr(*, "dimnames")=List of 2
+#&gt;   .. ..$ : chr  "1" "2" "3" "4" ...
+#&gt;   .. ..$ : chr  "Bit" "Vap" "Vac" "Gac" ...
+#&gt;  $ site     : Factor w/ 8 levels "GGravier1","GGravier2",..: 5 5 5 5 5 5 5 5 5 5 ...
+#&gt;  $ season   : Factor w/ 4 levels "automn","spring",..: 4 4 4 2 2 2 3 3 3 1 ...
+#&gt;  $ method   : Factor w/ 2 levels "string","wood": 2 2 2 2 2 2 2 2 2 2 ...
+#&gt;  $ duration : num  3 6 9 3 6 9 3 6 9 3 ...</div><div class='input'>## also see the package case study about mollusk
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#value">Value</a></li>
+      <li><a href="#format">Format</a></li>
 
-      <li><a href="#methods-by-class-">Methods (by class)</a></li>
+      <li><a href="#source">Source</a></li>
 
-      <li><a href="#see-also">See also</a></li>
-          </ul>
+      <li><a href="#references">References</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

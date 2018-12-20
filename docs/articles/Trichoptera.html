@@ -66,10 +66,10 @@
       <a href="../articles/PLNPCA.html">PLNPCA: Dimension Reduction</a>
     </li>
     <li>
-      <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
+      <a href="../articles/PLNnetwork.html">PLNnetwork: sparse structure inference</a>
     </li>
     <li>
-      <a href="../articles/PLNnetwork.html">PLNnetwork: sparse structure inference</a>
+      <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
     </li>
   </ul>
 </li>
@@ -96,7 +96,7 @@
       <h1>Description of the Trichoptera data set</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2018-12-14</h4>
+            <h4 class="date">2018-12-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/Trichoptera.Rmd"><code>vignettes/Trichoptera.Rmd</code></a></small>
       <div class="hidden name"><code>Trichoptera.Rmd</code></div>
@@ -118,9 +118,9 @@
 <div id="the-trichopterata-data-set" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-trichopterata-data-set" class="anchor"></a>The trichopterata data set</h2>
-<p>The order Trichoptera (or caddisflies) are a group of insects with aquatic larvae and terrestrial adults. The ecological data set trichoptera <span class="citation">(Usseglio-Polatera and Auda <a href="#ref-trichoptera">1987</a>)</span> describes abundances of Trichopetera species (hereafter the <em>counts</em>), accompanied with some meteorological factors (hereafter the <em>covariates</em>) that may influence their presence during the sampling<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
+<p>The order Trichoptera (or caddisflies) are a group of insects with aquatic larvae and terrestrial adults. The ecological data set trichoptera <span class="citation">(Usseglio-Polatera and Auda <a href="#ref-trichoptera">1987</a>)</span> describes abundances of Trichoptera species (hereafter the <em>counts</em>), accompanied with some meteorological factors (hereafter the <em>covariates</em>) that may influence their presence during the sampling<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
 <div class="figure" style="text-align: center">
-<img src="figures/macronema_zebratum.jpg" alt="Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001." width="94"><p class="caption">
+<img src="figures/macronema_zebratum.jpg" alt="Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001."><p class="caption">
 Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 </p>
 </div>
@@ -307,152 +307,116 @@ log-counts in the trichoptera data set
 <div id="offsets-and-the-compositionality-issue" class="section level3">
 <h3 class="hasAnchor">
 <a href="#offsets-and-the-compositionality-issue" class="anchor"></a>Offsets and the compositionality issue</h3>
-<p>A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by a <span class="math inline">\(49 \times 17\)</span> matrix of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The corresponding column is named <code>TotalCounts</code> in the data frame:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">trichoptera<span class="op">$</span>TotalCounts <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="right">Che</th>
-<th align="right">Hyc</th>
-<th align="right">Hym</th>
-<th align="right">Hys</th>
-<th align="right">Psy</th>
-<th align="right">Aga</th>
-<th align="right">Glo</th>
-<th align="right">Ath</th>
-<th align="right">Cea</th>
-<th align="right">Ced</th>
-<th align="right">Set</th>
-<th align="right">All</th>
-<th align="right">Han</th>
-<th align="right">Hfo</th>
-<th align="right">Hsp</th>
-<th align="right">Hve</th>
-<th align="right">Sta</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-<td align="right">29</td>
-</tr>
-<tr class="even">
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-<td align="right">13</td>
-</tr>
-<tr class="odd">
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-<td align="right">38</td>
-</tr>
-<tr class="even">
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-<td align="right">192</td>
-</tr>
-<tr class="odd">
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-<td align="right">79</td>
-</tr>
-<tr class="even">
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-<td align="right">18</td>
-</tr>
-</tbody>
-</table>
+<p>A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by an <span class="math inline">\(49\)</span> numeric of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The formula syntax accepts either no offset, a vector or a matrix or specify the offsets term.</p>
+<p>Here, we have a vector whose corresponding column is named <code>TotalCounts</code> in in the <code>trichoptera</code> data frame:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">trichoptera<span class="op">$</span>TotalCounts</a></code></pre></div>
+<pre><code>##     Che  Hyc  Hym  Hys  Psy  Aga  Glo  Ath  Cea  Ced  Set  All  Han  Hfo
+## 1    29   29   29   29   29   29   29   29   29   29   29   29   29   29
+## 2    13   13   13   13   13   13   13   13   13   13   13   13   13   13
+## 3    38   38   38   38   38   38   38   38   38   38   38   38   38   38
+## 4   192  192  192  192  192  192  192  192  192  192  192  192  192  192
+## 5    79   79   79   79   79   79   79   79   79   79   79   79   79   79
+## 6    18   18   18   18   18   18   18   18   18   18   18   18   18   18
+## 7     8    8    8    8    8    8    8    8    8    8    8    8    8    8
+## 8    34   34   34   34   34   34   34   34   34   34   34   34   34   34
+## 9    12   12   12   12   12   12   12   12   12   12   12   12   12   12
+## 10    4    4    4    4    4    4    4    4    4    4    4    4    4    4
+## 11    4    4    4    4    4    4    4    4    4    4    4    4    4    4
+## 12    3    3    3    3    3    3    3    3    3    3    3    3    3    3
+## 13   49   49   49   49   49   49   49   49   49   49   49   49   49   49
+## 14   33   33   33   33   33   33   33   33   33   33   33   33   33   33
+## 15  600  600  600  600  600  600  600  600  600  600  600  600  600  600
+## 16  172  172  172  172  172  172  172  172  172  172  172  172  172  172
+## 17   58   58   58   58   58   58   58   58   58   58   58   58   58   58
+## 18   51   51   51   51   51   51   51   51   51   51   51   51   51   51
+## 19   56   56   56   56   56   56   56   56   56   56   56   56   56   56
+## 20  127  127  127  127  127  127  127  127  127  127  127  127  127  127
+## 21   35   35   35   35   35   35   35   35   35   35   35   35   35   35
+## 22   13   13   13   13   13   13   13   13   13   13   13   13   13   13
+## 23   17   17   17   17   17   17   17   17   17   17   17   17   17   17
+## 24    3    3    3    3    3    3    3    3    3    3    3    3    3    3
+## 25   27   27   27   27   27   27   27   27   27   27   27   27   27   27
+## 26   40   40   40   40   40   40   40   40   40   40   40   40   40   40
+## 27   44   44   44   44   44   44   44   44   44   44   44   44   44   44
+## 28    8    8    8    8    8    8    8    8    8    8    8    8    8    8
+## 29    9    9    9    9    9    9    9    9    9    9    9    9    9    9
+## 30 1599 1599 1599 1599 1599 1599 1599 1599 1599 1599 1599 1599 1599 1599
+## 31 2980 2980 2980 2980 2980 2980 2980 2980 2980 2980 2980 2980 2980 2980
+## 32   88   88   88   88   88   88   88   88   88   88   88   88   88   88
+## 33  135  135  135  135  135  135  135  135  135  135  135  135  135  135
+## 34  327  327  327  327  327  327  327  327  327  327  327  327  327  327
+## 35   66   66   66   66   66   66   66   66   66   66   66   66   66   66
+## 36   90   90   90   90   90   90   90   90   90   90   90   90   90   90
+## 37   63   63   63   63   63   63   63   63   63   63   63   63   63   63
+## 38   15   15   15   15   15   15   15   15   15   15   15   15   15   15
+## 39   14   14   14   14   14   14   14   14   14   14   14   14   14   14
+## 40   20   20   20   20   20   20   20   20   20   20   20   20   20   20
+## 41   70   70   70   70   70   70   70   70   70   70   70   70   70   70
+## 42   53   53   53   53   53   53   53   53   53   53   53   53   53   53
+## 43   95   95   95   95   95   95   95   95   95   95   95   95   95   95
+## 44   43   43   43   43   43   43   43   43   43   43   43   43   43   43
+## 45   62   62   62   62   62   62   62   62   62   62   62   62   62   62
+## 46  149  149  149  149  149  149  149  149  149  149  149  149  149  149
+## 47   16   16   16   16   16   16   16   16   16   16   16   16   16   16
+## 48   31   31   31   31   31   31   31   31   31   31   31   31   31   31
+## 49   86   86   86   86   86   86   86   86   86   86   86   86   86   86
+##     Hsp  Hve  Sta
+## 1    29   29   29
+## 2    13   13   13
+## 3    38   38   38
+## 4   192  192  192
+## 5    79   79   79
+## 6    18   18   18
+## 7     8    8    8
+## 8    34   34   34
+## 9    12   12   12
+## 10    4    4    4
+## 11    4    4    4
+## 12    3    3    3
+## 13   49   49   49
+## 14   33   33   33
+## 15  600  600  600
+## 16  172  172  172
+## 17   58   58   58
+## 18   51   51   51
+## 19   56   56   56
+## 20  127  127  127
+## 21   35   35   35
+## 22   13   13   13
+## 23   17   17   17
+## 24    3    3    3
+## 25   27   27   27
+## 26   40   40   40
+## 27   44   44   44
+## 28    8    8    8
+## 29    9    9    9
+## 30 1599 1599 1599
+## 31 2980 2980 2980
+## 32   88   88   88
+## 33  135  135  135
+## 34  327  327  327
+## 35   66   66   66
+## 36   90   90   90
+## 37   63   63   63
+## 38   15   15   15
+## 39   14   14   14
+## 40   20   20   20
+## 41   70   70   70
+## 42   53   53   53
+## 43   95   95   95
+## 44   43   43   43
+## 45   62   62   62
+## 46  149  149  149
+## 47   16   16   16
+## 48   31   31   31
+## 49   86   86   86</code></pre>
 <p>Offsets are denoted by <span class="math inline">\(\mathbf{O}\)</span> when the mathematical model in other vignettes, and by <code>O</code> in the <code>R</code> environment.</p>
 </div>
 <div id="covariates-external-meteorological-effect-groups" class="section level3">
 <h3 class="hasAnchor">
 <a href="#covariates-external-meteorological-effect-groups" class="anchor"></a>Covariates (external meteorological effect, groups)</h3>
 <p>Additional information was collected during the sampling, which corresponds to external covariates the effect of which may or may not be taken into account in the model (depending on the question at play). In the trichoptera data set, those covariates correspond to meteorological factors plus a categorical variable indicating the family of the caughts specimens.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>TotalCounts, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>TotalCounts, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">Temperature</th>
@@ -522,8 +486,8 @@ log-counts in the trichoptera data set
 </table>
 <p>The design matrix arising from the covariates is denoted by <span class="math inline">\(\mathbf{X}\)</span> in our mathematical model and <code>X</code> within the <code>R</code> environment.</p>
 <p>A first glance at the pairs plot between the covariates shows no particular structure regarding the trichoptera groups.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>TotalCounts, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/GGally/topics/ggpairs">ggpairs</a></span>(<span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">colour =</span> Group))</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>TotalCounts, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/GGally/topics/ggpairs">ggpairs</a></span>(<span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">colour =</span> Group))</a></code></pre></div>
 <div class="figure">
 <img src="Trichoptera_files/figure-html/pairs-1.png" alt="Pairs plot of the covariates in the trichoptera data set" width="672"><p class="caption">
 Pairs plot of the covariates in the trichoptera data set

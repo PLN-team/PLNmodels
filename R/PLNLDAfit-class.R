@@ -18,7 +18,7 @@
 #' @field criteria a vector with loglik, BIC, ICL, R_squared and degrees of freedom
 #' @field degrees_freedom number of parameters in the current PLN model
 #' @field percent_var the percent of variance explained by each axis
-#' @field corr_circle a matrix of correlations to plot the correlation circles
+#' @field corr_map a matrix of correlations to plot the correlation circles
 #' @field scores a matrix of scores to plot the individual factor maps
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
@@ -42,6 +42,7 @@ PLNLDAfit <-
           Mu <- private$Theta
         }
         colnames(Mu) <- colnames(design_group)
+        rownames(Mu) <- rownames(private$Theta)
         private$Mu <- Mu
         nk <- table(private$grouping)
         Mu_bar <- as.vector(Mu %*% nk / self$n)
@@ -75,7 +76,7 @@ PLNLDAfit <-
         eigen.val <- private$svdLDA$d[1:self$rank]^2
         round(eigen.val/sum(eigen.val),4)
       },
-      corr_circle = function() {
+      corr_map = function() {
         corr <- cor(private$P, self$scores)
         rownames(corr) <- rownames(private$B)
         corr
@@ -84,6 +85,9 @@ PLNLDAfit <-
         scores <- private$P %*% t(t(private$svdLDA$u[, 1:self$rank]) * private$svdLDA$d[1:self$rank])
         rownames(scores) <- rownames(private$M)
         scores
+      },
+      group_means = function() {
+        self$model_par$Mu
       }
     )
 )
@@ -112,17 +116,17 @@ PLNLDAfit$set("public", "plot_individual_map",
 })
 
 # Plot the correlation circle of a specified axis for a \code{PLNLDAfit} object
-PLNLDAfit$set("public", "plot_correlation_circle",
+PLNLDAfit$set("public", "plot_correlation_map",
   function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "default", plot=TRUE) {
 
     ## data frame with correlations between variables and PCs
-    correlations <- as.data.frame(self$corr_circle[, axes, drop = FALSE])
+    correlations <- as.data.frame(self$corr_map[, axes, drop = FALSE])
     colnames(correlations) <- paste0("axe", 1:length(axes))
     correlations$labels <- cols
     correlations$names  <- rownames(correlations)
     axes_label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
-    p <- get_ggplot_corr_circle(correlations, axes_label, main)
+    p <- get_ggplot_corr_square(correlations, axes_label, main)
 
     if (plot) print(p)
     invisible(p)
@@ -144,7 +148,7 @@ PLNLDAfit$set("public", "plot_LDA",
 
       ## get back all correlation circle
       cor.plot <- lapply(pairs.axes, function(pair) {
-        ggobj <- self$plot_correlation_circle(axes = pair, plot = FALSE, main = "", cols = var_cols)
+        ggobj <- self$plot_correlation_map(axes = pair, plot = FALSE, main = "", cols = var_cols)
         return(ggplotGrob(ggobj))
       })
 
@@ -182,7 +186,7 @@ PLNLDAfit$set("public", "plot_LDA",
     } else {
       p <- arrangeGrob(grobs = list(
         self$plot_individual_map(plot = FALSE),
-        self$plot_correlation_circle(plot = FALSE)
+        self$plot_correlation_map(plot = FALSE)
       ), ncol = 1)
     }
     if (plot)
@@ -234,7 +238,7 @@ PLNLDAfit$set("public", "show",
 function() {
   super$show(paste0("Linear Discriminant Analysis for Poisson Lognormal distribution\n"))
   cat("* Additional fields for LDA\n")
-  cat("    $percent_var, $corr_circle, $scores \n")
+  cat("    $percent_var, $corr_map, $scores, $group_means \n")
   cat("* Additional S3 methods for LDA\n")
   cat("    plot.PLNLDAfit(), predict.PLNLDAfit()\n")
 })

@@ -47,7 +47,7 @@ plot.PLNLDAfit <-
     if (map == "individual")
       p <- x$plot_individual_map(main = main, plot = plot)
     if (map == "variable")
-      p <- x$plot_correlation_circle(cols = var_cols, main = main, plot = plot)
+      p <- x$plot_correlation_map(cols = var_cols, main = main, plot = plot)
     if (map == "both")
       p <- x$plot_LDA(nb_axes = nb_axes, var_cols = var_cols, plot = plot)
 
@@ -72,3 +72,24 @@ predict.PLNLDAfit <- function(object, newdata,
   stopifnot(isPLNLDAfit(object))
   object$predict(newdata, type, control, parent.frame())
 }
+
+#' Extracts model coefficients from objects returned by \code{\link[=PLNLDA]{PLNLDA}}
+#'
+#' @description The method for objects returned by \code{\link[=PLNLDA]{PLNLDA}} only returns
+#'              coefficients associated to the \deqn{\Theta} part of the model (see the PLNLDA vignette
+#'              for mathematical details).
+#'
+#' @name coef.PLNLDAfit
+#'
+#' @param object an R6 object with class PLNfit
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return Either NULL or a matrix of coefficients extracted from the PLNLDAfit model.
+#'
+#' @export
+coef.PLNLDAfit <- function(object, ...) {
+  stopifnot(isPLNLDAfit(object))
+  n.covariates <- object$d - object$rank - 1
+  if (n.covariates == 0) return(NULL)
+  object$model_par$Theta[ , 1:n.covariates, drop = FALSE]
+}
+

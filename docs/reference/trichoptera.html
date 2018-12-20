@@ -105,10 +105,10 @@ contiguous nights between summer 1959 and summer 1960." />
       <a href="../articles/PLNPCA.html">PLNPCA: Dimension Reduction</a>
     </li>
     <li>
-      <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
+      <a href="../articles/PLNnetwork.html">PLNnetwork: sparse structure inference</a>
     </li>
     <li>
-      <a href="../articles/PLNnetwork.html">PLNnetwork: sparse structure inference</a>
+      <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
     </li>
   </ul>
 </li>
@@ -153,9 +153,9 @@ contiguous nights between summer 1959 and summer 1960.</p>
         
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>A data frame with 49 rows and 9 variables (vectors and matrices):</p><dl class='dl-horizontal'>
+    <p>A data frame with 49 rows and 9 variables (8 vectors and 1 matrix):</p><dl class='dl-horizontal'>
   <dt>Abundance</dt><dd><p>a 49 x 17 matrix of abundancies/counts (49 trapping nights and 17 trichoptera species)</p></dd>
-  <dt>TotalCounts</dt><dd><p>a 49 x 17 matrix of total counts that can be used for offsets</p></dd>
+  <dt>TotalCounts</dt><dd><p>a vector of total counts that can be used as a proxy for the sampling effort, and thus as an offsets term</p></dd>
   <dt>Temperature</dt><dd><p>Evening Temperature in Celsius</p></dd>
   <dt>Wind</dt><dd><p>Wind in m/s</p></dd>
   <dt>Pressure</dt><dd><p>Pressure in mm Hg</p></dd>
@@ -191,10 +191,7 @@ See a data description at <a href='http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf'>h
 #&gt;  $ Cloudiness   : num  19 0 6 81 50 50 100 19 69 6 ...
 #&gt;  $ Precipitation: num  0 0 0 0 0 0 1.6 0 1.6 0 ...
 #&gt;  $ Group        : Factor w/ 12 levels "1","2","3","4",..: 1 1 1 1 1 1 1 1 1 1 ...
-#&gt;  $ TotalCounts  : num [1:49, 1:17] 29 13 38 192 79 18 8 34 12 4 ...
-#&gt;   ..- attr(*, "dimnames")=List of 2
-#&gt;   .. ..$ : chr  "1" "2" "3" "4" ...
-#&gt;   .. ..$ : chr  "Che" "Hyc" "Hym" "Hys" ...</div><div class='input'>## also see the package vignettes
+#&gt;  $ TotalCounts  : num  29 13 38 192 79 18 8 34 12 4 ...</div><div class='input'>## also see the package vignettes
 
 </div></pre>
   </div>
