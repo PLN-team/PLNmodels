@@ -291,11 +291,23 @@ PLNfit$set("public", "compute_fisher",
 
 # Compute univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate)
 # Fisher information matrix. See \code{\link[=PLNfit_fisher]{fisher}} for more details on the approximations.
+#' @importFrom Matrix diag solve
 PLNfit$set("public", "compute_standard_error",
   function() {
     if (self$d > 0) {
       fim <- self$n * self$fisher$mat ## Fisher Information matrix I_n(\Theta) = n * I(\Theta)
-      stderr <- fim %>% solve %>% diag %>% sqrt %>% matrix(nrow = self$d) %>% t()
+      ## safe inversion using Matrix::solve and Matrix::diag and error handling
+      out <- tryCatch(Matrix::diag(Matrix::solve(fim)),
+                         error = function(e) {e})
+      if (is(out, "error")) {
+        warning(paste("Inversion of the Fisher information matrix failed with following error message:",
+                      out$message,
+                      "Returning NA",
+                      sep = "\n"))
+        stderr <- matrix(NA, nrow = self$p, ncol = seld$d)
+      } else {
+        stderr <- out %>% sqrt %>% matrix(nrow = self$d) %>% t()
+      }
       dimnames(stderr) <- dimnames(self$model_par$Theta)
     } else {
       stderr <- NULL
