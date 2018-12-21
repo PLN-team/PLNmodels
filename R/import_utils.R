@@ -1,6 +1,5 @@
 common_samples <- function(counts, covariates) {
   ## Sanity checks
-  browser()
   if (is.null(dimnames(counts)) || is.null(rownames(covariates))) {
     warning(paste("There are no dimension names for the abundance matrix and/or the covariates data.frame.",
                   "Function will proceed assuming:",
