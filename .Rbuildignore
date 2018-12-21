@@ -15,4 +15,3 @@
 ^appveyor\.yml$
 ^vignettes/*_cache/
 ^vignettes/cache/
-
