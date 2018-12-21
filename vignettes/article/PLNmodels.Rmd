@@ -61,7 +61,7 @@ In many fields of life science, count data is becoming the standard, like abunda
 
 This article quickly reviews the mathematical aspect of the PLN model and its variants. We briefly describe the algorithm used to adjust these models, which is based on a variational strategy. Then, we illustrate the use of the top level functions by performing various multivariate analysis on a simple companion dataset from ecology that fulfills the typical characteristics of count data. To support our point, let us start introducing this data set.
 
-### `trichoptera`: a motivating companion data set
+### `mollusc`: a motivating companion data set
 
 The order Trichoptera (or caddisflies) are a group of insects with aquatic larvae and terrestrial adults. The ecological data set trichoptera [@trichoptera] describes abundances of Trichopetera species (hereafter the _counts_), accompanied with some meteological factors (hereafter the _covariates_) that may have influenced their presence during the sampling^[The original version is available in the **ade4** package. We consider here a different version where we only keep a subset of the original meteorological features, for illutrative purposes]. 
 

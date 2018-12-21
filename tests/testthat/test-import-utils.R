@@ -43,7 +43,7 @@ test_that("common_samples succeeds on matrices with no dimension names but compa
   expect_equal(common_samples(`dimnames<-`(counts, NULL),
                               data.matrix(covariates)),
                list(transpose_counts = FALSE,
-                    common_samples   = str_c("Sample_", 1:49)))
+                    common_samples   = paste0("Sample_", 1:49)))
 })
 
 test_that("common_samples fails on matrices with dimension names but no common samples",  {
