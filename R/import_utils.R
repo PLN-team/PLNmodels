@@ -8,7 +8,7 @@ common_samples <- function(counts, covariates) {
     if (nrow(counts) != nrow(covariates)) {
       stop("Incompatible dimensions")
     }
-    rownames(counts) <- rownames(covariates) <- str_c("Sample_", 1:nrow(counts))
+    rownames(counts) <- rownames(covariates) <- paste0("Sample_", 1:nrow(counts))
   }
   ## Check whether samples are stored as columns in the abundance matrix
   ## and transpose if that's the case

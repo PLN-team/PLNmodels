@@ -14,7 +14,7 @@ test_that("common_samples throws warnings on matrices with no dimension names", 
   ## No names for covariates matrix
   ## (must transform covariates to matrix as data.frames always have rownames)
   expect_warning(common_samples(counts,
-                                data.matrix(covariates)))
+                                data.matrix(covariates, rownames.force = FALSE)))
 })
 
 test_that("common_samples fails on matrices with no dimension names and incompatibles dimensions",  {
@@ -23,7 +23,7 @@ test_that("common_samples fails on matrices with no dimension names and incompat
                                 covariates))
   ## No rownames for covariates matrix
   expect_error(common_samples(counts %>% t(),
-                              data.matrix(covariates)))
+                              data.matrix(covariates, rownames.force = FALSE)))
 })
 
 test_that("common_samples succeeds on matrices with no dimension names but compatible dimensions",  {
@@ -45,7 +45,7 @@ test_that("common_samples succeeds on matrices with no dimension names but compa
   expect_equal(common_samples(`dimnames<-`(counts, NULL),
                               data.matrix(covariates)),
                list(transpose_counts = FALSE,
-                    common_samples   = str_c("Sample_", 1:49)))
+                    common_samples   = paste0("Sample_", 1:49)))
 })
 
 test_that("common_samples fails on matrices with dimension names but no common samples",  {
