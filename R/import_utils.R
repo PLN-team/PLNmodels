@@ -26,14 +26,10 @@ common_samples <- function(counts, covariates) {
               common_samples   = common_samples))
 }
 
-prepare_data <- function(counts, covariates, offset = c("TSS", "GMPR", "none")) {
+prepare_data <- function(counts, covariates, offset = c("TSS", "GMPR", "none"), ...) {
   ## Offset setup
   offset <- match.arg(offset)
-  offset_function <- switch (offset,
-                             "TSS"  = offset_tss,
-                             "GMPR" = offset_gmpr,
-                             "none" = offset_none
-  )
+  offset_function <- choose_offset_function(offset)
   ## sanitize abundance matrix and covariates data.frame
   common <- common_samples(counts, covariates)
   if (common$transpose_counts) counts <- t(counts)
@@ -41,13 +37,24 @@ prepare_data <- function(counts, covariates, offset = c("TSS", "GMPR", "none")) 
   covariates <- covariates[common$common_samples, ] %>% as.data.frame
   if (is.null(names(covariates))) names(covariates) <- paste0("Variable", seq_along(covariates))
   ## compute offset
-  offset     <- offset_function(counts)
+  offset     <- offset_function(counts, ...)
   ## prepare data for PLN
   result <- data.frame(Abundance = I(counts),
                        covariates)
   if (!is.null(offset)) results$offset <- I(offset)
   return(result)
 }
+
+choose_offset_function <- function(offset) {
+  offset_function <- switch (offset,
+                             "TSS"  = offset_tss,
+                             "GMPR" = offset_gmpr,
+                             "none" = offset_none
+  )
+  return(offset_function)
+}
+
+
 
 offset_none <- function(counts) { return(NULL) }
 
