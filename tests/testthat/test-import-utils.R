@@ -5,7 +5,7 @@ counts <- trichoptera$Abundance
 ## covariates <- `$<-`(trichoptera, "Abundance", NULL)
 covariates <- trichoptera; covariates$Abundance <- NULL
 
-## Test common_samples
+## Test common_samples ------------------------------------------------------------------------------------
 
 test_that("common_samples throws warnings on matrices with no dimension names",  {
   ## No names for abundance matrix
@@ -77,6 +77,7 @@ test_that("common_samples find biggest subset of common samples and produces mes
                as.character(1:35))
 })
 
-## Test prepare_data
+## Test offset_functions --------------------------------------------------------------------------------
 
-## Test offset_functions
+## Test prepare_data ------------------------------------------------------------------------------------
+
