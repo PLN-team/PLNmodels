@@ -49,7 +49,7 @@ test_that("common_samples succeeds on matrices with no dimension names but compa
 })
 
 test_that("common_samples fails on matrices with dimension names but no common samples",  {
-  expect_error(common_samples(`rownames<-`(counts, str_c("Sample_", 1:49)),
+  expect_error(common_samples(`rownames<-`(counts, paste0("Sample_", 1:49)),
                                covariates))
 })
 
