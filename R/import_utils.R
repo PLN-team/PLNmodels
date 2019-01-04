@@ -74,11 +74,13 @@ offset_rle <- function(counts, pseudocounts = 0) {
 
 ## Cumulative Sum Scaling (CSS) normalization (as used in metagenomeSeq and presented in doi.org/10.1038/nmeth.2658)
 offset_css <- function(counts) {
+  ## special treatment for edge case of one-column matrix (1 OTU, many samples)
+  if (ncol(counts) == 1) return( counts[, 1] / median(counts) )
   ## matrix of sample-specific quantiles and cumulative sums up to quantile
   mat_sample_quant <- apply(counts, 1, sort) %>% t()
   mat_sample_cumsum <- apply(mat_sample_quant, 1, cumsum) %>% t()
   ## reference quantiles, computed as median of sample_specific quantiles and MAD around the reference quantiles
-  ref_quant_mad <- apply(mat_sample_quant, 1, mad, constant = 1)
+  ref_quant_mad <- apply(mat_sample_quant, 2, mad, constant = 1)
   ## find smallest quantile for which high instability is detected
   ## instability for quantile l is defined as ref_quant_mad[l+1] - ref_quant_mad[l] >= 0.1 * ref_quant_mad[l]
   instable <- (diff(ref_quant_mad) >= 0.1 * head(ref_quant_mad, -1))
