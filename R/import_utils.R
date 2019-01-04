@@ -96,6 +96,34 @@ offset_css <- function(counts) {
 ##  EXPORTED FUNCTIONS   ##
 ###########################
 
+#' @title Prepare data for use in PLN models
+#' @name prepare_data
+#'
+#' @description Prepare data in proper format for use in PLN model and its variants. The function (i) merges a count table and
+#' a covariate data frame in the most comprehensive way and (ii) computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc). The function fails with informative messages when the heuristics used for sample matching fail.
+#'
+#' @param counts Required. An abundance count table, preferably with dimensions names and species as columns.
+#' @param covariates Required. A covariates data frame, preferably with row names.
+#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Can be "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none".
+#' @param ... Additional parameters passed on to \code{\link[=compute_offset]{compute_offset}}
+#'
+#' @references Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \url{https://doi.org/10.7717/peerj.4600}
+#' @references Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \url{http://dx.doi.org/10.1038/nmeth.2658}
+#' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
+#'
+#' @return A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset")
+#'
+#' @seealso \code{\link[=compute_offset]{compute_offset}} for details on the different normalisation schemes
+#'
+#' @export
+#'
+#' @examples
+#' data(trichoptera)
+#' counts <- trichoptera$Abundance
+#' covariates <- trichoptera %>% inset2("Abundance", value = NULL)
+#' proper_data <- prepare_data(counts, covariates, offset = "TSS")
+#' proper_data$Abundance
+#' proper_data$Offset
 prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   ## sanitize abundance matrix and covariates data.frame
   common <- common_samples(counts, covariates)
@@ -125,6 +153,27 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   return(result)
 }
 
+
+#' @title Compute offsets from a count data using one of several normalization schemes
+#' @name compute_offset
+#'
+#' @description Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature.
+#'
+#' @inheritParams prepare_data
+#' @param ... Additional parameters passed on to specific methods
+#' @inherit prepare_data references
+#'
+#' @details The only normalisation with an additional argument is RLE, for which you can add pseudocounts to the observed counts. The default is \code{pseudocounts = 0}. Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
+#'
+#' @return If offset = "none", NULL else a vector of length \code{nrow(counts)} with one offset per sample.
+#'
+#' @importFrom stats mad median
+#' @export
+#'
+#' @examples
+#' data(trichoptera)
+#' counts <- trichoptera$Abundance
+#' compute_offset(counts)
 compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...) {
   ## Choose offset function
   offset <- match.arg(offset)
@@ -149,21 +198,48 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
 # library(phyloseq)
 # data(enterotypes)
 
+
+#' Prepare data for use in PLN models from a biom object
+#'
+#' @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "biom" class object
+#' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
+#'
+#' @param biom Required. Either a biom-class object from which the count table and covariates data.frame are extracted or a file name where to read the biom.
+#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference.
+#' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
+#'
+#' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
+#' @export
+#'
+## importFrom biomformat read_biom sample_metadata biom_data
 prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
-  if (is.character(biom)) biom <- read_biom(biom)
-  if (is.null(sample_metadata(biom))) {
+  if (is.character(biom)) biom <- biomformat::read_biom(biom)
+  if (is.null(biomformat::sample_metadata(biom))) {
     stop(paste("No covariates detected in biom. Consider:",
                "- extracting count data from biom with biom_data()",
                "- preparing a covariates data.frame",
                "- using prepare_data instead of prepare_data_from_biom",
                sep = "\n"))
   }
-  prepare_data(counts     = biom_data(biom) %>% as("matrix"),
-               covariates = sample_metadata(biom),
+  prepare_data(counts     = biomformat::biom_data(biom) %>% as("matrix"),
+               covariates = biomformat::sample_metadata(biom),
                offset     = offset,
                ...)
 }
 
+#' Prepare data for use in PLN models from a phyloseq object
+#'
+#' @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "phyloseq" class object
+#' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
+#'
+#' @param biom Required. A phyloseq class object from which the count table and covariates data.frame are extracted.
+#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference.
+#' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
+#'
+#' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
+#' @export
+#'
+## @importFrom phyloseq sample_data otu_table
 prepare_data_from_phyloseq <- function(physeq, offset = "TSS", ...) {
   if (!inherits(physeq, "phyloseq")) stop("physeq should be a phyloseq object.")
   if (is.null(phyloseq::sample_data(physeq, errorIfNULL = FALSE))) {
