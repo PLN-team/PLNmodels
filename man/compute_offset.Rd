@@ -12,7 +12,7 @@ compute_offset(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"),
 
 \item{offset}{Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Can be "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none".}
 
-\item{...}{Additional parameters passed on to specific methods}
+\item{...}{Additional parameters passed on to specific methods (for now CSS and RLE)}
 }
 \value{
 If offset = "none", NULL else a vector of length \code{nrow(counts)} with one offset per sample.
@@ -21,7 +21,7 @@ If offset = "none", NULL else a vector of length \code{nrow(counts)} with one of
 Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature.
 }
 \details{
-The only normalisation with an additional argument is RLE, for which you can add pseudocounts to the observed counts. The default is \code{pseudocounts = 0}. Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
+RLE has an additional \code{pseudocounts} arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional \code{reference} argument to choose the location function used to compute the reference quantiles (defaults to \code{median} as in the Nature publication but can be set to \code{mean} to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
 }
 \examples{
 data(trichoptera)

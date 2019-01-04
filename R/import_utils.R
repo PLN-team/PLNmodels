@@ -73,25 +73,38 @@ offset_rle <- function(counts, pseudocounts = 0) {
 }
 
 ## Cumulative Sum Scaling (CSS) normalization (as used in metagenomeSeq and presented in doi.org/10.1038/nmeth.2658)
-offset_css <- function(counts) {
+offset_css <- function(counts, reference = median) {
   ## special treatment for edge case of one-column matrix (1 OTU, many samples)
   if (ncol(counts) == 1) return( counts[, 1] / median(counts) )
-  ## matrix of sample-specific quantiles and cumulative sums up to quantile
-  mat_sample_quant <- apply(counts, 1, sort) %>% t()
-  mat_sample_cumsum <- apply(mat_sample_quant, 1, cumsum) %>% t()
-  ## reference quantiles, computed as median of sample_specific quantiles and MAD around the reference quantiles
-  ref_quant_mad <- apply(mat_sample_quant, 2, mad, constant = 1)
+  ## remove 0s and check that all samples have at least two positive counts
+  counts[counts == 0] <- NA
+  if (any(rowSums(!is.na(counts)) < 2)) {
+    warning("Some samples only have 1 positive values. Can't compute quantiles and fall back to TSS normalization")
+    return(rowSums(counts, na.rm = TRUE))
+  }
+  ## compute sample-specific quantiles and cumulative sums up to quantiles
+  cumsum_up_to <- function(counts, quantiles) {
+    (counts * outer(counts, quantiles, `<=`)) %>% colSums(na.rm = TRUE)
+  }
+  mat_sample_quant <- apply(counts, 1, quantile, probs = seq(0, 1, length.out = ncol(counts)), na.rm = TRUE) %>% t()
+  mat_sample_cumsum <- sapply(1:nrow(counts), function(i) { cumsum_up_to(counts[i, ], mat_sample_quant[i, ]) }) %>% t()
+  ## reference quantiles, computed as median (nature article) or mean (metagenomeSeq::cumNormStat[Fast]) of sample_specific quantiles
+  ## and MAD around the reference quantiles
+  ref_quant <- apply(mat_sample_quant, 2, reference)
+  ref_quant_mad <- sweep(mat_sample_quant, 2, ref_quant) %>% abs %>% apply(2, median)
   ## find smallest quantile for which high instability is detected
   ## instability for quantile l is defined as ref_quant_mad[l+1] - ref_quant_mad[l] >= 0.1 * ref_quant_mad[l]
   instable <- (diff(ref_quant_mad) >= 0.1 * head(ref_quant_mad, -1))
-  lhat <- min(which(instable))
-  if (!is.finite(lhat)) {
+  if (any(instable)) {
+    ## Hack to mimick package implementation: never choose quantile below 50%
+    lhat <- max(min(which(instable)), ceiling(ncol(counts)/2))
+  } else {
     warning("No instability detected in quantile distribution across samples, falling back to scaled TSS normalization.")
     lhat <- ncol(counts)
   }
   ## scaling factors are cumulative sums up to quantile lhat, divided by their median
   size_factors <- mat_sample_cumsum[ , lhat] / median(mat_sample_cumsum[ , lhat])
-  return(size_factors)
+  return(size_factors %>% unname())
 }
 
 ###########################
@@ -162,10 +175,10 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' @description Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature.
 #'
 #' @inheritParams prepare_data
-#' @param ... Additional parameters passed on to specific methods
+#' @param ... Additional parameters passed on to specific methods (for now CSS and RLE)
 #' @inherit prepare_data references
 #'
-#' @details The only normalisation with an additional argument is RLE, for which you can add pseudocounts to the observed counts. The default is \code{pseudocounts = 0}. Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
+#' @details RLE has an additional \code{pseudocounts} arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional \code{reference} argument to choose the location function used to compute the reference quantiles (defaults to \code{median} as in the Nature publication but can be set to \code{mean} to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
 #'
 #' @return If offset = "none", NULL else a vector of length \code{nrow(counts)} with one offset per sample.
 #'
