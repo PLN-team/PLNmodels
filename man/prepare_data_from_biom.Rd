@@ -17,6 +17,13 @@ prepare_data_from_biom(biom, offset = "TSS", ...)
 Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "biom" class object
 before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
 }
+\examples{
+## Requires the biomformat package
+library(biomformat)
+biom_file <- system.file("extdata", "rich_sparse_otu_table.biom", package = "biomformat")
+biom <- read_biom(biom_file)
+prepare_data_from_biom(biom)
+}
 \seealso{
 \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
 }

@@ -17,6 +17,12 @@ prepare_data_from_phyloseq(physeq, offset = "TSS", ...)
 Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "phyloseq" class object
 before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
 }
+\examples{
+## Requires the phyloseq package
+library(phyloseq)
+data(enterotypes)
+prepare_data_from_phyloseq(enterotypes)
+}
 \seealso{
 \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
 }

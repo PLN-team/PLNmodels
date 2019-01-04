@@ -59,14 +59,15 @@ offset_gmpr <- function(counts) {
   }
   ## Geometric mean of pairwise ratio
   size_factor <- apply(mat_pr, 1, geom_mean)
+  if (any(size_factor == 0 || is.infinite(size_factor))) stop("Some sample(s) do not share any species with other samples, GMPR normalization failed.")
   return(size_factor)
 }
 
 ## Relative Log Expression (RLE) normalization (as used in DESeq2)
 offset_rle <- function(counts, pseudocounts = 0) {
-  ## Add pseudo.counts and compute geometric for all otus
+  ## Add pseudo.counts and compute geometric mean for all otus
   geom_means <- (counts + pseudocounts) %>% log() %>% colMeans(na.rm = TRUE) %>% exp
-  if (all(is.nan(geom_means))) stop("There are no common OTUs, RLE normalization failed")
+  if (all(geom_means == 0)) stop("Sample do not share any common species, RLE normalization failed.")
   ## compute size factor as the median of all otus log-ratios in that sample
   size_factor <- apply(counts, 1, function(x) {median(x / geom_means, na.rm = TRUE)} )
   return(size_factor)
@@ -126,7 +127,7 @@ offset_css <- function(counts, reference = median) {
 #' @references Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \url{http://dx.doi.org/10.1038/nmeth.2658}
 #' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
 #'
-#' @return A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset")
+#' @return A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
 #'
 #' @seealso \code{\link[=compute_offset]{compute_offset}} for details on the different normalisation schemes
 #'
@@ -153,7 +154,9 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   ## filter out empty samples
   empty_samples <- which(rowSums(counts) == 0)
   if (length(empty_samples)) {
-    warning(paste0("Samples ", samples[empty_samples], " were dropped as they have no positive counts."))
+    warning(paste0("Sample(s) ",
+                   paste(samples[empty_samples], collapse = " and "),
+                   " dropped for lack of positive counts."))
     samples <- samples[-empty_samples]
     counts <- counts[samples, ,drop = FALSE]
   }
@@ -162,9 +165,12 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   ## compute offset
   offset     <- compute_offset(counts, offset, ...)
   ## prepare data for PLN
-  result <- data.frame(Abundance = I(counts),
-                       covariates)
-  if (!is.null(offset)) result$Offset <- I(offset)
+  result <- data.frame(Abundance = NA, ## placeholder for Abundance, to avoid using I() and inheriting "AsIs" class
+                       covariates,
+                       Offset    = NA ## placeholder for Offset, to avoid using I() and inheriting "AsIs" class
+                       )
+  result$Abundance <- counts
+  result$Offset <- offset
   return(result)
 }
 
@@ -203,17 +209,6 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
   offset_function(counts, ...)
 }
 
-## Example biom class object
-# library(biomformat)
-# biom_file <- system.file("extdata", "rich_sparse_otu_table.biom", package = "biomformat")
-# biom_file
-# biom <- read_biom(biom_file)
-
-# Example phyloseq class object
-# library(phyloseq)
-# data(enterotypes)
-
-
 #' Prepare data for use in PLN models from a biom object
 #'
 #' @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "biom" class object
@@ -227,6 +222,12 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
 #' @export
 #'
 ## importFrom biomformat read_biom sample_metadata biom_data
+#' @examples
+#' ## Requires the biomformat package
+#' library(biomformat)
+#' biom_file <- system.file("extdata", "rich_sparse_otu_table.biom", package = "biomformat")
+#' biom <- read_biom(biom_file)
+#' prepare_data_from_biom(biom)
 prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
   if (is.character(biom)) biom <- biomformat::read_biom(biom)
   if (is.null(biomformat::sample_metadata(biom))) {
@@ -255,6 +256,11 @@ prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
 #' @export
 #'
 ## @importFrom phyloseq sample_data otu_table
+#' @examples
+#' ## Requires the phyloseq package
+#' library(phyloseq)
+#' data(enterotypes)
+#' prepare_data_from_phyloseq(enterotypes)
 prepare_data_from_phyloseq <- function(physeq, offset = "TSS", ...) {
   if (!inherits(physeq, "phyloseq")) stop("physeq should be a phyloseq object.")
   if (is.null(phyloseq::sample_data(physeq, errorIfNULL = FALSE))) {

@@ -16,7 +16,7 @@ prepare_data(counts, covariates, offset = "TSS", ...)
 \item{...}{Additional parameters passed on to \code{\link[=compute_offset]{compute_offset}}}
 }
 \value{
-A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset")
+A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
 }
 \description{
 Prepare data in proper format for use in PLN model and its variants. The function (i) merges a count table and
