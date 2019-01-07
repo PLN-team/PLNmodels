@@ -223,7 +223,7 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
 #'
 #' @details This functions depends on the biomformat package which is not a proper dependency of PLNmodels as it is not available on CRAN
 #'
-## importFrom biomformat read_biom sample_metadata biom_data
+#' @importFrom biomformat read_biom sample_metadata biom_data
 #' @examples
 #' ## Requires the biomformat package
 #' \dontrun{
@@ -262,7 +262,7 @@ prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
 #'
 #' @details This functions depends on the phyloseq package which is not a proper dependency of PLNmodels as it is not available on CRAN
 #'
-## @importFrom phyloseq sample_data otu_table
+#' @importFrom phyloseq sample_data otu_table
 #' @examples
 #' ## Requires the phyloseq package
 #' \dontrun{

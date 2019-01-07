@@ -1,6 +1,7 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2019-01-07: handling bioconductor
 #  - 2018-12-08: coverage updated
 #  - 2018-09-12: added checck for OS X
 #  - 2018-09-11: warning as error set to false
@@ -9,8 +10,8 @@
 language: r
 r_check_args: --as-cran
 cache: packages
-warnings_are_errors: false
 
+warnings_are_errors: false
 
 addons:
   apt:
@@ -24,16 +25,19 @@ brew_packages:
 r_packages:
   - covr
 
+bioc_packages:
+  - biomformat
+  - phyloseq
+
 matrix:
   include:
     - os: linux
-      r: release
+      r: bioc-release
       after_success:
       - Rscript -e 'covr::codecov()'
       env: NB='with covr'
     - os: linux
-      r: devel
+      r: bioc-devel
     - os: osx
-      r: release
-
+      r: bioc-release
 
