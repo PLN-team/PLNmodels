@@ -19,31 +19,23 @@ test_that("common_samples throws warnings on matrices with no dimension names", 
 
 test_that("common_samples fails on matrices with no dimension names and incompatibles dimensions",  {
   ## No names for abundance matrix
-  expect_error(common_samples(`dimnames<-`(counts, NULL) %>% t(),
-                                covariates))
+  expect_error(suppressWarnings(common_samples(unname(counts) %>% t(), covariates)))
   ## No rownames for covariates matrix
-  expect_error(common_samples(counts %>% t(),
-                              data.matrix(covariates, rownames.force = FALSE)))
+  expect_error(suppressWarnings(common_samples(counts %>% t(), data.matrix(covariates, rownames.force = FALSE))))
 })
 
 test_that("common_samples succeeds on matrices with no dimension names but compatible dimensions",  {
-  expect_length(common_samples(`dimnames<-`(counts, NULL),
-                               data.matrix(covariates)),
-                2)
-  expect_named(common_samples(`dimnames<-`(counts, NULL),
-                               data.matrix(covariates)),
+  expect_warning(result <- common_samples(unname(counts), data.matrix(covariates)))
+  expect_length(result, 2)
+  expect_named(result,
                c("transpose_counts", "common_samples"))
-  expect_type(common_samples(`dimnames<-`(counts, NULL),
-                             data.matrix(covariates)),
+  expect_type(result,
               "list")
-  expect_type(common_samples(`dimnames<-`(counts, NULL),
-                             data.matrix(covariates))$transpose_counts,
+  expect_type(result$transpose_counts,
               "logical")
-  expect_type(common_samples(`dimnames<-`(counts, NULL),
-                             data.matrix(covariates))$common_samples,
+  expect_type(result$common_samples,
               "character")
-  expect_equal(common_samples(`dimnames<-`(counts, NULL),
-                              data.matrix(covariates)),
+  expect_equal(result,
                list(transpose_counts = FALSE,
                     common_samples   = paste0("Sample_", 1:49)))
 })
@@ -70,10 +62,10 @@ test_that("common_samples succeeds on matrices with dimension names and differen
 })
 
 test_that("common_samples find biggest subset of common samples and produces message.",  {
-  expect_message(common_samples(counts, covariates[1:35, ]),
+  expect_message(result <- common_samples(counts, covariates[1:35, ]),
                  "14 samples were dropped from the abundance matrix for lack of associated covariates.")
-  expect_length(common_samples(counts, covariates[1:35, ])$common_samples, 35)
-  expect_equal(common_samples(counts, covariates[1:35, ])$common_samples,
+  expect_length(result$common_samples, 35)
+  expect_equal(result$common_samples,
                as.character(1:35))
 })
 
@@ -198,4 +190,34 @@ test_that("prepare_data succeeds on simple data", {
 
 ## Test prepare_data_* functions ------------------------------------------------------------------------
 
+if (require(biomformat)) {
+  test_that("prepare_data_from_biom fails when covariates data.frame is missing", {
+    biom <- make_biom(data = t(counts), sample_metadata = NULL)
+    expect_error(prepare_data_from_biom(biom, offset = "none"))
+  })
 
+  test_that("prepare_data_from_biom succeeds on proper biom objects (but converts all columns to character...)", {
+    biom <- make_biom(data = t(counts), sample_metadata = lapply(covariates, as.character) %>% as.data.frame)
+    result <- trichoptera
+    result[-1] <- lapply(result[-1], as.character)
+    expect_equal(prepare_data_from_biom(biom, offset = "none"),
+                 result)
+  })
+}
+
+if (require(phyloseq)) {
+  ## massage rownames to fit phyloseq sample naming conventions
+  rownames(counts) <- rownames(covariates) <- paste0("Sample", 1:nrow(covariates))
+
+  test_that("prepare_data_from_phyloseq fails when covariate data.frame is missing", {
+      physeq <- phyloseq(otu_table(counts, taxa_are_rows = FALSE))
+    expect_error(prepare_data_from_phyloseq(physeq, offset = "none"))
+  })
+
+  test_that("prepare_data_from_phyloseq succeeds on proper phyloseq class objects", {
+    physeq <- phyloseq(otu_table(counts, taxa_are_rows = FALSE),
+                       sample_data(covariates))
+    result <- trichoptera; rownames(result$Abundance) <- rownames(result) <- paste0("Sample", 1:nrow(covariates))
+    expect_equal(prepare_data_from_phyloseq(physeq, offset = "none"), result)
+  })
+}
