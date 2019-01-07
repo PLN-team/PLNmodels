@@ -17,6 +17,9 @@ prepare_data_from_biom(biom, offset = "TSS", ...)
 Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "biom" class object
 before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
 }
+\details{
+This functions depends on the biomformat package which is not a proper dependency of PLNmodels as it is not available on CRAN
+}
 \examples{
 ## Requires the biomformat package
 \dontrun{
