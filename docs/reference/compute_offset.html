@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily) — plot.PLNnetworkfamily • PLNmodels</title>
+<title>Compute offsets from a count data using one of several normalization schemes — compute_offset • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily) — plot.PLNnetworkfamily" />
+<meta property="og:title" content="Compute offsets from a count data using one of several normalization schemes — compute_offset" />
 
-<meta property="og:description" content="Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)" />
+<meta property="og:description" content="Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -128,62 +128,63 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfamily-S3methods.R'><code>R/PLNnetworkfamily-S3methods.R</code></a></small>
-    <div class="hidden name"><code>plot.PLNnetworkfamily.Rd</code></div>
+    <h1>Compute offsets from a count data using one of several normalization schemes</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/import_utils.R'><code>R/import_utils.R</code></a></small>
+    <div class="hidden name"><code>compute_offset.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</p>
+    <p>Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature.</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for PLNnetworkfamily</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"criteria"</span>, <span class='st'>"stability"</span>,
-  <span class='st'>"diagnostic"</span>), <span class='kw'>criteria</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"pen_loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>),
-  <span class='kw'>log.x</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>stability</span> <span class='kw'>=</span> <span class='fl'>0.9</span>, <span class='kw'>annotate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>compute_offset</span>(<span class='no'>counts</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"TSS"</span>, <span class='st'>"GMPR"</span>, <span class='st'>"RLE"</span>, <span class='st'>"CSS"</span>, <span class='st'>"none"</span>),
+  <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>an R6 object with class PLNfamily</p></td>
+      <th>counts</th>
+      <td><p>Required. An abundance count table, preferably with dimensions names and species as columns.</p></td>
     </tr>
     <tr>
-      <th>type</th>
-      <td><p>a character, either "criteria", "stability" or "diagnostic" for the type of plot.</p></td>
-    </tr>
-    <tr>
-      <th>criteria</th>
-      <td><p>vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
-Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when type equals "criteria".</p></td>
-    </tr>
-    <tr>
-      <th>log.x</th>
-      <td><p>logical: should the x-axis be repsented in log-scale? Default is <code>TRUE</code>.</p></td>
-    </tr>
-    <tr>
-      <th>stability</th>
-      <td><p>scalar: the targeted level of stability in stability plot. Default is .9.</p></td>
-    </tr>
-    <tr>
-      <th>annotate</th>
-      <td><p>logical: should the value of approximated R squared be added to the plot of criteria? Default is <code>TRUE</code>.</p></td>
+      <th>offset</th>
+      <td><p>Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Can be "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none".</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional parameters for S3 compatibility. Not used</p></td>
+      <td><p>Additional parameters passed on to specific methods (for now CSS and RLE)</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Produces a plot  representing the evolution of the criteria of the different models considered,
-highlighting the best model in terms of BIC and EBIC.</p>
+    <p>If offset = "none", NULL else a vector of length <code><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow(counts)</a></code> with one offset per sample.</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>RLE has an additional <code>pseudocounts</code> arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional <code>reference</code> argument to choose the location function used to compute the reference quantiles (defaults to <code>median</code> as in the Nature publication but can be set to <code>mean</code> to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.</p>
+    
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 <a href='https://doi.org/10.7717/peerj.4600'>https://doi.org/10.7717/peerj.4600</a></p>
+<p>Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 <a href='http://dx.doi.org/10.1038/nmeth.2658'>http://dx.doi.org/10.1038/nmeth.2658</a></p>
+<p>Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 <a href='https://doi.org/10.1186/gb-2010-11-10-r106'>https://doi.org/10.1186/gb-2010-11-10-r106</a></p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>trichoptera</span>)
+<span class='no'>counts</span> <span class='kw'>&lt;-</span> <span class='no'>trichoptera</span>$<span class='no'>Abundance</span>
+<span class='fu'>compute_offset</span>(<span class='no'>counts</span>)</div><div class='output co'>#&gt;    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16 
+#&gt;   29   13   38  192   79   18    8   34   12    4    4    3   49   33  600  172 
+#&gt;   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32 
+#&gt;   58   51   56  127   35   13   17    3   27   40   44    8    9 1599 2980   88 
+#&gt;   33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48 
+#&gt;  135  327   66   90   63   15   14   20   70   53   95   43   62  149   16   31 
+#&gt;   49 
+#&gt;   86 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -191,7 +192,13 @@ highlighting the best model in terms of BIC and EBIC.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+
+      <li><a href="#details">Details</a></li>
+
+      <li><a href="#references">References</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

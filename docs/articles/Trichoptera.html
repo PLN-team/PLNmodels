@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.1003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.4001</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
       <h1>Description of the Trichoptera data set</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2018-12-19</h4>
+            <h4 class="date">2019-01-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/Trichoptera.Rmd"><code>vignettes/Trichoptera.Rmd</code></a></small>
       <div class="hidden name"><code>Trichoptera.Rmd</code></div>
@@ -120,7 +120,7 @@
 <a href="#the-trichopterata-data-set" class="anchor"></a>The trichopterata data set</h2>
 <p>The order Trichoptera (or caddisflies) are a group of insects with aquatic larvae and terrestrial adults. The ecological data set trichoptera <span class="citation">(Usseglio-Polatera and Auda <a href="#ref-trichoptera">1987</a>)</span> describes abundances of Trichoptera species (hereafter the <em>counts</em>), accompanied with some meteorological factors (hereafter the <em>covariates</em>) that may influence their presence during the sampling<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
 <div class="figure" style="text-align: center">
-<img src="figures/macronema_zebratum.jpg" alt="Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001."><p class="caption">
+<img src="figures/macronema_zebratum.jpg" alt="Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001." width="94"><p class="caption">
 Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 </p>
 </div>
@@ -143,10 +143,7 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 ##  $ Cloudiness   : num  19 0 6 81 50 50 100 19 69 6 ...
 ##  $ Precipitation: num  0 0 0 0 0 0 1.6 0 1.6 0 ...
 ##  $ Group        : Factor w/ 12 levels "1","2","3","4",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ TotalCounts  : num [1:49, 1:17] 29 13 38 192 79 18 8 34 12 4 ...
-##   ..- attr(*, "dimnames")=List of 2
-##   .. ..$ : chr  "1" "2" "3" "4" ...
-##   .. ..$ : chr  "Che" "Hyc" "Hym" "Hys" ...</code></pre>
+##  $ TotalCounts  : num  29 13 38 192 79 18 8 34 12 4 ...</code></pre>
 <p>We thus rely on a not so common use of the <code>data.frame</code> structure, where a column may be a matrix and not necessarily an atomic vector. This formatting is very handy for model specification with <code>R</code> <code>formulas</code>, especially in a multivariate setting like in <strong>PLNmodels</strong>.</p>
 </div>
 <div id="table-of-counts-abundancies" class="section level3">
@@ -310,106 +307,10 @@ log-counts in the trichoptera data set
 <p>A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by an <span class="math inline">\(49\)</span> numeric of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The formula syntax accepts either no offset, a vector or a matrix or specify the offsets term.</p>
 <p>Here, we have a vector whose corresponding column is named <code>TotalCounts</code> in in the <code>trichoptera</code> data frame:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">trichoptera<span class="op">$</span>TotalCounts</a></code></pre></div>
-<pre><code>##     Che  Hyc  Hym  Hys  Psy  Aga  Glo  Ath  Cea  Ced  Set  All  Han  Hfo
-## 1    29   29   29   29   29   29   29   29   29   29   29   29   29   29
-## 2    13   13   13   13   13   13   13   13   13   13   13   13   13   13
-## 3    38   38   38   38   38   38   38   38   38   38   38   38   38   38
-## 4   192  192  192  192  192  192  192  192  192  192  192  192  192  192
-## 5    79   79   79   79   79   79   79   79   79   79   79   79   79   79
-## 6    18   18   18   18   18   18   18   18   18   18   18   18   18   18
-## 7     8    8    8    8    8    8    8    8    8    8    8    8    8    8
-## 8    34   34   34   34   34   34   34   34   34   34   34   34   34   34
-## 9    12   12   12   12   12   12   12   12   12   12   12   12   12   12
-## 10    4    4    4    4    4    4    4    4    4    4    4    4    4    4
-## 11    4    4    4    4    4    4    4    4    4    4    4    4    4    4
-## 12    3    3    3    3    3    3    3    3    3    3    3    3    3    3
-## 13   49   49   49   49   49   49   49   49   49   49   49   49   49   49
-## 14   33   33   33   33   33   33   33   33   33   33   33   33   33   33
-## 15  600  600  600  600  600  600  600  600  600  600  600  600  600  600
-## 16  172  172  172  172  172  172  172  172  172  172  172  172  172  172
-## 17   58   58   58   58   58   58   58   58   58   58   58   58   58   58
-## 18   51   51   51   51   51   51   51   51   51   51   51   51   51   51
-## 19   56   56   56   56   56   56   56   56   56   56   56   56   56   56
-## 20  127  127  127  127  127  127  127  127  127  127  127  127  127  127
-## 21   35   35   35   35   35   35   35   35   35   35   35   35   35   35
-## 22   13   13   13   13   13   13   13   13   13   13   13   13   13   13
-## 23   17   17   17   17   17   17   17   17   17   17   17   17   17   17
-## 24    3    3    3    3    3    3    3    3    3    3    3    3    3    3
-## 25   27   27   27   27   27   27   27   27   27   27   27   27   27   27
-## 26   40   40   40   40   40   40   40   40   40   40   40   40   40   40
-## 27   44   44   44   44   44   44   44   44   44   44   44   44   44   44
-## 28    8    8    8    8    8    8    8    8    8    8    8    8    8    8
-## 29    9    9    9    9    9    9    9    9    9    9    9    9    9    9
-## 30 1599 1599 1599 1599 1599 1599 1599 1599 1599 1599 1599 1599 1599 1599
-## 31 2980 2980 2980 2980 2980 2980 2980 2980 2980 2980 2980 2980 2980 2980
-## 32   88   88   88   88   88   88   88   88   88   88   88   88   88   88
-## 33  135  135  135  135  135  135  135  135  135  135  135  135  135  135
-## 34  327  327  327  327  327  327  327  327  327  327  327  327  327  327
-## 35   66   66   66   66   66   66   66   66   66   66   66   66   66   66
-## 36   90   90   90   90   90   90   90   90   90   90   90   90   90   90
-## 37   63   63   63   63   63   63   63   63   63   63   63   63   63   63
-## 38   15   15   15   15   15   15   15   15   15   15   15   15   15   15
-## 39   14   14   14   14   14   14   14   14   14   14   14   14   14   14
-## 40   20   20   20   20   20   20   20   20   20   20   20   20   20   20
-## 41   70   70   70   70   70   70   70   70   70   70   70   70   70   70
-## 42   53   53   53   53   53   53   53   53   53   53   53   53   53   53
-## 43   95   95   95   95   95   95   95   95   95   95   95   95   95   95
-## 44   43   43   43   43   43   43   43   43   43   43   43   43   43   43
-## 45   62   62   62   62   62   62   62   62   62   62   62   62   62   62
-## 46  149  149  149  149  149  149  149  149  149  149  149  149  149  149
-## 47   16   16   16   16   16   16   16   16   16   16   16   16   16   16
-## 48   31   31   31   31   31   31   31   31   31   31   31   31   31   31
-## 49   86   86   86   86   86   86   86   86   86   86   86   86   86   86
-##     Hsp  Hve  Sta
-## 1    29   29   29
-## 2    13   13   13
-## 3    38   38   38
-## 4   192  192  192
-## 5    79   79   79
-## 6    18   18   18
-## 7     8    8    8
-## 8    34   34   34
-## 9    12   12   12
-## 10    4    4    4
-## 11    4    4    4
-## 12    3    3    3
-## 13   49   49   49
-## 14   33   33   33
-## 15  600  600  600
-## 16  172  172  172
-## 17   58   58   58
-## 18   51   51   51
-## 19   56   56   56
-## 20  127  127  127
-## 21   35   35   35
-## 22   13   13   13
-## 23   17   17   17
-## 24    3    3    3
-## 25   27   27   27
-## 26   40   40   40
-## 27   44   44   44
-## 28    8    8    8
-## 29    9    9    9
-## 30 1599 1599 1599
-## 31 2980 2980 2980
-## 32   88   88   88
-## 33  135  135  135
-## 34  327  327  327
-## 35   66   66   66
-## 36   90   90   90
-## 37   63   63   63
-## 38   15   15   15
-## 39   14   14   14
-## 40   20   20   20
-## 41   70   70   70
-## 42   53   53   53
-## 43   95   95   95
-## 44   43   43   43
-## 45   62   62   62
-## 46  149  149  149
-## 47   16   16   16
-## 48   31   31   31
-## 49   86   86   86</code></pre>
+<pre><code>##  [1]   29   13   38  192   79   18    8   34   12    4    4    3   49   33
+## [15]  600  172   58   51   56  127   35   13   17    3   27   40   44    8
+## [29]    9 1599 2980   88  135  327   66   90   63   15   14   20   70   53
+## [43]   95   43   62  149   16   31   86</code></pre>
 <p>Offsets are denoted by <span class="math inline">\(\mathbf{O}\)</span> when the mathematical model in other vignettes, and by <code>O</code> in the <code>R</code> environment.</p>
 </div>
 <div id="covariates-external-meteorological-effect-groups" class="section level3">

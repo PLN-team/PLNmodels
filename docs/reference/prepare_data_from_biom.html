@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily) — plot.PLNnetworkfamily • PLNmodels</title>
+<title>Prepare data for use in PLN models from a biom object — prepare_data_from_biom • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,10 @@
 
 
 
-<meta property="og:title" content="Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily) — plot.PLNnetworkfamily" />
+<meta property="og:title" content="Prepare data for use in PLN models from a biom object — prepare_data_from_biom" />
 
-<meta property="og:description" content="Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)" />
+<meta property="og:description" content="Wrapper around prepare_data, extracts the count table and the covariates data.frame from a &quot;biom&quot; class object
+before passing them to prepare_data. See prepare_data for details." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -128,70 +129,66 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfamily-S3methods.R'><code>R/PLNnetworkfamily-S3methods.R</code></a></small>
-    <div class="hidden name"><code>plot.PLNnetworkfamily.Rd</code></div>
+    <h1>Prepare data for use in PLN models from a biom object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/import_utils.R'><code>R/import_utils.R</code></a></small>
+    <div class="hidden name"><code>prepare_data_from_biom.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)</p>
+    <p>Wrapper around <code><a href='prepare_data.html'>prepare_data</a></code>, extracts the count table and the covariates data.frame from a "biom" class object
+before passing them to <code><a href='prepare_data.html'>prepare_data</a></code>. See <code><a href='prepare_data.html'>prepare_data</a></code> for details.</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for PLNnetworkfamily</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"criteria"</span>, <span class='st'>"stability"</span>,
-  <span class='st'>"diagnostic"</span>), <span class='kw'>criteria</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"pen_loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>),
-  <span class='kw'>log.x</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>stability</span> <span class='kw'>=</span> <span class='fl'>0.9</span>, <span class='kw'>annotate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>prepare_data_from_biom</span>(<span class='no'>biom</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='st'>"TSS"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>an R6 object with class PLNfamily</p></td>
+      <th>biom</th>
+      <td><p>Required. Either a biom-class object from which the count table and covariates data.frame are extracted or a file name where to read the biom.</p></td>
     </tr>
     <tr>
-      <th>type</th>
-      <td><p>a character, either "criteria", "stability" or "diagnostic" for the type of plot.</p></td>
-    </tr>
-    <tr>
-      <th>criteria</th>
-      <td><p>vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
-Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when type equals "criteria".</p></td>
-    </tr>
-    <tr>
-      <th>log.x</th>
-      <td><p>logical: should the x-axis be repsented in log-scale? Default is <code>TRUE</code>.</p></td>
-    </tr>
-    <tr>
-      <th>stability</th>
-      <td><p>scalar: the targeted level of stability in stability plot. Default is .9.</p></td>
-    </tr>
-    <tr>
-      <th>annotate</th>
-      <td><p>logical: should the value of approximated R squared be added to the plot of criteria? Default is <code>TRUE</code>.</p></td>
+      <th>offset</th>
+      <td><p>Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional parameters for S3 compatibility. Not used</p></td>
+      <td><p>Addtional arguments passed on to <code><a href='compute_offset.html'>compute_offset</a></code></p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Produces a plot  representing the evolution of the criteria of the different models considered,
-highlighting the best model in terms of BIC and EBIC.</p>
+    <p>This functions depends on the biomformat package which is not a proper dependency of PLNmodels as it is not available on CRAN</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='compute_offset.html'>compute_offset</a></code> and <code><a href='prepare_data.html'>prepare_data</a></code></p></div>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>## Requires the biomformat package
+</div><span class='co'># NOT RUN {</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>biomformat</span>)
+<span class='no'>biom_file</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/system.file'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"rich_sparse_otu_table.biom"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"biomformat"</span>)
+<span class='no'>biom</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/biomformat/topics/read_biom'>read_biom</a></span>(<span class='no'>biom_file</span>)
+<span class='fu'>prepare_data_from_biom</span>(<span class='no'>biom</span>)
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#value">Value</a></li>
-          </ul>
+      <li><a href="#details">Details</a></li>
+
+      <li><a href="#see-also">See also</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

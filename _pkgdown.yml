@@ -81,9 +81,12 @@ reference:
 - title: 'Other functions'
   desc: ~
   contents:
+    - '`prepare_data`'
+    - '`compute_offset`'
     - '`rPLN`'
 - title: Data set
   desc: ~
   contents:
     - '`trichoptera`'
+    - '`mollusk`'
 
