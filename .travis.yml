@@ -26,6 +26,7 @@ r_packages:
   - covr
 
 bioc_packages:
+  - BiocInstaller
   - biomformat
   - phyloseq
 
