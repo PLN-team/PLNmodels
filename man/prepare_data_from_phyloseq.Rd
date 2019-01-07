@@ -7,11 +7,11 @@
 prepare_data_from_phyloseq(physeq, offset = "TSS", ...)
 }
 \arguments{
+\item{physeq}{Required. A phyloseq class object from which the count table and covariates data.frame are extracted.}
+
 \item{offset}{Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference.}
 
 \item{...}{Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}}
-
-\item{biom}{Required. A phyloseq class object from which the count table and covariates data.frame are extracted.}
 }
 \description{
 Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "phyloseq" class object
@@ -19,9 +19,11 @@ before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\lin
 }
 \examples{
 ## Requires the phyloseq package
+\dontrun{
 library(phyloseq)
 data(enterotypes)
 prepare_data_from_phyloseq(enterotypes)
+}
 }
 \seealso{
 \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}

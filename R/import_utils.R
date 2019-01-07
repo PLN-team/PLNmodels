@@ -136,7 +136,7 @@ offset_css <- function(counts, reference = median) {
 #' @examples
 #' data(trichoptera)
 #' counts <- trichoptera$Abundance
-#' covariates <- trichoptera %>% inset2("Abundance", value = NULL)
+#' covariates <- trichoptera; covariates$Abundance <- NULL
 #' proper_data <- prepare_data(counts, covariates, offset = "TSS")
 #' proper_data$Abundance
 #' proper_data$Offset
@@ -188,7 +188,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #'
 #' @return If offset = "none", NULL else a vector of length \code{nrow(counts)} with one offset per sample.
 #'
-#' @importFrom stats mad median
+#' @importFrom stats mad median quantile
 #' @export
 #'
 #' @examples
@@ -221,16 +221,21 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
 #' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
 #' @export
 #'
+#' @details This functions depends on the biomformat package which is not a proper dependency of PLNmodels as it is not available on CRAN
+#'
 ## importFrom biomformat read_biom sample_metadata biom_data
 #' @examples
 #' ## Requires the biomformat package
+#' \dontrun{
 #' library(biomformat)
 #' biom_file <- system.file("extdata", "rich_sparse_otu_table.biom", package = "biomformat")
 #' biom <- read_biom(biom_file)
 #' prepare_data_from_biom(biom)
+#' }
 prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
   if (is.character(biom)) biom <- biomformat::read_biom(biom)
-  if (is.null(biomformat::sample_metadata(biom))) {
+  sdf <- biomformat::sample_metadata(biom)
+  if (is.null(sdf) || all(is.na(sdf))) {
     stop(paste("No covariates detected in biom. Consider:",
                "- extracting count data from biom with biom_data()",
                "- preparing a covariates data.frame",
@@ -238,7 +243,7 @@ prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
                sep = "\n"))
   }
   prepare_data(counts     = biomformat::biom_data(biom) %>% as("matrix"),
-               covariates = biomformat::sample_metadata(biom),
+               covariates = sdf,
                offset     = offset,
                ...)
 }
@@ -248,19 +253,23 @@ prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
 #' @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "phyloseq" class object
 #' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
 #'
-#' @param biom Required. A phyloseq class object from which the count table and covariates data.frame are extracted.
+#' @param physeq Required. A phyloseq class object from which the count table and covariates data.frame are extracted.
 #' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference.
 #' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
 #'
 #' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
 #' @export
 #'
+#' @details This functions depends on the phyloseq package which is not a proper dependency of PLNmodels as it is not available on CRAN
+#'
 ## @importFrom phyloseq sample_data otu_table
 #' @examples
 #' ## Requires the phyloseq package
+#' \dontrun{
 #' library(phyloseq)
 #' data(enterotypes)
 #' prepare_data_from_phyloseq(enterotypes)
+#' }
 prepare_data_from_phyloseq <- function(physeq, offset = "TSS", ...) {
   if (!inherits(physeq, "phyloseq")) stop("physeq should be a phyloseq object.")
   if (is.null(phyloseq::sample_data(physeq, errorIfNULL = FALSE))) {
@@ -271,7 +280,7 @@ prepare_data_from_phyloseq <- function(physeq, offset = "TSS", ...) {
                sep = "\n"))
   }
   prepare_data(counts     = phyloseq::otu_table(physeq) %>% as("matrix"),
-               covariates = phyloseq::sample_data(physeq),
+               covariates = phyloseq::sample_data(physeq) %>% as("data.frame"),
                offset     = offset,
                ...)
 }

@@ -25,7 +25,7 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
 \examples{
 data(trichoptera)
 counts <- trichoptera$Abundance
-covariates <- trichoptera \%>\% inset2("Abundance", value = NULL)
+covariates <- trichoptera; covariates$Abundance <- NULL
 proper_data <- prepare_data(counts, covariates, offset = "TSS")
 proper_data$Abundance
 proper_data$Offset
