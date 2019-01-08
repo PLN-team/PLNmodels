@@ -169,7 +169,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
                        covariates,
                        Offset    = NA ## placeholder for Offset, to avoid using I() and inheriting "AsIs" class
                        )
-  result$Abundance <- counts
+  result$Abundance <- counts %>% as("matrix")
   result$Offset <- offset
   return(result)
 }
