@@ -1,6 +1,7 @@
 context("test-plnnetworkfamily")
 
 data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
 test_that("PLNnetwork methods", {
 

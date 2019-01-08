@@ -1,9 +1,7 @@
 context("test-import-utils")
 data("trichoptera")
-
-counts <- trichoptera$Abundance
-# covariates <- trichoptera %>% inset2("Abundance", value = NULL)
-covariates <- trichoptera; covariates$Abundance <- NULL
+counts     <- trichoptera$Abundance %>% as.matrix()
+covariates <- trichoptera$Covariate
 
 ## Test common_samples ------------------------------------------------------------------------------------
 
@@ -183,9 +181,15 @@ test_that("prepare_data replace NA with 0s", {
   expect_equal(dim(result$Abundance), c(nrow(counts), ncol(counts)))
 })
 
+result <- data.frame(
+  Abundance = NA,
+  covariates
+  )
+result$Abundance <- counts
+
 test_that("prepare_data succeeds on simple data", {
   expect_identical(prepare_data(counts, covariates, offset = "none"),
-                   trichoptera)
+                   result)
 })
 
 ## Test prepare_data_* functions ------------------------------------------------------------------------
@@ -198,10 +202,11 @@ if (require(biomformat)) {
 
   test_that("prepare_data_from_biom succeeds on proper biom objects (but converts all columns to character...)", {
     biom <- make_biom(data = t(counts), sample_metadata = lapply(covariates, as.character) %>% as.data.frame)
-    result <- trichoptera
-    result[-1] <- lapply(result[-1], as.character)
+    result_biom <- result
+    result_biom[-1] <- lapply(result_biom[-1], as.character)
+    rownames(result_biom) <- as.character(rownames(result_biom))
     expect_equal(prepare_data_from_biom(biom, offset = "none"),
-                 result)
+                 result_biom)
   })
 }
 
@@ -217,7 +222,7 @@ if (require(phyloseq)) {
   test_that("prepare_data_from_phyloseq succeeds on proper phyloseq class objects", {
     physeq <- phyloseq(otu_table(counts, taxa_are_rows = FALSE),
                        sample_data(covariates))
-    result <- trichoptera; rownames(result$Abundance) <- rownames(result) <- paste0("Sample", 1:nrow(covariates))
-    expect_equal(prepare_data_from_phyloseq(physeq, offset = "none"), result)
+    result_physeq <- result; rownames(result_physeq$Abundance) <- rownames(result_physeq) <- paste0("Sample", 1:nrow(covariates))
+    expect_equal(prepare_data_from_phyloseq(physeq, offset = "none"), result_physeq)
   })
 }

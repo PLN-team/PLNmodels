@@ -1,6 +1,7 @@
 context("test-plnlda")
 
-data("trichoptera")
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
 test_that("Check that PLN is running and robust",  {
 

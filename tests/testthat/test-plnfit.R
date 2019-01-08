@@ -1,6 +1,7 @@
 context("test-plnfit")
 
-data("trichoptera")
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
 test_that("Check classes, getters and field access",  {
 

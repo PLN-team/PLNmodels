@@ -1,5 +1,8 @@
 context("test-plnnetwork")
 
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+
 test_that("PLNnetwork runs", {
 
   models <- PLNnetwork(Abundance ~ 1, data = trichoptera)

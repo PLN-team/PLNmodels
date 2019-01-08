@@ -1,10 +1,11 @@
 context("test-standard-error")
 
-data("trichoptera")
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
 test_that("Check that fisher and standard_error return objects with proper dimensions and sign",  {
 
-  myPLN_cov <- myPLN_cov <- PLN(Abundance ~ Wind + offset(log(TotalCounts)), data = trichoptera)
+  myPLN_cov <- myPLN_cov <- PLN(Abundance ~ Wind + offset(log(Offset)), data = trichoptera)
   expect_is(myPLN_cov, "PLNfit")
   p <- myPLN_cov$p
   d <- myPLN_cov$d
@@ -33,7 +34,7 @@ test_that("Check internal consistency of Fisher matrix for PLN models with no co
   tol <- 1e-8
 
   ## Fit model without covariates
-  myPLN <- PLN(Abundance ~ 1 + offset(log(TotalCounts)), data = trichoptera)
+  myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 
   ## Consistency of the diagonal of the fisher matrix
   fim.diag <- Matrix::diag(fisher(myPLN))
@@ -53,7 +54,7 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
   tol <- 1e-3
 
   ## Fit model without covariates
-  myPLN <- PLN(Abundance ~ 1 + offset(log(TotalCounts)), data = trichoptera)
+  myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 
   ## Consistency of the diagonal of the fisher matrix
   fim.diag <- Matrix::diag(fisher(myPLN))
