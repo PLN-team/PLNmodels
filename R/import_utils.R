@@ -135,9 +135,11 @@ offset_css <- function(counts, reference = median) {
 #'
 #' @examples
 #' data(trichoptera)
-#' counts <- trichoptera$Abundance
-#' covariates <- trichoptera; covariates$Abundance <- NULL
-#' proper_data <- prepare_data(counts, covariates, offset = "TSS")
+#' proper_data <- prepare_data(
+#'  counts      = trichoptera$Abundance,
+#'  covariates = trichoptera$Covariate,
+#'   offset = "TSS"
+#' )
 #' proper_data$Abundance
 #' proper_data$Offset
 prepare_data <- function(counts, covariates, offset = "TSS", ...) {
