@@ -209,7 +209,14 @@ a collection of models with class <code><a href='PLNnetworkfit.html'>PLNnetworkf
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>fits</span> <span class='kw'>&lt;-</span> <span class='fu'>PLNnetwork</span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; <span class='error'>Error in model.frame.default(formula = Abundance ~ 1, data = trichoptera): invalid type (list) for variable 'Abundance'</span></div></pre>
+<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
+<span class='no'>fits</span> <span class='kw'>&lt;-</span> <span class='fu'>PLNnetwork</span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 
+#&gt;  Initialization...
+#&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
+#&gt; 	Joint optimization alternating gradient descent and graphical-lasso
+#&gt; 	sparsifying penalty = 7.288053 	sparsifying penalty = 6.731762 	sparsifying penalty = 6.217932 	sparsifying penalty = 5.743323 	sparsifying penalty = 5.30494 	sparsifying penalty = 4.900018 	sparsifying penalty = 4.526004 	sparsifying penalty = 4.180538 	sparsifying penalty = 3.861441 	sparsifying penalty = 3.566701 	sparsifying penalty = 3.294458 	sparsifying penalty = 3.042994 	sparsifying penalty = 2.810725 	sparsifying penalty = 2.596185 	sparsifying penalty = 2.39802 	sparsifying penalty = 2.214982 	sparsifying penalty = 2.045914 	sparsifying penalty = 1.889751 	sparsifying penalty = 1.745508 	sparsifying penalty = 1.612275 	sparsifying penalty = 1.489211 	sparsifying penalty = 1.375541 	sparsifying penalty = 1.270547 	sparsifying penalty = 1.173567 	sparsifying penalty = 1.08399 	sparsifying penalty = 1.00125 	sparsifying penalty = 0.9248255 	sparsifying penalty = 0.8542343 	sparsifying penalty = 0.7890314 	sparsifying penalty = 0.7288053 
+#&gt;  Post-treatments
+#&gt;  DONE!</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

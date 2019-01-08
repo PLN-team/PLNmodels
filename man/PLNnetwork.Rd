@@ -55,6 +55,7 @@ The list of parameters \code{control_init} controls the optimization process in 
 }
 \examples{
 data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 }
 \seealso{

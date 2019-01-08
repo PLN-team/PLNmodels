@@ -29,12 +29,6 @@ mollusk
 This data set gives the abundance of 32 mollusk species in 163 samples.
 For each sample, 4 additional informations (covariates) are knowne.
 }
-\examples{
-data(mollusk)
-str(mollusk)
-prepare_date(mollusk)
-
-}
 \references{
 Richardot-Coulet, M., Chessel D. and Bournaud M. (1986) Typological value of the benthos of old beds of a large river. Methodological approach. Archiv fùr Hydrobiologie, 107, 363–383.
 }

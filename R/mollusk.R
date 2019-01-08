@@ -19,11 +19,6 @@
 ##' In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use \code{\link[=prepare_data]{prepare_data}}.
 ##' Original data set has been extracted from ade4.
 ##'
-##' @examples
-##' data(mollusk)
-##' str(mollusk)
-##' prepare_date(mollusk)
-##'
 ##' @seealso \code{\link[=prepare_data]{prepare_data}}
 ##' @references Richardot-Coulet, M., Chessel D. and Bournaud M. (1986) Typological value of the benthos of old beds of a large river. Methodological approach. Archiv fùr Hydrobiologie, 107, 363–383.
 ##' @source Data from Richardot-Coulet, Chessel and Bournaud.

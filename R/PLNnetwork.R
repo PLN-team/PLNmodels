@@ -39,6 +39,7 @@
 ##' @rdname PLNnetwork
 ##' @examples
 ##' data(trichoptera)
+##' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ##' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 ##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset

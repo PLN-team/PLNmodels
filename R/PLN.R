@@ -31,7 +31,7 @@
 ##' @include PLNfit-class.R
 ##' @examples
 ##' data(trichoptera)
-##' trichoptera <- prepare_data(trichoptera)
+##' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ##' myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 ##' @seealso The class  \code{\link[=PLNfit]{PLNfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset model.weights terms

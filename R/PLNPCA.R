@@ -32,13 +32,8 @@
 ##' @rdname PLNPCA
 ##' @examples
 ##' data(trichoptera)
-##' TotalCount <- matrix(
-##' rowSums(trichoptera$Abundance),
-##'   nrow = nrow(trichoptera$Abundance),
-##'   ncol = ncol(trichoptera$Abundance)
-##' )
-##'
-##' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera, ranks = 1:6)
+##' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+##' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:6)
 ##' @seealso The classes \code{\link[=PLNPCAfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
