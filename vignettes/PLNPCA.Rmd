@@ -41,9 +41,10 @@ We illustrate our point with the trichoptera data set, a full description of whi
 
 ```{r data_load}
 data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ```
 
-The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$TotalCounts`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
+The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
 
 ### Mathematical background
 
@@ -93,7 +94,7 @@ We fit a collection of $q$ models as follows:
 
 ```{r simple PLNPCA}
 PCA_models <- PLNPCA(
-  Abundance ~ 1 + offset(log(TotalCounts)),
+  Abundance ~ 1 + offset(log(Offset)),
   data  = trichoptera, 
   ranks = 1:6
 )
@@ -196,7 +197,7 @@ In the case at hand, the covariates corresponds to the meteorological variables.
 ```{r cov}
 PCA_models_cov <- 
   PLNPCA(
-    Abundance ~ 1 + offset(log(TotalCounts)) + Temperature + Wind + Cloudiness,
+    Abundance ~ 1 + offset(log(Offset)) + Temperature + Wind + Cloudiness,
     data  = trichoptera,
     ranks = 1:6
   )

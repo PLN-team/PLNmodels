@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 ## Preliminaries
 
-This vignette describes the data set `trichoptera`, which is used in all examples, tests and other vignettes of the package **PLNmodels**. This data set regroups the main striking characteristics of ecological count data (encompassing tables of abundances, offsets and covariates). The low dimensional space of the data also ensures that it is well suited for illutrative purposes. 
+This vignette describes the data set `trichoptera`, which is used in all examples, tests and other vignettes of the package **PLNmodels**. This data set regroups the main striking characteristics of ecological count data (encompassing tables of abundances and covariates). The low dimensional space of the data also ensures that it is well suited for illutrative purposes. 
 
 The packages required to run the vignette are the following:
 
@@ -52,7 +52,13 @@ data(trichoptera)
 
 ### Formatting
 
-Data are stored in the `trichoptera` data frame which includes 49 rows (the observations - or trapping nights) and 9 columns. As can be seen, there are 2 multivariate columns (matrices of counts and offsets) and 7 univariate columns (vectors of covariates):
+Data are originaly stored in a list of two data frames for abundances and covariates. We first prepare the data (see the cooresponding vignette) for easy use in the multivariate framework of **PLNmodels**. Offsets are automatically computed:
+
+```{r prepare_data}
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+```
+
+Data are now stored in the `trichoptera` data frame which includes 49 rows (the observations - or trapping nights) and 9 columns. As can be seen, there are 2 multivariate columns (matrices of counts and offsets) and 7 univariate columns (vectors of covariates):
 
 ```{r data_str}
 str(trichoptera)
@@ -97,7 +103,7 @@ Offsets are denoted by $\mathbf{O}$ when the mathematical model in other vignett
 Additional information was collected during the sampling, which corresponds to external covariates the effect of which may or may not be taken into account in the model (depending on the question at play). In the trichoptera data set, those covariates correspond to meteorological factors plus a categorical variable indicating the family of the caughts specimens.
 
 ```{r covariates_trichoptera}
-select(trichoptera, -TotalCounts, -Abundance) %>% head() %>% knitr::kable()
+select(trichoptera, -Offset, -Abundance) %>% head() %>% knitr::kable()
 ```
 
 The design matrix arising from the covariates is denoted by $\mathbf{X}$ in our mathematical model and `X` within the `R` environment.
@@ -105,7 +111,7 @@ The design matrix arising from the covariates is denoted by $\mathbf{X}$ in our 
 A first glance at the pairs plot between the covariates shows no particular structure regarding the trichoptera groups.
 
 ```{r pairs, fig.dim = c(7, 7), cache = TRUE, fig.cap ="Pairs plot of the covariates in the trichoptera data set"}
-select(trichoptera, -TotalCounts, -Abundance) %>% 
+select(trichoptera, -Offset, -Abundance) %>% 
 ggpairs(columns = 1:6, mapping = aes(colour = Group))
 ```
 

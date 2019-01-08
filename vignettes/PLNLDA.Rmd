@@ -41,9 +41,10 @@ We illustrate our point with the trichoptera data set, a full description of whi
 
 ```{r data_load}
 data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ```
 
-The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$TotalCounts`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.) In the following, we're particularly interested in the `trichoptera$Group` **discrete** covariate which corresponds to disjoint time spans during which the catching took place. The correspondance between group label and time spans is:
+The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.) In the following, we're particularly interested in the `trichoptera$Group` **discrete** covariate which corresponds to disjoint time spans during which the catching took place. The correspondance between group label and time spans is:
 
 ```{r description, echo = FALSE}
 tibble(Label = 1:12, 
@@ -125,7 +126,7 @@ We start by adjusting the above model to the Trichoptera data set. We use `Group
 The model can be fitted with the function `PLNLDA` as follows:
 
 ```{r LDA-nocov}
-myLDA_nocov <- PLNLDA(Abundance ~ 0 + offset(log(TotalCounts)),
+myLDA_nocov <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
                       grouping = trichoptera$Group, 
                       data = trichoptera)
 ```
@@ -217,7 +218,7 @@ table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
 
 It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  :
 ```{r, warning=FALSE}
-myLDA_cov <- PLNLDA(Abundance ~ Wind + 0 + offset(log(TotalCounts)), 
+myLDA_cov <- PLNLDA(Abundance ~ Wind + 0 + offset(log(Offset)), 
                     grouping = trichoptera$Group, 
                     data = trichoptera)
 ```

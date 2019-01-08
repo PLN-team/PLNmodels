@@ -42,9 +42,10 @@ We illustrate our point with the trichoptera data set, a full description of whi
 
 ```{r data_load}
 data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ```
 
-The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$TotalCounts`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
+The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
 
 ### Mathematical background
 
@@ -86,7 +87,7 @@ In the package, the sparse PLN-network model is adjusted with the function `PLNn
 `PLNnetwork` finds an hopefully appropriate set of penalties on its own. This set can be controlled by the user, but use it with care and check details in `?PLNnetwork`.  The collection of models is fitted as follows:
 
 ```{r simple PLNnetwork}
-network_models <- PLNnetwork(Abundance ~ 1 + offset(log(TotalCounts)), data = trichoptera)
+network_models <- PLNnetwork(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 ```
 
 Note the use of the `formula` object to specify the model, similar to the one used in the function `PLN`.

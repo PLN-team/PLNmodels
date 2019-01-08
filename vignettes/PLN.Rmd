@@ -43,9 +43,10 @@ We illustrate our point with the trichoptera data set, a full description of whi
 
 ```{r data_load}
 data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ```
 
-The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$TotalCounts`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
+The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
 
 ### Mathematical background
 
@@ -194,7 +195,7 @@ For ecological count data, it is generally a good advice to include the sampling
 
 ```{r PLN offset}
 myPLN_offsets <- 
-  PLN(Abundance ~ 1 + offset(log(TotalCounts)), 
+  PLN(Abundance ~ 1 + offset(log(Offset)), 
       data = trichoptera, control = list(trace = 0))
 ```
 
@@ -209,7 +210,7 @@ rbind(
 
 Let us try to correct for the wind effect in our model:
 ```{r PLN wind}
-myPLN_wind <- PLN(Abundance ~ 1 + Wind + offset(log(TotalCounts)), data = trichoptera)
+myPLN_wind <- PLN(Abundance ~ 1 + Wind + offset(log(Offset)), data = trichoptera)
 ```
 
 When we compare the models, the gain is clear in terms of log-likelihood. However, the BIC choses not to include this variable:
@@ -228,17 +229,17 @@ It is possible to change a bit the parametrization used for modelling the residu
 ```{r covariances models}
 myPLN_full <- 
   PLN(
-    Abundance ~ 1 + offset(log(TotalCounts)),
+    Abundance ~ 1 + offset(log(Offset)),
     data = trichoptera, control = list(covariance = "full", trace = 0)
   )
 myPLN_diagonal <- 
   PLN(
-    Abundance ~ 1 + offset(log(TotalCounts)),
+    Abundance ~ 1 + offset(log(Offset)),
     data = trichoptera, control = list(covariance = "diagonal", trace = 0)
   )
 myPLN_spherical <- 
   PLN(
-    Abundance ~ 1 + offset(log(TotalCounts)),
+    Abundance ~ 1 + offset(log(Offset)),
     data = trichoptera, control = list(covariance = "spherical", trace = 0)
   )
 ```
@@ -260,7 +261,7 @@ A final model that we can try is the diagonal one with the wind as a covariate, 
 ```{r final}
 myPLN_final <- 
   PLN(
-    Abundance ~ 1 + Wind + offset(log(TotalCounts)),
+    Abundance ~ 1 + Wind + offset(log(Offset)),
     data    = trichoptera, control = list(covariance = "diagonal", trace = 0)
   )
 rbind(
