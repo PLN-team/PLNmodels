@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.4001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.4002</span>
       </span>
     </div>
 
@@ -210,13 +210,7 @@ a collection of models with class <code><a href='PLNPCAfit.html'>PLPCAfit</a></c
   <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>ncol</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>)
 )
 
-<span class='no'>myPCA</span> <span class='kw'>&lt;-</span> <span class='fu'>PLNPCA</span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span> + <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/offset'>offset</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>log</a></span>(<span class='no'>TotalCount</span>)), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>, <span class='kw'>ranks</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>6</span>)</div><div class='output co'>#&gt; 
-#&gt;  Initialization...
-#&gt; 
-#&gt;  Adjusting 6 PLN models for PCA analysis.
-#&gt; 	 Rank approximation = 1 	 Rank approximation = 2 	 Rank approximation = 3 	 Rank approximation = 4 	 Rank approximation = 5 	 Rank approximation = 6 
-#&gt;  Post-treatments
-#&gt;  DONE!</div></pre>
+<span class='no'>myPCA</span> <span class='kw'>&lt;-</span> <span class='fu'>PLNPCA</span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span> + <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/offset'>offset</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>log</a></span>(<span class='no'>TotalCount</span>)), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>, <span class='kw'>ranks</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>6</span>)</div><div class='output co'>#&gt; <span class='error'>Error in model.frame.default(formula = Abundance ~ 1 + offset(log(TotalCount)),     data = trichoptera): invalid type (list) for variable 'Abundance'</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

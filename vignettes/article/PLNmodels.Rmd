@@ -32,6 +32,7 @@ bibliography: PLNreferences.bib
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
+  eval = FALSE, ## Avoid pkgdown
   echo = TRUE,
   rows.print = 5,
   layout = "l-page",

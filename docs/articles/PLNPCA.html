@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.4001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.4002</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
       <h1>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-01-07</h4>
+            <h4 class="date">2019-01-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNPCA.Rmd"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -120,8 +120,9 @@
 <h3 class="hasAnchor">
 <a href="#data-set" class="anchor"></a>Data set</h3>
 <p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a></code></pre></div>
-<p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$TotalCounts</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">trichoptera &lt;-<span class="st"> </span><span class="kw"><a href="../reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance, trichoptera<span class="op">$</span>Covariate)</a></code></pre></div>
+<p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
 </div>
 <div id="mathematical-background" class="section level3">
 <h3 class="hasAnchor">
@@ -167,7 +168,7 @@
 <a href="#adjusting-a-collection-of-fits" class="anchor"></a>Adjusting a collection of fits</h4>
 <p>We fit a collection of <span class="math inline">\(q\)</span> models as follows:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">PCA_models &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNPCA.html">PLNPCA</a></span>(</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">  Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)),</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">  Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
 <a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="dt">data  =</span> trichoptera, </a>
 <a class="sourceLine" id="cb3-4" data-line-number="4">  <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">6</span></a>
 <a class="sourceLine" id="cb3-5" data-line-number="5">)</a></code></pre></div>
@@ -246,18 +247,18 @@
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">102</td>
-<td align="right">-1000.5382</td>
-<td align="right">-1199.021</td>
-<td align="right">-1324.778</td>
-<td align="right">0.8946993</td>
+<td align="right">-1000.4191</td>
+<td align="right">-1198.902</td>
+<td align="right">-1325.409</td>
+<td align="right">0.8945488</td>
 </tr>
 <tr class="even">
 <td align="right">6</td>
 <td align="right">119</td>
-<td align="right">-996.2053</td>
-<td align="right">-1227.769</td>
-<td align="right">-1416.620</td>
-<td align="right">0.9050106</td>
+<td align="right">-993.4222</td>
+<td align="right">-1224.986</td>
+<td align="right">-1418.916</td>
+<td align="right">0.9045287</td>
 </tr>
 </tbody>
 </table>
@@ -303,14 +304,14 @@
 <tr class="odd">
 <td align="right">5</td>
 <td align="left">102</td>
-<td align="left">2393</td>
+<td align="left">2784</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="even">
 <td align="right">6</td>
 <td align="left">119</td>
-<td align="left">3831</td>
+<td align="left">3875</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
@@ -486,7 +487,7 @@
 <p>In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the temperature, the wind and the cloudiness. This can be done thanks to the model formula:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">PCA_models_cov &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb19-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLNPCA.html">PLNPCA</a></span>(</a>
-<a class="sourceLine" id="cb19-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)) <span class="op">+</span><span class="st"> </span>Temperature <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Cloudiness,</a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)) <span class="op">+</span><span class="st"> </span>Temperature <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Cloudiness,</a>
 <a class="sourceLine" id="cb19-4" data-line-number="4">    <span class="dt">data  =</span> trichoptera,</a>
 <a class="sourceLine" id="cb19-5" data-line-number="5">    <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">6</span></a>
 <a class="sourceLine" id="cb19-6" data-line-number="6">  )</a></code></pre></div>

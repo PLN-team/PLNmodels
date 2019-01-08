@@ -43,6 +43,7 @@ The parameter \code{control} is a list controlling the optimization with the fol
 }
 \examples{
 data(trichoptera)
+trichoptera <- prepare_data(trichoptera)
 myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 }
 \seealso{

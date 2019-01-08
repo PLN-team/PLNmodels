@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.4001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.4002</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
       <h1>Analyzing multivariate count data with the Poisson log-normal model</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-01-07</h4>
+            <h4 class="date">2019-01-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLN.Rmd"><code>vignettes/PLN.Rmd</code></a></small>
       <div class="hidden name"><code>PLN.Rmd</code></div>
@@ -122,8 +122,9 @@
 <h3 class="hasAnchor">
 <a href="#data-set" class="anchor"></a>Data set</h3>
 <p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a></code></pre></div>
-<p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$TotalCounts</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">trichoptera &lt;-<span class="st"> </span><span class="kw"><a href="../reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance, trichoptera<span class="op">$</span>Covariate)</a></code></pre></div>
+<p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
 </div>
 <div id="mathematical-background" class="section level3">
 <h3 class="hasAnchor">
@@ -187,7 +188,7 @@
 <pre><code>## A multivariate Poisson Lognormal fit with full covariance model.
 ## ==================================================================
 ##  degrees_freedom    loglik       BIC       ICL R_squared
-##              170 -1129.478 -1460.283 -2304.886 0.9898259
+##              170 -1129.517 -1460.322 -2303.623 0.9898065
 ## ==================================================================
 ## * Useful fields 
 ##     $model_par, $latent, $var_par, $optim_par 
@@ -201,10 +202,10 @@
 <a href="#field-access" class="anchor"></a>Field access</h4>
 <p>Accessing public fields of a <code>PLNfit</code> object can be done just like with a traditional list, <em>e.g.</em>,</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(myPLN<span class="op">$</span>loglik, myPLN<span class="op">$</span>BIC, myPLN<span class="op">$</span>ICL, myPLN<span class="op">$</span>R_squared)</a></code></pre></div>
-<pre><code>## [1] -1129.4780635 -1460.2827888 -2304.8859299     0.9898259</code></pre>
+<pre><code>## [1] -1129.5167841 -1460.3215094 -2303.6227068     0.9898065</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">myPLN<span class="op">$</span>criteria</a></code></pre></div>
 <pre><code>##   degrees_freedom    loglik       BIC       ICL R_squared
-## 1             170 -1129.478 -1460.283 -2304.886 0.9898259</code></pre>
+## 1             170 -1129.517 -1460.322 -2303.623 0.9898065</code></pre>
 </div>
 <div id="glm-like-interface" class="section level4">
 <h4 class="hasAnchor">
@@ -232,7 +233,7 @@ fitted value vs. observation
 <a class="sourceLine" id="cb12-4" data-line-number="4"> ) <span class="op">%&gt;%</span><span class="st"> </span>rmarkdown<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</a></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Che"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Hyc"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Hym"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Hys"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Psy"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Aga"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Glo"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["Ath"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["Cea"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["Ced"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["Set"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["All"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["Han"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["Hfo"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["Hsp"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["Hve"],"name":[16],"type":["dbl"],"align":["right"]},{"label":["Sta"],"name":[17],"type":["dbl"],"align":["right"]}],"data":[{"1":"-3.1836573","2":"-4.063570","3":"1.0438902","4":"-2.3213783","5":"3.26258157","6":"-0.38563751","7":"-2.2353079","8":"-1.6815676","9":"-3.3794900","10":"0.34430886","11":"-0.65290753","12":"-0.8627910","13":"-1.32637745","14":"-2.18373366","15":"-0.31471032","16":"-2.7980229","17":"0.94359111","_rn_":"effect"},{"1":"0.5774098","2":"0.577224","3":"0.0739237","4":"0.4082535","5":"0.01292284","6":"0.09580974","7":"0.2672541","8":"0.2672592","9":"0.3779266","10":"0.09284646","11":"0.07273173","12":"0.1386794","13":"0.07229377","14":"0.08661712","15":"0.04610948","16":"0.3333387","17":"0.05862066","_rn_":"stderr"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[5],"max":[5]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Che"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Hyc"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Hym"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Hys"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Psy"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Aga"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Glo"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["Ath"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["Cea"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["Ced"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["Set"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["All"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["Han"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["Hfo"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["Hsp"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["Hve"],"name":[16],"type":["dbl"],"align":["right"]},{"label":["Sta"],"name":[17],"type":["dbl"],"align":["right"]}],"data":[{"1":"-3.1660317","2":"-4.0499390","3":"1.0420367","4":"-2.3277592","5":"3.25421347","6":"-0.3909625","7":"-2.2366602","8":"-1.6839327","9":"-3.381363","10":"0.34190160","11":"-0.64559287","12":"-0.8682693","13":"-1.29899358","14":"-2.18557392","15":"-0.28337325","16":"-2.8049135","17":"0.94218424","_rn_":"effect"},{"1":"0.5771906","2":"0.5772221","3":"0.0739078","4":"0.4083038","5":"0.01292286","6":"0.0957752","7":"0.2672509","8":"0.2672583","9":"0.377900","10":"0.09284655","11":"0.07271413","12":"0.1386775","13":"0.07233875","14":"0.08664385","15":"0.04608915","16":"0.3333437","17":"0.05861891","_rn_":"stderr"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[5],"max":[5]},"pages":{}}}
   </script>
 </div>
 <p>The residual covariance matrix better displays as an image matrix:</p>
@@ -279,7 +280,7 @@ fitted value vs. observation
 <a href="#accounting-for-covariates-and-offsets" class="anchor"></a>Accounting for covariates and offsets</h3>
 <p>For ecological count data, it is generally a good advice to include the sampling effort via an offset term whenever available, otherwise samples are not necessarily comparable:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">myPLN_offsets &lt;-<span class="st"> </span></a>
-<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)), </a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)), </a>
 <a class="sourceLine" id="cb15-3" data-line-number="3">      <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">trace =</span> <span class="dv">0</span>))</a></code></pre></div>
 <p>Note that we use the function <code>offset</code> with a log-transform of the total counts since it acts in the latent layer of the model. Obviously the model with offsets is better since the log-likelihood is higher with the same number of parameters<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(</a>
@@ -297,22 +298,22 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1129.478</td>
-<td align="right">-1460.283</td>
-<td align="right">-2304.886</td>
-<td align="right">0.9898259</td>
+<td align="right">-1129.517</td>
+<td align="right">-1460.322</td>
+<td align="right">-2303.623</td>
+<td align="right">0.9898065</td>
 </tr>
 <tr class="even">
 <td align="right">170</td>
-<td align="right">-1051.510</td>
-<td align="right">-1382.315</td>
-<td align="right">-2206.456</td>
-<td align="right">0.9221898</td>
+<td align="right">-1051.523</td>
+<td align="right">-1382.327</td>
+<td align="right">-2205.476</td>
+<td align="right">0.9221581</td>
 </tr>
 </tbody>
 </table>
 <p>Let us try to correct for the wind effect in our model:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">myPLN_wind &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)), <span class="dt">data =</span> trichoptera)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">myPLN_wind &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)), <span class="dt">data =</span> trichoptera)</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ##  Adjusting a PLN model with full covariance model
@@ -334,17 +335,17 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1051.510</td>
-<td align="right">-1382.315</td>
-<td align="right">-2206.456</td>
-<td align="right">0.9221898</td>
+<td align="right">-1051.523</td>
+<td align="right">-1382.327</td>
+<td align="right">-2205.476</td>
+<td align="right">0.9221581</td>
 </tr>
 <tr class="even">
 <td align="right">187</td>
-<td align="right">-1027.806</td>
-<td align="right">-1391.691</td>
-<td align="right">-2083.927</td>
-<td align="right">0.8902650</td>
+<td align="right">-1027.804</td>
+<td align="right">-1391.690</td>
+<td align="right">-2077.693</td>
+<td align="right">0.8900134</td>
 </tr>
 </tbody>
 </table>
@@ -355,17 +356,17 @@ fitted value vs. observation
 <p>It is possible to change a bit the parametrization used for modelling the residual covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence <span class="math inline">\(p \times (p+1)/2\)</span> parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix <span class="math inline">\(\boldsymbol\Sigma_D\)</span> with only <span class="math inline">\(p\)</span> parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix <span class="math inline">\(\boldsymbol\Sigma = \sigma \mathbf{I}_p\)</span>. This can be tuned in <code>PLN</code> with the <code>control</code> argument, a list controlling various aspects of the underlying optimization process:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">myPLN_full &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb20-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
-<a class="sourceLine" id="cb20-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)),</a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
 <a class="sourceLine" id="cb20-4" data-line-number="4">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"full"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb20-5" data-line-number="5">  )</a>
 <a class="sourceLine" id="cb20-6" data-line-number="6">myPLN_diagonal &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb20-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
-<a class="sourceLine" id="cb20-8" data-line-number="8">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)),</a>
+<a class="sourceLine" id="cb20-8" data-line-number="8">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
 <a class="sourceLine" id="cb20-9" data-line-number="9">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"diagonal"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb20-10" data-line-number="10">  )</a>
 <a class="sourceLine" id="cb20-11" data-line-number="11">myPLN_spherical &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb20-12" data-line-number="12"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
-<a class="sourceLine" id="cb20-13" data-line-number="13">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)),</a>
+<a class="sourceLine" id="cb20-13" data-line-number="13">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
 <a class="sourceLine" id="cb20-14" data-line-number="14">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"spherical"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb20-15" data-line-number="15">  )</a></code></pre></div>
 <p>It seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:</p>
@@ -389,18 +390,18 @@ fitted value vs. observation
 <tr class="odd">
 <td>full</td>
 <td align="right">170</td>
-<td align="right">-1051.510</td>
-<td align="right">-1382.315</td>
-<td align="right">-2206.456</td>
-<td align="right">0.9221898</td>
+<td align="right">-1051.523</td>
+<td align="right">-1382.327</td>
+<td align="right">-2205.476</td>
+<td align="right">0.9221581</td>
 </tr>
 <tr class="even">
 <td>diagonal</td>
 <td align="right">34</td>
-<td align="right">-1109.344</td>
-<td align="right">-1175.505</td>
-<td align="right">-2051.256</td>
-<td align="right">0.9166219</td>
+<td align="right">-1109.416</td>
+<td align="right">-1175.577</td>
+<td align="right">-2069.192</td>
+<td align="right">0.9172739</td>
 </tr>
 <tr class="odd">
 <td>spherical</td>
@@ -415,7 +416,7 @@ fitted value vs. observation
 <p>A final model that we can try is the diagonal one with the wind as a covariate, which gives a slight improvement.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">myPLN_final &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb22-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
-<a class="sourceLine" id="cb22-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(TotalCounts)),</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
 <a class="sourceLine" id="cb22-4" data-line-number="4">    <span class="dt">data    =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"diagonal"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb22-5" data-line-number="5">  )</a>
 <a class="sourceLine" id="cb22-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(</a>
@@ -434,24 +435,24 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">187</td>
-<td align="right">-1027.806</td>
-<td align="right">-1391.691</td>
-<td align="right">-2083.927</td>
-<td align="right">0.8902650</td>
+<td align="right">-1027.804</td>
+<td align="right">-1391.690</td>
+<td align="right">-2077.693</td>
+<td align="right">0.8900134</td>
 </tr>
 <tr class="even">
 <td align="right">34</td>
-<td align="right">-1109.344</td>
-<td align="right">-1175.505</td>
-<td align="right">-2051.256</td>
-<td align="right">0.9166219</td>
+<td align="right">-1109.416</td>
+<td align="right">-1175.577</td>
+<td align="right">-2069.192</td>
+<td align="right">0.9172739</td>
 </tr>
 <tr class="odd">
 <td align="right">51</td>
-<td align="right">-1072.810</td>
-<td align="right">-1172.052</td>
-<td align="right">-1752.859</td>
-<td align="right">0.8754378</td>
+<td align="right">-1072.762</td>
+<td align="right">-1172.003</td>
+<td align="right">-1754.451</td>
+<td align="right">0.8757984</td>
 </tr>
 </tbody>
 </table>
