@@ -4,10 +4,11 @@
 \name{trichoptera}
 \alias{trichoptera}
 \title{Trichoptera data set}
-\format{A data frame with 49 rows and 9 variables (8 vectors and 1 matrix):
+\format{A list with 2 two data frames:
 \describe{
-  \item{Abundance}{a 49 x 17 matrix of abundancies/counts (49 trapping nights and 17 trichoptera species)}
-  \item{TotalCounts}{a vector of total counts that can be used as a proxy for the sampling effort, and thus as an offsets term}
+  \code{Abundance}{a 49 x 17 matrix of abundancies/counts (49 trapping nights and 17 trichoptera species)}
+  \item{Covariate}{a 49 x 7 data frame of covariates:
+  \describe{
   \item{Temperature}{Evening Temperature in Celsius}
   \item{Wind}{Wind in m/s}
   \item{Pressure}{Pressure in mm Hg}
@@ -15,9 +16,11 @@
   \item{Cloudiness}{proportion of sky coverage at 9pm}
   \item{Precipitation}{Nighttime precipitation in mm}
   \item{Group}{a factor of 12 levels for the definition of the consecutive night groups}
+  }
+  }
 }
 
-This format is convenient for using formula in multivariate analysis (multiple outputs and inputs).
+In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use \code{\link[=prepare_data]{prepare_data}}.
 We only kept a subset of the original meteorological covariates for illustration purposes.}
 \source{
 Data from P. Usseglio-Polatera.
@@ -36,6 +39,7 @@ contiguous nights between summer 1959 and summer 1960.
 \examples{
 data(trichoptera)
 str(trichoptera)
+prepare_date(mollusk)
 ## also see the package vignettes
 
 }
