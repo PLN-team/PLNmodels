@@ -17,6 +17,8 @@ navbar:
       menu:
       - text: "The trichoptera data set"
         href: articles/Trichoptera.html
+      - text: "Data importation in PLNmodels"
+        href: articles/Import_data.html
       - text: "PLN: Multivariate Poisson regression"
         href: articles/PLN.html
       - text: "PLNPCA: Dimension Reduction"

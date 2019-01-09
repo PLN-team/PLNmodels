@@ -1,5 +1,5 @@
 ---
-title: "Description of the Trichoptera data set"
+title: "Data importation in PLNmodels"
 author: "PLN team"
 date: "`r Sys.Date()`"
 output:
