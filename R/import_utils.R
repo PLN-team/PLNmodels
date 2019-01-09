@@ -59,17 +59,20 @@ offset_gmpr <- function(counts) {
   }
   ## Geometric mean of pairwise ratio
   size_factor <- apply(mat_pr, 1, geom_mean)
-  if (any(size_factor == 0 || is.infinite(size_factor))) stop("Some sample(s) do not share any species with other samples, GMPR normalization failed.")
+  if (any(size_factor == 0 | !is.finite(size_factor))) stop("Some sample(s) do not share any species with other samples, GMPR normalization failed.")
   return(size_factor)
 }
 
 ## Relative Log Expression (RLE) normalization (as used in DESeq2)
 offset_rle <- function(counts, pseudocounts = 0) {
-  ## Add pseudo.counts and compute geometric mean for all otus
-  geom_means <- (counts + pseudocounts) %>% log() %>% colMeans(na.rm = TRUE) %>% exp
+  ## Add pseudo.counts
+  counts <- counts + pseudocounts
+  ## compute geometric mean for all otus
+  geom_means <- counts %>% log() %>% colMeans(na.rm = TRUE) %>% exp
   if (all(geom_means == 0)) stop("Sample do not share any common species, RLE normalization failed.")
   ## compute size factor as the median of all otus log-ratios in that sample
   size_factor <- apply(counts, 1, function(x) {median(x / geom_means, na.rm = TRUE)} )
+  if (any(is.infinite(size_factor))) warning("Because of high sparsity, some samples have infinite offset.")
   return(size_factor)
 }
 
@@ -143,11 +146,14 @@ offset_css <- function(counts, reference = median) {
 #' proper_data$Abundance
 #' proper_data$Offset
 prepare_data <- function(counts, covariates, offset = "TSS", ...) {
+  ## Convert counts and covariates to expected format
+  counts     <- data.matrix(counts)
+  covariates <- as.data.frame(covariates)
   ## sanitize abundance matrix and covariates data.frame
   common <- common_samples(counts, covariates)
   samples <- common$common_samples
   if (common$transpose_counts) counts <- t(counts)
-  counts     <- counts[samples, ]
+  counts <- counts[samples, ]
   ## Replace NA with 0s
   if (any(is.na(counts))) {
     counts[is.na(counts)] <- 0
@@ -162,16 +168,17 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
     samples <- samples[-empty_samples]
     counts <- counts[samples, ,drop = FALSE]
   }
-  covariates <- covariates[samples, ] %>% as.data.frame
+  covariates <- covariates[samples, ]
   if (is.null(names(covariates))) names(covariates) <- paste0("Variable", seq_along(covariates))
   ## compute offset
+  counts
   offset     <- compute_offset(counts, offset, ...)
   ## prepare data for PLN
   result <- data.frame(Abundance = NA, ## placeholder for Abundance, to avoid using I() and inheriting "AsIs" class
                        covariates,
                        Offset    = NA ## placeholder for Offset, to avoid using I() and inheriting "AsIs" class
                        )
-  result$Abundance <- counts %>% as("matrix")
+  result$Abundance <- counts
   result$Offset <- offset
   return(result)
 }
@@ -207,6 +214,8 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
                             "CSS"  = offset_css,
                             "none" = offset_none
   )
+  ## Ensure that counts is a matrix
+  counts <- counts %>% data.matrix()
   ## Compute offset (with optional parameters)
   offset_function(counts, ...)
 }

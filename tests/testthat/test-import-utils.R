@@ -120,6 +120,17 @@ test_that("compute_offset provides correct answers for identical samples", {
   expect_null(compute_offset(counts, "none"))
 })
 
+test_that("offset_rle provides correct answers when adding pseudocounts", {
+  sizes <- c(1, 2)
+  counts <- sizes %o% rep(1, 10)
+  geom_mean_size <- exp(mean(log(sizes+1)))
+  ## External consistency
+  expect_equal(compute_offset(counts, "RLE", pseudocount = 1),  (sizes+1) / geom_mean_size)
+  ## Internal consistency
+  expect_equal(compute_offset(counts, "RLE", pseudocount = 1),
+               compute_offset(counts + 1, "RLE"))
+})
+
 ## low or no redundancy across samples
 test_that("offset_css throws a warning for nearly samples with limited inner variations", {
   sizes <- seq(from = 0.8, to = 1.2, by = 0.1)
@@ -128,7 +139,7 @@ test_that("offset_css throws a warning for nearly samples with limited inner var
                  "No instability detected in quantile distribution across samples, falling back to scaled TSS normalization.")
 })
 
-test_that("offset_css throws a warning has less than two positive counts", {
+test_that("offset_css throws a warning when a sample has less than two positive counts", {
   #      [,1] [,2] [,3]
   # [1,]    1    1    0
   # [2,]    0    0    1
@@ -137,6 +148,18 @@ test_that("offset_css throws a warning has less than two positive counts", {
                    nrow = 2, byrow = TRUE)
   expect_warning(compute_offset(counts, "CSS"),
                  "Some samples only have 1 positive values. Can't compute quantiles and fall back to TSS normalization")
+})
+
+test_that("offset_rle throws a warning when data is too sparse but samples share a common species", {
+  ## One common species, 4 specific species
+  # [,1] [,2] [,3] [,4] [,5]
+  # [1,]    1    1    0    1    0
+  # [2,]    1    0    1    0    1
+  counts <- matrix(c(1, 1, 0, 1, 0,
+                     1, 0, 1, 0, 1),
+                   nrow = 2, byrow = TRUE)
+  expect_warning(compute_offset(counts, "RLE"),
+                 "Because of high sparsity, some samples have infinite offset.")
 })
 
 test_that("offset_rle fails when no species is shared across samples", {
@@ -194,35 +217,33 @@ test_that("prepare_data succeeds on simple data", {
 
 ## Test prepare_data_* functions ------------------------------------------------------------------------
 
-if (require(biomformat)) {
-  test_that("prepare_data_from_biom fails when covariates data.frame is missing", {
-    biom <- make_biom(data = t(counts), sample_metadata = NULL)
-    expect_error(prepare_data_from_biom(biom, offset = "none"))
-  })
 
-  test_that("prepare_data_from_biom succeeds on proper biom objects (but converts all columns to character...)", {
-    biom <- make_biom(data = t(counts), sample_metadata = lapply(covariates, as.character) %>% as.data.frame)
-    result_biom <- result
-    result_biom[-1] <- lapply(result_biom[-1], as.character)
-    rownames(result_biom) <- as.character(rownames(result_biom))
-    expect_equal(prepare_data_from_biom(biom, offset = "none"),
-                 result_biom)
-  })
-}
+test_that("prepare_data_from_biom fails when covariates data.frame is missing", {
+  biom <- biomformat::make_biom(data = t(counts), sample_metadata = NULL)
+  expect_error(prepare_data_from_biom(biom, offset = "none"))
+})
 
-if (require(phyloseq)) {
-  ## massage rownames to fit phyloseq sample naming conventions
-  rownames(counts) <- rownames(covariates) <- paste0("Sample", 1:nrow(covariates))
+test_that("prepare_data_from_biom succeeds on proper biom objects (but converts all columns to character...)", {
+  biom <- biomformat::make_biom(data = t(counts),
+                               sample_metadata = lapply(covariates, as.character) %>% as.data.frame)
+  result_biom <- result
+  result_biom[-1] <- lapply(result_biom[-1], as.character)
+  rownames(result_biom) <- as.character(rownames(result_biom))
+  expect_equal(prepare_data_from_biom(biom, offset = "none"),
+               result_biom)
+})
 
-  test_that("prepare_data_from_phyloseq fails when covariate data.frame is missing", {
-      physeq <- phyloseq(otu_table(counts, taxa_are_rows = FALSE))
-    expect_error(prepare_data_from_phyloseq(physeq, offset = "none"))
-  })
+## massage rownames to fit phyloseq sample naming conventions
+rownames(counts) <- rownames(covariates) <- paste0("Sample", 1:nrow(covariates))
 
-  test_that("prepare_data_from_phyloseq succeeds on proper phyloseq class objects", {
-    physeq <- phyloseq(otu_table(counts, taxa_are_rows = FALSE),
-                       sample_data(covariates))
-    result_physeq <- result; rownames(result_physeq$Abundance) <- rownames(result_physeq) <- paste0("Sample", 1:nrow(covariates))
-    expect_equal(prepare_data_from_phyloseq(physeq, offset = "none"), result_physeq)
-  })
-}
+test_that("prepare_data_from_phyloseq fails when covariate data.frame is missing", {
+  physeq <- phyloseq::phyloseq(otu_table(counts, taxa_are_rows = FALSE))
+  expect_error(prepare_data_from_phyloseq(physeq, offset = "none"))
+})
+
+test_that("prepare_data_from_phyloseq succeeds on proper phyloseq class objects", {
+  physeq <- phyloseq::phyloseq(otu_table(counts, taxa_are_rows = FALSE),
+                     sample_data(covariates))
+  result_physeq <- result; rownames(result_physeq$Abundance) <- rownames(result_physeq) <- paste0("Sample", 1:nrow(covariates))
+  expect_equal(prepare_data_from_phyloseq(physeq, offset = "none"), result_physeq)
+})
