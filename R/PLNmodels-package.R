@@ -36,7 +36,6 @@
 ##'
 ##' @import methods R6 parallel Matrix
 ##' @importFrom Rcpp sourceCpp
-##' @import RcppArmadillo
 ##' @import dplyr
 ##' @importFrom tidyr gather
 ##' @import ggplot2
