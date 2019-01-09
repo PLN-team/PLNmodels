@@ -32,8 +32,8 @@ Imports:
   gridExtra,
   dplyr,
   tidyr,
-  reshape2,
   ggplot2,
+  magrittr,
   Matrix,
   parallel,
   R6,
@@ -41,11 +41,8 @@ Imports:
   stats,
   glassoFast,
   Rcpp,
-  RcppArmadillo,
   corrplot,
   MASS,
-  mclust,
-  magrittr,
   curl (>= 1.0)
 Suggests: 
     knitr,
