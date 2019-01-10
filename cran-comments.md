@@ -1,3 +1,9 @@
+## System Requirements
+
+A NLOpt system version is needed, via 
+- sudo apt-get install libnlopt-dev (deb)
+- brew install (homebrew)
+
 ## Test environments
 
 * local ubuntu 18.04 install, R 3.5.2
@@ -9,10 +15,10 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 3 note
+0 errors | 0 warnings | 2 note
 
 * This is a new release.
 * Installed size is 11.6Mb
     - doc 2.1Mb (vignettes)
     - libs 8.6Mb (RcppArmadillo package)
-* Examples with CPU or elapsed time > 5s: PLNPCA 5.237 0.02 0.645
+
