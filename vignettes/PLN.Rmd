@@ -59,7 +59,52 @@ The multivariate Poisson lognormal model (in short PLN, see @AiH89) relates some
   \end{array}
 \end{equation}
 
-The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying residual structure of dependence between the $p$ variables. 
+The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying residual structure of dependence between the $p$ variables.  The following figure provides insights about the role played by the different layers
+
+```{r geometricalInsight, echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "PLN: geometrical view", fig.width=7, fig.height=7, fig.align='center'}
+library(grid)
+library(gridExtra)
+
+set.seed(20171110)
+x <- rnorm(100)
+y <- rnorm(100)
+b <- data.frame(x = x + y, y = y) / 1
+mu <- 0
+##
+data.perfect <- as.data.frame((b + matrix(rep(mu, each = length(x)), ncol = 2)))
+p.latent <- ggplot(data.perfect, aes(x, y)) + geom_point() + ggtitle(expression(Latent~Space~(Z)))
+.rpois <- function(lambda) {
+  unlist(lapply(exp(lambda), function(x) {rpois(1, x)}))
+}
+observation <- as.data.frame(lapply(data.perfect, .rpois))
+mapped.parameter <- as.data.frame(lapply(data.perfect, exp))
+## segment between mapped and observed data
+segment.data <- cbind(mapped.parameter, observation)
+names(segment.data) <- c("x", "y", "xend", "yend")
+## Mapped parameters
+p.mapped <- ggplot(mapped.parameter, aes(x, y)) + geom_point(col = "red") + ggtitle(expression(Observation~Space~(exp(Z))))
+## Observations only
+obs <- group_by(observation, x, y)
+obs <- dplyr::summarize(obs, count = n())
+p.observation.only <- ggplot(obs, aes(x, y)) +
+  geom_point(aes(size = count)) +
+  ggtitle(Observation~Space~(Y)~+'noise') +
+  theme(legend.position = c(.95, .95), legend.justification = c(1, 1),
+        legend.background = element_rect(color = "transparent"),
+        legend.box.background = element_blank())
+## Observations and latent parameters
+p.observation.mixed <- p.observation.only +
+  geom_point(data = mapped.parameter, color = "red", alpha = 0.5) +
+  geom_segment(data = segment.data, aes(xend = xend, yend = yend), color = "black", alpha = 0.2) +
+  ggtitle(Observation~Space~(Y==P(exp(Z)))~+'noise')
+
+grid.arrange(p.latent + labs(x = "species 1", y = "species 2"),
+             p.mapped  + labs(x = "species 1", y = "species 2"),
+             p.observation.mixed + labs(x = "species 1", y = "species 2"),
+             p.observation.only + labs(x = "species 1", y = "species 2"),
+             ncol = 2)
+```
+
 
 #### Covariates and offsets
 
