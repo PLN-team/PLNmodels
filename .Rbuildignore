@@ -15,3 +15,6 @@
 ^appveyor\.yml$
 ^vignettes/*_cache/
 ^vignettes/cache/
+^inst/case_studies/
+^inst/sticker/
+^inst/test/
