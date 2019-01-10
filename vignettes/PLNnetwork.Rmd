@@ -19,8 +19,7 @@ knitr::opts_chunk$set(
   echo = TRUE,
   rows.print = 5,
   message = FALSE, 
-  warning = FALSE,
-  cache = TRUE)
+  warning = FALSE)
 ```
 
 ## Preliminaries
