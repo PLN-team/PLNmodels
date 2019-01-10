@@ -8,6 +8,10 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 2 note
 
 * This is a new release.
+* Installed size is 11.6Mb
+    - doc 2.1Mb (vignettes)
+    - libs 8.6Mb (RcppArmadillo package)
+
