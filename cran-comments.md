@@ -1,8 +1,10 @@
+
 ## System Requirements
 
 A NLOpt system version is needed, via 
 - sudo apt-get install libnlopt-dev (deb)
-- brew install (homebrew)
+- brew install nlopt (homebrew)
+- automatically downloaded for Windows
 
 ## Test environments
 
