@@ -15,4 +15,5 @@
 * Installed size is 11.6Mb
     - doc 2.1Mb (vignettes)
     - libs 8.6Mb (RcppArmadillo package)
+* Examples with CPU or elapsed time > 5s: PLNPCA 5.237   0.02   0.645
 
