@@ -1,7 +1,8 @@
 ## Test environments
 
 * local ubuntu 18.04 install, R 3.5.2
-* ubuntu 16.04 (on travis-ci), R 3.5.2, devel and release
+* ubuntu 14.04 (on travis-ci), R 3.5.2
+* ubuntu 14.04 (on travis-ci), R devel
 * Mac OS X (on travis-ci), R 3.5.2
 * windows (on appveyor), R 3.5.2
 * win-builder (devel and release)
