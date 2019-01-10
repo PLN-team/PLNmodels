@@ -50,7 +50,7 @@ link](https://ci.appveyor.com/project/jchiquet/plnmodels/build/artifacts)
 ``` r
 ## w/o vignettes
 devtools::install_github("jchiquet/PLNmodels")
-devtools::install_github("jchiquet/PLNmodels", build_vignettes = TRUE)
+devtools::install_github("jchiquet/PLNmodels", build_opts = c("--no-resave-data"))
 ```
 
 ## Usage and main fitting functions
@@ -75,7 +75,7 @@ page. There is a dedicated vignettes for each model in the package (See
 myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 ```
 
-### Rank Contraint Poisson lognormal for Poisson Principal Component Analysis (ala PLNPCA)
+### Rank Contraint Poisson lognormal for Poisson Principal Component Analysis (aka PLNPCA)
 
 ``` r
 myPCA <- PLNPCA(Abundance ~ 1, data = trichoptera, ranks = 1:8)
