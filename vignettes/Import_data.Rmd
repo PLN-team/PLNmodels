@@ -157,6 +157,22 @@ str(prepare_data_from_phyloseq(GlobalPatterns, offset = "TSS"))
 
 ## Mathematical details about the offsets
 
+We detail here the mathematical background behind the various offsets and the way they are computed. Note $\mathbf{C} = (c_{ij})$ the counts matrix where $c_{ij}$ is the count of species $j$ in sample $i$. Assume that there are $J$ species in total. The offset of sample $i$ is noted $O_i$ and computed in the following way. 
+
+### Total Sum Scaling
+
+Offsets are simply the total counts of a sample:
+$$
+O_i = \sum_{j=1}^J c_{ij}
+$$
+
+### Cumulative Sum Scaling 
+
+Positive counts are used to compute sample-specific quantiles $q_i^l$ and cumulative sums $s_i^l$ defined as
+$$
+q_i^l = \min \{q \text{ such that } \sum_j 1_{c_{ij} \leq q} \geq l \sum_j 1_{c_{ij} > 0} \} \qquad s_i^l = \sum_{j: c_{ij} \leq q_i^l} c_{ij}
+$$
+
 [^1]: although a `data.frame` is technically a `list`
 
 ## References
