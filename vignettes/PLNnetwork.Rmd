@@ -19,8 +19,7 @@ knitr::opts_chunk$set(
   echo = TRUE,
   rows.print = 5,
   message = FALSE, 
-  warning = FALSE,
-  cache = TRUE)
+  warning = FALSE)
 ```
 
 ## Preliminaries
@@ -38,7 +37,7 @@ library(PLNmodels)
 
 ### Data set
 
-We illustrate our point with the trichoptera data set, a full description of which can be found in [the corresponding vignette](Trichoptera.html).
+We illustrate our point with the trichoptera data set, a full description of which can be found in [the corresponding vignette](Trichoptera.html). Data preparation is also detailed in [the specific vignette](Import_data.html).
 
 ```{r data_load}
 data(trichoptera)

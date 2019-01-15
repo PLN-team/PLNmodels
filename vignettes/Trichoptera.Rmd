@@ -110,7 +110,7 @@ The design matrix arising from the covariates is denoted by $\mathbf{X}$ in our 
 
 A first glance at the pairs plot between the covariates shows no particular structure regarding the trichoptera groups.
 
-```{r pairs, fig.dim = c(7, 7), cache = TRUE, fig.cap ="Pairs plot of the covariates in the trichoptera data set"}
+```{r pairs, fig.dim = c(7, 7), fig.cap ="Pairs plot of the covariates in the trichoptera data set"}
 select(trichoptera, -Offset, -Abundance) %>% 
 ggpairs(columns = 1:6, mapping = aes(colour = Group))
 ```

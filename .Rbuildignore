@@ -1,3 +1,5 @@
+^CRAN-RELEASE$
+^cran-comments\.md$
 ^codecov\.yml$
 ^\.travis\.yml$
 ^_pkgdown\.yml$
@@ -15,3 +17,6 @@
 ^appveyor\.yml$
 ^vignettes/*_cache/
 ^vignettes/cache/
+^inst/case_studies/
+^inst/sticker/
+^inst/test/

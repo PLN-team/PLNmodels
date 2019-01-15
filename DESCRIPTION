@@ -1,7 +1,7 @@
 Package: PLNmodels
 Type: Package
 Title: Poisson Lognormal Models
-Version: 0.6.4002
+Version: 0.7
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -13,37 +13,37 @@ Maintainer: Julien Chiquet <julien.chiquet@inra.fr>
 Description: The Poisson-lognormal model and variants can be used for 
     a variety of multivariate problems when count data are at play (including 
     PCA for count data, discriminant analysis and network inference). This package 
-    implements efficients variational algorithms to fit such models accompanied with a set of
-    functions for vizualisation and diagnostic.
-URL: https://github.com/jchiquet/PLNmodels (dev version)
+    implements efficien tvariational algorithms to fit such models accompanied with a set of
+    functions for visualization and diagnostic.
+URL: https://jchiquet.github.io/PLNmodels/, https://github.com/jchiquet/PLNmodels
 BugReports: https://github.com/jchiquet/PLNmodels/issues
 License: GPL (>= 3)
-SystemRequirements: libnlopt: libnlopt-dev (deb) or NLopt-devel (rpm).
+SystemRequirements: nlopt: libnlopt-dev (deb), NLopt-devel (rpm), nlopt (homebrew).
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 Depends: R (>= 3.4)
 biocViews:
 Imports: 
-  biomformat,
-  phyloseq,
+  methods,
+  stats,
+  MASS,
+  parallel,
+  R6,
+  glassoFast,
+  Matrix,
+  Rcpp,
+  curl (>= 1.0),
   igraph,
   grid,
   gridExtra,
   dplyr,
   tidyr,
   ggplot2,
-  magrittr,
-  Matrix,
-  parallel,
-  R6,
-  methods,
-  stats,
-  glassoFast,
-  Rcpp,
   corrplot,
-  MASS,
-  curl (>= 1.0)
+  magrittr,
+  biomformat,
+  phyloseq,
 Suggests: 
     knitr,
     rmarkdown,

@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.4002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7</span>
       </span>
     </div>
 
@@ -64,6 +64,9 @@
       <a href="articles/Trichoptera.html">The trichoptera data set</a>
     </li>
     <li>
+      <a href="articles/Import_data.html">Data importation in PLNmodels</a>
+    </li>
+    <li>
       <a href="articles/PLN.html">PLN: Multivariate Poisson regression</a>
     </li>
     <li>
@@ -76,6 +79,9 @@
       <a href="articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -128,7 +134,7 @@
 <a href="#r-package-installation" class="anchor"></a>R Package installation</h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">## w/o vignettes</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb4-3" data-line-number="3">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>, <span class="dt">build_opts =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"--no-resave-data"</span>))</a></code></pre></div>
 </div>
 </div>
 <div id="usage-and-main-fitting-functions" class="section level2">
