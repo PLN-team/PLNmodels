@@ -13,7 +13,7 @@ PKG_CSW_NAME=""
 pkg-config --version >/dev/null 2>&1
 if [ $? -eq 0 ]; then
   NLOPT_LIBS=`pkg-config --libs ${PKG_CONFIG_NAME}`
-  NLOPT_INCLUDE=`pkg-config --cflags ${PKG_CONFIG_NAME}`
+  NLOPT_FLAG=`pkg-config --cflags ${PKG_CONFIG_NAME}`
   # Check if nlopt is installed
   if [ -z "$NLOPT_LIBS" ]; then
     echo "------------------------- ANTICONF ERROR ---------------------------"
@@ -38,7 +38,7 @@ fi
 
 # For debugging
 echo "Using NLOPT_LIBS=$NLOPT_LIBS"
-echo "Using NLOPT_INCLUDE=$NLOPT_INCLUDE"
+echo "Using NLOPT_FLAG=$NLOPT_FLAG"
 
 # Avoid OpenMP for MAC OS
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -48,7 +48,7 @@ else
 fi
 
 # Write to Makevars
-sed -e "s|@nlopt_libs@|$NLOPT_LIBS|" -e "s|@nlopt_include@|$NLOPT_INCLUDE|" -e "s|@openmp_flag@|$OPENMP_FLAG|" src/Makevars.in > src/Makevars
+sed -e "s|@nlopt_libs@|$NLOPT_LIBS|" -e "s|@nlopt_flag@|$NLOPT_FLAG|" -e "s|@openmp_flag@|$OPENMP_FLAG|" src/Makevars.in > src/Makevars
 
 
 # Success
