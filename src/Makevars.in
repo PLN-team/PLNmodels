@@ -1,6 +1,6 @@
 CXX_STD = CXX11
 NLOPT_LIBS=@nlopt_libs@
-PKG_CFLAGS = @nlopt_include@
+PKG_CPPFLAGS = @nlopt_include@
 PKG_CXXFLAGS = @openmp_flag@
 PKG_LIBS = @openmp_flag@ $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(NLOPT_LIBS)
 
