@@ -19,6 +19,16 @@ PKG_TEST_HEADER="<nlopt.hpp>"
 pkg-config --version >/dev/null 2>&1
 if [ $? -eq 0 ]; then
   NLOPT_LIBS=`pkg-config --libs ${PKG_CONFIG_NAME}`
+  if [ -z "$NLOPT_LIBS"]; then
+    echo "------------------------- ANTICONF ERROR ---------------------------"
+    echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
+    echo " * deb: sudo apt-get install $PKG_DEB_NAME (Debian, Ubuntu)"
+    echo " * rpm: sudo yum install $PKG_RPM_NAME (Fedora, EPEL)"
+    echo " * brew: brew install $PKG_RPM_NAME (MacOS with brew)"
+    echo " * otherwise: not yet available"
+    echo "--------------------------------------------------------------------"
+    exit 1;
+  fi
 else
   echo "------------------------- ANTICONF ERROR ---------------------------"
   echo "Configuration failed because pkg-config is not installed. Try installing: "
@@ -31,21 +41,9 @@ else
 fi
 
 # For debugging
-# echo "Using NLOPT_LIBS=$NLOPT_LIBS"
+echo "Using NLOPT_LIBS=$NLOPT_LIBS"
 
-# Test for linblopt
-echo "#include $PKG_TEST_HEADER" >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-  echo "------------------------- ANTICONF ERROR ---------------------------"
-  echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
-  echo " * deb: sudo apt-get install $PKG_DEB_NAME (Debian, Ubuntu)"
-  echo " * rpm: sudo yum install $PKG_RPM_NAME (Fedora, EPEL)"
-  echo " * brew: brew install $PKG_RPM_NAME (MacOS with brew)"
-  echo " * otherwise: not yet available"
-  echo "--------------------------------------------------------------------"
-  exit 1;
-fi
-
+#
 if [[ "$OSTYPE" == "darwin"* ]]; then
   OPENMP_FLAG=''
 else

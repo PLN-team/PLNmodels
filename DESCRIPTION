@@ -18,6 +18,7 @@ Description: The Poisson-lognormal model and variants can be used for
 URL: https://jchiquet.github.io/PLNmodels/, https://github.com/jchiquet/PLNmodels
 BugReports: https://github.com/jchiquet/PLNmodels/issues
 License: GPL (>= 3)
+NeedsCompilation: yes
 SystemRequirements: nlopt: libnlopt-dev (deb), NLopt-devel (rpm), nlopt (homebrew).
 Encoding: UTF-8
 LazyData: true
