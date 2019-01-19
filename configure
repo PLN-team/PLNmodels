@@ -1,24 +1,19 @@
 #!/bin/bash
-# Julien Chiquet (2018) mainly stolen from Anticonf scripts by Jeroen Ooms
+# Julien Chiquet (2018-19) mainly stolen from Anticonf scripts by Jeroen Ooms
 #
 # This script will query 'pkg-config' for the required cflags and ldflags.
-#
-# 02-05-2018 initial version: only working for linux
 
 PKG_CONFIG_NAME="nlopt"
-PKGCONFIG_DEB_NAME="pkg-config"
-PKGCONFIG_RPM_NAME="pkgconfig"
-PKGCONFIG_BREW_NAME="pkg-config"
 PKG_DEB_NAME="libnlopt-dev"
 PKG_RPM_NAME="NLopt-devel"
 PKG_BREW_NAME="nlopt"
 PKG_CSW_NAME=""
-PKG_TEST_HEADER="<nlopt.hpp>"
 
 # Use pkg-config if available
 pkg-config --version >/dev/null 2>&1
 if [ $? -eq 0 ]; then
   NLOPT_LIBS=`pkg-config --libs ${PKG_CONFIG_NAME}`
+  # Check if nlopt is installed
   if [ -z "$NLOPT_LIBS"]; then
     echo "------------------------- ANTICONF ERROR ---------------------------"
     echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
@@ -43,7 +38,7 @@ fi
 # For debugging
 echo "Using NLOPT_LIBS=$NLOPT_LIBS"
 
-#
+# Avoid OpenMP for MAC OS
 if [[ "$OSTYPE" == "darwin"* ]]; then
   OPENMP_FLAG=''
 else
