@@ -50,7 +50,7 @@ link](https://ci.appveyor.com/project/jchiquet/plnmodels/build/artifacts)
 ``` r
 ## w/o vignettes
 devtools::install_github("jchiquet/PLNmodels")
-devtools::install_github("jchiquet/PLNmodels", build_opts = c("--no-resave-data"))
+devtools::install_github("jchiquet/PLNmodels", build_vignettes = TRUE, build_opts = c("--no-resave-data"))
 ```
 
 ## Usage and main fitting functions

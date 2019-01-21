@@ -102,9 +102,9 @@
       <h1>Description of the Trichoptera data set</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-01-10</h4>
+            <h4 class="date">2019-01-21</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/Trichoptera.Rmd"><code>vignettes/Trichoptera.Rmd</code></a></small>
+      
       <div class="hidden name"><code>Trichoptera.Rmd</code></div>
 
     </div>
@@ -135,7 +135,7 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 <div id="formatting" class="section level3">
 <h3 class="hasAnchor">
 <a href="#formatting" class="anchor"></a>Formatting</h3>
-<p>Data are originaly stored in a list of two data frames for abundances and covariates. We first prepare the data <a href="import.html">see the corresponding vignette</a> for easy use in the multivariate framework of <strong>PLNmodels</strong>. Offsets are automatically computed:</p>
+<p>Data are originaly stored in a list of two data frames for abundances and covariates. We first prepare the data <a href="Import_data.html">see the corresponding vignette</a> for easy use in the multivariate framework of <strong>PLNmodels</strong>. Offsets are automatically computed:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">trichoptera &lt;-<span class="st"> </span><span class="kw"><a href="../reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance, trichoptera<span class="op">$</span>Covariate)</a></code></pre></div>
 <p>Data are now stored in the <code>trichoptera</code> data frame which includes 49 rows (the observations - or trapping nights) and 9 columns. As can be seen, there are 2 multivariate columns (matrices of counts and offsets) and 7 univariate columns (vectors of covariates):</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/str">str</a></span>(trichoptera)</a></code></pre></div>

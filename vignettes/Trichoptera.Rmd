@@ -52,7 +52,7 @@ data(trichoptera)
 
 ### Formatting
 
-Data are originaly stored in a list of two data frames for abundances and covariates. We first prepare the data [see the corresponding vignette](import.html) for easy use in the multivariate framework of **PLNmodels**. Offsets are automatically computed:
+Data are originaly stored in a list of two data frames for abundances and covariates. We first prepare the data [see the corresponding vignette](Import_data.html) for easy use in the multivariate framework of **PLNmodels**. Offsets are automatically computed:
 
 ```{r prepare_data}
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
