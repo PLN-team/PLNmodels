@@ -49,7 +49,7 @@ On **Windows**, the package now builds and installs correctly by [including stat
 ```{r package, eval = FALSE}
 ## w/o vignettes
 devtools::install_github("jchiquet/PLNmodels")
-devtools::install_github("jchiquet/PLNmodels", build_opts = c("--no-resave-data"))
+devtools::install_github("jchiquet/PLNmodels", build_vignettes = TRUE, build_opts = c("--no-resave-data"))
 ```
 
 ## Usage and main fitting functions

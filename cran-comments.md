@@ -6,7 +6,7 @@ A NLOpt system version is needed, via
 - brew install nlopt (homebrew)
 - automatically downloaded for Windows
 
-## Test environments
+## Tested environments
 
 * local ubuntu 18.04 install, R 3.5.2
 * ubuntu 14.04 (on travis-ci), R 3.5.2
