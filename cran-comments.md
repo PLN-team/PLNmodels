@@ -1,10 +1,13 @@
-
 ## System Requirements
 
 A NLOpt system version is needed, via 
+
 - sudo apt-get install libnlopt-dev (deb)
 - brew install nlopt (homebrew)
 - automatically downloaded for Windows
+
+_On Debian testing (Sid), the C++ interface to nlopt is required_
+- sudo apt-get install libnlopt-cxx-dev
 
 ## Tested environments
 
