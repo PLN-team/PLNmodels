@@ -27,7 +27,7 @@ vignettes/cache/
 inst/doc/*
 inst/radix_article/*_cache/
 inst/radix_article/cache/
-
+inst/case_studies/mollusk/libs/jquery/
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
