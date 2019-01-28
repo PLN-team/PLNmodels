@@ -8,8 +8,17 @@
 #  - 2018-06-29: first try
 
 language: r
+
 r_check_args: --as-cran
-cache: packages
+
+env:
+  - PKG_TARBALL=PLNmodels_0.7.0.0.tar.gz
+
+sudo: required
+
+cache:
+  - packages
+  - apt: true
 
 warnings_are_errors: false
 
@@ -24,6 +33,7 @@ brew_packages:
 
 r_packages:
   - covr
+  - pkgdown
 
 use_bioc: true
 bioc_required: true
@@ -38,20 +48,21 @@ matrix:
       r: bioc-release
       after_success:
       - Rscript -e 'covr::codecov()'
-      env: NB='with covr'
+#      - tar -C .. -xf $PKG_TARBALL
+#      - rm -rf PLNmodels.Rcheck
+#      - Rscript -e 'pkgdown::build_site()'
+      deploy:
+        - provider: releases
+          api_key:
+            - secure: "SiGdlTgQ97kHWow4KPYJv2c9roglYMKYwGeC2Tj0eaMNCTdvJoxulp4zBumWcxgHKt6AJwW0uO4wWlVQ+lqWZemUx+VYVZTX9eiOLB55RUPcEEqB/2CqgGtwt/df7VPbZ4UWv9zHZTyDXbKGgkByr9GxG4WBVQVagmiVaEQQwdrbfvH2oog3NPnhASn3ITRAqrifyuYKJeDQ3VT/GSwCB9whxiqdEuMv2JCD8IcaPlhHV67btapjGOh3CuFn7/ndzIuJJpcNmqArQt8YbuhBZEeW/GuWib6iNHeJ6HINlhmxuTrVtBZTIH/cvbv0DWaQUc8HFQnQ9a+zRH1qlSuAdQxiSLOgX2DeJ+tv2ZLU0CyFShx2qiDaRDqxs+NrqUNgutL8DPexuIrPJYezMrqG6EdSz+vY/nEJztxqFMHhBTKmcH+INeudrezbh+s8JyKKgfVp7UsJPqldSgNOqCU6bHu/W623fjjGckkkxDhBGrW/6fTXfFTQOkwAVgW7b9Ad+wYcLzzchlzaq8ehq6q0hD1+0/h1HflfqWd/XDYXbgYyYpRz7dc5PYcgISszbkrIMb/pXkGcOpAInqH7iJrmDLJpjrPsu3OcZOKB55lyfCG3/KbD0ZxCmBbwnwI+OCvoAnfZSWF/99kQkzHAtj/JCbfuYp6VmEsr6p7bOEfM3QY="
+          file: ${PKG_TARBALL}
+          skip_cleanup: true
+          on:
+            tags: true
     - os: linux
       r: bioc-devel
     - os: osx
       r: bioc-release
-
-deploy:
-  provider: releases
-  api_key:
-    - secure: "SiGdlTgQ97kHWow4KPYJv2c9roglYMKYwGeC2Tj0eaMNCTdvJoxulp4zBumWcxgHKt6AJwW0uO4wWlVQ+lqWZemUx+VYVZTX9eiOLB55RUPcEEqB/2CqgGtwt/df7VPbZ4UWv9zHZTyDXbKGgkByr9GxG4WBVQVagmiVaEQQwdrbfvH2oog3NPnhASn3ITRAqrifyuYKJeDQ3VT/GSwCB9whxiqdEuMv2JCD8IcaPlhHV67btapjGOh3CuFn7/ndzIuJJpcNmqArQt8YbuhBZEeW/GuWib6iNHeJ6HINlhmxuTrVtBZTIH/cvbv0DWaQUc8HFQnQ9a+zRH1qlSuAdQxiSLOgX2DeJ+tv2ZLU0CyFShx2qiDaRDqxs+NrqUNgutL8DPexuIrPJYezMrqG6EdSz+vY/nEJztxqFMHhBTKmcH+INeudrezbh+s8JyKKgfVp7UsJPqldSgNOqCU6bHu/W623fjjGckkkxDhBGrW/6fTXfFTQOkwAVgW7b9Ad+wYcLzzchlzaq8ehq6q0hD1+0/h1HflfqWd/XDYXbgYyYpRz7dc5PYcgISszbkrIMb/pXkGcOpAInqH7iJrmDLJpjrPsu3OcZOKB55lyfCG3/KbD0ZxCmBbwnwI+OCvoAnfZSWF/99kQkzHAtj/JCbfuYp6VmEsr6p7bOEfM3QY="
-  file: "${PKG_TARBALL}"
-  skip_cleanup: true
-  on:
-    tags: true
 
 #  provider: pages
 #  api_key:
