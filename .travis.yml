@@ -45,16 +45,13 @@ matrix:
       r: bioc-release
 
 before_deploy:
-  - export FILE_TO_UPLOAD=$(ls _builds/*/PLNmodels*.tar.gz)
+  - export FILE_TO_UPLOAD=$(ls ../PLNmodels*.tar.gz)
 
 deploy:
   provider: releases
   api_key:
     - secure: "SiGdlTgQ97kHWow4KPYJv2c9roglYMKYwGeC2Tj0eaMNCTdvJoxulp4zBumWcxgHKt6AJwW0uO4wWlVQ+lqWZemUx+VYVZTX9eiOLB55RUPcEEqB/2CqgGtwt/df7VPbZ4UWv9zHZTyDXbKGgkByr9GxG4WBVQVagmiVaEQQwdrbfvH2oog3NPnhASn3ITRAqrifyuYKJeDQ3VT/GSwCB9whxiqdEuMv2JCD8IcaPlhHV67btapjGOh3CuFn7/ndzIuJJpcNmqArQt8YbuhBZEeW/GuWib6iNHeJ6HINlhmxuTrVtBZTIH/cvbv0DWaQUc8HFQnQ9a+zRH1qlSuAdQxiSLOgX2DeJ+tv2ZLU0CyFShx2qiDaRDqxs+NrqUNgutL8DPexuIrPJYezMrqG6EdSz+vY/nEJztxqFMHhBTKmcH+INeudrezbh+s8JyKKgfVp7UsJPqldSgNOqCU6bHu/W623fjjGckkkxDhBGrW/6fTXfFTQOkwAVgW7b9Ad+wYcLzzchlzaq8ehq6q0hD1+0/h1HflfqWd/XDYXbgYyYpRz7dc5PYcgISszbkrIMb/pXkGcOpAInqH7iJrmDLJpjrPsu3OcZOKB55lyfCG3/KbD0ZxCmBbwnwI+OCvoAnfZSWF/99kQkzHAtj/JCbfuYp6VmEsr6p7bOEfM3QY="
-  file_glob: true
   file: "${FILE_TO_UPLOAD}"
   skip_cleanup: true
   on:
     tags: true
-
-
