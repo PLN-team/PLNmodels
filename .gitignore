@@ -28,6 +28,7 @@ inst/doc/*
 inst/radix_article/*_cache/
 inst/radix_article/cache/
 inst/case_studies/mollusk/libs/jquery/
+inst/case_studies/mollusk/mollusk_cache/
 
 # web files
 docs/

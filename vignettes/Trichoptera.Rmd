@@ -86,18 +86,6 @@ corrplot(
 )
 ```
 
-### Offsets and the compositionality issue
-
-A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by an $49$ numeric of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The formula syntax accepts either no offset, a vector or a matrix or specify the offsets term. 
-
-Here, we have a vector whose corresponding column is named `TotalCounts` in in the `trichoptera` data frame:
-
-```{r offset_trichopera}
-trichoptera$TotalCounts
-```
-
-Offsets are denoted by $\mathbf{O}$ when the mathematical model in other vignettes, and by `O` in the `R` environment.
-
 ### Covariates (external meteorological effect, groups)
 
 Additional information was collected during the sampling, which corresponds to external covariates the effect of which may or may not be taken into account in the model (depending on the question at play). In the trichoptera data set, those covariates correspond to meteorological factors plus a categorical variable indicating the family of the caughts specimens.
@@ -114,5 +102,19 @@ A first glance at the pairs plot between the covariates shows no particular stru
 select(trichoptera, -Offset, -Abundance) %>% 
 ggpairs(columns = 1:6, mapping = aes(colour = Group))
 ```
+
+### Offsets and the compositionality issue
+
+A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by an $49$ numeric of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The formula syntax accepts either no offset, a vector or a matrix or specify the offsets term. 
+
+Here, we have a vector whose corresponding column is named `Offset` in in the `trichoptera` data frame:
+
+```{r offset_trichopera}
+trichoptera$Offset
+```
+
+[See the importation vignette](Import_data.html) and the function `prepare_data()` to learn more about how Offset can be computed in **PLNmodels**.
+
+Offsets are denoted by $\mathbf{O}$ in the mathematical model across other vignettes, and by `O` in the `R` environment.
 
 ## References
