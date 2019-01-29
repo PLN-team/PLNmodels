@@ -48,8 +48,6 @@ matrix:
       r: bioc-release
       after_success:
       - Rscript -e 'covr::codecov()'
-      - tar -C .. -xf $PKG_TARBALL
-      - rm -rf PLNmodels.Rcheck
       - Rscript -e 'pkgdown::build_site()'
       deploy:
         - provider: releases

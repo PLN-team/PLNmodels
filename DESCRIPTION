@@ -46,7 +46,8 @@ Suggests:
     tidyverse,
     GGally,
     testthat,
-    covr
+    covr,
+    pkgdown
 VignetteBuilder: knitr
 Collate: 
     'PLNfit-class.R'
