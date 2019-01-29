@@ -30,7 +30,6 @@ Imports:
   glassoFast,
   Matrix,
   Rcpp,
-  curl (>= 1.0),
   igraph,
   grid,
   gridExtra,
