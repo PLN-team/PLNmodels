@@ -56,7 +56,7 @@ devtools::install_github("jchiquet/PLNmodels", build_vignettes = TRUE, build_opt
 
 The package comes with a ecological data to present the functionality 
 
-```{r load PLNmodels}
+```{r load PLNmodels, eval = FALSE}
 library(PLNmodels)
 data(trichoptera)
 ```
