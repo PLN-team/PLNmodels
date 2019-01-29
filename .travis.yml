@@ -1,6 +1,8 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2019-01-29: deployment of pages with travis
+#  - 2019-01-28: deployment of releases with travis
 #  - 2019-01-07: handling bioconductor
 #  - 2018-12-08: coverage updated
 #  - 2018-09-12: added checck for OS X
