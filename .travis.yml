@@ -5,7 +5,7 @@
 #  - 2019-01-28: deployment of releases with travis
 #  - 2019-01-07: handling bioconductor
 #  - 2018-12-08: coverage updated
-#  - 2018-09-12: added checck for OS X
+#  - 2018-09-12: added check for OS X
 #  - 2018-09-11: warning as error set to false
 #  - 2018-06-29: first try
 
@@ -18,9 +18,7 @@ env:
 
 sudo: required
 
-cache:
-  - packages
-  - apt: true
+cache: packages
 
 warnings_are_errors: false
 
@@ -55,15 +53,14 @@ matrix:
       - Rscript -e 'pkgdown::build_site()'
       deploy:
         - provider: releases
-          api_key:
-            - secure: "SiGdlTgQ97kHWow4KPYJv2c9roglYMKYwGeC2Tj0eaMNCTdvJoxulp4zBumWcxgHKt6AJwW0uO4wWlVQ+lqWZemUx+VYVZTX9eiOLB55RUPcEEqB/2CqgGtwt/df7VPbZ4UWv9zHZTyDXbKGgkByr9GxG4WBVQVagmiVaEQQwdrbfvH2oog3NPnhASn3ITRAqrifyuYKJeDQ3VT/GSwCB9whxiqdEuMv2JCD8IcaPlhHV67btapjGOh3CuFn7/ndzIuJJpcNmqArQt8YbuhBZEeW/GuWib6iNHeJ6HINlhmxuTrVtBZTIH/cvbv0DWaQUc8HFQnQ9a+zRH1qlSuAdQxiSLOgX2DeJ+tv2ZLU0CyFShx2qiDaRDqxs+NrqUNgutL8DPexuIrPJYezMrqG6EdSz+vY/nEJztxqFMHhBTKmcH+INeudrezbh+s8JyKKgfVp7UsJPqldSgNOqCU6bHu/W623fjjGckkkxDhBGrW/6fTXfFTQOkwAVgW7b9Ad+wYcLzzchlzaq8ehq6q0hD1+0/h1HflfqWd/XDYXbgYyYpRz7dc5PYcgISszbkrIMb/pXkGcOpAInqH7iJrmDLJpjrPsu3OcZOKB55lyfCG3/KbD0ZxCmBbwnwI+OCvoAnfZSWF/99kQkzHAtj/JCbfuYp6VmEsr6p7bOEfM3QY="
+          github-token: $GITHUB_TOKEN
           file: ${PKG_TARBALL}
           skip_cleanup: true
           on:
             tags: true
         - provider: pages
-          api_key:
-            - secure: "SiGdlTgQ97kHWow4KPYJv2c9roglYMKYwGeC2Tj0eaMNCTdvJoxulp4zBumWcxgHKt6AJwW0uO4wWlVQ+lqWZemUx+VYVZTX9eiOLB55RUPcEEqB/2CqgGtwt/df7VPbZ4UWv9zHZTyDXbKGgkByr9GxG4WBVQVagmiVaEQQwdrbfvH2oog3NPnhASn3ITRAqrifyuYKJeDQ3VT/GSwCB9whxiqdEuMv2JCD8IcaPlhHV67btapjGOh3CuFn7/ndzIuJJpcNmqArQt8YbuhBZEeW/GuWib6iNHeJ6HINlhmxuTrVtBZTIH/cvbv0DWaQUc8HFQnQ9a+zRH1qlSuAdQxiSLOgX2DeJ+tv2ZLU0CyFShx2qiDaRDqxs+NrqUNgutL8DPexuIrPJYezMrqG6EdSz+vY/nEJztxqFMHhBTKmcH+INeudrezbh+s8JyKKgfVp7UsJPqldSgNOqCU6bHu/W623fjjGckkkxDhBGrW/6fTXfFTQOkwAVgW7b9Ad+wYcLzzchlzaq8ehq6q0hD1+0/h1HflfqWd/XDYXbgYyYpRz7dc5PYcgISszbkrIMb/pXkGcOpAInqH7iJrmDLJpjrPsu3OcZOKB55lyfCG3/KbD0ZxCmBbwnwI+OCvoAnfZSWF/99kQkzHAtj/JCbfuYp6VmEsr6p7bOEfM3QY="
+          skip-cleanup: true
+          github-token: $GITHUB_TOKEN
           local_dir: "docs"
           keep-history: true
           on:
