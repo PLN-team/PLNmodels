@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.0</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
       <h1>Description of the Trichoptera data set</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-01-21</h4>
+            <h4 class="date">2019-01-29</h4>
       
       
       <div class="hidden name"><code>Trichoptera.Rmd</code></div>
@@ -309,20 +309,11 @@ log-counts in the trichoptera data set
 </p>
 </div>
 </div>
-<div id="offsets-and-the-compositionality-issue" class="section level3">
-<h3 class="hasAnchor">
-<a href="#offsets-and-the-compositionality-issue" class="anchor"></a>Offsets and the compositionality issue</h3>
-<p>A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by an <span class="math inline">\(49\)</span> numeric of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The formula syntax accepts either no offset, a vector or a matrix or specify the offsets term.</p>
-<p>Here, we have a vector whose corresponding column is named <code>TotalCounts</code> in in the <code>trichoptera</code> data frame:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">trichoptera<span class="op">$</span>TotalCounts</a></code></pre></div>
-<pre><code>## NULL</code></pre>
-<p>Offsets are denoted by <span class="math inline">\(\mathbf{O}\)</span> when the mathematical model in other vignettes, and by <code>O</code> in the <code>R</code> environment.</p>
-</div>
 <div id="covariates-external-meteorological-effect-groups" class="section level3">
 <h3 class="hasAnchor">
 <a href="#covariates-external-meteorological-effect-groups" class="anchor"></a>Covariates (external meteorological effect, groups)</h3>
 <p>Additional information was collected during the sampling, which corresponds to external covariates the effect of which may or may not be taken into account in the model (depending on the question at play). In the trichoptera data set, those covariates correspond to meteorological factors plus a categorical variable indicating the family of the caughts specimens.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>Offset, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>Offset, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">Temperature</th>
@@ -392,13 +383,26 @@ log-counts in the trichoptera data set
 </table>
 <p>The design matrix arising from the covariates is denoted by <span class="math inline">\(\mathbf{X}\)</span> in our mathematical model and <code>X</code> within the <code>R</code> environment.</p>
 <p>A first glance at the pairs plot between the covariates shows no particular structure regarding the trichoptera groups.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>Offset, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/GGally/topics/ggpairs">ggpairs</a></span>(<span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">colour =</span> Group))</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">select</span>(trichoptera, <span class="op">-</span>Offset, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/GGally/topics/ggpairs">ggpairs</a></span>(<span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">colour =</span> Group))</a></code></pre></div>
 <div class="figure">
 <img src="Trichoptera_files/figure-html/pairs-1.png" alt="Pairs plot of the covariates in the trichoptera data set" width="672"><p class="caption">
 Pairs plot of the covariates in the trichoptera data set
 </p>
 </div>
+</div>
+<div id="offsets-and-the-compositionality-issue" class="section level3">
+<h3 class="hasAnchor">
+<a href="#offsets-and-the-compositionality-issue" class="anchor"></a>Offsets and the compositionality issue</h3>
+<p>A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by an <span class="math inline">\(49\)</span> numeric of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The formula syntax accepts either no offset, a vector or a matrix or specify the offsets term.</p>
+<p>Here, we have a vector whose corresponding column is named <code>Offset</code> in in the <code>trichoptera</code> data frame:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">trichoptera<span class="op">$</span>Offset</a></code></pre></div>
+<pre><code>##  [1]   29   13   38  192   79   18    8   34   12    4    4    3   49   33
+## [15]  600  172   58   51   56  127   35   13   17    3   27   40   44    8
+## [29]    9 1599 2980   88  135  327   66   90   63   15   14   20   70   53
+## [43]   95   43   62  149   16   31   86</code></pre>
+<p><a href="Import_data.html">See the importation vignette</a> and the function <code><a href="../reference/prepare_data.html">prepare_data()</a></code> to learn more about how Offset can be computed in <strong>PLNmodels</strong>.</p>
+<p>Offsets are denoted by <span class="math inline">\(\mathbf{O}\)</span> in the mathematical model across other vignettes, and by <code>O</code> in the <code>R</code> environment.</p>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">

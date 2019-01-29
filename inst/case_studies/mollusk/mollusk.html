@@ -4,7 +4,7 @@
     <title>PLNmodels: a case study</title>
     <meta charset="utf-8">
     <meta name="author" content="PLN team" />
-    <meta name="date" content="2019-01-09" />
+    <meta name="date" content="2019-01-29" />
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
@@ -26,7 +26,7 @@ class: center, middle, inverse, title-slide
 # PLNmodels: a case study
 ## The mollusk data set
 ### PLN team
-### 2019-01-09
+### 2019-01-29
 
 ---
 
@@ -35,7 +35,7 @@ class: center, middle, inverse, title-slide
 
 class: inverse, center, middle
 
-background-image: url(../../../man/figures/logo.png)
+&lt;!-- background-image: url(../../../man/figures/logo.png) --&gt;
 
 # Getting Started
 
@@ -44,11 +44,11 @@ background-image: url(../../../man/figures/logo.png)
 
 ## Package PLNmodels and dependencies
 
-For this tutorial, you may preferably install the binaries of **PLNmodels** from [CRAN]() :
+For this tutorial, you may preferably install the last release of **PLNmodels** from GitHub:
 
 
 ```r
-install.packages("PLNmodels")
+devtools::install_github("jchiquet/PLNmodels@v7.0.0")
 ```
 
 Advanced users&lt;sup&gt;1&lt;/sup&gt; can install the development version&lt;sup&gt;2&lt;/sup&gt; from [Github](https://github.com/jchiquet/PLNmodels)
@@ -85,7 +85,7 @@ packageVersion("PLNmodels")
 ```
 
 ```
-## [1] '0.6.4002'
+## [1] '0.7.0.0'
 ```
 
 ## Finding help and documentation
@@ -98,825 +98,441 @@ The [PLNmodels website](https://jchiquet.github.io/PLNmodels/) contains
 all formatted with [**pkgdown**](https://pkgdown.r-lib.org)
 
 ---
-class: inverse, middle, center
 
-# Load the data
+# Some additional useful packages
 
+The tools provided by the two following libraries will be useful during our analyses.
+
+
+```r
+library(tidyverse) # data manipulation
+```
+
+```
+## ── Attaching packages ─────────────────────────────────── tidyverse 1.2.1 ──
+```
+
+```
+## ✔ ggplot2 3.1.0     ✔ purrr   0.3.0
+## ✔ tibble  2.0.1     ✔ dplyr   0.7.8
+## ✔ tidyr   0.8.2     ✔ stringr 1.3.1
+## ✔ readr   1.3.1     ✔ forcats 0.3.0
+```
+
+```
+## ── Conflicts ────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+```
+
+```r
+library(corrplot)  # plot of covariance/correlation matrices
+```
+
+```
+## corrplot 0.84 loaded
+```
+
+---
+
+class: inverse, center, middle
+
+# The Mollusk data set
+
+---
+
+# Data overview
+
+The `mollusk` variable is loaded by the function `data()`. 
 
 ```r
 data(mollusk)
-mollusk
+```
+
+It consists in a list of two data frames
+
+
+```r
+str(mollusk, max.level = 1)
 ```
 
 ```
-## $Abundance
-##     Bit Vap Vac Gac Raa Rap Lit Pha Phf Plc Bac Ans Anl An- Gya Hic Arc
-## 1     2   0   2   0   0   0   0  22   0   0   0   0   0   0  26   2  17
-## 2     2   0   0   0   2   0   0  93   0   0   0   0   0   0  80   3  20
-## 3     1   0   0   0   1   0   0  39   0   0   0   0   0   0  41   3   7
-## 4    13   0   0   0   0   0   0   1   0   0   0   0   0   0   1   1   1
-## 5    19   0   4   0   0   0   0   2   0   0   0   0   0   0  12   1   2
-## 6    54   0   3   0   1   0   0   2   0   0   0   0   0   0  10   6  12
-## 7    32   0  29   0   0   0   0   0   0   0   0   0   0   0  12  52  24
-## 8     6   0   2   0   0   0   0   0   0   0   0   0   0   0   4   2   7
-## 9    24   0   8   0   0   0   0   0   0   0   0   0   0   0  24   0  48
-## 10   15   0  23   2   2   0   0  22   0   0   0   0   0   0   4   1  18
-## 11   19   0   9   0   3   0   0  16   0   0   0   0   0   0   4   0  24
-## 12    2   0   2   0   2   0   0  36   0   0   0   0   0   0   5   0  14
-## 13    6   0   1   0   0   0   0  29   0   0   0   0   0   0  27   3  11
-## 14    1   0   1   0   0   0   0 153   0   0   0   0   0   0 187   0  22
-## 15   14   0   1   0   1   0   0 126   0   0   0   0   0   0 127   3  37
-## 16   13   0   5   0   1   0   0   9   0   0   0   0   0   0  24   1   6
-## 17   24   0   3   0   1   0   0   0   0   0   0   0   0   0  16   3   9
-## 18   65   0  17   0   3   0   0   2   0   0   0   0   0   0  14  14  28
-## 19   30   0  15   0   0   0   0   0   0   0   0   0   0   0  10   7   7
-## 20    9   0  10   0   0   0   0   2   0   0   0   0   0   0  20   7  55
-## 21   16   0   0   0  24   0   0  24   0   0   0   0   0   0  24   0  64
-## 22   32   1  23   0   0   0   0 151   0   0   0   0   0   0  20   5  27
-## 23   21   0  13   0   1   0   0  81   0   0   0   0   0   0  18   9  45
-## 24   10   0  10   0   2   0   0 108   0   0   0   0   0   0  16   2  56
-## 25    2   0   1   0   4   0   0   1   0   0   0   0   0   0  26   0   5
-## 26    1   0   1   0   3   0   0   1   0   0   0   0   0   0  17   2   4
-## 27    0   0   0   0   4   0   0   2   0   0   0   0   0   0  30   4   9
-## 28    0   0   0   0   1   0   0   2   0   0   0   0   0   0   3   0   1
-## 29    4   0   4   0   0   0   0   0   0   0   0   0   0   0  19   2   9
-## 30   18   0  16   0   1   0   0   0   0   0   0   0   0   0  17   2   6
-## 31   10   0   4   0  25   0   0   1   0   0   0   0   0   0  10   2  12
-## 32   33   0   2   0   8   0   0   2   0   0   0   0   0   0  10   2  14
-## 33   64   0   2   1   2   0   0   0   0   0   0   0   0   0  24   3  14
-## 34    4   0   0   0  12   0   0  26   0   0   0   0   0   0   3   1   2
-## 35    2   0   3   0   4   0   0   9   0   0   0   0   0   0   2   0   2
-## 36    9   0   4   0   1   0   0  25   0   0   0   0   0   0   8   0   6
-## 37    2   0   0   0   0   0   0   1   0   0   0   0   0   0  20   3   6
-## 38    2   0   3   0   5   0   0   1   0   0   0   0   0   0  56   4  14
-## 39    0   0   0   0   1   0   0   1   0   0   0   0   0   0  31   2   3
-## 40    8   0  14   0   2   0   0   4   0   0   0   0   0   0  45  10  15
-## 41   43   0  52   0   1   0   0   2   0   0   0   0   0   0  45   9  26
-## 42   16   1  33   0   1   0   0   0   0   0   0   0   0   0  15  15  12
-## 43   47   0  10   0   6   0   0   3   0   0   0   0   0   0  12  10  15
-## 44  110   0  40   0   1   0   0   4   0   0   0   0   0   0  12  19  43
-## 45  108   0  78   0   0   0   0  35   0   0   0   0   0   0   3  72  17
-## 46    4   0   0   0   6   0   0  23   0   0   0   0   0   0   3   0   2
-## 47    4   0   3   0   2   0   0  13   0   0   0   0   0   0   0   0   0
-## 48    6   0  25   0   5   0   0  28   0   0   0   0   0   0   2   2   4
-## 49    0   0   0   0   0   0   0   0   0   1   0   0   0   0   0   0   0
-## 50    0   0   0   0   0   0   0   0   0   7   0   0   0   0   0   0   0
-## 51    1   0   1   0   0   0   0   0   0   3   0   0   0   0   0   0   0
-## 52    0   0  10   0   0   0   0   0   0   3   0   0   0   0   0   0   0
-## 53    1   0   1   1   0   0   0   0   0  14   0   1   1   1   0   0   0
-## 54    7   0   0   0   0   0   0   0   0   7   0  16   0   6   0   0   0
-## 55    3   0   0   1   0   0   0   0   0   7   0   0   0   0   0   0   0
-## 56    5   0   0   1   0   0   0   0   0   9   0   0   0   0   0   0   0
-## 57   22   0   3   0   0   0   0   0   0  36   0   0   0   1   0   0   0
-## 58    8   1  30   0   0   0   0   0   0 142   0   0   1   0   0   0   0
-## 59    1   0   3   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 60    4   0   4   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 61    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 62    1   0   0   0   0   0   0   0   0   5   0   0   0   0   0   0   0
-## 63    0   0   9   0   0   0   0   0   0   6   0   0   0   0   0   0   0
-## 64    5   0  44   0   0   0   0   0   0   2   0   0   2   0   1   0   0
-## 65    7   0  13   1   0   0   0   0   0   8   0   0   5   0   0   0   0
-## 66    7   0  66   1   0   0   0   0   0  11   0  25  12  29   0   0   0
-## 67   31   0  43   0   0   0   0   0   0   9   0   0   0   0   0   0   0
-## 68    8   1   1   0   0   0   0   0   0   6   0   0   0   0   0   0   2
-## 69    7   0  35   0   0   0   0   0   0  18   0   0   0   0   0   0   0
-## 70    2   0  10   0   0   0   0   0   0  58   0   0   0   0   0   0   0
-## 71    3   0   5   0   0   0   0   0   0   1   0   0   0   0   0   0   0
-## 72    5   0  11   0   0   0   0   1   0   2   0   0   0   0   0   0   0
-## 73    0   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0   0
-## 74    0   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 75    0   0   0   0   1   0   0   0   0   1   0   0   0   0   0   0   1
-## 76    0   0   1   0   0   0   1   0   0   1   0   0   0   0   2   0   0
-## 77    0   0   0   0   0   0   0   0   0   1   0   0   0   0   2   0   0
-## 78    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 79    0   0   2   0   0   0   0   0   0   9   0   0   0   0   1   0   0
-## 80    0   0   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0
-## 81    0   0   0   1   0   0   0   0   0   1   0   0   0   0   0   1   0
-## 82    0   0   3   0   0   0   0   0   0   1   0   0   0   0   0   0   1
-## 83    0   0   5   0   1   0   0   1   0   0   0   0   0   0   0   0   0
-## 84    0   0   7   0   1   0   0   0   0   0   0   0   0   0   1   0   0
-## 85    0   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0   0
-## 86    0   0   1   0   0   0   0   0   0   1   0   0   0   0   0   0   2
-## 87    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   1
-## 88    0   0   1   0   1   0   0   0   0   1   0   0   0   0   0   0   2
-## 89    0   0   1   0   0   0   0   0   0   2   0   0   0   0   0   0   0
-## 90    0   0   1   0   0   0   0   0   0   0   0   0   0   0   0   3   2
-## 91    0   0   1   0   0   0   0   0   0   1   0   0   0   0   0   0   0
-## 92    2   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 93    1   0  14   0   0   0   0   0   0   0   0   0   0   0   0   1   0
-## 94    0   0   2   0   0   0   0   3   0   3   0   0   0   0   0   0   0
-## 95    1   0   2   0   0   0   0   1   0   2   0   0   0   0   0   0   0
-## 96    0   0  32   0   0   0   0   0   0   0   0   0   0   0   0   0   1
-## 97    0   0   0   1   0   0   0   0   0   0   1   0   0   0   0   0   0
-## 98    0   0   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 99    4   0  14   1   0   0   0   0   0   0   1   0   0   0   0   0   0
-## 100   1   0   5   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 101   6   0   0   4   0   0   0   0   0   0   3   0   0   0   0   0   0
-## 102   5   0   0   0   0   0   0   0   0   0   3   0   0   0   0   0   0
-## 103   2   0   0   0   0   0   0   0   0   0   1   0   0   0   0   0   0
-## 104   0   0   1   9   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 105   0   0   1   9   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 106   0   0   1   6   0   0   0   0   1   0   0   0   0   0   0   0   0
-## 107   0   0   3   2   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 108   1   0   6   0   0   0   0   0   0   0   2   0   0   0   0   0   0
-## 109   2   0  42   1   0   0   0   0   0   0   1   0   0   0   0   0   0
-## 110  57   0  87   9   0   0   0   0   0   0   5   0   0   0   0   0   0
-## 111  19   0   9   2   0   0   0   0   0   0   2   0   0   0   0   0   0
-## 112   5   0   2   1   0   0   0   0   0   1   2   0   0   0   0   0   0
-## 113   2   0   2  14   0   0   0   0   0   0   4   0   0   0   0   0   0
-## 114   2   0   3   5   0   0   0   0   0   0   6   0   0   0   0   0   0
-## 115   2   0   4   3   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 116   3   0   4   6   0   0   0   0   0   0   2   0   0   0   0   0   0
-## 117   1   0   1   7   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 118   1   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 119   2   0   1   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 120   1   0   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 121   1   0   0   1   0   0   0   0   0   2   1   0   0   0   0   0   0
-## 122   0   0   0   2   1   0   0   0   0   0   0   0   0   0   0   0   0
-## 123   2   0   0   4   0   0   0   0   0   0   2   0   0   0   0   0   0
-## 124   0   0   0   2   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 125   0   0   0   2   0   0   0   0   1   0   1   0   0   0   0   0   0
-## 126   6   0   4   1   0   0   0   0   0   0   2   0   0   0   0   0   0
-## 127  25   0  21   6   0   0   0   0   0   0   2   0   0   0   0   0   0
-## 128  35   0  11   4   0   0   0   0   0   0   2   0   0   0   0   0   0
-## 129  10   0   5   0   0   0   0   0   1   0  11   0   0   0   0   0   1
-## 130   0   0   1   1   0   0   0   0   0   0   1   0   0   0   0   0   0
-## 131  12   0   8   7   0   0   0   0   0   1  29   0   0   0   0   0   0
-## 132   0   0   0   4   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 133   0   0   0   1   0   0   0   0   0   0   3   0   0   0   0   0   0
-## 134   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 135   0   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0   0
-## 136   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 137   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 138   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 139   0   0   0   0   0   0   0   0   0   1   0   0   0   0   0   0   0
-## 140   1   0   0  10   0   0   0   0   2   1   0   0   0   0   0   0   0
-## 141  25   0   0   0   0   0   0   0   4   1   0   0   0   0   0   0   0
-## 142   1   0   0   2   0   0   0   0   1   0   1   0   0   0   0   0   0
-## 143   0   0   0   0   0   0   0   0   0   3   0   0   0   0   0   0   0
-## 144   0   0   0   0   0   0   0   0   3   0   1   0   0   0   0   0   0
-## 145   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 146   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 147   0   0   0   0   0   0   0   0   0   1   0   0   0   0   0   0   0
-## 148   1   0   1   0   0   0   0   0   0   0   0   0   0   0   1   0   0
-## 149   1   0   1   0   0   0   0   0   0   0   1   0   0   0   0   0   0
-## 150   1   0   1   0   0   0   0   0   0   1   1   0   0   0   0   0   0
-## 151   6   0   0   0   0   0   0   0   3   1   0   0   0   0   0   0   0
-## 152   6   0   0   0   0   0   0   0   3   2   0   0   0   0   0   0   0
-## 153   7   0   0   0   0   0   0   0   2   6   1   0   0   0   0   0   0
-## 154   1   0   1   0   0   0   0   0   2   6   0   0   0   0   0   0   0
-## 155   1   0   0   1   0   0   0   0   4   0   0   0   0   0   0   0   0
-## 156   0   0   0   0   0   0   0   0   8   0   1   0   0   0   0   0   0
-## 157   0   0   0   0   0   0   0   0   2   1   0   0   0   0   0   0   0
-## 158   0   0   0   0   0   0   0   0  31   0   0   0   0   0   0   0   0
-## 159   0   0   0   0   0   1   0   0  31   1   2   0   0   0   0   0   0
-## 160   0   0   0   0   0   0   0   0  19   0   9   0   0   0   0   0   6
-## 161   0   0   0   0   0   0   0   0   1   0   1   0   0   0   0   0   0
-## 162   0   0   0   0   0   1   0   0  20   1   1   0   0   0   0   0   0
-## 163   0   0   0   0   0   2   0   0  26   0   0   0   0   0   0   0   0
-##     Acl Few Spc Pio Pic Pip Pin Pis Pim Ppe Pi- Cam Cat Euf Vea
-## 1     2  10   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 2     3   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 3     0   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 4     0   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 5     1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 6     8   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 7    21   4   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 8     1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 9     0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 10    1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 11    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 12    0   5   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 13    1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 14    2   9   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 15    1   9   0   0   0   0   0   0   0   0   1   0   0   0   0
-## 16    4   2   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 17    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 18    5   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 19   15   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 20   36   2   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 21   24   8   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 22    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 23    4  17   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 24    1   2   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 25    1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 26    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 27    0   3   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 28    1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 29    0   1   1   0   0   0   0   0   0   0   0   0   0   0   0
-## 30    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 31    2   2   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 32    0   7   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 33    0  16   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 34    0   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 35    0   2   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 36    1   2   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 37    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 38    0   4   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 39    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 40    2   6   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 41    1   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 42    1   2   1   0   0   0   0   0   0   0   0   0   0   0   0
-## 43    0   7   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 44    4   4   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 45    1   8  16   0   0   0   0   0   0   0   0   0   0   0   0
-## 46    0   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 47    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 48    0   1   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 49    4   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 50   42   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 51    4   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 52    6   0   0   9   0   0   0   0   0   0   0   0   0   0   0
-## 53    7   0   0   4   0   0   0   0   0   0   0   0   0   0   0
-## 54   27   0   0   7   0   0   0   0   0   0   0   0   0   0   0
-## 55    8   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 56   10   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 57   12   0   0   6   0   0   0   0   0   0   0   0   0   0   0
-## 58    9   0   0   4   1   0   0   0   0   0   0   0   0   0   0
-## 59    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 60    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 61    7   0   0   1   0   0   0   0   0   0   0   0   0   0   0
-## 62    5   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 63   10   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 64    3   0   0   9   0   0   0   0   0   0   0   0   0   0   0
-## 65    7   0   0  45   1   0   0   0   0   0   0   0   0   0   0
-## 66   40   0   0  87   0   0   0   0   0   0   0   0   0   0   0
-## 67    7   0   0   9   1   0   0   0   0   0   0   0   0   0   0
-## 68    4   1   0  11   0   0   0   0   0   0   0   0   0   0   0
-## 69    6   0   0  14   0   0   0   0   0   0   0   0   0   0   0
-## 70    1   0   0   1   1   0   0   0   0   0   0   0   0   0   0
-## 71    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 72    0   0   0   0   0   1   0   0   0   0   0   0   0   0   0
-## 73    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 74    2   0   0   0   2   0   0   5   0   0   0   0   0   0   0
-## 75    4   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 76    1   0   0   0   0   0   0   5   0   0   0   0   0   0   0
-## 77    1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 78    3   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 79    0   0   0   0   0   0   0   0   0   0   2   0   0   0   0
-## 80    2   0   0   0   0   0   0   0   0   0   7   0   0   0   0
-## 81   15   0   0   0   0   0   0   0   0   0   5   0   0   0   0
-## 82    0   0   0   0   2   0   0   1   0   0   0   0   0   0   0
-## 83    4   0   0   0   0   0   0   0   0   0   1   0   0   0   0
-## 84    1   0   0   0   0   0   1   0   0   0   5   0   1   0   0
-## 85    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 86    1   0   0   0   1   0   0   0   0   0   0   0   0   0   0
-## 87    2   0   0   0   0   0   0   1   0   0   0   0   0   0   0
-## 88    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 89    3   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 90    8   0   0   3   0   0   0   0   0   0   0   0   0   0   0
-## 91    2   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 92    2   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 93    3   0   0   0   0   0   0   0   0   0   1   0   0   0   0
-## 94    1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 95    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 96    3   0   0   1   0   0   0   2   0   0   0   0   0   0   0
-## 97    0   0   0   0   0   0   0   0   0   0   0   1   0   0   0
-## 98    1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 99    2   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 100   1   0   0   0   0   0   0   0   0   0   0   1   0   0   0
-## 101   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 102   1   0   0   1   0   0   0   0   0   0   0   0   0   0   0
-## 103   2   0   0   1   0   0   0   0   0   0   0   0   0   0   0
-## 104   0   0   0   0   0   0   0   0   0   0   0   0   2   0   0
-## 105   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0
-## 106   1   0   0   0   0   0   0   0   0   0   0   1   1   1   0
-## 107   1   0   0   0   0   0   0   0   0   0   0   0   1   1   0
-## 108   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 109   8   0   0   2   1   0   0   0   0   0   0   2   2   0   0
-## 110   1   0   0   1   0   0   0   0   0   0   0   0   0   0   0
-## 111   0   0   0   7   0   0   0   0   0   0   0   0   0   0   0
-## 112   1   0   0   0   0   0   0   0   0   0   1   0   0   1   0
-## 113   1   0   2   0   0   0   0   0   0   0   1   0   0   0   0
-## 114   0   0   0   0   0   0   0   0   0   0   0   0   0   0   1
-## 115   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0
-## 116   1   0   0   1   0   0   0   0   0   0   0   1   1   0   1
-## 117   0   0   0   0   0   0   0   0   0   0   0   0   1   1   0
-## 118   5   0   0   0   0   0   0   0   0   0   0   0   0   1   0
-## 119   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0
-## 120   0   0   0   0   0   0   0   0   0   0   0   0   0   3   0
-## 121   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 122   0   0   0   0   0   0   0   0   0   0   0   0   0   4   0
-## 123   2   1   0   0   0   0   0   0   0   0   0   0   0   8   2
-## 124   0   0   0   0   0   0   0   0   0   0   0   0   0   1  11
-## 125   0   0   0   0   0   0   0   0   0   0   0   0   0   3   8
-## 126   2   0   0   4   0   0   0   0   0   0   0   0   0   0   0
-## 127   2   0   0   8   0   1   0   0   0   0   0   0   0   2   0
-## 128   3   0   0   0   0   0   0   0   0   5   0   0   0   2   0
-## 129   0   0   0   0   0   0   0   0   0   0   1   0   0   4   0
-## 130   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 131   0   0   0   0   0   0   0   0   0   0   0   0   0  46   2
-## 132   0   0   0   0   0   0   0   0   0   0   0   0   0   5   8
-## 133   0   0   0   0   0   0   0   0   0   0   0   0   0   2   6
-## 134   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 135   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 136   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 137   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 138   1   0   0   0   0   0   0   0   0   0   1   0   0   0   0
-## 139   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 140   0   0   0   0   0   0   0   0   0   0   0   0   0   1   0
-## 141   4   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 142   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 143   3   0   0   0   0   0   0   0   0   0   1   0   0   1   1
-## 144   2   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 145   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 146   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 147   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 148   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 149   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 150   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 151   0   0   0   0   0   0   0   0   0   0   1   0   0   0   0
-## 152  10   0   0   0   0   0   0   0   2   0   3   0   0   1   1
-## 153   1   0   0   0   0   0   0   0   0   0   0   0   0   1   1
-## 154   1   0   0   0   0   0   0   0   0   0   0   0   0   1   1
-## 155   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 156   1   0   0   0   0   0   4   2   0   0   0   0   0   0   0
-## 157   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 158   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 159   0   0   0   0   0   0   0   0   0   0   1   0   0   0   0
-## 160   0   0   0   0   1   0   3  14  10   0   4   0   0   0   0
-## 161   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 162   0   0   0   0   0   0   3   4   1   0   0   0   0   0   0
-## 163   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-## 
-## $Covariate
-##          site season method duration
-## 1     Negria1 winter   wood        3
-## 2     Negria1 winter   wood        6
-## 3     Negria1 winter   wood        9
-## 4     Negria1 spring   wood        3
-## 5     Negria1 spring   wood        6
-## 6     Negria1 spring   wood        9
-## 7     Negria1 summer   wood        3
-## 8     Negria1 summer   wood        6
-## 9     Negria1 summer   wood        9
-## 10    Negria1 automn   wood        3
-## 11    Negria1 automn   wood        6
-## 12    Negria1 automn   wood        9
-## 13    Negria1 winter string        3
-## 14    Negria1 winter string        6
-## 15    Negria1 winter string        9
-## 16    Negria1 spring string        3
-## 17    Negria1 spring string        6
-## 18    Negria1 spring string        9
-## 19    Negria1 summer string        3
-## 20    Negria1 summer string        6
-## 21    Negria1 summer string        9
-## 22    Negria1 automn string        3
-## 23    Negria1 automn string        6
-## 24    Negria1 automn string        9
-## 25    Negria2 winter   wood        3
-## 26    Negria2 winter   wood        6
-## 27    Negria2 winter   wood        9
-## 28    Negria2 spring   wood        3
-## 29    Negria2 spring   wood        6
-## 30    Negria2 spring   wood        9
-## 31    Negria2 summer   wood        3
-## 32    Negria2 summer   wood        6
-## 33    Negria2 summer   wood        9
-## 34    Negria2 automn   wood        3
-## 35    Negria2 automn   wood        6
-## 36    Negria2 automn   wood        9
-## 37    Negria2 winter string        3
-## 38    Negria2 winter string        6
-## 39    Negria2 winter string        9
-## 40    Negria2 spring string        3
-## 41    Negria2 spring string        6
-## 42    Negria2 spring string        9
-## 43    Negria2 summer string        3
-## 44    Negria2 summer string        6
-## 45    Negria2 summer string        9
-## 46    Negria2 automn string        3
-## 47    Negria2 automn string        6
-## 48    Negria2 automn string        9
-## 49  Pecheurs1 winter   wood        3
-## 50  Pecheurs1 winter   wood        6
-## 51  Pecheurs1 winter   wood        9
-## 52  Pecheurs1 spring   wood        3
-## 53  Pecheurs1 spring   wood        6
-## 54  Pecheurs1 spring   wood        9
-## 55  Pecheurs1 summer   wood        3
-## 56  Pecheurs1 summer   wood        6
-## 57  Pecheurs1 summer   wood        9
-## 58  Pecheurs1 automn   wood        3
-## 59  Pecheurs1 automn   wood        6
-## 60  Pecheurs1 automn   wood        9
-## 61  Pecheurs1 winter string        3
-## 62  Pecheurs1 winter string        6
-## 63  Pecheurs1 winter string        9
-## 64  Pecheurs1 spring string        3
-## 65  Pecheurs1 spring string        6
-## 66  Pecheurs1 spring string        9
-## 67  Pecheurs1 summer string        3
-## 68  Pecheurs1 summer string        6
-## 69  Pecheurs1 summer string        9
-## 70  Pecheurs1 automn string        3
-## 71  Pecheurs1 automn string        6
-## 72  Pecheurs1 automn string        9
-## 73  Pecheurs2 winter   wood        3
-## 74  Pecheurs2 winter   wood        6
-## 75  Pecheurs2 winter   wood        9
-## 76  Pecheurs2 spring   wood        3
-## 77  Pecheurs2 spring   wood        6
-## 78  Pecheurs2 spring   wood        9
-## 79  Pecheurs2 summer   wood        3
-## 80  Pecheurs2 summer   wood        6
-## 81  Pecheurs2 summer   wood        9
-## 82  Pecheurs2 automn   wood        3
-## 83  Pecheurs2 automn   wood        6
-## 84  Pecheurs2 automn   wood        9
-## 85  Pecheurs2 winter string        3
-## 86  Pecheurs2 winter string        6
-## 87  Pecheurs2 winter string        9
-## 88  Pecheurs2 spring string        3
-## 89  Pecheurs2 spring string        6
-## 90  Pecheurs2 spring string        9
-## 91  Pecheurs2 summer string        3
-## 92  Pecheurs2 summer string        6
-## 93  Pecheurs2 summer string        9
-## 94  Pecheurs2 automn string        3
-## 95  Pecheurs2 automn string        6
-## 96  Pecheurs2 automn string        9
-## 97  GGravier1 winter   wood        6
-## 98  GGravier1 winter   wood        9
-## 99  GGravier1 spring   wood        3
-## 100 GGravier1 spring   wood        6
-## 101 GGravier1 spring   wood        9
-## 102 GGravier1 summer   wood        3
-## 103 GGravier1 summer   wood        6
-## 104 GGravier1 summer   wood        9
-## 105 GGravier1 automn   wood        6
-## 106 GGravier1 automn   wood        9
-## 107 GGravier1 winter string        6
-## 108 GGravier1 winter string        9
-## 109 GGravier1 spring string        3
-## 110 GGravier1 spring string        6
-## 111 GGravier1 spring string        9
-## 112 GGravier1 summer string        3
-## 113 GGravier1 summer string        6
-## 114 GGravier1 summer string        9
-## 115 GGravier1 automn string        3
-## 116 GGravier1 automn string        6
-## 117 GGravier1 automn string        9
-## 118 GGravier2 spring   wood        3
-## 119 GGravier2 spring   wood        6
-## 120 GGravier2 spring   wood        9
-## 121 GGravier2 summer   wood        3
-## 122 GGravier2 summer   wood        6
-## 123 GGravier2 summer   wood        9
-## 124 GGravier2 automn   wood        6
-## 125 GGravier2 automn   wood        9
-## 126 GGravier2 spring string        3
-## 127 GGravier2 spring string        6
-## 128 GGravier2 spring string        9
-## 129 GGravier2 summer string        3
-## 130 GGravier2 summer string        6
-## 131 GGravier2 summer string        9
-## 132 GGravier2 automn string        6
-## 133 GGravier2 automn string        9
-## 134 GGravier3 winter   wood        6
-## 135 GGravier3 winter   wood        9
-## 136 GGravier3 spring   wood        3
-## 137 GGravier3 spring   wood        6
-## 138 GGravier3 spring   wood        9
-## 139 GGravier3 summer   wood        3
-## 140 GGravier3 summer   wood        6
-## 141 GGravier3 summer   wood        9
-## 142 GGravier3 automn   wood        3
-## 143 GGravier3 automn   wood        6
-## 144 GGravier3 automn   wood        9
-## 145 GGravier3 winter string        6
-## 146 GGravier3 winter string        9
-## 147 GGravier3 spring string        3
-## 148 GGravier3 spring string        6
-## 149 GGravier3 spring string        9
-## 150 GGravier3 summer string        3
-## 151 GGravier3 summer string        6
-## 152 GGravier3 summer string        9
-## 153 GGravier3 automn string        3
-## 154 GGravier3 automn string        6
-## 155 GGravier3 automn string        9
-## 156     Meant winter   wood        6
-## 157     Meant spring   wood        6
-## 158     Meant summer   wood        6
-## 159     Meant automn   wood        6
-## 160     Meant winter string        6
-## 161     Meant spring string        6
-## 162     Meant summer string        6
-## 163     Meant automn string        6
+## List of 2
+##  $ Abundance:'data.frame':	163 obs. of  32 variables:
+##  $ Covariate:'data.frame':	163 obs. of  4 variables:
 ```
 
+These two data frames are typical from ecological data sets:
+
+- The `abundance` table contains the counts of 32 species in 163 samples; 
+- The `covariate` table contains information about 4  environmental variables.
+
+Have a look at the help page with `?mollusk` to get additional details.
 
 ---
 
-# The mollusk data set
+# Abundance table (I)
 
-# remark.js vs xaringan
 
-Some differences between using remark.js (left) and using **xaringan** (right):
+```r
+mollusk$Abundance %&gt;% 
+  dplyr::select(1:10) %&gt;% 
+  head() %&gt;% DT::datatable(fillContainer = FALSE)
+```
 
-.pull-left[
-1. Start with a boilerplate HTML file;
+<div id="htmlwidget-3ce9c6593e1842736679" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3ce9c6593e1842736679">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6"],[2,2,1,13,19,54],[0,0,0,0,0,0],[2,0,0,0,4,3],[0,0,0,0,0,0],[0,2,1,0,0,1],[0,0,0,0,0,0],[0,0,0,0,0,0],[22,93,39,1,2,2],[0,0,0,0,0,0],[0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Bit<\/th>\n      <th>Vap<\/th>\n      <th>Vac<\/th>\n      <th>Gac<\/th>\n      <th>Raa<\/th>\n      <th>Rap<\/th>\n      <th>Lit<\/th>\n      <th>Pha<\/th>\n      <th>Phf<\/th>\n      <th>Plc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 
-1. Plain Markdown;
+---
 
-1. Write JavaScript to autoplay slides;
+# Abundance table (II)
 
-1. Manually configure MathJax;
 
-1. Highlight code with `*`;
+```r
+t(log(1 + mollusk$Abundance)) %&gt;% 
+  corrplot::corrplot(
+    is.corr = FALSE,
+    addgrid.col = NA, 
+    tl.cex = .5, 
+    cl.pos = "n"
+  )
+```
 
-1. Edit Markdown source and refresh browser to see updated slides;
+![](mollusk_files/figure-html/glance Abundances-1.png)&lt;!-- --&gt;
+
+---
+
+# Covariates
+
+The three first covariates are categorical. The fourth one is numerical.
+
+- `site`: sampling site
+- `season`: winter, spring, summer, autumn
+- `method`: sampling - wood or string
+- `duration`: time of exposure (in week)
+
+
+```r
+summary(mollusk$Covariate)
+```
+
+```
+##         site       season      method      duration    
+##  Negria1  :24   automn:41   string:82   Min.   :3.000  
+##  Negria2  :24   spring:44   wood  :81   1st Qu.:3.000  
+##  Pecheurs1:24   summer:44               Median :6.000  
+##  Pecheurs2:24   winter:34               Mean   :6.129  
+##  GGravier3:22                           3rd Qu.:9.000  
+##  GGravier1:21                           Max.   :9.000  
+##  (Other)  :24
+```
+
+---
+
+# Data preparation
+
+In **PLNmodels**, data are handled into a single data frame that put together
+1. the counts,
+1. the potential covariates,
+1. the offset that may be used in the models.
+
+--
+
+_Important!_
+1. All the species found in the counts table will be used in the model,
+2. The formula mechanism of `R` allow you to choose specific covariates or offsets.
+
+--
+
+The helping function `prepare_data` allows you to avoid taking care of cumbersome data manipulation &lt;sup&gt;1&lt;/sup&gt;.
+
+
+```r
+prepare_data(
+  counts     = , # your count table
+  covariates = , # your covariates
+  offset     = , # the method to compute offset
+)
+```
+
+.footnote[
+[1] variants of `prepare_data` exist for `biom` and `phyloseq` BioConductor formats.
 ]
-
-.pull-right[
-1. Start with an R Markdown document;
-
-1. R Markdown (can embed R/other code chunks);
-
-1. Provide an option `autoplay`;
-
-1. MathJax just works;&lt;sup&gt;*&lt;/sup&gt;
-
-1. Highlight code with `{{}}`;
-
-1. The RStudio addin "Infinite Moon Reader" automatically refreshes slides on changes;
-]
-
-.footnote[[*] Not really. See next page.]
-
 ---
 
-# Math Expressions
+# Preparing the mollusk data set 
 
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. &amp;#36;\alpha+\beta$ renders `\(\alpha+\beta\)`. You can use the display style with double dollar signs:
-
-```
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-```
-
-`$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$`
-
-Limitations:
-
-1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
-
-1. There should not be spaces after the opening `$` or before the closing `$`.
-
-1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
-
----
-
-# R Code
+We choose here to consider the total sum of count to build our vector of offsets
 
 
 ```r
-# a boring regression
-fit = lm(dist ~ 1 + speed, data = cars)
-coef(summary(fit))
+mollusc &lt;- prepare_data(
+    counts = mollusk$Abundance,
+    covariates = mollusk$Covariate, 
+*   offset = "TSS"  # look at other possible choices
+  )
 ```
 
-```
-#               Estimate Std. Error   t value     Pr(&gt;|t|)
-# (Intercept) -17.579095  6.7584402 -2.601058 1.231882e-02
-# speed         3.932409  0.4155128  9.463990 1.489836e-12
-```
+--
+
+The structure of the final object is a data frame, but with some columns filled with matrices:
+
 
 ```r
-dojutsu = c('地爆天星', '天照', '加具土命', '神威', '須佐能乎', '無限月読')
-grep('天', dojutsu, value = TRUE)
+str(mollusc, max.level = 1)
 ```
 
 ```
-# [1] "地爆天星" "天照"
+## 'data.frame':	159 obs. of  6 variables:
+##  $ Abundance: int [1:159, 1:32] 2 2 1 13 19 54 32 6 24 15 ...
+##   ..- attr(*, "dimnames")=List of 2
+##  $ site     : Factor w/ 8 levels "GGravier1","GGravier2",..: 5 5 5 5 5 5 5 5 5 5 ...
+##  $ season   : Factor w/ 4 levels "automn","spring",..: 4 4 4 2 2 2 3 3 3 1 ...
+##  $ method   : Factor w/ 2 levels "string","wood": 2 2 2 2 2 2 2 2 2 2 ...
+##  $ duration : num  3 6 9 3 6 9 3 6 9 3 ...
+##  $ Offset   : num  83 203 93 18 41 96 174 22 104 88 ...
 ```
 
 ---
 
-# R Plots
+class: inverse, center, middle
 
-
-```r
-par(mar = c(4, 4, 1, .1))
-plot(cars, pch = 19, col = 'darkgray', las = 1)
-abline(fit, lwd = 2)
-```
-
-![](mollusk_files/figure-html/cars-1.svg)&lt;!-- --&gt;
+# Fitting Poisson Lognormal models with *PLN()*
 
 ---
 
-# Tables
+# The Poisson Lognormal model (PLN)
 
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
+The PLN model is a multivariate generalized linear model, where 
+
+- the counts `\(\mathbf{Y}_i\)` are the response variables
+- the main effect is due to a linear combination of the covariates `\(\mathbf{x}_i\)`
+- a vector of offsets `\(\mathbf{o}_i\)` can be specified for each sample.
+
+$$
+  \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
+$$
+The unkwown parameters are 
+- `\(\boldsymbol\Theta\)`, the matrix of regression parameters
+- `\(\boldsymbol\Sigma\)`, the variance-covariance matrix
+
+--
+
+When all individuals `\(i=1,\dots,n\)` are stacked together, the data matrices available to feed the model are
+
+  - the `\(n\times p\)` matrix of counts  `\(\mathbf{Y}\)`
+  - the `\(n\times d\)` matrix of design  `\(\mathbf{X}\)`
+  - the `\(n\times p\)` matrix of offsets `\(\mathbf{O}\)`
+
+---
+
+# The PLN function
+
+The `PLN` function works in the same way as `lm`: 
 
 
 ```r
-knitr::kable(head(iris), format = 'html')
+PLN(formula = , # mandatory
+    data    = , # highly recommended
+    subset    , # optional  
+    weights   , # optional 
+    control     # optional
+  )
+```
+
+- `data` brings the variable to work with
+- `formula` specifies how the relation between variables in `data`
+
+  ( `\(\rightsquigarrow\)` _It builds matrices_ `\(\mathbf{Y},\mathbf{X},\mathbf{O}\)`)
+
+--
+
+- `subset` is used for subsampling the observations, 
+- `weights` is used to weighting the observations, 
+- `control` is (mainly) used for tuning the optimization
+
+---
+
+# Simple PLN models on mollusc data (I)
+
+The simplest model we can imagine only has an intercept term:
+
+
+```r
+M00_mollusc &lt;- PLN(Abundance ~ 1, mollusc)
+```
+
+`M00_mollusc` is a particular `R` object that comes with a couple methods:
+
+
+```r
+M00_mollusc
+```
+
+```
+## A multivariate Poisson Lognormal fit with full covariance model.
+## ==================================================================
+##  degrees_freedom    loglik      BIC       ICL R_squared
+##              560 -3634.067 -5053.36 -13800.65 0.9788567
+## ==================================================================
+## * Useful fields 
+##     $model_par, $latent, $var_par, $optim_par 
+##     $loglik, $BIC, $ICL, $loglik_vec, $degrees_freedom, $criteria 
+## * Useful S3 methods
+##     print(), coef(), vcov(), fitted(), predict(), standard_error(), fisher()
+```
+
+---
+
+# Accessing parameters: coefficients and co
+
+
+```r
+coef(M00_mollusc) %&gt;% head() %&gt;% t() %&gt;% knitr::kable(format = "html")
 ```
 
 &lt;table&gt;
  &lt;thead&gt;
   &lt;tr&gt;
-   &lt;th style="text-align:right;"&gt; Sepal.Length &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Sepal.Width &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Petal.Length &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Petal.Width &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; Species &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Bit &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Vap &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Vac &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Gac &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Raa &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Rap &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 5.1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.5 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1.4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 4.9 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.0 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1.4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 4.7 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.2 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1.3 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 4.6 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1.5 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 5.0 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.6 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1.4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 5.4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.9 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1.7 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.4 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; setosa &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5910263 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5.108065 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3348884 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.190636 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.518615 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -7.283385 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 
----
-
-# HTML Widgets
-
 
 ```r
-DT::datatable(
-  head(iris, 10),
-  fillContainer = FALSE, options = list(pageLength = 8)
+M00_mollusc$criteria %&gt;% knitr::kable(format = "html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; degrees_freedom &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; loglik &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; BIC &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; ICL &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; R_squared &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 560 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3634.067 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5053.36 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13800.65 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9788567 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Try some other fields!
+
+---
+
+# Accessing parameters: covariance
+
+.pull-left[
+
+```r
+corrplot(
+  vcov(M00_mollusc),
+  is.corr = FALSE, tl.cex = .5
 )
 ```
 
-<div id="htmlwidget-1188781319caac68f0b1" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1188781319caac68f0b1">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6","7","8","9","10"],[5.1,4.9,4.7,4.6,5,5.4,4.6,5,4.4,4.9],[3.5,3,3.2,3.1,3.6,3.9,3.4,3.4,2.9,3.1],[1.4,1.4,1.3,1.5,1.4,1.7,1.4,1.5,1.4,1.5],[0.2,0.2,0.2,0.2,0.2,0.4,0.3,0.2,0.2,0.1],["setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Sepal.Length<\/th>\n      <th>Sepal.Width<\/th>\n      <th>Petal.Length<\/th>\n      <th>Petal.Width<\/th>\n      <th>Species<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
-
----
-
-# Some Tips
-
-
-.pull-left[
-An example using a leading `*`:
-
-    ```r
-    if (TRUE) {
-    ** message("Very important!")
-    }
-    ```
-Output:
-```r
-if (TRUE) {
-* message("Very important!")
-}
-```
-
-This is invalid R code, so it is a plain fenced code block that is not executed.
+![](mollusk_files/figure-html/simple PLN covariance-1.png)&lt;!-- --&gt;
 ]
 
 .pull-right[
-An example using `{{}}`:
-
-    ```{r tidy=FALSE}
-    if (TRUE) {
-    *{{ message("Very important!") }}
-    }
-    ```
-Output:
 
 ```r
-if (TRUE) {
-* message("Very important!") 
-}
+corrplot(
+  cov2cor(vcov(M00_mollusc)),
+  tl.cex = .5
+)
 ```
 
-```
-## Very important!
-```
-
-It is valid R code so you can run it. Note that `{{}}` can wrap an R expression of multiple lines.
+![](mollusk_files/figure-html/simple PLN correlation-1.png)&lt;!-- --&gt;
 ]
 
 ---
 
-# Some Tips
+# Playing with offsets
 
-An example of using the trailing comment `#&lt;&lt;` to highlight lines:
-
-````markdown
-```{r tidy=FALSE}
-library(ggplot2)
-ggplot(mtcars) + 
-  aes(mpg, disp) + 
-  geom_point() +   #&lt;&lt;
-  geom_smooth()    #&lt;&lt;
-```
-````
-
-Output:
+Let us try the Total sum of count for offset, and the sampling duration:
 
 
 ```r
-library(ggplot2)
-ggplot(mtcars) + 
-  aes(mpg, disp) + 
-* geom_point() +
-* geom_smooth()
+M01_mollusc &lt;- PLN(Abundance ~ 1 + offset(log(Offset)) , mollusc)
+M02_mollusc &lt;- PLN(Abundance ~ 1 + offset(log(duration)), mollusc)
 ```
 
----
-
-# Some Tips
-
-When you enable line-highlighting, you can also use the chunk option `highlight.output` to highlight specific lines of the text output from a code chunk. For example, `highlight.output = TRUE` means highlighting all lines, and `highlight.output = c(1, 3)` means highlighting the first and third line.
-
-````md
-```{r, highlight.output=c(1, 3)}
-head(iris)
-```
-````
+We then compare the models regarding their criteria:
 
 
-```
-*##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-## 1          5.1         3.5          1.4         0.2  setosa
-*## 2          4.9         3.0          1.4         0.2  setosa
-## 3          4.7         3.2          1.3         0.2  setosa
-## 4          4.6         3.1          1.5         0.2  setosa
-## 5          5.0         3.6          1.4         0.2  setosa
-## 6          5.4         3.9          1.7         0.4  setosa
+```r
+rbind(
+  M00 = M00_mollusc$criteria,
+  M01 = M01_mollusc$criteria, 
+  M02 = M02_mollusc$criteria
+) %&gt;% knitr::kable(format = "html")
 ```
 
-Question: what does `highlight.output = c(TRUE, FALSE)` mean? (Hint: think about R's recycling of vectors)
-
----
-
-# Themes
-
-To use a theme, you can specify the `css` option as an array of CSS filenames (without the `.css` extensions), e.g.,
-
-```yaml
-output:
-  xaringan::moon_reader:
-    css: [default, metropolis, metropolis-fonts]
-```
-
-If you want to contribute a theme to **xaringan**, please read [this blog post](https://yihui.name/en/2017/10/xaringan-themes).
-
----
-
-class: center
-
-# Hand seals (印)
-
-Press `h` or `?` to see the possible ninjutsu you can use in remark.js.
-
-![](https://upload.wikimedia.org/wikipedia/commons/7/7e/Mudra-Naruto-KageBunshin.svg)
-
----
-
-class: center, middle
-
-# Thanks!
-
-Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
-
-The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; degrees_freedom &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; loglik &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; BIC &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; ICL &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; R_squared &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; M00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 560 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3634.067 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5053.360 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13800.65 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9788567 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; M01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 560 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3593.202 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5012.495 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13927.45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9648182 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; M02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 560 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3651.196 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5070.489 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13908.51 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9795608 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({

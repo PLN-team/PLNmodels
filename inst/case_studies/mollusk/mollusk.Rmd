@@ -19,7 +19,7 @@ options(htmltools.dir.version = FALSE)
 
 class: inverse, center, middle
 
-background-image: url(../../../man/figures/logo.png)
+<!-- background-image: url(../../../man/figures/logo.png) -->
 
 # Getting Started
 
@@ -28,10 +28,10 @@ background-image: url(../../../man/figures/logo.png)
 
 ## Package PLNmodels and dependencies
 
-For this tutorial, you may preferably install the binaries of **PLNmodels** from [CRAN]() :
+For this tutorial, you may preferably install the last release of **PLNmodels** from GitHub:
 
 ```{r eval=FALSE, tidy=FALSE}
-install.packages("PLNmodels")
+devtools::install_github("jchiquet/PLNmodels@v7.0.0")
 ```
 
 Advanced users<sup>1</sup> can install the development version<sup>2</sup> from [Github](https://github.com/jchiquet/PLNmodels)
@@ -75,232 +75,262 @@ The [PLNmodels website](https://jchiquet.github.io/PLNmodels/) contains
 all formatted with [**pkgdown**](https://pkgdown.r-lib.org)
 
 ---
-class: inverse, middle, center
 
-# Load the data
+# Some additional useful packages
 
+The tools provided by the two following libraries will be useful during our analyses.
+
+```{r load tools}
+library(tidyverse) # data manipulation
+library(corrplot)  # plot of covariance/correlation matrices
+```
+
+---
+
+class: inverse, center, middle
+
+# The Mollusk data set
+
+---
+
+# Data overview
+
+The `mollusk` variable is loaded by the function `data()`. 
 ```{r load mollusk}
 data(mollusk)
-mollusk
 ```
 
+It consists in a list of two data frames
+
+```{r mollusk struct}
+str(mollusk, max.level = 1)
+```
+
+These two data frames are typical from ecological data sets:
+
+- The `abundance` table contains the counts of 32 species in 163 samples; 
+- The `covariate` table contains information about 4  environmental variables.
+
+Have a look at the help page with `?mollusk` to get additional details.
 
 ---
 
-# The mollusk data set
+# Abundance table (I)
 
-# remark.js vs xaringan
-
-Some differences between using remark.js (left) and using **xaringan** (right):
-
-.pull-left[
-1. Start with a boilerplate HTML file;
-
-1. Plain Markdown;
-
-1. Write JavaScript to autoplay slides;
-
-1. Manually configure MathJax;
-
-1. Highlight code with `*`;
-
-1. Edit Markdown source and refresh browser to see updated slides;
-]
-
-.pull-right[
-1. Start with an R Markdown document;
-
-1. R Markdown (can embed R/other code chunks);
-
-1. Provide an option `autoplay`;
-
-1. MathJax just works;<sup>*</sup>
-
-1. Highlight code with `{{}}`;
-
-1. The RStudio addin "Infinite Moon Reader" automatically refreshes slides on changes;
-]
-
-.footnote[[*] Not really. See next page.]
-
----
-
-# Math Expressions
-
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. &#36;\alpha+\beta$ renders $\alpha+\beta$. You can use the display style with double dollar signs:
-
-```
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-```
-
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-
-Limitations:
-
-1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
-
-1. There should not be spaces after the opening `$` or before the closing `$`.
-
-1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
-
----
-
-# R Code
-
-```{r comment='#'}
-# a boring regression
-fit = lm(dist ~ 1 + speed, data = cars)
-coef(summary(fit))
-dojutsu = c('地爆天星', '天照', '加具土命', '神威', '須佐能乎', '無限月読')
-grep('天', dojutsu, value = TRUE)
+```{r glimpse Abundance}
+mollusk$Abundance %>% 
+  dplyr::select(1:10) %>% 
+  head() %>% DT::datatable(fillContainer = FALSE)
 ```
 
 ---
 
-# R Plots
+# Abundance table (II)
 
-```{r cars, fig.height=4, dev='svg'}
-par(mar = c(4, 4, 1, .1))
-plot(cars, pch = 19, col = 'darkgray', las = 1)
-abline(fit, lwd = 2)
+```{r glance Abundances, fig.width=12, fig.height=4}
+t(log(1 + mollusk$Abundance)) %>% 
+  corrplot::corrplot(
+    is.corr = FALSE,
+    addgrid.col = NA, 
+    tl.cex = .5, 
+    cl.pos = "n"
+  )
 ```
 
 ---
 
-# Tables
+# Covariates
 
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
+The three first covariates are categorical. The fourth one is numerical.
 
-```{r}
-knitr::kable(head(iris), format = 'html')
+- `site`: sampling site
+- `season`: winter, spring, summer, autumn
+- `method`: sampling - wood or string
+- `duration`: time of exposure (in week)
+
+```{r covariates summary}
+summary(mollusk$Covariate)
 ```
 
 ---
 
-# HTML Widgets
+# Data preparation
 
-```{r eval=require('DT'), tidy=FALSE}
-DT::datatable(
-  head(iris, 10),
-  fillContainer = FALSE, options = list(pageLength = 8)
+In **PLNmodels**, data are handled into a single data frame that put together
+1. the counts,
+1. the potential covariates,
+1. the offset that may be used in the models.
+
+--
+
+_Important!_
+1. All the species found in the counts table will be used in the model,
+2. The formula mechanism of `R` allow you to choose specific covariates or offsets.
+
+--
+
+The helping function `prepare_data` allows you to avoid taking care of cumbersome data manipulation <sup>1</sup>.
+
+```{r prepare data, eval = FALSE}
+prepare_data(
+  counts     = , # your count table
+  covariates = , # your covariates
+  offset     = , # the method to compute offset
 )
 ```
 
+.footnote[
+[1] variants of `prepare_data` exist for `biom` and `phyloseq` BioConductor formats.
+]
 ---
 
-# Some Tips
+# Preparing the mollusk data set 
 
+We choose here to consider the total sum of count to build our vector of offsets
 
-.pull-left[
-An example using a leading `*`:
-
-    ```r
-    if (TRUE) {
-    ** message("Very important!")
-    }
-    ```
-Output:
-```r
-if (TRUE) {
-* message("Very important!")
-}
+```{r preparing mollusc, warning = FALSE}
+mollusc <- prepare_data(
+    counts = mollusk$Abundance,
+    covariates = mollusk$Covariate, 
+{{   offset = "TSS" }} # look at other possible choices
+  )
 ```
 
-This is invalid R code, so it is a plain fenced code block that is not executed.
+--
+
+The structure of the final object is a data frame, but with some columns filled with matrices:
+
+```{r structu mollusc}
+str(mollusc, max.level = 1)
+```
+
+---
+
+class: inverse, center, middle
+
+# Fitting Poisson Lognormal models with *PLN()*
+
+---
+
+# The Poisson Lognormal model (PLN)
+
+The PLN model is a multivariate generalized linear model, where 
+
+- the counts $\mathbf{Y}_i$ are the response variables
+- the main effect is due to a linear combination of the covariates $\mathbf{x}_i$
+- a vector of offsets $\mathbf{o}_i$ can be specified for each sample.
+
+$$
+  \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
+$$
+The unkwown parameters are 
+- $\boldsymbol\Theta$, the matrix of regression parameters
+- $\boldsymbol\Sigma$, the variance-covariance matrix
+
+--
+
+When all individuals $i=1,\dots,n$ are stacked together, the data matrices available to feed the model are
+
+  - the $n\times p$ matrix of counts  $\mathbf{Y}$
+  - the $n\times d$ matrix of design  $\mathbf{X}$
+  - the $n\times p$ matrix of offsets $\mathbf{O}$
+
+---
+
+# The PLN function
+
+The `PLN` function works in the same way as `lm`: 
+
+```{r, eval = FALSE}
+PLN(formula = , # mandatory
+    data    = , # highly recommended
+    subset    , # optional  
+    weights   , # optional 
+    control     # optional
+  )
+```
+
+- `data` brings the variable to work with
+- `formula` specifies how the relation between variables in `data`
+
+  ( $\rightsquigarrow$ _It builds matrices_ $\mathbf{Y},\mathbf{X},\mathbf{O}$)
+
+--
+
+- `subset` is used for subsampling the observations, 
+- `weights` is used to weighting the observations, 
+- `control` is (mainly) used for tuning the optimization
+
+---
+
+# Simple PLN models on mollusc data (I)
+
+The simplest model we can imagine only has an intercept term:
+
+```{r mollusc PLN, cache = TRUE, results = FALSE}
+M00_mollusc <- PLN(Abundance ~ 1, mollusc)
+```
+
+`M00_mollusc` is a particular `R` object that comes with a couple methods:
+
+```{r mollusc PLN print}
+M00_mollusc
+```
+
+---
+
+# Accessing parameters: coefficients and co
+
+```{r simple PLN coeff}
+coef(M00_mollusc) %>% head() %>% t() %>% knitr::kable(format = "html")
+```
+
+```{r simple PLN others}
+M00_mollusc$criteria %>% knitr::kable(format = "html")
+```
+
+Try some other fields!
+
+---
+
+# Accessing parameters: covariance
+
+.pull-left[
+```{r simple PLN covariance}
+corrplot(
+  vcov(M00_mollusc),
+  is.corr = FALSE, tl.cex = .5
+)
+```
 ]
 
 .pull-right[
-An example using `{{}}`:
-
-    `r ''````{r tidy=FALSE}
-    if (TRUE) {
-    *{{ message("Very important!") }}
-    }
-    ```
-Output:
-```{r tidy=FALSE}
-if (TRUE) {
-{{ message("Very important!") }}
-}
+```{r simple PLN correlation}
+corrplot(
+  cov2cor(vcov(M00_mollusc)),
+  tl.cex = .5
+)
 ```
-
-It is valid R code so you can run it. Note that `{{}}` can wrap an R expression of multiple lines.
 ]
 
 ---
 
-# Some Tips
+# Playing with offsets
 
-An example of using the trailing comment `#<<` to highlight lines:
+Let us try the Total sum of count for offset, and the sampling duration:
 
-````markdown
-`r ''````{r tidy=FALSE}
-library(ggplot2)
-ggplot(mtcars) + 
-  aes(mpg, disp) + 
-  geom_point() +   #<<
-  geom_smooth()    #<<
-```
-````
-
-Output:
-
-```{r tidy=FALSE, eval=FALSE}
-library(ggplot2)
-ggplot(mtcars) + 
-  aes(mpg, disp) + 
-  geom_point() +   #<<
-  geom_smooth()    #<<
+```{r simple PLN offsets, results = FALSE}
+M01_mollusc <- PLN(Abundance ~ 1 + offset(log(Offset)) , mollusc)
+M02_mollusc <- PLN(Abundance ~ 1 + offset(log(duration)), mollusc)
 ```
 
----
+We then compare the models regarding their criteria:
 
-# Some Tips
-
-When you enable line-highlighting, you can also use the chunk option `highlight.output` to highlight specific lines of the text output from a code chunk. For example, `highlight.output = TRUE` means highlighting all lines, and `highlight.output = c(1, 3)` means highlighting the first and third line.
-
-````md
-`r ''````{r, highlight.output=c(1, 3)}
-head(iris)
-```
-````
-
-```{r, highlight.output=c(1, 3), echo=FALSE}
-head(iris)
+```{r}
+rbind(
+  M00 = M00_mollusc$criteria,
+  M01 = M01_mollusc$criteria, 
+  M02 = M02_mollusc$criteria
+) %>% knitr::kable(format = "html")
 ```
 
-Question: what does `highlight.output = c(TRUE, FALSE)` mean? (Hint: think about R's recycling of vectors)
-
----
-
-# Themes
-
-To use a theme, you can specify the `css` option as an array of CSS filenames (without the `.css` extensions), e.g.,
-
-```yaml
-output:
-  xaringan::moon_reader:
-    css: [default, metropolis, metropolis-fonts]
-```
-
-If you want to contribute a theme to **xaringan**, please read [this blog post](https://yihui.name/en/2017/10/xaringan-themes).
-
----
-
-class: center
-
-# Hand seals (印)
-
-Press `h` or `?` to see the possible ninjutsu you can use in remark.js.
-
-![](https://upload.wikimedia.org/wikipedia/commons/7/7e/Mudra-Naruto-KageBunshin.svg)
-
----
-
-class: center, middle
-
-# Thanks!
-
-Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
-
-The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).

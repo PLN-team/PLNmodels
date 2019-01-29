@@ -5,7 +5,7 @@
 ##'
 ##' @format A list with 2 two data frames:
 ##' \describe{
-##'   \code{Abundance}{a 163 x 32 data frame of abundancies/counts (163 samples and 32 mollusk species)}
+##'   \item{Abundance}{a 163 x 32 data frame of abundancies/counts (163 samples and 32 mollusk species)}
 ##'   \item{Covariate}{a 163 x 4 data frame of covariates:
 ##'   \describe{
 ##'     \item{site}{a factor with 8 levels indicating the sampling site}

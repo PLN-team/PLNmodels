@@ -1,14 +1,23 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2019-01-29: deployment of pages with travis
+#  - 2019-01-28: deployment of releases with travis
 #  - 2019-01-07: handling bioconductor
 #  - 2018-12-08: coverage updated
-#  - 2018-09-12: added checck for OS X
+#  - 2018-09-12: added check for OS X
 #  - 2018-09-11: warning as error set to false
 #  - 2018-06-29: first try
 
 language: r
+
 r_check_args: --as-cran
+
+env:
+  - PKG_TARBALL=PLNmodels_0.7.0.0.tar.gz
+
+sudo: required
+
 cache: packages
 
 warnings_are_errors: false
@@ -24,6 +33,7 @@ brew_packages:
 
 r_packages:
   - covr
+  - pkgdown
 
 use_bioc: true
 bioc_required: true
@@ -38,7 +48,21 @@ matrix:
       r: bioc-release
       after_success:
       - Rscript -e 'covr::codecov()'
-      env: NB='with covr'
+      - Rscript -e 'pkgdown::build_site()'
+      deploy:
+        - provider: releases
+          github-token: $GITHUB_TOKEN
+          file: ${PKG_TARBALL}
+          skip_cleanup: true
+          on:
+            tags: true
+        - provider: pages
+          skip-cleanup: true
+          github-token: $GITHUB_TOKEN
+          local_dir: "docs"
+          keep-history: true
+          on:
+            branch: master
     - os: linux
       r: bioc-devel
     - os: osx
