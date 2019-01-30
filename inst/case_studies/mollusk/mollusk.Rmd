@@ -2,7 +2,7 @@
 title: "PLNmodels: a case study"
 subtitle: "The mollusk data set"
 author: "PLN team"
-date: "`r Sys.Date()`"
+date: "2019/01 (last update: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
     chakra: libs/remark-latest.min.js
