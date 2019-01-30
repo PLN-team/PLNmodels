@@ -4,7 +4,6 @@
     <title>PLNmodels: a case study</title>
     <meta charset="utf-8">
     <meta name="author" content="PLN team" />
-    <meta name="date" content="2019-01-29" />
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
@@ -26,7 +25,7 @@ class: center, middle, inverse, title-slide
 # PLNmodels: a case study
 ## The mollusk data set
 ### PLN team
-### 2019-01-29
+### 2019/01 (last update: 2019-01-30)
 
 ---
 
@@ -34,8 +33,6 @@ class: center, middle, inverse, title-slide
 
 
 class: inverse, center, middle
-
-&lt;!-- background-image: url(../../../man/figures/logo.png) --&gt;
 
 # Getting Started
 
@@ -109,7 +106,7 @@ library(tidyverse) # data manipulation
 ```
 
 ```
-## ── Attaching packages ─────────────────────────────────── tidyverse 1.2.1 ──
+## ── Attaching packages ────────────────────────────────────────────────── tidyverse 1.2.1 ──
 ```
 
 ```
@@ -120,7 +117,7 @@ library(tidyverse) # data manipulation
 ```
 
 ```
-## ── Conflicts ────────────────────────────────────── tidyverse_conflicts() ──
+## ── Conflicts ───────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()
 ```
@@ -180,8 +177,8 @@ mollusk$Abundance %&gt;%
   head() %&gt;% DT::datatable(fillContainer = FALSE)
 ```
 
-<div id="htmlwidget-3ce9c6593e1842736679" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3ce9c6593e1842736679">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6"],[2,2,1,13,19,54],[0,0,0,0,0,0],[2,0,0,0,4,3],[0,0,0,0,0,0],[0,2,1,0,0,1],[0,0,0,0,0,0],[0,0,0,0,0,0],[22,93,39,1,2,2],[0,0,0,0,0,0],[0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Bit<\/th>\n      <th>Vap<\/th>\n      <th>Vac<\/th>\n      <th>Gac<\/th>\n      <th>Raa<\/th>\n      <th>Rap<\/th>\n      <th>Lit<\/th>\n      <th>Pha<\/th>\n      <th>Phf<\/th>\n      <th>Plc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-cfa55b81174c1180541b" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-cfa55b81174c1180541b">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6"],[2,2,1,13,19,54],[0,0,0,0,0,0],[2,0,0,0,4,3],[0,0,0,0,0,0],[0,2,1,0,0,1],[0,0,0,0,0,0],[0,0,0,0,0,0],[22,93,39,1,2,2],[0,0,0,0,0,0],[0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Bit<\/th>\n      <th>Vap<\/th>\n      <th>Vac<\/th>\n      <th>Gac<\/th>\n      <th>Raa<\/th>\n      <th>Rap<\/th>\n      <th>Lit<\/th>\n      <th>Pha<\/th>\n      <th>Phf<\/th>\n      <th>Plc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -297,7 +294,7 @@ str(mollusc, max.level = 1)
 
 class: inverse, center, middle
 
-# Fitting Poisson Lognormal models with *PLN()*
+# Multivariate Poisson Lognormal models with PLN
 
 ---
 
@@ -310,7 +307,7 @@ The PLN model is a multivariate generalized linear model, where
 - a vector of offsets `\(\mathbf{o}_i\)` can be specified for each sample.
 
 $$
-  \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
+\mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
 $$
 The unkwown parameters are 
 - `\(\boldsymbol\Theta\)`, the matrix of regression parameters
@@ -473,7 +470,6 @@ corrplot(
 ]
 
 ---
-
 # Playing with offsets
 
 Let us try the Total sum of count for offset, and the sampling duration:
@@ -533,8 +529,633 @@ rbind(
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
+
+---
+
+# Adding covariates: site effect (I)
+
+The covariate `site` has 8 levels indicating the sampling site, 
+
+
+```r
+table(mollusc$site)
+```
+
+```
+## 
+## GGravier1 GGravier2 GGravier3     Meant   Negria1   Negria2 Pecheurs1 
+##        21        16        18         8        24        24        24 
+## Pecheurs2 
+##        24
+```
+
+--
+
+We would like to account for this covariate, as a natural candidate for explaining a part of the variance which is not very interesting regarding the interactions between species&lt;sup&gt;1&lt;/sup&gt;:
+
+
+
+```r
+M11_mollusc &lt;- PLN(Abundance ~ 0 + site + offset(log(Offset)), mollusc)
+```
+
+.footnote[
+[1] Note the use of `0 + ` in the formula so that each parameters associated with the categorical variable corresponds to a mean effect in each modality. 
+]
+
+---
+# Adding covariates: site effect (II)
+
+There is a clear gain in introducing this covariate in the model:
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; degrees_freedom &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; loglik &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; BIC &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; ICL &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; R_squared &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; M01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 560 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3593.202 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5012.495 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13927.45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9648182 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; M11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 784 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2899.770 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4886.781 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -11479.57 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8920388 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+--
+
+However, looking at the coefficients `\(\mathbf{\Theta}\)` associated with `site`, some modalities may be regrouped, hoping for a gain in statistical power/efficiency:
+
+![](mollusk_files/figure-html/site matrix plot-1.png)&lt;!-- --&gt;
+
+---
+
+# Adding covariates (III)
+
+So let us regroup the "Gravier" modalities and the "Negria" and adjust a model
+
+```r
+mollusc &lt;- mollusc %&gt;% 
+  mutate(site_new = 
+    fct_collapse(site, 
+      Gravier = c("GGravier1", "GGravier2", "GGravier3"),
+      Negria  = c("Negria1", "Negria2")
+    )
+  )
+M21_mollusc &lt;- PLN(Abundance ~ 0 + site_new + offset(log(Offset)), mollusc)
+```
+
+--
+
+There is a little loss in terms of loglikelihood, but the BIC choses the latter model:
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; degrees_freedom &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; loglik &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; BIC &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; ICL &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; R_squared &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; M11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 784 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2899.770 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4886.781 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -11479.57 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8920388 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; M21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 688 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3019.726 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4763.429 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -11974.22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9096246 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+
+class: inverse, center, middle
+
+# Dimension reduction and vizualisation with PLNPCA
+
+---
+# Poisson Lognormal model for Principal Component Analysis
+
+The PLN-PCA model implemented in *PLNmodels* can viewed as a PLN model with an additional rank constraint on the covariance matrix `\(\boldsymbol\Sigma\)` such that `\(\mathrm{rank}(\boldsymbol\Sigma)= q\)`:
+
+`$$\begin{array}{rcl}
+  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}(\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta,\boldsymbol\Sigma), &amp; \boldsymbol\Sigma = \mathbf{B}\mathbf{B}^\top \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
+\end{array}$$`
+
+The dimension of the latent space `\(q\)` corresponds to the number of axes in the PCA or, in other words, to the rank of `\(\boldsymbol\Sigma = \mathbf{B}\mathbf{B}^\intercal\)`.
+
+
+The unkwown parameters are 
+- `\(\boldsymbol\Theta\)`, the matrix of regression parameters
+- `\(\mathbf{B}\)`, the matrix of _rescaled loadings_
+
+---
+# The PLNPCA function
+
+The `PLNPCA` function works in the same way as `PLN`. 
+
+There is just an additional parameter to control the successive value of the ranks to be considered:
+
+
+```r
+PLNPCA(formula = ,   # mandatory
+       data    = ,   # highly recommended
+       subset    ,   # optional  
+       weights   ,   # optional 
+*      ranks   = 1:5 # has default values
+       control_init  # optional
+       control_main  # optional
+  )
+```
+
+- `ranks` is a vector of rank to be considered
+- `control_init` is (mainly) used for tuning the initialization
+- `control_main` is (mainly) used for tuning the optimization
+
+The output will be a _collection_ of objects (or _family_), one per rank.
+
+---
+# A PCA analysis of the mollusc data set
+
+Let us fit PLNPCA on our best model with offset:
+
+
+```r
+PCA_offset &lt;- PLNPCA(Abundance ~ 1 + offset(log(Offset)), mollusc, ranks = 1:8)
+```
+
+--
+
+The ouput is a collection of `R` objects:
+
+
+```r
+PCA_offset
+```
+
+```
+## --------------------------------------------------------
+## COLLECTION OF 8 POISSON LOGNORMAL MODELS
+## --------------------------------------------------------
+##  Task: Principal Component Analysis
+## ========================================================
+##  - Ranks considered: from 1 to 8 
+##  - Best model (regarding BIC): rank = 6 - R2 = 0.93 
+##  - Best model (regarding ICL): rank = 5 - R2 = 0.91
+```
+
+This collection of object is itself an `R` object with a three methods: `plot`, `getModel`, `getBestModel`. (Additional help can be found with `?PLNPCAfamily`)
+
+---
+# PCA analysis: model selection (I)
+
+The plot function gives you hints about the "right" rank for your data
+
+
+```r
+plot(PCA_offset)
+```
+
+![](mollusk_files/figure-html/plot PLNPCA offset-1.png)&lt;!-- --&gt;
+
+---
+# PCA analysis: model selection (II)
+
+To extract a particular model from the collection, use `getBestModel`:
+
+
+```r
+PCA_offset_BIC &lt;- getBestModel(PCA_offset, "BIC")
+```
+
+--
+
+The extracted object inherits from the `PLNfit` class (resulting from `PLN`), but with additional methods due to its `PCA` nature: when printing `PCA_offset_BIC`, we get
+
+
+```
+## Poisson Lognormal with rank constrained for PCA (rank = 6)
+## ==================================================================
+##  degrees_freedom    loglik       BIC       ICL R_squared
+##              224 -3498.244 -4065.961 -4242.693 0.9302682
+## ==================================================================
+## * Useful fields 
+##     $model_par, $latent, $var_par, $optim_par 
+##     $loglik, $BIC, $ICL, $loglik_vec, $degrees_freedom, $criteria 
+## * Useful S3 methods
+##     print(), coef(), vcov(), fitted(), predict(), standard_error(), fisher() 
+## * Additional fields for PCA
+##     $percent_var, $corr_circle, $scores, $rotation 
+## * Additional S3 methods for PCA
+##     plot.PLNPCAfit()
+```
+
+---
+# PCA analysis: model exploration
+
+Inheritance allows you to rely on the same methods as with `PLN`:
+
+.pull-left[
+
+```r
+corrplot(
+  cov2cor(vcov(M01_mollusc)),
+  tl.cex = .5
+)
+```
+
+![](mollusk_files/figure-html/PLN covariance M01-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+```r
+corrplot(
+  cov2cor(vcov(PCA_offset_BIC)),
+  tl.cex = .5
+)
+```
+
+![](mollusk_files/figure-html/PLNPCA covariance-1.png)&lt;!-- --&gt;
+]
+
+---
+# PCA: vizualisation 
+
+The whole point of PCA is vizualisation via dimension reduction.
+
+.pull-left[
+
+```r
+plot(PCA_offset_BIC,
+  ind_col = mollusc$site,
+  nb_axes = 2)
+```
+
+&lt;img src="mollusk_files/figure-html/PCA offset vizu site-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+plot(PCA_offset_BIC, 
+  ind_col = mollusc$site_new,
+  nb_axes = 2)
+```
+
+&lt;img src="mollusk_files/figure-html/PCA offset vizu site_new-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# PCA: removing covariate effects
+
+To hopefully fine more hidden effects in the data, we may wan to remove confounding ones:
+
+
+```r
+PCA_s &lt;- PLNPCA(Abundance ~ 0 + site_new + offset(log(Offset)), mollusc, ranks = 1:8)
+```
+
+&lt;img src="mollusk_files/figure-html/PCA covariate site plot-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# PCA: refinements in plotting (I)
+
+
+```r
+plot(PCA_offset_BIC,  map = "individual", 
+  ind_col = mollusc$site, main = "my individual map")
+```
+
+&lt;img src="mollusk_files/figure-html/plot individual-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: inverse, center, middle
+
+# Discriminant Analysis for counts with PLNLDA
+
+---
+
+# Poisson Discriminant Analysis
+
+In the vein of Fisher and Rao, we introduce a multi-class LDA model for multivariate count data which can viewed as a PLN model with a discrete group structure in the latent Gaussian space:
+
+The PLN-LDA model assumes a discrete structure with `\(K\)` groups in the following way: the different parameters `\({\boldsymbol\mu}_k \in\mathbb{R}^p\)` corresponds to the group-specific main effects and the variance matrix `\(\boldsymbol{\Sigma}\)` is shared among groups:
+
+`$$\begin{array}{rcl}
+  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}(\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta + {\boldsymbol\mu}_i,\boldsymbol\Sigma) &amp; \boldsymbol{\mu}_i = \mathbf{g}_i^\top \mathbf{M} \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
+\end{array}$$`
+
+where, `\(\mathbf{M} = [\boldsymbol{\mu}_1^\top, \dots, \boldsymbol{\mu}_K^\top]^\top\)` is a `\(K \times p\)` matrix collecting the group-specific main effects, and `\(\mathbf{g}_i\)` is a group-indicator vector of length `\(K\)` 
+
+$$ g_{ik} = 1 \Leftrightarrow g_i = k $$
+
+The unkwown parameters are 
+- `\(\boldsymbol\Theta\)`, the matrix of regression parameters
+- `\(\mathbf{M}\)`, the matrix containing the `\(K\)` vectors of group means
+- `\(\boldsymbol{\Sigma}\)`, the mvariance-covariance matrix
+
+---
+# The PLNLDA function
+
+The `PLNLDA` function works in the same way as `PLN`. 
+
+There is just an additional parameter to for the vector of groups on which the discriminant rule is built:
+
+
+```r
+PLNLDA(formula = , # mandatory
+       data    = , # highly recommended
+       subset    , # optional  
+       weights   , # optional 
+*      grouping  , # mandatory
+       control     # optional
+  )
+```
+
+- `grouping` is a factor of group () to be considered
+
+---
+
+# LDA of the mollusc data set: site (I)
+
+Let us try a PLN-LDA on the `site_new` variable:
+
+
+```r
+LDA_site &lt;- PLNLDA(
+  Abundance ~ 1 + offset(log(Offset)), mollusc, 
+    grouping = mollusc$site_new)
+```
+
+--
+
+Contrary to PLNPCA, PLNLDA does not need no model selection, and has the same cost as a PLN fit. As usual, the printing method gives acces tho the availab fields and methods:
+
+
+```
+## Linear Discriminant Analysis for Poisson Lognormal distribution
+## ==================================================================
+##  degrees_freedom    loglik       BIC       ICL R_squared
+##              288 -3019.726 -3749.648 -10960.44 0.9096246
+## ==================================================================
+## * Useful fields 
+##     $model_par, $latent, $var_par, $optim_par 
+##     $loglik, $BIC, $ICL, $loglik_vec, $degrees_freedom, $criteria 
+## * Useful S3 methods
+##     print(), coef(), vcov(), fitted(), predict(), standard_error(), fisher() 
+## * Additional fields for LDA
+##     $percent_var, $corr_map, $scores, $group_means 
+## * Additional S3 methods for LDA
+##     plot.PLNLDAfit(), predict.PLNLDAfit()
+```
+
+---
+# LDA of the mollusc data set: site (II)
+
+The plot function is useful to quickly view if some species separates well the groups:
+
+
+```r
+plot(LDA_site, nb_axes = 2)
+```
+
+&lt;img src="mollusk_files/figure-html/PLNLDA site plot-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# LDA of the mollusc data set: season
+
+PLN-LDA works also very well for season, with or with correction of the `site effect`:
+
+
+```r
+LDA_season1 &lt;- PLNLDA(Abundance ~ 1 + offset(log(Offset)), 
+  mollusc, grouping = mollusc$season)
+
+LDA_season2 &lt;- PLNLDA(Abundance ~ site_new + offset(log(Offset)), 
+  mollusc, grouping = mollusc$season)
+```
+
+.pull-left[
+![](mollusk_files/figure-html/plot season1-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+![](mollusk_files/figure-html/plot season2-1.png)&lt;!-- --&gt;
+]
+
+
+---
+
+class: center, middle, inverse
+
+# Sparse structure estimation with PLNnetwork
+
+---
+
+# Sparse precision matrix for multivariate count
+
+The PLN-network model for multivariate count data is a variant of PLN where we add a sparsity constraint on the inverse covariance matrix `\({\boldsymbol\Sigma}^{-1}\triangleq \boldsymbol\Omega\)` by means of the `\(\ell_1\)`-norm, such that `\(\|\boldsymbol\Omega\|_1 &lt; c\)`:
+
+`$$\begin{array}{rcl}
+  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Omega^{-1}\right) &amp;  \|\boldsymbol\Omega\|_1 &lt; c \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
+  \end{array}$$`
+
+The `\(\ell_1\)`-penalty on `\(\boldsymbol\Omega\)` induces sparsity and selection of important direct relationships between entities. Hence, the support of `\(\boldsymbol\Omega\)` correspond to a network of underlying interactions. The sparsity level ($c$ in the above mathematical model), which corresponds to the number of edges in the network, is controlled by a penalty parameter in the optimization process sometimes referred to as `\(\lambda\)`.
+
+
+---
+
+# The PLNnetwork function
+
+The `PLNnetwork` function works in the same way as `PLN`.
+
+There is just an additional parameter to control the successive values of the sparsity contraint:
+
+
+```r
+PLNnetwork(formula = ,  # mandatory
+           data    = ,  # highly recommended
+           subset    ,  # optional  
+           weights   ,  # optional 
+*          penalties ,  # has default values
+       control_init  # optional
+       control_main  # optional
+  )
+```
+
+- `penalties` is a vector controlling the successively applied sparsity constraints
+- `control_init` is (mainly) used for tuning the initialization
+- `control_main` is (mainly) used for tuning the optimization
+
+--
+
+`\(\rightsquigarrow\)` The algorithm finds a penalty inducing an empty network and goes along the penalties levels, adding edges stepwisely.
+
+---
+# Controlling the range of visited networks
+
+The range and size of the vector `penalties` may be controlled via `control_init`. For example,
+
+
+```r
+my_control &lt;- list(
+  nPenalties = 40, # more penalties = more networks
+  min.ratio = 1e-2 # the smaller, the denser the final network
+)
+PLNnetwork(formula, mydata,
+* control_init = my_control
+)
+```
+
+Be careful as 
+- more network means more computation
+- dense network means more computation, and less statistical significance !
+
+---
+# Network inference on the mollusc data set
+
+We try inference of two collections of networks, with or without accounting for the site effect.
+
+
+```r
+networks_mollusc &lt;- 
+  PLNnetwork(
+    Abundance ~ 1 + offset(log(Offset)),
+    data = mollusc, 
+    control_init = list(min.ratio = 1e-2)
+  )
+```
+
+
+```r
+networks_mollusc_site &lt;- 
+  PLNnetwork(
+    Abundance ~ 0 + site_new + offset(log(Offset)),
+    data = mollusc, 
+    control_init = list(min.ratio = 1e-2)
+  )
+```
+
+---
+# PLNnetwork: Model selection
+
+Just like PLN-PCA, PLNnetwork produces a collection of models. The models are indexed by the sparsity level (or penalty). The plot function helps in choosing an appropriate level of penalty: 
+
+.pull-left[
+![](mollusk_files/figure-html/plot network family-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+![](mollusk_files/figure-html/plot network family site-1.png)&lt;!-- --&gt;
+]
+
+---
+# PLNnetwork: field access
+
+Let us plot the residuals covariance matrices, after regularization of its inverse
+.pull-left[
+
+```r
+net1 &lt;- getBestModel(networks_mollusc)
+corrplot(vcov(net1),
+  cl.pos = "n", is.corr = FALSE)
+```
+
+![](mollusk_files/figure-html/plot covariance-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+```r
+net2 &lt;- getBestModel(networks_mollusc_site)
+corrplot(vcov(net2),
+  cl.pos = "n", is.corr = FALSE)
+```
+
+![](mollusk_files/figure-html/plot network site-1.png)&lt;!-- --&gt;
+]
+
+---
+# PLNnetwork: network specific functions 
+
+**PLNmodels** brings additional plotting functions dedicated to network.
+
+`\(\rightsquigarrow\)` The `site` effect was masking the relevant interactions.
+
+.pull-left[
+
+```r
+plot(net1)
+```
+
+![](mollusk_files/figure-html/plot net-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+```r
+plot(net2)
+```
+
+![](mollusk_files/figure-html/plot net site-1.png)&lt;!-- --&gt;
+]
+
+---
+# PLNnetwork: stability selection
+
+An alternative to model selection criteria is the stability selection  - or StARS in the context of network.
+
+- Basically, it uses resampling to estimate robustness of each edges in the network.
+- we keep the value of the penalty that guarantees a given level of robustness in the whole network
+
+Careful: its is computationally expensive.
+
+--
+
+In `getBestModel`, when "StARS" is requested, stabiltiy selection is performed if needed:
+
+
+```r
+net3 &lt;- getBestModel(networks_mollusc_site, "StARS") 
+```
     </textarea>
-<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="libs/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
 "highlightStyle": "github",
 "highlightLines": true,
