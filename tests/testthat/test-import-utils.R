@@ -71,15 +71,16 @@ test_that("common_samples find biggest subset of common samples and produces mes
 
 ## all samples are identical up to a proportionality coefficient (induce explicit simple computations)
 test_that("compute_offset provides correct answers for proportional samples", {
-  sizes <- c(1, 2, 5, 6)
+  sizes <- c(1, 2, 3, 5, 6)
   counts <- sizes %o% 1:10
   median_scale_size <- median(sizes)
   geom_mean_size <- exp(mean(log(sizes)))
+  gmpr <- sapply(seq_along(sizes), function(i) { exp(mean(log(sizes[i]/sizes[-i]))) } )
 
   expect_equal(compute_offset(counts, "TSS"),  sizes * sum(1:10))
   expect_equal(compute_offset(counts, "CSS"),  sizes / median_scale_size)
   expect_equal(compute_offset(counts, "RLE"),  sizes / geom_mean_size)
-  expect_equal(compute_offset(counts, "GMPR"), sizes / geom_mean_size)
+  expect_equal(compute_offset(counts, "GMPR"), gmpr)
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -92,7 +93,7 @@ test_that("compute_offset provides correct answers for single row matrices", {
   expect_equal(compute_offset(counts, "TSS"),  sizes * sum(1:10))
   expect_equal(compute_offset(counts, "CSS"),  sizes / median_scale_size)
   expect_equal(compute_offset(counts, "RLE"),  sizes / geom_mean_size)
-  expect_equal(compute_offset(counts, "GMPR"), sizes / geom_mean_size)
+  expect_error(compute_offset(counts, "GMPR"), "GMPR is not defined when there is only one sample.")
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -101,11 +102,12 @@ test_that("compute_offset provides correct answers for single column matrices", 
   counts <- sizes %o% 1
   median_scale_size <- median(sizes)
   geom_mean_size <- exp(mean(log(sizes)))
+  gmpr <- sapply(seq_along(sizes), function(i) { exp(mean(log(sizes[i]/sizes[-i]))) } )
 
   expect_equal(compute_offset(counts, "TSS"),  sizes)
   expect_equal(compute_offset(counts, "CSS"),  sizes / median_scale_size)
   expect_equal(compute_offset(counts, "RLE"),  sizes / geom_mean_size)
-  expect_equal(compute_offset(counts, "GMPR"), sizes / geom_mean_size)
+  expect_equal(compute_offset(counts, "GMPR"), gmpr)
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -159,7 +161,7 @@ test_that("offset_rle throws a warning when data is too sparse but samples share
                      1, 0, 1, 0, 1),
                    nrow = 2, byrow = TRUE)
   expect_warning(compute_offset(counts, "RLE"),
-                 "Because of high sparsity, some samples have infinite offset.")
+                 "Because of high sparsity, some samples have null or infinite offset.")
 })
 
 test_that("offset_rle fails when no species is shared across samples", {

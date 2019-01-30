@@ -45,16 +45,17 @@ offset_tss <- function(counts) {
 
 ## Geometric Mean Pairwise Ratio (GMPR) normalisation (as presented in doi.org/10.7717/peerj.4600)
 offset_gmpr <- function(counts) {
+  if (nrow(counts) == 1) stop("GMPR is not defined when there is only one sample.")
   ## median of (non-null, non-infinite) pairwise ratios between counts of samples i and j
   pairwise_ratio <- function(i, j) { median(counts[i, ] / counts[j, ], na.rm = TRUE) }
-  ## Robust geometric mean
-  geom_mean <- function(x) { x %>% log %>% mean(na.rm = TRUE) %>% exp }
+  ## Geometric mean of finite values
+  geom_mean <- function(x) { x %>% log %>% `[`(is.finite(.)) %>% mean(na.rm = TRUE) %>% exp }
   ## Matrix of pairwise ratios
   n <- nrow(counts)
   mat_pr <- matrix(NaN, nrow = n, ncol = n)
   for (i in 1:n) {
     for (j in 1:n) {
-      mat_pr[i, j] <- pairwise_ratio(i, j)
+      if (i != j) mat_pr[i, j] <- pairwise_ratio(i, j)
     }
   }
   ## Geometric mean of pairwise ratio
@@ -72,7 +73,7 @@ offset_rle <- function(counts, pseudocounts = 0) {
   if (all(geom_means == 0)) stop("Sample do not share any common species, RLE normalization failed.")
   ## compute size factor as the median of all otus log-ratios in that sample
   size_factor <- apply(counts, 1, function(x) {median(x / geom_means, na.rm = TRUE)} )
-  if (any(is.infinite(size_factor))) warning("Because of high sparsity, some samples have infinite offset.")
+  if (any(is.infinite(size_factor) | size_factor == 0)) warning("Because of high sparsity, some samples have null or infinite offset.")
   return(size_factor)
 }
 
