@@ -172,6 +172,35 @@ Positive counts are used to compute sample-specific quantiles $q_i^l$ and cumula
 $$
 q_i^l = \min \{q \text{ such that } \sum_j 1_{c_{ij} \leq q} \geq l \sum_j 1_{c_{ij} > 0} \} \qquad s_i^l = \sum_{j: c_{ij} \leq q_i^l} c_{ij}
 $$
+The sample-specific quantiles are then used to compute reference quantiles defined as $q^l = \text{median} \{q^i_l\}$ and median average deviation around the quantile $q^l$ as $d^l = \text{median} |q_i^l - q^l|$. The method then searches for the smallest quantile $l$ for which it detects instability, defined as large relative increase in the $d^l$. Formally, $\hat{l}$ is the smallest $l$ satisfying $\frac{d^{l+1} - d^l}{d^l} \geq 0.1$. The scaling sample-specific offset are then chosen as:
+$$
+O_i = s_i^{\hat{l}} / \text{median}_i \{ s_i^{\hat{l}} \}
+$$
+Dividing by the median of the $s_i^{\hat{l}}$ ensures that offsets are centered around $1$ and compare sizes differences with respect to the reference sample. Note also that the reference quantiles $q^l$ can be computed using either the median (default, as in the original @CSS paper) or the mean, by specifying `reference = mean`, as implemented in `metagenomeseq`. 
+
+### Relative Log Expression
+
+A reference sample $(q_j)_j$ is first built by computing the geometric means of each species count:
+$$
+q_j = \exp \left( \frac{1}{n} \sum_{i} \log(c_{ij})\right)
+$$
+Each sample is then compared to the reference sample to compute one ratio per species and the final offset $O_i$ is the median of those ratios:
+$$
+O_i = \text{median}_j \frac{c_{ij}}{q_j}
+$$
+The method fails when no species is shared across all sample (as all $q_j$ are then $0$) or when a sample shares less than 50% of species with the reference (in which case the median of the ratios may be null or infinite). The problem can be alleviated by adding pseudocounts to the $c_{ij}$ with `pseudocounts = 1`. 
+
+### Geometric Mean of Pairwise Ratio 
+
+This method is similar to RLE but does create a reference sample. Instead, each sample is compared to each other to compute a median ratio (similar to RLE)
+$$
+r_{ii'} = {\text{median}}_{j: c_{ij}.c_{i'j} > 0} \frac{c_{ij}}{c_{i'j}}
+$$
+The offset is then taken as the median of all the $r_{ii'}$:
+$$
+O_i = \text{median}_{i' != i} r_{ii'}
+$$
+The method fails when there is only one sample in the data set or when a sample shares no species with any other. 
 
 [^1]: although a `data.frame` is technically a `list`
 
