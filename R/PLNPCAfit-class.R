@@ -64,7 +64,7 @@ PLNPCAfit <-
         round(eigen.val/sum(eigen.val),4)
       },
       corr_circle = function() {
-        corr <- t(t(private$svdBM$v[, 1:self$rank]) * private$svdBM$d[1:self$rank]^2)
+        corr <- t(t(private$svdBM$v[, 1:self$rank, drop = FALSE]) * private$svdBM$d[1:self$rank]^2)
         corr <- corr/sqrt(rowSums(corr^2))
         rownames(corr) <- rownames(private$Sigma)
         corr
@@ -75,7 +75,7 @@ PLNPCAfit <-
         scores
       },
       rotation   = function() {
-        rotation <- private$svdBM$v[, 1:self$rank]
+        rotation <- private$svdBM$v[, 1:self$rank, drop = FALSE]
         rownames(rotation) <- rownames(private$Sigma)
         rotation
       }
