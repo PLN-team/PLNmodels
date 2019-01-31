@@ -49,7 +49,10 @@ offset_gmpr <- function(counts) {
   ## median of (non-null, non-infinite) pairwise ratios between counts of samples i and j
   pairwise_ratio <- function(i, j) { median(counts[i, ] / counts[j, ], na.rm = TRUE) }
   ## Geometric mean of finite values
-  geom_mean <- function(x) { x %>% log %>% `[`(is.finite(.)) %>% mean(na.rm = TRUE) %>% exp }
+  geom_mean <- function(x) {
+    x_log <- log(x)
+    exp(mean(x_log[is.finite(x_log)], na.rm = TRUE))
+  }
   ## Matrix of pairwise ratios
   n <- nrow(counts)
   mat_pr <- matrix(NaN, nrow = n, ncol = n)
