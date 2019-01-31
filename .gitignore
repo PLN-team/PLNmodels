@@ -32,7 +32,7 @@ inst/radix_article/cache/
 inst/case_studies/mollusk/mollusk_cache/
 
 # web files
-docs/
+# docs/
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
