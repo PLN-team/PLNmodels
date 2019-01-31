@@ -164,7 +164,7 @@ In **PLNmodels**, data are handled into a single data frame that put together
 
 _Important!_
 1. All the species found in the counts table will be used in the model,
-2. The formula mechanism of `R` allow you to choose specific covariates or offsets.
+2. The formula mechanism of `R` allows you to choose specific covariates or offsets.
 
 --
 
@@ -179,7 +179,7 @@ prepare_data(
 ```
 
 .footnote[
-[1] variants of `prepare_data` exist for `biom` and `phyloseq` BioConductor formats.
+[1] variants of `prepare_data` exist for [`biom`](http://biom-format.org/) file and objects build using the [`phyloseq`](https://joey711.github.io/phyloseq/) BioConductor package.
 ]
 ---
 
@@ -203,6 +203,7 @@ The structure of the final object is a data frame, but with some columns filled 
 str(mollusc, max.level = 1)
 ```
 
+Note that `mollusc` has 3 fewer samples than `mollusk`, as `prepare_data` automatically removed empty samples. 
 ---
 
 class: inverse, center, middle
@@ -217,7 +218,7 @@ The PLN model is a multivariate generalized linear model, where
 
 - the counts $\mathbf{Y}_i$ are the response variables
 - the main effect is due to a linear combination of the covariates $\mathbf{x}_i$
-- a vector of offsets $\mathbf{o}_i$ can be specified for each sample.
+- a vector<sup>1</sup> of offsets $\mathbf{o}_i$ can be specified for each sample.
 
 $$
 \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
@@ -226,9 +227,13 @@ The unkwown parameters are
 - $\boldsymbol\Theta$, the matrix of regression parameters
 - $\boldsymbol\Sigma$, the variance-covariance matrix
 
+.footnote[
+[1] Single values are also accepted and automatically recycled to full length-vectors.
+]
+
 --
 
-When all individuals $i=1,\dots,n$ are stacked together, the data matrices available to feed the model are
+When all individuals $i=1,\dots,n$ are stacked together, the data matrices required by the model are
 
   - the $n\times p$ matrix of counts  $\mathbf{Y}$
   - the $n\times d$ matrix of design  $\mathbf{X}$
@@ -245,21 +250,20 @@ PLN(formula = , # mandatory
     data    = , # highly recommended
     subset    , # optional  
     weights   , # optional 
-    control     # optional
-  )
+    control     # optional, mostly for advanced users
+    )
 ```
 
-- `data` brings the variable to work with
-- `formula` specifies how the relation between variables in `data`
+- `data` specifies where to look for the variables
+- `formula` specifies the relationship between variables in `data`
 
   ( $\rightsquigarrow$ _It builds matrices_ $\mathbf{Y},\mathbf{X},\mathbf{O}$)
 
 --
 
-- `subset` is used for subsampling the observations, 
+- `subset` is used for subsampling the observations, it should be a **full length** boolean vector, not a vector of indices / sample names
 - `weights` is used to weighting the observations, 
-- `control` is (mainly) used for tuning the optimization
-
+- `control` is (mainly) used for tuning the optimization and should typically not be changed.
 ---
 
 # Simple PLN models on mollusc data (I)
@@ -270,7 +274,7 @@ The simplest model we can imagine only has an intercept term:
 M00_mollusc <- PLN(Abundance ~ 1, mollusc)
 ```
 
-`M00_mollusc` is a particular `R` object that comes with a couple methods:
+`M00_mollusc` is a particular `R` object that comes with a couple methods, helpfully listed when you print the object :
 
 ```{r mollusc PLN print}
 M00_mollusc
@@ -288,7 +292,7 @@ coef(M00_mollusc) %>% head() %>% t() %>% knitr::kable(format = "html")
 M00_mollusc$criteria %>% knitr::kable(format = "html")
 ```
 
-Try some other fields!
+Try accessing some other fields!
 
 ---
 
