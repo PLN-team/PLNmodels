@@ -1,3 +1,4 @@
+
 # PLNmodels: Poisson lognormal models <img src="man/figures/logo.png" align="right" width="155" height="180"/>
 
 [![Travis-CI build
@@ -10,9 +11,9 @@ Badge](https://api.codacy.com/project/badge/Grade/c031ad73ccdb4c88ba11dfd74fab12
 status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/jchiquet/PLNmodels?branch=master)
 
 > The Poisson lognormal model and variants can be used for a variety of
-> multivariate problems when count data are at play (including PCA for
-> count data and network inference). This package implements an
-> efficient algorithm to fit such models accompanied with a set of
+> multivariate problems when count data are at play (including PCA, LDA
+> and network inference for count data). This package implements
+> efficient algorithms to fit such models accompanied with a set of
 > functions for vizualisation and diagnostic.
 
 ## Installation
@@ -28,6 +29,12 @@ On **Debian** or **Ubuntu** use `libnlopt-dev`:
 sudo apt-get install libnlopt-dev
 ```
 
+On **Debian testing** use `libnlopt-cxx-dev`:
+
+``` bash
+sudo apt-get install libnlopt-cxx-dev
+```
+
 On **Fedora** or similar use `NLopt-devel`:
 
 ``` bash
@@ -40,17 +47,58 @@ With **Mac OS X**, install `nlopt` via [homebrew](https://brew.sh/)
 brew install nlopt
 ```
 
-On **Windows**, the package now builds and installs correctly by
-[including static libraries](https://github.com/rwinlib/nlopt) on
-compilation. For the binary version of the package, [check this
+On **Windows**, the package builds and installs correctly by [including
+static libraries](https://github.com/rwinlib/nlopt) on compilation.
+
+For the binary version of the package, [check this
 link](https://ci.appveyor.com/project/jchiquet/plnmodels/build/artifacts)
 
 ### R Package installation
 
+#### CRAN dependencies
+
+**PLNmodels** needs the following CRAN R packages, so check that their
+are installed on your computer.
+
 ``` r
-## w/o vignettes
+library(R6)
+library(glassoFast)
+library(Matrix)
+library(Rcpp)
+library(RcppArmadillo)
+library(igraph)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(corrplot)
+library(magrittr)
+# use install.packages() if needed
+```
+
+#### CRAN dependencies
+
+**PLNmodels** also needs two BioConductor packages
+
+``` r
+library(phyloseq)
+library(biomformat)
+## use BiocManager::install() if needed
+```
+
+#### Installing PLNmodels
+
+For the last tagged release, use
+
+``` r
+devtools::install_github("jchiquet/PLNmodels@v0.7.0.1")
+```
+
+For the development version, use
+
+``` r
 devtools::install_github("jchiquet/PLNmodels")
-devtools::install_github("jchiquet/PLNmodels", build_vignettes = TRUE, build_opts = c("--no-resave-data"))
 ```
 
 ## Usage and main fitting functions
@@ -66,7 +114,6 @@ The main fitting functions work with the usual `R formula` notations,
 with mutivariate responses on the left hand side. You probably want to
 start by one of them. Check the corresponding vignette and documentation
 page. There is a dedicated vignettes for each model in the package (See
-`vignette(package = "PLNmodels")` or
 <http://jchiquet.github.io/PLNmodels/articles/>).
 
 ### Unpenalized Poisson lognormal model (aka PLN)
@@ -98,8 +145,8 @@ myPLNnetwork <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 Please cite our work using the following references:
 
   - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
-    probabilistic Poisson PCA, the Annals of Applied Statistics, to
-    appear. [link](https://arxiv.org/abs/1703.06633)
+    probabilistic Poisson PCA, the Annals of Applied Statistics, 12:
+    2674–2698, 2018. [link](http://dx.doi.org/10.1214/18-AOAS1177)
 
   - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
     sparse network reconstruction from count data, arXiv preprint, 2018.
