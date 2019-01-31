@@ -14,7 +14,7 @@ language: r
 r_check_args: --as-cran
 
 env:
-  - PKG_TARBALL=PLNmodels_0.7.0.0.tar.gz
+  - PKG_TARBALL=PLNmodels_0.7.0.1.tar.gz
 
 sudo: required
 
