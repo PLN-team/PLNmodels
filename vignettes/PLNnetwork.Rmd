@@ -9,8 +9,8 @@ output:
 bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{PLNnetwork}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{PLNnetwork}
   %\VignetteEncoding{UTF-8}
 ---
 

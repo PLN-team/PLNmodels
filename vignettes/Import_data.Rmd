@@ -4,14 +4,14 @@ author: "PLN team"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
-  toc: true
-  toc_depth: 4
-  df_print: paged
+    toc: true
+    toc_depth: 4
+    df_print: paged
 bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{import}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{import}
   %\VignetteEncoding{UTF-8}
 ---
 

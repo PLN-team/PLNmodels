@@ -2,15 +2,15 @@
 title: "Analyzing multivariate count data with the Poisson log-normal model"
 author: "PLN team"
 date: "`r Sys.Date()`"
-output: 
+output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 4
 bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{PLN}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{PLN}
   %\VignetteEncoding{UTF-8}
 ---
 

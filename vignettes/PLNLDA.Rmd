@@ -9,12 +9,12 @@ output:
 bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{PLNLDA}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{PLNLDA}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE, cache = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
   rows.print = 5,

@@ -19,11 +19,13 @@
 
 # produced vignettes
 vignettes/*.html
+vignettes/*.R
 vignettes/*.pdf
 vignettes/*_cache/
 vignettes/cache/
 
 # doc files
+inst/doc
 inst/doc/*
 inst/radix_article/*_cache/
 inst/radix_article/cache/
