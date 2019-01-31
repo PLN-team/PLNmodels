@@ -1,4 +1,3 @@
-
 # PLNmodels: Poisson lognormal models <img src="man/figures/logo.png" align="right" width="155" height="180"/>
 
 [![Travis-CI build
@@ -50,9 +49,6 @@ brew install nlopt
 On **Windows**, the package builds and installs correctly by [including
 static libraries](https://github.com/rwinlib/nlopt) on compilation.
 
-For the binary version of the package, [check this
-link](https://ci.appveyor.com/project/jchiquet/plnmodels/build/artifacts)
-
 ### R Package installation
 
 #### CRAN dependencies
@@ -77,7 +73,7 @@ library(magrittr)
 # use install.packages() if needed
 ```
 
-#### CRAN dependencies
+#### Bioconductor dependencies
 
 **PLNmodels** also needs two BioConductor packages
 
@@ -89,13 +85,20 @@ library(biomformat)
 
 #### Installing PLNmodels
 
-For the last tagged release, use
+  - For the last tagged release, use
+
+<!-- end list -->
 
 ``` r
 devtools::install_github("jchiquet/PLNmodels@v0.7.0.1")
 ```
 
-For the development version, use
+  - Windows users may want to use [the binary version of the
+    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.7.0.1/PLNmodels_0.7.0.1.zip)
+
+  - For the development version, use
+
+<!-- end list -->
 
 ``` r
 devtools::install_github("jchiquet/PLNmodels")
