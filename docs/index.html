@@ -130,7 +130,6 @@
 <p>With <strong>Mac OS X</strong>, install <code>nlopt</code> via <a href="https://brew.sh/">homebrew</a></p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ex">brew</span> install nlopt</a></code></pre></div>
 <p>On <strong>Windows</strong>, the package builds and installs correctly by <a href="https://github.com/rwinlib/nlopt">including static libraries</a> on compilation.</p>
-<p>For the binary version of the package, <a href="https://ci.appveyor.com/project/jchiquet/plnmodels/build/artifacts">check this link</a></p>
 </div>
 <div id="r-package-installation" class="section level3">
 <h3 class="hasAnchor">
@@ -154,9 +153,9 @@
 <a class="sourceLine" id="cb5-13" data-line-number="13"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(magrittr)</a>
 <a class="sourceLine" id="cb5-14" data-line-number="14"><span class="co"># use install.packages() if needed</span></a></code></pre></div>
 </div>
-<div id="cran-dependencies-1" class="section level4">
+<div id="bioconductor-dependencies" class="section level4">
 <h4 class="hasAnchor">
-<a href="#cran-dependencies-1" class="anchor"></a>CRAN dependencies</h4>
+<a href="#bioconductor-dependencies" class="anchor"></a>Bioconductor dependencies</h4>
 <p><strong>PLNmodels</strong> also needs two BioConductor packages</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(phyloseq)</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(biomformat)</a>
@@ -165,9 +164,14 @@
 <div id="installing-plnmodels" class="section level4">
 <h4 class="hasAnchor">
 <a href="#installing-plnmodels" class="anchor"></a>Installing PLNmodels</h4>
-<p>For the last tagged release, use</p>
+<ul>
+<li>For the last tagged release, use</li>
+</ul>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jchiquet/PLNmodels@v0.7.0.1"</span>)</a></code></pre></div>
-<p>For the development version, use</p>
+<ul>
+<li><p>Windows users may want to use <a href="https://github.com/jchiquet/PLNmodels/releases/download/v0.7.0.1/PLNmodels_0.7.0.1.zip">the binary version of the package</a></p></li>
+<li><p>For the development version, use</p></li>
+</ul>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>)</a></code></pre></div>
 </div>
 </div>
