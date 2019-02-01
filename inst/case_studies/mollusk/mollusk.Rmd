@@ -119,7 +119,7 @@ Have a look at the help page with `?mollusk` to get additional details.
 ```{r glimpse Abundance}
 mollusk$Abundance %>% 
   dplyr::select(1:10) %>% 
-  head() %>% DT::datatable(fillContainer = FALSE)
+  head() %>% DT::datatable(options = list(dom = "ti"))
 ```
 
 ---
@@ -285,11 +285,11 @@ M00_mollusc
 # Accessing parameters: coefficients and co
 
 ```{r simple PLN coeff}
-coef(M00_mollusc) %>% head() %>% t() %>% knitr::kable(format = "html")
+coef(M00_mollusc) %>% head() %>% t() %>% knitr::kable(digits = 3, format = "html")
 ```
 
 ```{r simple PLN others}
-M00_mollusc$criteria %>% knitr::kable(format = "html")
+M00_mollusc$criteria %>% knitr::kable(digits = 3, format = "html")
 ```
 
 Try accessing some other fields!
@@ -333,7 +333,7 @@ rbind(
   M00 = M00_mollusc$criteria,
   M01 = M01_mollusc$criteria, 
   M02 = M02_mollusc$criteria
-) %>% knitr::kable(format = "html")
+) %>% knitr::kable(digits = 3, format = "html")
 ```
 
 ---
@@ -365,7 +365,7 @@ M11_mollusc <- PLN(Abundance ~ 0 + site + offset(log(Offset)), mollusc)
 There is a clear gain in introducing this covariate in the model:
 
 ```{r PLN covariate site results, echo = FALSE}
-rbind(M01 = M01_mollusc$criteria, M11 = M11_mollusc$criteria) %>% knitr::kable(format = "html")
+rbind(M01 = M01_mollusc$criteria, M11 = M11_mollusc$criteria) %>% knitr::kable(digits = 3, format = "html")
 ```
 
 --
@@ -397,7 +397,7 @@ M21_mollusc <- PLN(Abundance ~ 0 + site_new + offset(log(Offset)), mollusc)
 There is a little loss in terms of loglikelihood, but the BIC choses the latter model:
 
 ```{r PLN covariate site regrouped results, echo = FALSE}
-rbind(M11 = M11_mollusc$criteria, M21 = M21_mollusc$criteria) %>% knitr::kable(format = "html")
+rbind(M11 = M11_mollusc$criteria, M21 = M21_mollusc$criteria) %>% knitr::kable(digits = 3, format = "html")
 ```
 
 
@@ -436,7 +436,7 @@ PLNPCA(formula = ,   # mandatory
        data    = ,   # highly recommended
        subset    ,   # optional  
        weights   ,   # optional 
-*      ranks   = 1:5 # has default values
+*      ranks   = 1:5 # has default values 1:5
        control_init  # optional
        control_main  # optional
   )
@@ -617,9 +617,11 @@ LDA_site <- PLNLDA(
     grouping = mollusc$site_new)
 ```
 
+*Note* The intercept (`1 + `) is automatically removed from the formula to ensure that coefficients and groups can be interpreted as excepted.
+
 --
 
-Contrary to PLNPCA, PLNLDA does not need no model selection, and has the same cost as a PLN fit. As usual, the printing method gives acces tho the availab fields and methods:
+Contrary to PLNPCA, PLNLDA does not need model selection and runs as quickly as a PLN fit. As usual, the printing method gives acces tho the availab fields and methods:
 
 ```{r LDA printing, echo = FALSE}
 LDA_site
@@ -643,7 +645,7 @@ PLN-LDA works also very well for season, with or with correction of the `site ef
 LDA_season1 <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), 
   mollusc, grouping = mollusc$season)
 
-LDA_season2 <- PLNLDA(Abundance ~ site_new + offset(log(Offset)), 
+LDA_season2 <- PLNLDA(Abundance ~ 1 + site_new + offset(log(Offset)), 
   mollusc, grouping = mollusc$season)
 ```
 
@@ -659,6 +661,19 @@ plot(LDA_season2, map = "individual", nb_axes = 1, main = "With correction")
 ```
 ]
 
+---
+# LDA of the mollusc data set: season
+
+If abundance data for new data are avalaible, their group can be predicted using the `predict` function. We illustrate this on our sample<sup>1</sup> and compare predicted seasons to actual ones
+
+```{r predict PLNLDA season}
+predictions <- predict(LDA_season2, newdata = mollusc, type = "response")
+table(predictions, mollusc$season)
+```
+
+.footnote[
+[1] Predicting the season of samples used to train the model is bad practice in general and prone to overfitting, we do it for illustrative purposes only. 
+]
 
 ---
 
@@ -677,7 +692,9 @@ $$\begin{array}{rcl}
   \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}$$
 
-The $\ell_1$-penalty on $\boldsymbol\Omega$ induces sparsity and selection of important direct relationships between entities. Hence, the support of $\boldsymbol\Omega$ correspond to a network of underlying interactions. The sparsity level ($c$ in the above mathematical model), which corresponds to the number of edges in the network, is controlled by a penalty parameter in the optimization process sometimes referred to as $\lambda$.
+The $\ell_1$-penalty on $\boldsymbol\Omega$ induces sparsity and selection of important direct relationships between entities. Hence, the support of $\boldsymbol\Omega$ correspond to a network of underlying interactions. 
+
+The sparsity level ($c$ in the above mathematical model), which corresponds to the number of edges in the network, is controlled by a penalty parameter in the optimization process sometimes referred to as $\lambda$.
 
 
 ---
@@ -686,7 +703,7 @@ The $\ell_1$-penalty on $\boldsymbol\Omega$ induces sparsity and selection of im
 
 The `PLNnetwork` function works in the same way as `PLN`.
 
-There is just an additional parameter to control the successive values of the sparsity contraint:
+There is just an additional parameter to control the successive values of the sparsity contraint ($\leftrightarrow$ density of the graph):
 
 ```{r, eval = FALSE}
 PLNnetwork(formula = ,  # mandatory
@@ -724,7 +741,7 @@ PLNnetwork(formula, mydata,
 
 Be careful as 
 - more network means more computation
-- dense network means more computation, and less statistical significance !
+- denser network means more computation, and less statistical significance !
 
 ---
 # Network inference on the mollusc data set

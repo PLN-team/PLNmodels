@@ -25,7 +25,7 @@ class: center, middle, inverse, title-slide
 # PLNmodels: a case study
 ## The mollusk data set
 ### PLN team
-### 2019/01 (last update: 2019-01-30)
+### 2019/01 (last update: 2019-02-01)
 
 ---
 
@@ -82,7 +82,7 @@ packageVersion("PLNmodels")
 ```
 
 ```
-## [1] '0.7.0.0'
+## [1] '0.7.0.1'
 ```
 
 ## Finding help and documentation
@@ -106,18 +106,18 @@ library(tidyverse) # data manipulation
 ```
 
 ```
-## ── Attaching packages ────────────────────────────────────────────────── tidyverse 1.2.1 ──
+## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 ```
 
 ```
-## ✔ ggplot2 3.1.0     ✔ purrr   0.3.0
-## ✔ tibble  2.0.1     ✔ dplyr   0.7.8
+## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
+## ✔ tibble  2.0.0     ✔ dplyr   0.7.8
 ## ✔ tidyr   0.8.2     ✔ stringr 1.3.1
 ## ✔ readr   1.3.1     ✔ forcats 0.3.0
 ```
 
 ```
-## ── Conflicts ───────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ── Conflicts ──────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()
 ```
@@ -174,11 +174,11 @@ Have a look at the help page with `?mollusk` to get additional details.
 ```r
 mollusk$Abundance %&gt;% 
   dplyr::select(1:10) %&gt;% 
-  head() %&gt;% DT::datatable(fillContainer = FALSE)
+  head() %&gt;% DT::datatable(options = list(dom = "ti"))
 ```
 
-<div id="htmlwidget-cfa55b81174c1180541b" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-cfa55b81174c1180541b">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6"],[2,2,1,13,19,54],[0,0,0,0,0,0],[2,0,0,0,4,3],[0,0,0,0,0,0],[0,2,1,0,0,1],[0,0,0,0,0,0],[0,0,0,0,0,0],[22,93,39,1,2,2],[0,0,0,0,0,0],[0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Bit<\/th>\n      <th>Vap<\/th>\n      <th>Vac<\/th>\n      <th>Gac<\/th>\n      <th>Raa<\/th>\n      <th>Rap<\/th>\n      <th>Lit<\/th>\n      <th>Pha<\/th>\n      <th>Phf<\/th>\n      <th>Plc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-7da86c3675a6c8ead77f" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7da86c3675a6c8ead77f">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[2,2,1,13,19,54],[0,0,0,0,0,0],[2,0,0,0,4,3],[0,0,0,0,0,0],[0,2,1,0,0,1],[0,0,0,0,0,0],[0,0,0,0,0,0],[22,93,39,1,2,2],[0,0,0,0,0,0],[0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Bit<\/th>\n      <th>Vap<\/th>\n      <th>Vac<\/th>\n      <th>Gac<\/th>\n      <th>Raa<\/th>\n      <th>Rap<\/th>\n      <th>Lit<\/th>\n      <th>Pha<\/th>\n      <th>Phf<\/th>\n      <th>Plc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"ti","columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -237,7 +237,7 @@ In **PLNmodels**, data are handled into a single data frame that put together
 
 _Important!_
 1. All the species found in the counts table will be used in the model,
-2. The formula mechanism of `R` allow you to choose specific covariates or offsets.
+2. The formula mechanism of `R` allows you to choose specific covariates or offsets.
 
 --
 
@@ -253,7 +253,7 @@ prepare_data(
 ```
 
 .footnote[
-[1] variants of `prepare_data` exist for `biom` and `phyloseq` BioConductor formats.
+[1] variants of `prepare_data` exist for [`biom`](http://biom-format.org/) file and objects build using the [`phyloseq`](https://joey711.github.io/phyloseq/) BioConductor package.
 ]
 ---
 
@@ -290,6 +290,7 @@ str(mollusc, max.level = 1)
 ##  $ Offset   : num  83 203 93 18 41 96 174 22 104 88 ...
 ```
 
+Note that `mollusc` has 3 fewer samples than `mollusk`, as `prepare_data` automatically removed empty samples. 
 ---
 
 class: inverse, center, middle
@@ -304,7 +305,7 @@ The PLN model is a multivariate generalized linear model, where
 
 - the counts `\(\mathbf{Y}_i\)` are the response variables
 - the main effect is due to a linear combination of the covariates `\(\mathbf{x}_i\)`
-- a vector of offsets `\(\mathbf{o}_i\)` can be specified for each sample.
+- a vector&lt;sup&gt;1&lt;/sup&gt; of offsets `\(\mathbf{o}_i\)` can be specified for each sample.
 
 $$
 \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
@@ -313,9 +314,13 @@ The unkwown parameters are
 - `\(\boldsymbol\Theta\)`, the matrix of regression parameters
 - `\(\boldsymbol\Sigma\)`, the variance-covariance matrix
 
+.footnote[
+[1] Single values are also accepted and automatically recycled to full length-vectors.
+]
+
 --
 
-When all individuals `\(i=1,\dots,n\)` are stacked together, the data matrices available to feed the model are
+When all individuals `\(i=1,\dots,n\)` are stacked together, the data matrices required by the model are
 
   - the `\(n\times p\)` matrix of counts  `\(\mathbf{Y}\)`
   - the `\(n\times d\)` matrix of design  `\(\mathbf{X}\)`
@@ -333,21 +338,20 @@ PLN(formula = , # mandatory
     data    = , # highly recommended
     subset    , # optional  
     weights   , # optional 
-    control     # optional
-  )
+    control     # optional, mostly for advanced users
+    )
 ```
 
-- `data` brings the variable to work with
-- `formula` specifies how the relation between variables in `data`
+- `data` specifies where to look for the variables
+- `formula` specifies the relationship between variables in `data`
 
   ( `\(\rightsquigarrow\)` _It builds matrices_ `\(\mathbf{Y},\mathbf{X},\mathbf{O}\)`)
 
 --
 
-- `subset` is used for subsampling the observations, 
+- `subset` is used for subsampling the observations, it should be a **full length** boolean vector, not a vector of indices / sample names
 - `weights` is used to weighting the observations, 
-- `control` is (mainly) used for tuning the optimization
-
+- `control` is (mainly) used for tuning the optimization and should typically not be changed.
 ---
 
 # Simple PLN models on mollusc data (I)
@@ -359,7 +363,7 @@ The simplest model we can imagine only has an intercept term:
 M00_mollusc &lt;- PLN(Abundance ~ 1, mollusc)
 ```
 
-`M00_mollusc` is a particular `R` object that comes with a couple methods:
+`M00_mollusc` is a particular `R` object that comes with a couple methods, helpfully listed when you print the object :
 
 
 ```r
@@ -369,8 +373,8 @@ M00_mollusc
 ```
 ## A multivariate Poisson Lognormal fit with full covariance model.
 ## ==================================================================
-##  degrees_freedom    loglik      BIC       ICL R_squared
-##              560 -3634.067 -5053.36 -13800.65 0.9788567
+##  degrees_freedom    loglik       BIC      ICL R_squared
+##              560 -3633.888 -5053.181 -13806.2 0.9788744
 ## ==================================================================
 ## * Useful fields 
 ##     $model_par, $latent, $var_par, $optim_par 
@@ -385,7 +389,7 @@ M00_mollusc
 
 
 ```r
-coef(M00_mollusc) %&gt;% head() %&gt;% t() %&gt;% knitr::kable(format = "html")
+coef(M00_mollusc) %&gt;% head() %&gt;% t() %&gt;% knitr::kable(digits = 3, format = "html")
 ```
 
 &lt;table&gt;
@@ -403,19 +407,19 @@ coef(M00_mollusc) %&gt;% head() %&gt;% t() %&gt;% knitr::kable(format = "html")
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.5910263 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -5.108065 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.3348884 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -2.190636 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -2.518615 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -7.283385 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.578 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5.116 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.325 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.173 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.542 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -7.27 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 
 
 ```r
-M00_mollusc$criteria %&gt;% knitr::kable(format = "html")
+M00_mollusc$criteria %&gt;% knitr::kable(digits = 3, format = "html")
 ```
 
 &lt;table&gt;
@@ -431,15 +435,15 @@ M00_mollusc$criteria %&gt;% knitr::kable(format = "html")
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:right;"&gt; 560 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -3634.067 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -5053.36 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -13800.65 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.9788567 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3633.888 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5053.181 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13806.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.979 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 
-Try some other fields!
+Try accessing some other fields!
 
 ---
 
@@ -488,7 +492,7 @@ rbind(
   M00 = M00_mollusc$criteria,
   M01 = M01_mollusc$criteria, 
   M02 = M02_mollusc$criteria
-) %&gt;% knitr::kable(format = "html")
+) %&gt;% knitr::kable(digits = 3, format = "html")
 ```
 
 &lt;table&gt;
@@ -506,26 +510,26 @@ rbind(
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; M00 &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 560 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -3634.067 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -5053.360 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -13800.65 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.9788567 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3633.888 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5053.181 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13806.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.979 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; M01 &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 560 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -3593.202 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -5012.495 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -13927.45 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.9648182 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3593.197 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5012.490 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13926.94 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.965 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; M02 &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 560 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -3651.196 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -5070.489 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -13908.51 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.9795608 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3651.054 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5070.347 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13911.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.980 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -583,18 +587,18 @@ There is a clear gain in introducing this covariate in the model:
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; M01 &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 560 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -3593.202 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -5012.495 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -13927.45 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.9648182 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3593.197 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5012.490 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13926.94 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.965 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; M11 &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 784 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -2899.770 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -4886.781 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -11479.57 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.8920388 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2899.776 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4886.787 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -11471.34 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.892 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -641,18 +645,18 @@ There is a little loss in terms of loglikelihood, but the BIC choses the latter 
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; M11 &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 784 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -2899.770 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -4886.781 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -11479.57 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.8920388 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2899.776 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4886.787 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -11471.34 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.892 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; M21 &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 688 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -3019.726 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -4763.429 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -11974.22 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.9096246 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3019.711 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4763.414 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -11984.89 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.910 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -694,7 +698,7 @@ PLNPCA(formula = ,   # mandatory
        data    = ,   # highly recommended
        subset    ,   # optional  
        weights   ,   # optional 
-*      ranks   = 1:5 # has default values
+*      ranks   = 1:5 # has default values 1:5
        control_init  # optional
        control_main  # optional
   )
@@ -733,7 +737,7 @@ PCA_offset
 ## ========================================================
 ##  - Ranks considered: from 1 to 8 
 ##  - Best model (regarding BIC): rank = 6 - R2 = 0.93 
-##  - Best model (regarding ICL): rank = 5 - R2 = 0.91
+##  - Best model (regarding ICL): rank = 5 - R2 = 0.9
 ```
 
 This collection of object is itself an `R` object with a three methods: `plot`, `getModel`, `getBestModel`. (Additional help can be found with `?PLNPCAfamily`)
@@ -769,7 +773,7 @@ The extracted object inherits from the `PLNfit` class (resulting from `PLN`), bu
 ## Poisson Lognormal with rank constrained for PCA (rank = 6)
 ## ==================================================================
 ##  degrees_freedom    loglik       BIC       ICL R_squared
-##              224 -3498.244 -4065.961 -4242.693 0.9302682
+##              224 -3509.448 -4077.165 -4258.823 0.9292753
 ## ==================================================================
 ## * Useful fields 
 ##     $model_par, $latent, $var_par, $optim_par 
@@ -922,16 +926,18 @@ LDA_site &lt;- PLNLDA(
     grouping = mollusc$site_new)
 ```
 
+*Note* The intercept (`1 + `) is automatically removed from the formula to ensure that coefficients and groups can be interpreted as excepted.
+
 --
 
-Contrary to PLNPCA, PLNLDA does not need no model selection, and has the same cost as a PLN fit. As usual, the printing method gives acces tho the availab fields and methods:
+Contrary to PLNPCA, PLNLDA does not need model selection and runs as quickly as a PLN fit. As usual, the printing method gives acces tho the availab fields and methods:
 
 
 ```
 ## Linear Discriminant Analysis for Poisson Lognormal distribution
 ## ==================================================================
 ##  degrees_freedom    loglik       BIC       ICL R_squared
-##              288 -3019.726 -3749.648 -10960.44 0.9096246
+##              288 -3019.711 -3749.634 -10971.11 0.9096821
 ## ==================================================================
 ## * Useful fields 
 ##     $model_par, $latent, $var_par, $optim_par 
@@ -966,7 +972,7 @@ PLN-LDA works also very well for season, with or with correction of the `site ef
 LDA_season1 &lt;- PLNLDA(Abundance ~ 1 + offset(log(Offset)), 
   mollusc, grouping = mollusc$season)
 
-LDA_season2 &lt;- PLNLDA(Abundance ~ site_new + offset(log(Offset)), 
+LDA_season2 &lt;- PLNLDA(Abundance ~ 1 + site_new + offset(log(Offset)), 
   mollusc, grouping = mollusc$season)
 ```
 
@@ -978,6 +984,29 @@ LDA_season2 &lt;- PLNLDA(Abundance ~ site_new + offset(log(Offset)),
 ![](mollusk_files/figure-html/plot season2-1.png)&lt;!-- --&gt;
 ]
 
+---
+# LDA of the mollusc data set: season
+
+If abundance data for new data are avalaible, their group can be predicted using the `predict` function. We illustrate this on our sample&lt;sup&gt;1&lt;/sup&gt; and compare predicted seasons to actual ones
+
+
+```r
+predictions &lt;- predict(LDA_season2, newdata = mollusc, type = "response")
+table(predictions, mollusc$season)
+```
+
+```
+##            
+## predictions automn spring summer winter
+##      automn     33      1      5      2
+##      spring      2     28      5      1
+##      summer      6     12     34      4
+##      winter      0      2      0     24
+```
+
+.footnote[
+[1] Predicting the season of samples used to train the model is bad practice in general and prone to overfitting, we do it for illustrative purposes only. 
+]
 
 ---
 
@@ -996,7 +1025,9 @@ The PLN-network model for multivariate count data is a variant of PLN where we a
   \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}$$`
 
-The `\(\ell_1\)`-penalty on `\(\boldsymbol\Omega\)` induces sparsity and selection of important direct relationships between entities. Hence, the support of `\(\boldsymbol\Omega\)` correspond to a network of underlying interactions. The sparsity level ($c$ in the above mathematical model), which corresponds to the number of edges in the network, is controlled by a penalty parameter in the optimization process sometimes referred to as `\(\lambda\)`.
+The `\(\ell_1\)`-penalty on `\(\boldsymbol\Omega\)` induces sparsity and selection of important direct relationships between entities. Hence, the support of `\(\boldsymbol\Omega\)` correspond to a network of underlying interactions. 
+
+The sparsity level ($c$ in the above mathematical model), which corresponds to the number of edges in the network, is controlled by a penalty parameter in the optimization process sometimes referred to as `\(\lambda\)`.
 
 
 ---
@@ -1005,7 +1036,7 @@ The `\(\ell_1\)`-penalty on `\(\boldsymbol\Omega\)` induces sparsity and selecti
 
 The `PLNnetwork` function works in the same way as `PLN`.
 
-There is just an additional parameter to control the successive values of the sparsity contraint:
+There is just an additional parameter to control the successive values of the sparsity contraint ($\leftrightarrow$ density of the graph):
 
 
 ```r
@@ -1045,7 +1076,7 @@ PLNnetwork(formula, mydata,
 
 Be careful as 
 - more network means more computation
-- dense network means more computation, and less statistical significance !
+- denser network means more computation, and less statistical significance !
 
 ---
 # Network inference on the mollusc data set
