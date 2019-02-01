@@ -215,6 +215,9 @@ PLNLDAfit$set("public", "predict",
     for (k in 1:K) { ## One VE-step to estimate the conditional (variational) likelihood of each group
       grouping <- factor(rep(groups[k], n.new), levels = groups)
       X <- cbind(args$X, model.matrix( ~ grouping + 0))
+      # - remove intercept so that design matrix is compatible with the one used for inference
+      xint <- match("(Intercept)", colnames(X), nomatch = 0L)
+      if (xint > 0L) X <- X[, -xint, drop = FALSE]
       cond.log.lik[, k] <- self$VEstep(X, args$O, args$Y, control = control)$log.lik
     }
     ## Compute posterior probabilities
