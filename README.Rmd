@@ -88,7 +88,7 @@ library(biomformat)
 - For the last tagged release, use
 
 ```{r package tag, eval = FALSE}
-devtools::install_github("jchiquet/PLNmodels@v0.7.0.1")
+devtools::install_github("jchiquet/PLNmodels@v0.7.0.2")
 ```
 
 - Windows users may want to use [the binary version of the package](https://github.com/jchiquet/PLNmodels/releases/download/v0.7.0.1/PLNmodels_0.7.0.1.zip)
