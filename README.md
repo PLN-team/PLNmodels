@@ -1,3 +1,4 @@
+
 # PLNmodels: Poisson lognormal models <img src="man/figures/logo.png" align="right" width="155" height="180"/>
 
 [![Travis-CI build
@@ -90,11 +91,11 @@ library(biomformat)
 <!-- end list -->
 
 ``` r
-devtools::install_github("jchiquet/PLNmodels@v0.7.0.1")
+devtools::install_github("jchiquet/PLNmodels@v0.7.0.2")
 ```
 
   - Windows users may want to use [the binary version of the
-    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.7.0.1/PLNmodels_0.7.0.1.zip)
+    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.7.0.2/PLNmodels_0.7.0.2.zip)
 
   - For the development version, use
 

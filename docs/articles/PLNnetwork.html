@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.2</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
       <h1>Sparse structure estimation for multivariate count data with PLN-network</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-01-31</h4>
+            <h4 class="date">2019-02-05</h4>
       
       
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -437,12 +437,12 @@
 </h3>
 <p>The variables <code>model_BIC</code>, <code>model_StARS</code> and <code>model_pen</code> are other <code>R6Class</code> objects with class <code>PLNnetworkfit</code>. They all inherits from the class <code>PLNfit</code> and thus own all its methods, with a couple of specific one, mostly for network vizualization purposes. Most fields and methods are recalled when such an object is printed:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">model_StARS</a></code></pre></div>
-<pre><code>## Poisson Lognormal with sparse inverse covariance (penalty = 0.805)
+<pre><code>## Poisson Lognormal with sparse inverse covariance (penalty = 0.634)
 ## ==================================================================
-##  degrees_freedom    loglik       BIC       ICL R_squared n_edges     EBIC
-##               22 -1181.992 -1224.802 -2509.354 0.9639262       5 -1233.06
+##  degrees_freedom    loglik       BIC       ICL R_squared n_edges      EBIC
+##               24 -1174.372 -1221.074 -2505.628 0.9639259       7 -1231.458
 ##  pen_loglik    density
-##   -1185.569 0.03460208
+##   -1177.467 0.04844291
 ## ==================================================================
 ## * Useful fields 
 ##     $model_par, $latent, $var_par, $optim_par 
@@ -459,12 +459,12 @@
 <p>Here, an igraph object can be recovered.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">my_graph &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS, <span class="dt">plot =</span> <span class="ot">FALSE</span>)</a>
 <a class="sourceLine" id="cb20-2" data-line-number="2">my_graph</a></code></pre></div>
-<pre><code>## IGRAPH b0d09ac UNW- 17 5 -- 
+<pre><code>## IGRAPH 0ebcdd0 UNW- 17 7 -- 
 ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
 ## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),
 ## | width (e/n)
-## + edges from b0d09ac (vertex names):
-## [1] Hym--Hsp Aga--Hsp Set--All Set--Hsp Hfo--Hsp</code></pre>
+## + edges from 0ebcdd0 (vertex names):
+## [1] Hym--Hsp Aga--Hfo Aga--Hsp Set--All Set--Hsp Han--Sta Hfo--Hsp</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_BIC)</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/partial_corr_network-1.png" width="672"></p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS)</a></code></pre></div>
