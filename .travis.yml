@@ -51,7 +51,7 @@ matrix:
       - Rscript -e 'pkgdown::build_site()'
       deploy:
         - provider: releases
-          github-token: $GITHUB_TOKEN
+          github-token: "$GITHUB_TOKEN"
           file: ${PKG_TARBALL}
           skip_cleanup: true
           on:
