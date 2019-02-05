@@ -304,7 +304,7 @@ PLNfit$set("public", "compute_standard_error",
                       out$message,
                       "Returning NA",
                       sep = "\n"))
-        stderr <- matrix(NA, nrow = self$p, ncol = seld$d)
+        stderr <- matrix(NA, nrow = self$p, ncol = self$d)
       } else {
         stderr <- out %>% sqrt %>% matrix(nrow = self$d) %>% t()
       }
