@@ -1,6 +1,6 @@
 context("test-import-utils")
 data("trichoptera")
-counts     <- trichoptera$Abundance %>% as.matrix()
+counts     <- data.matrix(trichoptera$Abundance)
 covariates <- trichoptera$Covariate
 
 ## Test common_samples ------------------------------------------------------------------------------------
@@ -8,6 +8,9 @@ covariates <- trichoptera$Covariate
 test_that("common_samples throws warnings on matrices with no dimension names",  {
   ## No names for abundance matrix
   expect_warning(common_samples(`dimnames<-`(counts, NULL),
+                                covariates))
+  ## No rownames for abundance matrix (and therefore no matching names)
+  expect_warning(common_samples(`rownames<-`(counts, NULL),
                                 covariates))
   ## No names for covariates matrix
   ## (must transform covariates to matrix as data.frames always have rownames)
@@ -22,41 +25,44 @@ test_that("common_samples fails on matrices with no dimension names and incompat
   expect_error(suppressWarnings(common_samples(counts %>% t(), data.matrix(covariates, rownames.force = FALSE))))
 })
 
-test_that("common_samples succeeds on matrices with no dimension names but compatible dimensions",  {
+test_that("common_samples succeeds on matrices with no or partial dimension names but compatible dimensions",  {
+  ## No dimensions names
   expect_warning(result <- common_samples(unname(counts), data.matrix(covariates)))
-  expect_length(result, 2)
-  expect_named(result,
-               c("transpose_counts", "common_samples"))
-  expect_type(result,
-              "list")
-  expect_type(result$transpose_counts,
-              "logical")
-  expect_type(result$common_samples,
-              "character")
   expect_equal(result,
                list(transpose_counts = FALSE,
-                    common_samples   = paste0("Sample_", 1:49)))
+                    common_samples   = paste0("Sample_", 1:49),
+                    default_names    = TRUE))
+  ## Partial dimensions names: sample names only in count table
+  expect_warning(result <- common_samples(`colnames<-`(counts, NULL),
+                                          data.matrix(covariates)))
+  expect_equal(result,
+               list(transpose_counts = FALSE,
+                    common_samples   = paste0(1:49),
+                    default_names    = TRUE))
+  ## Partial dimensions names: samples names only in covariates data.frame
+  expect_warning(result <- common_samples(`rownames<-`(counts, NULL),
+                                          covariates))
+  expect_equal(result,
+               list(transpose_counts = FALSE,
+                    common_samples   = paste0(1:49),
+                    default_names    = TRUE))
 })
 
 test_that("common_samples fails on matrices with dimension names but no common samples",  {
-  expect_error(common_samples(`rownames<-`(counts, paste0("Sample_", 1:49)),
-                               covariates))
+  expect_error(
+    suppressWarnings(
+      common_samples(
+        `rownames<-`(counts, paste0("Sample_", 1:49)),
+        covariates)),
+    "Conflicting samples names in count matrix and covariates data frames"
+  )
 })
 
 test_that("common_samples succeeds on matrices with dimension names and different orientations",  {
-  expect_length(common_samples(t(counts),covariates),
-                2)
-  expect_named(common_samples(t(counts), covariates),
-               c("transpose_counts", "common_samples"))
-  expect_type(common_samples(t(counts), covariates),
-              "list")
-  expect_type(common_samples(t(counts), covariates)$transpose_counts,
-              "logical")
-  expect_type(common_samples(t(counts), covariates)$common_samples,
-              "character")
   expect_equal(common_samples(t(counts), covariates),
                list(transpose_counts = TRUE,
-                    common_samples   = as.character(1:49)))
+                    common_samples   = as.character(1:49),
+                    default_names    = FALSE))
 })
 
 test_that("common_samples find biggest subset of common samples and produces message.",  {
@@ -215,6 +221,16 @@ result$Abundance <- counts
 test_that("prepare_data succeeds on simple data", {
   expect_identical(prepare_data(counts, covariates, offset = "none"),
                    result)
+})
+
+test_that("prepare_data succeeds on simple data with missing names", {
+  expect_warning(res <- prepare_data(`rownames<-`(counts, NULL),
+                                         covariates, offset = "none"))
+  expect_identical(res,
+                   ## small hack to account for the fact that setting rownames via rownames<-
+                   ## changes its mode to character
+                   `rownames<-`(result, rownames(result))
+                   )
 })
 
 ## Test prepare_data_* functions ------------------------------------------------------------------------

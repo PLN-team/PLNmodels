@@ -4,16 +4,38 @@
 
 ## Internal function to find the most comprehensive set of common samples between a count table and a covariates data.frame
 common_samples <- function(counts, covariates) {
-  ## Sanity checks
-  if (is.null(dimnames(counts)) || is.null(rownames(covariates))) {
-    warning(paste("There are no dimension names for the abundance matrix and/or the covariates data.frame.",
-                  "Function will proceed assuming:",
-                  "- samples are in the same order;",
-                  "- samples are rows of the abundance matrix.", sep = "\n"))
+  ## Have default samples names been created when matching samples?
+  default_names <- FALSE
+  ## Sanity checks:
+  name_warning <- paste("There are no matching names in the count matrix and the covariates data.frame.",
+                        "Function will proceed assuming:",
+                        "- samples are in the same order;",
+                        "- samples are rows of the abundance matrix.", sep = "\n")
+  ## no sample names in covariates: create sample names
+  if (is.null(rownames(covariates))) {
+    warning(name_warning)
     if (nrow(counts) != nrow(covariates)) {
       stop("Incompatible dimensions")
     }
-    rownames(counts) <- rownames(covariates) <- paste0("Sample_", 1:nrow(counts))
+    if (is.null(rownames(counts))) rownames(counts) <- paste0("Sample_", 1:nrow(counts))
+    rownames(covariates) <- rownames(counts)
+    default_names <- TRUE
+  }
+  ## Attempt name matching between covariates and count data
+  count_names <- unlist(dimnames(counts))
+  if (is.null(count_names) || !any(count_names %in% rownames(covariates))) {
+    # If name matching is impossible, abort if
+    ## - dimension are incompatible or
+    ## - row (samples) names are conflicting
+    warning(name_warning)
+    if (nrow(counts) != nrow(covariates)) {
+      stop("Incompatible dimensions")
+    }
+    if (!is.null(rownames(counts))) {
+      stop("Conflicting samples names in count matrix and covariates data frames")
+    }
+    rownames(counts) <- rownames(covariates)
+    default_names <- TRUE
   }
   ## Check whether samples are stored as columns in the abundance matrix
   ## and transpose if that's the case
@@ -28,7 +50,8 @@ common_samples <- function(counts, covariates) {
     message(paste0(nrow(counts) - length(common_samples), " samples were dropped from the abundance matrix for lack of associated covariates."))
   }
   return(list(transpose_counts = sample_are_cols,
-              common_samples   = common_samples))
+              common_samples   = common_samples,
+              default_names    = default_names))
 }
 
 ## Internal functions to compute scaling factors from a count table
@@ -157,6 +180,9 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   common <- common_samples(counts, covariates)
   samples <- common$common_samples
   if (common$transpose_counts) counts <- t(counts)
+  if (common$default_names) {
+    rownames(counts) <- rownames(covariates) <- samples
+  }
   counts <- counts[samples, ]
   ## Replace NA with 0s
   if (any(is.na(counts))) {
