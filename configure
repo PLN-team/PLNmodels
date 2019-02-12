@@ -22,12 +22,12 @@ CXX=`${R_HOME}/bin/R CMD config CXXCPP`
 CXX11=`${R_HOME}/bin/R CMD config CXX11STD`
 CXXFLAGS=`${R_HOME}/bin/R CMD config CXXFLAGS`
 
-# Avoid OpenMP for MAC OS
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  OPENMP_FLAG=''
-else
-  OPENMP_FLAG='$(SHLIB_OPENMP_CXXFLAGS)'
-fi
+# # Avoid OpenMP for MAC OS
+# if [[ "$OSTYPE" == "darwin"* ]]; then
+#   OPENMP_FLAG=''
+# else
+#   OPENMP_FLAG='$(SHLIB_OPENMP_CXXFLAGS)'
+# fi
 
 # For debugging
 echo "Using NLOPT_LIBS=$NLOPT_LIBS"

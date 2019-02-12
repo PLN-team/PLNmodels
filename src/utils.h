@@ -1,7 +1,7 @@
 #ifndef _utils_H
 #define _utils_H
 
-#include "RcppArmadillo.h"
+#include <RcppArmadillo.h>
 #include <nlopt.hpp>
 
 arma::vec get_KY(arma::mat Y, arma::vec w) ;
