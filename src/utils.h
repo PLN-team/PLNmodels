@@ -2,7 +2,7 @@
 #define _utils_H
 
 #include <RcppArmadillo.h>
-#include <nlopt.hpp>
+#include <nlopt.h>
 
 arma::vec get_KY(arma::mat Y, arma::vec w) ;
 
@@ -95,8 +95,8 @@ typedef struct optim_data {
 } optim_data ;
 
 // Convert string to nlopt_alogirthm
-nlopt::algorithm getAlgorithmCode(const std::string &) ;
+nlopt_algorithm getAlgorithmCode(const std::string &) ;
 
-nlopt::opt initNLOPT(int, Rcpp::List) ;
+nlopt_opt initNLOPT(int, Rcpp::List) ;
 
 #endif
