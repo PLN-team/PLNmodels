@@ -46,3 +46,9 @@ test_that("Check PLNLDA weights",  {
   expect_equal(model2$model_par, model1$model_par, tolerance = tol)
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
+
+test_that("Use or not of the intercept does not change the result.",  {
+  tol <- 1e-5
+})
+
+## TODO add tests for predictions, tests for fit
