@@ -19,4 +19,4 @@
 ^inst/sticker$
 ^inst/case_studies$
 ^inst/test/
-^src/Makevars
+^src/Makevars$
