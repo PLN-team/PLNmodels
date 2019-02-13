@@ -10,60 +10,65 @@ arma::mat logfact(arma::mat Y) {
 // Convert string to nlopt_algorithm
 //
 // restrict the choices to algorithms meaningful for PLN optimization
-nlopt::algorithm getAlgorithmCode( const std::string & algorithm_str) {
+nlopt_algorithm getAlgorithmCode( const std::string & algorithm_str) {
 
-    nlopt::algorithm algorithm;
+    nlopt_algorithm algorithm;
 
     if ( algorithm_str.compare("LBFGS_NOCEDAL") == 0 ) {
-        algorithm = nlopt::LD_LBFGS_NOCEDAL;
+        algorithm = NLOPT_LD_LBFGS_NOCEDAL;
     }
     else if ( algorithm_str.compare("LBFGS" ) == 0 ) {
-        algorithm = nlopt::LD_LBFGS;
+        algorithm = NLOPT_LD_LBFGS;
     }
     else if ( algorithm_str.compare("VAR1" ) == 0 ) {
-        algorithm = nlopt::LD_VAR1;
+        algorithm = NLOPT_LD_VAR1;
     }
     else if ( algorithm_str.compare("VAR2" ) == 0 ) {
-        algorithm = nlopt::LD_VAR2;
+        algorithm = NLOPT_LD_VAR2;
     }
     else if ( algorithm_str.compare("TNEWTON" ) == 0 ) {
-        algorithm = nlopt::LD_TNEWTON;
+        algorithm = NLOPT_LD_TNEWTON;
     }
     else if ( algorithm_str.compare("TNEWTON_RESTART" ) == 0 ) {
-        algorithm = nlopt::LD_TNEWTON_RESTART;
+        algorithm = NLOPT_LD_TNEWTON_RESTART;
     }
     else if ( algorithm_str.compare("TNEWTON_PRECOND" ) == 0 ) {
-        algorithm = nlopt::LD_TNEWTON_PRECOND;
+        algorithm = NLOPT_LD_TNEWTON_PRECOND;
     }
     else if ( algorithm_str.compare("TNEWTON_PRECOND_RESTART" ) == 0 ) {
-        algorithm = nlopt::LD_TNEWTON_PRECOND_RESTART;
+        algorithm = NLOPT_LD_TNEWTON_PRECOND_RESTART;
     }
     else if ( algorithm_str.compare("MMA" ) == 0 ) {
-        algorithm = nlopt::LD_MMA;
+        algorithm = NLOPT_LD_MMA;
     }
     else if ( algorithm_str.compare("CCSAQ" ) == 0 ) {
-        algorithm = nlopt::LD_CCSAQ;
+        algorithm = NLOPT_LD_CCSAQ;
     }
     else {
         // unknown algorithm code
-        algorithm = nlopt::NUM_ALGORITHMS;       // Not an algorithm, so this should result in a runtime error.
+        algorithm = NLOPT_NUM_ALGORITHMS;       // Not an algorithm, so this should result in a runtime error.
     }
 
     return algorithm;
 }
 
-nlopt::opt initNLOPT(int n_param, List options) {
+nlopt_opt initNLOPT(int n_param, List options) {
 
   // Prepare optimization by setting nlopt options
-  nlopt::algorithm algo = getAlgorithmCode(as<std::string>(options["algorithm"])) ;
-  nlopt::opt opt(algo, n_param);
-  opt.set_xtol_rel(as<double>(options["xtol_rel"]));
-  opt.set_ftol_abs(as<double>(options["ftol_abs"]));
-  opt.set_ftol_rel(as<double>(options["ftol_rel"]));
-  opt.set_maxeval (as<int>   (options["maxeval" ]));
-  opt.set_maxtime (as<double>(options["maxtime" ]));
-  opt.set_xtol_abs(as<stdvec>(options["xtol_abs"]));
-  opt.set_lower_bounds(as<stdvec>(options["lower_bound"]));
+
+  nlopt_algorithm algo = getAlgorithmCode(as<std::string>(options["algorithm"])) ;
+  nlopt_opt opt = nlopt_create(algo, n_param);
+
+  stdvec xtol_abs    = as<stdvec>(options["xtol_abs"   ]) ;
+  stdvec lower_bound = as<stdvec>(options["lower_bound"]) ;
+
+  nlopt_set_xtol_rel    (opt, as<double>(options["xtol_rel"]));
+  nlopt_set_ftol_abs    (opt, as<double>(options["ftol_abs"]));
+  nlopt_set_ftol_rel    (opt, as<double>(options["ftol_rel"]));
+  nlopt_set_maxeval     (opt, as<int>   (options["maxeval" ]));
+  nlopt_set_maxtime     (opt, as<double>(options["maxtime" ]));
+  nlopt_set_xtol_abs    (opt, &xtol_abs[0]   );
+  nlopt_set_lower_bounds(opt, &lower_bound[0]) ;
 
   return opt;
 }
