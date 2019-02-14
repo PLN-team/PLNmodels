@@ -89,6 +89,8 @@ coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
 #' @param force force computation of the stability path, even if a previous one has been detected.
 #'
 #' @return the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the initial Robject with class PLNnetworkfamily
+#'
+#' @export
 stability_selection <- function(Robject, subsamples = NULL, control = list(),
                                 mc.cores = 1, force = FALSE) {
   stopifnot(isPLNnetworkfamily(Robject))
