@@ -48,7 +48,7 @@ plot.PLNnetworkfamily <-
 #' @export
 getModel.PLNnetworkfamily <- function(Robject, var, index = NULL) {
   stopifnot(isPLNnetworkfamily(Robject))
-  Robject$getModel(var, index = NULL)
+  Robject$getModel(var, index)
 }
 
 #' @describeIn getBestModel Model extraction for PLNnetworkfamily
