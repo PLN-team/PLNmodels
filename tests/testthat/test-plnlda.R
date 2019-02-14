@@ -3,6 +3,9 @@ context("test-plnlda")
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
+data(mollusk)
+mollusc <- prepare_data(mollusk$Abundance, mollusk$Covariate)
+
 test_that("Check that PLN is running and robust",  {
 
   model1 <- PLNLDA(trichoptera$Abundance ~ 0, grouping = trichoptera$Group)
@@ -48,7 +51,15 @@ test_that("Check PLNLDA weights",  {
 })
 
 test_that("Use or not of the intercept does not change the result.",  {
-  tol <- 1e-5
+  lda_with <- PLNLDA(Abundance ~ 1 + duration + offset(log(Offset)),
+                     grouping = mollusc$site,
+                     data = mollusc)
+  lda_wo <- PLNLDA(Abundance ~ 0 + duration + offset(log(Offset)),
+                     grouping = mollusc$site,
+                     data = mollusc)
+  expect_equal(lda_with$group_means, lda_wo$group_means)
+  expect_equal(coef(lda_with), coef(lda_wo))
+  expect_equal(vcov(lda_with), vcov(lda_wo))
 })
 
 ## TODO add tests for predictions, tests for fit
