@@ -31,8 +31,10 @@ optimizer_PLN::optimizer_PLN(
 // FUNCTION THAT CALL NLOPT
 void optimizer_PLN::optimize()  {
   double objective ; // value of objective function at optimum
-  optimizer.set_min_objective(fn_optim, &data);
-  status = optimizer.optimize(parameter, objective);
+
+  nlopt_set_min_objective(optimizer, fn_optim, &data);
+  status = nlopt_optimize(optimizer, &parameter[0], &objective) ;
+  nlopt_destroy(optimizer);
 }
 
 // CREATE THE RCPP::LIST FOR R

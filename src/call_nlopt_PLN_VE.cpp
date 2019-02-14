@@ -5,9 +5,9 @@
 
 #include "utils.h"
 
-double fn_optim_VEstep_PLN(const std::vector<double> &x, std::vector<double> &grad, void *data) {
+double fn_optim_VEstep_PLN(unsigned N, const double *x, double *grad, void *data) {
 
-  optim_data *dat = reinterpret_cast<optim_data*>(data);
+  optim_data *dat = (optim_data *) data;
   dat->iterations++; // increase number of iterations
 
   int n = dat->Y.n_rows, p = dat->Y.n_cols ;
@@ -25,9 +25,9 @@ double fn_optim_VEstep_PLN(const std::vector<double> &x, std::vector<double> &gr
   arma::vec grd_M     = vectorise(M * dat->Omega + A-dat->Y) ;
   arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(dat->Omega).t() + A - 1/S));
 
-  if (!grad.empty()) {
-    grad = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
-  }
+  stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
+
+  for (int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -48,13 +48,15 @@ Rcpp::List optimization_VEstep_PLN(
   optim_data my_optim_data(Y, X, O, Theta, Omega, log_det_Omega);
 
   // Initialize the NLOPT optimizer
-  nlopt::opt opt = initNLOPT(par.n_elem, options) ;
+  nlopt_opt opt = initNLOPT(par.n_elem, options) ;
 
   // Perform the optimization
   double f_optimized ;
   stdvec x_optimized = arma::conv_to<stdvec>::from(par);
-  opt.set_min_objective(fn_optim_VEstep_PLN, &my_optim_data);
-  nlopt::result status = opt.optimize(x_optimized, f_optimized);
+
+  nlopt_set_min_objective(opt, fn_optim_VEstep_PLN, &my_optim_data);
+  nlopt_result status = nlopt_optimize(opt, &x_optimized[0], &f_optimized);
+  nlopt_destroy(opt);
 
   // Format the output
   int n = Y.n_rows, p = Y.n_cols;

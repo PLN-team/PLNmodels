@@ -12,7 +12,6 @@
 ^README.md$
 ^LICENSE$
 ^.editorconfig$
-^src/Makevars$
 ^README.Rmd
 ^appveyor\.yml$
 ^vignettes/*_cache/
@@ -20,3 +19,4 @@
 ^inst/sticker$
 ^inst/case_studies$
 ^inst/test/
+^src/Makevars$

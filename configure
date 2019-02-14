@@ -8,7 +8,7 @@ PKG_DEB_NAME="libnlopt-dev"
 PKG_DEB_TESTING_NAME="libnlopt-cxx-dev"
 PKG_RPM_NAME="NLopt-devel"
 PKG_BREW_NAME="nlopt"
-PKG_TEST_HEADER="<nlopt.hpp>"
+PKG_TEST_HEADER="<nlopt.h>"
 
 # Check if pkg-config
 pkg-config --version >/dev/null 2>&1
@@ -22,13 +22,16 @@ CXX=`${R_HOME}/bin/R CMD config CXXCPP`
 CXX11=`${R_HOME}/bin/R CMD config CXX11STD`
 CXXFLAGS=`${R_HOME}/bin/R CMD config CXXFLAGS`
 
-# # Avoid OpenMP for MAC OS
-# if [[ "$OSTYPE" == "darwin"* ]]; then
-#   OPENMP_FLAG=''
-# else
-#   OPENMP_FLAG='$(SHLIB_OPENMP_CXXFLAGS)'
-# fi
+# # # Avoid OpenMP for MAC OS
+# # if [[ "$OSTYPE" == "darwin"* ]]; then
+# #   OPENMP_FLAG=''
+# # else
+# #   OPENMP_FLAG='$(SHLIB_OPENMP_CXXFLAGS)'
+# # fi
 
+# NLOPT_LIBS=`${R_HOME}/bin/Rscript -e "nloptr:::LdFlags()"`
+# NLOPT_FLAG=`${R_HOME}/bin/Rscript -e "nloptr:::CFlags()"`
+#
 # For debugging
 echo "Using NLOPT_LIBS=$NLOPT_LIBS"
 echo "Using NLOPT_FLAG=$NLOPT_FLAG"
@@ -60,4 +63,3 @@ sed -e "s|@nlopt_libs@|$NLOPT_LIBS|" -e "s|@nlopt_flag@|$NLOPT_FLAG|" -e "s|@ope
 
 # Success
 exit 0
-
