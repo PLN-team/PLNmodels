@@ -153,7 +153,7 @@ PLNnetworkfamily$set("public", "stability_selection",
       mutate(Penalty = as.numeric(Penalty),
              Node1   = node_set[edge_to_node(Edge)$node1],
              Node2   = node_set[edge_to_node(Edge)$node2],
-             Edge    = paste0(Node1, "--", Node2))
+             Edge    = paste0(Node1, "|", Node2))
 
     invisible(subsamples)
   }
@@ -180,7 +180,7 @@ function(precision = TRUE, corr = TRUE) {
       mutate(Penalty = x,
              Node1   = as.character(Node1),
              Node2   = as.character(Node2),
-             Edge    = paste0(Node1, "--", Node2)) %>%
+             Edge    = paste0(Node1, "|", Node2)) %>%
       filter(Node1 < Node2)
   }) %>% bind_rows()
 })
