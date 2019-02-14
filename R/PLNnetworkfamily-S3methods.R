@@ -48,7 +48,7 @@ plot.PLNnetworkfamily <-
 #' @export
 getModel.PLNnetworkfamily <- function(Robject, var, index = NULL) {
   stopifnot(isPLNnetworkfamily(Robject))
-  Robject$getModel(var, index = NULL)
+  Robject$getModel(var, index)
 }
 
 #' @describeIn getBestModel Model extraction for PLNnetworkfamily
@@ -79,13 +79,24 @@ coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
 #' Compute the stability path by stability selection
 #'
 #' @name stability_selection
+#'
+#' @description This function computes the StARS stability criteria over a path of penalties. If a path has already been computed, the functions stops with a message unless \code{force = TRUE} has been specified.
+#'
 #' @param Robject an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}
 #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
 #' @param control a list controling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.
 #' @param mc.cores the number of cores to used. Default is 1.
+#' @param force force computation of the stability path, even if a previous one has been detected.
 #'
 #' @return the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the initial Robject with class PLNnetworkfamily
-stability_selection <- function(Robject, subsamples = NULL, control = list(), mc.cores = 1) {
+#'
+#' @export
+stability_selection <- function(Robject, subsamples = NULL, control = list(),
+                                mc.cores = 1, force = FALSE) {
   stopifnot(isPLNnetworkfamily(Robject))
-  Robject$stability_selection(subsamples, control, mc.cores)
+  if (force || anyNA(Robject$stability)) {
+    Robject$stability_selection(subsamples, control, mc.cores)
+  } else {
+    message("Previous stability selection detected. Use \"force = TRUE\" to recompute it.")
+  }
 }

@@ -5,7 +5,7 @@
 \title{Compute the stability path by stability selection}
 \usage{
 stability_selection(Robject, subsamples = NULL, control = list(),
-  mc.cores = 1)
+  mc.cores = 1, force = FALSE)
 }
 \arguments{
 \item{Robject}{an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}}
@@ -15,10 +15,12 @@ stability_selection(Robject, subsamples = NULL, control = list(),
 \item{control}{a list controling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.}
 
 \item{mc.cores}{the number of cores to used. Default is 1.}
+
+\item{force}{force computation of the stability path, even if a previous one has been detected.}
 }
 \value{
 the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the initial Robject with class PLNnetworkfamily
 }
 \description{
-Compute the stability path by stability selection
+This function computes the StARS stability criteria over a path of penalties. If a path has already been computed, the functions stops with a message unless \code{force = TRUE} has been specified.
 }

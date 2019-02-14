@@ -174,7 +174,7 @@ offset_css <- function(counts, reference = median) {
 #' proper_data$Offset
 prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   ## Convert counts and covariates to expected format
-  counts     <- data.matrix(counts)
+  counts     <- data.matrix(counts, rownames.force = TRUE)
   covariates <- as.data.frame(covariates)
   ## sanitize abundance matrix and covariates data.frame
   common <- common_samples(counts, covariates)

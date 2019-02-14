@@ -30,7 +30,7 @@ plot.PLNPCAfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), annotate 
 #' @export
 getModel.PLNPCAfamily <- function(Robject, var, index = NULL) {
   stopifnot(isPLNPCAfamily(Robject))
-  Robject$getModel(var, index = NULL)
+  Robject$getModel(var, index)
 }
 
 #' @describeIn getBestModel Model extraction for PLNPCAfamily
