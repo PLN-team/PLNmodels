@@ -144,7 +144,7 @@ PLNnetworkfamily$set("public", "stability_selection",
 
     prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
     ## formatting/tyding
-    node_set <- rownames(inception_$model_par$Theta)
+    node_set <- rownames(self$getModel(index = 1)$model_par$Theta)
     colnames(prob) <- self$penalties
     private$stab_path <- prob %>%
       as.data.frame() %>%
