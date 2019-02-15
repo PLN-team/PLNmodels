@@ -42,9 +42,8 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## look for grouping in the data or the parent frame
-  grouping <- try(eval(grouping))
-  if (class(grouping) == "try-error") {
-    grouping <- try(eval(substitute(grouping), data))
+  if (class(try(eval(grouping), silent = TRUE)) == "try-error") {
+    grouping <- try(eval(substitute(grouping), data), silent = TRUE)
     if (class(grouping) == "try-error") stop("invalid grouping")
   }
   grouping <- as.factor(grouping)
