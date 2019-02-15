@@ -16,6 +16,9 @@ test_that("Check that PLN is running and robust",  {
 
   model2 <- PLNLDA(Abundance ~ 0, grouping = trichoptera$Group, data = trichoptera)
 
+
+  model3 <- PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)
+
   expect_equal(PLNLDA(trichoptera$Abundance ~ 0, grouping = trichoptera$Group)$fitted,
                PLNLDA(Abundance ~ 0, grouping = trichoptera$Group, data = trichoptera)$fitted)
 

@@ -127,7 +127,7 @@ The model can be fitted with the function `PLNLDA` as follows:
 
 ```{r LDA-nocov}
 myLDA_nocov <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
-                      grouping = trichoptera$Group, 
+                      grouping = Group, 
                       data = trichoptera)
 ```
 
@@ -219,7 +219,7 @@ table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
 It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  :
 ```{r, warning=FALSE}
 myLDA_cov <- PLNLDA(Abundance ~ Wind + 0 + offset(log(Offset)), 
-                    grouping = trichoptera$Group, 
+                    grouping = Group, 
                     data = trichoptera)
 ```
 

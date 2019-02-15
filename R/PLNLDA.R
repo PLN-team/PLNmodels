@@ -32,7 +32,7 @@
 ##' @examples
 ##' data(trichoptera)
 ##' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-##' myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = trichoptera$Group, data = trichoptera)
+##' myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
 ##' @seealso The class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
