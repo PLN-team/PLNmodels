@@ -138,6 +138,8 @@ stability_selection <- function(Robject, subsamples = NULL, control = list(),
 #' g
 #' }
 #'
+#' @importFrom stats setNames
+#'
 extract_probs <- function(Robject, penalty = NULL, index = NULL,
                           crit = c("StARS", "BIC", "EBIC"),
                           format = c("matrix", "vector"),
@@ -156,9 +158,8 @@ extract_probs <- function(Robject, penalty = NULL, index = NULL,
     model <- getBestModel(Robject, match.arg(crit))
   }
   pen <- model$penalty
-  p   <- model$p
   ## extract relevant portion from the stability path
-  stab_path <- filter(stab_path, abs(Penalty - pen) < tol)
+  stab_path <- dplyr::filter(stab_path, abs(stab_path$Penalty - pen) < tol)
   format <- match.arg(format)
   if (format == "vector") {
     return(setNames(stab_path$Prob, stab_path$Edge))
@@ -168,9 +169,9 @@ extract_probs <- function(Robject, penalty = NULL, index = NULL,
     mat <- model$model_par$Omega
     mat[] <- 0
     ## Fill and symmetrize
-    edge_array_index <- stab_path %>% select(Node1, Node2) %>% as.matrix()
+    edge_array_index <- stab_path %>% dplyr::select('Node1', 'Node2') %>% as.matrix()
     mat[edge_array_index] <- stab_path$Prob
     mat <- mat + t(mat)
-    return(mat)
+    mat
   }
 }
