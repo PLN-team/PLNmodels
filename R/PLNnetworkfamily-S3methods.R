@@ -100,3 +100,77 @@ stability_selection <- function(Robject, subsamples = NULL, control = list(),
     message("Previous stability selection detected. Use \"force = TRUE\" to recompute it.")
   }
 }
+
+
+
+#' Extract edge selection frequency in bootstrap subsamples
+#'
+#' @description Extracts edge selection frequency in networks reconstructed from bootstrap subsamples
+#' during the stars stability selection procedure, as either a matrix or a named vector. In the latter
+#' case, edge names follow igraph naming convention.
+#'
+#' @inheritParams getModel
+#' @inheritParams getBestModel
+#' @param Robject an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}
+#' @param penalty penalty used for the boostrap subsamples
+#' @param format output format. Either a matrix (default) or a named vector.
+#' @param tol tolerance for rounding error when comparing penalties.
+#'
+#' @return Either a matrix or named vector of edge-wise probabilities. In the latter case, edge names follow igraph convention.
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' data(mollusk)
+#' mollusc <- prepare_data(mollusk$Abundance, mollusk$Covariate)
+#' nets <- PLNnetwork(Abundance ~ 0 + site + offset(log(Offset)), data = mollusc)
+#' stability_selection(nets)
+#' probs <- extract_probs(nets, crit = "StARS", format = "vector")
+#' probs
+#' }
+#'
+#' \dontrun{
+#' ## Add edge attributes to graph using igraph
+#' net_stars <- getBestModel(nets, "StARS")
+#' g <- plot(net_BIC, type = "partial_cor", plot=F)
+#' library(igraph)
+#' E(g)$prob <- probs[as_ids(E(g))]
+#' g
+#' }
+#'
+extract_probs <- function(Robject, penalty = NULL, index = NULL,
+                          crit = c("StARS", "BIC", "EBIC"),
+                          format = c("matrix", "vector"),
+                          tol = 1e-5) {
+  stopifnot(isPLNnetworkfamily(Robject))
+  ## Check if stability selection has been performed
+  stab_path <- Robject$stability_path
+  if (is.null(stab_path)) {
+    stop("Please perform stability selection using stability_selection(Robject) first")
+  }
+  ## Select model from penalty and/or index
+  if (!is.null(penalty) || !is.null(index)) {
+    model <- getModel(Robject, penalty, index)
+  } else {
+    ## Select index from criteria
+    model <- getBestModel(Robject, match.arg(crit))
+  }
+  pen <- model$penalty
+  p   <- model$p
+  ## extract relevant portion from the stability path
+  stab_path <- filter(stab_path, abs(Penalty - pen) < tol)
+  format <- match.arg(format)
+  if (format == "vector") {
+    return(setNames(stab_path$Prob, stab_path$Edge))
+  }
+  if (format == "matrix") {
+    ## initialize matrix with correct names and dimensions
+    mat <- model$model_par$Omega
+    mat[] <- 0
+    ## Fill and symmetrize
+    edge_array_index <- stab_path %>% select(Node1, Node2) %>% as.matrix()
+    mat[edge_array_index] <- stab_path$Prob
+    mat <- mat + t(mat)
+    return(mat)
+  }
+}
