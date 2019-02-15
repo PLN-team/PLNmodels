@@ -1,4 +1,5 @@
 get_ggplot_ind_map <- function(scores, axes_label, main) {
+
   if (length(axes_label) > 1 ) {
     p <- ggplot(scores, aes_(x = ~a1, y = ~a2, label = ~names, colour = ~labels)) +
       geom_hline(yintercept = 0, colour = "gray65") +
@@ -39,8 +40,8 @@ get_ggplot_corr <- function(correlations, axes_label, main) {
                          names = correlations$names, labels = correlations$labels)
     p <- ggplot(arrows) + xlim(-1.1, 1.1) + ylim(-1.1, 1.1) +
       geom_hline(yintercept = 0, colour = "gray65") +
-      geom_segment(aes_(x = ~x1, y = ~y1, xend = ~x2, yend = ~y2, colour = ~cols)) +
-      geom_text(aes_(x = ~x2, y = ~y2, label = rownames(correlations), colour = ~cols), vjust = -.5, angle = 90, size=5) +
+      geom_segment(aes_(x = ~x1, y = ~y1, xend = ~x2, yend = ~y2, colour = ~labels)) +
+      geom_text(aes_(x = ~x2, y = ~y2, label = rownames(correlations), colour = ~labels), vjust = -.5, angle = 90, size=5) +
       geom_point(aes_(x = ~x2, y = 0)) +
       theme_bw() +  theme(axis.title.y = element_blank(),
                           axis.text.y  = element_blank(),
