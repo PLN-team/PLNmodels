@@ -41,6 +41,14 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
+  ## look for grouping in the data or the parent frame
+  grouping <- try(eval(grouping))
+  if (class(grouping) == "try-error") {
+    grouping <- try(eval(substitute(grouping), data))
+    if (class(grouping) == "try-error") stop("invalid grouping")
+  }
+  grouping <- as.factor(grouping)
+
   ## treatment of the design, which is specific to LDA
   # - save the covariates
   covar <- args$X
@@ -48,7 +56,6 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   xint <- match("(Intercept)", colnames(covar), nomatch = 0L)
   if (xint > 0L) covar <- covar[, -xint, drop = FALSE]
   # - build the design matrix encompassing covariates and LDA grouping
-  grouping <- as.factor(grouping)
   design_group <- model.matrix(~ grouping + 0)
   args$X <- cbind(covar, design_group)
 
