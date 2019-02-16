@@ -1,0 +1,239 @@
+---
+title: "Dimension reduction of multivariate count data with PLN-PCA"
+author: "PLN team"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+bibliography: article/PLNreferences.bib
+link-citations: yes
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{PLNPCA}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  rows.print = 5,
+  message = FALSE, 
+  warning = FALSE)
+```
+
+## Preliminaries
+
+This vignette illustrates the basical use of the `PLNPCA` function and the methods accompaning the R6 Classes `PLNPCAfamily` and `PLNPCAfit`.
+
+### Requirements
+
+The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:
+
+```{r requirement}
+library(tidyverse)
+library(PLNmodels)
+```
+
+### Data set
+
+We illustrate our point with the trichoptera data set, a full description of which can be found in [the corresponding vignette](Trichoptera.html). Data preparation is also detailed in [the specific vignette](Import_data.html).
+
+```{r data_load}
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+```
+
+The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
+
+### Mathematical background
+
+In the vein of @TiB99, we introduce in @PLNPCA a probabilistic PCA model for multivariate count data which is a variant of the Poisson Lognormal model of @AiH89 (see [the PLN vignette](PLN.html) as a reminder). Indeed, it can viewed as a PLN model with an additional rank constraint on the covariance matrix $\boldsymbol\Sigma$ such that $\mathrm{rank}(\boldsymbol\Sigma)= q$.
+
+This PLN-PCA model can be written in a hierachical framework where a sample of $p$-dimensional observation vectors $\mathbf{Y}_i$ is related to some  $q$-dimensional vectors of latent variables $\mathbf{W}_i$ as follows:
+\begin{equation} 
+  \begin{array}{rcl}
+    \text{latent space }  & \mathbf{W}_i \quad \text{i.i.d.} & \mathbf{W}_i \sim      \mathcal{N}(\mathbf{0}_q, \mathbf{I}_q)  \\
+\text{parameter space } &   \mathbf{Z}_i = {\boldsymbol\mu} + \mathbf{B}^\top \mathbf{W}_i & \\
+  \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
+  \end{array}
+\end{equation}
+
+The parameter ${\boldsymbol\mu}\in\mathbb{R}^p$ corresponds to the main effects, the $p\times q$ matrix $\mathbf{B}$  to the \emph{rescaled} loadings in the parameter spaces and $\mathbf{W}_i$ to the scores of the $i$-th observation in the low-dimensional latent subspace of the parameter space. The dimension of the latent space $q$ corresponds to the number of axes in the PCA or, in other words, to the rank of $\mathbf{B}\mathbf{B}^\intercal$. An hopefully more intuitive way of writting this model is the following:
+\begin{equation} 
+  \begin{array}{rcl}
+  \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{B}\mathbf{B}^\top \\
+  \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
+  \end{array}
+\end{equation}
+where the interpretation of PLN-PCA as a rank-constrained PLN model is more obvious.
+
+#### Covariates and offsets 
+
+Just like PLN, PLN-PCA generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$. The latent layer then reads
+\begin{equation} 
+  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{B}\mathbf{B}^\top,
+\end{equation}
+where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters.
+
+#### Optimization by Variational inference
+
+Dimension reduction and vizualization is the main objective in (PLN)-PCA. To reach this goal, we need to first estimate the model parameters. Inference in PLN-PCA focuses on the regression parameters $\boldsymbol\Theta$ and on the covariance matrix $\boldsymbol\Sigma$. Technically speaking, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package. Technical details can be found in @PLNPCA.
+
+## Analysis of trichoptera data with a PLNPCA model
+
+In the package, the PLNPCA model is adjusted with the function `PLNPCA`, which we review in this section. This function adjusts the model for a series of value of $q$ and provides a collection of objects `PLNPCAfit` stored in an object with class `PLNPCAfamily`. 
+
+The class `PLNPCAfit` inherits from the class `PLNfit`, so we strongly recommend the reader to be comfortable with `PLN` and `PLNfit` before using `PLNPCA` (see [the PLN vignette](PLN.html)).
+
+### A model with latent main effects for the Trichopetra data set
+
+#### Adjusting a collection of fits
+
+We fit a collection of $q$ models as follows:
+
+```{r simple PLNPCA}
+PCA_models <- PLNPCA(
+  Abundance ~ 1 + offset(log(Offset)),
+  data  = trichoptera, 
+  ranks = 1:6
+)
+```
+
+Note the use of the `formula` object to specify the model, similar to the one used in the function `PLN`.
+
+#### Structure of `PLNPCAfamily`
+
+The `PCA_models` variable is an `R6` object with class `PLNPCAfamily`, which comes with a couple of methods. The most basic is the `show/print` method, which sends a brief summary of the estimation process:
+
+```{r show nocov}
+PCA_models
+```
+
+One can also easily access the successive values of the criteria in the collection 
+
+```{r collection criteria}
+PCA_models$criteria %>% knitr::kable()
+```
+
+A quick diagnostic of the optimization process is available via the `convergence` field:
+
+```{r convergence criteria}
+PCA_models$convergence  %>% knitr::kable()
+```
+
+Comprehensive information about `PLNPCAfamily` is available via `?PLNPCAfamily`.
+
+#### Model selection of rank $q$
+
+The `plot` method of `PLNPCAfamily` displays evolution of the criteria mentioned above, and is a good starting point for model selection:
+
+```{r plot nocov, fig.width=7, fig.height=5}
+plot(PCA_models)
+```
+
+In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) $R^2$ which is displayed for each value of $q$ (see [@PLNPCA] for details on its computation).
+
+From this plot, we can see that the best model in terms of BIC or ICL is obtained for a rank $q=4$ or $q=3$. We may extract the corresponding model with the method `getBestModel("ICL")`. A model with a specific rank can be extracted with the `getModel()` method:
+
+```{r model extraction}
+myPCA_ICL <- getBestModel(PCA_models, "ICL") 
+myPCA_BIC <- getModel(PCA_models, 3) ## getBestModel(PCA_models, "BIC")  is equivalent here 
+```
+
+#### Structure of `PLNPCAfit`
+
+Objects `myPCA_ICL` and `myPCA_BIC` are `R6Class` objects of class `PLNPCAfit` which in turns own a couple of methods, some inherited from `PLNfit` and some others specific, mostly for vizualization purposes. The `plot` method provides individual maps and correlation circles as in usual PCA. If an additional classification exists for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument to the function.
+
+```{r map, fig.width=8, fig.height=8}
+plot(myPCA_ICL, ind_cols = trichoptera$Group)
+```
+
+With our PLN-PCA (and any pPCA model for count data, where successive models are not nested), it is important to performed the model selection of $q$ prior to vizualization, since the model with rank $q=3$ is not nested in the model with rank $q=4$. Indeed, let us vizualize the first three axes of model $q=3$:
+
+```{r map q3, fig.width=8, fig.height=8}
+plot(myPCA_BIC, ind_cols = trichoptera$Group)
+```
+
+We can see that the maps for axes (1,2) is slightly different for the model with $q=3$ from the one obtained for axes (1,2) in the $q=4$ model^[Percentage of variance must be interpreted with care: it sums to 100% but must be put in perspective with the model $R^2$, giving an approximation of the total percentage of variance explained with the current model.]
+
+Among other fields and methods (see `?PLNPCAfit` for a comprehensive view), the most interesting for the end-user in the context of PCA are 
+
+- the regression coefficient matrix
+```{r regression}
+coef(myPCA_ICL) %>% head() %>% knitr::kable()
+```
+
+- the estimated covariance matrix $\boldsymbol\Sigma$ with fixed rank 
+
+```{r vcov, fig.width=7}
+vcov(myPCA_ICL) %>% corrplot::corrplot(is.corr = FALSE)
+```
+
+- the rotation matrix (in the latent space)
+
+```{r rotation}
+myPCA_ICL$rotation %>% head() %>% knitr::kable()
+```
+
+- the principal components values (or scores)
+
+```{r scores}
+myPCA_ICL$scores %>% head() %>% knitr::kable()
+```
+
+`PLNPCAfit` also inherits from the methods of `PLNfit` (see the [appropriate vignette](articles/PLN.html)). Most are recalled via the show method:
+```{r show PLNPCAfit}
+myPCA_ICL
+```
+
+
+### A model accounting for meteorological covariates
+
+A contribution of PLN-PCA is to let the possibility to taking into account some covariates in the parameter space. Such a strategy often completly changes the interpretation of PCA. Indeed, the covariates are often responsible for some strong structure in the data. The effect of the covariates should be removed since they are often quite obvious for the analyst and may hide some more important and subtile effects.
+
+In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the temperature, the wind and the cloudiness. This can be done thanks to the model formula:
+
+```{r cov}
+PCA_models_cov <- 
+  PLNPCA(
+    Abundance ~ 1 + offset(log(Offset)) + Temperature + Wind + Cloudiness,
+    data  = trichoptera,
+    ranks = 1:6
+  )
+```
+
+Again, the best model is obtained for $q=3$ classes.
+
+```{r extraction cov, fig.width=7, fig.height=7}
+plot(PCA_models_cov)
+myPCA_cov <- getBestModel(PCA_models_cov, "ICL")
+```
+
+Suppose that we want to have a closer look to the first two axes. This can be done thanks to the plot method:
+
+```{r maps, fig.height=4, fig.width=7}
+gridExtra::grid.arrange(
+  plot(myPCA_cov, map = "individual", ind_cols = trichoptera$Group, plot = FALSE),
+  plot(myPCA_cov, map = "variable", plot = FALSE),
+  ncol = 2
+)
+```
+
+We can check that the fitted value of the counts -- even with this low-rank covariance matrix -- are close to the observed ones:
+
+```{r fitted, fig.cap = "fitted value vs. observation", fig.dim=c(7,5)}
+data.frame(
+  fitted   = as.vector(fitted(myPCA_cov)),
+  observed = as.vector(trichoptera$Abundance)
+) %>% 
+  ggplot(aes(x = observed, y = fitted)) + 
+    geom_point(size = .5, alpha =.25 ) + 
+    scale_x_log10(limits = c(1,1000)) + 
+    scale_y_log10(limits = c(1,1000)) + 
+    theme_bw() + annotation_logticks()
+```
+
+
+## References
+

@@ -1,0 +1,23 @@
+citHeader("To cite PLNmodels (either PLNPCA or PLNnetwork) in publications, please use:")
+
+citEntry(entry = "article",
+  key = "PLNPCA",
+  author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
+  title = "Variational inference for probabilistic Poisson PCA",
+  journal = "The Annals of Applied Statistics",
+  year = "2018",
+  volume = "12", pages = "2674--2698",
+  url = "http://dx.doi.org/10.1214/18-AOAS1177",
+  textVersion = "J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, to appear."
+)
+
+citEntry(entry = "article",
+  key = "PLNnetwork",
+  author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
+  title = "Variational inference for sparse network reconstruction from count data",
+  journal = "arXiv preprint",
+  year = "2018",
+  url = "https://arxiv.org/abs/1806.03120",
+  textVersion = "J. Chiquet, M. Mariadassou and S. Robin:  Variational inference for sparse network reconstruction from count data, arXiv preprint, 2018."
+)
+

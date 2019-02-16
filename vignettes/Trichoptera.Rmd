@@ -1,0 +1,120 @@
+---
+title: "Description of the Trichoptera data set"
+author: "PLN team"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+    df_print: paged
+bibliography: article/PLNreferences.bib
+link-citations: yes
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{trichoptera}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  rows.print = 5,
+  message = FALSE,
+  warning = FALSE)
+```
+
+## Preliminaries
+
+This vignette describes the data set `trichoptera`, which is used in all examples, tests and other vignettes of the package **PLNmodels**. This data set regroups the main striking characteristics of ecological count data (encompassing tables of abundances and covariates). The low dimensional space of the data also ensures that it is well suited for illutrative purposes. 
+
+The packages required to run the vignette are the following:
+
+```{r packages}
+library(PLNmodels)
+library(tidyverse)
+library(GGally)
+library(corrplot)
+```
+
+## The trichopterata data set 
+
+The order Trichoptera (or caddisflies) are a group of insects with aquatic larvae and terrestrial adults. The ecological data set trichoptera [@trichoptera] describes abundances of Trichoptera species (hereafter the _counts_), accompanied with some meteorological factors (hereafter the _covariates_) that may influence their presence during the sampling^[The original data set is available in the **ade4** package. We consider here a different version where we only keep a subset of the original meteorological features, for illutrative purposes].
+
+```{r trichoptera, echo = FALSE, fig.align='center', fig.cap = "Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001."}
+knitr::include_graphics("figures/macronema_zebratum.jpg")
+```
+
+The data is directly available once **PLNmodels** is loaded. Comprehensive information and description are available to the user with `?PLNmodels::trichoptera`.
+
+```{r data_load}
+data(trichoptera)
+```
+
+### Formatting
+
+Data are originaly stored in a list of two data frames for abundances and covariates. We first prepare the data [see the corresponding vignette](Import_data.html) for easy use in the multivariate framework of **PLNmodels**. Offsets are automatically computed:
+
+```{r prepare_data}
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+```
+
+Data are now stored in the `trichoptera` data frame which includes 49 rows (the observations - or trapping nights) and 9 columns. As can be seen, there are 2 multivariate columns (matrices of counts and offsets) and 7 univariate columns (vectors of covariates):
+
+```{r data_str}
+str(trichoptera)
+```
+
+We thus rely on a not so common use of the `data.frame` structure, where a column may be a matrix and not necessarily an atomic vector. This formatting is very handy for model specification with `R` `formulas`, especially in a multivariate setting like in **PLNmodels**.
+
+### Table of counts (abundancies)
+
+The `Abundance` column is a $49 \times 17$ matrix of abundancies (or counts) for the 17 species found during the 49 trapping nights.
+
+```{r responses_trichoptera}
+trichoptera$Abundance %>% head() %>% knitr::kable()
+```
+
+In all other vignettes and journal papers associated with **PLNmodels**, the count table is denoted by $\mathbf{Y}$ in the mathematical model and `Y` in the `R` environment.
+
+A basic representation of the matrix of counts (here transposed and log-transformed), shows the typical huge dispersion between low and highly abundant species.
+
+```{r count diplay, fig.width = 7, fig.cap = "log-counts in the trichoptera data set"}
+corrplot(
+  t(log(1 + trichoptera$Abundance)),
+  is.corr = FALSE,
+  addgrid.col = NA
+)
+```
+
+### Covariates (external meteorological effect, groups)
+
+Additional information was collected during the sampling, which corresponds to external covariates the effect of which may or may not be taken into account in the model (depending on the question at play). In the trichoptera data set, those covariates correspond to meteorological factors plus a categorical variable indicating the family of the caughts specimens.
+
+```{r covariates_trichoptera}
+select(trichoptera, -Offset, -Abundance) %>% head() %>% knitr::kable()
+```
+
+The design matrix arising from the covariates is denoted by $\mathbf{X}$ in our mathematical model and `X` within the `R` environment.
+
+A first glance at the pairs plot between the covariates shows no particular structure regarding the trichoptera groups.
+
+```{r pairs, fig.dim = c(7, 7), fig.cap ="Pairs plot of the covariates in the trichoptera data set"}
+select(trichoptera, -Offset, -Abundance) %>% 
+ggpairs(columns = 1:6, mapping = aes(colour = Group))
+```
+
+### Offsets and the compositionality issue
+
+A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by an $49$ numeric of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The formula syntax accepts either no offset, a vector or a matrix or specify the offsets term. 
+
+Here, we have a vector whose corresponding column is named `Offset` in in the `trichoptera` data frame:
+
+```{r offset_trichopera}
+trichoptera$Offset
+```
+
+[See the importation vignette](Import_data.html) and the function `prepare_data()` to learn more about how Offset can be computed in **PLNmodels**.
+
+Offsets are denoted by $\mathbf{O}$ in the mathematical model across other vignettes, and by `O` in the `R` environment.
+
+## References
