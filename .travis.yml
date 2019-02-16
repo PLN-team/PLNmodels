@@ -58,8 +58,8 @@ matrix:
           github-token: $GITHUB_TOKEN
           script: Rscript -e 'pkgdown::deploy_site_github()'
           skip_cleanup: true
-#          local_dir: "docs"
-#          keep-history: true
+          local_dir: "docs"
+          keep-history: true
           on:
             branch: master
     - os: linux
