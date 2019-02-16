@@ -16,9 +16,9 @@
 #' @field EBIC variational lower bound of the EBIC
 #' @field ICL variational lower bound of the ICL
 #' @field R_squared approximated goodness-of-fit criterion
-#' @field degrees_freedom number of parameters in the current PLN model
+#' @field nb_param number of parameters in the current PLN model
 #' @field density proportion of non-null edges in the network
-#' @field criteria a vector with loglik, BIC, ICL, R_squared and degrees of freedom
+#' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
 #' @include PLNnetworkfit-class.R
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}
 PLNnetworkfit <-
@@ -41,11 +41,10 @@ PLNnetworkfit <-
     ),
     active = list(
       penalty         = function() {private$lambda},
-### TODO: understand what is happening when penalize_diagonal = FALSE
-      n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
-      degrees_freedom = function() {self$p * self$d + self$n_edges},
-      pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
-      model_par = function() {
+      n_edges    = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
+      nb_param   = function() {self$p * self$d + self$n_edges},
+      pen_loglik = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
+      model_par  = function() {
         par <- super$model_par
         par$Omega <- private$Omega
         par

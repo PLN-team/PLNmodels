@@ -36,9 +36,9 @@ See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and degrees of freedom}
+\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
 
-\item{\code{degrees_freedom}}{number of parameters in the current PLN model}
+\item{\code{nb_param}}{number of parameters in the current PLN model}
 
 \item{\code{percent_var}}{the percent of variance explained by each axis}
 

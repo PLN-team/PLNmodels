@@ -15,8 +15,8 @@
 #' @field BIC variational lower bound of the BIC
 #' @field ICL variational lower bound of the ICL
 #' @field R_squared approximated goodness-of-fit criterion
-#' @field criteria a vector with loglik, BIC, ICL, R_squared and degrees of freedom
-#' @field degrees_freedom number of parameters in the current PLN model
+#' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
+#' @field nb_param number of parameters in the current PLN model
 #' @field percent_var the percent of variance explained by each axis
 #' @field corr_map a matrix of correlations to plot the correlation circles
 #' @field scores a matrix of scores to plot the individual factor maps
@@ -64,7 +64,7 @@ PLNLDAfit <-
     ),
     active = list(
       rank = function() {nlevels(private$grouping) - 1},
-      degrees_freedom = function() {self$p * (self$d + self$rank)},
+      nb_param = function() {self$p * (self$d + self$rank)},
       model_par = function() {
         par <- super$model_par
         par$B  <- private$B

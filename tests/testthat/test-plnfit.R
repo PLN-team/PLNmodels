@@ -35,23 +35,23 @@ test_that("Check prediction",  {
   )
 })
 
-test_that("Check degrees of freedom",  {
+test_that("Check number of parameters",  {
 
   p <- ncol(trichoptera$Abundance)
 
   model <- PLN(Abundance ~ 1, data = trichoptera)
-  expect_equal(model$degrees_freedom, p*(p+1)/2 + p * 1)
+  expect_equal(model$nb_param, p*(p+1)/2 + p * 1)
 
   model <- PLN(Abundance ~ 1 + Wind, data = trichoptera)
-  expect_equal(model$degrees_freedom, p*(p+1)/2 + p * 2)
+  expect_equal(model$nb_param, p*(p+1)/2 + p * 2)
 
   model <- PLN(Abundance ~ Group + 0 , data = trichoptera)
-  expect_equal(model$degrees_freedom, p*(p+1)/2 + p * nlevels(trichoptera$Group))
+  expect_equal(model$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
 
   model <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal"))
-  expect_equal(model$degrees_freedom, p + p * 1)
+  expect_equal(model$nb_param, p + p * 1)
 
   model <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical"))
-  expect_equal(model$degrees_freedom, 1 + p * 1)
+  expect_equal(model$nb_param, 1 + p * 1)
 
 })

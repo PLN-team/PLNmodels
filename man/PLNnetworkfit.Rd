@@ -39,11 +39,11 @@ See the documentation for \code{\link[=plot.PLNnetworkfit]{plot.PLNnetworkfit}} 
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
-\item{\code{degrees_freedom}}{number of parameters in the current PLN model}
+\item{\code{nb_param}}{number of parameters in the current PLN model}
 
 \item{\code{density}}{proportion of non-null edges in the network}
 
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and degrees of freedom}
+\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
 }}
 
 \seealso{

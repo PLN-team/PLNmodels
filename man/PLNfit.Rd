@@ -42,9 +42,9 @@ Fields are accessed via active binding and cannot be changed by the user.
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
-\item{\code{degrees_freedom}}{number of parameters in the current PLN model}
+\item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and degrees of freedom}
+\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
 }}
 
 \keyword{datasets}

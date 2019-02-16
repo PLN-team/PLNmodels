@@ -20,8 +20,8 @@
 #' @field BIC variational lower bound of the BIC
 #' @field ICL variational lower bound of the ICL
 #' @field R_squared approximated goodness-of-fit criterion
-#' @field degrees_freedom number of parameters in the current PLN model
-#' @field criteria a vector with loglik, BIC, ICL, R_squared and degrees of freedom
+#' @field nb_param number of parameters in the current PLN model
+#' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 PLNfit <-
@@ -71,7 +71,7 @@ PLNfit <-
       var_par    = function() {list(M = private$M, S = private$S)},
       latent     = function() {private$Z},
       fitted     = function() {private$A},
-      degrees_freedom = function() {
+      nb_param   = function() {
         res <- self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)
         as.integer(res)
       },
@@ -79,11 +79,11 @@ PLNfit <-
       optim_par  = function() {private$monitoring},
       loglik     = function() {sum(private$Ji)},
       loglik_vec = function() {private$Ji},
-      BIC        = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
+      BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
       entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", self$q, 1))},
       ICL        = function() {self$BIC - self$entropy},
       R_squared  = function() {private$R2},
-      criteria   = function() {data.frame(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
+      criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
   )
 
@@ -324,7 +324,7 @@ function(model = paste("A multivariate Poisson Lognormal fit with", private$cova
   cat("==================================================================\n")
   cat("* Useful fields \n")
   cat("    $model_par, $latent, $var_par, $optim_par \n")
-  cat("    $loglik, $BIC, $ICL, $loglik_vec, $degrees_freedom, $criteria \n")
+  cat("    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria \n")
   cat("* Useful S3 methods\n")
   cat("    print(), coef(), vcov(), fitted(), predict(), standard_error(), fisher() \n")
 })
