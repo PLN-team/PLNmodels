@@ -56,6 +56,18 @@ common_samples <- function(counts, covariates) {
 
 ## Internal functions to compute scaling factors from a count table
 
+## Numeric offset
+offset_numeric <- function(counts, offset, ...) {
+  ## Sanity checks
+  if (anyNA(ii <- match(rownames(counts), rownames(offset)))) {
+    missing <- ii[is.na(ii)]
+    stop(paste("Samples"),
+         paste(rownames(counts)[missing], collapse = " and "),
+         "from the count table lack an offset. Please check your offset.")
+  }
+  ## More sanity checks
+}
+
 ## No offset
 offset_none <- function(counts) {
   return(NULL)
@@ -158,6 +170,8 @@ offset_css <- function(counts, reference = median) {
 #' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
 #'
 #' @return A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
+#' @note User supplied offsets must have the same size / dimensions as the original count matrix and are trimmed in exactly the same way to remove empty samples.
+#'
 #'
 #' @seealso \code{\link[=compute_offset]{compute_offset}} for details on the different normalisation schemes
 #'
@@ -179,9 +193,17 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   ## sanitize abundance matrix and covariates data.frame
   common <- common_samples(counts, covariates)
   samples <- common$common_samples
-  if (common$transpose_counts) counts <- t(counts)
+  if (common$transpose_counts) {
+    counts <- t(counts)
+    ## sanitize offset
+    if (is.numeric(offset)) {
+      if (is.vector(offset)) offset <- matrix(offset, nrow = 1)
+      offset <- t(offset)
+    }
+  }
   if (common$default_names) {
     rownames(counts) <- rownames(covariates) <- samples
+    if (is.numeric(offset)) rownames(offset) <- samples
   }
   counts <- counts[samples, ]
   ## Replace NA with 0s
@@ -234,6 +256,10 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' counts <- trichoptera$Abundance
 #' compute_offset(counts)
 compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...) {
+  ## special behavior for numeric offset
+  if (is.numeric(offset)) {
+    return(offset_numeric(counts, offset, ...))
+  }
   ## Choose offset function
   offset <- match.arg(offset)
   offset_function <- switch(offset,
@@ -255,7 +281,7 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
 #' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
 #'
 #' @param biom Required. Either a biom-class object from which the count table and covariates data.frame are extracted or a file name where to read the biom.
-#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference.
+#' @inheritParams prepare_data
 #' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
 #'
 #' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
@@ -294,7 +320,7 @@ prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
 #' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
 #'
 #' @param physeq Required. A phyloseq class object from which the count table and covariates data.frame are extracted.
-#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference.
+#' @inheritParams prepare_data
 #' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
 #'
 #' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
