@@ -26,5 +26,5 @@ Extracts univariate standard errors for the estimated coefficient of Theta. Stan
 }}
 
 \seealso{
-\code{\link[=fisher.PLNfit]{fisher}} for the complete Fisher information matrix
+\code{\link[=vcov.PLNfit]{vcov}} for the complete Fisher information matrix
 }
