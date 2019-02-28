@@ -3,16 +3,12 @@ context("test-plcpca")
 ## get data with some offset
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-data(mollusk)
-mollusc <- prepare_data(mollusk$Abundance, mollusk$Covariate)
 
 test_that("PLNPCA runs", {
 
   models <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
   expect_is(models, "PLNPCAfamily")
 
-  models <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = mollusc, ranks = 1:8, control_main = list(cores = 8))
-  expect_is(models, "PLNPCAfamily")
     ## add some...
 })
 
