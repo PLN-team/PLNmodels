@@ -9,7 +9,7 @@ prepare_data_from_biom(biom, offset = "TSS", ...)
 \arguments{
 \item{biom}{Required. Either a biom-class object from which the count table and covariates data.frame are extracted or a file name where to read the biom.}
 
-\item{offset}{Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference.}
+\item{offset}{Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).}
 
 \item{...}{Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}}
 }

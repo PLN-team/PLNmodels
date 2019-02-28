@@ -56,6 +56,42 @@ common_samples <- function(counts, covariates) {
 
 ## Internal functions to compute scaling factors from a count table
 
+## Sanitize offset to ensure consistency with count matrix
+sanitize_offset <- function(counts, offset, ...) {
+  p <- ncol(counts) ## number of features
+  ## Sanity check: transform vector offset and column-matrices to full matrices
+  if (is.vector(offset) || (is.matrix(offset) && ncol(offset) == 1)) {
+    offset <- matrix(rep(offset, p),
+                     ncol = p,
+                     dimnames = list(names(offset), colnames(counts)))
+  }
+  ## Sanity check: rownames
+  if (is.null(rownames(offset))) {
+    stop("Rownames are used for sample matching.\nPlease specify them in the offset vector/matrix.")
+  }
+  ## Sanity checks: offsets are available for all samples
+  if (anyNA(ii <- match(rownames(counts), rownames(offset)))) {
+    stop(paste("Sample(s) "),
+         paste(rownames(counts)[is.na(ii)], collapse = " and "),
+         " from the count table lack an offset.\nConsider checking your offset (orientation, rownames).")
+  }
+  offset <- offset[rownames(counts), , drop = FALSE]
+  ## Sanity checks: offset are available for all species
+  if (ncol(offset) != p) {
+    stop(paste("There should be one offset per feature in the count table.\nYou have",
+               p,
+               "features but",
+               ncol(offset),
+               "offsets."))
+  }
+  offset
+}
+
+## Numeric offset
+offset_numeric <- function(counts, offset, ...) {
+  sanitize_offset(counts, offset, ...)
+}
+
 ## No offset
 offset_none <- function(counts) {
   return(NULL)
@@ -150,7 +186,7 @@ offset_css <- function(counts, reference = median) {
 #'
 #' @param counts Required. An abundance count table, preferably with dimensions names and species as columns.
 #' @param covariates Required. A covariates data frame, preferably with row names.
-#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Can be "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none".
+#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
 #' @param ... Additional parameters passed on to \code{\link[=compute_offset]{compute_offset}}
 #'
 #' @references Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \url{https://doi.org/10.7717/peerj.4600}
@@ -158,6 +194,8 @@ offset_css <- function(counts, reference = median) {
 #' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
 #'
 #' @return A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
+#' @note User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
+#'
 #'
 #' @seealso \code{\link[=compute_offset]{compute_offset}} for details on the different normalisation schemes
 #'
@@ -166,9 +204,9 @@ offset_css <- function(counts, reference = median) {
 #' @examples
 #' data(trichoptera)
 #' proper_data <- prepare_data(
-#'  counts      = trichoptera$Abundance,
+#'  counts     = trichoptera$Abundance,
 #'  covariates = trichoptera$Covariate,
-#'   offset = "TSS"
+#'  offset     = "TSS"
 #' )
 #' proper_data$Abundance
 #' proper_data$Offset
@@ -179,9 +217,19 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   ## sanitize abundance matrix and covariates data.frame
   common <- common_samples(counts, covariates)
   samples <- common$common_samples
-  if (common$transpose_counts) counts <- t(counts)
+  if (common$transpose_counts) {
+    counts <- t(counts)
+    ## sanitize offset
+    if (is.numeric(offset)) {
+      if (is.vector(offset)) {
+        offset <- matrix(offset, nrow = 1, dimnames = list(names(offset), NULL))
+      }
+      offset <- t(offset)
+    }
+  }
   if (common$default_names) {
     rownames(counts) <- rownames(covariates) <- samples
+    if (is.numeric(offset)) rownames(offset) <- samples
   }
   counts <- counts[samples, ]
   ## Replace NA with 0s
@@ -201,7 +249,6 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   covariates <- covariates[samples, ]
   if (is.null(names(covariates))) names(covariates) <- paste0("Variable", seq_along(covariates))
   ## compute offset
-  counts
   offset     <- compute_offset(counts, offset, ...)
   ## prepare data for PLN
   result <- data.frame(Abundance = NA, ## placeholder for Abundance, to avoid using I() and inheriting "AsIs" class
@@ -234,7 +281,16 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' data(trichoptera)
 #' counts <- trichoptera$Abundance
 #' compute_offset(counts)
+#' ## Other normalization schemes
+#' compute_offset(counts, offset = "GMPR")
+#' compute_offset(counts, offset = "RLE", pseudocounts = 1)
+#' ## User supplied offsets
+#' compute_offset(counts, offset = rep(1, nrow(counts)))
 compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...) {
+  ## special behavior for numeric offset
+  if (is.numeric(offset)) {
+    return(offset_numeric(counts, offset, ...))
+  }
   ## Choose offset function
   offset <- match.arg(offset)
   offset_function <- switch(offset,
@@ -256,7 +312,7 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
 #' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
 #'
 #' @param biom Required. Either a biom-class object from which the count table and covariates data.frame are extracted or a file name where to read the biom.
-#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference.
+#' @inheritParams prepare_data
 #' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
 #'
 #' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
@@ -295,7 +351,7 @@ prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
 #' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
 #'
 #' @param physeq Required. A phyloseq class object from which the count table and covariates data.frame are extracted.
-#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference.
+#' @inheritParams prepare_data
 #' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
 #'
 #' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
