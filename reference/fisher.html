@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="Fisher information matrix for Theta — fisher" />
 
-<meta property="og:description" content="Extracts Fisher information matrix of \(\Theta\) from objects returned by PLN and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the one-data version (not scaled by the number of observations)." />
+<meta property="og:description" content="Extracts Fisher information matrix of \(\Theta\) from objects returned by PLN and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the full-data version (scaled by the number of observations), usually noted $$I_n(\theta)$$." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
       </span>
     </div>
 
@@ -141,7 +141,7 @@
 
     <div class="ref-description">
     
-    <p>Extracts Fisher information matrix of \(\Theta\) from objects returned by <code><a href='PLN.html'>PLN</a></code> and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).</p>
+    <p>Extracts Fisher information matrix of \(\Theta\) from objects returned by <code><a href='PLN.html'>PLN</a></code> and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the full-data version (scaled by the number of observations), usually noted $$I_n(\theta)$$.</p>
     
     </div>
 
@@ -159,8 +159,7 @@
     </tr>
     <tr>
       <th>type</th>
-      <td><p>Either `wald` (default) or `louis`. Approxomation scheme used to compute the
-Fisher information matrix</p></td>
+      <td><p>Either `wald` (default) or `louis`. Approxomation scheme used to compute the Fisher information matrix</p></td>
     </tr>
     </table>
     

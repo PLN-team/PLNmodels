@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extract model coefficients — coef.PLNfit • PLNmodels</title>
+<title>Extract variance-covariance of residuals 'Sigma' — sigma.PLNfit • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Extract model coefficients — coef.PLNfit" />
+<meta property="og:title" content="Extract variance-covariance of residuals 'Sigma' — sigma.PLNfit" />
 
-<meta property="og:description" content="Extracts model coefficients from objects returned by PLN and its variants" />
+<meta property="og:description" content="Extract the variance-covariance matrix of the residuals, usually noted $$\Sigma$$ in PLN models. This captures the correlation between the species in the latent space." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -134,19 +134,19 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Extract model coefficients</h1>
+    <h1>Extract variance-covariance of residuals 'Sigma'</h1>
     
-    <div class="hidden name"><code>coef.PLNfit.Rd</code></div>
+    <div class="hidden name"><code>sigma.PLNfit.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Extracts model coefficients from objects returned by <code><a href='PLN.html'>PLN</a></code> and its variants</p>
+    <p>Extract the variance-covariance matrix of the residuals, usually noted $$\Sigma$$ in PLN models. This captures the correlation between the species in the latent space.</p>
     
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNfit</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>object</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"main"</span>, <span class='st'>"covariance"</span>), <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/sigma'>sigma</a></span>(<span class='no'>object</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -156,10 +156,6 @@
       <td><p>an R6 object with class PLNfit</p></td>
     </tr>
     <tr>
-      <th>type</th>
-      <td><p>type of parameter that should be extracted. Either "main" (default) for $$\Theta$$ or "covariance" for $$\Sigma$$</p></td>
-    </tr>
-    <tr>
       <th>...</th>
       <td><p>additional parameters for S3 compatibility. Not used</p></td>
     </tr>
@@ -167,11 +163,11 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A matrix of coefficients extracted from the PLNfit model.</p>
+    <p>A semi definite positive matrix of size p, assuming there are p species in the model.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='sigma.PLNfit.html'>sigma</a></code>, <code><a href='vcov.PLNfit.html'>vcov</a></code>, <code><a href='standard_error.html'>standard_error</a></code></p></div>
+    <div class='dont-index'><p><code><a href='coef.PLNfit.html'>coef</a></code>, <code><a href='standard_error.html'>standard_error</a></code> and <code><a href='vcov.PLNfit.html'>vcov</a></code> for other ways to access $$\Sigma$$.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -181,24 +177,7 @@
 #&gt;  Initialization...
 #&gt;  Adjusting a PLN model with full covariance model
 #&gt;  Post-treatments...
-#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>myPLN</span>) <span class='co'>## Theta</span></div><div class='output co'>#&gt;     (Intercept)
-#&gt; Che  -8.1718383
-#&gt; Hyc  -8.2814641
-#&gt; Hym  -2.9754866
-#&gt; Hys  -7.0808989
-#&gt; Psy  -0.5449225
-#&gt; Aga  -4.0800045
-#&gt; Glo  -6.3389447
-#&gt; Ath  -6.0418944
-#&gt; Cea  -7.0624492
-#&gt; Ced  -3.6355916
-#&gt; Set  -4.4088713
-#&gt; All  -4.9163962
-#&gt; Han  -4.8108818
-#&gt; Hfo  -6.0952140
-#&gt; Hsp  -4.2696750
-#&gt; Hve  -6.8433377
-#&gt; Sta  -2.8811805</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>myPLN</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"covariance"</span>) <span class='co'>## Sigma</span></div><div class='output co'>#&gt;              Che          Hyc        Hym         Hys           Psy         Aga
+#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/sigma'>sigma</a></span>(<span class='no'>myPLN</span>) <span class='co'>## Sigma</span></div><div class='output co'>#&gt;              Che          Hyc        Hym         Hys           Psy         Aga
 #&gt; Che  2.527910653 -0.009337094  0.3617320  0.44643957 -0.0180048441  0.30904259
 #&gt; Hyc -0.009337094  1.906200016  0.1109625  0.27016045 -0.1464564715 -0.13140626
 #&gt; Hym  0.361731955  0.110962478  1.2445919  0.86583510 -0.1186783498  0.51345012
