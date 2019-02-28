@@ -66,7 +66,7 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0.9000</span>
       </span>
     </div>
 
@@ -162,7 +162,7 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
     </tr>
     <tr>
       <th>offset</th>
-      <td><p>Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Can be "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none".</p></td>
+      <td><p>Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -173,6 +173,10 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A data.frame suited for use in <code><a href='PLN.html'>PLN</a></code> and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")</p>
+    
+    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
+
+    <p>User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.</p>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
@@ -188,9 +192,9 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>trichoptera</span>)
 <span class='no'>proper_data</span> <span class='kw'>&lt;-</span> <span class='fu'>prepare_data</span>(
- <span class='kw'>counts</span>      <span class='kw'>=</span> <span class='no'>trichoptera</span>$<span class='no'>Abundance</span>,
+ <span class='kw'>counts</span>     <span class='kw'>=</span> <span class='no'>trichoptera</span>$<span class='no'>Abundance</span>,
  <span class='kw'>covariates</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>,
-  <span class='kw'>offset</span> <span class='kw'>=</span> <span class='st'>"TSS"</span>
+ <span class='kw'>offset</span>     <span class='kw'>=</span> <span class='st'>"TSS"</span>
 )
 <span class='no'>proper_data</span>$<span class='no'>Abundance</span></div><div class='output co'>#&gt;    Che Hyc Hym Hys  Psy Aga Glo Ath Cea Ced Set All Han Hfo Hsp Hve Sta
 #&gt; 1    0   0   5   0   17   0   0   0   0   2   0   1   0   1   2   0   1
@@ -252,6 +256,8 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#note">Note</a></li>
 
       <li><a href="#references">References</a></li>
 

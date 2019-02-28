@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0.9000</span>
       </span>
     </div>
 
@@ -186,8 +186,9 @@ Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when type eq
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Produces a plot  representing the evolution of the criteria of the different models considered,
-highlighting the best model in terms of BIC and EBIC.</p>
+    <p>Produces a plot representing the evolution of the criteria of the different models considered,
+highlighting the best model in terms of BIC and EBIC (the greater, the better).
+These criteria have the form 'loglik - 1/2 * penalty' so that they are on the same scale as the model loglikelihood.</p>
     
 
   </div>
