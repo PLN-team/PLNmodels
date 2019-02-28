@@ -57,9 +57,6 @@ matrix:
           skip_cleanup: true
           on:
             tags: true
-#        - provider: script
-#          script: Rscript -e 'pkgdown::deploy_site_github()'
-#          skip_cleanup: true
         - provider: pages
           github-token: $GITHUB_TOKEN
           skip_cleanup: true
