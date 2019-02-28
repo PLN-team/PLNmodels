@@ -327,7 +327,7 @@ function(model = paste("A multivariate Poisson Lognormal fit with", private$cova
   cat("    $model_par, $latent, $var_par, $optim_par \n")
   cat("    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria \n")
   cat("* Useful S3 methods\n")
-  cat("    print(), coef(), vcov(), fitted(), predict(), standard_error(), fisher() \n")
+  cat("    print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()\n")
 })
 
 PLNfit$set("public", "print", function() self$show())
