@@ -24,7 +24,7 @@ test_that("Check that PLN is running and robust",  {
 })
 
 test_that("Check PLNLDA initialization",  {
-  tol <- 1e-5
+  tol <- 1e-4
 
   ## use default initialization (LM)
   model1 <- PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)
@@ -39,7 +39,7 @@ test_that("Check PLNLDA initialization",  {
 })
 
 test_that("Check PLNLDA weights",  {
-  tol <- 1e-5
+  tol <- 1e-4
 
   ## no weights
   model1 <- PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)
