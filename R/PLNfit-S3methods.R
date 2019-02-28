@@ -22,26 +22,38 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
   object$predict(newdata, type, parent.frame())
 }
 
-#' Extracts model coefficients from objects returned by \code{\link[=PLN]{PLN}} and its variants
+#' Extract model coefficients
+#'
+#' @description Extracts model coefficients from objects returned by \code{\link[=PLN]{PLN}} and its variants
 #'
 #' @name coef.PLNfit
 #'
 #' @param object an R6 object with class PLNfit
+#' @param type type of parameter that should be extracted. Either "main" (default) for \deqn{\Theta} or "covariance" for \deqn{\Sigma}
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of coefficients extracted from the PLNfit model.
 #'
+#' @seealso \code{\link[=sigma.PLNfit]{sigma}}, \code{\link[=vcov.PLNfit]{vcov}}, \code{\link[=standard_error.PLNfit]{standard_error}}
+#'
 #' @export
-coef.PLNfit <- function(object, ...) {
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+#' coef(myPLN) ## Theta
+#' coef(myPLN, type = "covariance") ## Sigma
+coef.PLNfit <- function(object, type = c("main", "covariance"), ...) {
   stopifnot(isPLNfit(object))
-  object$model_par$Theta
+  switch(match.arg(type),
+         main       = object$model_par$Theta,
+         covariance = object$model_par$Sigma)
 }
 
 #' Extracts model fitted values from objects returned by \code{\link[=PLN]{PLN}} and its variants
 #'
 #' @name fitted.PLNfit
 #'
-#' @param object an R6 object with class PLNfit
-#' @param ... additional parameters for S3 compatibility. Not used
+#' @inheritParams coef.PLNfit
 #' @return A matrix of Fitted values extracted from the object object.
 #'
 #' @export
@@ -50,70 +62,55 @@ fitted.PLNfit <- function(object, ...) {
   object$fitted
 }
 
-#' Extracts model covariance from objects returned by \code{\link[=PLN]{PLN}} and its variants
+#' Calculate Variance-Covariance Matrix for a fitted \code{\link[=PLN]{PLN}} model object
 #'
 #' @name vcov.PLNfit
 #'
-#' @param object an R6 object with class PLNfit
-#' @param ... additional parameters for S3 compatibility. Not used
-#' @return A matrix of variance/covariance extracted from the PLNfit model.
+#' @description Returns the variance-covariance matrix of the main parameters of a fitted \code{\link[=PLN]{PLN}} model object. The main parameters of the model correspond to \deqn{\Theta}, as returned by \code{\link[=coef.PLNfit]{coef}}. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via \code{\link[=sigma.PLNfit]{sigma}}
+#'
+#' @inheritParams coef.PLNfit@param
+#' @return A matrix of variance/covariance extracted from the PLNfit model. If type="main" and \eqn{\Theta} is a matrix of size d * p, the result is a block-diagonal matrix with p (number of species) blocks of size d (number of covariates). if type="main", it is a symmetric matrix of size p.
+#' .
+#'
+#' @seealso \code{\link[=sigma.PLNfit]{sigma}}, \code{\link[=coef.PLNfit]{coef}}, \code{\link[=standard_error.PLNfit]{standard_error}}
 #'
 #' @export
-vcov.PLNfit <- function(object, ...) {
+#'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+#' vcov(myPLN) ## variance-covariance of Theta
+#' vcov(myPLN, type = "covariance") ## Sigma
+vcov.PLNfit <- function(object, type = c("main", "covariance"), ...) {
+  stopifnot(isPLNfit(object))
+  switch(match.arg(type),
+         main       = object$fisher$mat,
+         covariance = object$model_par$Sigma)
+}
+
+
+#' Extract variance-covariance of residuals 'Sigma'
+#'
+#' @name sigma.PLNfit
+#' @description Extract the variance-covariance matrix of the residuals, usually noted \deqn{\Sigma} in PLN models. This captures the correlation between the species in the latent space.
+#'
+#' @inheritParams coef.PLNfit
+#'
+#' @return A semi definite positive matrix of size p, assuming there are p species in the model.
+#' @export
+#'
+#' @seealso \code{\link[=coef.PLNfit]{coef}}, \code{\link[=standard_error.PLNfit]{standard_error}} and \code{\link[=vcov.PLNfit]{vcov}} for other ways to access \deqn{\Sigma}.
+#'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+#' sigma(myPLN) ## Sigma
+sigma.PLNfit <- function(object, ...) {
   stopifnot(isPLNfit(object))
   object$model_par$Sigma
 }
-
-# Fisher information matrix for Theta
-#
-# @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{g(E[Y|X]) = X\Theta}.
-# Useful to create confidence intervals and (multivariate) confidence regions under a Gaussian approximation of \eqn{\Theta}. Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
-#
-# @param object An `R` object. Currently there are methods for \code{\link{PLNfit}} (and its variants) objects.
-# @param ... Further arguments passed to or from other methods.
-#
-# @return The fisher information matrix of \eqn{\Theta} in generalized linear models.
-# @export
-#
-
-#' Fisher information matrix for Theta
-#'
-#' @description Extracts Fisher information matrix of \eqn{\Theta} from objects returned by \code{\link[=PLN]{PLN}} and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the one-data version (not scaled by the number of observations).
-#'
-#' @param object an R6 object with class PLNfit
-#' @param type Either `wald` (default) or `louis`. Approxomation scheme used to compute the
-#' Fisher information matrix
-#' @return A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
-#' \eqn{\Theta} is a matrix of size d * p.
-#'
-#' @seealso \code{\link[=standard_error.PLNfit]{standard_error}} for standard errors
-#'
-#' @export
-fisher <- function(object, type) {
-  UseMethod("fisher", object)
-}
-
-#' @describeIn fisher Fisher information matrix for PLNfit
-#' @export
-fisher.PLNfit <- function(object, type = c("wald", "louis")) {
-  stopifnot(isPLNfit(object))
-  type <- match.arg(type)
-  if (type != object$fisher$type) {
-    stop(paste("Fisher information was not computed using the", type, "approximation. Try another approximation scheme."))
-  }
-  object$fisher$mat
-}
-
-# Component-wise standard errors of Theta
-#
-# @description Compute or extract component-wise standard errors of Theta in multivariate (generalized) linear models of the form \deqn{g(E[Y|X]) = X\Theta}. Useful to compute Z-scores and p-values under a gaussian/student approximation of \eqn{\Theta}
-#
-# @param object An `R` object. Currently there are methods for \code{\link{PLNfit}} (and its variants) objects.
-# @param ... Further arguments passed to or from other methods.
-#
-# @return The standard errors associated with coefficients of \eqn{\Theta}
-# @export
-#
 
 #' Component-wise standard errors of Theta
 #'
@@ -122,7 +119,7 @@ fisher.PLNfit <- function(object, type = c("wald", "louis")) {
 #' @param object an R6 object with class PLNfit
 #' @param type Either `Wald` (default) or `Louis`. Approximation scheme used to compute the Fisher information matrix
 #'
-#' @seealso \code{\link[=fisher.PLNfit]{fisher}} for the complete Fisher information matrix
+#' @seealso \code{\link[=vcov.PLNfit]{vcov}} for the complete Fisher information matrix
 #'
 #' @return A p * d positive matrix (same size as \eqn{\Theta}) with standard errors for the coefficients of \eqn{\Theta}
 #'
