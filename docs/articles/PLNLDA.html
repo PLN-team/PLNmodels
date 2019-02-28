@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
       </span>
     </div>
 
@@ -278,14 +278,14 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">myLDA_nocov</a></code></pre></div>
 <pre><code>## Linear Discriminant Analysis for Poisson Lognormal distribution
 ## ==================================================================
-##  nb_param    loglik       BIC       ICL R_squared
-##       391 -799.6686 -1560.519 -1194.071 0.4812456
+##  nb_param    loglik       BIC     ICL R_squared
+##       391 -799.5249 -1560.376 -1140.4 0.4790224
 ## ==================================================================
 ## * Useful fields 
 ##     $model_par, $latent, $var_par, $optim_par 
 ##     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria 
 ## * Useful S3 methods
-##     print(), coef(), vcov(), fitted(), predict(), standard_error(), fisher() 
+##     print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()
 ## * Additional fields for LDA
 ##     $percent_var, $corr_map, $scores, $group_means 
 ## * Additional S3 methods for LDA
@@ -299,7 +299,7 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <ul>
 <li>the <span class="math inline">\(p \times p\)</span> covariance matrix <span class="math inline">\(\hat{\boldsymbol{\Sigma}}\)</span>:</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/vcov">vcov</a></span>(myLDA_nocov) <span class="op">%&gt;%</span><span class="st"> </span>corrplot<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sigma">sigma</a></span>(myLDA_nocov) <span class="op">%&gt;%</span><span class="st"> </span>corrplot<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <p><img src="PLNLDA_files/figure-html/vcov-1.png" width="700"></p>
 <ul>
 <li>the regression coefficient matrix <span class="math inline">\(\hat{\boldsymbol{\Theta}}\)</span> (in this case <code>NULL</code> as there are no covariates)</li>
@@ -328,31 +328,31 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-21.96</td>
+<td align="right">-23.93</td>
 <td align="right">-6.82</td>
-<td align="right">-21.53</td>
-<td align="right">-20.36</td>
-<td align="right">-23.31</td>
-<td align="right">-23.89</td>
-<td align="right">-22.20</td>
-<td align="right">-21.35</td>
-<td align="right">-21.42</td>
+<td align="right">-23.50</td>
+<td align="right">-22.33</td>
+<td align="right">-25.28</td>
+<td align="right">-25.86</td>
+<td align="right">-24.17</td>
+<td align="right">-23.32</td>
+<td align="right">-23.39</td>
 <td align="right">-5.65</td>
 <td align="right">-3.47</td>
-<td align="right">-20.34</td>
+<td align="right">-22.31</td>
 </tr>
 <tr class="even">
-<td align="right">-21.93</td>
-<td align="right">-22.68</td>
-<td align="right">-5.66</td>
-<td align="right">-20.33</td>
-<td align="right">-7.43</td>
-<td align="right">-23.86</td>
-<td align="right">-22.17</td>
-<td align="right">-21.32</td>
-<td align="right">-21.39</td>
-<td align="right">-21.46</td>
-<td align="right">-19.29</td>
+<td align="right">-23.92</td>
+<td align="right">-24.66</td>
+<td align="right">-5.67</td>
+<td align="right">-22.31</td>
+<td align="right">-7.44</td>
+<td align="right">-25.84</td>
+<td align="right">-24.15</td>
+<td align="right">-23.30</td>
+<td align="right">-23.37</td>
+<td align="right">-23.44</td>
+<td align="right">-21.28</td>
 <td align="right">-4.47</td>
 </tr>
 <tr class="odd">
@@ -360,28 +360,28 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <td align="right">-3.96</td>
 <td align="right">-2.36</td>
 <td align="right">-2.92</td>
-<td align="right">-6.51</td>
+<td align="right">-6.52</td>
 <td align="right">-5.54</td>
 <td align="right">-2.69</td>
 <td align="right">-2.03</td>
 <td align="right">-2.70</td>
 <td align="right">-2.65</td>
-<td align="right">-19.41</td>
+<td align="right">-21.38</td>
 <td align="right">-3.85</td>
 </tr>
 <tr class="even">
-<td align="right">-21.96</td>
-<td align="right">-22.71</td>
+<td align="right">-23.93</td>
+<td align="right">-24.68</td>
 <td align="right">-5.69</td>
 <td align="right">-4.52</td>
-<td align="right">-23.24</td>
-<td align="right">-23.93</td>
-<td align="right">-22.22</td>
-<td align="right">-5.52</td>
+<td align="right">-25.22</td>
+<td align="right">-25.90</td>
+<td align="right">-24.18</td>
+<td align="right">-5.51</td>
 <td align="right">-5.59</td>
 <td align="right">-4.91</td>
-<td align="right">-19.37</td>
-<td align="right">-20.39</td>
+<td align="right">-21.33</td>
+<td align="right">-22.35</td>
 </tr>
 <tr class="odd">
 <td align="right">-0.28</td>
@@ -408,8 +408,8 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <td align="right">-3.06</td>
 <td align="right">-5.53</td>
 <td align="right">-3.99</td>
-<td align="right">-19.28</td>
-<td align="right">-20.30</td>
+<td align="right">-21.26</td>
+<td align="right">-22.28</td>
 </tr>
 </tbody>
 </table>
@@ -426,82 +426,82 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">myLDA_nocov<span class="op">$</span>scores <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</a></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
-<td align="right">1794850</td>
-<td align="right">315.10</td>
-<td align="right">21732.66</td>
-<td align="right">-35842.61</td>
-<td align="right">10025.54</td>
-<td align="right">-5039.37</td>
-<td align="right">2151.51</td>
-<td align="right">-1037.49</td>
-<td align="right">-132.32</td>
-<td align="right">-2.61</td>
-<td align="right">-87.30</td>
+<td align="right">3280815</td>
+<td align="right">-293274.9</td>
+<td align="right">165207.0</td>
+<td align="right">-58387.12</td>
+<td align="right">17377.18</td>
+<td align="right">8675.17</td>
+<td align="right">-1075.38</td>
+<td align="right">-1315.04</td>
+<td align="right">107.62</td>
+<td align="right">12.65</td>
+<td align="right">-116.04</td>
 </tr>
 <tr class="even">
-<td align="right">1794991</td>
-<td align="right">-2186.18</td>
-<td align="right">21889.29</td>
-<td align="right">-36097.65</td>
-<td align="right">9946.63</td>
-<td align="right">-5046.64</td>
-<td align="right">2143.39</td>
-<td align="right">-1036.73</td>
-<td align="right">-129.24</td>
-<td align="right">-1.32</td>
-<td align="right">-88.04</td>
+<td align="right">3281709</td>
+<td align="right">-289098.1</td>
+<td align="right">165412.1</td>
+<td align="right">-58751.17</td>
+<td align="right">17240.77</td>
+<td align="right">8688.21</td>
+<td align="right">-1089.94</td>
+<td align="right">-1354.69</td>
+<td align="right">103.19</td>
+<td align="right">14.04</td>
+<td align="right">-117.00</td>
 </tr>
 <tr class="odd">
-<td align="right">1797121</td>
-<td align="right">-25544.16</td>
-<td align="right">23728.50</td>
-<td align="right">-37674.91</td>
-<td align="right">9401.70</td>
-<td align="right">-4693.22</td>
-<td align="right">2116.13</td>
-<td align="right">-946.64</td>
-<td align="right">-145.31</td>
-<td align="right">2.09</td>
-<td align="right">-82.54</td>
+<td align="right">3290969</td>
+<td align="right">-250510.2</td>
+<td align="right">167254.7</td>
+<td align="right">-61123.51</td>
+<td align="right">16077.11</td>
+<td align="right">8539.15</td>
+<td align="right">-897.29</td>
+<td align="right">-1313.51</td>
+<td align="right">124.62</td>
+<td align="right">17.71</td>
+<td align="right">-110.79</td>
 </tr>
 <tr class="even">
-<td align="right">1799367</td>
-<td align="right">-52012.26</td>
-<td align="right">25785.80</td>
-<td align="right">-39352.47</td>
-<td align="right">8843.36</td>
-<td align="right">-4170.46</td>
-<td align="right">2117.20</td>
-<td align="right">-832.62</td>
-<td align="right">-167.79</td>
-<td align="right">3.32</td>
-<td align="right">-75.82</td>
+<td align="right">3301250</td>
+<td align="right">-206744.8</td>
+<td align="right">169374.8</td>
+<td align="right">-63673.19</td>
+<td align="right">14789.74</td>
+<td align="right">8307.86</td>
+<td align="right">-591.64</td>
+<td align="right">-1131.26</td>
+<td align="right">156.45</td>
+<td align="right">19.56</td>
+<td align="right">-103.00</td>
 </tr>
 <tr class="odd">
-<td align="right">1798002</td>
-<td align="right">-36646.39</td>
-<td align="right">24569.30</td>
-<td align="right">-38342.95</td>
-<td align="right">9198.16</td>
-<td align="right">-4420.38</td>
-<td align="right">2128.72</td>
-<td align="right">-897.63</td>
-<td align="right">-156.44</td>
-<td align="right">1.77</td>
-<td align="right">-79.43</td>
+<td align="right">3295223</td>
+<td align="right">-232052.5</td>
+<td align="right">168176.6</td>
+<td align="right">-62152.42</td>
+<td align="right">15554.44</td>
+<td align="right">8411.70</td>
+<td align="right">-733.69</td>
+<td align="right">-1176.34</td>
+<td align="right">141.19</td>
+<td align="right">17.88</td>
+<td align="right">-107.12</td>
 </tr>
 <tr class="even">
-<td align="right">1796314</td>
-<td align="right">-17273.30</td>
-<td align="right">23061.76</td>
-<td align="right">-37088.18</td>
-<td align="right">9617.86</td>
-<td align="right">-4770.19</td>
-<td align="right">2138.01</td>
-<td align="right">-974.67</td>
-<td align="right">-141.30</td>
-<td align="right">-0.15</td>
-<td align="right">-84.29</td>
+<td align="right">3287620</td>
+<td align="right">-264169.2</td>
+<td align="right">166623.2</td>
+<td align="right">-60246.57</td>
+<td align="right">16501.61</td>
+<td align="right">8567.21</td>
+<td align="right">-932.11</td>
+<td align="right">-1274.87</td>
+<td align="right">120.00</td>
+<td align="right">15.52</td>
+<td align="right">-112.70</td>
 </tr>
 </tbody></table>
 <p>…or the <span class="math inline">\(p \times (K-1)\)</span> matrix of correlations between scores and (latent) variables</p>
@@ -509,87 +509,87 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <table class="table"><tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-0.31</td>
-<td align="right">0.28</td>
-<td align="right">0.38</td>
-<td align="right">0.17</td>
-<td align="right">-0.66</td>
-<td align="right">0.08</td>
-<td align="right">-0.63</td>
-<td align="right">0.08</td>
-<td align="right">-0.80</td>
-<td align="right">-0.44</td>
-<td align="right">0.06</td>
+<td align="right">-0.26</td>
+<td align="right">-0.14</td>
+<td align="right">-0.61</td>
+<td align="right">0.23</td>
+<td align="right">-0.60</td>
+<td align="right">-0.32</td>
+<td align="right">-0.15</td>
+<td align="right">-0.39</td>
+<td align="right">0.84</td>
+<td align="right">-0.48</td>
+<td align="right">0.04</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-0.07</td>
+<td align="right">-0.03</td>
+<td align="right">0.51</td>
+<td align="right">0.13</td>
+<td align="right">0.39</td>
+<td align="right">-0.01</td>
 <td align="right">-0.49</td>
-<td align="right">0.11</td>
-<td align="right">0.44</td>
-<td align="right">0.27</td>
-<td align="right">0.85</td>
-<td align="right">0.09</td>
-<td align="right">0.28</td>
-<td align="right">0.19</td>
-<td align="right">-0.23</td>
-<td align="right">0.61</td>
+<td align="right">0.64</td>
+<td align="right">0.92</td>
+<td align="right">-0.09</td>
+<td align="right">-0.17</td>
+<td align="right">0.59</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
 <td align="right">0.08</td>
+<td align="right">0.15</td>
+<td align="right">0.22</td>
+<td align="right">-0.77</td>
+<td align="right">0.33</td>
 <td align="right">-0.13</td>
-<td align="right">-0.10</td>
-<td align="right">-0.73</td>
-<td align="right">0.25</td>
-<td align="right">-0.14</td>
-<td align="right">-0.15</td>
-<td align="right">-0.61</td>
-<td align="right">0.41</td>
+<td align="right">-0.41</td>
+<td align="right">-0.02</td>
+<td align="right">-0.32</td>
 <td align="right">0.02</td>
 <td align="right">-0.61</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-0.48</td>
-<td align="right">0.10</td>
-<td align="right">-0.62</td>
-<td align="right">0.02</td>
-<td align="right">0.14</td>
-<td align="right">0.03</td>
+<td align="right">-0.54</td>
+<td align="right">-0.12</td>
+<td align="right">0.20</td>
+<td align="right">-0.07</td>
+<td align="right">0.27</td>
 <td align="right">-0.45</td>
-<td align="right">-0.59</td>
-<td align="right">0.44</td>
-<td align="right">0.03</td>
+<td align="right">-0.43</td>
+<td align="right">0.00</td>
+<td align="right">-0.30</td>
+<td align="right">-0.03</td>
 <td align="right">0.28</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
 <td align="right">0.24</td>
-<td align="right">0.30</td>
-<td align="right">0.20</td>
-<td align="right">-0.31</td>
-<td align="right">-0.45</td>
-<td align="right">-0.05</td>
-<td align="right">0.12</td>
-<td align="right">-0.02</td>
-<td align="right">-0.54</td>
-<td align="right">-0.59</td>
 <td align="right">-0.32</td>
+<td align="right">-0.19</td>
+<td align="right">-0.26</td>
+<td align="right">-0.40</td>
+<td align="right">0.24</td>
+<td align="right">-0.16</td>
+<td align="right">-0.04</td>
+<td align="right">0.50</td>
+<td align="right">-0.60</td>
+<td align="right">-0.35</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
 <td align="right">0.10</td>
-<td align="right">-0.12</td>
-<td align="right">-0.11</td>
+<td align="right">0.11</td>
+<td align="right">0.24</td>
 <td align="right">-0.89</td>
-<td align="right">0.03</td>
-<td align="right">-0.06</td>
-<td align="right">-0.32</td>
-<td align="right">-0.28</td>
-<td align="right">0.17</td>
-<td align="right">-0.19</td>
-<td align="right">-0.50</td>
+<td align="right">0.05</td>
+<td align="right">-0.20</td>
+<td align="right">-0.20</td>
+<td align="right">-0.17</td>
+<td align="right">-0.10</td>
+<td align="right">-0.21</td>
+<td align="right">-0.51</td>
 </tr>
 </tbody></table>
 </div>
@@ -619,101 +619,206 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-17.44</td>
-<td align="right">-41.45</td>
-<td align="right">-38.50</td>
-<td align="right">-25.46</td>
-<td align="right">-49.67</td>
-<td align="right">-32.76</td>
+<td align="right">-17.45</td>
+<td align="right">-43.44</td>
+<td align="right">-40.48</td>
+<td align="right">-25.47</td>
+<td align="right">-51.64</td>
+<td align="right">-32.77</td>
 <td align="right">-25.91</td>
-<td align="right">-72.40</td>
-<td align="right">-69.48</td>
-<td align="right">-20.59</td>
-<td align="right">-162.50</td>
-<td align="right">-64.81</td>
+<td align="right">-78.34</td>
+<td align="right">-75.40</td>
+<td align="right">-20.60</td>
+<td align="right">-180.29</td>
+<td align="right">-68.74</td>
 </tr>
 <tr class="even">
 <td align="right">-9.66</td>
 <td align="right">-17.04</td>
-<td align="right">-49.88</td>
+<td align="right">-53.83</td>
 <td align="right">-21.33</td>
-<td align="right">-62.13</td>
+<td align="right">-66.08</td>
 <td align="right">-27.31</td>
-<td align="right">-14.69</td>
+<td align="right">-14.68</td>
 <td align="right">-15.57</td>
 <td align="right">-15.20</td>
 <td align="right">-14.69</td>
-<td align="right">-96.77</td>
-<td align="right">-56.37</td>
+<td align="right">-106.65</td>
+<td align="right">-60.31</td>
 </tr>
 <tr class="odd">
-<td align="right">-12.94</td>
+<td align="right">-12.93</td>
 <td align="right">-22.56</td>
-<td align="right">-95.02</td>
-<td align="right">-39.89</td>
-<td align="right">-99.91</td>
-<td align="right">-30.79</td>
-<td align="right">-22.52</td>
-<td align="right">-45.02</td>
-<td align="right">-39.45</td>
-<td align="right">-22.92</td>
-<td align="right">-118.88</td>
-<td align="right">-100.46</td>
+<td align="right">-102.94</td>
+<td align="right">-40.00</td>
+<td align="right">-107.76</td>
+<td align="right">-30.78</td>
+<td align="right">-22.53</td>
+<td align="right">-47.05</td>
+<td align="right">-41.44</td>
+<td align="right">-22.94</td>
+<td align="right">-130.78</td>
+<td align="right">-108.40</td>
 </tr>
 <tr class="even">
-<td align="right">-18.42</td>
-<td align="right">-30.97</td>
-<td align="right">-106.77</td>
-<td align="right">-114.63</td>
-<td align="right">-128.94</td>
-<td align="right">-54.02</td>
-<td align="right">-41.83</td>
-<td align="right">-99.29</td>
-<td align="right">-88.07</td>
-<td align="right">-44.51</td>
-<td align="right">-247.86</td>
-<td align="right">-192.03</td>
+<td align="right">-18.43</td>
+<td align="right">-31.03</td>
+<td align="right">-112.91</td>
+<td align="right">-116.36</td>
+<td align="right">-134.87</td>
+<td align="right">-54.03</td>
+<td align="right">-41.96</td>
+<td align="right">-105.56</td>
+<td align="right">-94.14</td>
+<td align="right">-44.70</td>
+<td align="right">-274.09</td>
+<td align="right">-206.36</td>
 </tr>
 <tr class="odd">
 <td align="right">-13.84</td>
 <td align="right">-20.00</td>
-<td align="right">-47.67</td>
-<td align="right">-60.63</td>
-<td align="right">-67.69</td>
-<td align="right">-38.18</td>
-<td align="right">-26.87</td>
-<td align="right">-46.72</td>
-<td align="right">-40.22</td>
-<td align="right">-25.85</td>
-<td align="right">-156.32</td>
-<td align="right">-100.51</td>
+<td align="right">-49.69</td>
+<td align="right">-61.02</td>
+<td align="right">-69.57</td>
+<td align="right">-38.17</td>
+<td align="right">-26.90</td>
+<td align="right">-48.81</td>
+<td align="right">-42.22</td>
+<td align="right">-25.89</td>
+<td align="right">-172.25</td>
+<td align="right">-106.56</td>
 </tr>
 <tr class="even">
-<td align="right">-9.25</td>
+<td align="right">-9.24</td>
 <td align="right">-13.48</td>
-<td align="right">-32.19</td>
-<td align="right">-24.38</td>
-<td align="right">-43.17</td>
-<td align="right">-23.74</td>
+<td align="right">-34.17</td>
+<td align="right">-24.40</td>
+<td align="right">-45.11</td>
+<td align="right">-23.73</td>
 <td align="right">-14.61</td>
-<td align="right">-15.90</td>
+<td align="right">-15.91</td>
 <td align="right">-15.29</td>
-<td align="right">-14.31</td>
-<td align="right">-80.98</td>
-<td align="right">-57.69</td>
+<td align="right">-14.32</td>
+<td align="right">-88.89</td>
+<td align="right">-61.65</td>
+</tr>
+</tbody>
+</table>
+<p>You can also show them in the standard (and human-friendly) <span class="math inline">\([0, 1]\)</span> scale with <code>scale = "prob"</code> to get the matrix <span class="math inline">\(\hat{\pi}_k\)</span></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">predicted.class &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_nocov, <span class="dt">newdata =</span> trichoptera, <span class="dt">scale =</span> <span class="st">"prob"</span>)</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">predicted.class <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">3</span>)</a></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">1</th>
+<th align="right">2</th>
+<th align="right">3</th>
+<th align="right">4</th>
+<th align="right">5</th>
+<th align="right">6</th>
+<th align="right">7</th>
+<th align="right">8</th>
+<th align="right">9</th>
+<th align="right">10</th>
+<th align="right">11</th>
+<th align="right">12</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.958</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.041</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0.980</td>
+<td align="right">0.001</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.006</td>
+<td align="right">0.003</td>
+<td align="right">0.004</td>
+<td align="right">0.006</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">1.000</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">1.000</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">0.998</td>
+<td align="right">0.002</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0.972</td>
+<td align="right">0.014</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.005</td>
+<td align="right">0.001</td>
+<td align="right">0.002</td>
+<td align="right">0.006</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 </tbody>
 </table>
 <p>Setting <code>type = "response"</code>, we can predict the most likely group <span class="math inline">\(\hat{k}\)</span> instead:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">predicted.class &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_nocov, <span class="dt">newdata =</span> trichoptera,  <span class="dt">type =</span> <span class="st">"response"</span>)</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">predicted.class</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">predicted.class &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_nocov, <span class="dt">newdata =</span> trichoptera,  <span class="dt">type =</span> <span class="st">"response"</span>)</a>
+<a class="sourceLine" id="cb16-2" data-line-number="2">predicted.class</a></code></pre></div>
 <pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
 ##  1  1  1  1  1  1  9  2  1  1  1  1  2  3  2  2  2  3  3  3  9  3  4  1  4 
 ## 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 
 ##  4 12  5  4  5  6  7  7  7  8  8  8  8  8  1  9  9  9 10 10 10 10 11 12 
 ## Levels: 1 2 3 4 5 6 7 8 9 10 11 12</code></pre>
-<p>Finally, we can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used dataset for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(predicted.class, trichoptera<span class="op">$</span>Group, <span class="dt">dnn =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"predicted"</span>, <span class="st">"true"</span>))</a></code></pre></div>
+<p>We can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used dataset for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(predicted.class, trichoptera<span class="op">$</span>Group, <span class="dt">dnn =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"predicted"</span>, <span class="st">"true"</span>))</a></code></pre></div>
 <pre><code>##          true
 ## predicted  1  2  3  4  5  6  7  8  9 10 11 12
 ##        1  10  0  0  1  0  0  0  0  1  0  0  0
@@ -728,15 +833,25 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 ##        10  0  0  0  0  0  0  0  0  0  4  0  0
 ##        11  0  0  0  0  0  0  0  0  0  0  1  0
 ##        12  0  0  0  0  1  0  0  0  0  0  0  1</code></pre>
+<p>Finally, we can get the coordinates of the new data on the same graph at the original ones with <code>type = "scores"</code>. This is done by averaging the latent positions <span class="math inline">\(\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k\)</span> (found when the sample is assumed to come from group <span class="math inline">\(k\)</span>) and weighting them with the <span class="math inline">\(\hat{\pi}_k\)</span>. Some samples, have compositions that put them very far from their group mean.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">predicted.scores &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_nocov, <span class="dt">newdata =</span> trichoptera,  <span class="dt">type =</span> <span class="st">"scores"</span>)</a>
+<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(predicted.scores) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(<span class="st">"Axis."</span>, <span class="dv">1</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">ncol</a></span>(predicted.scores))</a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">predicted.scores &lt;-<span class="st"> </span>predicted.scores <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb20-5" data-line-number="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">group =</span> trichoptera<span class="op">$</span>Group)</a>
+<a class="sourceLine" id="cb20-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myLDA_nocov, <span class="dt">map =</span> <span class="st">"individual"</span>, <span class="dt">nb_axes =</span> <span class="dv">2</span>, <span class="dt">plot =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb20-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data =</span> predicted.scores, </a>
+<a class="sourceLine" id="cb20-8" data-line-number="8">             <span class="kw">aes</span>(<span class="dt">x =</span> Axis<span class="fl">.1</span>, <span class="dt">y =</span> Axis<span class="fl">.2</span>, <span class="dt">color =</span> group, <span class="dt">label =</span> <span class="ot">NULL</span>))</a></code></pre></div>
+<p><img src="PLNLDA_files/figure-html/predicted_scores-1.png" width="672"></p>
 </div>
 </div>
 <div id="a-model-with-latent-main-effects-and-meterological-covariates" class="section level3">
 <h3 class="hasAnchor">
 <a href="#a-model-with-latent-main-effects-and-meterological-covariates" class="anchor"></a>A model with latent main effects and meterological covariates</h3>
 <p>It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we’re going to use <code>Wind</code> as a covariate and illustrate the main differences with before :</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">myLDA_cov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNLDA.html">PLNLDA</a></span>(Abundance <span class="op">~</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)), </a>
-<a class="sourceLine" id="cb19-2" data-line-number="2">                    <span class="dt">grouping =</span> Group, </a>
-<a class="sourceLine" id="cb19-3" data-line-number="3">                    <span class="dt">data =</span> trichoptera)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">myLDA_cov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNLDA.html">PLNLDA</a></span>(Abundance <span class="op">~</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)), </a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">                    <span class="dt">grouping =</span> Group, </a>
+<a class="sourceLine" id="cb21-3" data-line-number="3">                    <span class="dt">data =</span> trichoptera)</a></code></pre></div>
 <pre><code>## 
 ##  Performing discriminant Analysis...
 ##  DONE!</code></pre>
@@ -744,7 +859,7 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <h4 class="hasAnchor">
 <a href="#specific-fields-1" class="anchor"></a>Specific fields</h4>
 <p>All fields of our new <code>PLNLDA</code> fit can be accessed as before with similar results. The only important difference is the result of <code>coef</code>: since we included a covariate in the model, <code>coef</code> now returns a 1-column matrix for <span class="math inline">\(\hat{\boldsymbol{\Theta}}\)</span> instead of <code>NULL</code></p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myLDA_cov) <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myLDA_cov) <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th></th>
@@ -753,32 +868,32 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <tbody>
 <tr class="odd">
 <td>Che</td>
-<td align="right">-0.3297371</td>
+<td align="right">-0.3331789</td>
 </tr>
 <tr class="even">
 <td>Hyc</td>
-<td align="right">1.2853661</td>
+<td align="right">1.1641220</td>
 </tr>
 <tr class="odd">
 <td>Hym</td>
-<td align="right">-0.1927520</td>
+<td align="right">-0.1930568</td>
 </tr>
 <tr class="even">
 <td>Hys</td>
-<td align="right">-0.4546649</td>
+<td align="right">-0.4543200</td>
 </tr>
 <tr class="odd">
 <td>Psy</td>
-<td align="right">0.0364644</td>
+<td align="right">0.0388209</td>
 </tr>
 <tr class="even">
 <td>Aga</td>
-<td align="right">-0.0611583</td>
+<td align="right">-0.0611778</td>
 </tr>
 </tbody>
 </table>
 <p>The group-specific main effects can still be accessed with <code>$group_means</code></p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">myLDA_cov<span class="op">$</span>group_means <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">myLDA_cov<span class="op">$</span>group_means <span class="op">%&gt;%</span><span class="st"> </span>head <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">digits =</span> <span class="dv">2</span>)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">grouping1</th>
@@ -796,88 +911,88 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-18.17</td>
-<td align="right">-10.36</td>
-<td align="right">-21.66</td>
-<td align="right">-16.99</td>
-<td align="right">-23.03</td>
-<td align="right">-39.20</td>
-<td align="right">-26.76</td>
-<td align="right">-25.25</td>
-<td align="right">-17.36</td>
-<td align="right">3.41</td>
-<td align="right">9.99</td>
-<td align="right">-21.27</td>
+<td align="right">-14.36</td>
+<td align="right">-9.51</td>
+<td align="right">-17.11</td>
+<td align="right">-13.24</td>
+<td align="right">-18.20</td>
+<td align="right">-31.27</td>
+<td align="right">-21.21</td>
+<td align="right">-19.91</td>
+<td align="right">-13.79</td>
+<td align="right">1.37</td>
+<td align="right">6.98</td>
+<td align="right">-16.56</td>
 </tr>
 <tr class="even">
-<td align="right">-21.36</td>
-<td align="right">-38.64</td>
-<td align="right">-1.78</td>
-<td align="right">-14.69</td>
-<td align="right">-10.25</td>
-<td align="right">-43.22</td>
-<td align="right">-29.76</td>
-<td align="right">-26.79</td>
-<td align="right">-13.55</td>
-<td align="right">-15.76</td>
-<td align="right">-5.59</td>
-<td align="right">1.22</td>
+<td align="right">-17.14</td>
+<td align="right">-31.50</td>
+<td align="right">-2.64</td>
+<td align="right">-11.03</td>
+<td align="right">-10.41</td>
+<td align="right">-35.05</td>
+<td align="right">-23.88</td>
+<td align="right">-21.20</td>
+<td align="right">-10.20</td>
+<td align="right">-12.16</td>
+<td align="right">-3.35</td>
+<td align="right">0.21</td>
 </tr>
 <tr class="odd">
-<td align="right">-1.13</td>
-<td align="right">-4.44</td>
-<td align="right">-1.74</td>
-<td align="right">-1.75</td>
-<td align="right">-5.79</td>
-<td align="right">-6.91</td>
+<td align="right">-1.25</td>
+<td align="right">-4.39</td>
+<td align="right">-1.81</td>
+<td align="right">-1.87</td>
+<td align="right">-5.80</td>
+<td align="right">-6.77</td>
 <td align="right">-2.66</td>
-<td align="right">-1.83</td>
-<td align="right">-1.52</td>
-<td align="right">-1.52</td>
-<td align="right">-22.60</td>
-<td align="right">-3.29</td>
+<td align="right">-1.85</td>
+<td align="right">-1.65</td>
+<td align="right">-1.64</td>
+<td align="right">-17.16</td>
+<td align="right">-3.35</td>
 </tr>
 <tr class="even">
-<td align="right">-21.99</td>
-<td align="right">-29.61</td>
-<td align="right">-3.09</td>
-<td align="right">-0.09</td>
-<td align="right">-24.43</td>
-<td align="right">-34.40</td>
-<td align="right">-26.96</td>
-<td align="right">-5.14</td>
-<td align="right">-0.82</td>
-<td align="right">-0.22</td>
-<td align="right">-17.11</td>
-<td align="right">-23.15</td>
+<td align="right">-17.23</td>
+<td align="right">-23.59</td>
+<td align="right">-3.60</td>
+<td align="right">-0.97</td>
+<td align="right">-19.19</td>
+<td align="right">-27.70</td>
+<td align="right">-21.38</td>
+<td align="right">-5.27</td>
+<td align="right">-1.79</td>
+<td align="right">-1.18</td>
+<td align="right">-12.89</td>
+<td align="right">-17.96</td>
 </tr>
 <tr class="odd">
 <td align="right">-0.05</td>
 <td align="right">-0.42</td>
 <td align="right">-0.47</td>
 <td align="right">-0.85</td>
-<td align="right">-0.44</td>
+<td align="right">-0.48</td>
 <td align="right">-0.43</td>
-<td align="right">-0.59</td>
-<td align="right">-0.71</td>
-<td align="right">-0.07</td>
+<td align="right">-0.61</td>
+<td align="right">-0.72</td>
+<td align="right">-0.06</td>
 <td align="right">-0.15</td>
-<td align="right">-0.19</td>
+<td align="right">-0.18</td>
 <td align="right">-1.03</td>
 </tr>
 <tr class="even">
-<td align="right">-1.82</td>
-<td align="right">-4.10</td>
-<td align="right">-1.72</td>
-<td align="right">-2.41</td>
-<td align="right">-5.49</td>
-<td align="right">-10.52</td>
-<td align="right">-2.71</td>
-<td align="right">-2.74</td>
-<td align="right">-3.31</td>
-<td align="right">-1.75</td>
-<td align="right">-21.01</td>
-<td align="right">-24.32</td>
+<td align="right">-1.97</td>
+<td align="right">-4.03</td>
+<td align="right">-1.81</td>
+<td align="right">-2.56</td>
+<td align="right">-5.55</td>
+<td align="right">-10.33</td>
+<td align="right">-2.72</td>
+<td align="right">-2.76</td>
+<td align="right">-3.47</td>
+<td align="right">-1.92</td>
+<td align="right">-15.62</td>
+<td align="right">-18.76</td>
 </tr>
 </tbody>
 </table>
@@ -886,16 +1001,16 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <h4 class="hasAnchor">
 <a href="#plot-method-1" class="anchor"></a><code>plot</code> method</h4>
 <p>Once again, the <code>plot</code> method is very useful to get a quick look at the results.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myLDA_cov)</a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myLDA_cov)</a></code></pre></div>
 <p><img src="PLNLDA_files/figure-html/plot_model_cov-1.png" width="672"></p>
 </div>
 <div id="predict-method-1" class="section level4">
 <h4 class="hasAnchor">
 <a href="#predict-method-1" class="anchor"></a><code>predict</code> method</h4>
 <p>We can again predict the most likely group for each sample :</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">predicted.class_cov &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_cov, <span class="dt">newdata =</span> trichoptera, <span class="dt">type =</span> <span class="st">"response"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">predicted.class_cov &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(myLDA_cov, <span class="dt">newdata =</span> trichoptera, <span class="dt">type =</span> <span class="st">"response"</span>)</a></code></pre></div>
 <p>and check that we recover the correct class in most cases (again, we used the same dataset for model fitting and group prediction only for ease of exposition):</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(predicted.class_cov, trichoptera<span class="op">$</span>Group, <span class="dt">dnn =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"predicted"</span>, <span class="st">"true"</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/table">table</a></span>(predicted.class_cov, trichoptera<span class="op">$</span>Group, <span class="dt">dnn =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"predicted"</span>, <span class="st">"true"</span>))</a></code></pre></div>
 <pre><code>##          true
 ## predicted  1  2  3  4  5  6  7  8  9 10 11 12
 ##        1  11  0  0  1  0  0  0  0  1  0  0  0
