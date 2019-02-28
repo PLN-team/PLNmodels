@@ -285,7 +285,8 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' compute_offset(counts, offset = "GMPR")
 #' compute_offset(counts, offset = "RLE", pseudocounts = 1)
 #' ## User supplied offsets
-#' compute_offset(counts, offset = rep(1, nrow(counts)))
+#' my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
+#' compute_offset(counts, offset = my_offset)
 compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...) {
   ## special behavior for numeric offset
   if (is.numeric(offset)) {

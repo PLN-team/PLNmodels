@@ -30,11 +30,14 @@ PLNPCAfit <-
     public  = list(
       initialize = function(rank, responses, covariates, offsets, weights, model, control) {
         super$initialize(responses, covariates, offsets, weights, model, control)
-        svdM      <- svd(private$M, nu = max(rank), nv = max(rank))
-        svdSigma  <- svd(crossprod(private$M)/nrow(responses) + diag(colMeans(private$S)), nu = rank, nv = 0)
-        private$M <- svdM$u[, 1:rank, drop=FALSE] %*% diag(svdM$d[1:rank], nrow=rank, ncol=rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
-        private$S <- matrix(max(control$lower_bound), nrow(responses), rank)
-        private$B <- svdSigma$u[, 1:rank, drop = FALSE] %*% sqrt(diag(svdSigma$d[1:rank],nrow = rank, ncol = rank))
+        if (!is.null(control$svdM)) {
+          svdM <- control$svdM
+        } else {
+          svdM <- svd(private$M, nu = rank, nv = self$p)
+        }
+        private$M <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
+        private$S <- matrix(max(control$lower_bound), self$n, rank)
+        private$B <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
         private$covariance <- "rank"
       },
       update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
@@ -118,8 +121,8 @@ function(responses, covariates, offsets, weights, control) {
 })
 
 PLNPCAfit$set("public", "postTreatment",
-function(responses, covariates, offsets, weights) {
-  super$postTreatment(responses, covariates, offsets, weights)
+function(responses, covariates, offsets, weights, nullModel) {
+  super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
   colnames(private$B) <- colnames(private$M) <- 1:self$q
   rownames(private$B) <- colnames(responses)
   if (private$covariance != "spherical") colnames(private$S) <- 1:self$q

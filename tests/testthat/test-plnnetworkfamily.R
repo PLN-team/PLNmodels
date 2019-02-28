@@ -11,8 +11,27 @@ mollusc <- suppressWarnings(
 test_that("PLNnetwork methods", {
 
   models <- PLNnetwork(Abundance ~ 1, data = trichoptera)
-  expect_equal(getBestModel(models), getBestModel(models, "BIC"))
 
+  X <- model.matrix(Abundance ~ 1, data = trichoptera)
+  Y <- as.matrix(trichoptera$Abundance)
+  O <- matrix(0, nrow(Y),ncol(Y))
+  w <- rep(1, nrow(Y))
+
+  ## extract the data matrices and weights
+  ctrl_init <- PLNmodels:::PLN_param(list(), nrow(Y), ncol(Y), ncol(X), weighted = FALSE)
+  ctrl_init$trace <- 0; ctrl_init$nPenalties <- 30; ctrl_init$min.ratio   <- .1
+  ctrl_main <- PLNmodels:::PLNnetwork_param(list(), nrow(Y), ncol(Y),ncol(X), weighted = FALSE)
+
+  ## instantiate
+  myPLN <- PLNmodels:::PLNnetworkfamily$new(NULL, Y, X, O, w, Abundance ~ 1, ctrl_init)
+
+  ## optimize
+  myPLN$optimize(ctrl_main)
+
+  ## post-treatment
+  myPLN$postTreatment()
+
+  expect_equivalent(myPLN, models)
   ## add some
 })
 

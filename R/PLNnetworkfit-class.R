@@ -117,8 +117,8 @@ function(responses, covariates, offsets, weights, control) {
 })
 
 PLNnetworkfit$set("public", "postTreatment",
-function(responses, covariates, offsets, weights) {
-  super$postTreatment(responses, covariates, offsets, weights)
+function(responses, covariates, offsets, weights, nullModel) {
+  super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
   dimnames(private$Omega) <- dimnames(private$Sigma)
   colnames(private$S) <- 1:self$p
 })

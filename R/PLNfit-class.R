@@ -166,17 +166,18 @@ function(responses, covariates, offsets, weights, control) {
 })
 
 PLNfit$set("public", "set_R2",
-function(responses, covariates, offsets, weights) {
+function(responses, covariates, offsets, weights, nullModel = NULL) {
+  if (is.null(nullModel)) nullModel <- nullModelPoisson(responses, covariates, offsets, weights)
   loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets), weights)
-  lmin   <- logLikPoisson(responses, nullModelPoisson(responses, covariates, offsets, weights))
+  lmin   <- logLikPoisson(responses, nullModel)
   lmax   <- logLikPoisson(responses, fullModelPoisson(responses, weights))
   private$R2 <- (loglik - lmin) / (lmax - lmin)
 })
 
 PLNfit$set("public", "postTreatment",
-function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis")) {
+function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis"), nullModel = NULL) {
   ## compute R2
-  self$set_R2(responses, covariates, offsets, weights)
+  self$set_R2(responses, covariates, offsets, weights, nullModel)
   ## Set the name of the matrices according to those of the data matrices
   rownames(private$Theta) <- colnames(responses)
   colnames(private$Theta) <- colnames(covariates)
