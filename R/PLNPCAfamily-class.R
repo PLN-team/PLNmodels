@@ -27,10 +27,16 @@ PLNPCAfamily <-
 
 PLNPCAfamily$set("public", "initialize",
   function(ranks, responses, covariates, offsets, weights, model, control) {
-
   ## initialize the required fields
   super$initialize(responses, covariates, offsets, weights, control)
   private$params <- ranks
+
+  ## save some time by using a common SVD to define the inceptive models
+  M <- mapply(
+    function(y, o, x, w) {lm.wfit(x, log(1 + y), w, offset =  o)$residuals},
+      data.frame(responses), data.frame(offsets), MoreArgs = list(x = covariates, w = weights)
+    )
+  control$svdM <- svd(M, nu = max(ranks), nv = ncol(responses))
 
   ## instantiate as many models as ranks
   self$models <- lapply(ranks, function(rank){
