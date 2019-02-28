@@ -221,50 +221,50 @@
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">34</td>
-<td align="right">-1458.282</td>
-<td align="right">-1524.443</td>
-<td align="right">-1536.694</td>
-<td align="right">0.4882522</td>
+<td align="right">-1458.2559</td>
+<td align="right">-1524.417</td>
+<td align="right">-1537.400</td>
+<td align="right">0.4881006</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">51</td>
-<td align="right">-1146.810</td>
-<td align="right">-1246.051</td>
-<td align="right">-1279.686</td>
-<td align="right">0.7136556</td>
+<td align="right">-1146.3962</td>
+<td align="right">-1245.638</td>
+<td align="right">-1278.650</td>
+<td align="right">0.7138562</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">68</td>
-<td align="right">-1057.785</td>
-<td align="right">-1190.107</td>
-<td align="right">-1247.081</td>
-<td align="right">0.8036381</td>
+<td align="right">-1057.8700</td>
+<td align="right">-1190.192</td>
+<td align="right">-1247.954</td>
+<td align="right">0.8035052</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">85</td>
-<td align="right">-1012.067</td>
-<td align="right">-1177.469</td>
-<td align="right">-1266.955</td>
-<td align="right">0.8611270</td>
+<td align="right">-1012.6385</td>
+<td align="right">-1178.041</td>
+<td align="right">-1267.495</td>
+<td align="right">0.8607348</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">102</td>
-<td align="right">-1003.248</td>
-<td align="right">-1201.731</td>
-<td align="right">-1328.160</td>
-<td align="right">0.8932537</td>
+<td align="right">-995.1051</td>
+<td align="right">-1193.588</td>
+<td align="right">-1330.300</td>
+<td align="right">0.8926364</td>
 </tr>
 <tr class="even">
 <td align="right">6</td>
 <td align="right">119</td>
-<td align="right">-992.016</td>
-<td align="right">-1223.579</td>
-<td align="right">-1418.593</td>
-<td align="right">0.9039477</td>
+<td align="right">-992.8091</td>
+<td align="right">-1224.372</td>
+<td align="right">-1417.052</td>
+<td align="right">0.9043600</td>
 </tr>
 </tbody>
 </table>
@@ -282,42 +282,42 @@
 <tr class="odd">
 <td align="right">1</td>
 <td align="left">34</td>
-<td align="left">543</td>
+<td align="left">477</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="left">51</td>
-<td align="left">959</td>
+<td align="left">985</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="left">68</td>
-<td align="left">970</td>
+<td align="left">838</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="left">85</td>
-<td align="left">2633</td>
+<td align="left">2098</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="left">102</td>
-<td align="left">1535</td>
+<td align="left">3905</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
 <tr class="even">
 <td align="right">6</td>
 <td align="left">119</td>
-<td align="left">2416</td>
+<td align="left">2981</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
@@ -335,7 +335,7 @@
 <p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of <span class="math inline">\(q\)</span> (see <span class="citation">(Chiquet, Mariadassou, and Robin <a href="#ref-PLNPCA">2018</a>)</span> for details on its computation).</p>
 <p>From this plot, we can see that the best model in terms of BIC or ICL is obtained for a rank <span class="math inline">\(q=4\)</span> or <span class="math inline">\(q=3\)</span>. We may extract the corresponding model with the method <code><a href="../reference/getBestModel.html">getBestModel("ICL")</a></code>. A model with a specific rank can be extracted with the <code><a href="../reference/getModel.html">getModel()</a></code> method:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">myPCA_ICL &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(PCA_models, <span class="st">"ICL"</span>) </a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">myPCA_BIC &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getModel.html">getModel</a></span>(PCA_models, <span class="dv">3</span>) <span class="co">## getBestModel(PCA_models, "BIC")  is equivalent here </span></a></code></pre></div>
+<a class="sourceLine" id="cb10-2" data-line-number="2">myPCA_BIC &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getModel.html">getModel</a></span>(PCA_models, <span class="dv">3</span>) ## getBestModel(PCA_models, "BIC")  is equivalent here </a></code></pre></div>
 </div>
 <div id="structure-of-plnpcafit" class="section level4">
 <h4 class="hasAnchor">
@@ -361,27 +361,27 @@
 <tbody>
 <tr class="odd">
 <td>Che</td>
-<td align="right">-7.5790768</td>
+<td align="right">-7.5673260</td>
 </tr>
 <tr class="even">
 <td>Hyc</td>
-<td align="right">-8.1466088</td>
+<td align="right">-8.1530008</td>
 </tr>
 <tr class="odd">
 <td>Hym</td>
-<td align="right">-3.0278324</td>
+<td align="right">-3.0236856</td>
 </tr>
 <tr class="even">
 <td>Hys</td>
-<td align="right">-6.8968412</td>
+<td align="right">-6.8910881</td>
 </tr>
 <tr class="odd">
 <td>Psy</td>
-<td align="right">-0.5311005</td>
+<td align="right">-0.5292095</td>
 </tr>
 <tr class="even">
 <td>Aga</td>
-<td align="right">-3.8116184</td>
+<td align="right">-3.8024475</td>
 </tr>
 </tbody>
 </table>
@@ -397,39 +397,39 @@
 <table class="table"><tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-0.2333271</td>
-<td align="right">0.3202598</td>
-<td align="right">0.0849517</td>
+<td align="right">-0.2331139</td>
+<td align="right">0.3239463</td>
+<td align="right">0.0721012</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-0.4056572</td>
-<td align="right">-0.3291028</td>
-<td align="right">0.1382673</td>
+<td align="right">-0.4105302</td>
+<td align="right">-0.3238864</td>
+<td align="right">0.1398154</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-0.1124565</td>
-<td align="right">0.0414272</td>
-<td align="right">0.3447596</td>
+<td align="right">-0.1169437</td>
+<td align="right">0.0501567</td>
+<td align="right">0.3413442</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-0.4167789</td>
-<td align="right">0.1991884</td>
-<td align="right">0.4219792</td>
+<td align="right">-0.4226411</td>
+<td align="right">0.2130493</td>
+<td align="right">0.4131949</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">0.0445403</td>
-<td align="right">0.0442388</td>
-<td align="right">-0.0613145</td>
+<td align="right">0.0453492</td>
+<td align="right">0.0425521</td>
+<td align="right">-0.0614051</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">0.0659549</td>
-<td align="right">0.1933551</td>
-<td align="right">0.2929757</td>
+<td align="right">0.0633525</td>
+<td align="right">0.1992533</td>
+<td align="right">0.2895145</td>
 </tr>
 </tbody></table>
 <ul>
@@ -438,42 +438,42 @@
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">myPCA_ICL<span class="op">$</span>scores <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
-<td align="right">-1.616199</td>
-<td align="right">-0.9167235</td>
-<td align="right">0.6236885</td>
+<td align="right">-1.602086</td>
+<td align="right">-0.8968063</td>
+<td align="right">0.6277273</td>
 </tr>
 <tr class="even">
-<td align="right">3.856897</td>
-<td align="right">0.1170090</td>
-<td align="right">2.1492251</td>
+<td align="right">3.792112</td>
+<td align="right">0.1903931</td>
+<td align="right">2.1702109</td>
 </tr>
 <tr class="odd">
-<td align="right">7.596376</td>
-<td align="right">-0.9625964</td>
-<td align="right">-0.1935520</td>
+<td align="right">7.565309</td>
+<td align="right">-1.0019266</td>
+<td align="right">-0.0957116</td>
 </tr>
 <tr class="even">
-<td align="right">6.247053</td>
-<td align="right">-0.2200686</td>
-<td align="right">-2.3891373</td>
+<td align="right">6.273697</td>
+<td align="right">-0.3142092</td>
+<td align="right">-2.3097141</td>
 </tr>
 <tr class="odd">
-<td align="right">4.556891</td>
-<td align="right">0.6770442</td>
-<td align="right">-1.1930676</td>
+<td align="right">4.558364</td>
+<td align="right">0.6266612</td>
+<td align="right">-1.1472436</td>
 </tr>
 <tr class="even">
-<td align="right">4.094362</td>
-<td align="right">0.7507044</td>
-<td align="right">0.5463551</td>
+<td align="right">4.047075</td>
+<td align="right">0.7725324</td>
+<td align="right">0.5672517</td>
 </tr>
 </tbody></table>
 <p><code>PLNPCAfit</code> also inherits from the methods of <code>PLNfit</code> (see the <a href="articles/PLN.html">appropriate vignette</a>). Most are recalled via the show method:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">myPCA_ICL</a></code></pre></div>
 <pre><code>## Poisson Lognormal with rank constrained for PCA (rank = 3)
 ## ==================================================================
-##  nb_param    loglik       BIC       ICL R_squared
-##        68 -1057.785 -1190.107 -1247.081 0.8036381
+##  nb_param   loglik       BIC       ICL R_squared
+##        68 -1057.87 -1190.192 -1247.954 0.8035052
 ## ==================================================================
 ## * Useful fields 
 ##     $model_par, $latent, $var_par, $optim_par 
@@ -545,10 +545,10 @@ fitted value vs. observation
 <p>Aitchison, J., and C.H. Ho. 1989. “The Multivariate Poisson-Log Normal Distribution.” <em>Biometrika</em> 76 (4). Oxford University Press: 643–53.</p>
 </div>
 <div id="ref-PLNPCA">
-<p>Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018. “Variational Inference for Probabilistic Poisson Pca.” <em>The Annals of Applied Statistics</em> 12: 2674–98. <a href="http://dx.doi.org/10.1214/18-AOAS1177">http://dx.doi.org/10.1214/18-AOAS1177</a>.</p>
+<p>Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018. “Variational Inference for Probabilistic Poisson Pca.” <em>The Annals of Applied Statistics</em> 12: 2674–98. <a href="http://dx.doi.org/10.1214/18-AOAS1177" class="uri">http://dx.doi.org/10.1214/18-AOAS1177</a>.</p>
 </div>
 <div id="ref-nlopt">
-<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="http://ab-initio.mit.edu/nlopt">http://ab-initio.mit.edu/nlopt</a>.</p>
+<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="http://ab-initio.mit.edu/nlopt" class="uri">http://ab-initio.mit.edu/nlopt</a>.</p>
 </div>
 <div id="ref-Svan02">
 <p>Svanberg, Krister. 2002. “A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.” <em>SIAM Journal on Optimization</em> 12 (2). SIAM: 555–73.</p>

@@ -171,7 +171,7 @@
 <li>Geometric Mean of Pairwise Ratio (GMPR), introduced in <span class="citation">(Chen et al. <a href="#ref-GMPR">2018</a>)</span> where each sample is compared to each other to compute a median log-ratio and the offset of a sample is the geometric means of those pairwise ratios.</li>
 </ul>
 <p>Each of these offset be computed from a counts matrix using the <code>compute_offset</code> function and changing its <code>offset</code> argument:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">## same as compute_offset(trichoptera$Abundance, offset = "TSS")</span></a>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">## same as compute_offset(trichoptera$Abundance, offset = "TSS")</a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw"><a href="../reference/compute_offset.html">compute_offset</a></span>(trichoptera<span class="op">$</span>Abundance) </a></code></pre></div>
 <pre><code>##    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15 
 ##   29   13   38  192   79   18    8   34   12    4    4    3   49   33  600 
@@ -230,8 +230,8 @@
 <p>Different communities use different standard for the count data where samples are either or columns of the counts matrix. <code>prepare_data</code> uses heuristics to guess the direction of the counts matrix (or fail informatively doing so) and automatically transpose it if needed.</p>
 <p>Finally, <code>prepare_data</code> enforces sample-consistency between the counts and the covariates and automatically trims away: - samples for which only covariates or only counts are available; - samples with no positive counts</p>
 <p>For example, if we remove the first sample from the counts and the last one from the covariates, we end up with 49 - 2 = 47 samples left, as expected.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(<span class="kw"><a href="../reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance[<span class="op">-</span><span class="dv">1</span>, ], <span class="co">## remove first sample</span></a>
-<a class="sourceLine" id="cb20-2" data-line-number="2">                  trichoptera<span class="op">$</span>Covariate[<span class="op">-</span><span class="dv">49</span>,]  <span class="co">## remove last sample</span></a>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(<span class="kw"><a href="../reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance[<span class="op">-</span><span class="dv">1</span>, ], ## remove first sample</a>
+<a class="sourceLine" id="cb20-2" data-line-number="2">                  trichoptera<span class="op">$</span>Covariate[<span class="op">-</span><span class="dv">49</span>,]  ## remove last sample</a>
 <a class="sourceLine" id="cb20-3" data-line-number="3">                  ))</a></code></pre></div>
 <pre><code>## [1] 47</code></pre>
 </div>
@@ -246,14 +246,14 @@
 <a href="#reading-from-a-biom-file" class="anchor"></a>Reading from a biom file</h3>
 <p>Note that the covariates <strong>must</strong> be stored in the biom object as they are automatically extracted, reading a biom without covariates results in an error.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(biomformat)</a>
-<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="co">## Biom file without covariates</span></a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">## Biom file without covariates</a>
 <a class="sourceLine" id="cb22-3" data-line-number="3">biomfile &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"min_dense_otu_table.biom"</span>, <span class="dt">package =</span> <span class="st">"biomformat"</span>)</a>
 <a class="sourceLine" id="cb22-4" data-line-number="4"><span class="kw"><a href="../reference/prepare_data_from_biom.html">prepare_data_from_biom</a></span>(biomfile)</a></code></pre></div>
 <pre><code>## Error in prepare_data_from_biom(biomfile): No covariates detected in biom. Consider:
 ## - extracting count data from biom with biom_data()
 ## - preparing a covariates data.frame
 ## - using prepare_data instead of prepare_data_from_biom</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="co">## Biom file with covariates, TSS offsets</span></a>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">## Biom file with covariates, TSS offsets</a>
 <a class="sourceLine" id="cb24-2" data-line-number="2">biomfile &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>, <span class="dt">package =</span> <span class="st">"biomformat"</span>)</a>
 <a class="sourceLine" id="cb24-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/str">str</a></span>(<span class="kw"><a href="../reference/prepare_data_from_biom.html">prepare_data_from_biom</a></span>(biomfile, <span class="dt">offset =</span> <span class="st">"TSS"</span>))</a></code></pre></div>
 <pre><code>## 'data.frame':    6 obs. of  6 variables:
@@ -272,11 +272,11 @@
 <a href="#reading-from-a-phyloseq-class-object" class="anchor"></a>Reading from a phyloseq-class object</h3>
 <p>Note that the covariates <strong>must</strong> be stored in the phyloseq-class object as they are automatically extracted, importing a phyloseq object with no <code>sample_data</code> component results in an error.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(phyloseq)</a>
-<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="co">## phyloseq object without covariates</span></a>
+<a class="sourceLine" id="cb26-2" data-line-number="2">## phyloseq object without covariates</a>
 <a class="sourceLine" id="cb26-3" data-line-number="3">physeq &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/phyloseq/topics/phyloseq">phyloseq</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/phyloseq/topics/otu_table-methods">otu_table</a></span>(trichoptera<span class="op">$</span>Abundance, <span class="dt">taxa_are_rows =</span> <span class="ot">FALSE</span>))</a>
 <a class="sourceLine" id="cb26-4" data-line-number="4"><span class="kw"><a href="../reference/prepare_data_from_phyloseq.html">prepare_data_from_phyloseq</a></span>(physeq)</a></code></pre></div>
 <pre><code>## Error in prepare_data_from_phyloseq(physeq): physeq should be a phyloseq object.</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="co">## phyloseq object with covariates, TSS offsets</span></a>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">## phyloseq object with covariates, TSS offsets</a>
 <a class="sourceLine" id="cb28-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(<span class="st">"GlobalPatterns"</span>)</a>
 <a class="sourceLine" id="cb28-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/str">str</a></span>(<span class="kw"><a href="../reference/prepare_data_from_phyloseq.html">prepare_data_from_phyloseq</a></span>(GlobalPatterns, <span class="dt">offset =</span> <span class="st">"TSS"</span>))</a></code></pre></div>
 <pre><code>## 'data.frame':    26 obs. of  9 variables:
@@ -338,16 +338,16 @@ O_i = \text{median}_{i' != i} r_{ii'}
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-DESeq2">
-<p>Anders, Simon, and Wolfgang Huber. 2010. “Differential Expression Analysis for Sequence Count Data.” <em>Genome Biology</em> 11 (10): R106. <a href="https://doi.org/10.1186/gb-2010-11-10-r106">https://doi.org/10.1186/gb-2010-11-10-r106</a>.</p>
+<p>Anders, Simon, and Wolfgang Huber. 2010. “Differential Expression Analysis for Sequence Count Data.” <em>Genome Biology</em> 11 (10): R106. <a href="https://doi.org/10.1186/gb-2010-11-10-r106" class="uri">https://doi.org/10.1186/gb-2010-11-10-r106</a>.</p>
 </div>
 <div id="ref-GMPR">
-<p>Chen, Li, James Reeve, Lujun Zhang, Shengbing Huang, Xuefeng Wang, and Jun Chen. 2018. “GMPR: A Robust Normalization Method for Zero-Inflated Count Data with Application to Microbiome Sequencing Data.” <em>PeerJ</em> 6 (April): e4600. <a href="https://doi.org/10.7717/peerj.4600">https://doi.org/10.7717/peerj.4600</a>.</p>
+<p>Chen, Li, James Reeve, Lujun Zhang, Shengbing Huang, Xuefeng Wang, and Jun Chen. 2018. “GMPR: A Robust Normalization Method for Zero-Inflated Count Data with Application to Microbiome Sequencing Data.” <em>PeerJ</em> 6 (April): e4600. <a href="https://doi.org/10.7717/peerj.4600" class="uri">https://doi.org/10.7717/peerj.4600</a>.</p>
 </div>
 <div id="ref-phyloseq">
-<p>McMurdie, Paul J. AND Holmes. 2013. “Phyloseq: An R Package for Reproducible Interactive Analysis and Graphics of Microbiome Census Data.” <em>PLoS ONE</em> 8 (4). Public Library of Science: e61217. <a href="https://doi.org/10.1371/journal.pone.0061217">https://doi.org/10.1371/journal.pone.0061217</a>.</p>
+<p>McMurdie, Paul J. AND Holmes. 2013. “Phyloseq: An R Package for Reproducible Interactive Analysis and Graphics of Microbiome Census Data.” <em>PLoS ONE</em> 8 (4). Public Library of Science: e61217. <a href="https://doi.org/10.1371/journal.pone.0061217" class="uri">https://doi.org/10.1371/journal.pone.0061217</a>.</p>
 </div>
 <div id="ref-CSS">
-<p>Paulson, Joseph N, O. Colin Stine, Héctor Corrada Bravo, and Mihai Pop. 2013. “Differential Abundance Analysis for Microbial Marker-Gene Surveys.” <em>Nat Methods</em> 10 (September): 1200–1202. <a href="https://doi.org/10.1038/nmeth.2658">https://doi.org/10.1038/nmeth.2658</a>.</p>
+<p>Paulson, Joseph N, O. Colin Stine, Héctor Corrada Bravo, and Mihai Pop. 2013. “Differential Abundance Analysis for Microbial Marker-Gene Surveys.” <em>Nat Methods</em> 10 (September): 1200–1202. <a href="https://doi.org/10.1038/nmeth.2658" class="uri">https://doi.org/10.1038/nmeth.2658</a>.</p>
 </div>
 </div>
 </div>
