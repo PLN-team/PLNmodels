@@ -56,16 +56,40 @@ common_samples <- function(counts, covariates) {
 
 ## Internal functions to compute scaling factors from a count table
 
+## Sanitize offset to ensure consistency with count matrix
+sanitize_offset <- function(counts, offset, ...) {
+  p <- ncol(counts) ## number of features
+  ## Sanity check: transform vector offset and column-matrices to full matrices
+  if (is.vector(offset) || (is.matrix(offset) && ncol(offset) == 1)) {
+    offset <- matrix(rep(offset, p),
+                     ncol = p,
+                     dimnames = list(names(offset), colnames(counts)))
+  }
+  ## Sanity check: rownames
+  if (is.null(rownames(offset))) {
+    stop("Rownames are used for sample matching.\nPlease specify them in the offset vector/matrix.")
+  }
+  ## Sanity checks: offsets are available for all samples
+  if (anyNA(ii <- match(rownames(counts), rownames(offset)))) {
+    stop(paste("Sample(s) "),
+         paste(rownames(counts)[is.na(ii)], collapse = " and "),
+         " from the count table lack an offset.\nConsider checking your offset (orientation, rownames).")
+  }
+  offset <- offset[rownames(counts), , drop = FALSE]
+  ## Sanity checks: offset are available for all species
+  if (ncol(offset) != p) {
+    stop(paste("There should be one offset per feature in the count table.\nYou have",
+               p,
+               "features but",
+               ncol(offset),
+               "offsets."))
+  }
+  offset
+}
+
 ## Numeric offset
 offset_numeric <- function(counts, offset, ...) {
-  ## Sanity checks
-  if (anyNA(ii <- match(rownames(counts), rownames(offset)))) {
-    missing <- ii[is.na(ii)]
-    stop(paste("Samples"),
-         paste(rownames(counts)[missing], collapse = " and "),
-         "from the count table lack an offset. Please check your offset.")
-  }
-  ## More sanity checks
+  sanitize_offset(counts, offset, ...)
 }
 
 ## No offset
@@ -197,7 +221,9 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
     counts <- t(counts)
     ## sanitize offset
     if (is.numeric(offset)) {
-      if (is.vector(offset)) offset <- matrix(offset, nrow = 1)
+      if (is.vector(offset)) {
+        offset <- matrix(offset, nrow = 1, dimnames = list(names(offset), NULL))
+      }
       offset <- t(offset)
     }
   }
