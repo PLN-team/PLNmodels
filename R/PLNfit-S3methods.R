@@ -98,10 +98,12 @@ vcov.PLNfit <- function(object, type = c("main", "covariance"), ...) {
 #' @inheritParams coef.PLNfit
 #'
 #' @return A semi definite positive matrix of size p, assuming there are p species in the model.
+#'
 #' @export
 #'
 #' @seealso \code{\link[=coef.PLNfit]{coef}}, \code{\link[=standard_error.PLNfit]{standard_error}} and \code{\link[=vcov.PLNfit]{vcov}} for other ways to access \deqn{\Sigma}.
 #'
+#' @importFrom stats sigma
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
