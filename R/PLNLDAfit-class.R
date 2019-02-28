@@ -200,34 +200,75 @@ PLNLDAfit$set("public", "plot_LDA",
 ## PUBLIC METHODS FOR THE USERS
 ## ----------------------------------------------------------------------
 PLNLDAfit$set("public", "predict",
-  function(newdata, type = c("posterior", "response"), control = list(), envir = parent.frame()) {
+  function(newdata,
+           type = c("posterior", "response", "scores"),
+           scale = c("log", "prob"),
+           prior = NULL,
+           control = list(), envir = parent.frame()) {
+
     type = match.arg(type)
+
+    if (type == "scores") scale <- "prob"
+    scale = match.arg(scale)
 
     args <- extract_model(call("PLNLDA", formula = private$model, data = newdata), envir)
 
     ## Problem dimensions
     n.new  <- nrow(args$Y)
+    p      <- ncol(args$Y)
     groups <- levels(private$grouping)
     K <- length(groups)
 
+    ## Initialize priors
+    if (is.null(prior)) {
+      prior <- table(private$grouping)
+    }
+    if (any(prior < 0) && anyNA(prior)) stop("Prior group proportions should be positive.")
+    prior <- prior / sum(prior)
+
     ## Compute conditional log-likelihoods of new data, using previously estimated parameters
     cond.log.lik <- matrix(0, n.new, K)
+    if (type == "scores") latent_pos <- array(0, dim = c(n.new, K, p))
     for (k in 1:K) { ## One VE-step to estimate the conditional (variational) likelihood of each group
       grouping <- factor(rep(groups[k], n.new), levels = groups)
       X <- cbind(args$X, model.matrix( ~ grouping + 0))
       # - remove intercept so that design matrix is compatible with the one used for inference
       xint <- match("(Intercept)", colnames(X), nomatch = 0L)
       if (xint > 0L) X <- X[, -xint, drop = FALSE]
-      cond.log.lik[, k] <- self$VEstep(X, args$O, args$Y, control = control)$log.lik
+      ve_step <- self$VEstep(X, args$O, args$Y, control = control)
+      cond.log.lik[, k] <- ve_step$log.lik
+      if (type == "scores") {
+        latent_pos[ , k, ] <- ve_step$M + rep(1, n.new) %o% self$group_means[, k]
+      }
     }
-    ## Compute posterior probabilities
-    log.prior <- rep(1, n.new) %o% log( table(private$grouping) / self$n)
+    ## Compute (unnormalized) posterior probabilities
+    log.prior <- rep(1, n.new) %o% log(prior)
     log.posterior <- cond.log.lik + log.prior
 
     ## format output
     res <- log.posterior
+    if (scale == "prob") { ## change log-likelihoods to probabilities
+      ## trick to avoid rounding errors before exponentiation
+      row_max <- apply(res, 1, max)
+      res <- exp(sweep(res, 1, row_max, "-"))
+      res <- sweep(res, 1, rowSums(res), "/")
+    }
     rownames(res) <- rownames(newdata)
     colnames(res) <- groups
+
+    if (type == "scores") { ## compute average latent positions
+      weights <- res %o% rep(1, p)
+      ## weighted average over all groups (second dimension of the array)
+      average_positions <- apply(latent_pos * weights, c(1, 3), sum)
+      ## Center positions using the same origin as for the learning set
+      centers <- attr(private$P, 'scaled:center')
+      centered_positions <- sweep(average_positions, 2, centers)
+      ## transformation through svd to project in the same space as learning samples
+      scores <- centered_positions %*% t(t(private$svdLDA$u[, 1:self$rank]) * private$svdLDA$d[1:self$rank])
+      rownames(scores) <- rownames(private$M)
+      return(scores)
+    }
+
     if (type == "response") {
       res <- apply(res, 1, which.max)
       res <- factor(groups[res], levels = groups)
