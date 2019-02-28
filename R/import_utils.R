@@ -61,7 +61,6 @@ sanitize_offset <- function(counts, offset, ...) {
   p <- ncol(counts) ## number of features
   ## Sanity check: transform vector offset and column-matrices to full matrices
   if (is.vector(offset) || (is.matrix(offset) && ncol(offset) == 1)) {
-    if (is.null(names(offset))) names(offset) <- rownames(counts) ## added by JC to fix erreor in example
     offset <- matrix(rep(offset, p),
                      ncol = p,
                      dimnames = list(names(offset), colnames(counts)))
@@ -286,7 +285,8 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' compute_offset(counts, offset = "GMPR")
 #' compute_offset(counts, offset = "RLE", pseudocounts = 1)
 #' ## User supplied offsets
-#' compute_offset(counts, offset = rep(1, nrow(counts)))
+#' my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
+#' compute_offset(counts, offset = my_offset)
 compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...) {
   ## special behavior for numeric offset
   if (is.numeric(offset)) {

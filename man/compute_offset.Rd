@@ -31,7 +31,8 @@ compute_offset(counts)
 compute_offset(counts, offset = "GMPR")
 compute_offset(counts, offset = "RLE", pseudocounts = 1)
 ## User supplied offsets
-compute_offset(counts, offset = rep(1, nrow(counts)))
+my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
+compute_offset(counts, offset = my_offset)
 }
 \references{
 Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \url{https://doi.org/10.7717/peerj.4600}
