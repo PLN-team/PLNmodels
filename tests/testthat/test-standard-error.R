@@ -3,6 +3,7 @@ context("test-standard-error")
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
+## Error messages ---------------------
 test_that("Check that fisher and standard_error return objects with proper dimensions and sign",  {
 
   myPLN_cov <- myPLN_cov <- PLN(Abundance ~ Wind + offset(log(Offset)), data = trichoptera)
@@ -10,7 +11,7 @@ test_that("Check that fisher and standard_error return objects with proper dimen
   p <- myPLN_cov$p
   d <- myPLN_cov$d
 
-  fim <- fisher(myPLN_cov)
+  fim <- vcov(myPLN_cov)
   sem <- standard_error(myPLN_cov)
   ## Dimensions
   expect_equal(dim(fim), c(p*d, p*d))
@@ -30,6 +31,14 @@ test_that("Check that fisher and standard_error return objects with proper dimen
 
 })
 
+test_that("Fisher is deprecated", {
+  myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+  expect_warning(fisher(myPLN),
+                 "Deprecated: please use `vcov()` instead",
+                 fixed = TRUE)
+})
+
+## Consistency -----------------------
 test_that("Check internal consistency of Fisher matrix for PLN models with no covariates",  {
   tol <- 1e-8
 
@@ -37,8 +46,8 @@ test_that("Check internal consistency of Fisher matrix for PLN models with no co
   myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 
   ## Consistency of the diagonal of the fisher matrix
-  fim.diag <- Matrix::diag(fisher(myPLN))
-  manual.fim.diag <- colSums(myPLN$fitted) / myPLN$n
+  fim.diag <- Matrix::diag(vcov(myPLN))
+  manual.fim.diag <- colSums(myPLN$fitted)
   ## Consistency of the standard error matrix
   sem <- standard_error(myPLN) %>% as.numeric()
   manual.sem <- 1/colSums(myPLN$fitted) %>% sqrt()
@@ -57,7 +66,7 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
   myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 
   ## Consistency of the diagonal of the fisher matrix
-  fim.diag <- Matrix::diag(fisher(myPLN))
+  fim.diag <- Matrix::diag(vcov(myPLN)) / nrow(trichoptera)
   expected.fim.diag <- c(0.0612123698810698, 0.0612384161054906, 3.73462487824109, 0.122467107738817,
                          122.19280897578, 2.2230572191967, 0.285741065637069, 0.285687659219944,
                          0.142744327711051, 2.36736421753514, 3.85859113231971, 1.06111199011525,
@@ -76,6 +85,3 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
   expect_equal(sem             , expected.sem     , tolerance = tol)
 
 })
-
-
-
