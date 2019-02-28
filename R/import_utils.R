@@ -61,6 +61,7 @@ sanitize_offset <- function(counts, offset, ...) {
   p <- ncol(counts) ## number of features
   ## Sanity check: transform vector offset and column-matrices to full matrices
   if (is.vector(offset) || (is.matrix(offset) && ncol(offset) == 1)) {
+    if (is.null(names(offset))) names(offset) <- rownames(counts) ## added by JC to fix erreor in example
     offset <- matrix(rep(offset, p),
                      ncol = p,
                      dimnames = list(names(offset), colnames(counts)))
