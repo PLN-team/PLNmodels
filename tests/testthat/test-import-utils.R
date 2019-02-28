@@ -192,6 +192,66 @@ test_that("offset_gmpr fails when a sample shares no species with any other samp
                fixed = TRUE)
 })
 
+## Numeric offset
+test_that("offset_numeric fails when the offsets are incompatible with the counts table", {
+  #   a b
+  # A 1 4
+  # B 2 5
+  # C 3 6
+  counts <- structure(1:6, .Dim = 3:2, .Dimnames = list(c("A", "B", "C"),
+                                                      c("a", "b")))
+  offset <- counts
+  ## No sample names
+  expect_error(offset_numeric(counts, unname(offset[, 1])),
+               "Rownames are used for sample matching.\nPlease specify them in the offset vector/matrix.",
+               fixed = TRUE
+  )
+  ## No offset for some samples
+  rownames(offset) <- c("A", "B", "c")
+  expect_error(offset_numeric(counts, offset),
+               "Sample(s) C from the count table lack an offset.\nConsider checking your offset (orientation, rownames).", fixed = TRUE
+               )
+  ##  Wrong number of features
+  rownames(offset) <- c("A", "B", "C")
+  expect_error(offset_numeric(counts, offset[, c(1, 1, 2)]),
+               "There should be one offset per feature in the count table.\nYou have 2 features but 3 offsets.",
+               fixed = TRUE
+  )
+})
+
+test_that("offset_numeric works for vectors or column-matrices.", {
+  #   a b
+  # A 1 4
+  # B 2 5
+  # C 3 6
+  counts <- structure(1:6, .Dim = 3:2, .Dimnames = list(c("A", "B", "C"),
+                                                        c("a", "b")))
+  offset <- c(A = 1, C = 3, B = 2)
+  ##  Correct dimensions
+  expect_equal(dim(offset_numeric(counts, offset)),
+               dim(counts))
+  ## Values in the correct order
+  expect_equal(rownames(offset_numeric(counts, offset)),
+               rownames(counts))
+  ## Correct values
+  expect_equal(offset_numeric(counts, offset)[, 1],
+               offset[rownames(counts)])
+})
+
+test_that("offset_numeric works for matrices.", {
+  #   a b
+  # A 1 4
+  # B 2 5
+  # C 3 6
+  counts <- structure(1:6, .Dim = 3:2, .Dimnames = list(c("A", "B", "C"),
+                                                        c("a", "b")))
+  offset <- rbind(counts, counts)
+  rownames(offset) <- LETTERS[6:1] ## too many offsets
+  ## Correct values
+  expect_equal(offset_numeric(counts, offset),
+               offset[c("A", "B", "C"), ])
+})
+
 ## Test prepare_data functions --------------------------------------------------------------------------
 
 test_that("prepare_data drops samples with no positive counts", {
@@ -231,6 +291,15 @@ test_that("prepare_data succeeds on simple data with missing names", {
                    ## changes its mode to character
                    `rownames<-`(result, rownames(result))
                    )
+})
+
+test_that("prepare_data succeeds on simple data when specifying a numeric offset", {
+  res <- prepare_data(counts, covariates, offset = "TSS")
+  res$Offset <- matrix(rep(res$Offset, ncol(counts)),
+                       ncol = ncol(counts),
+                       dimnames = dimnames(counts))
+  expect_identical(prepare_data(counts, covariates, offset = rowSums(counts)),
+                   res)
 })
 
 ## Test prepare_data_* functions ------------------------------------------------------------------------
