@@ -67,6 +67,16 @@ plot.PLNLDAfit <-
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of posterior probabilities for each group (if type = "posterior"), a matrix of (average) scores in the latent space (if type = "scores") or a vector of predicted groups (if type = "response").
 #' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myLDA <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
+#'                 grouping = Group,
+#'                 data = trichoptera)
+#' post_probs <- predict(myLDA, newdata = trichoptera, type = "posterior", scale = "prob")
+#' head(round(post_probs, digits = 3))
+#' predicted_group <- predict(myLDA, newdata = trichoptera, type = "response")
+#' table(predicted_group, trichoptera$Group, dnn = c("predicted", "true"))
 predict.PLNLDAfit <- function(object, newdata,
                               type = c("posterior", "response", "scores"),
                               scale = c("log", "prob"),
