@@ -186,7 +186,7 @@ offset_css <- function(counts, reference = median) {
 #'
 #' @param counts Required. An abundance count table, preferably with dimensions names and species as columns.
 #' @param covariates Required. A covariates data frame, preferably with row names.
-#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets,
+#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
 #' @param ... Additional parameters passed on to \code{\link[=compute_offset]{compute_offset}}
 #'
 #' @references Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \url{https://doi.org/10.7717/peerj.4600}
@@ -194,7 +194,7 @@ offset_css <- function(counts, reference = median) {
 #' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
 #'
 #' @return A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
-#' @note User supplied offsets must have the same size / dimensions as the original count matrix and are trimmed in exactly the same way to remove empty samples.
+#' @note User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
 #'
 #'
 #' @seealso \code{\link[=compute_offset]{compute_offset}} for details on the different normalisation schemes
@@ -204,9 +204,9 @@ offset_css <- function(counts, reference = median) {
 #' @examples
 #' data(trichoptera)
 #' proper_data <- prepare_data(
-#'  counts      = trichoptera$Abundance,
+#'  counts     = trichoptera$Abundance,
 #'  covariates = trichoptera$Covariate,
-#'   offset = "TSS"
+#'  offset     = "TSS"
 #' )
 #' proper_data$Abundance
 #' proper_data$Offset
@@ -281,6 +281,11 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' data(trichoptera)
 #' counts <- trichoptera$Abundance
 #' compute_offset(counts)
+#' ## Other normalization schemes
+#' compute_offset(counts, offset = "GMPR")
+#' compute_offset(counts, offset = "RLE", pseudocounts = 1)
+#' ## User supplied offsets
+#' compute_offset(counts, offset = rep(1, nrow(counts)))
 compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...) {
   ## special behavior for numeric offset
   if (is.numeric(offset)) {

@@ -11,7 +11,7 @@ prepare_data(counts, covariates, offset = "TSS", ...)
 
 \item{covariates}{Required. A covariates data frame, preferably with row names.}
 
-\item{offset}{Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Can be "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none".}
+\item{offset}{Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).}
 
 \item{...}{Additional parameters passed on to \code{\link[=compute_offset]{compute_offset}}}
 }
@@ -22,12 +22,15 @@ A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two
 Prepare data in proper format for use in PLN model and its variants. The function (i) merges a count table and
 a covariate data frame in the most comprehensive way and (ii) computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc). The function fails with informative messages when the heuristics used for sample matching fail.
 }
+\note{
+User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
+}
 \examples{
 data(trichoptera)
 proper_data <- prepare_data(
- counts      = trichoptera$Abundance,
+ counts     = trichoptera$Abundance,
  covariates = trichoptera$Covariate,
-  offset = "TSS"
+ offset     = "TSS"
 )
 proper_data$Abundance
 proper_data$Offset
