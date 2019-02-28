@@ -293,6 +293,15 @@ test_that("prepare_data succeeds on simple data with missing names", {
                    )
 })
 
+test_that("prepare_data succeeds on simple data when specifying a numeric offset", {
+  res <- prepare_data(counts, covariates, offset = "TSS")
+  res$Offset <- matrix(rep(res$Offset, ncol(counts)),
+                       ncol = ncol(counts),
+                       dimnames = dimnames(counts))
+  expect_identical(prepare_data(counts, covariates, offset = rowSums(counts)),
+                   res)
+})
+
 ## Test prepare_data_* functions ------------------------------------------------------------------------
 
 
