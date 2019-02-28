@@ -121,8 +121,8 @@ function(responses, covariates, offsets, weights, control) {
 })
 
 PLNPCAfit$set("public", "postTreatment",
-function(responses, covariates, offsets, weights) {
-  super$postTreatment(responses, covariates, offsets, weights)
+function(responses, covariates, offsets, weights, nullModel) {
+  super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
   colnames(private$B) <- colnames(private$M) <- 1:self$q
   rownames(private$B) <- colnames(responses)
   if (private$covariance != "spherical") colnames(private$S) <- 1:self$q

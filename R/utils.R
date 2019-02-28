@@ -18,10 +18,14 @@ logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) 
 
 ##' @importFrom stats glm.fit
 nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
-  Theta <- mapply(function(y, o, x, w) {
-    coefficients(glm.fit(x, y, weights = w, offset = o, family = stats::poisson()))
-  }, data.frame(responses), data.frame(offsets), MoreArgs = list(x = covariates, w = weights))
-  lambda <- offsets + tcrossprod(covariates, Theta)
+  if (ncol(covariates) == 0) {
+    lambda <- offsets
+  } else  {
+    Theta <- mapply(function(y, o, x, w) {
+      coefficients(glm.fit(x, y, weights = w, offset = o, family = stats::poisson()))
+    }, data.frame(responses), data.frame(offsets), MoreArgs = list(x = covariates, w = weights))
+    lambda <- offsets + tcrossprod(covariates, Theta)
+  }
   lambda
 }
 
