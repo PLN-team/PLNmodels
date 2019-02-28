@@ -30,7 +30,7 @@ See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestMod
 
 \item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.}
 
-\item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
+\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 }}
 
 \seealso{
