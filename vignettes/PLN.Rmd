@@ -190,7 +190,7 @@ data.frame(
 The residual covariance matrix better displays as an image matrix: 
 
 ```{r plot covariance, fig.width=7, fig.height=5}
-corrplot::corrplot(vcov(myPLN), is.corr = FALSE)
+corrplot::corrplot(sigma(myPLN), is.corr = FALSE)
 ```
 
 #### Observation weights

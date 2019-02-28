@@ -150,7 +150,7 @@ The user can easily access several fields of the `PLNLDAfit` object using `S3` m
 - the $p \times p$ covariance matrix $\hat{\boldsymbol{\Sigma}}$:
 
 ```{r vcov}
-vcov(myLDA_nocov) %>% corrplot::corrplot(is.corr = FALSE)
+sigma(myLDA_nocov) %>% corrplot::corrplot(is.corr = FALSE)
 ```
 
 - the regression coefficient matrix $\hat{\boldsymbol{\Theta}}$ (in this case `NULL` as there are no covariates)
@@ -201,6 +201,13 @@ predicted.class <- predict(myLDA_nocov, newdata = trichoptera)
 predicted.class %>% head() %>% knitr::kable(digits = 2)
 ```
 
+You can also show them in the standard (and human-friendly) $[0, 1]$ scale with `scale = "prob"` to get the matrix $\hat{\pi}_k$
+
+```{r predict_class_posterior_prob}
+predicted.class <- predict(myLDA_nocov, newdata = trichoptera, scale = "prob")
+predicted.class %>% head() %>% knitr::kable(digits = 3)
+```
+
 Setting `type = "response"`, we can predict the most likely group $\hat{k}$ instead: 
 
 ```{r predict_class}
@@ -208,11 +215,26 @@ predicted.class <- predict(myLDA_nocov, newdata = trichoptera,  type = "response
 predicted.class
 ```
 
-Finally, we can assess that the predictions are quite similar to the real group (*this is not a proper validation of the method as we used dataset for both model fitting and prediction and are thus at risk of overfitting*). 
+We can assess that the predictions are quite similar to the real group (*this is not a proper validation of the method as we used dataset for both model fitting and prediction and are thus at risk of overfitting*). 
 
 ```{r check_predicted_class}
 table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
 ```
+
+Finally, we can get the coordinates of the new data on the same graph at the original ones with `type = "scores"`. This is done by averaging the latent positions $\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k$ (found when the sample is assumed to come from group $k$) and weighting them with the $\hat{\pi}_k$. Some samples, have compositions that put them very far from their group mean. 
+
+```{r predicted_scores, fig.width=7, fig.height=5}
+predicted.scores <- predict(myLDA_nocov, newdata = trichoptera,  type = "scores")
+colnames(predicted.scores) <- paste0("Axis.", 1:ncol(predicted.scores))
+predicted.scores <- predicted.scores %>% 
+  as_tibble() %>% 
+  mutate(group = trichoptera$Group)
+plot(myLDA_nocov, map = "individual", nb_axes = 2, plot = FALSE) + 
+  geom_point(data = predicted.scores, 
+             aes(x = Axis.1, y = Axis.2, color = group, label = NULL))
+```
+
+
 
 ### A model with latent main effects and meterological covariates
 
