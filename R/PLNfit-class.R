@@ -278,7 +278,7 @@ PLNfit$set("public", "compute_fisher",
     }
     result <- bdiag(lapply(1:self$p, function(i) {
       ## t(X) %*% diag(A[, i]) %*% X
-      crossprod(X, A[, i] * X) / n
+      crossprod(X, A[, i] * X)
     }))
     ## set proper names
     element.names <- expand.grid(covariates = colnames(private$Theta),
@@ -296,9 +296,9 @@ PLNfit$set("public", "compute_fisher",
 PLNfit$set("public", "compute_standard_error",
   function() {
     if (self$d > 0) {
-      fim <- self$n * self$fisher$mat ## Fisher Information matrix I_n(\Theta) = n * I(\Theta)
+      ## self$fisher$mat : Fisher Information matrix I_n(\Theta) = n * I(\Theta)
       ## safe inversion using Matrix::solve and Matrix::diag and error handling
-      out <- tryCatch(Matrix::diag(Matrix::solve(fim)),
+      out <- tryCatch(Matrix::diag(Matrix::solve(self$fisher$mat)),
                          error = function(e) {e})
       if (is(out, "error")) {
         warning(paste("Inversion of the Fisher information matrix failed with following error message:",
