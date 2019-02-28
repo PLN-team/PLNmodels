@@ -12,7 +12,7 @@
 #' @field ranks the dimensions of the successively fitted models
 #' @field models a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.
 #' @field inception a \code{\link[=PLNfit]{PLNfit}} object, obtained when full rank is considered.
-#' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
+#' @field criteria a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @import ggplot2
@@ -80,7 +80,7 @@ function() {
   cat(" Task: Principal Component Analysis\n")
   cat("========================================================\n")
   cat(" - Ranks considered: from", min(self$ranks), "to", max(self$ranks),"\n")
-  cat(" - Best model (regarding BIC): rank =", self$getBestModel("BIC")$rank, "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
-  cat(" - Best model (regarding ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
+  cat(" - Best model (greater BIC): rank =", self$getBestModel("BIC")$rank, "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
+  cat(" - Best model (greater ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
 })
 

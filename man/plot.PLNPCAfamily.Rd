@@ -19,7 +19,8 @@ Default is  c("loglik", "BIC", "ICL").}
 }
 \value{
 Produces a plot  representing the evolution of the criteria of the different models considered,
-highlighting the best model in terms of BIC and ICL.
+highlighting the best model in terms of BIC and ICL (the greater, the better).
+These criteria have the form 'loglik - 1/2 * penalty' so that they are on the same scale as the model loglikelihood.
 }
 \description{
 Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)

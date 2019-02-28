@@ -12,7 +12,7 @@
 #' @field penalties the sparsity level of the network in the successively fitted models
 #' @field models a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.
 #' @field inception a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.
-#' @field criteria a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
+#' @field criteria a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom glassoFast glassoFast
@@ -257,8 +257,8 @@ function() {
   cat(" Task: Network Inference \n")
   cat("========================================================\n")
   cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties), "\n")
-  cat(" - Best model (regarding BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
-  cat(" - Best model (regarding EBIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
+  cat(" - Best model (greater BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
+  cat(" - Best model (greater EBIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
   if (!anyNA(self$criteria$stability))
     cat(" - Best model (regarding StARS): lambda =", format(self$getBestModel("StARS")$penalty, digits = 3), "\n")
 })

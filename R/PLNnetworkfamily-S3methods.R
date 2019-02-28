@@ -21,8 +21,9 @@ isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
 #' @param annotate logical: should the value of approximated R squared be added to the plot of criteria? Default is \code{TRUE}.
 #' @param ... additional parameters for S3 compatibility. Not used
 #'
-#' @return Produces a plot  representing the evolution of the criteria of the different models considered,
-#' highlighting the best model in terms of BIC and EBIC.
+#' @return Produces a plot representing the evolution of the criteria of the different models considered,
+#' highlighting the best model in terms of BIC and EBIC (the greater, the better).
+#' These criteria have the form 'loglik - 1/2 * penalty' so that they are on the same scale as the model loglikelihood.
 #'
 #' @export
 plot.PLNnetworkfamily <-
