@@ -68,7 +68,7 @@ fitted.PLNfit <- function(object, ...) {
 #'
 #' @description Returns the variance-covariance matrix of the main parameters of a fitted \code{\link[=PLN]{PLN}} model object. The main parameters of the model correspond to \deqn{\Theta}, as returned by \code{\link[=coef.PLNfit]{coef}}. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via \code{\link[=sigma.PLNfit]{sigma}}
 #'
-#' @inheritParams coef.PLNfit@param
+#' @inheritParams coef.PLNfit
 #' @return A matrix of variance/covariance extracted from the PLNfit model. If type="main" and \eqn{\Theta} is a matrix of size d * p, the result is a block-diagonal matrix with p (number of species) blocks of size d (number of covariates). if type="main", it is a symmetric matrix of size p.
 #' .
 #'

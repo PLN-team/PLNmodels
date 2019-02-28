@@ -166,8 +166,8 @@ coef(myPCA_ICL) %>% head() %>% knitr::kable()
 
 - the estimated covariance matrix $\boldsymbol\Sigma$ with fixed rank 
 
-```{r vcov, fig.width=7}
-vcov(myPCA_ICL) %>% corrplot::corrplot(is.corr = FALSE)
+```{r sigma, fig.width=7}
+sigma(myPCA_ICL) %>% corrplot::corrplot(is.corr = FALSE)
 ```
 
 - the rotation matrix (in the latent space)

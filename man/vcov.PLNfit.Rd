@@ -6,6 +6,13 @@
 \usage{
 \method{vcov}{PLNfit}(object, type = c("main", "covariance"), ...)
 }
+\arguments{
+\item{object}{an R6 object with class PLNfit}
+
+\item{type}{type of parameter that should be extracted. Either "main" (default) for \deqn{\Theta} or "covariance" for \deqn{\Sigma}}
+
+\item{...}{additional parameters for S3 compatibility. Not used}
+}
 \value{
 A matrix of variance/covariance extracted from the PLNfit model. If type="main" and \eqn{\Theta} is a matrix of size d * p, the result is a block-diagonal matrix with p (number of species) blocks of size d (number of covariates). if type="main", it is a symmetric matrix of size p.
 .
