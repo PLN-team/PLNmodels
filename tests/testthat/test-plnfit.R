@@ -14,10 +14,10 @@ test_that("Check classes, getters and field access",  {
   expect_equal(model$d, 1)
 
   expect_equal(coef(model), model$model_par$Theta)
-  expect_equal(vcov(model), model$model_par$Sigma)
+  expect_equal(sigma(model), model$model_par$Sigma)
 
   expect_equal(class(coef(model)), "matrix")
-  expect_equal(class(vcov(model)), "matrix")
+  expect_equal(class(sigma(model)), "matrix")
 
 })
 
