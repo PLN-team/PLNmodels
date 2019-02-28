@@ -47,6 +47,7 @@ matrix:
       r: bioc-release
       after_success:
       - Rscript -e 'covr::codecov()'
+      before_deploy: Rscript -e 'remotes::install_cran("pkgdown")'
       deploy:
         - provider: releases
           api_key: $GITHUB_TOKEN
@@ -54,16 +55,18 @@ matrix:
           skip_cleanup: true
           on:
             tags: true
-        - provider: pages
-          github-token: $GITHUB_TOKEN
+        - provider: script
           script: Rscript -e 'pkgdown::deploy_site_github()'
           skip_cleanup: true
-          local_dir: "docs"
-          keep-history: true
           on:
             branch: master
+#        - provider: pages
+#          github-token: $GITHUB_TOKEN
+#          script: Rscript -e 'pkgdown::deploy_site_github()'
+#          skip_cleanup: true
+#          local_dir: "docs"
+#          keep-history: true
     - os: linux
       r: bioc-devel
     - os: osx
       r: bioc-release
-

@@ -6,9 +6,6 @@ A NLOpt system version is needed, via
 - brew install nlopt (homebrew)
 - automatically downloaded for Windows
 
-_On Debian testing (Sid), the C++ interface to nlopt is required_
-- sudo apt-get install libnlopt-cxx-dev
-
 ## Tested environments
 
 * local ubuntu 18.04 install, R 3.5.2
