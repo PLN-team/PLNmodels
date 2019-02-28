@@ -30,12 +30,6 @@ On **Debian** or **Ubuntu** use `libnlopt-dev`:
 sudo apt-get install libnlopt-dev
 ```
 
-On **Debian testing** use `libnlopt-cxx-dev`:
-
-```{bash apt testing, eval = FALSE}
-sudo apt-get install libnlopt-cxx-dev
-```
-
 On **Fedora** or similar use `NLopt-devel`:
 
 ```{bash yum, eval = FALSE}
@@ -106,6 +100,7 @@ The package comes with a ecological data to present the functionality
 ```{r load PLNmodels, eval = FALSE}
 library(PLNmodels)
 data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ```
 
 The main fitting functions work with the usual `R formula` notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See  http://jchiquet.github.io/PLNmodels/articles/).
@@ -125,7 +120,7 @@ myPCA <- PLNPCA(Abundance ~ 1, data = trichoptera, ranks = 1:8)
 ### Poisson lognormal discriminant analysis (aka PLNLDA)
 
 ```{r PLNLDA, eval = FALSE}
-myLDA <- PLNLDA(Abundance ~ 1, grouping = trichoptera$Group, data = trichoptera)
+myLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
 ```
 
 ### Sparse Poisson lognormal model for sparse covariance inference for counts (aka PLNnetwork)

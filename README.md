@@ -1,4 +1,3 @@
-
 # PLNmodels: Poisson lognormal models <img src="man/figures/logo.png" align="right" width="155" height="180"/>
 
 [![Travis-CI build
@@ -27,12 +26,6 @@ On **Debian** or **Ubuntu** use `libnlopt-dev`:
 
 ``` bash
 sudo apt-get install libnlopt-dev
-```
-
-On **Debian testing** use `libnlopt-cxx-dev`:
-
-``` bash
-sudo apt-get install libnlopt-cxx-dev
 ```
 
 On **Fedora** or similar use `NLopt-devel`:
@@ -112,6 +105,7 @@ The package comes with a ecological data to present the functionality
 ``` r
 library(PLNmodels)
 data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ```
 
 The main fitting functions work with the usual `R formula` notations,
@@ -135,7 +129,7 @@ myPCA <- PLNPCA(Abundance ~ 1, data = trichoptera, ranks = 1:8)
 ### Poisson lognormal discriminant analysis (aka PLNLDA)
 
 ``` r
-myLDA <- PLNLDA(Abundance ~ 1, grouping = trichoptera$Group, data = trichoptera)
+myLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
 ```
 
 ### Sparse Poisson lognormal model for sparse covariance inference for counts (aka PLNnetwork)

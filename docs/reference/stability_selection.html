@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="Compute the stability path by stability selection — stability_selection" />
 
-<meta property="og:description" content="Compute the stability path by stability selection" />
+<meta property="og:description" content="This function computes the StARS stability criteria over a path of penalties. If a path has already been computed, the functions stops with a message unless force = TRUE has been specified." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0.9000</span>
       </span>
     </div>
 
@@ -141,12 +141,12 @@
 
     <div class="ref-description">
     
-    <p>Compute the stability path by stability selection</p>
+    <p>This function computes the StARS stability criteria over a path of penalties. If a path has already been computed, the functions stops with a message unless <code>force = TRUE</code> has been specified.</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>stability_selection</span>(<span class='no'>Robject</span>, <span class='kw'>subsamples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>control</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
-  <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+  <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>force</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -166,6 +166,10 @@
     <tr>
       <th>mc.cores</th>
       <td><p>the number of cores to used. Default is 1.</p></td>
+    </tr>
+    <tr>
+      <th>force</th>
+      <td><p>force computation of the stability path, even if a previous one has been detected.</p></td>
     </tr>
     </table>
     
