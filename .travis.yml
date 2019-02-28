@@ -58,8 +58,8 @@ matrix:
         - provider: script
           script: Rscript -e 'pkgdown::deploy_site_github()'
           skip_cleanup: true
-          on:
-            branch: master
+#          on:
+#            branch: master
 #        - provider: pages
 #          github-token: $GITHUB_TOKEN
 #          script: Rscript -e 'pkgdown::deploy_site_github()'
