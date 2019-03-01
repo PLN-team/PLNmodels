@@ -23,13 +23,14 @@ vignettes/*.R
 vignettes/*.pdf
 vignettes/*_cache/
 vignettes/cache/
+vignettes/article/altmetrics.html
+vignettes/article/PLNmodels.html
+vignettes/article/PLNmodels.Rmd
+vignettes/article/biblioPLN.bib
+vignettes/article/figures
 
 # doc files
-inst/doc
-inst/doc/*
-inst/radix_article/*_cache/
-inst/radix_article/cache/
-inst/case_studies/mollusk/mollusk_cache/
+inst/oaks_mildew
 
 # web files
 docs/
