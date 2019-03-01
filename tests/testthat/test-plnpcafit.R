@@ -11,7 +11,7 @@ test_that("PLNnetworkfit methods", {
   O <- matrix(0, nrow = nrow(Y), ncol = ncol(Y))
   w <- rep(1, nrow(Y))
 
-  myPLNfit <- getBestModel(myPLN)
+  myPLNfit <- getBestModel(models)
 
   ## fields and active bindings
   expect_equal(dim(myPLNfit$latent_pos(X, O)), dim(Y))
