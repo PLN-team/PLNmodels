@@ -32,7 +32,12 @@ test_that("PLNnetwork methods", {
   myPLN$postTreatment()
 
   expect_equivalent(myPLN, models)
-  ## add some
+
+  ## S3 methods
+  expect_true(PLNmodels:::isPLNnetworkfamily(myPLN))
+  expect_is(plot(myPLN), "ggplot")
+  expect_is(getBestModel(myPLN), "PLNnetworkfit")
+  expect_is(getModel(myPLN, myPLN$penalties[1]), "PLNnetworkfit")
 })
 
 test_that("PLNnetwork computes the stability path only once.", {

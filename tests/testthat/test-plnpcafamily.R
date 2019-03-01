@@ -26,6 +26,13 @@ test_that("PLNPCAfamily methods", {
   myPLN$postTreatment()
 
   expect_equivalent(myPLN, models)
-  ## add some
+
+  ## S3 methods
+  expect_true(PLNmodels:::isPLNPCAfamily(myPLN))
+  expect_is(plot(myPLN), "ggplot")
+  expect_is(plot(myPLN, map="individual"), "ggplot")
+  expect_is(plot(myPLN, map="variable"), "ggplot")
+  expect_is(getBestModel(myPLN), "PLNPCAfit")
+  expect_is(getModel(myPLN, myPLN$ranks[1]), "PLNPCAfit")
 })
 
