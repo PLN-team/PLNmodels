@@ -51,19 +51,20 @@ matrix:
       - R CMD INSTALL .
       - Rscript -e 'pkgdown::build_site()'
       deploy:
+      - provider: pages
+        skip-cleanup: true
+        github-token: $GITHUB_PAT
+        keep-history: true
+        local-dir: docs
+        on:
+          branch: master
+      deploy:
         - provider: releases
-          api_key: $GITHUB_TOKEN
+          api_key: $GITHUB_PAT
           file: ${PKG_TARBALL}
           skip_cleanup: true
           on:
             tags: true
-        - provider: pages
-          github-token: $GITHUB_TOKEN
-          skip_cleanup: true
-          local_dir: docs
-          keep-history: true
-          on:
-            branch: master
     - os: linux
       r: bioc-devel
     - os: osx
