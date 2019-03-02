@@ -9,10 +9,12 @@ Authors@R: c(
   person("Stéphane", "Robin", role ="ctb", email = "stephane.robininra.fr")
   )
 Description: The Poisson-lognormal model and variants can be used for 
-    a variety of multivariate problems when count data are at play (including 
-    PCA for count data, discriminant analysis and network inference). This package 
-    implements efficient variational algorithms to fit such models accompanied with a set of
-    functions for visualization and diagnostic.
+    a variety of multivariate problems when count data are at play, including 
+    principal component analysis for count data (Chiquet, Mariadassou and Robin, 
+    2018 <doi:10.1214/18-AOAS1177>), discriminant analysis and 
+    network inference (Chiquet, Mariadassou and Robin, 2018 <arXiv:1806.03120>). 
+    Implements variational algorithms to fit such models accompanied with a set of 
+    functions for visualization and diagnostic. 
 URL: https://jchiquet.github.io/PLNmodels/
 BugReports: https://github.com/jchiquet/PLNmodels/issues
 License: GPL (>= 3)
