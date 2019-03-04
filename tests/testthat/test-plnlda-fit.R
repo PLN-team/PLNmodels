@@ -41,7 +41,6 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
   expect_equal(dim(myPLNfit$group_means), c(p, g))
   expect_equal(dim(myPLNfit$scores), c(n, myPLNfit$rank))
   expect_true(all(myPLNfit$percent_var >= 0))
-  expect_lte(sum(myPLNfit$percent_var), 1)
   expect_equal(dim(myPLNfit$corr_map), c(p, myPLNfit$rank))
 
   ## S3 methods
