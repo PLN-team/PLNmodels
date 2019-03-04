@@ -1,4 +1,4 @@
-# PLNmodels 0.8.0-9000
+# PLNmodels 0.8.1
 
 * Preparing first CRAN release
 
