@@ -3,7 +3,7 @@ context("test-plnpcafit")
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-test_that("PLNnetworkfit methods", {
+test_that("PLNPCAfit methods", {
   models <- PLNPCA(Abundance ~ 1, data = trichoptera)
 
   X <- model.matrix(Abundance ~ 1, data = trichoptera)
@@ -29,7 +29,8 @@ test_that("PLNnetworkfit methods", {
   expect_equal(myPLNfit$nb_param, p + p * myPLNfit$rank)
   expect_equal(dim(myPLNfit$rotation), c(p, myPLNfit$rank))
   expect_equal(dim(myPLNfit$scores), c(n, myPLNfit$rank))
-  expect_equal(sum(myPLNfit$percent_var), 1)
+  expect_true(all(myPLNfit$percent_var >= 0))
+  expect_lte(sum(myPLNfit$percent_var), 1)
   expect_equal(dim(myPLNfit$corr_circle), c(p, myPLNfit$rank))
 
   ## S3 methods
