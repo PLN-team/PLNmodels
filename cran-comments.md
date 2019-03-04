@@ -4,8 +4,8 @@ This is a resubmission. In this version I have:
 
 - added references in the description field of DESCRIPTION
 - corrected a typo in the description field of DESCRIPTION
-- added examples to mostly all the documented function (Rd files)
-- limited the use of \dontrun whenever possible (< 5 sec.)
+- added examples to almost all the documented functions (Rd files)
+- limited the use of \dontrun whenever possible (to keep examples runtimes < 5 sec.)
 - added more tests via testthat
 
 ## System Requirements

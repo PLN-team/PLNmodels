@@ -1,6 +1,7 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2019-03-04: some tweaks
 #  - 2019-01-29: deployment of pages with travis
 #  - 2019-01-28: deployment of releases with travis
 #  - 2019-01-07: handling bioconductor
@@ -12,9 +13,6 @@
 language: r
 
 r_check_args: --as-cran
-
-env:
-  - PKG_TARBALL=PLNmodels_0.8.1.gz
 
 sudo: required
 
@@ -35,6 +33,9 @@ r_packages:
   - covr
   - pkgdown
 
+r_github_packages:
+  - r-lib/covr
+
 use_bioc: true
 bioc_required: true
 
@@ -45,27 +46,28 @@ bioc_packages:
 matrix:
   include:
     - os: linux
-      r: bioc-release
-      after_success:
-      - Rscript -e 'covr::codecov()'
-      - R CMD INSTALL .
-      - Rscript -e 'pkgdown::build_site()'
-      deploy:
-        - provider: pages
-          skip-cleanup: true
-          github-token: $GITHUB_PAT
-          keep-history: true
-          local-dir: docs
-          on:
-            branch: master
-      deploy:
-        - provider: releases
-          api_key: $GITHUB_PAT
-          file: ${PKG_TARBALL}
-          skip_cleanup: true
-          on:
-            tags: true
-    - os: linux
       r: bioc-devel
     - os: osx
       r: bioc-release
+    - os: linux
+      r: bioc-release
+      after_success:
+      - Rscript -e 'covr::codecov()'
+      before_deploy:
+      - R CMD INSTALL .
+      - Rscript -e 'pkgdown::build_site()'
+      deploy:
+        provider: pages
+        skip-cleanup: true
+        github-token: $GITHUB_PAT
+        keep-history: true
+        local-dir: docs
+        on:
+          branch: master
+      deploy:
+        provider: releases
+        api_key: $GITHUB_PAT
+        file: $PKG_TARBALL
+        skip_cleanup: true
+        on:
+          tags: true

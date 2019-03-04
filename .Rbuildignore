@@ -3,7 +3,9 @@
 ^codecov\.yml$
 ^\.travis\.yml$
 ^_pkgdown\.yml$
-^docs$
+^docs
+^docs/*.*
+^docs/*
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.git$
