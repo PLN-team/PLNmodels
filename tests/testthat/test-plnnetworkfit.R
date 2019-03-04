@@ -3,7 +3,7 @@ context("test-plnnetworkfit")
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-test_that("PLNnetworkfit methods", {
+test_that("PLNnetwork fit: check classes, getters and field access", {
 
   models <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 

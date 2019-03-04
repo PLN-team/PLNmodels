@@ -3,7 +3,7 @@ context("test-plnpcafit")
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-test_that("PLNPCAfit methods", {
+test_that("PLNPCA fit: check classes, getters and field access", {
   models <- PLNPCA(Abundance ~ 1, data = trichoptera)
 
   X <- model.matrix(Abundance ~ 1, data = trichoptera)

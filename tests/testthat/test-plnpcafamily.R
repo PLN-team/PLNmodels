@@ -3,9 +3,10 @@ context("test-plnpcafamily")
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-test_that("PLNPCAfamily methods", {
+test_that("PLNPCAfamily: main function, field access and methods", {
 
   models <- PLNPCA(Abundance ~ 1, data = trichoptera)
+  expect_is(models, "PLNPCAfamily")
 
   X <- model.matrix(Abundance ~ 1, data = trichoptera)
   Y <- as.matrix(trichoptera$Abundance)
@@ -36,3 +37,13 @@ test_that("PLNPCAfamily methods", {
   expect_is(getModel(myPLN, myPLN$ranks[1]), "PLNPCAfit")
 })
 
+test_that("PLNPCA is fast on low ranks", {
+
+  n <- 100
+  p <- 1000
+  lambda <- exp(rnorm(n * p))
+  Y <- matrix(rpois(n * p, lambda), n, p)
+
+  models <- PLNPCA(Y ~ 1, ranks = 1:3)
+  expect_is(models, "PLNPCAfamily")
+})

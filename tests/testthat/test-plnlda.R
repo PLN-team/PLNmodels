@@ -6,7 +6,7 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 data(mollusk)
 suppressWarnings(mollusc <- prepare_data(mollusk$Abundance, mollusk$Covariate))
 
-test_that("Check that PLN is running and robust",  {
+test_that("Check that PLNLDA is running and robust",  {
 
   model1 <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
                    grouping = Group, data = trichoptera)

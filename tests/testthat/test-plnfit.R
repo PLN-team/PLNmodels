@@ -3,7 +3,7 @@ context("test-plnfit")
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-test_that("Check classes, getters and field access",  {
+test_that("PLN fit: check classes, getters and field access",  {
 
   model <- PLN(Abundance ~ 1, data = trichoptera)
 

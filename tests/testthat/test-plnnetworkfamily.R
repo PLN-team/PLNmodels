@@ -8,9 +8,10 @@ mollusc <- suppressWarnings(
   prepare_data(mollusk$Abundance, mollusk$Covariate)
 )
 
-test_that("PLNnetwork methods", {
+test_that("PLNnetwork: main function, fields access and methods", {
 
   models <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+  expect_equal(getBestModel(models), getBestModel(models, "BIC"))
 
   X <- model.matrix(Abundance ~ 1, data = trichoptera)
   Y <- as.matrix(trichoptera$Abundance)

@@ -1,9 +1,9 @@
-context("test-plnfit")
+context("test-plnldafit")
 
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-test_that("Check classes, getters and field access",  {
+test_that("PLNLDA fit: check classes, getters and field access",  {
 
   myPLNfit <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = Group)
   n <- nrow(trichoptera$Abundance)
