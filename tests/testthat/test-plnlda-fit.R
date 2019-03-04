@@ -62,7 +62,7 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
 
 })
 
-test_that("Check number of parameters",  {
+test_that("PLNLDA fit: Check number of parameters",  {
 
   p <- ncol(trichoptera$Abundance)
 

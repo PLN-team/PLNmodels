@@ -3,7 +3,7 @@ context("test-pln")
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-test_that("Check that PLN is running and robust",  {
+test_that("PLN: Check that PLN is running and robust",  {
 
   expect_is(PLN(Abundance ~ 1, data = trichoptera), "PLNfit")
 
@@ -17,7 +17,7 @@ test_that("Check that PLN is running and robust",  {
   ## add more
 })
 
-test_that("Check consistency of initialization - fully parametrized covariance",  {
+test_that("PLN: Check consistency of initialization - fully parametrized covariance",  {
   tol <- 1e-4
 
   ## use default initialization (LM)
@@ -31,7 +31,7 @@ test_that("Check consistency of initialization - fully parametrized covariance",
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
-test_that("Check consistency of initialization - diagonal covariance",  {
+test_that("PLN: Check consistency of initialization - diagonal covariance",  {
   tol <- 1e-4
 
   ## use default initialization (LM)
@@ -45,7 +45,7 @@ test_that("Check consistency of initialization - diagonal covariance",  {
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
-test_that("Check consistency of observation weights - fully parameterized covariance",  {
+test_that("PLN: Check consistency of observation weights - fully parameterized covariance",  {
   tol <- 1e-2
 
   ## no weights
@@ -59,7 +59,7 @@ test_that("Check consistency of observation weights - fully parameterized covari
 
 })
 
-test_that("Check consistency of observation weights - diagonal covariance",  {
+test_that("PLN: Check consistency of observation weights - diagonal covariance",  {
   tol <- 1e-2
 
   ## no weights
@@ -71,7 +71,7 @@ test_that("Check consistency of observation weights - diagonal covariance",  {
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
 })
 
-test_that("Check consistency of observation weights - spherical covariance",  {
+test_that("PLN: Check consistency of observation weights - spherical covariance",  {
   tol <- 1e-2
 
   ## no weights
@@ -84,7 +84,7 @@ test_that("Check consistency of observation weights - spherical covariance",  {
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
 })
 
-test_that("Routine comparison between the different covariance models",  {
+test_that("PLN: Routine comparison between the different covariance models",  {
   model_full      <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "full"     , trace = 0))
   model_diagonal  <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal" , trace = 0))
   model_spherical <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical", trace = 0))

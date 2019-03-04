@@ -24,7 +24,7 @@ test_that("PLN fit: check classes, getters and field access",  {
   expect_equal(dim(vcov(model)), c(model$d * model$p, model$d * model$p))
 })
 
-test_that("Check prediction",  {
+test_that("PLN fit: Check prediction",  {
 
   model1 <- PLN(Abundance ~ 1, data = trichoptera, subset = 1:30)
   model2 <- PLN(Abundance ~ Pressure + Humidity, data = trichoptera, subset = 1:30)
@@ -38,7 +38,7 @@ test_that("Check prediction",  {
   )
 })
 
-test_that("Check number of parameters",  {
+test_that("PLN fit: Check number of parameters",  {
 
   p <- ncol(trichoptera$Abundance)
 
