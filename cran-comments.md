@@ -1,3 +1,13 @@
+## Resubmission
+
+This is a resubmission. In this version I have:
+
+- added references in the description field of DESCRIPTION
+- corrected a typo in the description field of DESCRIPTION
+- added examples to mostly all the documented function (Rd files)
+- limited the use of \dontrun whenever possible (< 5 sec.)
+- added more tests via testthat
+
 ## System Requirements
 
 A NLOpt system version is needed, via 
@@ -8,12 +18,12 @@ A NLOpt system version is needed, via
 
 ## Tested environments
 
-* local ubuntu 18.04 install, R 3.5.2
-* ubuntu 14.04 (on travis-ci), R 3.5.2
-* ubuntu 14.04 (on travis-ci), R devel
-* Mac OS X (on travis-ci), R 3.5.2
-* windows (on appveyor), R 3.5.2
-* win-builder, R 3.5.2 
+- local ubuntu 18.04 install, R 3.5.2
+- ubuntu 14.04 (on travis-ci), R 3.5.2
+- ubuntu 14.04 (on travis-ci), R devel
+- Mac OS X (on travis-ci), R 3.5.2
+- windows (on appveyor), R 3.5.2
+- win-builder, R 3.5.2 
 
 ## R CMD check results
 
