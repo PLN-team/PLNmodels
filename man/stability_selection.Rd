@@ -24,3 +24,13 @@ the list of subsamples. The estimated probabilities of selection of the edges ar
 \description{
 This function computes the StARS stability criteria over a path of penalties. If a path has already been computed, the functions stops with a message unless \code{force = TRUE} has been specified.
 }
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+\dontrun{
+n <- nrow(trichoptera)
+subs <- replicate(10, sample.int(n, size = n/2), simplify = FALSE)
+stability_selection(nets, subsamples = subs)
+}
+}
