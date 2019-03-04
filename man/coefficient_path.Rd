@@ -23,5 +23,5 @@ Extract the regularization path of a PLNnetwork fit
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
-coefficient_path(fits)
+head(coefficient_path(fits))
 }

@@ -34,3 +34,12 @@ Send back an invisible object (igraph or Matrix, depending on the output chosen)
 \description{
 Extract and plot the network (aprtial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object
 }
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+myNet <- getBestModel(fits)
+\dontrun{
+plot(myNet)
+}
+}

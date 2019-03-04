@@ -22,7 +22,14 @@ isPLNnetworkfit <- function(Robject) {inherits(Robject, "PLNnetworkfit")}
 #' @param ... Not used (S3 compatibility).
 #'
 #' @return Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionaly displays a graph (via igraph or corrplot for large ones)
-#'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+#' myNet <- getBestModel(fits)
+#' \dontrun{
+#' plot(myNet)
+#' }
 #' @export
 plot.PLNnetworkfit <-
   function(x,

@@ -80,7 +80,7 @@ getBestModel.PLNnetworkfamily <- function(Robject, crit = c("BIC", "loglik", "R_
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
-#' coefficient_path(fits)
+#' head(coefficient_path(fits))
 #' @export
 coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
   stopifnot(isPLNnetworkfamily(Robject))
@@ -100,7 +100,15 @@ coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
 #' @param force force computation of the stability path, even if a previous one has been detected.
 #'
 #' @return the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the initial Robject with class PLNnetworkfamily
-#'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+#' \dontrun{
+#' n <- nrow(trichoptera)
+#' subs <- replicate(10, sample.int(n, size = n/2), simplify = FALSE)
+#' stability_selection(nets, subsamples = subs)
+#' }
 #' @export
 stability_selection <- function(Robject, subsamples = NULL, control = list(),
                                 mc.cores = 1, force = FALSE) {

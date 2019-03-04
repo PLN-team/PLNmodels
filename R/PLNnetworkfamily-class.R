@@ -267,4 +267,4 @@ function() {
   if (!anyNA(self$criteria$stability))
     cat(" - Best model (regarding StARS): lambda =", format(self$getBestModel("StARS")$penalty, digits = 3), "\n")
 })
-2
+
