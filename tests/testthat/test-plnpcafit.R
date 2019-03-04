@@ -8,8 +8,9 @@ test_that("PLNnetworkfit methods", {
 
   X <- model.matrix(Abundance ~ 1, data = trichoptera)
   Y <- as.matrix(trichoptera$Abundance)
-  O <- matrix(0, nrow = nrow(Y), ncol = ncol(Y))
-  w <- rep(1, nrow(Y))
+  n <- nrow(Y); p <- ncol(Y)
+  O <- matrix(0, nrow = n, ncol = p)
+  w <- rep(1, n)
 
   myPLNfit <- getBestModel(models)
 
@@ -25,6 +26,11 @@ test_that("PLNnetworkfit methods", {
   expect_lt(myPLNfit$ICL, myPLNfit$loglik)
   expect_lt(myPLNfit$ICL, myPLNfit$BIC)
   expect_gt(myPLNfit$R_squared, 0)
+  expect_equal(myPLNfit$nb_param, p + p * myPLNfit$rank)
+  expect_equal(dim(myPLNfit$rotation), c(p, myPLNfit$rank))
+  expect_equal(dim(myPLNfit$scores), c(n, myPLNfit$rank))
+  expect_equal(sum(myPLNfit$percent_var), 1)
+  expect_equal(dim(myPLNfit$corr_circle), c(p, myPLNfit$rank))
 
   ## S3 methods
   expect_equal(coefficients(myPLNfit), myPLNfit$model_par$Theta)
@@ -34,5 +40,14 @@ test_that("PLNnetworkfit methods", {
   expect_equal(vcov(myPLNfit, "covariance"), myPLNfit$model_par$Sigma)
   expect_equal(vcov(myPLNfit, "covariance"), sigma(myPLNfit))
   expect_equal(dim(standard_error(myPLNfit)), dim(coefficients(myPLNfit)))
+
+  expect_true(inherits(plot(myPLNfit, map = "variable", plot = FALSE), "ggplot"))
+  expect_true(inherits(plot(myPLNfit, map = "individual", plot = FALSE), "ggplot"))
+  expect_true(inherits(plot(myPLNfit, map = "both", plot = FALSE), "grob"))
+
+  ## R6 methods
+  expect_true(inherits(myPLNfit$plot_correlation_circle(plot = FALSE), "ggplot"))
+  expect_true(inherits(myPLNfit$plot_individual_map(plot = FALSE), "ggplot"))
+  expect_true(inherits(myPLNfit$plot_PCA(plot = FALSE), "grob"))
 
 })

@@ -65,26 +65,4 @@ test_that("Use or not of the intercept does not change the result.",  {
   expect_equal(vcov(lda_with), vcov(lda_wo))
 })
 
-## add tests for predictions, tests for fit
-
-test_that("Predictions have the right dimensions.", {
-  model1 <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
-                   grouping = Group, data = trichoptera)
-
-  expect_length(predict(model1, newdata = trichoptera, type = "response"),
-                nrow(trichoptera))
-  expect_is(predict(model1, newdata = trichoptera, type = "response"),
-            "factor")
-  expect_equal(dim(predict(model1, newdata = trichoptera)),
-               c(nrow(trichoptera), length(levels(trichoptera$Group))))
-  expect_equal(dim(predict(model1, newdata = trichoptera, type = "scores")),
-               c(nrow(trichoptera), model1$rank))
-  ## log-posterior probabilities are nonpositive
-  expect_lt(max(predict(model1, newdata = trichoptera)), 0)
-  ## Posterior probabilities are between 0 and 1
-  expect_lte(max(predict(model1, newdata = trichoptera, scale = "prob")), 1)
-  expect_gte(min(predict(model1, newdata = trichoptera, scale = "prob")), 0)
-
-})
-
 

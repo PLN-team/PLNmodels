@@ -38,6 +38,22 @@ test_that("PLNnetwork methods", {
   expect_is(plot(myPLN), "ggplot")
   expect_is(getBestModel(myPLN), "PLNnetworkfit")
   expect_is(getModel(myPLN, myPLN$penalties[1]), "PLNnetworkfit")
+
+  ## Field access
+  expect_true(all(myPLN$penalties > 0))
+  expect_null(myPLN$stability_path)
+  expect_true(anyNA(myPLN$stability))
+
+  ## Other R6 methods
+  expect_true(is.data.frame(myPLN$coefficient_path()))
+  subs <- replicate(2,
+                    sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
+                    simplify = FALSE)
+  myPLN$stability_selection(subsamples = subs)
+  expect_true(!is.null(myPLN$stability_path))
+  expect_true(inherits(myPLN$plot(), "ggplot"))
+  expect_true(inherits(myPLN$plot_objective(), "ggplot"))
+  expect_true(inherits(myPLN$plot_stars(), "ggplot"))
 })
 
 test_that("PLNnetwork computes the stability path only once.", {

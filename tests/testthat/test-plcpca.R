@@ -19,7 +19,6 @@ test_that("PLNPCA is fast on low ranks", {
   lambda <- exp(rnorm(n * p))
   Y <- matrix(rpois(n * p, lambda), n, p)
 
-##  profvis(models <- PLNPCA(Y ~ 1, ranks = 1:3))
   models <- PLNPCA(Y ~ 1, ranks = 1:3)
   expect_is(models, "PLNPCAfamily")
 })
