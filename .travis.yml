@@ -1,7 +1,7 @@
 # Travis CI for automatic building.
 #
 # Changelog:
-#  - 2019-03-04: some tweaks
+#  - 2019-03-04: some tweaks and clean up
 #  - 2019-01-29: deployment of pages with travis
 #  - 2019-01-28: deployment of releases with travis
 #  - 2019-01-07: handling bioconductor
@@ -29,9 +29,9 @@ brew_packages:
   - gcc
   - nlopt
 
-r_github_packages:
-  - r-lib/covr
-  - r-lib/pkgdown
+r_packages:
+  - covr
+  - pkgdown
 
 use_bioc: true
 bioc_required: true
@@ -54,17 +54,17 @@ matrix:
       - R CMD INSTALL .
       - Rscript -e 'pkgdown::build_site()'
       deploy:
-        provider: pages
-        skip-cleanup: true
-        github-token: $GITHUB_PAT
-        keep-history: true
-        local-dir: docs
-        on:
-          branch: master
+        - provider: pages
+          skip-cleanup: true
+          github-token: $GITHUB_PAT
+          keep-history: true
+          local-dir: docs
+          on:
+            branch: master
       deploy:
-        provider: releases
-        api_key: $GITHUB_PAT
-        file: $PKG_TARBALL
-        skip_cleanup: true
-        on:
-          tags: true
+        - provider: releases
+          api_key: $GITHUB_PAT
+          file: $PKG_TARBALL
+          skip_cleanup: true
+          on:
+            tags: true
