@@ -29,12 +29,9 @@ brew_packages:
   - gcc
   - nlopt
 
-r_packages:
-  - covr
-  - pkgdown
-
 r_github_packages:
   - r-lib/covr
+  - r-lib/pkgdown
 
 use_bioc: true
 bioc_required: true
