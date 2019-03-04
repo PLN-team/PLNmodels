@@ -51,3 +51,6 @@ docs/*
 src/*.o
 src/*.so
 src/*.dll
+
+# Plot in testthat
+tests/testthat/Rplots.pdf
