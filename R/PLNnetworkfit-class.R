@@ -20,6 +20,13 @@
 #' @field density proportion of non-null edges in the network
 #' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
 #' @include PLNnetworkfit-class.R
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' nets <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+#' myPLNnet <- getBestModel(nets)
+#' class(myPLNnet)
+#' print(myPLNnet)
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}
 PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",

@@ -33,6 +33,12 @@ See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestMod
 \item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+class(fits)
+}
 \seealso{
 The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 }

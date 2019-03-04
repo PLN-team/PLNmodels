@@ -49,6 +49,14 @@ See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}
 \item{\code{rotation}}{a matrix of rotation of the latent space}
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+myPCA <- getBestModel(myPCAs)
+class(myPCA)
+print(myPCA)
+}
 \seealso{
 The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}
 }

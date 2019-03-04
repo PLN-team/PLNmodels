@@ -25,6 +25,12 @@ Extracts univariate standard errors for the estimated coefficient of Theta. Stan
 \item \code{PLNfit}: Component-wise standard errors of Theta in PLNfit
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+standard_error(myPLN, "wald")
+}
 \seealso{
 \code{\link[=vcov.PLNfit]{vcov}} for the complete Fisher information matrix
 }

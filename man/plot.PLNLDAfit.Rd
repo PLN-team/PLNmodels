@@ -31,3 +31,11 @@ displays an individual and/or variable factor maps for the corresponding axes, a
 \description{
 LDA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object
 }
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
+\dontrun{
+plot(myPLNLDA, map = "individual", nb_axes = 2)
+}
+}

@@ -124,7 +124,11 @@ sigma.PLNfit <- function(object, ...) {
 #' @seealso \code{\link[=vcov.PLNfit]{vcov}} for the complete Fisher information matrix
 #'
 #' @return A p * d positive matrix (same size as \eqn{\Theta}) with standard errors for the coefficients of \eqn{\Theta}
-#'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+#' standard_error(myPLN, "wald")
 #' @export
 standard_error <- function(object, type) {
   UseMethod("standard_error", object)

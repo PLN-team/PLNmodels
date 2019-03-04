@@ -21,7 +21,13 @@ isPLNLDAfit <- function(Robject) {inherits(Robject, "PLNLDAfit"       )}
 #' @param ... Not used (S3 compatibility).
 #'
 #' @return displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a ggplot2 or gtable object
-#'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
+#' \dontrun{
+#' plot(myPLNLDA, map = "individual", nb_axes = 2)
+#' }
 #' @export
 plot.PLNLDAfit <-
   function(x,
@@ -96,6 +102,11 @@ predict.PLNLDAfit <- function(object, newdata,
 #'
 #' @param object an R6 object with class PLNfit
 #' @param ... additional parameters for S3 compatibility. Not used
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLNLDA <- PLNLDA(Abundance ~ Wind, grouping = Group, data = trichoptera)
+#' coef(myPLNLDA)
 #' @return Either NULL or a matrix of coefficients extracted from the PLNLDAfit model.
 #'
 #' @export

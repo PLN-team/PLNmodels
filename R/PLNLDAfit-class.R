@@ -22,6 +22,12 @@
 #' @field scores a matrix of scores to plot the individual factor maps
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
+#' class(myPLNLDA)
+#' print(myPLNLDA)
 #' @seealso The function \code{\link{PLNLDA}}.
 PLNLDAfit <-
   R6Class(classname = "PLNLDAfit",

@@ -22,7 +22,16 @@ isPLNPCAfit <- function(Robject) {inherits(Robject, "PLNPCAfit"       )}
 #' @param ... Not used (S3 compatibility).
 #'
 #' @return displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a ggplot2 or gtable object
-#'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+#' myPCA <- getBestModel(myPCAs)
+#' \dontrun{
+#' plot(myPCA, map = "individual", nb_axes=2, ind_cols = trichoptera$Group)
+#' plot(myPCA, map = "variable", nb_axes=2)
+#' plot(myPCA, map = "both", nb_axes=2, ind_cols = trichoptera$Group)
+#' }
 #' @export
 plot.PLNPCAfit <-
   function(x,

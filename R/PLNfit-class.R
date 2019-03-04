@@ -24,6 +24,12 @@
 #' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLN(Abundance ~ 1, data = trichoptera)
+#' class(myPLN)
+#' print(myPLN)
 PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(

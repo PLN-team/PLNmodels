@@ -36,6 +36,10 @@ the abundance of each species. Finally, the observations (that is to say,
 the trapping nights), have been classified into 12 groups corresponding to
 contiguous nights between summer 1959 and summer 1960.
 }
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+}
 \references{
 Usseglio-Polatera, P. and Auda, Y. (1987) Influence des facteurs météorologiques sur les résultats de piégeage lumineux. Annales de Limnologie, 23, 65–79. (code des espèces p. 76)
 See a data description at \href{http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf}{http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf} (in French)

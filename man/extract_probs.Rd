@@ -33,10 +33,10 @@ during the stars stability selection procedure, as either a matrix or a named ve
 case, edge names follow igraph naming convention.
 }
 \examples{
-\donttest{
-data(mollusk)
-mollusc <- prepare_data(mollusk$Abundance, mollusk$Covariate)
-nets <- PLNnetwork(Abundance ~ 0 + site + offset(log(Offset)), data = mollusc)
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+nets <- PLNnetwork(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+\dontrun{
 stability_selection(nets)
 probs <- extract_probs(nets, crit = "StARS", format = "vector")
 probs
@@ -45,7 +45,7 @@ probs
 \dontrun{
 ## Add edge attributes to graph using igraph
 net_stars <- getBestModel(nets, "StARS")
-g <- plot(net_BIC, type = "partial_cor", plot=F)
+g <- plot(net_stars, type = "partial_cor", plot=F)
 library(igraph)
 E(g)$prob <- probs[as_ids(E(g))]
 g

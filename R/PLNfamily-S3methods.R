@@ -19,6 +19,11 @@ isPLNfamily <- function(Robject) {inherits(Robject, 'PLNfamily'       )}
 #' @param ... additional parameters for StARS criterion (only for PLNnetwork). stability, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
 #' @return  Send back an object with class \code{\link[=PLNPCAfit]{PLNPCAfit}} or \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 #'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+#' myModel <- getBestModel(myPCA)
 #' @export
 getBestModel <- function(Robject, crit, ...) {UseMethod("getBestModel", Robject)}
 
@@ -29,6 +34,10 @@ getBestModel <- function(Robject, crit, ...) {UseMethod("getBestModel", Robject)
 #' @param index Integer index of the model to be returned. Only the first value is taken into account.
 #'
 #' @return Sends back an object with class \code{\link[=PLNPCAfit]{PLNPCAfit}} or \code{\link[=PLNPCAfit]{PLNnetworkfit}}.
-#'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:4)
+#' myModel <- getModel(myPCA, 2)
 #' @export
 getModel <- function(Robject, var , index) {UseMethod("getModel"    , Robject)}

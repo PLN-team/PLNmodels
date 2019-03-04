@@ -38,3 +38,9 @@ Best model extraction from a collection of models
 \item \code{PLNnetworkfamily}: Model extraction for PLNnetworkfamily
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+myModel <- getBestModel(myPCA)
+}

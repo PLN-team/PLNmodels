@@ -46,6 +46,13 @@ See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}
 \item{\code{scores}}{a matrix of scores to plot the individual factor maps}
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
+class(myPLNLDA)
+print(myPLNLDA)
+}
 \seealso{
 The function \code{\link{PLNLDA}}.
 }

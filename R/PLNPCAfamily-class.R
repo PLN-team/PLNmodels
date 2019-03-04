@@ -16,6 +16,11 @@
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @import ggplot2
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+#' class(myPCAs)
 #' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 PLNPCAfamily <-
   R6Class(classname = "PLNPCAfamily",

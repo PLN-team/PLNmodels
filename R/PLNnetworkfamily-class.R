@@ -16,6 +16,11 @@
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom glassoFast glassoFast
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+#' class(fits)
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 PLNnetworkfamily <-
   R6Class(classname = "PLNnetworkfamily",

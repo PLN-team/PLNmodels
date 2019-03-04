@@ -33,6 +33,12 @@ See the documentation for \code{\link[=getBestModel.PLNPCAfamily]{getBestModel}}
 \item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+class(myPCAs)
+}
 \seealso{
 The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }

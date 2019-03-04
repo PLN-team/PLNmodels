@@ -19,3 +19,9 @@ Send back a tibble/data.frame.
 \description{
 Extract the regularization path of a PLNnetwork fit
 }
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+coefficient_path(fits)
+}

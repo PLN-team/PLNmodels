@@ -47,4 +47,11 @@ Fields are accessed via active binding and cannot be changed by the user.
 \item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPLN <- PLN(Abundance ~ 1, data = trichoptera)
+class(myPLN)
+print(myPLN)
+}
 \keyword{datasets}

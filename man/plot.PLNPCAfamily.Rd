@@ -25,3 +25,11 @@ These criteria have the form 'loglik - 1/2 * penalty' so that they are on the sa
 \description{
 Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)
 }
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+\dontrun{
+plot(myPCAs)
+}
+}

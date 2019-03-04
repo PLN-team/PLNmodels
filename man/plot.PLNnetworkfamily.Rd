@@ -32,3 +32,11 @@ These criteria have the form 'loglik - 1/2 * penalty' so that they are on the sa
 \description{
 Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)
 }
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+\dontrun{
+plot(fits)
+}
+}

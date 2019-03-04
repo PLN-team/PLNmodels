@@ -19,3 +19,9 @@ The method for objects returned by \code{\link[=PLNLDA]{PLNLDA}} only returns
              coefficients associated to the \deqn{\Theta} part of the model (see the PLNLDA vignette
              for mathematical details).
 }
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPLNLDA <- PLNLDA(Abundance ~ Wind, grouping = Group, data = trichoptera)
+coef(myPLNLDA)
+}

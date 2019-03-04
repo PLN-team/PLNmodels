@@ -23,6 +23,13 @@
 #' @field rotation a matrix of rotation of the latent space
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+#' myPCA <- getBestModel(myPCAs)
+#' class(myPCA)
+#' print(myPCA)
 #' @seealso The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}
 PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
