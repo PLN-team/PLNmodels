@@ -59,7 +59,6 @@ matrix:
           local-dir: docs
           on:
             branch: master
-      deploy:
         - provider: releases
           api_key: $GITHUB_PAT
           file: $PKG_TARBALL
