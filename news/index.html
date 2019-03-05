@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extracts model coefficients from objects returned by <code><a href='PLNLDA.html'>PLNLDA</a></code> — coef.PLNLDAfit • PLNmodels</title>
+<title>Changelog • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,11 +30,7 @@
 
 
 
-<meta property="og:title" content="Extracts model coefficients from objects returned by <code><a href='PLNLDA.html'>PLNLDA</a></code> — coef.PLNLDAfit" />
-
-<meta property="og:description" content="The method for objects returned by PLNLDA only returns
-             coefficients associated to the $$\Theta$$ part of the model (see the PLNLDA vignette
-             for mathematical details)." />
+<meta property="og:title" content="Changelog" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -54,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
@@ -136,75 +132,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Extracts model coefficients from objects returned by <code><a href='PLNLDA.html'>PLNLDA</a></code></h1>
-    
-    <div class="hidden name"><code>coef.PLNLDAfit.Rd</code></div>
+      <h1>Changelog <small></small></h1>
+      
     </div>
 
-    <div class="ref-description">
-    
-    <p>The method for objects returned by <code><a href='PLNLDA.html'>PLNLDA</a></code> only returns
-             coefficients associated to the $$\Theta$$ part of the model (see the PLNLDA vignette
-             for mathematical details).</p>
-    
-    </div>
-
-    <pre class="usage"><span class='co'># S3 method for PLNLDAfit</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>object</span>, <span class='no'>...</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>object</th>
-      <td><p>an R6 object with class PLNfit</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>additional parameters for S3 compatibility. Not used</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>Either NULL or a matrix of coefficients extracted from the PLNLDAfit model.</p>
-    
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
-<span class='no'>myPLNLDA</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNLDA.html'>PLNLDA</a></span>(<span class='no'>Abundance</span> ~ <span class='no'>Wind</span>, <span class='kw'>grouping</span> <span class='kw'>=</span> <span class='no'>Group</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 
-#&gt;  Performing discriminant Analysis...</div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit: algorithm did not converge</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit: fitted rates numerically 0 occurred</span></div><div class='output co'>#&gt; 
-#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>myPLNLDA</span>)</div><div class='output co'>#&gt;            Wind
-#&gt; Che -0.09857138
-#&gt; Hyc  1.72444086
-#&gt; Hym  0.06523092
-#&gt; Hys -0.36779692
-#&gt; Psy  0.32128854
-#&gt; Aga  0.22376519
-#&gt; Glo  0.12596448
-#&gt; Ath  0.05406782
-#&gt; Cea  0.59903153
-#&gt; Ced  0.12552155
-#&gt; Set  0.37678123
-#&gt; All  0.09586500
-#&gt; Han  0.15817991
-#&gt; Hfo  0.34022033
-#&gt; Hsp  0.30012364
-#&gt; Hve  0.14541495
-#&gt; Sta  0.24652771</div></pre>
+    <div id="plnmodels-0-8-1" class="section level1">
+<h1 class="page-header">
+<a href="#plnmodels-0-8-1" class="anchor"></a>PLNmodels 0.8.1</h1>
+<ul>
+<li>Preparing first CRAN release</li>
+</ul>
+</div>
+    <div id="plnmodels-0-7-0-1" class="section level1">
+<h1 class="page-header">
+<a href="#plnmodels-0-7-0-1" class="anchor"></a>PLNmodels 0.7.0.1</h1>
+<ul>
+<li>Added a <code>NEWS.md</code> file to track changes to the package.</li>
+</ul>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+    <div id="tocnav">
+      <h2>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+        <li><a href="#plnmodels-0-8-1">0.8.1</a></li>
+        <li><a href="#plnmodels-0-7-0-1">0.7.0.1</a></li>
+      </ul>
+    </div>
   </div>
+
 </div>
 
       <footer>

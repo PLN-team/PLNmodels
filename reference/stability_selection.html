@@ -178,6 +178,20 @@
     <p>the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the initial Robject with class PLNnetworkfamily</p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>trichoptera</span>)
+<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
+<span class='no'>fits</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 
+#&gt;  Initialization...
+#&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
+#&gt; 	Joint optimization alternating gradient descent and graphical-lasso
+#&gt; 	sparsifying penalty = 7.331617 	sparsifying penalty = 6.772001 	sparsifying penalty = 6.2551 	sparsifying penalty = 5.777653 	sparsifying penalty = 5.33665 	sparsifying penalty = 4.929308 	sparsifying penalty = 4.553058 	sparsifying penalty = 4.205527 	sparsifying penalty = 3.884523 	sparsifying penalty = 3.588021 	sparsifying penalty = 3.31415 	sparsifying penalty = 3.061184 	sparsifying penalty = 2.827526 	sparsifying penalty = 2.611704 	sparsifying penalty = 2.412354 	sparsifying penalty = 2.228222 	sparsifying penalty = 2.058143 	sparsifying penalty = 1.901047 	sparsifying penalty = 1.755942 	sparsifying penalty = 1.621912 	sparsifying penalty = 1.498113 	sparsifying penalty = 1.383763 	sparsifying penalty = 1.278142 	sparsifying penalty = 1.180582 	sparsifying penalty = 1.09047 	sparsifying penalty = 1.007235 	sparsifying penalty = 0.9303536 	sparsifying penalty = 0.8593405 	sparsifying penalty = 0.7937478 	sparsifying penalty = 0.7331617 
+#&gt;  Post-treatments
+#&gt;  DONE!</div><span class='co'># NOT RUN {</span>
+<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>trichoptera</span>)
+<span class='no'>subs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>replicate</a></span>(<span class='fl'>10</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample.int</a></span>(<span class='no'>n</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='no'>n</span>/<span class='fl'>2</span>), <span class='kw'>simplify</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+<span class='fu'>stability_selection</span>(<span class='no'>nets</span>, <span class='kw'>subsamples</span> <span class='kw'>=</span> <span class='no'>subs</span>)
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -185,7 +199,9 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

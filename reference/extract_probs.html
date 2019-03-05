@@ -191,120 +191,23 @@ case, edge names follow igraph naming convention.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>mollusk</span>)
-<span class='no'>mollusc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>mollusk</span>$<span class='no'>Abundance</span>, <span class='no'>mollusk</span>$<span class='no'>Covariate</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Sample(s) 134 and 137 and 145 and 146 dropped for lack of positive counts.</span></div><div class='input'><span class='no'>nets</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>0</span> + <span class='no'>site</span> + <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/offset'>offset</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>log</a></span>(<span class='no'>Offset</span>)), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>mollusc</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>trichoptera</span>)
+<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
+<span class='no'>nets</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span> + <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/offset'>offset</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>log</a></span>(<span class='no'>Offset</span>)), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
 #&gt; 	Joint optimization alternating gradient descent and graphical-lasso
-#&gt; 	sparsifying penalty = 5.756715 	sparsifying penalty = 5.31731 	sparsifying penalty = 4.911444 	sparsifying penalty = 4.536558 	sparsifying penalty = 4.190286 	sparsifying penalty = 3.870445 	sparsifying penalty = 3.575018 	sparsifying penalty = 3.30214 	sparsifying penalty = 3.05009 	sparsifying penalty = 2.817279 	sparsifying penalty = 2.602239 	sparsifying penalty = 2.403612 	sparsifying penalty = 2.220146 	sparsifying penalty = 2.050685 	sparsifying penalty = 1.894158 	sparsifying penalty = 1.749578 	sparsifying penalty = 1.616034 	sparsifying penalty = 1.492684 	sparsifying penalty = 1.378749 	sparsifying penalty = 1.27351 	sparsifying penalty = 1.176304 	sparsifying penalty = 1.086518 	sparsifying penalty = 1.003585 	sparsifying penalty = 0.926982 	sparsifying penalty = 0.8562262 	sparsifying penalty = 0.7908712 	sparsifying penalty = 0.7305047 	sparsifying penalty = 0.6747459 	sparsifying penalty = 0.6232431 	sparsifying penalty = 0.5756715 
+#&gt; 	sparsifying penalty = 3.652546 	sparsifying penalty = 3.37375 	sparsifying penalty = 3.116235 	sparsifying penalty = 2.878375 	sparsifying penalty = 2.658671 	sparsifying penalty = 2.455737 	sparsifying penalty = 2.268293 	sparsifying penalty = 2.095156 	sparsifying penalty = 1.935234 	sparsifying penalty = 1.78752 	sparsifying penalty = 1.65108 	sparsifying penalty = 1.525054 	sparsifying penalty = 1.408648 	sparsifying penalty = 1.301127 	sparsifying penalty = 1.201813 	sparsifying penalty = 1.11008 	sparsifying penalty = 1.025349 	sparsifying penalty = 0.9470846 	sparsifying penalty = 0.8747944 	sparsifying penalty = 0.8080221 	sparsifying penalty = 0.7463465 	sparsifying penalty = 0.6893785 	sparsifying penalty = 0.6367588 	sparsifying penalty = 0.5881556 	sparsifying penalty = 0.5432622 	sparsifying penalty = 0.5017954 	sparsifying penalty = 0.4634938 	sparsifying penalty = 0.4281157 	sparsifying penalty = 0.395438 	sparsifying penalty = 0.3652546 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='fu'><a href='stability_selection.html'>stability_selection</a></span>(<span class='no'>nets</span>)</div><div class='output co'>#&gt; 
-#&gt; Stability Selection for PLNnetwork: 
-#&gt; subsampling: ++++++++++++++++++++</div><div class='input'><span class='no'>probs</span> <span class='kw'>&lt;-</span> <span class='fu'>extract_probs</span>(<span class='no'>nets</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='st'>"StARS"</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"vector"</span>)
-<span class='no'>probs</span></div><div class='output co'>#&gt; Bit|Vap Bit|Vac Vap|Vac Bit|Gac Vap|Gac Vac|Gac Bit|Raa Vap|Raa Vac|Raa Gac|Raa 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Bit|Rap Vap|Rap Vac|Rap Gac|Rap Raa|Rap Bit|Lit Vap|Lit Vac|Lit Gac|Lit Raa|Lit 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Rap|Lit Bit|Pha Vap|Pha Vac|Pha Gac|Pha Raa|Pha Rap|Pha Lit|Pha Bit|Phf Vap|Phf 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Vac|Phf Gac|Phf Raa|Phf Rap|Phf Lit|Phf Pha|Phf Bit|Plc Vap|Plc Vac|Plc Gac|Plc 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Raa|Plc Rap|Plc Lit|Plc Pha|Plc Phf|Plc Bit|Bac Vap|Bac Vac|Bac Gac|Bac Raa|Bac 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Rap|Bac Lit|Bac Pha|Bac Phf|Bac Plc|Bac Bit|Ans Vap|Ans Vac|Ans Gac|Ans Raa|Ans 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Rap|Ans Lit|Ans Pha|Ans Phf|Ans Plc|Ans Bac|Ans Bit|Anl Vap|Anl Vac|Anl Gac|Anl 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Raa|Anl Rap|Anl Lit|Anl Pha|Anl Phf|Anl Plc|Anl Bac|Anl Ans|Anl Bit|An- Vap|An- 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.60    0.00    0.00 
-#&gt; Vac|An- Gac|An- Raa|An- Rap|An- Lit|An- Pha|An- Phf|An- Plc|An- Bac|An- Ans|An- 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.95 
-#&gt; Anl|An- Bit|Gya Vap|Gya Vac|Gya Gac|Gya Raa|Gya Rap|Gya Lit|Gya Pha|Gya Phf|Gya 
-#&gt;    0.35    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Plc|Gya Bac|Gya Ans|Gya Anl|Gya An-|Gya Bit|Hic Vap|Hic Vac|Hic Gac|Hic Raa|Hic 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Rap|Hic Lit|Hic Pha|Hic Phf|Hic Plc|Hic Bac|Hic Ans|Hic Anl|Hic An-|Hic Gya|Hic 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Bit|Arc Vap|Arc Vac|Arc Gac|Arc Raa|Arc Rap|Arc Lit|Arc Pha|Arc Phf|Arc Plc|Arc 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Bac|Arc Ans|Arc Anl|Arc An-|Arc Gya|Arc Hic|Arc Bit|Acl Vap|Acl Vac|Acl Gac|Acl 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Raa|Acl Rap|Acl Lit|Acl Pha|Acl Phf|Acl Plc|Acl Bac|Acl Ans|Acl Anl|Acl An-|Acl 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Gya|Acl Hic|Acl Arc|Acl Bit|Few Vap|Few Vac|Few Gac|Few Raa|Few Rap|Few Lit|Few 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Pha|Few Phf|Few Plc|Few Bac|Few Ans|Few Anl|Few An-|Few Gya|Few Hic|Few Arc|Few 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Acl|Few Bit|Spc Vap|Spc Vac|Spc Gac|Spc Raa|Spc Rap|Spc Lit|Spc Pha|Spc Phf|Spc 
-#&gt;    0.00    0.00    0.10    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Plc|Spc Bac|Spc Ans|Spc Anl|Spc An-|Spc Gya|Spc Hic|Spc Arc|Spc Acl|Spc Few|Spc 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Bit|Pio Vap|Pio Vac|Pio Gac|Pio Raa|Pio Rap|Pio Lit|Pio Pha|Pio Phf|Pio Plc|Pio 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Bac|Pio Ans|Pio Anl|Pio An-|Pio Gya|Pio Hic|Pio Arc|Pio Acl|Pio Few|Pio Spc|Pio 
-#&gt;    0.00    0.05    0.10    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Bit|Pic Vap|Pic Vac|Pic Gac|Pic Raa|Pic Rap|Pic Lit|Pic Pha|Pic Phf|Pic Plc|Pic 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Bac|Pic Ans|Pic Anl|Pic An-|Pic Gya|Pic Hic|Pic Arc|Pic Acl|Pic Few|Pic Spc|Pic 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Pio|Pic Bit|Pip Vap|Pip Vac|Pip Gac|Pip Raa|Pip Rap|Pip Lit|Pip Pha|Pip Phf|Pip 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Plc|Pip Bac|Pip Ans|Pip Anl|Pip An-|Pip Gya|Pip Hic|Pip Arc|Pip Acl|Pip Few|Pip 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Spc|Pip Pio|Pip Pic|Pip Bit|Pin Vap|Pin Vac|Pin Gac|Pin Raa|Pin Rap|Pin Lit|Pin 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Pha|Pin Phf|Pin Plc|Pin Bac|Pin Ans|Pin Anl|Pin An-|Pin Gya|Pin Hic|Pin Arc|Pin 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Acl|Pin Few|Pin Spc|Pin Pio|Pin Pic|Pin Pip|Pin Bit|Pis Vap|Pis Vac|Pis Gac|Pis 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Raa|Pis Rap|Pis Lit|Pis Pha|Pis Phf|Pis Plc|Pis Bac|Pis Ans|Pis Anl|Pis An-|Pis 
-#&gt;    0.00    0.00    0.85    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Gya|Pis Hic|Pis Arc|Pis Acl|Pis Few|Pis Spc|Pis Pio|Pis Pic|Pis Pip|Pis Pin|Pis 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.25    0.00    0.05 
-#&gt; Bit|Pim Vap|Pim Vac|Pim Gac|Pim Raa|Pim Rap|Pim Lit|Pim Pha|Pim Phf|Pim Plc|Pim 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Bac|Pim Ans|Pim Anl|Pim An-|Pim Gya|Pim Hic|Pim Arc|Pim Acl|Pim Few|Pim Spc|Pim 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Pio|Pim Pic|Pim Pip|Pim Pin|Pim Pis|Pim Bit|Ppe Vap|Ppe Vac|Ppe Gac|Ppe Raa|Ppe 
-#&gt;    0.00    0.00    0.00    0.10    0.10    0.00    0.00    0.00    0.00    0.00 
-#&gt; Rap|Ppe Lit|Ppe Pha|Ppe Phf|Ppe Plc|Ppe Bac|Ppe Ans|Ppe Anl|Ppe An-|Ppe Gya|Ppe 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Hic|Ppe Arc|Ppe Acl|Ppe Few|Ppe Spc|Ppe Pio|Ppe Pic|Ppe Pip|Ppe Pin|Ppe Pis|Ppe 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Pim|Ppe Bit|Pi- Vap|Pi- Vac|Pi- Gac|Pi- Raa|Pi- Rap|Pi- Lit|Pi- Pha|Pi- Phf|Pi- 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Plc|Pi- Bac|Pi- Ans|Pi- Anl|Pi- An-|Pi- Gya|Pi- Hic|Pi- Arc|Pi- Acl|Pi- Few|Pi- 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Spc|Pi- Pio|Pi- Pic|Pi- Pip|Pi- Pin|Pi- Pis|Pi- Pim|Pi- Ppe|Pi- Bit|Cam Vap|Cam 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Vac|Cam Gac|Cam Raa|Cam Rap|Cam Lit|Cam Pha|Cam Phf|Cam Plc|Cam Bac|Cam Ans|Cam 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Anl|Cam An-|Cam Gya|Cam Hic|Cam Arc|Cam Acl|Cam Few|Cam Spc|Cam Pio|Cam Pic|Cam 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Pip|Cam Pin|Cam Pis|Cam Pim|Cam Ppe|Cam Pi-|Cam Bit|Cat Vap|Cat Vac|Cat Gac|Cat 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Raa|Cat Rap|Cat Lit|Cat Pha|Cat Phf|Cat Plc|Cat Bac|Cat Ans|Cat Anl|Cat An-|Cat 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Gya|Cat Hic|Cat Arc|Cat Acl|Cat Few|Cat Spc|Cat Pio|Cat Pic|Cat Pip|Cat Pin|Cat 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.80 
-#&gt; Pis|Cat Pim|Cat Ppe|Cat Pi-|Cat Cam|Cat Bit|Euf Vap|Euf Vac|Euf Gac|Euf Raa|Euf 
-#&gt;    0.00    0.00    0.00    0.00    0.15    0.00    0.00    0.00    0.00    0.00 
-#&gt; Rap|Euf Lit|Euf Pha|Euf Phf|Euf Plc|Euf Bac|Euf Ans|Euf Anl|Euf An-|Euf Gya|Euf 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Hic|Euf Arc|Euf Acl|Euf Few|Euf Spc|Euf Pio|Euf Pic|Euf Pip|Euf Pin|Euf Pis|Euf 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Pim|Euf Ppe|Euf Pi-|Euf Cam|Euf Cat|Euf Bit|Vea Vap|Vea Vac|Vea Gac|Vea Raa|Vea 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Rap|Vea Lit|Vea Pha|Vea Phf|Vea Plc|Vea Bac|Vea Ans|Vea Anl|Vea An-|Vea Gya|Vea 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Hic|Vea Arc|Vea Acl|Vea Few|Vea Spc|Vea Pio|Vea Pic|Vea Pip|Vea Pin|Vea Pis|Vea 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00 
-#&gt; Pim|Vea Ppe|Vea Pi-|Vea Cam|Vea Cat|Vea Euf|Vea 
-#&gt;    0.00    0.00    0.00    0.00    0.00    0.00 </div><div class='input'>
+#&gt;  DONE!</div><span class='co'># NOT RUN {</span>
+<span class='fu'><a href='stability_selection.html'>stability_selection</a></span>(<span class='no'>nets</span>)
+<span class='no'>probs</span> <span class='kw'>&lt;-</span> <span class='fu'>extract_probs</span>(<span class='no'>nets</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='st'>"StARS"</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"vector"</span>)
+<span class='no'>probs</span>
+<span class='co'># }</span><div class='input'>
 </div><span class='co'># NOT RUN {</span>
 <span class='co'>## Add edge attributes to graph using igraph</span>
 <span class='no'>net_stars</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='getBestModel.html'>getBestModel</a></span>(<span class='no'>nets</span>, <span class='st'>"StARS"</span>)
-<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>net_BIC</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"partial_cor"</span>, <span class='kw'>plot</span><span class='kw'>=</span><span class='no'>F</span>)
+<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>net_stars</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"partial_cor"</span>, <span class='kw'>plot</span><span class='kw'>=</span><span class='no'>F</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>igraph</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/igraph/topics/E'>E</a></span>(<span class='no'>g</span>)$<span class='no'>prob</span> <span class='kw'>&lt;-</span> <span class='no'>probs</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/igraph/topics/as_ids'>as_ids</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/igraph/topics/E'>E</a></span>(<span class='no'>g</span>))]
 <span class='no'>g</span>
