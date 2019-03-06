@@ -13,15 +13,24 @@ test_that("PLN fit: check classes, getters and field access",  {
   expect_equal(model$p, ncol(trichoptera$Abundance))
   expect_equal(model$d, 1)
 
+  ## S3 methods: values
   expect_equal(coef(model), model$model_par$Theta)
+  expect_equal(coef(model, type = "covariance"), sigma(model))
   expect_equal(sigma(model), model$model_par$Sigma)
   expect_equal(vcov(model), model$fisher$mat)
 
+  ## S3 methods: class
   expect_equal(class(coef(model)), "matrix")
   expect_equal(class(sigma(model)), "matrix")
   expect_true(class(vcov(model)) == "dgCMatrix")
 
+  ## S3 methods: dimensions
   expect_equal(dim(vcov(model)), c(model$d * model$p, model$d * model$p))
+
+  ## S3 methods errors
+  expect_error(standard_error(model, type = "louis"),
+               "Standard errors were not computed using the louis approximation. Try another approximation scheme.")
+
 })
 
 test_that("PLN fit: Check prediction",  {
