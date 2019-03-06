@@ -221,16 +221,11 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   ## sanitize abundance matrix and covariates data.frame
   common <- common_samples(counts, covariates)
   samples <- common$common_samples
-  if (common$transpose_counts) {
-    counts <- t(counts)
-    ## sanitize offset
-    if (is.numeric(offset)) {
-      if (is.vector(offset)) {
-        offset <- matrix(offset, nrow = 1, dimnames = list(NULL, names(offset)))
-      }
-      offset <- t(offset)
-    }
+  ## sanitize offset
+  if (is.numeric(offset) && is.vector(offset)) {
+    offset <- matrix(offset, ncol = 1, dimnames = list(names(offset), NULL))
   }
+  if (common$transpose_counts) counts <- t(counts)
   if (common$default_names) {
     rownames(counts) <- rownames(covariates) <- samples
     if (is.numeric(offset)) rownames(offset) <- samples

@@ -288,12 +288,21 @@ test_that("prepare_data succeeds on simple data", {
 
 test_that("prepare_data succeeds on simple data with missing names", {
   expect_warning(res <- prepare_data(`rownames<-`(counts, NULL),
-                                         covariates, offset = "none"))
+                                     covariates, offset = "none"))
   expect_identical(res,
                    ## small hack to account for the fact that setting rownames via rownames<-
                    ## changes its mode to character
                    `rownames<-`(result, rownames(result))
-                   )
+  )
+})
+
+test_that("prepare_data succeeds on simple data with missing names and numeric offset", {
+  expect_warning(res <- prepare_data(`rownames<-`(counts, NULL),
+                                     covariates,
+                                     offset = rowSums(counts)))
+  expect_equal(dim(res$Offset), dim(counts))
+  expect_equal(rownames(res$Offset), as.character(1:nrow(res)))
+  expect_equal(colnames(res$Offset), colnames(counts))
 })
 
 test_that("prepare_data provides automatic variable names when missing from covariate", {
@@ -313,7 +322,6 @@ test_that("prepare_data succeeds when specifying a numeric offset", {
   ## On strange data (transposed count matrix)
   expect_identical(prepare_data(t(counts), covariates, offset = rowSums(counts)),
                    res)
-
 })
 
 ## Test prepare_data_* functions ------------------------------------------------------------------------
