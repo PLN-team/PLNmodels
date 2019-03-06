@@ -276,16 +276,20 @@ PLNfit$set("public", "compute_fisher",
   function(type = c("wald", "louis"), X = NULL) {
     type <- match.arg(type)
     A <- private$A
-    n <- self$n
     if (type == "louis") {
       ## TODO check how to adapt for PLNPCA
       ## A = A + A \odot A \odot (exp(S) - 1_{n \times p})
       A <- A + A * A * (exp(self$var_par$S) - 1)
     }
-    result <- bdiag(lapply(1:self$p, function(i) {
-      ## t(X) %*% diag(A[, i]) %*% X
-      crossprod(X, A[, i] * X)
-    }))
+    if (anyNA(A)) {
+      warning("Something went wrong during model fitting!!\nMatrix A has missing values.")
+      result <- bdiag(lapply(1:self$p, function(i) {diag(NA, nrow = self$d)}))
+    } else {
+      result <- bdiag(lapply(1:self$p, function(i) {
+        ## t(X) %*% diag(A[, i]) %*% X
+        crossprod(X, A[, i] * X)
+      }))
+    }
     ## set proper names
     element.names <- expand.grid(covariates = colnames(private$Theta),
                                  species    = rownames(private$Theta)) %>% rev() %>%
