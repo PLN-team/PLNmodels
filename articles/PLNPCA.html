@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
       <h1>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-03-05</h4>
+            <h4 class="date">2019-03-06</h4>
       
       
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -203,8 +203,8 @@
 ## --------------------------------------------------------
 ##  Task: Principal Component Analysis
 ## ========================================================
-##  - Ranks considered: from 1 to 6 
-##  - Best model (greater BIC): rank = 4 - R2 = 0.86 
+##  - Ranks considered: from 1 to 6
+##  - Best model (greater BIC): rank = 4 - R2 = 0.86
 ##  - Best model (greater ICL): rank = 3 - R2 = 0.8</code></pre>
 <p>One can also easily access the successive values of the criteria in the collection</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">PCA_models<span class="op">$</span>criteria <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
@@ -473,15 +473,15 @@
 <pre><code>## Poisson Lognormal with rank constrained for PCA (rank = 3)
 ## ==================================================================
 ##  nb_param   loglik       BIC       ICL R_squared
-##        68 -1057.87 -1190.192 -1247.954 0.8035052
+##        68 -1057.87 -1190.192 -1247.954     0.804
 ## ==================================================================
-## * Useful fields 
-##     $model_par, $latent, $var_par, $optim_par 
-##     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria 
+## * Useful fields
+##     $model_par, $latent, $var_par, $optim_par
+##     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
 ## * Useful S3 methods
 ##     print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()
 ## * Additional fields for PCA
-##     $percent_var, $corr_circle, $scores, $rotation 
+##     $percent_var, $corr_circle, $scores, $rotation
 ## * Additional S3 methods for PCA
 ##     plot.PLNPCAfit()</code></pre>
 </div>
