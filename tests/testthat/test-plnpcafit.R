@@ -70,20 +70,25 @@ test_that("plot_PCA works for 4 or more axes:", {
 })
 
 test_that("PLNPCA fit: check print message",  {
+
+  output <- "Poisson Lognormal with rank constrained for PCA (rank = 4)\n==================================================================\n nb_param   loglik       BIC       ICL R_squared\n       85 -1111.49 -1276.892 -1304.704 0.9804882\n==================================================================\n* Useful fields\n    $model_par, $latent, $var_par, $optim_par\n    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria\n* Useful S3 methods\n    print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()\n* Additional fields for PCA\n    $percent_var, $corr_circle, $scores, $rotation\n* Additional S3 methods for PCA\n    plot.PLNPCAfit()"
+
   model <- getBestModel(models)
   expect_output(model$show(),
-"Poisson Lognormal with rank constrained for PCA (rank = 4)
-==================================================================
- nb_param   loglik       BIC       ICL R_squared
-       85 -1111.49 -1276.892 -1304.704 0.9804882
-==================================================================
-* Useful fields
-    $model_par, $latent, $var_par, $optim_par
-    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
-* Useful S3 methods
-    print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()
-* Additional fields for PCA
-    $percent_var, $corr_circle, $scores, $rotation
-* Additional S3 methods for PCA
-    plot.PLNPCAfit()", fixed = TRUE)
+                output,
+# "Poisson Lognormal with rank constrained for PCA (rank = 4)
+# ==================================================================
+#  nb_param   loglik       BIC       ICL R_squared
+#        85 -1111.49 -1276.892 -1304.704 0.9804882
+# ==================================================================
+# * Useful fields
+#     $model_par, $latent, $var_par, $optim_par
+#     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
+# * Useful S3 methods
+#     print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()
+# * Additional fields for PCA
+#     $percent_var, $corr_circle, $scores, $rotation
+# * Additional S3 methods for PCA
+#     plot.PLNPCAfit()",
+                fixed = TRUE)
 })
