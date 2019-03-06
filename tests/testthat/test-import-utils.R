@@ -219,7 +219,7 @@ test_that("offset_numeric fails when the offsets are incompatible with the count
   )
 })
 
-test_that("offset_numeric works for vectors or column-matrices.", {
+test_that("offset_numeric works for vectors and column-matrices.", {
   #   a b
   # A 1 4
   # B 2 5
@@ -227,6 +227,9 @@ test_that("offset_numeric works for vectors or column-matrices.", {
   counts <- structure(1:6, .Dim = 3:2, .Dimnames = list(c("A", "B", "C"),
                                                         c("a", "b")))
   offset <- c(A = 1, C = 3, B = 2)
+  ## No difference between vectors and column matrices
+  expect_equal(offset_numeric(counts, offset),
+               offset_numeric(counts, as.matrix(offset)))
   ##  Correct dimensions
   expect_equal(dim(offset_numeric(counts, offset)),
                dim(counts))
@@ -293,17 +296,27 @@ test_that("prepare_data succeeds on simple data with missing names", {
                    )
 })
 
-test_that("prepare_data succeeds on simple data when specifying a numeric offset", {
+test_that("prepare_data provides automatic variable names when missing from covariate", {
+  res <- prepare_data(counts, unname(covariates))
+  expect_identical(colnames(res),
+                   c("Abundance", paste0("Variable", 1:ncol(covariates)), "Offset"))
+})
+
+test_that("prepare_data succeeds when specifying a numeric offset", {
+  ## On simple data
   res <- prepare_data(counts, covariates, offset = "TSS")
   res$Offset <- matrix(rep(res$Offset, ncol(counts)),
                        ncol = ncol(counts),
                        dimnames = dimnames(counts))
   expect_identical(prepare_data(counts, covariates, offset = rowSums(counts)),
                    res)
+  ## On strange data (transposed count matrix)
+  expect_identical(prepare_data(t(counts), covariates, offset = rowSums(counts)),
+                   res)
+
 })
 
 ## Test prepare_data_* functions ------------------------------------------------------------------------
-
 
 test_that("prepare_data_from_biom fails when covariates data.frame is missing", {
   biom <- biomformat::make_biom(data = t(counts), sample_metadata = NULL)

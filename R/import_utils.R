@@ -59,9 +59,14 @@ sanitize_offset <- function(counts, offset, ...) {
   p <- ncol(counts) ## number of features
   ## Sanity check: transform vector offset and column-matrices to full matrices
   if (is.vector(offset) || (is.matrix(offset) && ncol(offset) == 1)) {
+    offset_samples <- if (is.vector(offset)) {
+      names(offset)
+    } else {
+      rownames(offset)
+    }
     offset <- matrix(rep(offset, p),
                      ncol = p,
-                     dimnames = list(names(offset), colnames(counts)))
+                     dimnames = list(offset_samples, colnames(counts)))
   }
   ## Sanity check: rownames
   if (is.null(rownames(offset))) {
@@ -221,7 +226,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
     ## sanitize offset
     if (is.numeric(offset)) {
       if (is.vector(offset)) {
-        offset <- matrix(offset, nrow = 1, dimnames = list(names(offset), NULL))
+        offset <- matrix(offset, nrow = 1, dimnames = list(NULL, names(offset)))
       }
       offset <- t(offset)
     }
