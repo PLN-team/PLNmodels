@@ -292,7 +292,7 @@ PLNLDAfit$set("public", "show",
 function() {
   super$show(paste0("Linear Discriminant Analysis for Poisson Lognormal distribution\n"))
   cat("* Additional fields for LDA\n")
-  cat("    $percent_var, $corr_map, $scores, $group_means \n")
+  cat("    $percent_var, $corr_map, $scores, $group_means\n")
   cat("* Additional S3 methods for LDA\n")
   cat("    plot.PLNLDAfit(), predict.PLNLDAfit()\n")
 })

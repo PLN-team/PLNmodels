@@ -2,66 +2,65 @@ context("test-plnldafit")
 
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+model <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = Group)
 
 test_that("PLNLDA fit: check classes, getters and field access",  {
 
-  myPLNfit <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = Group)
   n <- nrow(trichoptera$Abundance)
   p <- ncol(trichoptera$Abundance)
   g <- length(unique(trichoptera$Group))
 
-  expect_is(myPLNfit, "PLNLDAfit")
-  expect_equal(myPLNfit$n, n)
-  expect_equal(myPLNfit$p, p)
-  expect_equal(myPLNfit$d, g)
-  expect_equal(myPLNfit$rank, g - 1)
+  expect_is(model, "PLNLDAfit")
+  expect_equal(model$n, n)
+  expect_equal(model$p, p)
+  expect_equal(model$d, g)
+  expect_equal(model$rank, g - 1)
 
-  expect_null(coef(myPLNfit))
-  expect_lt(sum((myPLNfit$group_means - myPLNfit$myPLNfit_par$Theta)^2), .Machine$double.eps)
-  expect_equal(sigma(myPLNfit), myPLNfit$model_par$Sigma)
-  expect_equal(vcov(myPLNfit), myPLNfit$fisher$mat)
+  expect_null(coef(model))
+  expect_lt(sum((model$group_means - model$model_par$Theta)^2), .Machine$double.eps)
+  expect_equal(sigma(model), model$model_par$Sigma)
+  expect_equal(vcov(model), model$fisher$mat)
 
-  expect_equal(class(myPLNfit$group_means), "matrix")
-  expect_equal(class(sigma(myPLNfit)), "matrix")
-  expect_true(class(vcov(myPLNfit)) == "dgCMatrix")
+  expect_equal(class(model$group_means), "matrix")
+  expect_equal(class(sigma(model)), "matrix")
+  expect_true(class(vcov(model)) == "dgCMatrix")
 
-  expect_equal(dim(vcov(myPLNfit)), c(myPLNfit$d * myPLNfit$p, myPLNfit$d * myPLNfit$p))
+  expect_equal(dim(vcov(model)), c(model$d * model$p, model$d * model$p))
 
   ## fields and active bindings
-  expect_equal(dim(myPLNfit$model_par$B), c(p, p))
-  expect_equal(dim(myPLNfit$model_par$Sigma), c(p, p))
-  expect_equal(dim(myPLNfit$var_par$M), c(n, p))
-  expect_equal(dim(myPLNfit$var_par$S), c(n, p))
-  expect_equal(sum(myPLNfit$loglik_vec), myPLNfit$loglik)
-  expect_lt(myPLNfit$BIC, myPLNfit$loglik)
-  expect_lt(myPLNfit$ICL, myPLNfit$loglik)
-  expect_lt(myPLNfit$ICL, myPLNfit$BIC)
-  expect_gt(myPLNfit$R_squared, 0)
-  expect_equal(myPLNfit$nb_param, p * (2 *g - 1))
-  expect_equal(dim(myPLNfit$group_means), c(p, g))
-  expect_equal(dim(myPLNfit$scores), c(n, myPLNfit$rank))
-  expect_true(all(myPLNfit$percent_var >= 0))
-  expect_equal(dim(myPLNfit$corr_map), c(p, myPLNfit$rank))
+  expect_equal(dim(model$model_par$B), c(p, p))
+  expect_equal(dim(model$model_par$Sigma), c(p, p))
+  expect_equal(dim(model$var_par$M), c(n, p))
+  expect_equal(dim(model$var_par$S), c(n, p))
+  expect_equal(sum(model$loglik_vec), model$loglik)
+  expect_lt(model$BIC, model$loglik)
+  expect_lt(model$ICL, model$loglik)
+  expect_lt(model$ICL, model$BIC)
+  expect_gt(model$R_squared, 0)
+  expect_equal(model$nb_param, p * (2 *g - 1))
+  expect_equal(dim(model$group_means), c(p, g))
+  expect_equal(dim(model$scores), c(n, model$rank))
+  expect_true(all(model$percent_var >= 0))
+  expect_equal(dim(model$corr_map), c(p, model$rank))
 
   ## S3 methods
-  expect_equal(dim(fitted(myPLNfit)), c(n, p))
-  expect_equal(sigma(myPLNfit), myPLNfit$model_par$Sigma)
-  expect_equal(vcov(myPLNfit, "main"), myPLNfit$fisher$mat)
-  expect_equal(vcov(myPLNfit, "covariance"), myPLNfit$model_par$Sigma)
-  expect_equal(vcov(myPLNfit, "covariance"), sigma(myPLNfit))
+  expect_equal(dim(fitted(model)), c(n, p))
+  expect_equal(sigma(model), model$model_par$Sigma)
+  expect_equal(vcov(model, "main"), model$fisher$mat)
+  expect_equal(vcov(model, "covariance"), model$model_par$Sigma)
+  expect_equal(vcov(model, "covariance"), sigma(model))
 
-  expect_true(inherits(plot(myPLNfit, map = "variable", plot = FALSE), "ggplot"))
-  expect_true(inherits(plot(myPLNfit, map = "individual", plot = FALSE), "ggplot"))
-  expect_true(inherits(plot(myPLNfit, map = "both", plot = FALSE), "grob"))
+  expect_true(inherits(plot(model, map = "variable", plot = FALSE), "ggplot"))
+  expect_true(inherits(plot(model, map = "individual", plot = FALSE), "ggplot"))
+  expect_true(inherits(plot(model, map = "both", plot = FALSE), "grob"))
 
   ## R6 methods
-  expect_true(inherits(myPLNfit$plot_correlation_map(plot = FALSE), "ggplot"))
-  expect_true(inherits(myPLNfit$plot_individual_map(plot = FALSE), "ggplot"))
-  expect_true(inherits(myPLNfit$plot_LDA(plot = FALSE), "grob"))
+  expect_true(inherits(model$plot_correlation_map(plot = FALSE), "ggplot"))
+  expect_true(inherits(model$plot_individual_map(plot = FALSE), "ggplot"))
+  expect_true(inherits(model$plot_LDA(plot = FALSE), "grob"))
 })
 
 test_that("PLNLDA fit: check print message",  {
-  model <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = Group)
   expect_equal(capture_output(model$show()),
 "Linear Discriminant Analysis for Poisson Lognormal distribution
 ==================================================================
@@ -82,13 +81,12 @@ test_that("PLNLDA fit: check print message",  {
 
 test_that("plot_LDA works for binary groups:", {
   trichoptera$custom_group <- ifelse(trichoptera$Cloudiness <= 50, "Sunny", "Cloudy")
-  model <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = custom_group)
+  model1 <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = custom_group)
   ## One axis only
-  expect_true(inherits(model$plot_LDA(plot = FALSE), "grob"))
+  expect_true(inherits(model1$plot_LDA(plot = FALSE), "grob"))
 })
 
 test_that("plot_LDA works for 4 or more axes:", {
-  model <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = Group)
   expect_true(inherits(model$plot_LDA(nb_axes = 4, plot = FALSE), "grob"))
 })
 
@@ -96,27 +94,25 @@ test_that("PLNLDA fit: Check number of parameters",  {
 
   p <- ncol(trichoptera$Abundance)
 
-  model <- PLN(Abundance ~ 1, data = trichoptera)
-  expect_equal(model$nb_param, p*(p+1)/2 + p * 1)
+  mdl <- PLN(Abundance ~ 1, data = trichoptera)
+  expect_equal(mdl$nb_param, p*(p+1)/2 + p * 1)
 
-  model <- PLN(Abundance ~ 1 + Wind, data = trichoptera)
-  expect_equal(model$nb_param, p*(p+1)/2 + p * 2)
+  mdl <- PLN(Abundance ~ 1 + Wind, data = trichoptera)
+  expect_equal(mdl$nb_param, p*(p+1)/2 + p * 2)
 
-  model <- PLN(Abundance ~ Group + 0 , data = trichoptera)
-  expect_equal(model$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
+  mdl <- PLN(Abundance ~ Group + 0 , data = trichoptera)
+  expect_equal(mdl$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
 
-  model <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal"))
-  expect_equal(model$nb_param, p + p * 1)
+  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal"))
+  expect_equal(mdl$nb_param, p + p * 1)
 
-  model <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical"))
-  expect_equal(model$nb_param, 1 + p * 1)
+  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical"))
+  expect_equal(mdl$nb_param, 1 + p * 1)
 
 })
 
 ## add tests for predictions, tests for fit --------------------------------------------
 test_that("Predictions have the right dimensions.", {
-  model <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
-                   grouping = Group, data = trichoptera)
   expect_length(predict(model, newdata = trichoptera, type = "response"),
                 nrow(trichoptera))
   expect_is(predict(model, newdata = trichoptera, type = "response"),
@@ -142,8 +138,6 @@ test_that("Predictions are not affected by inclusion of an intercept.", {
 })
 
 test_that("Prediction fails for non positive prior probabilities.", {
-  model <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
-                  grouping = Group, data = trichoptera)
   nb_groups <- length(levels(trichoptera$Group))
   expect_error(predict(model, newdata = trichoptera, type = "response", prior = rep(0, nb_groups)),
                "Prior group proportions should be positive.")
@@ -152,8 +146,6 @@ test_that("Prediction fails for non positive prior probabilities.", {
 })
 
 test_that("Predictions succeeds for positive prior probabilities.", {
-  model <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
-                  grouping = Group, data = trichoptera)
   nb_groups <- model$rank + 1
   expect_length(predict(model, newdata = trichoptera, type = "response", prior = rep(1, nb_groups)),
                 nrow(trichoptera))
