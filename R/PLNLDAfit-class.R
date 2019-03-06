@@ -140,7 +140,8 @@ PLNLDAfit$set("public", "plot_correlation_map",
 
 
 # Plot a summary of the current \code{PLNLDAfit} object
-#' @importFrom grid nullGrob
+#' @importFrom gridExtra grid.arrange arrangeGrob
+#' @importFrom grid nullGrob textGrob
 PLNLDAfit$set("public", "plot_LDA",
   function(nb_axes = min(3, self$rank), var_cols = "default", plot = TRUE) {
 

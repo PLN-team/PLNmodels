@@ -2,11 +2,11 @@ context("test-plnpcafit")
 
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+models <- PLNPCA(Abundance ~ 1, data = trichoptera)
+X <- model.matrix(Abundance ~ 1, data = trichoptera)
 
 test_that("PLNPCA fit: check classes, getters and field access", {
-  models <- PLNPCA(Abundance ~ 1, data = trichoptera)
 
-  X <- model.matrix(Abundance ~ 1, data = trichoptera)
   Y <- as.matrix(trichoptera$Abundance)
   n <- nrow(Y); p <- ncol(Y)
   O <- matrix(0, nrow = n, ncol = p)
@@ -50,4 +50,40 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_true(inherits(myPLNfit$plot_individual_map(plot = FALSE), "ggplot"))
   expect_true(inherits(myPLNfit$plot_PCA(plot = FALSE), "grob"))
 
+})
+
+test_that("Louis-type Fisher matrices are not available for PLNPCA", {
+  model <- getBestModel(models)
+  expect_error(model$compute_fisher(type = "louis", X = X),
+               "Louis approximation scheme not available yet for object of class PLNPLCA, use type = \"wald\" instead.")
+})
+
+test_that("plot_PCA works one axis only:", {
+  model1 <- getModel(models, 1)
+  ## One axis only
+  expect_true(inherits(model1$plot_PCA(plot = FALSE), "grob"))
+})
+
+test_that("plot_PCA works for 4 or more axes:", {
+  model4 <- getModel(models, 4)
+  expect_true(inherits(model4$plot_PCA(nb_axes = 4, plot = FALSE), "grob"))
+})
+
+test_that("PLNPCA fit: check print message",  {
+  model <- getBestModel(models)
+  expect_output(model$show(),
+"Poisson Lognormal with rank constrained for PCA (rank = 4)
+==================================================================
+ nb_param   loglik       BIC       ICL R_squared
+       85 -1111.49 -1276.892 -1304.704 0.9804882
+==================================================================
+* Useful fields
+    $model_par, $latent, $var_par, $optim_par
+    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
+* Useful S3 methods
+    print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()
+* Additional fields for PCA
+    $percent_var, $corr_circle, $scores, $rotation
+* Additional S3 methods for PCA
+    plot.PLNPCAfit()", fixed = TRUE)
 })
