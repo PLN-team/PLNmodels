@@ -88,8 +88,8 @@ function() {
   super$show()
   cat(" Task: Principal Component Analysis\n")
   cat("========================================================\n")
-  cat(" - Ranks considered: from", min(self$ranks), "to", max(self$ranks),"\n")
-  cat(" - Best model (greater BIC): rank =", self$getBestModel("BIC")$rank, "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
-  cat(" - Best model (greater ICL): rank =", self$getBestModel("ICL")$rank, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
+  cat(" - Ranks considered: from ", min(self$ranks), " to ", max(self$ranks),"\n", sep = "")
+  cat(" - Best model (greater BIC): rank = ", self$getBestModel("BIC")$rank, " - R2 = ", round(self$getBestModel("BIC")$R_squared, 2), "\n", sep = "")
+  cat(" - Best model (greater ICL): rank = ", self$getBestModel("ICL")$rank, " - R2 = ", round(self$getBestModel("ICL")$R_squared, 2), "\n", sep = "")
 })
 
