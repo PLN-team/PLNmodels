@@ -52,7 +52,11 @@ test_that("PLN: Check consistency of observation weights - fully parameterized c
   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
 
   ## equivalent weigths
-  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(trace = 0))
+  expect_output(model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(trace = 1)),
+                paste("\n Initialization...",
+                      "Adjusting a PLN model with full covariance model (with observation weigths)",
+                      "Post-treatments...",
+                      "DONE!", sep = "\n "), fixed = TRUE)
 
   expect_equal(model2$loglik, model1$loglik, tolerance = tol)
 
