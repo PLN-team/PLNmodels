@@ -20,7 +20,12 @@ test_that("Check that PLNLDA is running and robust",  {
   expect_equal(PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)$fitted,
                PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)$fitted)
 
-  ## add more
+})
+
+test_that("Invalid group throws an error",  {
+  expect_error(PLNLDA(Abundance ~ 0 + offset(log(Offset)),
+                      grouping = group, data = trichoptera),
+               "invalid grouping")
 })
 
 test_that("Check PLNLDA initialization",  {

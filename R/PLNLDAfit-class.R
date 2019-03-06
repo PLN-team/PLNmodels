@@ -138,7 +138,9 @@ PLNLDAfit$set("public", "plot_correlation_map",
     invisible(p)
 })
 
+
 # Plot a summary of the current \code{PLNLDAfit} object
+#' @importFrom grid nullGrob
 PLNLDAfit$set("public", "plot_LDA",
   function(nb_axes = min(3, self$rank), var_cols = "default", plot = TRUE) {
 
@@ -228,8 +230,10 @@ PLNLDAfit$set("public", "predict",
     ## Initialize priors
     if (is.null(prior)) {
       prior <- table(private$grouping)
+    } else {
+      names(prior) <- groups
     }
-    if (any(prior < 0) && anyNA(prior)) stop("Prior group proportions should be positive.")
+    if (any(prior <= 0) || anyNA(prior)) stop("Prior group proportions should be positive.")
     prior <- prior / sum(prior)
 
     ## Compute conditional log-likelihoods of new data, using previously estimated parameters
