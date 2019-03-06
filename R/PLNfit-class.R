@@ -327,7 +327,7 @@ PLNfit$set("public", "show",
 function(model = paste("A multivariate Poisson Lognormal fit with", private$covariance, "covariance model.\n")) {
   cat(model)
   cat("==================================================================\n")
-  print(as.data.frame(self$criteria, row.names = ""))
+  print(as.data.frame(round(self$criteria, digits = 3), row.names = ""))
   cat("==================================================================\n")
   cat("* Useful fields\n")
   cat("    $model_par, $latent, $var_par, $optim_par\n")
