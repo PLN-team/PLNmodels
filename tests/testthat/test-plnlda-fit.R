@@ -61,25 +61,25 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
 })
 
 test_that("PLNLDA fit: check print message",  {
-  # output <- "Linear Discriminant Analysis for Poisson Lognormal distribution\n==================================================================\n nb_param  loglik       BIC       ICL R_squared\n      391 -895.33 -1656.181 -1884.964     0.955\n==================================================================\n* Useful fields\n    $model_par, $latent, $var_par, $optim_par\n    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria\n* Useful S3 methods\n    print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()\n* Additional fields for LDA\n    $percent_var, $corr_map, $scores, $group_means\n* Additional S3 methods for LDA\n    plot.PLNLDAfit(), predict.PLNLDAfit()"
+  output <- "Linear Discriminant Analysis for Poisson Lognormal distribution\n==================================================================\n nb_param  loglik       BIC       ICL R_squared\n      391 -895.33 -1656.181 -1884.964     0.955\n==================================================================\n* Useful fields\n    $model_par, $latent, $var_par, $optim_par\n    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria\n* Useful S3 methods\n    print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()\n* Additional fields for LDA\n    $percent_var, $corr_map, $scores, $group_means\n* Additional S3 methods for LDA\n    plot.PLNLDAfit(), predict.PLNLDAfit()"
 
   expect_output(model$show(),
                 fixed = TRUE,
-#                output,
-"Linear Discriminant Analysis for Poisson Lognormal distribution
-==================================================================
- nb_param  loglik       BIC       ICL R_squared
-      391 -895.33 -1656.181 -1884.964     0.955
-==================================================================
-* Useful fields
-    $model_par, $latent, $var_par, $optim_par
-    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
-* Useful S3 methods
-    print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()
-* Additional fields for LDA
-    $percent_var, $corr_map, $scores, $group_means
-* Additional S3 methods for LDA
-    plot.PLNLDAfit(), predict.PLNLDAfit()",
+                output
+# "Linear Discriminant Analysis for Poisson Lognormal distribution
+# ==================================================================
+#  nb_param  loglik       BIC       ICL R_squared
+#       391 -895.33 -1656.181 -1884.964     0.955
+# ==================================================================
+# * Useful fields
+#     $model_par, $latent, $var_par, $optim_par
+#     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
+# * Useful S3 methods
+#     print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()
+# * Additional fields for LDA
+#     $percent_var, $corr_map, $scores, $group_means
+# * Additional S3 methods for LDA
+#     plot.PLNLDAfit(), predict.PLNLDAfit()"
 )
 })
 
