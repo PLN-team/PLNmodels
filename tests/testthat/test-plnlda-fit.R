@@ -60,6 +60,26 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
   expect_true(inherits(myPLNfit$plot_LDA(plot = FALSE), "grob"))
 })
 
+test_that("PLNLDA fit: check print message",  {
+  model <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = Group)
+  expect_equal(capture_output(model$show()),
+"Linear Discriminant Analysis for Poisson Lognormal distribution
+==================================================================
+ nb_param    loglik       BIC       ICL R_squared
+      391 -895.3299 -1656.181 -1884.964 0.9549509
+==================================================================
+* Useful fields
+    $model_par, $latent, $var_par, $optim_par
+    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
+* Useful S3 methods
+    print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()
+* Additional fields for LDA
+    $percent_var, $corr_map, $scores, $group_means
+* Additional S3 methods for LDA
+    plot.PLNLDAfit(), predict.PLNLDAfit()"
+)
+})
+
 test_that("plot_LDA works for binary groups:", {
   trichoptera$custom_group <- ifelse(trichoptera$Cloudiness <= 50, "Sunny", "Cloudy")
   model <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = custom_group)
