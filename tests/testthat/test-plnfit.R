@@ -91,8 +91,11 @@ capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names 
 test_that("standard error fails for degenerate models", {
   trichoptera$X1 <- ifelse(trichoptera$Cloudiness <= 50, 0, 1)
   trichoptera$X2 <- 1 - trichoptera$X1
-  expect_warning(model <- PLN(Abundance ~ 1 + X1 + X2, data = trichoptera),
-                 "Something went wrong during model fitting!!\nMatrix A has missing values.")
+  # expect_warning(model <- PLN(Abundance ~ 1 + X1 + X2, data = trichoptera),
+  #                "Something went wrong during model fitting!!\nMatrix A has missing values.")
+  model <- PLN(Abundance ~ 1 + X1, data = trichoptera)
+  ## Force a degenerate matrix in the FIM slot
+  model$.__enclos_env__$private$FIM <- diag(0, nrow = model$p * model$d)
   expect_warning(std_err <- model$compute_standard_error(),
                  "Inversion of the Fisher information matrix failed with following error message:")
   expect_equal(std_err,
