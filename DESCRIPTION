@@ -78,4 +78,4 @@ Collate:
     'plot_utils.R'
     'trichoptera.R'
     'utils.R'
-LinkingTo: Rcpp, RcppArmadillo
+LinkingTo: Rcpp, RcppArmadillo, nloptr

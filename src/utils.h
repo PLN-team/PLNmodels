@@ -1,10 +1,8 @@
 #ifndef _utils_H
 #define _utils_H
 
-#include <RcppArmadillo.h>
-#include <nlopt.h>
-
-arma::vec get_KY(arma::mat Y, arma::vec w) ;
+#include <nloptrAPI.h>
+#include "RcppArmadillo.h"
 
 arma::mat logfact(arma::mat Y) ;
 

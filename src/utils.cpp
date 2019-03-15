@@ -1,12 +1,5 @@
 #include "utils.h"
 
-using namespace Rcpp;
-
-arma::mat logfact(arma::mat Y) {
-  arma::mat v = Y.replace(0, 1);
-  return sum(v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2, 1);
-}
-
 // Convert string to nlopt_algorithm
 //
 // restrict the choices to algorithms meaningful for PLN optimization
@@ -52,23 +45,29 @@ nlopt_algorithm getAlgorithmCode( const std::string & algorithm_str) {
     return algorithm;
 }
 
-nlopt_opt initNLOPT(int n_param, List options) {
+nlopt_opt initNLOPT(int n_param, Rcpp::List options) {
 
   // Prepare optimization by setting nlopt options
 
-  nlopt_algorithm algo = getAlgorithmCode(as<std::string>(options["algorithm"])) ;
+  nlopt_algorithm algo = getAlgorithmCode(Rcpp::as<std::string>(options["algorithm"])) ;
   nlopt_opt opt = nlopt_create(algo, n_param);
 
-  stdvec xtol_abs    = as<stdvec>(options["xtol_abs"   ]) ;
-  stdvec lower_bound = as<stdvec>(options["lower_bound"]) ;
+  stdvec xtol_abs    = Rcpp::as<stdvec>(options["xtol_abs"   ]) ;
+  stdvec lower_bound = Rcpp::as<stdvec>(options["lower_bound"]) ;
 
-  nlopt_set_xtol_rel    (opt, as<double>(options["xtol_rel"]));
-  nlopt_set_ftol_abs    (opt, as<double>(options["ftol_abs"]));
-  nlopt_set_ftol_rel    (opt, as<double>(options["ftol_rel"]));
-  nlopt_set_maxeval     (opt, as<int>   (options["maxeval" ]));
-  nlopt_set_maxtime     (opt, as<double>(options["maxtime" ]));
+  nlopt_set_xtol_rel    (opt, Rcpp::as<double>(options["xtol_rel"]));
+  nlopt_set_ftol_abs    (opt, Rcpp::as<double>(options["ftol_abs"]));
+  nlopt_set_ftol_rel    (opt, Rcpp::as<double>(options["ftol_rel"]));
+  nlopt_set_maxeval     (opt, Rcpp::as<int>   (options["maxeval" ]));
+  nlopt_set_maxtime     (opt, Rcpp::as<double>(options["maxtime" ]));
   nlopt_set_xtol_abs    (opt, &xtol_abs[0]   );
   nlopt_set_lower_bounds(opt, &lower_bound[0]) ;
 
   return opt;
 }
+
+arma::mat logfact(arma::mat Y) {
+  arma::mat v = Y.replace(0, 1);
+  return sum(v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2, 1);
+}
+
