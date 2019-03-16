@@ -1,10 +1,12 @@
-#ifndef _utils_H
-#define _utils_H
+#ifndef _data_struct_H
+#define _data_struct_H
 
-#include <nloptrAPI.h>
-#include "RcppArmadillo.h"
+#include <RcppArmadillo.h>
 
-arma::mat logfact(arma::mat Y) ;
+inline arma::mat logfact(arma::mat Y) {
+  arma::mat v = Y.replace(0, 1);
+  return sum(v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2, 1);
+};
 
 typedef std::vector<double> stdvec;
 
@@ -91,10 +93,5 @@ typedef struct optim_data {
     } ;
 
 } optim_data ;
-
-// Convert string to nlopt_alogirthm
-nlopt_algorithm getAlgorithmCode(const std::string &) ;
-
-nlopt_opt initNLOPT(int, Rcpp::List) ;
 
 #endif

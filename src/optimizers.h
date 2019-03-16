@@ -1,7 +1,7 @@
 #ifndef _optimizers_H
 #define _optimizers_H
 
-#include "utils.h"
+#include "nlopt_utils.h"
 #include "gradients.h"
 
 // ---------------------------------------------------------------------------

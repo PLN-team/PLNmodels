@@ -1,8 +1,12 @@
 #include "RcppArmadillo.h"
+#include "nloptrAPI.h"
 
 // [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(nloptr)]]
 // [[Rcpp::plugins(cpp11)]]
 
+#include "data_struct.h"
+#include "nlopt_utils.h"
 #include "optimizers.h"
 
 // ---------------------------------------------------------------------------------------

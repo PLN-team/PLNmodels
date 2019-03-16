@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "nlopt_utils.h"
 
 // Convert string to nlopt_algorithm
 //
@@ -65,9 +65,3 @@ nlopt_opt initNLOPT(int n_param, Rcpp::List options) {
 
   return opt;
 }
-
-arma::mat logfact(arma::mat Y) {
-  arma::mat v = Y.replace(0, 1);
-  return sum(v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2, 1);
-}
-
