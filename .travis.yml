@@ -1,6 +1,7 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2019-03-16: suppressing requirements for system version of nlopt
 #  - 2019-03-04: some tweaks and clean up
 #  - 2019-01-29: deployment of pages with travis
 #  - 2019-01-28: deployment of releases with travis
@@ -20,14 +21,8 @@ cache: packages
 
 warnings_are_errors: false
 
-addons:
-  apt:
-    packages:
-    - libnlopt-dev
-
 brew_packages:
   - gcc
-  - nlopt
 
 use_bioc: true
 bioc_required: true

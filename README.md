@@ -1,3 +1,4 @@
+
 # PLNmodels: Poisson lognormal models <img src="man/figures/logo.png" align="right" width="155" height="180"/>
 
 [![Travis-CI build
@@ -17,32 +18,6 @@ status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)]
 
 ## Installation
 
-### System Requirements
-
-Installation requires a system version of
-[nlopt 2.4-2](https://nlopt.readthedocs.io/)
-
-On **Debian** or **Ubuntu** use `libnlopt-dev`:
-
-``` bash
-sudo apt-get install libnlopt-dev
-```
-
-On **Fedora** or similar use `NLopt-devel`:
-
-``` bash
-sudo yum install NLopt-devel
-```
-
-With **Mac OS X**, install `nlopt` via [homebrew](https://brew.sh/)
-
-``` bash
-brew install nlopt
-```
-
-On **Windows**, the package builds and installs correctly by [including
-static libraries](https://github.com/rwinlib/nlopt) on compilation.
-
 ### R Package installation
 
 #### CRAN dependencies
@@ -56,6 +31,7 @@ library(glassoFast)
 library(Matrix)
 library(Rcpp)
 library(RcppArmadillo)
+library(nloptr)
 library(igraph)
 library(grid)
 library(gridExtra)
@@ -79,17 +55,6 @@ library(biomformat)
 
 #### Installing PLNmodels
 
-  - For the last tagged release, use
-
-<!-- end list -->
-
-``` r
-devtools::install_github("jchiquet/PLNmodels@v0.7.0.2")
-```
-
-  - Windows users may want to use [the binary version of the
-    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.7.0.2/PLNmodels_0.7.0.2.zip)
-
   - For the development version, use
 
 <!-- end list -->
@@ -97,6 +62,17 @@ devtools::install_github("jchiquet/PLNmodels@v0.7.0.2")
 ``` r
 devtools::install_github("jchiquet/PLNmodels")
 ```
+
+  - For the last tagged release, use
+
+<!-- end list -->
+
+``` r
+devtools::install_github("jchiquet/PLNmodels@v0.8.2")
+```
+
+  - Windows users may want to use [the binary version of the
+    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.7.0.2/PLNmodels_0.8.2.zip)
 
 ## Usage and main fitting functions
 

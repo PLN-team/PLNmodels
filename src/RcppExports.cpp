@@ -6,23 +6,6 @@
 
 using namespace Rcpp;
 
-// optimization_VEstep_PLN
-Rcpp::List optimization_VEstep_PLN(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& Theta, const arma::mat& Sigma, Rcpp::List options);
-RcppExport SEXP _PLNmodels_optimization_VEstep_PLN(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP ThetaSEXP, SEXP SigmaSEXP, SEXP optionsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Sigma(SigmaSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimization_VEstep_PLN(par, Y, X, O, Theta, Sigma, options));
-    return rcpp_result_gen;
-END_RCPP
-}
 // optim_spherical
 Rcpp::List optim_spherical(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, Rcpp::List options);
 RcppExport SEXP _PLNmodels_optim_spherical(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP optionsSEXP) {
@@ -103,14 +86,31 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// optimization_VEstep_PLN
+Rcpp::List optimization_VEstep_PLN(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& Theta, const arma::mat& Sigma, Rcpp::List options);
+RcppExport SEXP _PLNmodels_optimization_VEstep_PLN(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP ThetaSEXP, SEXP SigmaSEXP, SEXP optionsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Sigma(SigmaSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(optimization_VEstep_PLN(par, Y, X, O, Theta, Sigma, options));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_PLNmodels_optimization_VEstep_PLN", (DL_FUNC) &_PLNmodels_optimization_VEstep_PLN, 7},
     {"_PLNmodels_optim_spherical", (DL_FUNC) &_PLNmodels_optim_spherical, 6},
     {"_PLNmodels_optim_diagonal", (DL_FUNC) &_PLNmodels_optim_diagonal, 6},
     {"_PLNmodels_optim_full", (DL_FUNC) &_PLNmodels_optim_full, 6},
     {"_PLNmodels_optim_rank", (DL_FUNC) &_PLNmodels_optim_rank, 6},
     {"_PLNmodels_optim_sparse", (DL_FUNC) &_PLNmodels_optim_sparse, 6},
+    {"_PLNmodels_optimization_VEstep_PLN", (DL_FUNC) &_PLNmodels_optimization_VEstep_PLN, 7},
     {NULL, NULL, 0}
 };
 
