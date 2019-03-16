@@ -34,7 +34,7 @@
 ##' @author Mahendra Mariadassou \email{mahendra.mariadassou@@inra.fr}
 ##' @author Stéphane Robin \email{stephane.robin@@inra.fr}
 ##'
-##' @import methods R6 parallel Matrix
+##' @import methods R6 parallel Matrix nloptr
 ##' @importFrom Rcpp sourceCpp
 ##' @import dplyr
 ##' @importFrom tidyr gather

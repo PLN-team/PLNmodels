@@ -287,3 +287,30 @@ double fn_optim_PLN_weighted_sparse(unsigned N, const double *x, double *grad, v
 
   return objective;
 }
+
+double fn_optim_VEstep_PLN(unsigned N, const double *x, double *grad, void *data) {
+
+  optim_data *dat = (optim_data *) data;
+  dat->iterations++; // increase number of iterations
+
+  int n = dat->Y.n_rows, p = dat->Y.n_cols ;
+
+  arma::mat M(&x[0]    , n,p);
+  arma::mat S(&x[n*p]  , n,p);
+
+  arma::mat Z = dat->O + dat->X * dat->Theta.t() + M;
+  arma::mat A = exp (Z + .5 * S);
+  // 0.5 tr(\Omega M'M) + 0.5 tr(\bar{S} \Omega)
+  double prior = .5*accu(dat->Omega % (M.t() * M)) + .5*dot(arma::ones(n).t() * S, diagvec(dat->Omega)) ;
+  // J(M, S, \Theta, \Omega, Y, X, O)
+  double objective = accu(A - dat->Y % Z - .5*log(S)) + prior - .5*n* dat->log_det_Omega ;
+
+  arma::vec grd_M     = vectorise(M * dat->Omega + A-dat->Y) ;
+  arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(dat->Omega).t() + A - 1/S));
+
+  stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
+
+  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+
+  return objective;
+}

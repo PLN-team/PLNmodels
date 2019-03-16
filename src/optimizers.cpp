@@ -5,9 +5,6 @@
 //
 // COMMON TO PLN WITH SPHERICAL, DIAGONAL AND FULLY PARAMETRIZED COVARIANCE
 
-using namespace arma ;
-using namespace Rcpp ;
-
 // CONSTRUCTOR
 optimizer_PLN::optimizer_PLN(
           arma::vec par,
