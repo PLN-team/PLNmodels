@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 0.8.1
+Version: 0.9.1
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -18,7 +18,6 @@ Description: The Poisson-lognormal model and variants can be used for
 URL: https://jchiquet.github.io/PLNmodels/
 BugReports: https://github.com/jchiquet/PLNmodels/issues
 License: GPL (>= 3)
-SystemRequirements: nlopt: libnlopt-dev (deb), NLopt-devel (rpm), nlopt (homebrew)
 Encoding: UTF-8
 RoxygenNote: 6.1.1
 Depends: R (>= 3.4)
@@ -32,6 +31,8 @@ Imports:
   glassoFast,
   Matrix,
   Rcpp,
+  RcppArmadillo,
+  nloptr (>= 1.2.0),
   igraph,
   grid,
   gridExtra,
@@ -78,4 +79,4 @@ Collate:
     'plot_utils.R'
     'trichoptera.R'
     'utils.R'
-LinkingTo: Rcpp, RcppArmadillo, nloptr
+LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)
