@@ -1,3 +1,7 @@
+# PLNmodels 0.8.2
+
+* Enhancement in PLNLDA
+
 # PLNmodels 0.8.1
 
 * Preparing first CRAN release
