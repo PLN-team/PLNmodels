@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
       </span>
     </div>
 
@@ -119,18 +119,6 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<div id="system-requirements" class="section level3">
-<h3 class="hasAnchor">
-<a href="#system-requirements" class="anchor"></a>System Requirements</h3>
-<p>Installation requires a system version of <a href="https://nlopt.readthedocs.io/">nlopt 2.4-2</a></p>
-<p>On <strong>Debian</strong> or <strong>Ubuntu</strong> use <code>libnlopt-dev</code>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="fu">sudo</span> apt-get install libnlopt-dev</a></code></pre></div>
-<p>On <strong>Fedora</strong> or similar use <code>NLopt-devel</code>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="fu">sudo</span> yum install NLopt-devel</a></code></pre></div>
-<p>With <strong>Mac OS X</strong>, install <code>nlopt</code> via <a href="https://brew.sh/">homebrew</a></p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ex">brew</span> install nlopt</a></code></pre></div>
-<p>On <strong>Windows</strong>, the package builds and installs correctly by <a href="https://github.com/rwinlib/nlopt">including static libraries</a> on compilation.</p>
-</div>
 <div id="r-package-installation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#r-package-installation" class="anchor"></a>R Package installation</h3>
@@ -138,41 +126,45 @@
 <h4 class="hasAnchor">
 <a href="#cran-dependencies" class="anchor"></a>CRAN dependencies</h4>
 <p><strong>PLNmodels</strong> needs the following CRAN R packages, so check that their are installed on your computer.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(R6)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(glassoFast)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(Matrix)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(Rcpp)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(RcppArmadillo)</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(igraph)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(grid)</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(gridExtra)</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(dplyr)</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyr)</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(corrplot)</a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(magrittr)</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co"># use install.packages() if needed</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(R6)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(glassoFast)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(Matrix)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(Rcpp)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(RcppArmadillo)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(nloptr)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(igraph)</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(grid)</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(gridExtra)</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(dplyr)</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyr)</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(corrplot)</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(magrittr)</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15"><span class="co"># use install.packages() if needed</span></a></code></pre></div>
 </div>
 <div id="bioconductor-dependencies" class="section level4">
 <h4 class="hasAnchor">
 <a href="#bioconductor-dependencies" class="anchor"></a>Bioconductor dependencies</h4>
 <p><strong>PLNmodels</strong> also needs two BioConductor packages</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(phyloseq)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(biomformat)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">## use BiocManager::install() if needed</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(phyloseq)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(biomformat)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">## use BiocManager::install() if needed</a></code></pre></div>
 </div>
 <div id="installing-plnmodels" class="section level4">
 <h4 class="hasAnchor">
 <a href="#installing-plnmodels" class="anchor"></a>Installing PLNmodels</h4>
 <ul>
+<li>For the development version, use</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>)</a></code></pre></div>
+<ul>
 <li>For the last tagged release, use</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jchiquet/PLNmodels@v0.7.0.2"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jchiquet/PLNmodels@v0.8.2"</span>)</a></code></pre></div>
 <ul>
-<li><p>Windows users may want to use <a href="https://github.com/jchiquet/PLNmodels/releases/download/v0.7.0.2/PLNmodels_0.7.0.2.zip">the binary version of the package</a></p></li>
-<li><p>For the development version, use</p></li>
+<li>Windows users may want to use <a href="https://github.com/jchiquet/PLNmodels/releases/download/v0.7.0.2/PLNmodels_0.8.2.zip">the binary version of the package</a>
+</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>)</a></code></pre></div>
 </div>
 </div>
 </div>
@@ -180,29 +172,29 @@
 <h2 class="hasAnchor">
 <a href="#usage-and-main-fitting-functions" class="anchor"></a>Usage and main fitting functions</h2>
 <p>The package comes with a ecological data to present the functionality</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">trichoptera &lt;-<span class="st"> </span><span class="kw"><a href="reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance, trichoptera<span class="op">$</span>Covariate)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">trichoptera &lt;-<span class="st"> </span><span class="kw"><a href="reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance, trichoptera<span class="op">$</span>Covariate)</a></code></pre></div>
 <p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <a href="http://jchiquet.github.io/PLNmodels/articles/" class="uri">http://jchiquet.github.io/PLNmodels/articles/</a>).</p>
 <div id="unpenalized-poisson-lognormal-model-aka-pln" class="section level3">
 <h3 class="hasAnchor">
 <a href="#unpenalized-poisson-lognormal-model-aka-pln" class="anchor"></a>Unpenalized Poisson lognormal model (aka PLN)</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">myPLN &lt;-<span class="st"> </span><span class="kw"><a href="reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> trichoptera)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">myPLN &lt;-<span class="st"> </span><span class="kw"><a href="reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> trichoptera)</a></code></pre></div>
 </div>
 <div id="rank-contraint-poisson-lognormal-for-poisson-principal-component-analysis-aka-plnpca" class="section level3">
 <h3 class="hasAnchor">
 <a href="#rank-contraint-poisson-lognormal-for-poisson-principal-component-analysis-aka-plnpca" class="anchor"></a>Rank Contraint Poisson lognormal for Poisson Principal Component Analysis (aka PLNPCA)</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">myPCA &lt;-<span class="st"> </span><span class="kw"><a href="reference/PLNPCA.html">PLNPCA</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> trichoptera, <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">8</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">myPCA &lt;-<span class="st"> </span><span class="kw"><a href="reference/PLNPCA.html">PLNPCA</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> trichoptera, <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">8</span>)</a></code></pre></div>
 </div>
 <div id="poisson-lognormal-discriminant-analysis-aka-plnlda" class="section level3">
 <h3 class="hasAnchor">
 <a href="#poisson-lognormal-discriminant-analysis-aka-plnlda" class="anchor"></a>Poisson lognormal discriminant analysis (aka PLNLDA)</h3>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">myLDA &lt;-<span class="st"> </span><span class="kw"><a href="reference/PLNLDA.html">PLNLDA</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">grouping =</span> Group, <span class="dt">data =</span> trichoptera)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">myLDA &lt;-<span class="st"> </span><span class="kw"><a href="reference/PLNLDA.html">PLNLDA</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">grouping =</span> Group, <span class="dt">data =</span> trichoptera)</a></code></pre></div>
 </div>
 <div id="sparse-poisson-lognormal-model-for-sparse-covariance-inference-for-counts-aka-plnnetwork" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sparse-poisson-lognormal-model-for-sparse-covariance-inference-for-counts-aka-plnnetwork" class="anchor"></a>Sparse Poisson lognormal model for sparse covariance inference for counts (aka PLNnetwork)</h3>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">myPLNnetwork &lt;-<span class="st"> </span><span class="kw"><a href="reference/PLNnetwork.html">PLNnetwork</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> trichoptera)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">myPLNnetwork &lt;-<span class="st"> </span><span class="kw"><a href="reference/PLNnetwork.html">PLNnetwork</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> trichoptera)</a></code></pre></div>
 </div>
 </div>
 <div id="references" class="section level2">
