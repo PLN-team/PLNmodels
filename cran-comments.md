@@ -1,3 +1,7 @@
+## Resubmission 3
+
+Removing RcppArmadillo from the Import field (ionly LinkingTo)
+
 ## Resubmission 2
 
 This is second a resubmission. In this version we
@@ -35,9 +39,8 @@ A NLOpt system version is needed, via
 
 ## R CMD check results
 
-0 errors | 0 warnings | 2 note
+0 errors | 0 warnings | 1 note
 
-* This is a new release.
 * Installed size is 10.8Mb
   sub-directories of 1Mb or more:
     - doc    2.2Mb
