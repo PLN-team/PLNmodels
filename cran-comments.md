@@ -4,7 +4,7 @@ This is second a resubmission. In this version we
 
 - include nlopt via nloptr for portability
 - corrected bugs in PLNLDA
-- boosted code coverage
+- boosted code coverage with more tests 
 
 ## Resubmission
 
