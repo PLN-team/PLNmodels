@@ -1,6 +1,6 @@
 ## Resubmission 3
 
-Removing RcppArmadillo from the Import field (ionly LinkingTo)
+Removing RcppArmadillo from the Imports field (only LinkingTo)
 
 ## Resubmission 2
 
