@@ -98,6 +98,6 @@ test_that("PLN: Routine comparison between the different covariance models",  {
 
 test_that("PLN is working with a single variable data matrix",  {
   Y <- matrix(rpois(10, exp(0.5)), ncol = 1)
-  expect_is(PLN(Y1 ~ 1), "PLNfit")
+  expect_is(PLN(Y ~ 1), "PLNfit")
 })
 
