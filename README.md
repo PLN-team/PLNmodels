@@ -72,7 +72,7 @@ devtools::install_github("jchiquet/PLNmodels@v0.8.2")
 ```
 
   - Windows users may want to use [the binary version of the
-    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.7.0.2/PLNmodels_0.8.2.zip)
+    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.8.2/PLNmodels_0.8.2.zip)
 
 ## Usage and main fitting functions
 

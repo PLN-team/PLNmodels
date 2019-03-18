@@ -38,8 +38,7 @@ The parameter \code{control} is a list controlling the optimization with the fol
  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
  \item{"maxtime"}{stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)}
  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
-    "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
-    "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
+    "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
  \item{"lower_bound"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-4.}
 }
 }
