@@ -137,7 +137,7 @@ function(responses, covariates, offsets, weights, model, control) {
     if (control$covariance == "spherical") {
       private$Sigma <- diag(crossprod(private$M)/n)
     } else  {
-      private$Sigma <- crossprod(private$M)/n + diag(colMeans(private$S))
+      private$Sigma <- crossprod(private$M)/n + diag(colMeans(private$S), nrow = p)
     }
   }
 

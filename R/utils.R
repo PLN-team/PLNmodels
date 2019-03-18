@@ -39,7 +39,7 @@ extract_model <- function(call, envir) {
   frame <- eval(call_frame, envir)
 
   ## create the set of matrices to fit the PLN model
-  Y <- model.response(frame)
+  Y <- frame[[1L]] ## model.response oversimplifies into a numeric when a single variable is involved
   X <- model.matrix(terms(frame), frame)
   O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
