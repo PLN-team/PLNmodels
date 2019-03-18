@@ -117,6 +117,8 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths
   Y
 }
 
+available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2")
+
 ## -----------------------------------------------------------------
 ##  Series of setter to default parameters for user's main functions
 ##
@@ -141,6 +143,7 @@ PLN_param <- function(control, n, p, d, weighted = FALSE) {
     "inception"   = NULL
   )
   ctrl[names(control)] <- control
+  stopifnot(ctrl$algorithm %in% available_algorithms)
   ctrl
 }
 
@@ -163,6 +166,7 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
     "inception"   = NULL
   )
   ctrl[names(control)] <- control
+  stopifnot(ctrl$algorithm %in% available_algorithms)
   ctrl
 }
 
@@ -183,6 +187,7 @@ PLNPCA_param <- function(control, weighted = FALSE) {
       "covariance"  = "rank"
     )
   ctrl[names(control)] <- control
+  stopifnot(ctrl$algorithm %in% available_algorithms)
   ctrl
 }
 
@@ -207,11 +212,12 @@ PLNnetwork_param <- function(control, n, p, d, weighted = FALSE) {
     "covariance"  = "sparse"
   )
   ctrl[names(control)] <- control
+  stopifnot(ctrl$algorithm %in% available_algorithms)
   ctrl
 }
 
 statusToMessage <- function(status) {
-    message <- switch( status,
+    message <- switch(as.character(status),
         "1"  = "success",
         "2"  = "stopval was reached",
         "3"  = "ftol_rel or ftol_abs was reached",
