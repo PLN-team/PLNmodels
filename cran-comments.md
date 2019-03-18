@@ -1,12 +1,12 @@
 ## Resubmission 2
 
-This is second a resubmission. In this version we
+This is a second resubmission. In this version we
 
-- include nlopt via nloptr for portability
-- corrected bugs in PLNLDA
+- include NLopt via nloptr for portability
+- corrected several bugs
 - boosted code coverage with more tests 
 
-## Resubmission
+## Resubmission 1
 
 This is a resubmission. In this version I have
 
@@ -15,14 +15,6 @@ This is a resubmission. In this version I have
 - added examples to almost all the documented functions (Rd files)
 - limited the use of \dontrun whenever possible (to keep examples runtimes < 5 sec.)
 - added more tests via testthat
-
-## System Requirements
-
-A NLOpt system version is needed, via 
-
-- sudo apt-get install libnlopt-dev (deb)
-- brew install nlopt (homebrew)
-- automatically downloaded for Windows
 
 ## Tested environments
 
