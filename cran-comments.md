@@ -1,14 +1,18 @@
+## Resubmission 3
+
+Removing RcppArmadillo from the Imports field (only LinkingTo)
+
 ## Resubmission 2
 
-This is second a resubmission. In this version
+This is a second resubmission. In this version we
 
-- we include nlopt via nloptr for portability
-- corrected bugs in PLNLDA
-- boosted code coverage
+- include NLopt via nloptr for portability
+- corrected several bugs
+- boosted code coverage with more tests 
 
-## Resubmission
+## Resubmission 1
 
-This is a resubmission. In this version I have:
+This is a resubmission. In this version I have
 
 - added references in the description field of DESCRIPTION
 - corrected a typo in the description field of DESCRIPTION
@@ -16,29 +20,20 @@ This is a resubmission. In this version I have:
 - limited the use of \dontrun whenever possible (to keep examples runtimes < 5 sec.)
 - added more tests via testthat
 
-## System Requirements
-
-A NLOpt system version is needed, via 
-
-- sudo apt-get install libnlopt-dev (deb)
-- brew install nlopt (homebrew)
-- automatically downloaded for Windows
-
 ## Tested environments
 
-- local ubuntu 18.04 install, R 3.5.2
-- ubuntu 14.04 (on travis-ci), R 3.5.2
+- local ubuntu 18.04 install, R 3.5.3
+- ubuntu 14.04 (on travis-ci), R 3.5.3
 - ubuntu 14.04 (on travis-ci), R devel
-- Mac OS X (on travis-ci), R 3.5.2
-- windows (on appveyor), R 3.5.2
-- win-builder, R 3.5.2 
+- Mac OS X (on travis-ci), R 3.5.3
+- windows (on appveyor), R 3.5.3
+- win-builder, R 3.5.3
 
 ## R CMD check results
 
-0 errors | 0 warnings | 2 note
+0 errors | 0 warnings | 1 note
 
-* This is a new release.
-* Installed size is 11.6Mb
-    - doc 2.1Mb (vignettes)
-    - libs 8.6Mb (RcppArmadillo package)
-
+* Installed size is 10.8Mb
+  sub-directories of 1Mb or more:
+    - doc    2.2Mb
+    - libs   7.8Mb

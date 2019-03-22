@@ -40,8 +40,7 @@ The list of parameters \code{control_main} controls the optimization of the main
  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
  \item{"maxtime"}{stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)}
  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
-    "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
-    "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
+    "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
  \item{"cores"}{The number of core used to paralellize jobs over the \code{ranks} vector. Default is 1.}
 }

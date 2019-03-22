@@ -95,3 +95,25 @@ test_that("PLN: Routine comparison between the different covariance models",  {
   expect_gte(model_full$loglik  , model_diagonal$loglik)
   expect_gte(model_diagonal$loglik, model_spherical$loglik)
 })
+
+test_that("PLN is working with a single variable data matrix",  {
+  Y <- matrix(rpois(10, exp(0.5)), ncol = 1)
+  colnames(Y) <- "Y"
+  expect_is(PLN(Y ~ 1), "PLNfit")
+
+  Y <- matrix(rpois(10, exp(0.5)), ncol = 1)
+  expect_is(PLN(Y ~ 1), "PLNfit")
+})
+
+ test_that("PLN is working with different optimization algorithm in NLopt",  {
+
+    MMA    <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "MMA"  ))
+    CCSAQ  <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "CCSAQ"))
+    LBFGS  <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "LBFGS"))
+
+    expect_equivalent(MMA$loglik, CCSAQ$loglik, tolerance = 1e-1) ## Almost equivalent, CCSAQ faster
+    expect_equivalent(MMA$loglik, LBFGS$loglik, tolerance = 1e-1)
+
+    expect_error(PLN(Abundance ~ 1, data = trichoptera, control=list(algorithm="nawak")))
+ })
+

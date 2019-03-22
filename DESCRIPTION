@@ -31,7 +31,6 @@ Imports:
   glassoFast,
   Matrix,
   Rcpp,
-  RcppArmadillo,
   nloptr (>= 1.2.0),
   igraph,
   grid,
@@ -51,6 +50,7 @@ Suggests:
     testthat,
     covr,
     pkgdown
+LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)
 VignetteBuilder: knitr
 Collate: 
     'PLNfit-class.R'
@@ -79,4 +79,3 @@ Collate:
     'plot_utils.R'
     'trichoptera.R'
     'utils.R'
-LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)

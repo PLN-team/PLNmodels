@@ -37,9 +37,8 @@ The list of parameters \code{control_main} controls the optimization of the main
  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
- \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "MMA", "LBFGS",
-    "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
-    "VAR1", "VAR2". See NLOPTR documentation for further details. Default is "MMA".}
+ \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
+    "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
  \item{"cores"}{integer for number of cores used. Default is 1.}
  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
  \item{"ftol_out"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
