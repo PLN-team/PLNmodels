@@ -1,0 +1,14 @@
+## NLOPT_LIBS=-lnlopt -lm
+NLOPT_LIBS=
+
+
+CXX_STD = CXX11
+## PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(NLOPT_LIBS)
+
+
+all:
+
+clean:
+	rm -f $(SHLIB) $(OBJECTS)
+

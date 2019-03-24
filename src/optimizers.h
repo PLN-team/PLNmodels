@@ -1,7 +1,7 @@
 #ifndef _optimizers_H
 #define _optimizers_H
 
-#include "utils.h"
+#include "nlopt_utils.h"
 #include "gradients.h"
 
 // ---------------------------------------------------------------------------
@@ -23,13 +23,14 @@ class optimizer_PLN {
     stdvec parameter ;
 
     // the function that computes the objective and thge gradient vector
-    double (*fn_optim) (const stdvec& , stdvec &, void *) ;
+    // double (*fn_optim) (const stdvec& , stdvec &, void *) ;
+    double (*fn_optim) (unsigned , const double* , double* , void*) ;
 
     // nlopt optimizer
-    nlopt::opt optimizer ;
+    nlopt_opt optimizer ;
 
     // result of the optimization process
-    nlopt::result status ;
+    nlopt_result status ;
 
     // element-wise log-likelihood
     arma::vec loglik ;
@@ -39,6 +40,8 @@ class optimizer_PLN {
     arma::mat Sigma ;
     arma::mat M     ;
     arma::mat S     ;
+    arma::mat Z     ;
+    arma::mat A     ;
 
   public:
 

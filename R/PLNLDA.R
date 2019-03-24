@@ -23,15 +23,15 @@
 ##'  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
 ##'  \item{"maxtime"}{stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)}
 ##'  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
-##'     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
-##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
+##'     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
 ##'  \item{"lower_bound"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-4.}
 ##' }
 ##'
 ##' @rdname PLNLDA
 ##' @examples
 ##' data(trichoptera)
-##' myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = trichoptera$Group, data = trichoptera)
+##' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+##' myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
 ##' @seealso The class \code{\link[=PLNLDAfit]{PLNLDAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
@@ -40,6 +40,13 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
+  ## look for grouping in the data or the parent frame
+  if (class(try(eval(grouping), silent = TRUE)) == "try-error") {
+    grouping <- try(eval(substitute(grouping), data), silent = TRUE)
+    if (class(grouping) == "try-error") stop("invalid grouping")
+  }
+  grouping <- as.factor(grouping)
+
   ## treatment of the design, which is specific to LDA
   # - save the covariates
   covar <- args$X
@@ -47,7 +54,6 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   xint <- match("(Intercept)", colnames(covar), nomatch = 0L)
   if (xint > 0L) covar <- covar[, -xint, drop = FALSE]
   # - build the design matrix encompassing covariates and LDA grouping
-  grouping <- as.factor(grouping)
   design_group <- model.matrix(~ grouping + 0)
   args$X <- cbind(covar, design_group)
 
@@ -55,7 +61,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X))
 
   ## Initialize LDA by adjusting a PLN
-  myLDA <- PLNLDAfit$new(grouping, args$Y, args$X, args$O, args$w, ctrl)
+  myLDA <- PLNLDAfit$new(grouping, args$Y, args$X, args$O, args$w, args$model, ctrl)
 
   ## Compute the group means
   if (ctrl$trace > 0) cat("\n Performing discriminant Analysis...")

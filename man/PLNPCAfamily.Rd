@@ -12,9 +12,8 @@ PLNPCAfamily
 The function \code{\link{PLNPCA}} produces an instance of this class.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNfamily_getBestModel]{getBestModel}},
-\code{\link[=PLNfamily_getModel]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
-and \code{\link[=predict.PLNfit]{predict}}.
+See the documentation for \code{\link[=getBestModel.PLNPCAfamily]{getBestModel}},
+\code{\link[=getModel.PLNPCAfamily]{getModel}} and  \code{\link[=plot.PLNPCAfamily]{plot}}.
 }
 \section{Fields}{
 
@@ -31,9 +30,15 @@ and \code{\link[=predict.PLNfit]{predict}}.
 
 \item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when full rank is considered.}
 
-\item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
+\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+class(myPCAs)
+}
 \seealso{
 The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }

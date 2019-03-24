@@ -19,11 +19,21 @@
 
 # produced vignettes
 vignettes/*.html
+vignettes/*.R
 vignettes/*.pdf
-vignettes/*.bib
+vignettes/*_cache/
+vignettes/cache/
+vignettes/article/altmetrics.html
+vignettes/article/PLNmodels.html
+vignettes/article/PLNmodels.Rmd
+vignettes/article/biblioPLN.bib
+vignettes/article/figures
 
 # doc files
-inst/doc/*
+inst/oaks_mildew
+
+# web files
+docs/*
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
@@ -41,3 +51,9 @@ inst/doc/*
 src/*.o
 src/*.so
 src/*.dll
+
+# Plot in testthat
+tests/testthat/Rplots.pdf
+
+# Mac bullsh.
+.DS_Store

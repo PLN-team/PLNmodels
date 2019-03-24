@@ -1,68 +1,85 @@
 Package: PLNmodels
-Type: Package
 Title: Poisson Lognormal Models
-Version: 0.5.8001
+Version: 0.9.1
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
-  person("Mahendra", "Mariadassou", role = "aut", email = "mahendra.mariadassou@inra.fr"),
-  person("Stéphane", "Robin", role ="aut", email = "stephane.robininra.fr")
+  person("Mahendra", "Mariadassou", role = "aut", email = "mahendra.mariadassou@inra.fr", 
+      comment = c(ORCID = "0000-0003-2986-354X")),
+  person("Stéphane", "Robin", role ="ctb", email = "stephane.robin@inra.fr")
   )
-Maintainer: Julien Chiquet <julien.chiquet@inra.fr>
 Description: The Poisson-lognormal model and variants can be used for 
-    a variety of multivariate problems when count data are at play (including 
-    PCA for count data, discriminant analysis and network inference). This package 
-    implements efficients variational algorithms to fit such models accompanied with a set of
-    functions for vizualisation and diagnostic.
-URL: https://github.com/jchiquet/PLNmodels (dev version)
-BugReports: https://github.com/jchiqut/PLNmodels/issues
+    a variety of multivariate problems when count data are at play, including 
+    principal component analysis for count data (Chiquet, Mariadassou and Robin, 
+    2018 <doi:10.1214/18-AOAS1177>), discriminant analysis and 
+    network inference (Chiquet, Mariadassou and Robin, 2018 <arXiv:1806.03120>). 
+    Implements variational algorithms to fit such models accompanied with a set of 
+    functions for visualization and diagnostic. 
+URL: https://jchiquet.github.io/PLNmodels/
+BugReports: https://github.com/jchiquet/PLNmodels/issues
 License: GPL (>= 3)
-SystemRequirements: libnlopt: libnlopt-dev (deb) or NLopt-devel (rpm).
 Encoding: UTF-8
-LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Depends: R (>= 3.4)
+biocViews:
 Imports: 
+  methods,
+  stats,
+  MASS,
+  parallel,
+  R6,
+  glassoFast,
+  Matrix,
+  Rcpp,
+  nloptr (>= 1.2.0),
   igraph,
   grid,
   gridExtra,
   dplyr,
   tidyr,
-  reshape2,
   ggplot2,
-  Matrix,
-  parallel,
-  R6,
-  methods,
-  stats,
-  glassoFast,
-  Rcpp,
-  RcppArmadillo,
   corrplot,
-  MASS,
-  mclust,
   magrittr,
-  curl (>= 1.0)
-Suggests: knitr, rmarkdown
+  biomformat,
+  phyloseq
+Suggests: 
+    knitr,
+    rmarkdown,
+    tidyverse,
+    GGally,
+    testthat,
+    covr,
+    pkgdown
+LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)
 VignetteBuilder: knitr
 Collate: 
     'PLNfit-class.R'
     'PLN.R'
     'PLNLDA.R'
+    'PLNLDAfit-S3methods.R'
     'PLNLDAfit-class.R'
     'PLNMM.R'
+    'PLNPCA.R'
+    'PLNPCAfamily-S3methods.R'
     'PLNfamily-class.R'
     'PLNMMfamily-class.R'
     'PLNMMfit-class.R'
     'PLNPCA.R'
     'PLNPCAfamily-class.R'
+    'PLNPCAfit-S3methods.R'
     'PLNPCAfit-class.R'
+    'PLNfamily-S3methods.R'
+    'PLNfit-S3methods.R'
     'PLNmodels-package.R'
     'PLNnetwork.R'
+    'PLNnetworkfamily-S3methods.R'
     'PLNnetworkfamily-class.R'
+    'PLNnetworkfit-S3methods.R'
     'PLNnetworkfit-class.R'
     'RcppExports.R'
+    'deprecated.R'
+    'import_utils.R'
+    'mollusk.R'
     'plot_utils.R'
     'trichoptera.R'
     'utils.R'
-LinkingTo: Rcpp, RcppArmadillo

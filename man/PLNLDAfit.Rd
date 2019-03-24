@@ -12,8 +12,9 @@ PLNLDAfit
 The function \code{\link{PLNLDA}} produces an instance of an object with class \code{PLNPLDAfit}.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNLDAfit_plot_LDA]{plot_LDA}}, \code{\link[=PLNLDAfit_plot_individual_map]{plot_individual_map}}
-and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
+See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}}, the
+\code{\link[=plot.PLNLDAfit]{plot.PLNPCAfit}} method for LDA vizualization and
+\code{\link[=predict.PLNLDAfit]{predict.PLNPCAfit}} method for prediction
 }
 \section{Fields}{
 
@@ -34,17 +35,24 @@ and \code{\link[=PLNLDAfit_plot_correlation_circle]{plot_correlation_circle}}
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and degrees of freedom}
+\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
 
-\item{\code{degrees_freedom}}{number of parameters in the current PLN model}
+\item{\code{nb_param}}{number of parameters in the current PLN model}
 
 \item{\code{percent_var}}{the percent of variance explained by each axis}
 
-\item{\code{corr_circle}}{a matrix of correlations to plot the correlation circles}
+\item{\code{corr_map}}{a matrix of correlations to plot the correlation circles}
 
 \item{\code{scores}}{a matrix of scores to plot the individual factor maps}
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
+class(myPLNLDA)
+print(myPLNLDA)
+}
 \seealso{
 The function \code{\link{PLNLDA}}.
 }

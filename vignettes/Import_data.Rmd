@@ -1,0 +1,207 @@
+---
+title: "Data importation in PLNmodels"
+author: "PLN team"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+    df_print: paged
+bibliography: article/PLNreferences.bib
+link-citations: yes
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{import}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  rows.print = 5,
+  message = FALSE,
+  warning = FALSE)
+```
+
+## Preliminaries
+
+This vignette documents the data format used in **PLNmodel** by `PLN` and its variants. It also shows how to create an object in the proper format for further analyses from (i) tabular data, (ii) biom-class objects and (iii) phyloseq-class objects.
+
+## Format description
+
+We illustrate the format using trichoptera data set, a full description of which can be found in [the corresponding vignette](Trichoptera.html).
+
+```{r data_load}
+library(PLNmodels)
+data(trichoptera)
+```
+
+The trichoptera data set is a list made of two data frames: `Abundance` (hereafter referred to as the _counts_) and `Covariate` (hereafter the _covariates_). 
+
+```{r trichoptera_structure}
+str(trichoptera, max.level = 1)
+```
+
+The covariates include, among others, the wind, pressure and humidity. 
+
+```{r covariates_overview}
+names(trichoptera$Covariate)
+```
+
+In the PLN framework, we model the counts from the covariates, let's say wind and pressure, using a Poisson Log-Normal model. Most models in R use the so-called _formula interface_ and it would thus be naturel to write something like 
+```{r first_try, eval = FALSE}
+PLN(Abundance ~ Wind + Pressure, data = trichoptera)
+```
+
+Unfortunately and unlike many generalized linear models, the response in PLN is intrinsically **multivariate**: it has 17 dimensions in our example. The left hand side (LHS) must encode a multivariate response across multiple samples, using a 2D-array (e.g. a matrix or a data frame). 
+
+We must therefore prepare a data structure where `Abundance` refers to a count *matrix* whereas `Wind` and `Pressure` refer to *vectors* before feeding it to `PLN`. That's the purpose of `prepare_data`. 
+
+```{r prepare_data_first_look}
+trichoptera2 <- prepare_data(counts     = trichoptera$Abundance, 
+                             covariates = trichoptera$Covariate)
+str(trichoptera2)
+```
+
+If you look carefully, you can notice a few difference between `trichoptera` and `trichoptera2`:
+
+- the first is a `list` whereas the second is a `data.frame`[^1];
+- `Abundance` is a matrix-column of `trichoptera2` that you can extract using the usual functions `[` and `[[` to retrieve the count matrix;
+- `trichoptera2` has an additional `Offset` column (more on that later). 
+
+## Computing offsets
+
+It is common practice when modeling count data to introduce an offset term to control for different sampling efforts, exposures, baselines, etc. The *proper way* to compute sample-specific offsets in still debated and may vary depending on the field. There are nevertheless a few popular methods:
+
+- Total Sum Scaling (TSS), where the offset of a sample is the total count in that sample
+- Cumulative Sum Scaling (CSS), introduced in [@CSS], where the offset of a sample if the cumulative sum of counts in that sample, up to a quantile determined in a data driven way. 
+- Relative Log-Expression (RLE), implemented in [@DESeq2], where all samples are used to compute a reference sample, each sample is compared to the reference sample using log-ratios and the offset is the median log-ratio. 
+- Geometric Mean of Pairwise Ratio (GMPR), introduced in [@GMPR] where each sample is compared to each other to compute a median log-ratio and the offset of a sample is the geometric means of those pairwise ratios. 
+
+Each of these offset be computed from a counts matrix using the `compute_offset` function and changing its `offset` argument:
+```{r compute_offset}
+## same as compute_offset(trichoptera$Abundance, offset = "TSS")
+compute_offset(trichoptera$Abundance) 
+```
+
+In this particular example, the counts are too sparse and sophisticated offset methods all fail (numeric output hidden)
+```{r other_offsets, warning=TRUE, error = TRUE, results='hide'} 
+compute_offset(trichoptera$Abundance, "CSS")
+compute_offset(trichoptera$Abundance, "RLE")
+compute_offset(trichoptera$Abundance, "GMPR")
+```
+
+We can mitigate this problem for the RLE offset by adding pseudocounts to the counts although doing so has its own drawbacks.  
+```{r pseudocounts}
+compute_offset(trichoptera$Abundance, "RLE", pseudocounts = 1)
+```
+
+## Building data frame using `prepare_data`
+
+We'll already learned that `prepare_data` can join counts and covariates into a single data.frame. It can also compute offset through `compute_offset` and does so by default with `offset = "TSS"`, hence the `Offset` column in `trichoptera2`. You can change the offset method and provide additional arguments that will passed on to `compute_offset`. 
+
+```{r prepare_data_other_offset}
+str(prepare_data(trichoptera$Abundance, 
+             trichoptera$Covariate, 
+             offset = "RLE", pseudocounts = 1))
+```
+
+Different communities use different standard for the count data where samples are either or columns of the counts matrix. `prepare_data` uses heuristics to guess the direction of the counts matrix (or fail informatively doing so) and automatically transpose it if needed. 
+
+Finally, `prepare_data` enforces sample-consistency between the counts and the covariates and automatically trims away:
+- samples for which only covariates or only counts are available;
+- samples with no positive counts
+
+For example, if we remove the first sample from the counts and the last one from the covariates, we end up with 49 - 2  = 47 samples left, as expected. 
+
+```{r trim_down_samples}
+nrow(prepare_data(trichoptera$Abundance[-1, ], ## remove first sample
+                  trichoptera$Covariate[-49,]  ## remove last sample
+                  ))
+```
+
+## Importing data from biom and phyloseq objects using `prepare_data_from_[phyloseq|biom]`
+
+Community composition data are quite popular in microbial ecology and usually stored in flat files using the [biom format](http://biom-format.org/) and/or imported in R as phyloseq-class objects [@phyloseq] using the Bioconductor [phyloseq](https://joey711.github.io/phyloseq/) package.
+
+We provide helper functions to directly import data from a biom file (or biom-class object) and a phyloseq-class object. 
+
+
+### Reading from a biom file
+
+Note that the covariates **must** be stored in the biom object as they are automatically extracted, reading a biom without covariates results in an error. 
+
+```{r import_biom, error=TRUE}
+library(biomformat)
+## Biom file without covariates
+biomfile <- system.file("extdata", "min_dense_otu_table.biom", package = "biomformat")
+prepare_data_from_biom(biomfile)
+## Biom file with covariates, TSS offsets
+biomfile <- system.file("extdata", "rich_dense_otu_table.biom", package = "biomformat")
+str(prepare_data_from_biom(biomfile, offset = "TSS"))
+```
+
+### Reading from a phyloseq-class object
+
+Note that the covariates **must** be stored in the phyloseq-class object as they are automatically extracted, importing a phyloseq object with no `sample_data` component results in an error. 
+
+```{r import_phyloseq, error = TRUE}
+library(phyloseq)
+## phyloseq object without covariates
+physeq <- phyloseq(otu_table(trichoptera$Abundance, taxa_are_rows = FALSE))
+prepare_data_from_phyloseq(physeq)
+## phyloseq object with covariates, TSS offsets
+data("GlobalPatterns")
+str(prepare_data_from_phyloseq(GlobalPatterns, offset = "TSS"))
+```
+
+## Mathematical details about the offsets
+
+We detail here the mathematical background behind the various offsets and the way they are computed. Note $\mathbf{C} = (c_{ij})$ the counts matrix where $c_{ij}$ is the count of species $j$ in sample $i$. Assume that there are $J$ species in total. The offset of sample $i$ is noted $O_i$ and computed in the following way. 
+
+### Total Sum Scaling
+
+Offsets are simply the total counts of a sample:
+$$
+O_i = \sum_{j=1}^J c_{ij}
+$$
+
+### Cumulative Sum Scaling 
+
+Positive counts are used to compute sample-specific quantiles $q_i^l$ and cumulative sums $s_i^l$ defined as
+$$
+q_i^l = \min \{q \text{ such that } \sum_j 1_{c_{ij} \leq q} \geq l \sum_j 1_{c_{ij} > 0} \} \qquad s_i^l = \sum_{j: c_{ij} \leq q_i^l} c_{ij}
+$$
+The sample-specific quantiles are then used to compute reference quantiles defined as $q^l = \text{median} \{q^i_l\}$ and median average deviation around the quantile $q^l$ as $d^l = \text{median} |q_i^l - q^l|$. The method then searches for the smallest quantile $l$ for which it detects instability, defined as large relative increase in the $d^l$. Formally, $\hat{l}$ is the smallest $l$ satisfying $\frac{d^{l+1} - d^l}{d^l} \geq 0.1$. The scaling sample-specific offset are then chosen as:
+$$
+O_i = s_i^{\hat{l}} / \text{median}_i \{ s_i^{\hat{l}} \}
+$$
+Dividing by the median of the $s_i^{\hat{l}}$ ensures that offsets are centered around $1$ and compare sizes differences with respect to the reference sample. Note also that the reference quantiles $q^l$ can be computed using either the median (default, as in the original @CSS paper) or the mean, by specifying `reference = mean`, as implemented in `metagenomeseq`. 
+
+### Relative Log Expression
+
+A reference sample $(q_j)_j$ is first built by computing the geometric means of each species count:
+$$
+q_j = \exp \left( \frac{1}{n} \sum_{i} \log(c_{ij})\right)
+$$
+Each sample is then compared to the reference sample to compute one ratio per species and the final offset $O_i$ is the median of those ratios:
+$$
+O_i = \text{median}_j \frac{c_{ij}}{q_j}
+$$
+The method fails when no species is shared across all sample (as all $q_j$ are then $0$) or when a sample shares less than 50% of species with the reference (in which case the median of the ratios may be null or infinite). The problem can be alleviated by adding pseudocounts to the $c_{ij}$ with `pseudocounts = 1`. 
+
+### Geometric Mean of Pairwise Ratio 
+
+This method is similar to RLE but does create a reference sample. Instead, each sample is compared to each other to compute a median ratio (similar to RLE)
+$$
+r_{ii'} = {\text{median}}_{j: c_{ij}.c_{i'j} > 0} \frac{c_{ij}}{c_{i'j}}
+$$
+The offset is then taken as the median of all the $r_{ii'}$:
+$$
+O_i = \text{median}_{i' != i} r_{ii'}
+$$
+The method fails when there is only one sample in the data set or when a sample shares no species with any other. 
+
+[^1]: although a `data.frame` is technically a `list`
+
+## References

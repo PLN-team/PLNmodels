@@ -1,0 +1,282 @@
+---
+title: "Supervized classification of multivariate count table with the Poisson discriminant Analysis"
+author: "PLN team"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+bibliography: article/PLNreferences.bib
+link-citations: yes
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{PLNLDA}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  rows.print = 5,
+  message = FALSE, 
+  warning = FALSE)
+```
+
+## Preliminaries
+
+This vignette illustrates the basical use of the `PLNLDA` function and the methods accompaning the R6 Classes `PLNLDA` and `PLNLDAfit`.
+
+### Requirements
+
+The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:
+
+```{r requirement, cache = FALSE}
+library(tidyverse)
+library(PLNmodels)
+```
+
+### Data set
+
+We illustrate our point with the trichoptera data set, a full description of which can be found in [the corresponding vignette](Trichoptera.html). Data preparation is also detailed in [the specific vignette](Import_data.html).
+
+```{r data_load}
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+```
+
+The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.) In the following, we're particularly interested in the `trichoptera$Group` **discrete** covariate which corresponds to disjoint time spans during which the catching took place. The correspondance between group label and time spans is:
+
+```{r description, echo = FALSE}
+tibble(Label = 1:12, 
+       `Number of Consecutive Nights` = c(12, 5, 5, 4, 4, 1, 3, 4, 5, 4, 1, 1), 
+       Date  = str_c(rep(c("June", "July", "June", "July"), times = c(4, 1, 6, 1)), 
+                     rep(c(59, 60), times = c(6, 6)),
+                     sep = " ")) %>% 
+  knitr::kable(align = "c")
+```
+
+### Mathematical background
+
+In the vein of @Fi36 and @Rao48, we introduce a multi-class LDA model for multivariate count data which is a variant of the Poisson Lognormal model of @AiH89 (see [the PLN vignette](PLN.html) as a reminder). Indeed, it can viewed as a PLN model with a discrete group structure in the latent gaussian space.
+
+This PLN-LDA model can be written in a hierachical framework where a sample of $p$-dimensional observation vectors $\mathbf{Y}_i$ is related to some  $p$-dimensional vectors of latent variables $\mathbf{Z}_i$ and a discrete structure with $K$ groups in the following way: 
+\begin{equation} 
+  \begin{array}{rcl}
+    \text{group structure }   & \mathbf{\mu}_i = \mu_{g_i} & g_i \in \{1, \dots, K\}  \\
+    \text{latent space }   & \mathbf{Z}_i \quad \text{indep.} & \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i, \boldsymbol{\Sigma})  & \\
+    \text{observation space } & Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
+  \end{array}
+\end{equation}
+where $g_i$ denotes the group sample $i$ belongs to. 
+
+The different parameters ${\boldsymbol\mu}_k \in\mathbb{R}^p$ corresponds to the group-specific main effects and the variance matrix $\boldsymbol{\Sigma}$ is shared among groups. An equivalent way of writting this model is the following:
+\begin{equation} 
+  \begin{array}{rcl}
+  \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i,\boldsymbol\Sigma) & \boldsymbol{\mu}_i = \mathbf{g}_i^\top \mathbf{M} \\
+  \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
+  \end{array}
+\end{equation}
+where, with a slight abuse of notation, $\mathbf{g}_i$ is a group-indicator vector of length $K$ ($g_{ik} = 1 \Leftrightarrow g_i = k$) and $\mathbf{M} = [\boldsymbol{\mu}_1^\top, \dots, \boldsymbol{\mu}_K^\top]^\top$ is a $K \times p$ matrix collecting the group-specific main effects. 
+
+#### Covariates and offsets 
+
+Just like PLN, PLN-LDA generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of the discrete group structure, $d$ covariates $\mathbf{x}_i$ and a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$. The latent layer then reads
+\begin{equation} 
+  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{g}_i^\top \mathbf{M} + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma)
+\end{equation}
+where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters.
+
+#### Prediction 
+
+Given: 
+
+- a new observation $\mathbf{Y}$ with associated offset $\mathbf{o}$ and covariates $\mathbf{x}$
+- a model with estimated parameters $\hat{\boldsymbol{\Sigma}}$, $\hat{\boldsymbol{\Theta}}$, $\hat{\mathbf{M}}$ and group counts $(n_1, \dots, n_K)$ 
+
+We can predict the observation's group using Bayes rule as follows: for $k \in {1, \dots, K}$, compute 
+\begin{equation}
+\begin{aligned}
+f_k(\mathbf{Y}) & = p(\mathbf{Y} | \mathbf{g} = k, \mathbf{o}, \mathbf{x}, \hat{\boldsymbol{\Theta}}, \hat{\boldsymbol{\Sigma}}) \\
+                & = \boldsymbol{\Phi}_{PLN}(\mathbf{Y}; \mathbf{o} + \boldsymbol{\mu}_k + \mathbf{x}^\top \hat{\boldsymbol{\Theta}}, \hat{\boldsymbol{\Sigma}}) \\
+p_k             & = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}    
+\end{aligned}
+\end{equation}
+where $\boldsymbol{\Phi}_{PLN}(\bullet; \boldsymbol{\mu}, \boldsymbol{\Sigma})$ is the density function of a PLN distribution with parameters $(\boldsymbol{\mu}, \boldsymbol{\Sigma})$. $f_k(\mathbf{Y})$ and $p_k$ are respectively plug-in estimates of (i) the probability of observing counts $\mathbf{Y}$ in a sample from group $k$ and (ii) the probability that a sample originates from group $k$. 
+
+The posterior probability $\hat{\pi}_k(\mathbf{Y})$ that observation $\mathbf{Y}$ belongs to group $k$ and most likely group $\hat{k}(\mathbf{Y})$ can thus be defined as
+\begin{equation}
+\begin{aligned}
+\hat{\pi}_k(\mathbf{Y}) & = \frac{p_k f_k(\mathbf{Y})}{\sum_{k' = 1}^K p_{k'} f_{k'}(\mathbf{Y})} \\
+\hat{k}(\mathbf{Y})     & = \underset{k \in \{1, \dots, K\}}{\arg\max} \hat{\pi}_k(\mathbf{Y})
+\end{aligned}
+\end{equation}
+
+#### Optimization by Variational inference
+
+Classification and prediction are the main objectives in (PLN-)LDA. To reach this goal, we first need to estimate the model parameters. Inference in PLN-LDA focuses on the group-specific main effects $\mathbf{M}$, the regression parameters $\boldsymbol\Theta$ and the covariance matrix $\boldsymbol\Sigma$. Technically speaking, we can treat $\mathbf{g}_i$ as a discrete covariate and estimate $[\mathbf{M}, \boldsymbol{\Theta}]$ using the same strategy as for the standard **PLN** model. Briefly, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package.
+
+## Analysis of trichoptera data with a PLN-LDA model
+
+In the package, the PLN-LDA model is adjusted with the function `PLNLDA`, which we review in this section. This function adjusts the model and stores it in a object of class `PLNLDAfit` which inherits from the class `PLNfit`, so we strongly recommend the reader to be somehow comfortable with `PLN` and `PLNfit` before using `PLNLDA` (see [the PLN vignette](PLN.html)).
+
+### A model with main effects and no covariates
+
+We start by adjusting the above model to the Trichoptera data set. We use `Group`, the catching time spans, as a discrete structure and use log as an offset to capture differences in sampling luck. 
+
+The model can be fitted with the function `PLNLDA` as follows:
+
+```{r LDA-nocov}
+myLDA_nocov <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
+                      grouping = Group, 
+                      data = trichoptera)
+```
+
+Note that `PLNLDA` uses the standard `formula` interface, like every other model in the **PLNmodels** package. 
+
+#### Structure of `PLNLDAfit`
+
+The `myLDA_nocov` variable is an `R6` object with class `PLNLDAfit`, which comes with a couple of methods. The most basic is the `show/print` method, which sends a brief summary of the estimation process and available methods:
+
+```{r show nocov}
+myLDA_nocov
+```
+
+Comprehensive information about `PLNLDAfit` is available via `?PLNLDAfit`.
+
+#### Specific fields
+
+The user can easily access several fields of the `PLNLDAfit` object using `S3` methods, the most interesting ones are 
+
+- the $p \times p$ covariance matrix $\hat{\boldsymbol{\Sigma}}$:
+
+```{r vcov}
+sigma(myLDA_nocov) %>% corrplot::corrplot(is.corr = FALSE)
+```
+
+- the regression coefficient matrix $\hat{\boldsymbol{\Theta}}$ (in this case `NULL` as there are no covariates)
+
+```{r coef}
+coef(myLDA_nocov)
+```
+
+- the $p \times K$ matrix of group means $\mathbf{M}$
+
+```{r group-means}
+myLDA_nocov$group_means %>% head() %>% knitr::kable(digits = 2)
+```
+
+The `PLNLDAfit` class also benefits from two important methods: `plot` and `predict`.
+
+#### `plot` method
+
+The `plot` methods provides easy to interpret graphics which reveals here that the groups are well separated: 
+```{r plot_model, fig.width=7, fig.height=5}
+plot(myLDA_nocov)
+```
+
+By default, `plot` shows the first 3 axis of the LDA when there are 4 or more groups and uses special representations for the edge cases of 3 or less groups. 
+
+`ggplot2`-savvy users who want to make their own representations can extracts the $n \times (K-1)$ matrix of sample scores from the `PLNLDAfit` object ...
+
+```{r extract-scores}
+myLDA_nocov$scores %>% head %>% knitr::kable(digits = 2)
+```
+
+...or the $p \times (K-1)$ matrix of correlations between scores and (latent) variables
+
+```{r extract-corr}
+myLDA_nocov$corr_map %>% head %>% knitr::kable(digits = 2)
+```
+
+#### `predict` method
+
+The `predict` method has a slightly different behavior than its siblings in other models of the **PLNmodels**. The goal of `predict` is to predict the discrete class based on observed *species counts* (rather than predicting counts from known covariates). 
+
+By default, the `predict` use the argument `type = "posterior"` to output the matrix of log-posterior probabilities $\log(\hat{\pi})_k$
+
+```{r predict_class_posterior}
+predicted.class <- predict(myLDA_nocov, newdata = trichoptera)
+## equivalent to 
+## predicted.class <- predict(myLDA_nocov, newdata = trichoptera,  type = "posterior")
+predicted.class %>% head() %>% knitr::kable(digits = 2)
+```
+
+You can also show them in the standard (and human-friendly) $[0, 1]$ scale with `scale = "prob"` to get the matrix $\hat{\pi}_k$
+
+```{r predict_class_posterior_prob}
+predicted.class <- predict(myLDA_nocov, newdata = trichoptera, scale = "prob")
+predicted.class %>% head() %>% knitr::kable(digits = 3)
+```
+
+Setting `type = "response"`, we can predict the most likely group $\hat{k}$ instead: 
+
+```{r predict_class}
+predicted.class <- predict(myLDA_nocov, newdata = trichoptera,  type = "response")
+predicted.class
+```
+
+We can assess that the predictions are quite similar to the real group (*this is not a proper validation of the method as we used dataset for both model fitting and prediction and are thus at risk of overfitting*). 
+
+```{r check_predicted_class}
+table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
+```
+
+Finally, we can get the coordinates of the new data on the same graph at the original ones with `type = "scores"`. This is done by averaging the latent positions $\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k$ (found when the sample is assumed to come from group $k$) and weighting them with the $\hat{\pi}_k$. Some samples, have compositions that put them very far from their group mean. 
+
+```{r predicted_scores, fig.width=7, fig.height=5}
+predicted.scores <- predict(myLDA_nocov, newdata = trichoptera,  type = "scores")
+colnames(predicted.scores) <- paste0("Axis.", 1:ncol(predicted.scores))
+predicted.scores <- predicted.scores %>% 
+  as_tibble() %>% 
+  mutate(group = trichoptera$Group)
+plot(myLDA_nocov, map = "individual", nb_axes = 2, plot = FALSE) + 
+  geom_point(data = predicted.scores, 
+             aes(x = Axis.1, y = Axis.2, color = group, label = NULL))
+```
+
+
+
+### A model with latent main effects and meterological covariates
+
+It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  :
+```{r, warning=FALSE}
+myLDA_cov <- PLNLDA(Abundance ~ Wind + 0 + offset(log(Offset)), 
+                    grouping = Group, 
+                    data = trichoptera)
+```
+
+#### Specific fields
+
+All fields of our new `PLNLDA` fit can be accessed as before with similar results. The only important difference is the result of `coef`: since we included a covariate in the model, `coef` now returns a 1-column matrix for $\hat{\boldsymbol{\Theta}}$ instead of `NULL`
+
+```{r coef-cov}
+coef(myLDA_cov) %>% head %>% knitr::kable()
+```
+
+The group-specific main effects can still be accessed with `$group_means`
+
+```{r group-means-cov}
+myLDA_cov$group_means %>% head %>% knitr::kable(digits = 2)
+```
+
+#### `plot` method
+
+Once again, the `plot` method is very useful to get a quick look at the results. 
+
+```{r plot_model_cov, fig.width=7, fig.height=5}
+plot(myLDA_cov)
+```
+
+#### `predict` method
+
+We can again predict the most likely group for each sample :
+
+```{r predict_class_cov}
+predicted.class_cov <- predict(myLDA_cov, newdata = trichoptera, type = "response")
+```
+
+and check that we recover the correct class in most cases (again, we used the same dataset for model fitting and group prediction only for ease of exposition):
+
+```{r check_predicted_class_cov}
+table(predicted.class_cov, trichoptera$Group, dnn = c("predicted", "true"))
+```

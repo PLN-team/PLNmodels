@@ -12,9 +12,8 @@ PLNnetworkfamily
 The function \code{\link{PLNnetwork}} produces an instance of this class.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNfamily_getBestModel]{getBestModel}},
-\code{\link[=PLNfamily_getModel]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
-and \code{\link[=predict.PLNfit]{predict}}.
+See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestModel}},
+\code{\link[=getModel.PLNnetworkfamily]{getModel}} and  \code{\link[=plot.PLNnetworkfamily]{plot}}.
 }
 \section{Fields}{
 
@@ -31,9 +30,15 @@ and \code{\link[=predict.PLNfit]{predict}}.
 
 \item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.}
 
-\item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
+\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+class(fits)
+}
 \seealso{
 The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 }

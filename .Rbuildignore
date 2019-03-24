@@ -1,3 +1,11 @@
+^CRAN-RELEASE$
+^cran-comments\.md$
+^codecov\.yml$
+^\.travis\.yml$
+^_pkgdown\.yml$
+^docs
+^docs/*.*
+^docs/*
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.git$
@@ -6,7 +14,10 @@
 ^README.md$
 ^LICENSE$
 ^.editorconfig$
-^src/Makevars$
-.travis.yml
 ^README.Rmd
 ^appveyor\.yml$
+^vignettes/*_cache/
+^vignettes/cache/
+^inst/sticker$
+^inst/case_studies$
+^inst/test/

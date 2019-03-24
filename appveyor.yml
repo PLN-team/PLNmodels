@@ -39,7 +39,17 @@ artifacts:
     name: Logs
 
   - path: '\*_*.tar.gz'
-    name: Bits
+    name: Package sources
 
   - path: '\*_*.zip'
-    name: Bits
+    name: Package binaries
+
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: "SZJhtsRDjOfVoi5xU4HVWw0/iK5CffYjEXFQ7ZRr+9bR3ZkZlHpFXpM+o2+YL3U4"
+  artifact: /PLNmodels_*\.zip/ # upload all zip binary packages to release assets
+  draft: false
+  prerelease: false
+  on:
+    APPVEYOR_REPO_TAG: true    # deploy on tag push only

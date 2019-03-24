@@ -23,8 +23,7 @@
 ##'  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
 ##'  \item{"maxtime"}{stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)}
 ##'  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
-##'     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
-##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
+##'     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
 ##'  \item{"cores"}{The number of core used to paralellize jobs over the \code{ranks} vector. Default is 1.}
 ##' }
@@ -32,13 +31,8 @@
 ##' @rdname PLNPCA
 ##' @examples
 ##' data(trichoptera)
-##' TotalCount <- matrix(
-##' rowSums(trichoptera$Abundance),
-##'   nrow = nrow(trichoptera$Abundance),
-##'   ncol = ncol(trichoptera$Abundance)
-##' )
-##'
-##' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(TotalCount)), data = trichoptera, ranks = 1:6)
+##' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+##' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:6)
 ##' @seealso The classes \code{\link[=PLNPCAfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
@@ -53,7 +47,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control_init = l
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank
   if (ctrl_main$trace > 0) cat("\n Initialization...")
-  myPCA <- PLNPCAfamily$new(ranks, args$Y, args$X, args$O, args$w, ctrl_init)
+  myPCA <- PLNPCAfamily$new(ranks, args$Y, args$X, args$O, args$w, args$model, ctrl_init)
 
   ## Adjust the PLN models
   if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.\n")

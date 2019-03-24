@@ -12,7 +12,7 @@ PLNnetworkfit
 The function \code{\link{PLNnetwork}} produces a collection of models which are instances of object with class \code{PLNnetworkfit}.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=plot_network]{plot_network}} + methods inherited from PLNfit.
+See the documentation for \code{\link[=plot.PLNnetworkfit]{plot.PLNnetworkfit}} + methods inherited from PLNfit.
 }
 \section{Fields}{
 
@@ -23,21 +23,37 @@ See the documentation for \code{\link[=plot_network]{plot_network}} + methods in
 
 \item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
 
+\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
 \item{\code{loglik}}{variational lower bound of the loglikelihood}
 
+\item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood}
+
 \item{\code{BIC}}{variational lower bound of the BIC}
+
+\item{\code{EBIC}}{variational lower bound of the EBIC}
 
 \item{\code{ICL}}{variational lower bound of the ICL}
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
-\item{\code{degrees_freedom}}{number of parameters in the current PLN model}
+\item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and degrees of freedom}
+\item{\code{density}}{proportion of non-null edges in the network}
+
+\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
 }}
 
+\examples{
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+nets <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+myPLNnet <- getBestModel(nets)
+class(myPLNnet)
+print(myPLNnet)
+}
 \seealso{
 The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}
 }

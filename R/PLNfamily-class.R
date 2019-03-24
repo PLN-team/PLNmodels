@@ -24,15 +24,12 @@ PLNfamily <-
       # send back a data frame with some quantities associated with the optimization process
       convergence = function() {
         res <- do.call(rbind, lapply(self$models, function(model) {
-          c(degrees_freedom = model$degrees_freedom, sapply(model$optim_par, function(x) x[length(x)]))
+          c(nb_param = model$nb_param, sapply(model$optim_par, function(x) x[length(x)]))
         }))
         data.frame(param = private$params, res, stringsAsFactors = FALSE)
       }
     )
 )
-
-## an S3 function to check if an object is a PLNfit
-isPLNfamily <- function(Robject) {all.equal(rev(class(Robject))[1:2], c('R6','PLNfamily'))}
 
 PLNfamily$set("public", "initialize",
   function(responses, covariates, offsets, weights, control) {
@@ -57,40 +54,17 @@ PLNfamily$set("public", "initialize",
 ## a method to compute and set fields after optimization
 PLNfamily$set("public", "postTreatment",
 function() {
-  for (model in self$models) model$postTreatment(self$responses, self$covariates, self$offsets, self$weights)
+  nullModel <- nullModelPoisson(self$responses, self$covariates, self$offsets, self$weights)
+  for (model in self$models)
+    model$postTreatment(
+      self$responses,
+      self$covariates,
+      self$offsets,
+      self$weights,
+      nullModel = nullModel
+    )
 })
 
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR THE USERS
-## ----------------------------------------------------------------------
-
-#' Best model extraction from a collection of PLNfit
-#'
-#' @name PLNfamily_getBestModel
-#'
-#' @param crit a character for the criterion used to performed the selection. Either
-#' "BIC", "EBIC", "ICL", "loglik", "R_squared". Default is "BIC".
-#' @return  Send back a object with class \code{\link[=PLNfit]{PLNfit}}.
-NULL
-PLNfamily$set("public", "getBestModel",
-function(crit = c("BIC", "ICL", "EBIC", "loglik", "R_squared")){
-  crit <- match.arg(crit)
-  stopifnot(!anyNA(self$criteria[[crit]]))
-  if (length(self$criteria[[crit]]) > 1) {
-    id <- which.max(self$criteria[[crit]])
-  } else {id <- 1}
-    model <- self$models[[id]]$clone()
-    return(model)
-})
-
-#' Model extraction from a collection of PLN models
-#'
-#' @name PLNfamily_getModel
-#'
-#' @param var value of the parameter (rank for PCA, penalty for network) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
-#' @param index Integer index of the model to be returned. Only the first value is taken into account.
-#' @return Sends back a object with class \code{\link[=PLNfit]{PLNfit}}.
-NULL
 PLNfamily$set("public", "getModel",
 function(var, index = NULL) {
   ## Extraction by index
@@ -112,43 +86,8 @@ function(var, index = NULL) {
   }
 })
 
-#' Predict counts of new samples for all fits in the family
-#'
-#' @name PLNfamily_predict
-#'
-#' @param newdata    A optional data frame in which to look for variables with which to predict. If omitted, the family-level covariates are used.
-#' @param newOffsets A optional matrix in which to look for offsets with which to predict. If omitted, the family-level offsets are used.
-#' @param type       The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count);
-#'                   the alternative "response" is on the scale of the response variable (i.e. average count)
-#' @return A list of matrices (one per fit) of predicted log-counts (if type = "link")
-#'         or predicted counts (if type = "response").
-#'
-PLNfamily$set("public", "predict",
-function(newdata = self$covariates, newOffsets = self$offsets, type = c("link", "response")) {
-  lapply(self$models, function(model) {
-    model$predict(newdata, newOffsets, type)
-  })
-})
-
-#' Display the criteria associated with a collection of PLN fits (a PLNfamily)
-#'
-#' @name plot.PLNfamily
-#'
-#' @param x an R6 object with class PLNfamily
-#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik")
-#' @param ... additional parameters for S3 compatibility. Not used
-#' The two last are only available por PLNnetworkfamily. Default is c("loglik", "BIC", "ICL")
-#'@return Produces a plot  representing the evolution of the criteria of the different models considered,
-#' highlighting the best model in terms of ICL for PLNPCA and EBIC for PLNnetwork.
-#'
-#' @export
-plot.PLNfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), ...) {
-  stopifnot(isPLNfamily(x))
-  x$plot(criteria)
-}
-
 PLNfamily$set("public", "plot",
-function(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE) {
+function(criteria, annotate = TRUE) {
   stopifnot(!anyNA(self$criteria[criteria]))
   dplot <- self$criteria %>%
     dplyr::select(c("param", criteria)) %>%
@@ -169,4 +108,6 @@ function() {
   cat("COLLECTION OF", length(self$models), "POISSON LOGNORMAL MODELS\n")
   cat("--------------------------------------------------------\n")
 })
+
 PLNfamily$set("public", "print", function() self$show())
+

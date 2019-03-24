@@ -37,20 +37,20 @@ extract_model <- function(call, envir) {
 
   ## eval the call in the parent environment
   frame <- eval(call_frame, envir)
-
   ## create the set of matrices to fit the PLN model
-  Y <- model.response(frame)
+  Y <- frame[[1L]] ## model.response oversimplifies into a numeric when a single variable is involved
+  if (ncol(Y) == 1 & is.null(colnames(Y))) colnames(Y) <- "Y"
   X <- model.matrix(terms(frame), frame)
   O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
+  if (is.vector(O)) O <- O %o% rep(1, ncol(Y))
   w <- model.weights(frame)
   if (is.null(w)) {
     w <- rep(1.0, nrow(Y))
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-
-  list(Y = Y, X = X, O = O, w = w)
+  list(Y = Y, X = X, O = O, w = w, model = call$formula)
 }
 
 edge_to_node <- function(x, n = max(x)) {
@@ -117,6 +117,8 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths
   Y
 }
 
+available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2")
+
 ## -----------------------------------------------------------------
 ##  Series of setter to default parameters for user's main functions
 ##
@@ -125,7 +127,7 @@ PLN_param <- function(control, n, p, d, weighted = FALSE) {
   lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
-  covariance  <- ifelse(is.null(control$inception), covariance, control$inception$model)
+  covariance  <- ifelse(is.null(control$inception), covariance, control$inception$vcov_model)
   ctrl <- list(
     "algorithm"   = "CCSAQ",
     "maxeval"     = 10000  ,
@@ -141,6 +143,7 @@ PLN_param <- function(control, n, p, d, weighted = FALSE) {
     "inception"   = NULL
   )
   ctrl[names(control)] <- control
+  stopifnot(ctrl$algorithm %in% available_algorithms)
   ctrl
 }
 
@@ -189,6 +192,7 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
     "inception"   = NULL
   )
   ctrl[names(control)] <- control
+  stopifnot(ctrl$algorithm %in% available_algorithms)
   ctrl
 }
 
@@ -209,6 +213,7 @@ PLNPCA_param <- function(control, weighted = FALSE) {
       "covariance"  = "rank"
     )
   ctrl[names(control)] <- control
+  stopifnot(ctrl$algorithm %in% available_algorithms)
   ctrl
 }
 
@@ -233,11 +238,12 @@ PLNnetwork_param <- function(control, n, p, d, weighted = FALSE) {
     "covariance"  = "sparse"
   )
   ctrl[names(control)] <- control
+  stopifnot(ctrl$algorithm %in% available_algorithms)
   ctrl
 }
 
 statusToMessage <- function(status) {
-    message <- switch( status,
+    message <- switch(as.character(status),
         "1"  = "success",
         "2"  = "stopval was reached",
         "3"  = "ftol_rel or ftol_abs was reached",
