@@ -23,24 +23,15 @@ status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)]
 #### CRAN dependencies
 
 **PLNmodels** needs the following CRAN R packages, so check that their
-are installed on your computer.
+are installed on your
+computer.
 
 ``` r
-library(R6)
-library(glassoFast)
-library(Matrix)
-library(Rcpp)
-library(RcppArmadillo)
-library(nloptr)
-library(igraph)
-library(grid)
-library(gridExtra)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(corrplot)
-library(magrittr)
-# use install.packages() if needed
+required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo",
+                   "nloptr", "igraph", "grid", "gridExtra", "dplyr",
+                   "tidyr", "ggplot2", "corrplot", "magrittr", "devtools")
+not_installed_CRAN <- setdiff(required_CRAN, rownames(installed.packages()))
+if (length(not_installed_CRAN) > 0) install.packages(not_installed_CRAN)
 ```
 
 #### Bioconductor dependencies
@@ -48,9 +39,9 @@ library(magrittr)
 **PLNmodels** also needs two BioConductor packages
 
 ``` r
-library(phyloseq)
-library(biomformat)
-## use BiocManager::install() if needed
+required_BioC <- c("phyloseq", "biomformat")
+not_installed_BioC <- setdiff(required_BioC, rownames(installed.packages()))
+if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
 ```
 
 #### Installing PLNmodels
@@ -68,11 +59,11 @@ devtools::install_github("jchiquet/PLNmodels")
 <!-- end list -->
 
 ``` r
-devtools::install_github("jchiquet/PLNmodels@v0.8.2")
+devtools::install_github("jchiquet/PLNmodels@v0.9.1")
 ```
 
   - Windows users may want to use [the binary version of the
-    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.8.2/PLNmodels_0.8.2.zip)
+    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.9.1/PLNmodels_0.9.1.zip)
 
 ## Usage and main fitting functions
 

@@ -26,22 +26,12 @@ knitr::opts_chunk$set(
 
 **PLNmodels** needs the following CRAN R packages, so check that their are installed on your computer.
 
-```{r dependencies CRAN, eval = FALSE}
-library(R6)
-library(glassoFast)
-library(Matrix)
-library(Rcpp)
-library(RcppArmadillo)
-library(nloptr)
-library(igraph)
-library(grid)
-library(gridExtra)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(corrplot)
-library(magrittr)
-# use install.packages() if needed
+```{r CRAN dependencies, eval = FALSE}
+required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo",
+                   "nloptr", "igraph", "grid", "gridExtra", "dplyr",
+                   "tidyr", "ggplot2", "corrplot", "magrittr", "devtools")
+not_installed_CRAN <- setdiff(required_CRAN, rownames(installed.packages()))
+if (length(not_installed_CRAN) > 0) install.packages(not_installed_CRAN)
 ```
 
 #### Bioconductor dependencies
@@ -49,9 +39,9 @@ library(magrittr)
 **PLNmodels** also needs two BioConductor packages
 
 ```{r Bioconductor dependencies, eval = FALSE}
-library(phyloseq)
-library(biomformat)
-## use BiocManager::install() if needed
+required_BioC <- c("phyloseq", "biomformat")
+not_installed_BioC <- setdiff(required_BioC, rownames(installed.packages()))
+if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
 ```
 
 #### Installing PLNmodels
@@ -65,10 +55,10 @@ devtools::install_github("jchiquet/PLNmodels")
 - For the last tagged release, use
 
 ```{r package tag, eval = FALSE}
-devtools::install_github("jchiquet/PLNmodels@v0.8.2")
+devtools::install_github("jchiquet/PLNmodels@v0.9.1")
 ```
 
-- Windows users may want to use [the binary version of the package](https://github.com/jchiquet/PLNmodels/releases/download/v0.8.2/PLNmodels_0.8.2.zip)
+- Windows users may want to use [the binary version of the package](https://github.com/jchiquet/PLNmodels/releases/download/v0.9.1/PLNmodels_0.9.1.zip)
 
 
 ## Usage and main fitting functions
