@@ -82,7 +82,7 @@ capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names 
     $model_par, $latent, $var_par, $optim_par
     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
 * Useful S3 methods
-    print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()
+    print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()
 * Additional fields for PCA
     $percent_var, $corr_circle, $scores, $rotation
 * Additional S3 methods for PCA
