@@ -5,8 +5,8 @@
 #' by inheritance.
 #'
 #' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-#' See the documentation for \code{\link[=coef.PLNfit]{coef}}, \code{\link[=vcov.PLNfit]{vcov.PLNfit}},
-#' \code{\link[=predict.PLNfit]{predict}}, \code{\link[=fisher.PLNfit]{fisher}} and \code{\link[=standard_error.PLNfit]{standard_error}}.
+#' See the documentation for \code{\link[=coef.PLNfit]{coef}}, \code{\link[=sigma.PLNfit]{sigma.PLNfit}},
+#' \code{\link[=predict.PLNfit]{predict}}, \code{\link[=vcov.PLNfit]{vcov}} and \code{\link[=standard_error.PLNfit]{standard_error}}.
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'
@@ -337,7 +337,7 @@ function(model = paste("A multivariate Poisson Lognormal fit with", private$cova
   cat("    $model_par, $latent, $var_par, $optim_par\n")
   cat("    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria\n")
   cat("* Useful S3 methods\n")
-  cat("    print(), coef(), sigma(), sigma(), fitted(), predict(), standard_error()\n")
+  cat("    print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()\n")
 })
 
 PLNfit$set("public", "print", function() self$show())
