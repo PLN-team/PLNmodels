@@ -36,8 +36,8 @@
 Objects produced by the functions PLNnetwork, PLNPCA and PLNLDA also enjoy the method of PLNfit
 by inheritance.
 This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-See the documentation for coef, vcov.PLNfit,
-predict, fisher and standard_error.
+See the documentation for coef, sigma.PLNfit,
+predict, vcov and standard_error.
 Fields are accessed via active binding and cannot be changed by the user." />
 
 <meta property="og:image" content="/logo.png" />
@@ -71,7 +71,7 @@ Fields are accessed via active binding and cannot be changed by the user." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1.9000</span>
       </span>
     </div>
 
@@ -151,8 +151,8 @@ Fields are accessed via active binding and cannot be changed by the user." />
 Objects produced by the functions <code><a href='PLNnetwork.html'>PLNnetwork</a></code>, <code><a href='PLNPCA.html'>PLNPCA</a></code> and <code><a href='PLNLDA.html'>PLNLDA</a></code> also enjoy the method of <code>PLNfit</code>
 by inheritance.</p>
 <p>This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-See the documentation for <code><a href='coef.PLNfit.html'>coef</a></code>, <code><a href='vcov.PLNfit.html'>vcov.PLNfit</a></code>,
-<code><a href='predict.PLNfit.html'>predict</a></code>, <code><a href='fisher.html'>fisher</a></code> and <code><a href='standard_error.html'>standard_error</a></code>.</p>
+See the documentation for <code><a href='coef.PLNfit.html'>coef</a></code>, <code><a href='sigma.PLNfit.html'>sigma.PLNfit</a></code>,
+<code><a href='predict.PLNfit.html'>predict</a></code>, <code><a href='vcov.PLNfit.html'>vcov</a></code> and <code><a href='standard_error.html'>standard_error</a></code>.</p>
 <p>Fields are accessed via active binding and cannot be changed by the user.</p>
     
     </div>
@@ -198,7 +198,7 @@ See the documentation for <code><a href='coef.PLNfit.html'>coef</a></code>, <cod
 #&gt;     $model_par, $latent, $var_par, $optim_par
 #&gt;     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
 #&gt; * Useful S3 methods
-#&gt;     print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()</div></pre>
+#&gt;     print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

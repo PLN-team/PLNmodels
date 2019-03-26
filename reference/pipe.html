@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>An R6 Class to represent a collection of PLNPCAfit — PLNPCAfamily • PLNmodels</title>
+<title>Pipe operator — %&gt;% • PLNmodels</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,12 +30,9 @@
 
 
 
-<meta property="og:title" content="An R6 Class to represent a collection of PLNPCAfit — PLNPCAfamily" />
+<meta property="og:title" content="Pipe operator — %&gt;%" />
 
-<meta property="og:description" content="The function PLNPCA produces an instance of this class.
-This class comes with a set of methods, some of them being useful for the user:
-See the documentation for getBestModel,
-getModel and  plot." />
+<meta property="og:description" content="See magrittr::%&amp;gt;% for details." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -137,67 +134,25 @@ getModel and  plot." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>An R6 Class to represent a collection of PLNPCAfit</h1>
+    <h1>Pipe operator</h1>
     
-    <div class="hidden name"><code>PLNPCAfamily.Rd</code></div>
+    <div class="hidden name"><code>pipe.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>The function <code><a href='PLNPCA.html'>PLNPCA</a></code> produces an instance of this class.</p>
-<p>This class comes with a set of methods, some of them being useful for the user:
-See the documentation for <code><a href='getBestModel.html'>getBestModel</a></code>,
-<code><a href='getModel.html'>getModel</a></code> and  <code><a href='plot.PLNPCAfamily.html'>plot</a></code>.</p>
+    <p>See <code>magrittr::%&gt;%</code> for details.</p>
     
     </div>
 
-    <pre class="usage"><span class='no'>PLNPCAfamily</span></pre>
+    <pre class="usage"><span class='no'>lhs</span> <span class='kw'>%&gt;%</span> <span class='no'>rhs</span></pre>
         
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>An object of class <code>R6ClassGenerator</code> of length 24.</p>
-    
-    <h2 class="hasAnchor" id="fields"><a class="anchor" href="#fields"></a>Fields</h2>
-
-    
-    <dl class='dl-horizontal'>
-<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
-    <dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
-    <dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
-    <dt><code>ranks</code></dt><dd><p>the dimensions of the successively fitted models</p></dd>
-    <dt><code>models</code></dt><dd><p>a list of <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> object, one per rank.</p></dd>
-    <dt><code>inception</code></dt><dd><p>a <code><a href='PLNfit.html'>PLNfit</a></code> object, obtained when full rank is considered.</p></dd>
-    <dt><code>criteria</code></dt><dd><p>a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.</p></dd>
-</dl>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p>The function <code><a href='PLNPCA.html'>PLNPCA</a></code>, the class <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code></p></div>
-    
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
-<span class='no'>myPCAs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNPCA.html'>PLNPCA</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span> + <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/offset'>offset</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>log</a></span>(<span class='no'>Offset</span>)), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>, <span class='kw'>ranks</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>5</span>)</div><div class='output co'>#&gt; 
-#&gt;  Initialization...
-#&gt; 
-#&gt;  Adjusting 5 PLN models for PCA analysis.
-#&gt; 	 Rank approximation = 1 	 Rank approximation = 2 	 Rank approximation = 3 	 Rank approximation = 4 	 Rank approximation = 5 
-#&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/class'>class</a></span>(<span class='no'>myPCAs</span>)</div><div class='output co'>#&gt; [1] "PLNPCAfamily" "PLNfamily"    "R6"          </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      
-      <li><a href="#format">Format</a></li>
-
-      <li><a href="#fields">Fields</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+                </ul>
 
   </div>
 </div>
