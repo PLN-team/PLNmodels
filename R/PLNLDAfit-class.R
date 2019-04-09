@@ -276,7 +276,7 @@ PLNLDAfit$set("public", "predict",
       centered_positions <- sweep(average_positions, 2, centers)
       ## transformation through svd to project in the same space as learning samples
       scores <- centered_positions %*% t(t(private$svdLDA$u[, 1:self$rank]) * private$svdLDA$d[1:self$rank])
-      rownames(scores) <- rownames(private$M)
+      rownames(scores) <- rownames(newdata)
       return(scores)
     }
 

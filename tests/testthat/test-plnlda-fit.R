@@ -118,6 +118,7 @@ test_that("PLNLDA fit: Check number of parameters",  {
 
 ## add tests for predictions, tests for fit --------------------------------------------
 test_that("Predictions have the right dimensions.", {
+  ## Train = Test
   expect_length(predict(model, newdata = trichoptera, type = "response"),
                 nrow(trichoptera))
   expect_is(predict(model, newdata = trichoptera, type = "response"),
@@ -131,7 +132,15 @@ test_that("Predictions have the right dimensions.", {
   ## Posterior probabilities are between 0 and 1
   expect_lte(max(predict(model, newdata = trichoptera, scale = "prob")), 1)
   expect_gte(min(predict(model, newdata = trichoptera, scale = "prob")), 0)
+  ## Train != Test
+  test <- 1:nrow(trichoptera) < (nrow(trichoptera)/2)
+  expect_equal(dim(predict(model, newdata = trichoptera[test, ], type = "scores")),
+               c(sum(test), model$rank))
+
+
 })
+
+
 
 test_that("Predictions are not affected by inclusion of an intercept.", {
   model0 <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
