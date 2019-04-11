@@ -184,7 +184,9 @@ PLNfit$set("public", "postTreatment",
 function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis"), nullModel = NULL) {
   ## compute R2
   self$set_R2(responses, covariates, offsets, weights, nullModel)
-  ## Set the name of the matrices according to those of the data matrices
+  ## Set the name of the matrices according to those of the data matrices,
+  ## if names are missing, set sensible defaults
+  if (is.null(colnames(responses))) colnames(responses) <- paste0("Y", 1:self$p)
   rownames(private$Theta) <- colnames(responses)
   colnames(private$Theta) <- colnames(covariates)
   rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
@@ -290,7 +292,7 @@ PLNfit$set("public", "compute_fisher",
         crossprod(X, A[, i] * X)
       }))
     }
-    ## set proper names
+    ## set proper names, use sensible defaults if some names are missing
     element.names <- expand.grid(covariates = colnames(private$Theta),
                                  species    = rownames(private$Theta)) %>% rev() %>%
       ## Hack to make sure that species is first and varies slowest

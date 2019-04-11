@@ -101,7 +101,8 @@ node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
 ##' @importFrom MASS mvrnorm
 ##' @importFrom stats rpois
 ##' @export
-rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths = rep(1e4, n)) {
+rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
+                 depths = rep(1e4, n))  {
   p <- ncol(Sigma)
   if (any(is.vector(mu), ncol(mu) == 1)) {
     mu <- matrix(rep(mu, n), ncol = p, byrow = TRUE)
@@ -114,6 +115,7 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5), depths
   offsets <- log(depths %o% rep(1, p)) - log(exp_depths)
   Z <- mu + mvrnorm(n, rep(0,ncol(Sigma)), as.matrix(Sigma)) + offsets
   Y <- matrix(rpois(n * p, as.vector(exp(Z))), n, p)
+  dimnames(Y) <- list(paste0("S", 1:n), paste0("Y", 1:p))
   Y
 }
 
