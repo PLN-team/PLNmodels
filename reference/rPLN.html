@@ -66,7 +66,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1.9001</span>
       </span>
     </div>
 
@@ -183,23 +183,23 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>## 10 samples of 5 species with equal abundances, no covariance and target depths of 10,000</span>
-<span class='fu'>rPLN</span>()</div><div class='output co'>#&gt;        [,1] [,2] [,3] [,4] [,5]
-#&gt;  [1,]  1332 3100 1947  682  292
-#&gt;  [2,]   634 1500 1798 2241 1515
-#&gt;  [3,]  1168 1521  338 9550  102
-#&gt;  [4,]   956 6059 2567  233 1262
-#&gt;  [5,]  1935 1372 8007 2044 2170
-#&gt;  [6,] 19236 1108 1078  202 3775
-#&gt;  [7,]  1314  182  517  747  218
-#&gt;  [8,]  2161  896 1238 1149  971
-#&gt;  [9,]  1393  842  547 2110  985
-#&gt; [10,]   183 3470  276  523  978</div><div class='input'><span class='co'>## 2 samples of 10 highly correlated species with target depths 1,000 and 100,000</span>
+<span class='fu'>rPLN</span>()</div><div class='output co'>#&gt;        Y1   Y2   Y3   Y4   Y5
+#&gt; S1   1332 3100 1947  682  292
+#&gt; S2    634 1500 1798 2241 1515
+#&gt; S3   1168 1521  338 9550  102
+#&gt; S4    956 6059 2567  233 1262
+#&gt; S5   1935 1372 8007 2044 2170
+#&gt; S6  19236 1108 1078  202 3775
+#&gt; S7   1314  182  517  747  218
+#&gt; S8   2161  896 1238 1149  971
+#&gt; S9   1393  842  547 2110  985
+#&gt; S10   183 3470  276  523  978</div><div class='input'><span class='co'>## 2 samples of 10 highly correlated species with target depths 1,000 and 100,000</span>
 <span class='co'>## very different abundances</span>
 <span class='no'>mu</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, -<span class='fl'>1</span>), <span class='kw'>each</span> <span class='kw'>=</span> <span class='fl'>5</span>)
 <span class='no'>Sigma</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>0.8</span>, <span class='fl'>10</span>, <span class='fl'>10</span>); <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/diag'>diag</a></span>(<span class='no'>Sigma</span>) <span class='kw'>&lt;-</span> <span class='fl'>1</span>
-<span class='fu'>rPLN</span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='no'>mu</span>, <span class='kw'>Sigma</span> <span class='kw'>=</span> <span class='no'>Sigma</span>, <span class='kw'>depths</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1e3</span>, <span class='fl'>1e5</span>))</div><div class='output co'>#&gt;      [,1]  [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-#&gt; [1,]   80    96   27   46   40    9    4    7    8     7
-#&gt; [2,] 4955 12325 6255 4962 4054  395 1473  869  791   498</div><div class='input'>
+<span class='fu'>rPLN</span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='no'>mu</span>, <span class='kw'>Sigma</span> <span class='kw'>=</span> <span class='no'>Sigma</span>, <span class='kw'>depths</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1e3</span>, <span class='fl'>1e5</span>))</div><div class='output co'>#&gt;      Y1    Y2   Y3   Y4   Y5  Y6   Y7  Y8  Y9 Y10
+#&gt; S1   80    96   27   46   40   9    4   7   8   7
+#&gt; S2 4955 12325 6255 4962 4054 395 1473 869 791 498</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
