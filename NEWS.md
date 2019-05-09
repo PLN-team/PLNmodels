@@ -1,4 +1,6 @@
-# PLNmodels 0.9.1.9000
+# PLNmodels 0.9.2
+
+* various bug fixes
 
 # PLNmodels 0.9.1
 
