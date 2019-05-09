@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 
 #### CRAN dependencies
 
-**PLNmodels** needs the following CRAN R packages, so check that their are installed on your computer.
+**PLNmodels** needs the following CRAN R packages, so check that they are are installed on your computer.
 
 ```{r CRAN dependencies, eval = FALSE}
 required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo",

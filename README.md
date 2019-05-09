@@ -22,8 +22,8 @@ status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)]
 
 #### CRAN dependencies
 
-**PLNmodels** needs the following CRAN R packages, so check that their
-are installed on your
+**PLNmodels** needs the following CRAN R packages, so check that they
+are are installed on your
 computer.
 
 ``` r
