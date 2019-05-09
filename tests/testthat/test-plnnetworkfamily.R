@@ -3,9 +3,10 @@ context("test-plnnetworkfamily")
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
+models <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+
 test_that("PLNnetwork: main function, fields access and methods", {
 
-  models <- PLNnetwork(Abundance ~ 1, data = trichoptera)
   expect_equal(getBestModel(models), getBestModel(models, "BIC"))
 
   X <- model.matrix(Abundance ~ 1, data = trichoptera)
@@ -53,27 +54,25 @@ test_that("PLNnetwork: main function, fields access and methods", {
 })
 
 test_that("PLNnetwork computes the stability path only once.", {
-  ## Compute network and stability selection once
-  nets <- PLNnetwork(Abundance ~ 1 + offset(log(Offset)),
-                     data = trichoptera)
+
   ## extract_probs fails if stability selection has not been performed.
-  expect_error(extract_probs(nets),
+  expect_error(extract_probs(models),
                "Please perform stability selection using stability_selection(Robject) first", fixed = TRUE)
   set.seed(1077)
   subs <- replicate(2,
                     sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
                     simplify = FALSE)
-  stability_selection(nets, subsamples = subs)
+  stability_selection(models, subsamples = subs)
   ## Stability_path has correct dimensions
-  p <- getModel(nets, index = 1)$p
-  expect_equal(dim(nets$stability_path),
-               c(length(nets$penalties) * p*(p-1)/2L, 5))
+  p <- getModel(models, index = 1)$p
+  expect_equal(dim(models$stability_path),
+               c(length(models$penalties) * p*(p-1)/2L, 5))
   ## try to compute it again
-  expect_message(stability_selection(nets),
+  expect_message(stability_selection(models),
                  "Previous stability selection detected. Use \"force = TRUE\" to recompute it.")
   ## extracts the inclusion frequencies
-  expect_equal(dim(extract_probs(nets, index = 1, format = "matrix")),
+  expect_equal(dim(extract_probs(models, index = 1, format = "matrix")),
                c(p, p))
-  expect_length(extract_probs(nets, index = 1, format = "vector"),
+  expect_length(extract_probs(models, index = 1, format = "vector"),
                p*(p-1)/2)
 })

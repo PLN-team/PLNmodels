@@ -31,8 +31,11 @@ test_that("Check that fisher and standard_error return objects with proper dimen
 
 })
 
+## Fit model without covariates
+myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+
 test_that("Fisher is deprecated", {
-  myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+
   expect_warning(fisher(myPLN),
                  "Deprecated: please use `vcov()` instead",
                  fixed = TRUE)
@@ -41,9 +44,6 @@ test_that("Fisher is deprecated", {
 ## Consistency -----------------------
 test_that("Check internal consistency of Fisher matrix for PLN models with no covariates",  {
   tol <- 1e-8
-
-  ## Fit model without covariates
-  myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 
   ## Consistency of the diagonal of the fisher matrix
   fim.diag <- Matrix::diag(vcov(myPLN))
@@ -61,9 +61,6 @@ test_that("Check internal consistency of Fisher matrix for PLN models with no co
 
 test_that("Check temporal consistency of Fisher matrix for PLN models with no covariates",  {
   tol <- 1e-3
-
-  ## Fit model without covariates
-  myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 
   ## Consistency of the diagonal of the fisher matrix
   fim.diag <- Matrix::diag(vcov(myPLN)) / nrow(trichoptera)
