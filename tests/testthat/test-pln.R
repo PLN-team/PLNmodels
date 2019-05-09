@@ -13,8 +13,6 @@ test_that("PLN: Check that PLN is running and robust",  {
 
   expect_equal(PLN(trichoptera$Abundance ~ 1 + trichoptera$Wind)$fitted,
                PLN(Abundance ~ Wind, data = trichoptera)$fitted)
-
-  ## add more
 })
 
 test_that("PLN: Check consistency of initialization - fully parametrized covariance",  {

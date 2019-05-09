@@ -96,7 +96,7 @@ We fit a collection of $q$ models as follows:
 PCA_models <- PLNPCA(
   Abundance ~ 1 + offset(log(Offset)),
   data  = trichoptera, 
-  ranks = 1:6
+  ranks = 1:5
 )
 ```
 
@@ -199,7 +199,7 @@ PCA_models_cov <-
   PLNPCA(
     Abundance ~ 1 + offset(log(Offset)) + Temperature + Wind + Cloudiness,
     data  = trichoptera,
-    ranks = 1:6
+    ranks = 1:4
   )
 ```
 

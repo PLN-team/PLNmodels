@@ -2,7 +2,10 @@ context("test-plnldafit")
 
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-model <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = Group)
+model0 <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
+                 grouping = Group, data = trichoptera)
+model  <- PLNLDA(Abundance ~ 1 + offset(log(Offset)),
+                 grouping = Group, data = trichoptera)
 
 test_that("PLNLDA fit: check classes, getters and field access",  {
 
@@ -35,7 +38,6 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
   expect_equal(sum(model$loglik_vec), model$loglik)
   expect_lt(model$BIC, model$loglik)
   expect_lt(model$ICL, model$loglik)
-  expect_lt(model$ICL, model$BIC)
   expect_gt(model$R_squared, 0)
   expect_equal(model$nb_param, p * (2 *g - 1))
   expect_equal(dim(model$group_means), c(p, g))
@@ -86,9 +88,9 @@ sep = "\n"
 
 test_that("plot_LDA works for binary groups:", {
   trichoptera$custom_group <- ifelse(trichoptera$Cloudiness <= 50, "Sunny", "Cloudy")
-  model1 <- PLNLDA(Abundance ~ 1, data = trichoptera, grouping = custom_group)
+
   ## One axis only
-  expect_true(inherits(model1$plot_LDA(plot = FALSE), "grob"))
+  expect_true(inherits(model$plot_LDA(plot = FALSE), "grob"))
 })
 
 test_that("plot_LDA works for 4 or more axes:", {
@@ -140,15 +142,9 @@ test_that("Predictions have the right dimensions.", {
 
 })
 
-
-
 test_that("Predictions are not affected by inclusion of an intercept.", {
-  model0 <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
-                  grouping = Group, data = trichoptera)
-  model1 <- PLNLDA(Abundance ~ 1 + offset(log(Offset)),
-                   grouping = Group, data = trichoptera)
   expect_equal(predict(model0, newdata = trichoptera),
-               predict(model1, newdata = trichoptera))
+               predict(model , newdata = trichoptera))
 })
 
 test_that("Prediction fails for non positive prior probabilities.", {

@@ -280,3 +280,6 @@ and check that we recover the correct class in most cases (again, we used the sa
 ```{r check_predicted_class_cov}
 table(predicted.class_cov, trichoptera$Group, dnn = c("predicted", "true"))
 ```
+
+
+## References

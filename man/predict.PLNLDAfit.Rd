@@ -37,6 +37,8 @@ myLDA <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
                 data = trichoptera)
 post_probs <- predict(myLDA, newdata = trichoptera, type = "posterior", scale = "prob")
 head(round(post_probs, digits = 3))
+\dontrun{
 predicted_group <- predict(myLDA, newdata = trichoptera, type = "response")
 table(predicted_group, trichoptera$Group, dnn = c("predicted", "true"))
+}
 }
