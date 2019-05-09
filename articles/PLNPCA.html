@@ -176,18 +176,17 @@
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">PCA_models &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNPCA.html">PLNPCA</a></span>(</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">  Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
 <a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="dt">data  =</span> trichoptera, </a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">  <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">6</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">  <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span></a>
 <a class="sourceLine" id="cb3-5" data-line-number="5">)</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ## 
-##  Adjusting 6 PLN models for PCA analysis.
+##  Adjusting 5 PLN models for PCA analysis.
 ##   Rank approximation = 1 
      Rank approximation = 2 
      Rank approximation = 3 
      Rank approximation = 4 
      Rank approximation = 5 
-     Rank approximation = 6 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
@@ -199,11 +198,11 @@
 <p>The <code>PCA_models</code> variable is an <code>R6</code> object with class <code>PLNPCAfamily</code>, which comes with a couple of methods. The most basic is the <code>show/print</code> method, which sends a brief summary of the estimation process:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">PCA_models</a></code></pre></div>
 <pre><code>## --------------------------------------------------------
-## COLLECTION OF 6 POISSON LOGNORMAL MODELS
+## COLLECTION OF 5 POISSON LOGNORMAL MODELS
 ## --------------------------------------------------------
 ##  Task: Principal Component Analysis
 ## ========================================================
-##  - Ranks considered: from 1 to 6
+##  - Ranks considered: from 1 to 5
 ##  - Best model (greater BIC): rank = 4 - R2 = 0.86
 ##  - Best model (greater ICL): rank = 3 - R2 = 0.8</code></pre>
 <p>One can also easily access the successive values of the criteria in the collection</p>
@@ -258,14 +257,6 @@
 <td align="right">-1330.300</td>
 <td align="right">0.8926364</td>
 </tr>
-<tr class="even">
-<td align="right">6</td>
-<td align="right">119</td>
-<td align="right">-992.8091</td>
-<td align="right">-1224.372</td>
-<td align="right">-1417.052</td>
-<td align="right">0.9043600</td>
-</tr>
 </tbody>
 </table>
 <p>A quick diagnostic of the optimization process is available via the <code>convergence</code> field:</p>
@@ -311,13 +302,6 @@
 <td align="right">5</td>
 <td align="left">102</td>
 <td align="left">3905</td>
-<td align="left">3</td>
-<td align="left">ftol_rel or ftol_abs was reached</td>
-</tr>
-<tr class="even">
-<td align="right">6</td>
-<td align="left">119</td>
-<td align="left">2981</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
@@ -495,18 +479,16 @@
 <a class="sourceLine" id="cb19-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLNPCA.html">PLNPCA</a></span>(</a>
 <a class="sourceLine" id="cb19-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)) <span class="op">+</span><span class="st"> </span>Temperature <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Cloudiness,</a>
 <a class="sourceLine" id="cb19-4" data-line-number="4">    <span class="dt">data  =</span> trichoptera,</a>
-<a class="sourceLine" id="cb19-5" data-line-number="5">    <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">6</span></a>
+<a class="sourceLine" id="cb19-5" data-line-number="5">    <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span></a>
 <a class="sourceLine" id="cb19-6" data-line-number="6">  )</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ## 
-##  Adjusting 6 PLN models for PCA analysis.
+##  Adjusting 4 PLN models for PCA analysis.
 ##   Rank approximation = 1 
      Rank approximation = 2 
      Rank approximation = 3 
      Rank approximation = 4 
-     Rank approximation = 5 
-     Rank approximation = 6 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>
