@@ -63,30 +63,30 @@ test_that("PLN: Check consistency of initialization - fully parametrized covaria
 #
 # })
 
-# test_that("PLN: Check consistency of observation weights - diagonal covariance",  {
-#   tol <- 1e-2
-#
-#   ## no weights
-#   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical", trace = 0))
-#
-#   ## equivalent weigths
-#   model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(covariance = "spherical", trace = 0))
-#
-#   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
-# })
-#
-# test_that("PLN: Check consistency of observation weights - spherical covariance",  {
-#   tol <- 1e-2
-#
-#   ## no weights
-#   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal", trace = 0))
-#
-#   ## equivalent weigths
-#   model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(covariance = "diagonal", trace = 0))
-#   model3 <- PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(covariance = "diagonal", trace = 0))
-#
-#   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
-# })
+test_that("PLN: Check consistency of observation weights - diagonal covariance",  {
+  tol <- 1e-2
+
+  ## no weights
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical", trace = 0))
+
+  ## equivalent weigths
+  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(covariance = "spherical", trace = 0))
+
+  expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
+})
+
+test_that("PLN: Check consistency of observation weights - spherical covariance",  {
+  tol <- 1e-2
+
+  ## no weights
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal", trace = 0))
+
+  ## equivalent weigths
+  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(covariance = "diagonal", trace = 0))
+  model3 <- PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(covariance = "diagonal", trace = 0))
+
+  expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
+})
 
 test_that("PLN: Routine comparison between the different covariance models",  {
   model_full      <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "full"     , trace = 0))
@@ -116,10 +116,10 @@ test_that("PLN is working with unnamed data matrix",  {
 
     MMA    <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "MMA"  ))
     CCSAQ  <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "CCSAQ"))
-    LBFGS  <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "LBFGS"))
+    # LBFGS  <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "LBFGS"))
 
     expect_equivalent(MMA$loglik, CCSAQ$loglik, tolerance = 1e-1) ## Almost equivalent, CCSAQ faster
-    expect_equivalent(MMA$loglik, LBFGS$loglik, tolerance = 1e-1)
+    # expect_equivalent(MMA$loglik, LBFGS$loglik, tolerance = 1e-1)
 
     expect_error(PLN(Abundance ~ 1, data = trichoptera, control=list(algorithm="nawak")))
  })

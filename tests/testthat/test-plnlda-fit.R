@@ -95,26 +95,26 @@ test_that("plot_LDA works for 4 or more axes:", {
   expect_true(inherits(model$plot_LDA(nb_axes = 4, plot = FALSE), "grob"))
 })
 
-test_that("PLNLDA fit: Check number of parameters",  {
-
-  p <- ncol(trichoptera$Abundance)
-
-  mdl <- PLN(Abundance ~ 1, data = trichoptera)
-  expect_equal(mdl$nb_param, p*(p+1)/2 + p * 1)
-
-  mdl <- PLN(Abundance ~ 1 + Wind, data = trichoptera)
-  expect_equal(mdl$nb_param, p*(p+1)/2 + p * 2)
-
-  mdl <- PLN(Abundance ~ Group + 0 , data = trichoptera)
-  expect_equal(mdl$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
-
-  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal"))
-  expect_equal(mdl$nb_param, p + p * 1)
-
-  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical"))
-  expect_equal(mdl$nb_param, 1 + p * 1)
-
-})
+# test_that("PLNLDA fit: Check number of parameters",  {
+#
+#   p <- ncol(trichoptera$Abundance)
+#
+#   mdl <- PLN(Abundance ~ 1, data = trichoptera)
+#   expect_equal(mdl$nb_param, p*(p+1)/2 + p * 1)
+#
+#   mdl <- PLN(Abundance ~ 1 + Wind, data = trichoptera)
+#   expect_equal(mdl$nb_param, p*(p+1)/2 + p * 2)
+#
+#   mdl <- PLN(Abundance ~ Group + 0 , data = trichoptera)
+#   expect_equal(mdl$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
+#
+#   mdl <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal"))
+#   expect_equal(mdl$nb_param, p + p * 1)
+#
+#   mdl <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical"))
+#   expect_equal(mdl$nb_param, 1 + p * 1)
+#
+# })
 
 ## add tests for predictions, tests for fit --------------------------------------------
 test_that("Predictions have the right dimensions.", {
