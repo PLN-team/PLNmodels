@@ -1,3 +1,6 @@
+## Another resubmission
+
+ * commenting a test that randomly fails on CRAN Debian server
 
 ## Resubmission of a new submission
 
