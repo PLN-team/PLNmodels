@@ -47,11 +47,13 @@ See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}
 }}
 
 \examples{
+\dontrun{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
 class(myPLNLDA)
 print(myPLNLDA)
+}
 }
 \seealso{
 The function \code{\link{PLNLDA}}.

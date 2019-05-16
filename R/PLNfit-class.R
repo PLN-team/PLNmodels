@@ -25,11 +25,13 @@
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #' @examples
+#' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 #' class(myPLN)
 #' print(myPLN)
+#' }
 PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(

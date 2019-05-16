@@ -48,10 +48,12 @@ Fields are accessed via active binding and cannot be changed by the user.
 }}
 
 \examples{
+\dontrun{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 class(myPLN)
 print(myPLN)
+}
 }
 \keyword{datasets}
