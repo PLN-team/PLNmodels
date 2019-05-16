@@ -1,4 +1,20 @@
 
+## Third Submission
+
+* added some dont run in examples to save time during check
+* simplification in the vignettes to save time during check
+
+On my compouter I get (Ubuntu 18.04, Intel Xeon 3.5 GHz; 32 Go mem)
+✔  checking whether package ‘PLNmodels’ can be installed (48.8s)
+N  checking installed package size ...
+     installed size is 10.8Mb
+     sub-directories of 1Mb or more:
+       doc    1.6Mb
+       libs   8.3Mb
+✔  checking examples (20.1s)
+✔  Running ‘testthat.R’ [27s/27s]
+✔  checking re-building of vignette outputs (44.3s)
+
 ## Second Submission
 
 * using smaller data in test files to reduce the testing time
@@ -18,7 +34,7 @@
 
 0 errors | 0 warnings | 1 note
 
-* installed size is 11.3Mb
+* installed size is 10.8Mb
      sub-directories of 1Mb or more:
-       doc    2.1Mb
+       doc    1.6Mb
        libs   8.3Mb
