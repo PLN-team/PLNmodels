@@ -103,7 +103,7 @@
       <h1>Analyzing multivariate count data with the Poisson log-normal model</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-05-09</h4>
+            <h4 class="date">2019-05-16</h4>
       
       
       <div class="hidden name"><code>PLN.Rmd</code></div>
@@ -121,8 +121,9 @@
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(corrplot)</a></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
@@ -222,11 +223,11 @@ PLN: geometrical view
 <a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="dt">fitted   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(myPLN)),</a>
 <a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="dt">observed =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(trichoptera<span class="op">$</span>Abundance)</a>
 <a class="sourceLine" id="cb11-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> observed, <span class="dt">y =</span> fitted)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="st">    </span><span class="kw">scale_x_log10</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-8" data-line-number="8"><span class="st">    </span><span class="kw">scale_y_log10</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="st">    </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">annotation_logticks</span>()</a></code></pre></div>
+<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> observed, <span class="dt">y =</span> fitted)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_point">geom_point</a></span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_x_log10</a></span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-8" data-line-number="8"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_y_log10</a></span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/annotation_logticks">annotation_logticks</a></span>()</a></code></pre></div>
 <div class="figure">
 <img src="PLN_files/figure-html/fitted-1.png" alt="fitted value vs. observation" width="672"><p class="caption">
 fitted value vs. observation
@@ -243,7 +244,7 @@ fitted value vs. observation
   </script>
 </div>
 <p>The residual covariance matrix better displays as an image matrix:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">corrplot<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sigma">sigma</a></span>(myPLN), <span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sigma">sigma</a></span>(myPLN), <span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <p><img src="PLN_files/figure-html/plot%20covariance-1.png" width="672"></p>
 </div>
 <div id="observation-weights" class="section level4">
@@ -261,11 +262,11 @@ fitted value vs. observation
 <a class="sourceLine" id="cb14-9" data-line-number="9">  <span class="dt">unweighted =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(myPLN)),</a>
 <a class="sourceLine" id="cb14-10" data-line-number="10">  <span class="dt">weighted   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(myPLN_weighted))</a>
 <a class="sourceLine" id="cb14-11" data-line-number="11">) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-12" data-line-number="12"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> unweighted, <span class="dt">y =</span> weighted)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-13" data-line-number="13"><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-14" data-line-number="14"><span class="st">    </span><span class="kw">scale_x_log10</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-15" data-line-number="15"><span class="st">    </span><span class="kw">scale_y_log10</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb14-16" data-line-number="16"><span class="st">    </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">annotation_logticks</span>()</a></code></pre></div>
+<a class="sourceLine" id="cb14-12" data-line-number="12"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> unweighted, <span class="dt">y =</span> weighted)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-13" data-line-number="13"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_point">geom_point</a></span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-14" data-line-number="14"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_x_log10</a></span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-15" data-line-number="15"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_y_log10</a></span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-16" data-line-number="16"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/annotation_logticks">annotation_logticks</a></span>()</a></code></pre></div>
 <p><img src="PLN_files/figure-html/weighted-1.png" width="672"></p>
 <!-- #### Optimization diagnostic -->
 <!-- Results of the optimization process can be monitored via the `$optim_par` field:  -->
@@ -360,29 +361,39 @@ fitted value vs. observation
 <h3 class="hasAnchor">
 <a href="#covariance-models-full-diagonal-spherical" class="anchor"></a>Covariance models (full, diagonal, spherical)</h3>
 <p>It is possible to change a bit the parametrization used for modelling the residual covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence <span class="math inline">\(p \times (p+1)/2\)</span> parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix <span class="math inline">\(\boldsymbol\Sigma_D\)</span> with only <span class="math inline">\(p\)</span> parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix <span class="math inline">\(\boldsymbol\Sigma = \sigma \mathbf{I}_p\)</span>. This can be tuned in <code>PLN</code> with the <code>control</code> argument, a list controlling various aspects of the underlying optimization process:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">myPLN_full &lt;-<span class="st"> </span></a>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">myPLN_diagonal &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb20-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
 <a class="sourceLine" id="cb20-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
-<a class="sourceLine" id="cb20-4" data-line-number="4">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"full"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb20-4" data-line-number="4">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"diagonal"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb20-5" data-line-number="5">  )</a>
-<a class="sourceLine" id="cb20-6" data-line-number="6">myPLN_diagonal &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb20-6" data-line-number="6">myPLN_spherical &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb20-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
 <a class="sourceLine" id="cb20-8" data-line-number="8">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
-<a class="sourceLine" id="cb20-9" data-line-number="9">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"diagonal"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb20-10" data-line-number="10">  )</a>
-<a class="sourceLine" id="cb20-11" data-line-number="11">myPLN_spherical &lt;-<span class="st"> </span></a>
-<a class="sourceLine" id="cb20-12" data-line-number="12"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
-<a class="sourceLine" id="cb20-13" data-line-number="13">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
-<a class="sourceLine" id="cb20-14" data-line-number="14">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"spherical"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb20-15" data-line-number="15">  )</a></code></pre></div>
-<p>It seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(</a>
-<a class="sourceLine" id="cb21-2" data-line-number="2">  myPLN_full<span class="op">$</span>criteria,</a>
-<a class="sourceLine" id="cb21-3" data-line-number="3">  myPLN_diagonal<span class="op">$</span>criteria,</a>
-<a class="sourceLine" id="cb21-4" data-line-number="4">  myPLN_spherical<span class="op">$</span>criteria</a>
-<a class="sourceLine" id="cb21-5" data-line-number="5">) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb21-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(<span class="dt">row.names =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"full"</span>, <span class="st">"diagonal"</span>, <span class="st">"spherical"</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb21-7" data-line-number="7"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<a class="sourceLine" id="cb20-9" data-line-number="9">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"spherical"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb20-10" data-line-number="10">  )</a></code></pre></div>
+<p>Note that, by default, the model chosen is , so that the two following calls are equivalents:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">myPLN_default &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> trichoptera, )</a></code></pre></div>
+<pre><code>## 
+##  Initialization...
+##  Adjusting a PLN model with full covariance model
+##  Post-treatments...
+##  DONE!</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">myPLN_full &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"full"</span>))</a></code></pre></div>
+<pre><code>## 
+##  Initialization...
+##  Adjusting a PLN model with full covariance model
+##  Post-treatments...
+##  DONE!</code></pre>
+<p>Different covariance models can then be compared with the usual criteria: it seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(</a>
+<a class="sourceLine" id="cb25-2" data-line-number="2">  myPLN_offsets<span class="op">$</span>criteria,</a>
+<a class="sourceLine" id="cb25-3" data-line-number="3">  myPLN_diagonal<span class="op">$</span>criteria,</a>
+<a class="sourceLine" id="cb25-4" data-line-number="4">  myPLN_spherical<span class="op">$</span>criteria</a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb25-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(<span class="dt">row.names =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"full"</span>, <span class="st">"diagonal"</span>, <span class="st">"spherical"</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb25-7" data-line-number="7"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th></th>
@@ -420,16 +431,16 @@ fitted value vs. observation
 </tbody>
 </table>
 <p>A final model that we can try is the diagonal one with the wind as a covariate, which gives a slight improvement.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">myPLN_final &lt;-<span class="st"> </span></a>
-<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
-<a class="sourceLine" id="cb22-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
-<a class="sourceLine" id="cb22-4" data-line-number="4">    <span class="dt">data    =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"diagonal"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb22-5" data-line-number="5">  )</a>
-<a class="sourceLine" id="cb22-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(</a>
-<a class="sourceLine" id="cb22-7" data-line-number="7">  myPLN_wind<span class="op">$</span>criteria,</a>
-<a class="sourceLine" id="cb22-8" data-line-number="8">  myPLN_diagonal<span class="op">$</span>criteria,</a>
-<a class="sourceLine" id="cb22-9" data-line-number="9">  myPLN_final<span class="op">$</span>criteria</a>
-<a class="sourceLine" id="cb22-10" data-line-number="10">) <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">myPLN_final &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">    <span class="dt">data    =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"diagonal"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb26-5" data-line-number="5">  )</a>
+<a class="sourceLine" id="cb26-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(</a>
+<a class="sourceLine" id="cb26-7" data-line-number="7">  myPLN_wind<span class="op">$</span>criteria,</a>
+<a class="sourceLine" id="cb26-8" data-line-number="8">  myPLN_diagonal<span class="op">$</span>criteria,</a>
+<a class="sourceLine" id="cb26-9" data-line-number="9">  myPLN_final<span class="op">$</span>criteria</a>
+<a class="sourceLine" id="cb26-10" data-line-number="10">) <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">nb_param</th>

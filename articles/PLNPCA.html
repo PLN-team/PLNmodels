@@ -102,7 +102,7 @@
       <h1>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-05-09</h4>
+            <h4 class="date">2019-05-16</h4>
       
       
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -119,8 +119,9 @@
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(corrplot)</a></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
@@ -319,24 +320,25 @@
 <p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of <span class="math inline">\(q\)</span> (see <span class="citation">(Chiquet, Mariadassou, and Robin <a href="#ref-PLNPCA">2018</a>)</span> for details on its computation).</p>
 <p>From this plot, we can see that the best model in terms of BIC or ICL is obtained for a rank <span class="math inline">\(q=4\)</span> or <span class="math inline">\(q=3\)</span>. We may extract the corresponding model with the method <code><a href="../reference/getBestModel.html">getBestModel("ICL")</a></code>. A model with a specific rank can be extracted with the <code><a href="../reference/getModel.html">getModel()</a></code> method:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">myPCA_ICL &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(PCA_models, <span class="st">"ICL"</span>) </a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">myPCA_BIC &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getModel.html">getModel</a></span>(PCA_models, <span class="dv">3</span>) ## getBestModel(PCA_models, "BIC")  is equivalent here </a></code></pre></div>
+<a class="sourceLine" id="cb10-2" data-line-number="2">myPCA_BIC &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getModel.html">getModel</a></span>(PCA_models, <span class="dv">3</span>) <span class="co"># getBestModel(PCA_models, "BIC")  is equivalent here </span></a></code></pre></div>
 </div>
 <div id="structure-of-plnpcafit" class="section level4">
 <h4 class="hasAnchor">
 <a href="#structure-of-plnpcafit" class="anchor"></a>Structure of <code>PLNPCAfit</code>
 </h4>
-<p>Objects <code>myPCA_ICL</code> and <code>myPCA_BIC</code> are <code>R6Class</code> objects of class <code>PLNPCAfit</code> which in turns own a couple of methods, some inherited from <code>PLNfit</code> and some others specific, mostly for vizualization purposes. The <code>plot</code> method provides individual maps and correlation circles as in usual PCA. If an additional classification exists for the observations – which is the case here with the available classification of the trapping nights – , it can be passed as an argument to the function.</p>
+<p>Objects <code>myPCA_ICL</code> and <code>myPCA_BIC</code> are <code>R6Class</code> objects of class <code>PLNPCAfit</code> which in turns own a couple of methods, some inherited from <code>PLNfit</code> and some others specific, mostly for vizualization purposes. The <code>plot</code> method provides individual maps and correlation circles as in usual PCA. If an additional classification exists for the observations – which is the case here with the available classification of the trapping nights – , it can be passed as an argument to the function.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myPCA_ICL, <span class="dt">ind_cols =</span> trichoptera<span class="op">$</span>Group)</a></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/map-1.png" width="768"></p>
-<p>With our PLN-PCA (and any pPCA model for count data, where successive models are not nested), it is important to performed the model selection of <span class="math inline">\(q\)</span> prior to vizualization, since the model with rank <span class="math inline">\(q=3\)</span> is not nested in the model with rank <span class="math inline">\(q=4\)</span>. Indeed, let us vizualize the first three axes of model <span class="math inline">\(q=3\)</span>:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myPCA_BIC, <span class="dt">ind_cols =</span> trichoptera<span class="op">$</span>Group)</a></code></pre></div>
-<p><img src="PLNPCA_files/figure-html/map%20q3-1.png" width="768"></p>
-<p>We can see that the maps for axes (1,2) is slightly different for the model with <span class="math inline">\(q=3\)</span> from the one obtained for axes (1,2) in the <span class="math inline">\(q=4\)</span> model<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<!-- Indeed, let us vizualize the first three axes of model $q=3$: -->
+<!-- ```{r map q3, fig.width=8, fig.height=8} -->
+<!-- plot(myPCA_BIC, ind_cols = trichoptera$Group) -->
+<!-- ``` -->
+<!-- We can see that the maps for axes (1,2) is slightly different for the model with $q=3$ from the one obtained for axes (1,2) in the $q=4$ model -->
 <p>Among other fields and methods (see <code><a href="../reference/PLNPCAfit.html">?PLNPCAfit</a></code> for a comprehensive view), the most interesting for the end-user in the context of PCA are</p>
 <ul>
 <li>the regression coefficient matrix</li>
 </ul>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myPCA_ICL) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myPCA_ICL) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th></th>
@@ -372,12 +374,12 @@
 <ul>
 <li>the estimated covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> with fixed rank</li>
 </ul>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sigma">sigma</a></span>(myPCA_ICL) <span class="op">%&gt;%</span><span class="st"> </span>corrplot<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sigma">sigma</a></span>(myPCA_ICL) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/sigma-1.png" width="672"></p>
 <ul>
 <li>the rotation matrix (in the latent space)</li>
 </ul>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">myPCA_ICL<span class="op">$</span>rotation <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">myPCA_ICL<span class="op">$</span>rotation <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
 <td align="left">Che</td>
@@ -419,7 +421,7 @@
 <ul>
 <li>the principal components values (or scores)</li>
 </ul>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">myPCA_ICL<span class="op">$</span>scores <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">myPCA_ICL<span class="op">$</span>scores <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
 <td align="right">-1.602086</td>
@@ -453,7 +455,7 @@
 </tr>
 </tbody></table>
 <p><code>PLNPCAfit</code> also inherits from the methods of <code>PLNfit</code> (see the <a href="articles/PLN.html">appropriate vignette</a>). Most are recalled via the show method:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">myPCA_ICL</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">myPCA_ICL</a></code></pre></div>
 <pre><code>## Poisson Lognormal with rank constrained for PCA (rank = 3)
 ## ==================================================================
 ##  nb_param   loglik       BIC       ICL R_squared
@@ -475,12 +477,12 @@
 <a href="#a-model-accounting-for-meteorological-covariates" class="anchor"></a>A model accounting for meteorological covariates</h3>
 <p>A contribution of PLN-PCA is to let the possibility to taking into account some covariates in the parameter space. Such a strategy often completly changes the interpretation of PCA. Indeed, the covariates are often responsible for some strong structure in the data. The effect of the covariates should be removed since they are often quite obvious for the analyst and may hide some more important and subtile effects.</p>
 <p>In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the temperature, the wind and the cloudiness. This can be done thanks to the model formula:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">PCA_models_cov &lt;-<span class="st"> </span></a>
-<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLNPCA.html">PLNPCA</a></span>(</a>
-<a class="sourceLine" id="cb19-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)) <span class="op">+</span><span class="st"> </span>Temperature <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Cloudiness,</a>
-<a class="sourceLine" id="cb19-4" data-line-number="4">    <span class="dt">data  =</span> trichoptera,</a>
-<a class="sourceLine" id="cb19-5" data-line-number="5">    <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span></a>
-<a class="sourceLine" id="cb19-6" data-line-number="6">  )</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">PCA_models_cov &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLNPCA.html">PLNPCA</a></span>(</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)) <span class="op">+</span><span class="st"> </span>Temperature <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Cloudiness,</a>
+<a class="sourceLine" id="cb18-4" data-line-number="4">    <span class="dt">data  =</span> trichoptera,</a>
+<a class="sourceLine" id="cb18-5" data-line-number="5">    <span class="dt">ranks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span></a>
+<a class="sourceLine" id="cb18-6" data-line-number="6">  )</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ## 
@@ -492,26 +494,26 @@
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(PCA_models_cov)</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(PCA_models_cov)</a></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/extraction%20cov-1.png" width="672"></p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">myPCA_cov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(PCA_models_cov, <span class="st">"ICL"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">myPCA_cov &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(PCA_models_cov, <span class="st">"ICL"</span>)</a></code></pre></div>
 <p>Suppose that we want to have a closer look to the first two axes. This can be done thanks to the plot method:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">gridExtra<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/gridExtra/topics/arrangeGrob">grid.arrange</a></span>(</a>
-<a class="sourceLine" id="cb23-2" data-line-number="2">  <span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myPCA_cov, <span class="dt">map =</span> <span class="st">"individual"</span>, <span class="dt">ind_cols =</span> trichoptera<span class="op">$</span>Group, <span class="dt">plot =</span> <span class="ot">FALSE</span>),</a>
-<a class="sourceLine" id="cb23-3" data-line-number="3">  <span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myPCA_cov, <span class="dt">map =</span> <span class="st">"variable"</span>, <span class="dt">plot =</span> <span class="ot">FALSE</span>),</a>
-<a class="sourceLine" id="cb23-4" data-line-number="4">  <span class="dt">ncol =</span> <span class="dv">2</span></a>
-<a class="sourceLine" id="cb23-5" data-line-number="5">)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">gridExtra<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/gridExtra/topics/arrangeGrob">grid.arrange</a></span>(</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">  <span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myPCA_cov, <span class="dt">map =</span> <span class="st">"individual"</span>, <span class="dt">ind_cols =</span> trichoptera<span class="op">$</span>Group, <span class="dt">plot =</span> <span class="ot">FALSE</span>),</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">  <span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myPCA_cov, <span class="dt">map =</span> <span class="st">"variable"</span>, <span class="dt">plot =</span> <span class="ot">FALSE</span>),</a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">  <span class="dt">ncol =</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb22-5" data-line-number="5">)</a></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/maps-1.png" width="672"></p>
 <p>We can check that the fitted value of the counts – even with this low-rank covariance matrix – are close to the observed ones:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">  <span class="dt">fitted   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(myPCA_cov)),</a>
-<a class="sourceLine" id="cb24-3" data-line-number="3">  <span class="dt">observed =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(trichoptera<span class="op">$</span>Abundance)</a>
-<a class="sourceLine" id="cb24-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-5" data-line-number="5"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> observed, <span class="dt">y =</span> fitted)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-6" data-line-number="6"><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-7" data-line-number="7"><span class="st">    </span><span class="kw">scale_x_log10</span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-8" data-line-number="8"><span class="st">    </span><span class="kw">scale_y_log10</span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-9" data-line-number="9"><span class="st">    </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">annotation_logticks</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(</a>
+<a class="sourceLine" id="cb23-2" data-line-number="2">  <span class="dt">fitted   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(myPCA_cov)),</a>
+<a class="sourceLine" id="cb23-3" data-line-number="3">  <span class="dt">observed =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(trichoptera<span class="op">$</span>Abundance)</a>
+<a class="sourceLine" id="cb23-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb23-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> observed, <span class="dt">y =</span> fitted)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb23-6" data-line-number="6"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_point">geom_point</a></span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb23-7" data-line-number="7"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_x_log10</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb23-8" data-line-number="8"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_y_log10</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb23-9" data-line-number="9"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/annotation_logticks">annotation_logticks</a></span>()</a></code></pre></div>
 <div class="figure">
 <img src="PLNPCA_files/figure-html/fitted-1.png" alt="fitted value vs. observation" width="672"><p class="caption">
 fitted value vs. observation
@@ -543,7 +545,7 @@ fitted value vs. observation
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>Percentage of variance must be interpreted with care: it sums to 100% but must be put in perspective with the model <span class="math inline">\(R^2\)</span>, giving an approximation of the total percentage of variance explained with the current model.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>With our PLN-PCA (and any pPCA model for count data, where successive models are not nested), it is important to performed the model selection of <span class="math inline">\(q\)</span> prior to vizualization, since the model with rank <span class="math inline">\(q=3\)</span> is not nested in the model with rank <span class="math inline">\(q=4\)</span>. Hence, percentage of variance must be interpreted with care: it sums to 100% but must be put in perspective with the model <span class="math inline">\(R^2\)</span>, giving an approximation of the total percentage of variance explained with the current model.<a href="#fnref1" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
   </div>

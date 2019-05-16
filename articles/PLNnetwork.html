@@ -102,7 +102,7 @@
       <h1>Sparse structure estimation for multivariate count data with PLN-network</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-05-09</h4>
+            <h4 class="date">2019-05-16</h4>
       
       
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -119,8 +119,8 @@
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
@@ -405,30 +405,25 @@
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(network_models)</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot-1.png" width="672"></p>
 <p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with a lower level of penalty (meaning more edges in the network). The same holds true for the penalized counterpart of the variational surrogate. Generally, smoothness of these criteria is a good sanity check of optimization process. BIC and its extended-version high-dimensional version EBIC are classically used for selecting the correct amount of penalization with sparse estimator like the one used by PLN-network. However, we will consider later a more robust albeit more computationally intensive strategy to chose the appropriate number of edges in the network.</p>
-<p>To pursue the analysis, we can represent the coefficient path (i.e., value of the edges in the network according to the penalty level) to see if some edges clearly come off. To this end, we provide the S3 function <code>coefficient_path</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(network_models, <span class="dt">corr =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st">  </span><span class="kw">coord_trans</span>(<span class="dt">x=</span><span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>()</a></code></pre></div>
+<p>To pursue the analysis, we can represent the coefficient path (i.e., value of the edges in the network according to the penalty level) to see if some edges clearly come off. An alternative and more intuitive view consists in plotting the values of the partial correlations along the path, which can be obtained with the options . To this end, we provide the S3 function <code>coefficient_path</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(network_models, <span class="dt">corr =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/coord_trans">coord_trans</a></span>(<span class="dt">x=</span><span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>()</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/path_coeff-1.png" width="672"></p>
-<p>An alternative and more intuitive view consiste in plotting the values of the partial correlations along the path.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(network_models, <span class="dt">corr =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Penalty, <span class="dt">y =</span> Coeff, <span class="dt">group =</span> Edge, <span class="dt">colour =</span> Edge)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span><span class="kw">coord_trans</span>(<span class="dt">x =</span> <span class="st">"log10"</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>()</a></code></pre></div>
-<p><img src="PLNnetwork_files/figure-html/path_corr-1.png" width="672"></p>
 </div>
 <div id="model-selection-issue-choosing-a-network" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model-selection-issue-choosing-a-network" class="anchor"></a>Model selection issue: choosing a network</h3>
 <p>To select a network with a specific level of penalty, one uses the <code><a href="../reference/getModel.html">getModel(lambda)</a></code> S3 method. We can also extract the best model according to the BIC or EBIC with the method <code><a href="../reference/getBestModel.html">getBestModel()</a></code>.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">model_pen &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getModel.html">getModel</a></span>(network_models, network_models<span class="op">$</span>penalties[<span class="dv">20</span>]) <span class="co"># give some sparsity</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">model_BIC &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(network_models, <span class="st">"BIC"</span>)   <span class="co"># if no criteria is specified, the best BIC is used</span></a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">model_pen &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getModel.html">getModel</a></span>(network_models, network_models<span class="op">$</span>penalties[<span class="dv">20</span>]) <span class="co"># give some sparsity</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">model_BIC &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(network_models, <span class="st">"BIC"</span>)   <span class="co"># if no criteria is specified, the best BIC is used</span></a></code></pre></div>
 <p>An alternative strategy is to use StARS <span class="citation">(Liu, Roeder, and Wasserman <a href="#ref-stars">2010</a>)</span>, which performs resampling to evaluate the robustness of the network along the path of solutions in a similar fashion as the stability selection approach of <span class="citation">Meinshausen and Bühlmann (<a href="#ref-stabilitySelection">2010</a>)</span>, but in a network inference context.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">model_StARS &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(network_models, <span class="st">"StARS"</span>) <span class="co"># if StARS is requested, stabiltiy selection is performed if needed </span></a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">model_StARS &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getBestModel.html">getBestModel</a></span>(network_models, <span class="st">"StARS"</span>) <span class="co"># if StARS is requested, stabiltiy selection is performed if needed </span></a></code></pre></div>
 <pre><code>## 
 ## Stability Selection for PLNnetwork: 
 ## subsampling: ++++++++++++++++++++</code></pre>
 <p>When “StARS” is requested for the first time, <code>getBestModel</code> automatically calls the method <code>stability_selection</code> with the default parameters. After the first call, the stability path is available from the <code>plot</code> function:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(network_models, <span class="st">"stability"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(network_models, <span class="st">"stability"</span>)</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot%20stability-1.png" width="672"></p>
 </div>
 <div id="structure-of-a-plnnetworkfit" class="section level3">
@@ -436,13 +431,13 @@
 <a href="#structure-of-a-plnnetworkfit" class="anchor"></a>Structure of a <code>PLNnetworkfit</code>
 </h3>
 <p>The variables <code>model_BIC</code>, <code>model_StARS</code> and <code>model_pen</code> are other <code>R6Class</code> objects with class <code>PLNnetworkfit</code>. They all inherits from the class <code>PLNfit</code> and thus own all its methods, with a couple of specific one, mostly for network vizualization purposes. Most fields and methods are recalled when such an object is printed:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">model_StARS</a></code></pre></div>
-<pre><code>## Poisson Lognormal with sparse inverse covariance (penalty = 0.637)
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">model_StARS</a></code></pre></div>
+<pre><code>## Poisson Lognormal with sparse inverse covariance (penalty = 0.689)
 ## ==================================================================
-##  nb_param    loglik       BIC      ICL R_squared n_edges     EBIC
-##        24 -1174.595 -1221.297 -2507.99     0.964       7 -1231.68
+##  nb_param    loglik       BIC       ICL R_squared n_edges     EBIC
+##        23 -1176.952 -1221.708 -2508.402     0.964       6 -1231.07
 ##  pen_loglik density
-##   -1177.687   0.048
+##   -1180.199   0.042
 ## ==================================================================
 ## * Useful fields
 ##     $model_par, $latent, $var_par, $optim_par
@@ -454,31 +449,28 @@
 ## * Additional S3 methods for network
 ##     plot.PLNnetworkfit()</code></pre>
 <p>The <code>plot</code> method provides a quick representation of the inferred network, with various options (either as a matrix, a graph, and always send back de plotted object invisibly if users needs to perform additional analyses).</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_BIC, <span class="dt">type =</span> <span class="st">"support"</span>, <span class="dt">output =</span> <span class="st">"corrplot"</span>)</a></code></pre></div>
-<p><img src="PLNnetwork_files/figure-html/support_network-1.png" width="672"></p>
-<p>Here, an igraph object can be recovered.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">my_graph &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS, <span class="dt">plot =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb20-2" data-line-number="2">my_graph</a></code></pre></div>
-<pre><code>## IGRAPH 79c00ce UNW- 17 7 -- 
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">my_graph &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS, <span class="dt">plot =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">my_graph</a></code></pre></div>
+<pre><code>## IGRAPH e805d0b UNW- 17 6 -- 
 ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
 ## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),
 ## | width (e/n)
-## + edges from 79c00ce (vertex names):
-## [1] Hym--Hsp Aga--Hfo Aga--Hsp Set--All Set--Hsp Han--Sta Hfo--Hsp</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_BIC)</a></code></pre></div>
-<p><img src="PLNnetwork_files/figure-html/partial_corr_network-1.png" width="672"></p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS)</a></code></pre></div>
-<p><img src="PLNnetwork_files/figure-html/partial_corr_network-2.png" width="672"></p>
+## + edges from e805d0b (vertex names):
+## [1] Hym--Hsp Aga--Hsp Set--All Set--Hsp Han--Sta Hfo--Hsp</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS)</a></code></pre></div>
+<p><img src="PLNnetwork_files/figure-html/stars_network-1.png" width="672"></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS, <span class="dt">type =</span> <span class="st">"support"</span>, <span class="dt">output =</span> <span class="st">"corrplot"</span>)</a></code></pre></div>
+<p><img src="PLNnetwork_files/figure-html/stars_network-2.png" width="672"></p>
 <p>We can finally check that the fitted value of the counts – even with sparse regularization of the covariance matrix – are close to the observed ones:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">  <span class="dt">fitted   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(model_StARS)),</a>
-<a class="sourceLine" id="cb24-3" data-line-number="3">  <span class="dt">observed =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(trichoptera<span class="op">$</span>Abundance)</a>
-<a class="sourceLine" id="cb24-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-5" data-line-number="5"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> observed, <span class="dt">y =</span> fitted)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-6" data-line-number="6"><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-7" data-line-number="7"><span class="st">    </span><span class="kw">scale_x_log10</span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-8" data-line-number="8"><span class="st">    </span><span class="kw">scale_y_log10</span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-9" data-line-number="9"><span class="st">    </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">annotation_logticks</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">  <span class="dt">fitted   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(model_StARS)),</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">  <span class="dt">observed =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(trichoptera<span class="op">$</span>Abundance)</a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> observed, <span class="dt">y =</span> fitted)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-6" data-line-number="6"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_point">geom_point</a></span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-7" data-line-number="7"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_x_log10</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-8" data-line-number="8"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_y_log10</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-9" data-line-number="9"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/annotation_logticks">annotation_logticks</a></span>()</a></code></pre></div>
 <div class="figure">
 <img src="PLNnetwork_files/figure-html/fitted-1.png" alt="fitted value vs. observation" width="672"><p class="caption">
 fitted value vs. observation
