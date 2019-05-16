@@ -1,10 +1,13 @@
 
-## Third Submission
+## Resubmission of a new submission
 
-* added some dont run in examples to save time during check
-* simplification in the vignettes to save time during check
+To reduce time during the R check, a new version of PLNmodels was (re)submitted where I 
 
-On my compouter I get (Ubuntu 18.04, Intel Xeon 3.5 GHz; 32 Go mem)
+* use smaller data in test files to reduce the testing time
+* add some dont run in examples to save time during check
+* simplify in the vignettes to save time during check
+
+On my computer I get (Ubuntu 18.04, Intel Xeon 3.5 GHz; 32 Go mem)
 ✔  checking whether package ‘PLNmodels’ can be installed (48.8s)
 N  checking installed package size ...
      installed size is 10.8Mb
@@ -14,12 +17,8 @@ N  checking installed package size ...
 ✔  checking examples (20.1s)
 ✔  Running ‘testthat.R’ [27s/27s]
 ✔  checking re-building of vignette outputs (44.3s)
-
-## Second Submission
-
-* using smaller data in test files to reduce the testing time
-
-## New Submission
+── R CMD check results ──────────────────────────────────── PLNmodels 0.9.2 ────
+Duration: 3m 29.2s
 
 ## Tested environments
 
