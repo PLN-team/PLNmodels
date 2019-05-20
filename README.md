@@ -18,6 +18,10 @@ status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)]
 
 ## Installation
 
+**PLNmodels** is available on
+[CRAN](https://cran.r-project.org/package=PLNmodels). The development
+version is available on [Github](https://github.com/jchiquet/PLNmodels).
+
 ### R Package installation
 
 #### CRAN dependencies
@@ -46,6 +50,14 @@ if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
 
 #### Installing PLNmodels
 
+  - For the last stable version, use
+
+<!-- end list -->
+
+``` r
+install.packages("PLNmodels")
+```
+
   - For the development version, use
 
 <!-- end list -->
@@ -54,16 +66,13 @@ if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
 devtools::install_github("jchiquet/PLNmodels")
 ```
 
-  - For the last tagged release, use
+  - For a specific tagged release, use
 
 <!-- end list -->
 
 ``` r
-devtools::install_github("jchiquet/PLNmodels@v0.9.1")
+devtools::install_github("jchiquet/PLNmodels@tag_number")
 ```
-
-  - Windows users may want to use [the binary version of the
-    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.9.1/PLNmodels_0.9.1.zip)
 
 ## Usage and main fitting functions
 

@@ -1,3 +1,7 @@
+# PLNmodels 0.9.2.9000
+
+* development version
+
 # PLNmodels 0.9.2
 
 * various bug fixes
