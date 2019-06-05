@@ -45,7 +45,6 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    GGally,
     testthat,
     covr,
     pkgdown

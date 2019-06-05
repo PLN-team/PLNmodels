@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 
 ## Installation
 
+**PLNmodels** is available on [CRAN](https://cran.r-project.org/package=PLNmodels). The development version is available on [Github](https://github.com/jchiquet/PLNmodels).
+
 ### R Package installation
 
 #### CRAN dependencies
@@ -46,20 +48,23 @@ if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
 
 #### Installing PLNmodels
 
+- For the last stable version, use
+
+```{r package CRAN, eval = FALSE}
+install.packages("PLNmodels")
+```
+
 - For the development version, use
 
-```{r package, eval = FALSE}
+```{r package github, eval = FALSE}
 devtools::install_github("jchiquet/PLNmodels")
 ```
 
-- For the last tagged release, use
+- For a specific tagged release, use
 
 ```{r package tag, eval = FALSE}
-devtools::install_github("jchiquet/PLNmodels@v0.9.1")
+devtools::install_github("jchiquet/PLNmodels@tag_number")
 ```
-
-- Windows users may want to use [the binary version of the package](https://github.com/jchiquet/PLNmodels/releases/download/v0.9.1/PLNmodels_0.9.1.zip)
-
 
 ## Usage and main fitting functions
 
