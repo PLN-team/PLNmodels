@@ -120,7 +120,6 @@ function(responses, covariates, offsets, weights, model, control) {
       "rank"      = optim_rank     ,
       "sparse"    = optim_sparse
     )
-
   if (isPLNfit(control$inception)) {
     if (control$trace > 1) cat("\n User defined inceptive PLN model")
     stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))))
