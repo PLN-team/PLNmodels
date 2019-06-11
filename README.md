@@ -9,6 +9,7 @@ Status](https://ci.appveyor.com/api/projects/status/github/jchiquet/PLNmodels?br
 Badge](https://api.codacy.com/project/badge/Grade/c031ad73ccdb4c88ba11dfd74fab1255)](https://www.codacy.com/app/jchiquet/PLNmodels?utm_source=github.com&utm_medium=referral&utm_content=jchiquet/PLNmodels&utm_campaign=Badge_Grade)
 [![Coverage
 status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/jchiquet/PLNmodels?branch=master)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 
 > The Poisson lognormal model and variants can be used for a variety of
 > multivariate problems when count data are at play (including PCA, LDA
