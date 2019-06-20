@@ -124,5 +124,6 @@ Please cite our work using the following references:
     2674–2698, 2018. [link](http://dx.doi.org/10.1214/18-AOAS1177)
 
   - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
-    sparse network reconstruction from count data, arXiv preprint, 2018.
-    [link](https://arxiv.org/abs/1806.03120)
+    sparse network reconstruction from count data, Proceedings of the
+    36th International Conference on Machine Learning (ICML), 2019.
+    [link](http://proceedings.mlr.press/v97/chiquet19a.html)
