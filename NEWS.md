@@ -1,6 +1,6 @@
-# PLNmodels 0.9.2.9000
+# PLNmodels 0.9.2.9002 - development version
 
-* development version
+* added the possibility for matrix of weights for the penalty in PLNnetworks
 
 # PLNmodels 0.9.2
 

@@ -60,7 +60,7 @@ PLNnetworkfamily$set("public", "initialize",
     ## Get an appropriate grid of penalties
     if (is.null(penalties)) {
       if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
-      max_pen <- max(abs(myPLN$model_par$Sigma))
+      max_pen <- max(abs(myPLN$model_par$Sigma / control$penalty_weights))
       penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min.ratio), len = control$nPenalties)
     } else {
       if (control$trace > 1) cat("\nPenalties already set by the user")

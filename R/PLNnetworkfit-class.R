@@ -71,7 +71,7 @@ PLNnetworkfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
 
   ## shall we penalize the diagonal? in glassoFast
-  rho <- matrix(self$penalty, self$p, self$p)
+  rho <- self$penalty * control$penalty_weights
   if (!control$penalize_diagonal) diag(rho) <- 0
 
   cond <- FALSE; iter <- 0
