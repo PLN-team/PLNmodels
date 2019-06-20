@@ -108,4 +108,18 @@ test_that("PLNnetwork: matrix of penalties work", {
   expect_true(inherits(myPLN$plot_objective(), "ggplot"))
   expect_true(inherits(myPLN$plot_stars(), "ggplot"))
 
+  ## missspecification of penlaty weights should induce errors
+  ## not symmetric
+  W <- diag(1, p, p)
+  W[upper.tri(W)] <- runif(p*(p-1)/2, min = 1, max = 5)
+  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control_main = list(penalty_weights = W)))
+
+  ## not square
+  W <- matrix(1, p + 1, p)
+  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control_main = list(penalty_weights = W)))
+
+  ## not-positive entries
+  W <- matrix(0, p, p)
+  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control_main = list(penalty_weights = W)))
+
 })

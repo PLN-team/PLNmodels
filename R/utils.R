@@ -216,6 +216,7 @@ PLNnetwork_param <- function(control, n, p, d, weighted = FALSE) {
   )
   ctrl[names(control)] <- control
   stopifnot(ctrl$algorithm %in% available_algorithms)
+  stopifnot(isSymmetric(ctrl$penalty_weights), all(ctrl$penalty_weights > 0))
   ctrl
 }
 
