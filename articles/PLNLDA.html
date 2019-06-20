@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9002</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
       <h1>Supervized classification of multivariate count table with the Poisson discriminant Analysis</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-06-11</h4>
+            <h4 class="date">2019-06-20</h4>
       
       
       <div class="hidden name"><code>PLNLDA.Rmd</code></div>
@@ -839,8 +839,8 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <a class="sourceLine" id="cb20-4" data-line-number="4">predicted.scores &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(predicted.scores)</a>
 <a class="sourceLine" id="cb20-5" data-line-number="5">predicted.scores<span class="op">$</span>group &lt;-<span class="st"> </span>trichoptera<span class="op">$</span>Group</a>
 <a class="sourceLine" id="cb20-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(myLDA_nocov, <span class="dt">map =</span> <span class="st">"individual"</span>, <span class="dt">nb_axes =</span> <span class="dv">2</span>, <span class="dt">plot =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb20-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_point">geom_point</a></span>(<span class="dt">data =</span> predicted.scores, </a>
-<a class="sourceLine" id="cb20-8" data-line-number="8">             <span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> Axis<span class="fl">.1</span>, <span class="dt">y =</span> Axis<span class="fl">.2</span>, <span class="dt">color =</span> group, <span class="dt">label =</span> <span class="ot">NULL</span>))</a></code></pre></div>
+<a class="sourceLine" id="cb20-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="dt">data =</span> predicted.scores, </a>
+<a class="sourceLine" id="cb20-8" data-line-number="8">             <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> Axis<span class="fl">.1</span>, <span class="dt">y =</span> Axis<span class="fl">.2</span>, <span class="dt">color =</span> group, <span class="dt">label =</span> <span class="ot">NULL</span>))</a></code></pre></div>
 <p><img src="PLNLDA_files/figure-html/predicted_scores-1.png" width="672"></p>
 </div>
 </div>

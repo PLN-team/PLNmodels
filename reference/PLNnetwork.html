@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9002</span>
       </span>
     </div>
 
@@ -201,6 +201,7 @@ a collection of models with class <code><a href='PLNnetworkfit.html'>PLNnetworkf
 <li><p>"ftol_out"outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6</p></li>
 <li><p>"maxit_out"outer solver stops when the number of iteration exceeds out.maxit. Default is 50</p></li>
 <li><p>"penalize_diagonal"boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.</p></li>
+<li><p>"penalty_weights"p x p matrix of weights (defaut filled with 1) to adapt the amount of shrinkage to each pairs of node. Mus tbe symmetric.</p></li>
 </ul>
     <p>The list of parameters <code>control_init</code> controls the optimization process in the initialization and in the function <code><a href='PLN.html'>PLN</a></code>, plus two additional parameters:</p><ul>
 <li><p>"nPenalties"an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non NULL</p></li>
