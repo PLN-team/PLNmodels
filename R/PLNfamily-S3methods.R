@@ -20,10 +20,12 @@ isPLNfamily <- function(Robject) {inherits(Robject, 'PLNfamily'       )}
 #' @return  Send back an object with class \code{\link[=PLNPCAfit]{PLNPCAfit}} or \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
 #'
 #' @examples
+#' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+#' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:4)
 #' myModel <- getBestModel(myPCA)
+#' }
 #' @export
 getBestModel <- function(Robject, crit, ...) {UseMethod("getBestModel", Robject)}
 
@@ -35,9 +37,11 @@ getBestModel <- function(Robject, crit, ...) {UseMethod("getBestModel", Robject)
 #'
 #' @return Sends back an object with class \code{\link[=PLNPCAfit]{PLNPCAfit}} or \code{\link[=PLNPCAfit]{PLNnetworkfit}}.
 #' @examples
+#' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:4)
+#' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
 #' myModel <- getModel(myPCA, 2)
+#' }
 #' @export
 getModel <- function(Robject, var , index) {UseMethod("getModel"    , Robject)}

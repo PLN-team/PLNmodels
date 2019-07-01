@@ -23,11 +23,13 @@
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #' @examples
+#' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
 #' class(myPLNLDA)
 #' print(myPLNLDA)
+#' }
 #' @seealso The function \code{\link{PLNLDA}}.
 PLNLDAfit <-
   R6Class(classname = "PLNLDAfit",
@@ -276,7 +278,7 @@ PLNLDAfit$set("public", "predict",
       centered_positions <- sweep(average_positions, 2, centers)
       ## transformation through svd to project in the same space as learning samples
       scores <- centered_positions %*% t(t(private$svdLDA$u[, 1:self$rank]) * private$svdLDA$d[1:self$rank])
-      rownames(scores) <- rownames(private$M)
+      rownames(scores) <- rownames(newdata)
       return(scores)
     }
 

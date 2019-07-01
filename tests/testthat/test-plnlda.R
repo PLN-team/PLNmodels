@@ -3,9 +3,6 @@ context("test-plnlda")
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-data(mollusk)
-suppressWarnings(mollusc <- prepare_data(mollusk$Abundance, mollusk$Covariate))
-
 test_that("Check that PLNLDA is running and robust",  {
 
   model1 <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
@@ -13,34 +10,12 @@ test_that("Check that PLNLDA is running and robust",  {
 
   expect_is(model1, "PLNLDAfit")
   expect_is(model1, "PLNfit")
-
-  model2 <- PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)
-  model3 <- PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)
-
-  expect_equal(PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)$fitted,
-               PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)$fitted)
-
 })
 
 test_that("Invalid group throws an error",  {
   expect_error(PLNLDA(Abundance ~ 0 + offset(log(Offset)),
                       grouping = group, data = trichoptera),
                "invalid grouping")
-})
-
-test_that("Check PLNLDA initialization",  {
-  tol <- 1e-4
-
-  ## use default initialization (LM)
-  model1 <- PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)
-
-  ## initialization with the previous fit
-  model2 <- PLNLDA(Abundance ~ 0, grouping = Group,
-                   data = trichoptera, control = list(inception = model1, trace = 0))
-
-  expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
-  expect_equal(model2$model_par, model1$model_par, tolerance = tol)
-  expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
 test_that("Check PLNLDA weights",  {
@@ -59,12 +34,12 @@ test_that("Check PLNLDA weights",  {
 })
 
 test_that("Use or not of the intercept does not change the result.",  {
-  lda_with <- PLNLDA(Abundance ~ 1 + duration + offset(log(Offset)),
-                     grouping = site,
-                     data = mollusc)
-  lda_wo <- PLNLDA(Abundance ~ 0 + duration + offset(log(Offset)),
-                     grouping = site,
-                     data = mollusc)
+  lda_with <- PLNLDA(Abundance ~ 1 + Wind + offset(log(Offset)),
+                     grouping = Group,
+                     data = trichoptera)
+  lda_wo <- PLNLDA(Abundance ~ 0 + Wind + offset(log(Offset)),
+                     grouping = Group,
+                     data = trichoptera)
   expect_equal(lda_with$group_means, lda_wo$group_means)
   expect_equal(coef(lda_with), coef(lda_wo))
   expect_equal(vcov(lda_with), vcov(lda_wo))

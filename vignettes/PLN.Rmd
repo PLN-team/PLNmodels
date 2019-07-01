@@ -33,8 +33,9 @@ From the statistical point of view, the function `PLN` adjusts a multivariate Po
 The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:
 
 ```{r requirement}
-library(tidyverse)
 library(PLNmodels)
+library(ggplot2)
+library(corrplot)
 ```
 
 ### Data set
@@ -64,6 +65,7 @@ The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent 
 ```{r geometricalInsight, echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "PLN: geometrical view", fig.width=7, fig.height=7, fig.align='center'}
 library(grid)
 library(gridExtra)
+library(dplyr)
 
 set.seed(20171110)
 x <- rnorm(100)
@@ -190,7 +192,7 @@ data.frame(
 The residual covariance matrix better displays as an image matrix: 
 
 ```{r plot covariance, fig.width=7, fig.height=5}
-corrplot::corrplot(sigma(myPLN), is.corr = FALSE)
+corrplot(sigma(myPLN), is.corr = FALSE)
 ```
 
 #### Observation weights
@@ -272,11 +274,6 @@ rbind(
 It is possible to change a bit the parametrization used for modelling the residual covariance matrix $\boldsymbol\Sigma$, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence $p \times (p+1)/2$ parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix $\boldsymbol\Sigma_D$ with only $p$ parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix $\boldsymbol\Sigma = \sigma \mathbf{I}_p$. This can be tuned in `PLN` with the `control` argument, a list controlling various aspects of the underlying optimization process:
 
 ```{r covariances models}
-myPLN_full <- 
-  PLN(
-    Abundance ~ 1 + offset(log(Offset)),
-    data = trichoptera, control = list(covariance = "full", trace = 0)
-  )
 myPLN_diagonal <- 
   PLN(
     Abundance ~ 1 + offset(log(Offset)),
@@ -289,11 +286,19 @@ myPLN_spherical <-
   )
 ```
 
-It seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:
+Note that, by default, the model chosen is \texttt{covariance = "spherical"}, so that the two following calls are equivalents:
+```{r PLN covariance full, evaluate = FALSE}
+myPLN_default <- 
+  PLN(Abundance ~ 1, data = trichoptera, )
+myPLN_full <- 
+  PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "full"))
+```
+
+Different covariance models can then be compared with the usual criteria: it seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:
 
 ```{r compare covariances}
 rbind(
-  myPLN_full$criteria,
+  myPLN_offsets$criteria,
   myPLN_diagonal$criteria,
   myPLN_spherical$criteria
 ) %>% 

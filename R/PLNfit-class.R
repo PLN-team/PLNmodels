@@ -5,8 +5,8 @@
 #' by inheritance.
 #'
 #' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-#' See the documentation for \code{\link[=coef.PLNfit]{coef}}, \code{\link[=vcov.PLNfit]{vcov.PLNfit}},
-#' \code{\link[=predict.PLNfit]{predict}}, \code{\link[=fisher.PLNfit]{fisher}} and \code{\link[=standard_error.PLNfit]{standard_error}}.
+#' See the documentation for \code{\link[=coef.PLNfit]{coef}}, \code{\link[=sigma.PLNfit]{sigma.PLNfit}},
+#' \code{\link[=predict.PLNfit]{predict}}, \code{\link[=vcov.PLNfit]{vcov}} and \code{\link[=standard_error.PLNfit]{standard_error}}.
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'
@@ -25,11 +25,13 @@
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #' @examples
+#' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 #' class(myPLN)
 #' print(myPLN)
+#' }
 PLNfit <-
    R6Class(classname = "PLNfit",
     public = list(
@@ -118,7 +120,6 @@ function(responses, covariates, offsets, weights, model, control) {
       "rank"      = optim_rank     ,
       "sparse"    = optim_sparse
     )
-
   if (isPLNfit(control$inception)) {
     if (control$trace > 1) cat("\n User defined inceptive PLN model")
     stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))))
@@ -184,7 +185,9 @@ PLNfit$set("public", "postTreatment",
 function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis"), nullModel = NULL) {
   ## compute R2
   self$set_R2(responses, covariates, offsets, weights, nullModel)
-  ## Set the name of the matrices according to those of the data matrices
+  ## Set the name of the matrices according to those of the data matrices,
+  ## if names are missing, set sensible defaults
+  if (is.null(colnames(responses))) colnames(responses) <- paste0("Y", 1:self$p)
   rownames(private$Theta) <- colnames(responses)
   colnames(private$Theta) <- colnames(covariates)
   rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
@@ -290,7 +293,7 @@ PLNfit$set("public", "compute_fisher",
         crossprod(X, A[, i] * X)
       }))
     }
-    ## set proper names
+    ## set proper names, use sensible defaults if some names are missing
     element.names <- expand.grid(covariates = colnames(private$Theta),
                                  species    = rownames(private$Theta)) %>% rev() %>%
       ## Hack to make sure that species is first and varies slowest
@@ -337,7 +340,7 @@ function(model = paste("A multivariate Poisson Lognormal fit with", private$cova
   cat("    $model_par, $latent, $var_par, $optim_par\n")
   cat("    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria\n")
   cat("* Useful S3 methods\n")
-  cat("    print(), coef(), vcov(), sigma(), fitted(), predict(), standard_error()\n")
+  cat("    print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()\n")
 })
 
 PLNfit$set("public", "print", function() self$show())

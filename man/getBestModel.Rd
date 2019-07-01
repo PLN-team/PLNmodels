@@ -39,8 +39,10 @@ Best model extraction from a collection of models
 }}
 
 \examples{
+\dontrun{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:4)
 myModel <- getBestModel(myPCA)
+}
 }

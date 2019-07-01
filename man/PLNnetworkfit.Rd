@@ -47,12 +47,14 @@ See the documentation for \code{\link[=plot.PLNnetworkfit]{plot.PLNnetworkfit}} 
 }}
 
 \examples{
+\dontrun{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 nets <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 myPLNnet <- getBestModel(nets)
 class(myPLNnet)
 print(myPLNnet)
+}
 }
 \seealso{
 The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}

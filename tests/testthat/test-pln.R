@@ -13,8 +13,6 @@ test_that("PLN: Check that PLN is running and robust",  {
 
   expect_equal(PLN(trichoptera$Abundance ~ 1 + trichoptera$Wind)$fitted,
                PLN(Abundance ~ Wind, data = trichoptera)$fitted)
-
-  ## add more
 })
 
 test_that("PLN: Check consistency of initialization - fully parametrized covariance",  {
@@ -31,37 +29,37 @@ test_that("PLN: Check consistency of initialization - fully parametrized covaria
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
-test_that("PLN: Check consistency of initialization - diagonal covariance",  {
-  tol <- 1e-4
-
-  ## use default initialization (LM)
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0, covariance = "diagonal"))
-
-  ## initialization with the previous fit
-  model2 <- PLN(Abundance ~ 1, data = trichoptera, control = list(inception = model1, trace = 0, covariance = "diagonal"))
-
-  expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
-  expect_equal(model2$model_par, model1$model_par, tolerance = tol)
-  expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
-})
-
-test_that("PLN: Check consistency of observation weights - fully parameterized covariance",  {
-  tol <- 1e-2
-
-  ## no weights
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
-
-  ## equivalent weigths
-  expect_output(model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(trace = 1)),
-                paste("\n Initialization...",
-                      "Adjusting a PLN model with full covariance model (with observation weigths)",
-                      "Post-treatments...",
-                      "DONE!", sep = "\n "), fixed = TRUE)
-
-  expect_equal(model2$loglik, model1$loglik, tolerance = tol)
-
-
-})
+# test_that("PLN: Check consistency of initialization - diagonal covariance",  {
+#   tol <- 1e-4
+#
+#   ## use default initialization (LM)
+#   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0, covariance = "diagonal"))
+#
+#   ## initialization with the previous fit
+#   model2 <- PLN(Abundance ~ 1, data = trichoptera, control = list(inception = model1, trace = 0, covariance = "diagonal"))
+#
+#   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
+#   expect_equal(model2$model_par, model1$model_par, tolerance = tol)
+#   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
+# })
+#
+# test_that("PLN: Check consistency of observation weights - fully parameterized covariance",  {
+#   tol <- 1e-2
+#
+#   ## no weights
+#   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
+#
+#   ## equivalent weigths
+#   expect_output(model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(trace = 1)),
+#                 paste("\n Initialization...",
+#                       "Adjusting a PLN model with full covariance model (with observation weigths)",
+#                       "Post-treatments...",
+#                       "DONE!", sep = "\n "), fixed = TRUE)
+#
+#   expect_equal(model2$loglik, model1$loglik, tolerance = tol)
+#
+#
+# })
 
 test_that("PLN: Check consistency of observation weights - diagonal covariance",  {
   tol <- 1e-2
@@ -105,14 +103,21 @@ test_that("PLN is working with a single variable data matrix",  {
   expect_is(PLN(Y ~ 1), "PLNfit")
 })
 
+test_that("PLN is working with unnamed data matrix",  {
+  n = 10; d = 3; p = 10
+  Y <- matrix(rpois(n*p, 1), n, p)
+  X <- matrix(rnorm(n*d), n, d)
+  expect_is(PLN(Y ~ X), "PLNfit")
+})
+
  test_that("PLN is working with different optimization algorithm in NLopt",  {
 
     MMA    <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "MMA"  ))
     CCSAQ  <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "CCSAQ"))
-    LBFGS  <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "LBFGS"))
+    # LBFGS  <- PLN(Abundance ~ 1, data = trichoptera, control = list(algorithm = "LBFGS"))
 
     expect_equivalent(MMA$loglik, CCSAQ$loglik, tolerance = 1e-1) ## Almost equivalent, CCSAQ faster
-    expect_equivalent(MMA$loglik, LBFGS$loglik, tolerance = 1e-1)
+    # expect_equivalent(MMA$loglik, LBFGS$loglik, tolerance = 1e-1)
 
     expect_error(PLN(Abundance ~ 1, data = trichoptera, control=list(algorithm="nawak")))
  })

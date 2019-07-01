@@ -31,7 +31,6 @@ This vignette illustrates the basical use of the `PLNLDA` function and the metho
 The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:
 
 ```{r requirement, cache = FALSE}
-library(tidyverse)
 library(PLNmodels)
 ```
 
@@ -47,9 +46,9 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.) In the following, we're particularly interested in the `trichoptera$Group` **discrete** covariate which corresponds to disjoint time spans during which the catching took place. The correspondance between group label and time spans is:
 
 ```{r description, echo = FALSE}
-tibble(Label = 1:12, 
+data.frame(Label = 1:12, 
        `Number of Consecutive Nights` = c(12, 5, 5, 4, 4, 1, 3, 4, 5, 4, 1, 1), 
-       Date  = str_c(rep(c("June", "July", "June", "July"), times = c(4, 1, 6, 1)), 
+       Date  = paste(rep(c("June", "July", "June", "July"), times = c(4, 1, 6, 1), sep = " "), 
                      rep(c(59, 60), times = c(6, 6)),
                      sep = " ")) %>% 
   knitr::kable(align = "c")
@@ -224,11 +223,11 @@ table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
 Finally, we can get the coordinates of the new data on the same graph at the original ones with `type = "scores"`. This is done by averaging the latent positions $\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k$ (found when the sample is assumed to come from group $k$) and weighting them with the $\hat{\pi}_k$. Some samples, have compositions that put them very far from their group mean. 
 
 ```{r predicted_scores, fig.width=7, fig.height=5}
+library(ggplot2)
 predicted.scores <- predict(myLDA_nocov, newdata = trichoptera,  type = "scores")
 colnames(predicted.scores) <- paste0("Axis.", 1:ncol(predicted.scores))
-predicted.scores <- predicted.scores %>% 
-  as_tibble() %>% 
-  mutate(group = trichoptera$Group)
+predicted.scores <- as.data.frame(predicted.scores)
+predicted.scores$group <- trichoptera$Group
 plot(myLDA_nocov, map = "individual", nb_axes = 2, plot = FALSE) + 
   geom_point(data = predicted.scores, 
              aes(x = Axis.1, y = Axis.2, color = group, label = NULL))
@@ -280,3 +279,6 @@ and check that we recover the correct class in most cases (again, we used the sa
 ```{r check_predicted_class_cov}
 table(predicted.class_cov, trichoptera$Group, dnn = c("predicted", "true"))
 ```
+
+
+## References

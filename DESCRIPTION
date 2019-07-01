@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 0.9.1
+Version: 0.9.2-9001
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -45,8 +45,6 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    tidyverse,
-    GGally,
     testthat,
     covr,
     pkgdown
@@ -82,4 +80,5 @@ Collate:
     'mollusk.R'
     'plot_utils.R'
     'trichoptera.R'
+    'utils-pipe.R'
     'utils.R'

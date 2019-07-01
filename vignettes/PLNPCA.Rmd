@@ -31,8 +31,9 @@ This vignette illustrates the basical use of the `PLNPCA` function and the metho
 The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:
 
 ```{r requirement}
-library(tidyverse)
 library(PLNmodels)
+library(ggplot2)
+library(corrplot)
 ```
 
 ### Data set
@@ -96,7 +97,7 @@ We fit a collection of $q$ models as follows:
 PCA_models <- PLNPCA(
   Abundance ~ 1 + offset(log(Offset)),
   data  = trichoptera, 
-  ranks = 1:6
+  ranks = 1:5
 )
 ```
 
@@ -138,24 +139,25 @@ From this plot, we can see that the best model in terms of BIC or ICL is obtaine
 
 ```{r model extraction}
 myPCA_ICL <- getBestModel(PCA_models, "ICL") 
-myPCA_BIC <- getModel(PCA_models, 3) ## getBestModel(PCA_models, "BIC")  is equivalent here 
+myPCA_BIC <- getModel(PCA_models, 3) # getBestModel(PCA_models, "BIC")  is equivalent here 
 ```
 
 #### Structure of `PLNPCAfit`
 
-Objects `myPCA_ICL` and `myPCA_BIC` are `R6Class` objects of class `PLNPCAfit` which in turns own a couple of methods, some inherited from `PLNfit` and some others specific, mostly for vizualization purposes. The `plot` method provides individual maps and correlation circles as in usual PCA. If an additional classification exists for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument to the function.
+Objects `myPCA_ICL` and `myPCA_BIC` are `R6Class` objects of class `PLNPCAfit` which in turns own a couple of methods, some inherited from `PLNfit` and some others specific, mostly for vizualization purposes. The `plot` method provides individual maps and correlation circles as in usual PCA. If an additional classification exists for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument to the function.^[With our PLN-PCA (and any pPCA model for count data, where successive models are not nested), it is important to performed the model selection of $q$ prior to vizualization, since the model with rank $q=3$ is not nested in the model with rank $q=4$. Hence, percentage of variance must be interpreted with care: it sums to 100% but must be put in perspective with the model $R^2$, giving an approximation of the total percentage of variance explained with the current model.]
+
 
 ```{r map, fig.width=8, fig.height=8}
 plot(myPCA_ICL, ind_cols = trichoptera$Group)
 ```
 
-With our PLN-PCA (and any pPCA model for count data, where successive models are not nested), it is important to performed the model selection of $q$ prior to vizualization, since the model with rank $q=3$ is not nested in the model with rank $q=4$. Indeed, let us vizualize the first three axes of model $q=3$:
+<!-- Indeed, let us vizualize the first three axes of model $q=3$: -->
 
-```{r map q3, fig.width=8, fig.height=8}
-plot(myPCA_BIC, ind_cols = trichoptera$Group)
-```
+<!-- ```{r map q3, fig.width=8, fig.height=8} -->
+<!-- plot(myPCA_BIC, ind_cols = trichoptera$Group) -->
+<!-- ``` -->
 
-We can see that the maps for axes (1,2) is slightly different for the model with $q=3$ from the one obtained for axes (1,2) in the $q=4$ model^[Percentage of variance must be interpreted with care: it sums to 100% but must be put in perspective with the model $R^2$, giving an approximation of the total percentage of variance explained with the current model.]
+<!-- We can see that the maps for axes (1,2) is slightly different for the model with $q=3$ from the one obtained for axes (1,2) in the $q=4$ model -->
 
 Among other fields and methods (see `?PLNPCAfit` for a comprehensive view), the most interesting for the end-user in the context of PCA are 
 
@@ -167,7 +169,7 @@ coef(myPCA_ICL) %>% head() %>% knitr::kable()
 - the estimated covariance matrix $\boldsymbol\Sigma$ with fixed rank 
 
 ```{r sigma, fig.width=7}
-sigma(myPCA_ICL) %>% corrplot::corrplot(is.corr = FALSE)
+sigma(myPCA_ICL) %>% corrplot(is.corr = FALSE)
 ```
 
 - the rotation matrix (in the latent space)
@@ -187,7 +189,6 @@ myPCA_ICL$scores %>% head() %>% knitr::kable()
 myPCA_ICL
 ```
 
-
 ### A model accounting for meteorological covariates
 
 A contribution of PLN-PCA is to let the possibility to taking into account some covariates in the parameter space. Such a strategy often completly changes the interpretation of PCA. Indeed, the covariates are often responsible for some strong structure in the data. The effect of the covariates should be removed since they are often quite obvious for the analyst and may hide some more important and subtile effects.
@@ -199,7 +200,7 @@ PCA_models_cov <-
   PLNPCA(
     Abundance ~ 1 + offset(log(Offset)) + Temperature + Wind + Cloudiness,
     data  = trichoptera,
-    ranks = 1:6
+    ranks = 1:4
   )
 ```
 
