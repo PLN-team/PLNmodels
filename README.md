@@ -51,7 +51,7 @@ if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
 
 #### Installing PLNmodels
 
-  - For the last stable version, use
+  - For the last stable version, use the CRAN version
 
 <!-- end list -->
 
@@ -59,12 +59,12 @@ if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
 install.packages("PLNmodels")
 ```
 
-  - For the development version, use
+  - For the development version, use the github install
 
 <!-- end list -->
 
 ``` r
-devtools::install_github("jchiquet/PLNmodels")
+remotes::install_github("jchiquet/PLNmodels")
 ```
 
   - For a specific tagged release, use
@@ -72,12 +72,13 @@ devtools::install_github("jchiquet/PLNmodels")
 <!-- end list -->
 
 ``` r
-devtools::install_github("jchiquet/PLNmodels@tag_number")
+remotes::install_github("jchiquet/PLNmodels@tag_number")
 ```
 
 ## Usage and main fitting functions
 
-The package comes with a ecological data to present the functionality
+The package comes with an ecological data set to present the
+functionality
 
 ``` r
 library(PLNmodels)

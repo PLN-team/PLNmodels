@@ -49,27 +49,27 @@ if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
 
 #### Installing PLNmodels
 
-- For the last stable version, use
+- For the last stable version, use the CRAN version
 
 ```{r package CRAN, eval = FALSE}
 install.packages("PLNmodels")
 ```
 
-- For the development version, use
+- For the development version, use the github install
 
 ```{r package github, eval = FALSE}
-devtools::install_github("jchiquet/PLNmodels")
+remotes::install_github("jchiquet/PLNmodels")
 ```
 
 - For a specific tagged release, use
 
 ```{r package tag, eval = FALSE}
-devtools::install_github("jchiquet/PLNmodels@tag_number")
+remotes::install_github("jchiquet/PLNmodels@tag_number")
 ```
 
 ## Usage and main fitting functions
 
-The package comes with a ecological data to present the functionality 
+The package comes with an ecological data set to present the functionality 
 
 ```{r load PLNmodels, eval = FALSE}
 library(PLNmodels)
@@ -109,7 +109,7 @@ Please cite our work using the following references:
 
 - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 12: 2674–2698, 2018. [link](http://dx.doi.org/10.1214/18-AOAS1177)
 
-- J. Chiquet, M. Mariadassou and S. Robin:  Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019. 
+- J. Chiquet, M. Mariadassou and S. Robin: Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019. 
 [link](http://proceedings.mlr.press/v97/chiquet19a.html)
 
 
