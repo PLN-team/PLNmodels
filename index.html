@@ -145,24 +145,24 @@
 <h4 class="hasAnchor">
 <a href="#installing-plnmodels" class="anchor"></a>Installing PLNmodels</h4>
 <ul>
-<li>For the last stable version, use</li>
+<li>For the last stable version, use the CRAN version</li>
 </ul>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"PLNmodels"</span>)</a></code></pre></div>
 <ul>
-<li>For the development version, use</li>
+<li>For the development version, use the github install</li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"jchiquet/PLNmodels"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>)</a></code></pre></div>
 <ul>
 <li>For a specific tagged release, use</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"jchiquet/PLNmodels@tag_number"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(<span class="st">"jchiquet/PLNmodels@tag_number"</span>)</a></code></pre></div>
 </div>
 </div>
 </div>
 <div id="usage-and-main-fitting-functions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage-and-main-fitting-functions" class="anchor"></a>Usage and main fitting functions</h2>
-<p>The package comes with a ecological data to present the functionality</p>
+<p>The package comes with an ecological data set to present the functionality</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a>
 <a class="sourceLine" id="cb6-3" data-line-number="3">trichoptera &lt;-<span class="st"> </span><span class="kw"><a href="reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance, trichoptera<span class="op">$</span>Covariate)</a></code></pre></div>
