@@ -18,7 +18,7 @@ citEntry(entry = "inproceedings",
   booktitle = "Proceedings of the 36th International Conference on Machine Learning",
   year = "2019",
   volume = "97",
-  series = "Proceedings of Machine Learning Research"
+  series = "Proceedings of Machine Learning Research",
   url = "http://proceedings.mlr.press/v97/chiquet19a.html",
   textVersion = "J. Chiquet, M. Mariadassou and S. Robin:  Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019."
 )
