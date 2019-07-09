@@ -370,8 +370,11 @@ test_that("prepare_data_from_phyloseq fails when covariate data.frame is missing
 })
 
 test_that("prepare_data_from_phyloseq succeeds on proper phyloseq class objects", {
-  physeq <- phyloseq::phyloseq(otu_table(counts, taxa_are_rows = FALSE),
-                     sample_data(covariates))
+  rownames(counts) <- rownames(covariates) <- paste0("Sample", 1:nrow(covariates))
+  physeq <- phyloseq::phyloseq(
+    phyloseq::otu_table(counts, taxa_are_rows = FALSE),
+    phyloseq::sample_data(covariates)
+    )
   result_physeq <- result; rownames(result_physeq$Abundance) <- rownames(result_physeq) <- paste0("Sample", 1:nrow(covariates))
   expect_equal(prepare_data_from_phyloseq(physeq, offset = "none"), result_physeq)
 })
