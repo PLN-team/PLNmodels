@@ -1,7 +1,8 @@
 # Travis CI for automatic building.
 #
 # Changelog:
-#  - 2019-12-04: try handling of bioconductor packages using only biocViews
+#  - 2019-12-04: bioconductor dependencies handled with
+#                biocViews (rather than bioc-devel or bioc-release)
 #  - 2019-03-16: suppressing requirements for system version of nlopt
 #  - 2019-03-04: some tweaks and clean up
 #  - 2019-01-29: deployment of pages with travis
@@ -37,11 +38,15 @@ matrix:
     - os: linux
       r: release
     - os: linux
-      r: bioc-devel
+      r: devel
     - os: osx
-      r: bioc-release
-    - os: linux
-      r: bioc-release
+      r: release
+#    - os: linux
+#      r: bioc-devel
+#    - os: osx
+#      r: bioc-release
+#    - os: linux
+#      r: bioc-release
       r_packages:
         - covr
         - pkgdown
