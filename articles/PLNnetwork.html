@@ -6,9 +6,16 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sparse structure estimation for multivariate count data with PLN-network • PLNmodels</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Sparse structure estimation for multivariate count data with PLN-network">
 <meta property="og:description" content="">
 <meta property="og:image" content="/logo.png">
@@ -31,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9003</span>
       </span>
     </div>
 
@@ -96,13 +103,14 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Sparse structure estimation for multivariate count data with PLN-network</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-07-03</h4>
+            <h4 class="date">2019-12-04</h4>
       
       
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -119,14 +127,14 @@
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(PLNmodels)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggplot2)</a></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
 <a href="#data-set" class="anchor"></a>Data set</h3>
 <p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>. Data preparation is also detailed in <a href="Import_data.html">the specific vignette</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(trichoptera)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">trichoptera &lt;-<span class="st"> </span><span class="kw"><a href="../reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance, trichoptera<span class="op">$</span>Covariate)</a></code></pre></div>
 <p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
 </div>
@@ -168,41 +176,41 @@
 <h3 class="hasAnchor">
 <a href="#adjusting-a-collection-of-network---a-k-a--a-regularization-path" class="anchor"></a>Adjusting a collection of network - a.k.a. a regularization path</h3>
 <p><code>PLNnetwork</code> finds an hopefully appropriate set of penalties on its own. This set can be controlled by the user, but use it with care and check details in <code><a href="../reference/PLNnetwork.html">?PLNnetwork</a></code>. The collection of models is fitted as follows:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">network_models &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNnetwork.html">PLNnetwork</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)), <span class="dt">data =</span> trichoptera)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">network_models &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLNnetwork.html">PLNnetwork</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(Offset)), <span class="dt">data =</span> trichoptera)</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ##  Adjusting 30 PLN with sparse inverse covariance estimation
 ##  Joint optimization alternating gradient descent and graphical-lasso
-##  sparsifying penalty = 3.652546 
-    sparsifying penalty = 3.37375 
-    sparsifying penalty = 3.116235 
-    sparsifying penalty = 2.878375 
-    sparsifying penalty = 2.658671 
-    sparsifying penalty = 2.455737 
-    sparsifying penalty = 2.268293 
-    sparsifying penalty = 2.095156 
-    sparsifying penalty = 1.935234 
-    sparsifying penalty = 1.78752 
-    sparsifying penalty = 1.65108 
-    sparsifying penalty = 1.525054 
-    sparsifying penalty = 1.408648 
-    sparsifying penalty = 1.301127 
-    sparsifying penalty = 1.201813 
-    sparsifying penalty = 1.11008 
-    sparsifying penalty = 1.025349 
-    sparsifying penalty = 0.9470846 
-    sparsifying penalty = 0.8747944 
-    sparsifying penalty = 0.8080221 
-    sparsifying penalty = 0.7463465 
-    sparsifying penalty = 0.6893785 
-    sparsifying penalty = 0.6367588 
-    sparsifying penalty = 0.5881556 
-    sparsifying penalty = 0.5432622 
-    sparsifying penalty = 0.5017954 
-    sparsifying penalty = 0.4634938 
-    sparsifying penalty = 0.4281157 
-    sparsifying penalty = 0.395438 
-    sparsifying penalty = 0.3652546 
+##  sparsifying penalty = 3.614115 
+    sparsifying penalty = 3.338253 
+    sparsifying penalty = 3.083447 
+    sparsifying penalty = 2.84809 
+    sparsifying penalty = 2.630698 
+    sparsifying penalty = 2.429899 
+    sparsifying penalty = 2.244427 
+    sparsifying penalty = 2.073112 
+    sparsifying penalty = 1.914873 
+    sparsifying penalty = 1.768712 
+    sparsifying penalty = 1.633708 
+    sparsifying penalty = 1.509008 
+    sparsifying penalty = 1.393827 
+    sparsifying penalty = 1.287437 
+    sparsifying penalty = 1.189168 
+    sparsifying penalty = 1.0984 
+    sparsifying penalty = 1.01456 
+    sparsifying penalty = 0.9371198 
+    sparsifying penalty = 0.8655902 
+    sparsifying penalty = 0.7995205 
+    sparsifying penalty = 0.7384938 
+    sparsifying penalty = 0.6821252 
+    sparsifying penalty = 0.6300591 
+    sparsifying penalty = 0.5819673 
+    sparsifying penalty = 0.5375462 
+    sparsifying penalty = 0.4965158 
+    sparsifying penalty = 0.4586171 
+    sparsifying penalty = 0.4236113 
+    sparsifying penalty = 0.3912774 
+    sparsifying penalty = 0.3614115 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
@@ -218,11 +226,11 @@
 ## --------------------------------------------------------
 ##  Task: Network Inference 
 ## ========================================================
-##  - 30 penalties considered: from 0.3652546 to 3.652546 
-##  - Best model (greater BIC): lambda = 0.875 
-##  - Best model (greater EBIC): lambda = 0.875</code></pre>
+##  - 30 penalties considered: from 0.3614115 to 3.614115 
+##  - Best model (greater BIC): lambda = 0.866 
+##  - Best model (greater EBIC): lambda = 0.866</code></pre>
 <p>One can also easily access the successive values of the criteria in the collection</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">network_models<span class="op">$</span>criteria <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">network_models<span class="op">$</span>criteria <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">param</th>
@@ -239,87 +247,87 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">3.652546</td>
+<td align="right">3.614115</td>
 <td align="right">17</td>
-<td align="right">-1276.359</td>
-<td align="right">-1309.439</td>
-<td align="right">-2596.207</td>
-<td align="right">0.9640030</td>
+<td align="right">-1275.246</td>
+<td align="right">-1308.326</td>
+<td align="right">-2593.344</td>
+<td align="right">0.9637759</td>
 <td align="right">0</td>
-<td align="right">-1309.439</td>
-<td align="right">-1284.900</td>
+<td align="right">-1308.326</td>
+<td align="right">-1283.770</td>
 <td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">3.373750</td>
+<td align="right">3.338253</td>
 <td align="right">17</td>
-<td align="right">-1267.719</td>
-<td align="right">-1300.799</td>
-<td align="right">-2587.568</td>
-<td align="right">0.9640030</td>
+<td align="right">-1266.638</td>
+<td align="right">-1299.719</td>
+<td align="right">-2584.732</td>
+<td align="right">0.9637761</td>
 <td align="right">0</td>
-<td align="right">-1300.799</td>
-<td align="right">-1275.947</td>
+<td align="right">-1299.719</td>
+<td align="right">-1274.850</td>
 <td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="right">3.116235</td>
+<td align="right">3.083447</td>
 <td align="right">17</td>
-<td align="right">-1259.643</td>
-<td align="right">-1292.724</td>
-<td align="right">-2579.490</td>
-<td align="right">0.9640030</td>
+<td align="right">-1258.594</td>
+<td align="right">-1291.675</td>
+<td align="right">-2576.697</td>
+<td align="right">0.9637765</td>
 <td align="right">0</td>
-<td align="right">-1292.724</td>
-<td align="right">-1267.560</td>
+<td align="right">-1291.675</td>
+<td align="right">-1266.495</td>
 <td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">2.878375</td>
+<td align="right">2.848090</td>
 <td align="right">17</td>
-<td align="right">-1252.107</td>
-<td align="right">-1285.188</td>
-<td align="right">-2571.958</td>
-<td align="right">0.9640031</td>
+<td align="right">-1251.089</td>
+<td align="right">-1284.169</td>
+<td align="right">-2569.206</td>
+<td align="right">0.9637778</td>
 <td align="right">0</td>
-<td align="right">-1285.188</td>
-<td align="right">-1259.716</td>
+<td align="right">-1284.169</td>
+<td align="right">-1258.680</td>
 <td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="right">2.658671</td>
+<td align="right">2.630698</td>
 <td align="right">17</td>
-<td align="right">-1245.086</td>
-<td align="right">-1278.167</td>
-<td align="right">-2564.932</td>
-<td align="right">0.9640031</td>
+<td align="right">-1244.097</td>
+<td align="right">-1277.178</td>
+<td align="right">-2562.209</td>
+<td align="right">0.9637781</td>
 <td align="right">0</td>
-<td align="right">-1278.167</td>
-<td align="right">-1252.389</td>
+<td align="right">-1277.178</td>
+<td align="right">-1251.383</td>
 <td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">2.455737</td>
+<td align="right">2.429899</td>
 <td align="right">17</td>
-<td align="right">-1238.553</td>
-<td align="right">-1271.634</td>
-<td align="right">-2558.401</td>
-<td align="right">0.9640031</td>
+<td align="right">-1237.591</td>
+<td align="right">-1270.672</td>
+<td align="right">-2555.736</td>
+<td align="right">0.9637854</td>
 <td align="right">0</td>
-<td align="right">-1271.634</td>
-<td align="right">-1245.555</td>
+<td align="right">-1270.672</td>
+<td align="right">-1244.576</td>
 <td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 </tbody>
 </table>
 <p>A diagnostic of the optimization process is available via the <code>convergence</code> field:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">network_models<span class="op">$</span>convergence <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">network_models<span class="op">$</span>convergence <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">param</th>
@@ -333,76 +341,76 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">3.652546</td>
+<td align="right">3.614115</td>
 <td align="left">17</td>
-<td align="left">1284.9004327991</td>
-<td align="left">3.80828600442519e-07</td>
+<td align="left">1283.77030706436</td>
+<td align="left">9.80874358002099e-06</td>
 <td align="left">3</td>
-<td align="left">9</td>
+<td align="left">12</td>
 <td align="left">4</td>
 <td align="left">xtol_rel or xtol_abs was reached</td>
 </tr>
 <tr class="even">
-<td align="right">3.373750</td>
+<td align="right">3.338253</td>
 <td align="left">17</td>
-<td align="left">1275.94700735818</td>
-<td align="left">8.91646315647397e-09</td>
+<td align="left">1274.8497982893</td>
+<td align="left">5.5794907142557e-08</td>
 <td align="left">2</td>
 <td align="left">9</td>
 <td align="left">4</td>
 <td align="left">xtol_rel or xtol_abs was reached</td>
 </tr>
 <tr class="odd">
-<td align="right">3.116235</td>
+<td align="right">3.083447</td>
 <td align="left">17</td>
-<td align="left">1267.5601479024</td>
-<td align="left">2.30007659160143e-08</td>
+<td align="left">1266.49466534186</td>
+<td align="left">9.26415747584221e-08</td>
 <td align="left">2</td>
 <td align="left">9</td>
 <td align="left">4</td>
 <td align="left">xtol_rel or xtol_abs was reached</td>
 </tr>
 <tr class="even">
-<td align="right">2.878375</td>
+<td align="right">2.848090</td>
 <td align="left">17</td>
-<td align="left">1259.71580087621</td>
-<td align="left">1.1363579337099e-08</td>
+<td align="left">1258.6804756702</td>
+<td align="left">8.41701880392602e-08</td>
 <td align="left">2</td>
-<td align="left">7</td>
+<td align="left">8</td>
 <td align="left">4</td>
 <td align="left">xtol_rel or xtol_abs was reached</td>
 </tr>
 <tr class="odd">
-<td align="right">2.658671</td>
+<td align="right">2.630698</td>
 <td align="left">17</td>
-<td align="left">1252.38915607234</td>
-<td align="left">1.7831059814431e-08</td>
+<td align="left">1251.38346098451</td>
+<td align="left">6.0564956395481e-08</td>
 <td align="left">2</td>
 <td align="left">10</td>
 <td align="left">4</td>
 <td align="left">xtol_rel or xtol_abs was reached</td>
 </tr>
 <tr class="even">
-<td align="right">2.455737</td>
+<td align="right">2.429899</td>
 <td align="left">17</td>
-<td align="left">1245.55482418606</td>
-<td align="left">1.11286893804836e-09</td>
+<td align="left">1244.57643652129</td>
+<td align="left">1.67684513482269e-07</td>
 <td align="left">2</td>
-<td align="left">9</td>
+<td align="left">8</td>
 <td align="left">4</td>
 <td align="left">xtol_rel or xtol_abs was reached</td>
 </tr>
 </tbody>
 </table>
 <p>An nicer view of this output comes with the option “diagnostic” in the <code>plot</code> method:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(network_models, <span class="st">"diagnostic"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(network_models, <span class="st">"diagnostic"</span>)</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/diagnostic-1.png" width="672"></p>
 </div>
 <div id="exploring-the-path-of-networks" class="section level3">
 <h3 class="hasAnchor">
 <a href="#exploring-the-path-of-networks" class="anchor"></a>Exploring the path of networks</h3>
 <p>By default, the <code>plot</code> method of <code>PLNnetworkfamily</code> displays evolution of the criteria mentioned above, and is a good starting point for model selection:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(network_models)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(network_models)</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot-1.png" width="672"></p>
 <p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with a lower level of penalty (meaning more edges in the network). The same holds true for the penalized counterpart of the variational surrogate. Generally, smoothness of these criteria is a good sanity check of optimization process. BIC and its extended-version high-dimensional version EBIC are classically used for selecting the correct amount of penalization with sparse estimator like the one used by PLN-network. However, we will consider later a more robust albeit more computationally intensive strategy to chose the appropriate number of edges in the network.</p>
 <p>To pursue the analysis, we can represent the coefficient path (i.e., value of the edges in the network according to the penalty level) to see if some edges clearly come off. An alternative and more intuitive view consists in plotting the values of the partial correlations along the path, which can be obtained with the options . To this end, we provide the S3 function <code>coefficient_path</code>:</p>
@@ -423,7 +431,7 @@
 ## Stability Selection for PLNnetwork: 
 ## subsampling: ++++++++++++++++++++</code></pre>
 <p>When “StARS” is requested for the first time, <code>getBestModel</code> automatically calls the method <code>stability_selection</code> with the default parameters. After the first call, the stability path is available from the <code>plot</code> function:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(network_models, <span class="st">"stability"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(network_models, <span class="st">"stability"</span>)</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot%20stability-1.png" width="672"></p>
 </div>
 <div id="structure-of-a-plnnetworkfit" class="section level3">
@@ -432,12 +440,12 @@
 </h3>
 <p>The variables <code>model_BIC</code>, <code>model_StARS</code> and <code>model_pen</code> are other <code>R6Class</code> objects with class <code>PLNnetworkfit</code>. They all inherits from the class <code>PLNfit</code> and thus own all its methods, with a couple of specific one, mostly for network vizualization purposes. Most fields and methods are recalled when such an object is printed:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">model_StARS</a></code></pre></div>
-<pre><code>## Poisson Lognormal with sparse inverse covariance (penalty = 0.689)
+<pre><code>## Poisson Lognormal with sparse inverse covariance (penalty = 0.63)
 ## ==================================================================
-##  nb_param    loglik       BIC       ICL R_squared n_edges     EBIC
-##        23 -1176.952 -1221.708 -2508.402     0.964       6 -1231.07
-##  pen_loglik density
-##   -1180.199   0.042
+##  nb_param   loglik       BIC      ICL R_squared n_edges      EBIC pen_loglik
+##        24 -1173.93 -1220.632 -2505.64     0.964       7 -1231.016  -1177.013
+##  density
+##    0.048
 ## ==================================================================
 ## * Useful fields
 ##     $model_par, $latent, $var_par, $optim_par
@@ -449,27 +457,27 @@
 ## * Additional S3 methods for network
 ##     plot.PLNnetworkfit()</code></pre>
 <p>The <code>plot</code> method provides a quick representation of the inferred network, with various options (either as a matrix, a graph, and always send back de plotted object invisibly if users needs to perform additional analyses).</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">my_graph &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS, <span class="dt">plot =</span> <span class="ot">FALSE</span>)</a>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">my_graph &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(model_StARS, <span class="dt">plot =</span> <span class="ot">FALSE</span>)</a>
 <a class="sourceLine" id="cb18-2" data-line-number="2">my_graph</a></code></pre></div>
-<pre><code>## IGRAPH 2bcef72 UNW- 17 6 -- 
+<pre><code>## IGRAPH 26d37e7 UNW- 17 7 -- 
 ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
 ## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),
 ## | width (e/n)
-## + edges from 2bcef72 (vertex names):
-## [1] Hym--Hsp Aga--Hsp Set--All Set--Hsp Han--Sta Hfo--Hsp</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS)</a></code></pre></div>
+## + edges from 26d37e7 (vertex names):
+## [1] Hym--Hsp Aga--Hfo Aga--Hsp Set--All Set--Hsp Han--Sta Hfo--Hsp</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(model_StARS)</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/stars_network-1.png" width="672"></p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(model_StARS, <span class="dt">type =</span> <span class="st">"support"</span>, <span class="dt">output =</span> <span class="st">"corrplot"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(model_StARS, <span class="dt">type =</span> <span class="st">"support"</span>, <span class="dt">output =</span> <span class="st">"corrplot"</span>)</a></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/stars_network-2.png" width="672"></p>
 <p>We can finally check that the fitted value of the counts – even with sparse regularization of the covariance matrix – are close to the observed ones:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(</a>
-<a class="sourceLine" id="cb22-2" data-line-number="2">  <span class="dt">fitted   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(model_StARS)),</a>
-<a class="sourceLine" id="cb22-3" data-line-number="3">  <span class="dt">observed =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(trichoptera<span class="op">$</span>Abundance)</a>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">  <span class="dt">fitted   =</span> <span class="kw"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span>(model_StARS)),</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">  <span class="dt">observed =</span> <span class="kw"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(trichoptera<span class="op">$</span>Abundance)</a>
 <a class="sourceLine" id="cb22-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb22-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> observed, <span class="dt">y =</span> fitted)) <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb22-6" data-line-number="6"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb22-7" data-line-number="7"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb22-8" data-line-number="8"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_log10</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-7" data-line-number="7"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-8" data-line-number="8"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_log10</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">1000</span>)) <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb22-9" data-line-number="9"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/annotation_logticks.html">annotation_logticks</a></span>()</a></code></pre></div>
 <div class="figure">
 <img src="PLNnetwork_files/figure-html/fitted-1.png" alt="fitted value vs. observation" width="672"><p class="caption">
@@ -514,6 +522,7 @@ fitted value vs. observation
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -528,17 +537,20 @@ fitted value vs. observation
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Julien Chiquet, Mahendra Mariadassou.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

@@ -8,21 +8,32 @@
 
 <title>Extract edge selection frequency in bootstrap subsamples — extract_probs • PLNmodels</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -30,14 +41,14 @@
 
 
 
-<meta property="og:title" content="Extract edge selection frequency in bootstrap subsamples — extract_probs" />
 
+<meta property="og:title" content="Extract edge selection frequency in bootstrap subsamples — extract_probs" />
 <meta property="og:description" content="Extracts edge selection frequency in networks reconstructed from bootstrap subsamples
 during the stars stability selection procedure, as either a matrix or a named vector. In the latter
 case, edge names follow igraph naming convention." />
-
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -49,6 +60,7 @@ case, edge names follow igraph naming convention." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -67,7 +79,7 @@ case, edge names follow igraph naming convention." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9003</span>
       </span>
     </div>
 
@@ -116,7 +128,6 @@ case, edge names follow igraph naming convention." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jchiquet/PLNmodels">
@@ -131,6 +142,7 @@ case, edge names follow igraph naming convention." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -142,17 +154,15 @@ case, edge names follow igraph naming convention." />
     </div>
 
     <div class="ref-description">
-    
     <p>Extracts edge selection frequency in networks reconstructed from bootstrap subsamples
 during the stars stability selection procedure, as either a matrix or a named vector. In the latter
 case, edge names follow igraph naming convention.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>extract_probs</span>(<span class='no'>Robject</span>, <span class='kw'>penalty</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>index</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"StARS"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>), <span class='kw'>format</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"matrix"</span>, <span class='st'>"vector"</span>),
+  <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"StARS"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>), <span class='kw'>format</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"matrix"</span>, <span class='st'>"vector"</span>),
   <span class='kw'>tol</span> <span class='kw'>=</span> <span class='fl'>1e-05</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -184,48 +194,46 @@ case, edge names follow igraph naming convention.</p>
       <td><p>tolerance for rounding error when comparing penalties.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Either a matrix or named vector of edge-wise probabilities. In the latter case, edge names follow igraph convention.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>trichoptera</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)
 <span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
-<span class='no'>nets</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span> + <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/offset'>offset</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>log</a></span>(<span class='no'>Offset</span>)), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 
+<span class='no'>nets</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span> + <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='no'>Offset</span>)), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
 #&gt; 	Joint optimization alternating gradient descent and graphical-lasso
-#&gt; 	sparsifying penalty = 3.652546 	sparsifying penalty = 3.37375 	sparsifying penalty = 3.116235 	sparsifying penalty = 2.878375 	sparsifying penalty = 2.658671 	sparsifying penalty = 2.455737 	sparsifying penalty = 2.268293 	sparsifying penalty = 2.095156 	sparsifying penalty = 1.935234 	sparsifying penalty = 1.78752 	sparsifying penalty = 1.65108 	sparsifying penalty = 1.525054 	sparsifying penalty = 1.408648 	sparsifying penalty = 1.301127 	sparsifying penalty = 1.201813 	sparsifying penalty = 1.11008 	sparsifying penalty = 1.025349 	sparsifying penalty = 0.9470846 	sparsifying penalty = 0.8747944 	sparsifying penalty = 0.8080221 	sparsifying penalty = 0.7463465 	sparsifying penalty = 0.6893785 	sparsifying penalty = 0.6367588 	sparsifying penalty = 0.5881556 	sparsifying penalty = 0.5432622 	sparsifying penalty = 0.5017954 	sparsifying penalty = 0.4634938 	sparsifying penalty = 0.4281157 	sparsifying penalty = 0.395438 	sparsifying penalty = 0.3652546 
+#&gt; 	sparsifying penalty = 3.614115 	sparsifying penalty = 3.338253 	sparsifying penalty = 3.083447 	sparsifying penalty = 2.84809 	sparsifying penalty = 2.630698 	sparsifying penalty = 2.429899 	sparsifying penalty = 2.244427 	sparsifying penalty = 2.073112 	sparsifying penalty = 1.914873 	sparsifying penalty = 1.768712 	sparsifying penalty = 1.633708 	sparsifying penalty = 1.509008 	sparsifying penalty = 1.393827 	sparsifying penalty = 1.287437 	sparsifying penalty = 1.189168 	sparsifying penalty = 1.0984 	sparsifying penalty = 1.01456 	sparsifying penalty = 0.9371198 	sparsifying penalty = 0.8655902 	sparsifying penalty = 0.7995205 	sparsifying penalty = 0.7384938 	sparsifying penalty = 0.6821252 	sparsifying penalty = 0.6300591 	sparsifying penalty = 0.5819673 	sparsifying penalty = 0.5375462 	sparsifying penalty = 0.4965158 	sparsifying penalty = 0.4586171 	sparsifying penalty = 0.4236113 	sparsifying penalty = 0.3912774 	sparsifying penalty = 0.3614115 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><span class='co'># NOT RUN {</span>
+#&gt;  DONE!</div><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='stability_selection.html'>stability_selection</a></span>(<span class='no'>nets</span>)
 <span class='no'>probs</span> <span class='kw'>&lt;-</span> <span class='fu'>extract_probs</span>(<span class='no'>nets</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='st'>"StARS"</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"vector"</span>)
 <span class='no'>probs</span>
-<span class='co'># }</span><div class='input'>
-</div><span class='co'># NOT RUN {</span>
+}
+
+<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='co'>## Add edge attributes to graph using igraph</span>
 <span class='no'>net_stars</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='getBestModel.html'>getBestModel</a></span>(<span class='no'>nets</span>, <span class='st'>"StARS"</span>)
-<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>net_stars</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"partial_cor"</span>, <span class='kw'>plot</span><span class='kw'>=</span><span class='no'>F</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>igraph</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/igraph/topics/E'>E</a></span>(<span class='no'>g</span>)$<span class='no'>prob</span> <span class='kw'>&lt;-</span> <span class='no'>probs</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/igraph/topics/as_ids'>as_ids</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/igraph/topics/E'>E</a></span>(<span class='no'>g</span>))]
+<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>net_stars</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"partial_cor"</span>, <span class='kw'>plot</span><span class='kw'>=</span><span class='no'>F</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>igraph</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/E.html'>E</a></span>(<span class='no'>g</span>)$<span class='no'>prob</span> <span class='kw'>&lt;-</span> <span class='no'>probs</span>[<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/as_ids.html'>as_ids</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/E.html'>E</a></span>(<span class='no'>g</span>))]
 <span class='no'>g</span>
-<span class='co'># }</span><div class='input'>
-</div></pre>
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -233,13 +241,16 @@ case, edge names follow igraph naming convention.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

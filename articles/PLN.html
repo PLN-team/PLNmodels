@@ -6,9 +6,16 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Analyzing multivariate count data with the Poisson log-normal model • PLNmodels</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Analyzing multivariate count data with the Poisson log-normal model">
 <meta property="og:description" content="">
 <meta property="og:image" content="/logo.png">
@@ -31,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9003</span>
       </span>
     </div>
 
@@ -96,6 +103,7 @@
 <!--/.navbar -->
 
       
+
       </header><link href="PLN_files/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
 <script src="PLN_files/pagedtable-1.1/js/pagedtable.js"></script><div class="row">
   <div class="col-md-9 contents">
@@ -103,7 +111,7 @@
       <h1>Analyzing multivariate count data with the Poisson log-normal model</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-07-03</h4>
+            <h4 class="date">2019-12-04</h4>
       
       
       <div class="hidden name"><code>PLN.Rmd</code></div>
@@ -121,15 +129,15 @@
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(corrplot)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(PLNmodels)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggplot2)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(corrplot)</a></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
 <a href="#data-set" class="anchor"></a>Data set</h3>
 <p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>. Data preparation is also detailed in <a href="Import_data.html">the specific vignette</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(trichoptera)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">trichoptera &lt;-<span class="st"> </span><span class="kw"><a href="../reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance, trichoptera<span class="op">$</span>Covariate)</a></code></pre></div>
 <p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
 </div>
@@ -194,8 +202,8 @@ PLN: geometrical view
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">myPLN</a></code></pre></div>
 <pre><code>## A multivariate Poisson Lognormal fit with full covariance model.
 ## ==================================================================
-##  nb_param   loglik       BIC      ICL R_squared
-##       170 -1129.48 -1460.284 -2305.22      0.99
+##  nb_param    loglik       BIC       ICL R_squared
+##       170 -1129.402 -1460.207 -2306.922      0.99
 ## ==================================================================
 ## * Useful fields
 ##     $model_par, $latent, $var_par, $optim_par
@@ -208,20 +216,20 @@ PLN: geometrical view
 <h4 class="hasAnchor">
 <a href="#field-access" class="anchor"></a>Field access</h4>
 <p>Accessing public fields of a <code>PLNfit</code> object can be done just like with a traditional list, <em>e.g.</em>,</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(myPLN<span class="op">$</span>loglik, myPLN<span class="op">$</span>BIC, myPLN<span class="op">$</span>ICL, myPLN<span class="op">$</span>R_squared)</a></code></pre></div>
-<pre><code>## [1] -1129.4796137 -1460.2843390 -2305.2203458     0.9898247</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(myPLN<span class="op">$</span>loglik, myPLN<span class="op">$</span>BIC, myPLN<span class="op">$</span>ICL, myPLN<span class="op">$</span>R_squared)</a></code></pre></div>
+<pre><code>## [1] -1129.4017860 -1460.2065113 -2306.9220111     0.9898526</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">myPLN<span class="op">$</span>criteria</a></code></pre></div>
-<pre><code>##   nb_param   loglik       BIC      ICL R_squared
-## 1      170 -1129.48 -1460.284 -2305.22 0.9898247</code></pre>
+<pre><code>##   nb_param    loglik       BIC       ICL R_squared
+## 1      170 -1129.402 -1460.207 -2306.922 0.9898526</code></pre>
 </div>
 <div id="glm-like-interface" class="section level4">
 <h4 class="hasAnchor">
 <a href="#glm-like-interface" class="anchor"></a>GLM-like interface</h4>
 <p>We provide a set of S3-methods for <code>PLNfit</code> that mimic the standard (G)LM-like interface of <code>R::stats</code>, which we present now.</p>
 <p>One can access the fitted value of the counts (<code>Abundance</code> – <span class="math inline">\(\hat{\mathbf{Y}}\)</span>) and check that the algorithm basically learnt correctly from the data<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="dt">fitted   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(myPLN)),</a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="dt">observed =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(trichoptera<span class="op">$</span>Abundance)</a>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="dt">fitted   =</span> <span class="kw"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span>(myPLN)),</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="dt">observed =</span> <span class="kw"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(trichoptera<span class="op">$</span>Abundance)</a>
 <a class="sourceLine" id="cb11-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb11-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> observed, <span class="dt">y =</span> fitted)) <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb11-6" data-line-number="6"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
@@ -234,17 +242,17 @@ fitted value vs. observation
 </p>
 </div>
 <p>We can also reach the matrix of regression parameters <span class="math inline">\(\mathbf{\Theta}\)</span> and the residual variance/covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span> of the latent variable with the traditional functions found in <code>R</code> for (G)LM manipulation: for the regression coefficents, we can use the <code>coef</code> (or <code>coefficients</code>) method. Approximated standard errors of the coefficients are also accessible via <code>standard_error</code>:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(myPLN)), <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(<span class="kw"><a href="../reference/standard_error.html">standard_error</a></span>(myPLN))), </a>
-<a class="sourceLine" id="cb12-3" data-line-number="3">  <span class="dt">row.names =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"effect"</span>, <span class="st">"stderr"</span>)</a>
-<a class="sourceLine" id="cb12-4" data-line-number="4"> ) <span class="op">%&gt;%</span><span class="st"> </span>rmarkdown<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">  <span class="kw"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span>(myPLN)), <span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="kw"><a href="../reference/standard_error.html">standard_error</a></span>(myPLN))), </a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">  <span class="dt">row.names =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"effect"</span>, <span class="st">"stderr"</span>)</a>
+<a class="sourceLine" id="cb12-4" data-line-number="4"> ) <span class="op">%&gt;%</span><span class="st"> </span>rmarkdown<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rmarkdown/man/paged_table.html">paged_table</a></span>()</a></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Che"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Hyc"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Hym"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Hys"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Psy"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Aga"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Glo"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["Ath"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["Cea"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["Ced"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["Set"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["All"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["Han"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["Hfo"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["Hsp"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["Hve"],"name":[16],"type":["dbl"],"align":["right"]},{"label":["Sta"],"name":[17],"type":["dbl"],"align":["right"]}],"data":[{"1":"-3.1750322","2":"-4.0611956","3":"1.04453402","4":"-2.3248854","5":"3.26181716","6":"-0.38186840","7":"-2.235447","8":"-1.6816161","9":"-3.382549","10":"0.34527773","11":"-0.64991947","12":"-0.8622836","13":"-1.31019371","14":"-2.2488003","15":"-0.30272431","16":"-2.7983587","17":"0.94601660","_rn_":"effect"},{"1":"0.5772813","2":"0.5772616","3":"0.07392656","4":"0.4082693","5":"0.01292272","6":"0.09578994","7":"0.267227","8":"0.2672609","9":"0.377945","10":"0.09284514","11":"0.07272028","12":"0.1386877","13":"0.07229008","14":"0.0867226","15":"0.04609167","16":"0.3333265","17":"0.05862003","_rn_":"stderr"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[5],"max":[5]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Che"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Hyc"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Hym"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Hys"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Psy"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Aga"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Glo"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["Ath"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["Cea"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["Ced"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["Set"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["All"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["Han"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["Hfo"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["Hsp"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["Hve"],"name":[16],"type":["dbl"],"align":["right"]},{"label":["Sta"],"name":[17],"type":["dbl"],"align":["right"]}],"data":[{"1":"-3.1922495","2":"-4.0749729","3":"1.04250472","4":"-2.3218889","5":"3.25348025","6":"-0.38438514","7":"-2.2441953","8":"-1.6833902","9":"-3.3933982","10":"0.33945597","11":"-0.66759340","12":"-0.8635733","13":"-1.41218212","14":"-2.24837313","15":"-0.34785477","16":"-2.8012433","17":"0.93583840","_rn_":"effect"},{"1":"0.5772658","2":"0.5773285","3":"0.07392229","4":"0.4082535","5":"0.01292249","6":"0.09578948","7":"0.2672497","8":"0.2672486","9":"0.3779228","10":"0.09284455","11":"0.07272652","12":"0.1386808","13":"0.07234903","14":"0.08667766","15":"0.04611495","16":"0.3333311","17":"0.05860776","_rn_":"stderr"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[5],"max":[5]},"pages":{}}}
   </script>
 </div>
 <p>The residual covariance matrix better displays as an image matrix:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/sigma">sigma</a></span>(myPLN), <span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/sigma.html">sigma</a></span>(myPLN), <span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <p><img src="PLN_files/figure-html/plot%20covariance-1.png" width="672"></p>
 </div>
 <div id="observation-weights" class="section level4">
@@ -255,12 +263,12 @@ fitted value vs. observation
 <a class="sourceLine" id="cb14-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
 <a class="sourceLine" id="cb14-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, </a>
 <a class="sourceLine" id="cb14-4" data-line-number="4">    <span class="dt">data    =</span> trichoptera, </a>
-<a class="sourceLine" id="cb14-5" data-line-number="5">    <span class="dt">weights =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Uniform">runif</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(trichoptera)),</a>
-<a class="sourceLine" id="cb14-6" data-line-number="6">    <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">trace =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb14-5" data-line-number="5">    <span class="dt">weights =</span> <span class="kw"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(trichoptera)),</a>
+<a class="sourceLine" id="cb14-6" data-line-number="6">    <span class="dt">control =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">trace =</span> <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb14-7" data-line-number="7">  )</a>
-<a class="sourceLine" id="cb14-8" data-line-number="8"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(</a>
-<a class="sourceLine" id="cb14-9" data-line-number="9">  <span class="dt">unweighted =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(myPLN)),</a>
-<a class="sourceLine" id="cb14-10" data-line-number="10">  <span class="dt">weighted   =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/fitted.values">fitted</a></span>(myPLN_weighted))</a>
+<a class="sourceLine" id="cb14-8" data-line-number="8"><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(</a>
+<a class="sourceLine" id="cb14-9" data-line-number="9">  <span class="dt">unweighted =</span> <span class="kw"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span>(myPLN)),</a>
+<a class="sourceLine" id="cb14-10" data-line-number="10">  <span class="dt">weighted   =</span> <span class="kw"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span>(myPLN_weighted))</a>
 <a class="sourceLine" id="cb14-11" data-line-number="11">) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb14-12" data-line-number="12"><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> unweighted, <span class="dt">y =</span> weighted)) <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb14-13" data-line-number="13"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="dt">size =</span> <span class="fl">.5</span>, <span class="dt">alpha =</span>.<span class="dv">25</span> ) <span class="op">+</span><span class="st"> </span></a>
@@ -287,13 +295,13 @@ fitted value vs. observation
 <a href="#accounting-for-covariates-and-offsets" class="anchor"></a>Accounting for covariates and offsets</h3>
 <p>For ecological count data, it is generally a good advice to include the sampling effort via an offset term whenever available, otherwise samples are not necessarily comparable:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">myPLN_offsets &lt;-<span class="st"> </span></a>
-<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)), </a>
-<a class="sourceLine" id="cb15-3" data-line-number="3">      <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">trace =</span> <span class="dv">0</span>))</a></code></pre></div>
+<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(Offset)), </a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">      <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">trace =</span> <span class="dv">0</span>))</a></code></pre></div>
 <p>Note that we use the function <code>offset</code> with a log-transform of the total counts since it acts in the latent layer of the model. Obviously the model with offsets is better since the log-likelihood is higher with the same number of parameters<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(</a>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(</a>
 <a class="sourceLine" id="cb16-2" data-line-number="2">  myPLN<span class="op">$</span>criteria,</a>
 <a class="sourceLine" id="cb16-3" data-line-number="3">  myPLN_offsets<span class="op">$</span>criteria</a>
-<a class="sourceLine" id="cb16-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<a class="sourceLine" id="cb16-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">nb_param</th>
@@ -305,32 +313,32 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1129.480</td>
-<td align="right">-1460.284</td>
-<td align="right">-2305.220</td>
-<td align="right">0.9898247</td>
+<td align="right">-1129.402</td>
+<td align="right">-1460.207</td>
+<td align="right">-2306.922</td>
+<td align="right">0.9898526</td>
 </tr>
 <tr class="even">
 <td align="right">170</td>
-<td align="right">-1051.456</td>
-<td align="right">-1382.261</td>
-<td align="right">-2199.653</td>
-<td align="right">0.9223267</td>
+<td align="right">-1051.535</td>
+<td align="right">-1382.339</td>
+<td align="right">-2203.495</td>
+<td align="right">0.9220948</td>
 </tr>
 </tbody>
 </table>
 <p>Let us try to correct for the wind effect in our model:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">myPLN_wind &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)), <span class="dt">data =</span> trichoptera)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">myPLN_wind &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(Offset)), <span class="dt">data =</span> trichoptera)</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ##  Adjusting a PLN model with full covariance model
 ##  Post-treatments...
 ##  DONE!</code></pre>
 <p>When we compare the models, the gain is clear in terms of log-likelihood. However, the BIC choses not to include this variable:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(</a>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(</a>
 <a class="sourceLine" id="cb19-2" data-line-number="2">  myPLN_offsets<span class="op">$</span>criteria,</a>
 <a class="sourceLine" id="cb19-3" data-line-number="3">  myPLN_wind<span class="op">$</span>criteria</a>
-<a class="sourceLine" id="cb19-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<a class="sourceLine" id="cb19-4" data-line-number="4">) <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">nb_param</th>
@@ -342,17 +350,17 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1051.456</td>
-<td align="right">-1382.261</td>
-<td align="right">-2199.653</td>
-<td align="right">0.9223267</td>
+<td align="right">-1051.535</td>
+<td align="right">-1382.339</td>
+<td align="right">-2203.495</td>
+<td align="right">0.9220948</td>
 </tr>
 <tr class="even">
 <td align="right">187</td>
-<td align="right">-1027.802</td>
-<td align="right">-1391.688</td>
-<td align="right">-2093.602</td>
-<td align="right">0.8902910</td>
+<td align="right">-1027.954</td>
+<td align="right">-1391.839</td>
+<td align="right">-2102.405</td>
+<td align="right">0.8903278</td>
 </tr>
 </tbody>
 </table>
@@ -363,13 +371,13 @@ fitted value vs. observation
 <p>It is possible to change a bit the parametrization used for modelling the residual covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence <span class="math inline">\(p \times (p+1)/2\)</span> parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix <span class="math inline">\(\boldsymbol\Sigma_D\)</span> with only <span class="math inline">\(p\)</span> parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix <span class="math inline">\(\boldsymbol\Sigma = \sigma \mathbf{I}_p\)</span>. This can be tuned in <code>PLN</code> with the <code>control</code> argument, a list controlling various aspects of the underlying optimization process:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">myPLN_diagonal &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb20-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
-<a class="sourceLine" id="cb20-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
-<a class="sourceLine" id="cb20-4" data-line-number="4">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"diagonal"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(Offset)),</a>
+<a class="sourceLine" id="cb20-4" data-line-number="4">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariance =</span> <span class="st">"diagonal"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb20-5" data-line-number="5">  )</a>
 <a class="sourceLine" id="cb20-6" data-line-number="6">myPLN_spherical &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb20-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
-<a class="sourceLine" id="cb20-8" data-line-number="8">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
-<a class="sourceLine" id="cb20-9" data-line-number="9">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"spherical"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb20-8" data-line-number="8">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(Offset)),</a>
+<a class="sourceLine" id="cb20-9" data-line-number="9">    <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariance =</span> <span class="st">"spherical"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb20-10" data-line-number="10">  )</a></code></pre></div>
 <p>Note that, by default, the model chosen is , so that the two following calls are equivalents:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">myPLN_default &lt;-<span class="st"> </span></a>
@@ -380,20 +388,20 @@ fitted value vs. observation
 ##  Post-treatments...
 ##  DONE!</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">myPLN_full &lt;-<span class="st"> </span></a>
-<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"full"</span>))</a></code></pre></div>
+<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariance =</span> <span class="st">"full"</span>))</a></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ##  Adjusting a PLN model with full covariance model
 ##  Post-treatments...
 ##  DONE!</code></pre>
 <p>Different covariance models can then be compared with the usual criteria: it seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(</a>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(</a>
 <a class="sourceLine" id="cb25-2" data-line-number="2">  myPLN_offsets<span class="op">$</span>criteria,</a>
 <a class="sourceLine" id="cb25-3" data-line-number="3">  myPLN_diagonal<span class="op">$</span>criteria,</a>
 <a class="sourceLine" id="cb25-4" data-line-number="4">  myPLN_spherical<span class="op">$</span>criteria</a>
 <a class="sourceLine" id="cb25-5" data-line-number="5">) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb25-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(<span class="dt">row.names =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"full"</span>, <span class="st">"diagonal"</span>, <span class="st">"spherical"</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb25-7" data-line-number="7"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<a class="sourceLine" id="cb25-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span>(<span class="dt">row.names =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"full"</span>, <span class="st">"diagonal"</span>, <span class="st">"spherical"</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb25-7" data-line-number="7"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th></th>
@@ -407,18 +415,18 @@ fitted value vs. observation
 <tr class="odd">
 <td>full</td>
 <td align="right">170</td>
-<td align="right">-1051.456</td>
-<td align="right">-1382.261</td>
-<td align="right">-2199.653</td>
-<td align="right">0.9223267</td>
+<td align="right">-1051.535</td>
+<td align="right">-1382.339</td>
+<td align="right">-2203.495</td>
+<td align="right">0.9220948</td>
 </tr>
 <tr class="even">
 <td>diagonal</td>
 <td align="right">34</td>
-<td align="right">-1109.357</td>
-<td align="right">-1175.518</td>
-<td align="right">-2050.778</td>
-<td align="right">0.9166840</td>
+<td align="right">-1109.416</td>
+<td align="right">-1175.577</td>
+<td align="right">-2053.853</td>
+<td align="right">0.9167151</td>
 </tr>
 <tr class="odd">
 <td>spherical</td>
@@ -433,14 +441,14 @@ fitted value vs. observation
 <p>A final model that we can try is the diagonal one with the wind as a covariate, which gives a slight improvement.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">myPLN_final &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb26-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/PLN.html">PLN</a></span>(</a>
-<a class="sourceLine" id="cb26-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/offset">offset</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(Offset)),</a>
-<a class="sourceLine" id="cb26-4" data-line-number="4">    <span class="dt">data    =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">covariance =</span> <span class="st">"diagonal"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">    Abundance <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(Offset)),</a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">    <span class="dt">data    =</span> trichoptera, <span class="dt">control =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">covariance =</span> <span class="st">"diagonal"</span>, <span class="dt">trace =</span> <span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb26-5" data-line-number="5">  )</a>
-<a class="sourceLine" id="cb26-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(</a>
+<a class="sourceLine" id="cb26-6" data-line-number="6"><span class="kw"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(</a>
 <a class="sourceLine" id="cb26-7" data-line-number="7">  myPLN_wind<span class="op">$</span>criteria,</a>
 <a class="sourceLine" id="cb26-8" data-line-number="8">  myPLN_diagonal<span class="op">$</span>criteria,</a>
 <a class="sourceLine" id="cb26-9" data-line-number="9">  myPLN_final<span class="op">$</span>criteria</a>
-<a class="sourceLine" id="cb26-10" data-line-number="10">) <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<a class="sourceLine" id="cb26-10" data-line-number="10">) <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">nb_param</th>
@@ -452,24 +460,24 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">187</td>
-<td align="right">-1027.802</td>
-<td align="right">-1391.688</td>
-<td align="right">-2093.602</td>
-<td align="right">0.8902910</td>
+<td align="right">-1027.954</td>
+<td align="right">-1391.839</td>
+<td align="right">-2102.405</td>
+<td align="right">0.8903278</td>
 </tr>
 <tr class="even">
 <td align="right">34</td>
-<td align="right">-1109.357</td>
-<td align="right">-1175.518</td>
-<td align="right">-2050.778</td>
-<td align="right">0.9166840</td>
+<td align="right">-1109.416</td>
+<td align="right">-1175.577</td>
+<td align="right">-2053.853</td>
+<td align="right">0.9167151</td>
 </tr>
 <tr class="odd">
 <td align="right">51</td>
-<td align="right">-1072.818</td>
-<td align="right">-1172.060</td>
-<td align="right">-1767.163</td>
-<td align="right">0.8759575</td>
+<td align="right">-1073.175</td>
+<td align="right">-1172.416</td>
+<td align="right">-1806.256</td>
+<td align="right">0.8762786</td>
 </tr>
 </tbody>
 </table>
@@ -500,6 +508,7 @@ fitted value vs. observation
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -514,17 +523,20 @@ fitted value vs. observation
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Julien Chiquet, Mahendra Mariadassou.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

@@ -6,9 +6,16 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Description of the Trichoptera data set • PLNmodels</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Description of the Trichoptera data set">
 <meta property="og:description" content="">
 <meta property="og:image" content="/logo.png">
@@ -31,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9003</span>
       </span>
     </div>
 
@@ -96,13 +103,14 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Description of the Trichoptera data set</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-07-03</h4>
+            <h4 class="date">2019-12-04</h4>
       
       
       <div class="hidden name"><code>Trichoptera.Rmd</code></div>
@@ -116,7 +124,7 @@
 <a href="#preliminaries" class="anchor"></a>Preliminaries</h2>
 <p>This vignette describes the data set <code>trichoptera</code>, which is used in all examples, tests and other vignettes of the package <strong>PLNmodels</strong>. This data set regroups the main striking characteristics of ecological count data (encompassing tables of abundances and covariates). The low dimensional space of the data also ensures that it is well suited for illutrative purposes.</p>
 <p>The packages required to run the vignette are the following:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(PLNmodels)</a></code></pre></div>
 </div>
 <div id="the-trichopterata-data-set" class="section level2">
 <h2 class="hasAnchor">
@@ -128,14 +136,14 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 </p>
 </div>
 <p>The data is directly available once <strong>PLNmodels</strong> is loaded. Comprehensive information and description are available to the user with <code><a href="../reference/trichoptera.html">?PLNmodels::trichoptera</a></code>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(trichoptera)</a></code></pre></div>
 <div id="formatting" class="section level3">
 <h3 class="hasAnchor">
 <a href="#formatting" class="anchor"></a>Formatting</h3>
 <p>Data are originaly stored in a list of two data frames for abundances and covariates. We first prepare the data <a href="Import_data.html">see the corresponding vignette</a> for easy use in the multivariate framework of <strong>PLNmodels</strong>. Offsets are automatically computed:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">trichoptera &lt;-<span class="st"> </span><span class="kw"><a href="../reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance, trichoptera<span class="op">$</span>Covariate)</a></code></pre></div>
 <p>Data are now stored in the <code>trichoptera</code> data frame which includes 49 rows (the observations - or trapping nights) and 9 columns. As can be seen, there are 2 multivariate columns (matrices of counts and offsets) and 7 univariate columns (vectors of covariates):</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/str">str</a></span>(trichoptera)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(trichoptera)</a></code></pre></div>
 <pre><code>## 'data.frame':    49 obs. of  9 variables:
 ##  $ Abundance    : num [1:49, 1:17] 0 0 0 0 0 0 0 0 0 0 ...
 ##   ..- attr(*, "dimnames")=List of 2
@@ -155,7 +163,7 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 <h3 class="hasAnchor">
 <a href="#table-of-counts-abundancies" class="anchor"></a>Table of counts (abundancies)</h3>
 <p>The <code>Abundance</code> column is a <span class="math inline">\(49 \times 17\)</span> matrix of abundancies (or counts) for the 17 species found during the 49 trapping nights.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">trichoptera<span class="op">$</span>Abundance <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">trichoptera<span class="op">$</span>Abundance <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">Che</th>
@@ -295,8 +303,8 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 </table>
 <p>In all other vignettes and journal papers associated with <strong>PLNmodels</strong>, the count table is denoted by <span class="math inline">\(\mathbf{Y}\)</span> in the mathematical model and <code>Y</code> in the <code>R</code> environment.</p>
 <p>A basic representation of the matrix of counts (here transposed and log-transformed), shows the typical huge dispersion between low and highly abundant species.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">corrplot<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/corrplot/topics/corrplot">corrplot</a></span>(</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log</a></span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>trichoptera<span class="op">$</span>Abundance)),</a>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">corrplot<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span>(</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">  <span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>trichoptera<span class="op">$</span>Abundance)),</a>
 <a class="sourceLine" id="cb7-3" data-line-number="3">  <span class="dt">is.corr =</span> <span class="ot">FALSE</span>,</a>
 <a class="sourceLine" id="cb7-4" data-line-number="4">  <span class="dt">addgrid.col =</span> <span class="ot">NA</span></a>
 <a class="sourceLine" id="cb7-5" data-line-number="5">)</a></code></pre></div>
@@ -310,7 +318,7 @@ log-counts in the trichoptera data set
 <h3 class="hasAnchor">
 <a href="#covariates-external-meteorological-effect-groups" class="anchor"></a>Covariates (external meteorological effect, groups)</h3>
 <p>Additional information was collected during the sampling, which corresponds to external covariates the effect of which may or may not be taken into account in the model (depending on the question at play). In the trichoptera data set, those covariates correspond to meteorological factors plus a categorical variable indicating the family of the caughts specimens.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">dplyr<span class="op">::</span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(trichoptera, <span class="op">-</span>Offset, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">dplyr<span class="op">::</span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(trichoptera, <span class="op">-</span>Offset, <span class="op">-</span>Abundance) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">Temperature</th>
@@ -391,10 +399,10 @@ log-counts in the trichoptera data set
 <p>A common issue with (microbiological) ecological data is the compositionality problem: counts can only be compared to each other within a sample but not across samples as they depend on a sample-specific size-factor, which may induce spurious negative correlations of its own. Besides, the sampling of some particular species may be biased, for instance when different technologies are used to sample different types of species. Those technical biases can be encoded in a table of offsets. In the case at hand, we have a natural offset for each sample that corresponds to the total counts per night, specified by an <span class="math inline">\(49\)</span> numeric of offsets. Note that the offset term remains the same in a given sample albeit sometimes one might include an offset specific to both the sample and the species. The formula syntax accepts either no offset, a vector or a matrix or specify the offsets term.</p>
 <p>Here, we have a vector whose corresponding column is named <code>Offset</code> in in the <code>trichoptera</code> data frame:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">trichoptera<span class="op">$</span>Offset</a></code></pre></div>
-<pre><code>##  [1]   29   13   38  192   79   18    8   34   12    4    4    3   49   33
-## [15]  600  172   58   51   56  127   35   13   17    3   27   40   44    8
-## [29]    9 1599 2980   88  135  327   66   90   63   15   14   20   70   53
-## [43]   95   43   62  149   16   31   86</code></pre>
+<pre><code>##  [1]   29   13   38  192   79   18    8   34   12    4    4    3   49   33  600
+## [16]  172   58   51   56  127   35   13   17    3   27   40   44    8    9 1599
+## [31] 2980   88  135  327   66   90   63   15   14   20   70   53   95   43   62
+## [46]  149   16   31   86</code></pre>
 <p><a href="Import_data.html">See the importation vignette</a> and the function <code><a href="../reference/prepare_data.html">prepare_data()</a></code> to learn more about how Offset can be computed in <strong>PLNmodels</strong>.</p>
 <p>Offsets are denoted by <span class="math inline">\(\mathbf{O}\)</span> in the mathematical model across other vignettes, and by <code>O</code> in the <code>R</code> environment.</p>
 </div>
@@ -417,6 +425,7 @@ log-counts in the trichoptera data set
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -431,17 +440,20 @@ log-counts in the trichoptera data set
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Julien Chiquet, Mahendra Mariadassou.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

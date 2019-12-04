@@ -6,9 +6,16 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Poisson Lognormal Models • PLNmodels</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Poisson Lognormal Models">
 <meta property="og:description" content="The Poisson-lognormal model and variants can be used for 
     a variety of multivariate problems when count data are at play, including 
@@ -25,7 +32,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-article">
+    <div class="container template-home">
       <header><div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -37,7 +44,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.2.9003</span>
       </span>
     </div>
 
@@ -102,12 +109,9 @@
 <!--/.navbar -->
 
       
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    
 
-    
-    
+      </header><div class="row">
+  <div class="contents col-md-9">
 <div id="plnmodels-poisson-lognormal-models" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#plnmodels-poisson-lognormal-models" class="anchor"></a>PLNmodels: Poisson lognormal models <img src="reference/figures/logo.png" align="right" width="155" height="180">
@@ -127,19 +131,19 @@
 <h4 class="hasAnchor">
 <a href="#cran-dependencies" class="anchor"></a>CRAN dependencies</h4>
 <p><strong>PLNmodels</strong> needs the following CRAN R packages, so check that they are are installed on your computer.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">required_CRAN &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"R6"</span>, <span class="st">"glassoFast"</span>, <span class="st">"Matrix"</span>, <span class="st">"Rcpp"</span>, <span class="st">"RcppArmadillo"</span>,</a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">required_CRAN &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"R6"</span>, <span class="st">"glassoFast"</span>, <span class="st">"Matrix"</span>, <span class="st">"Rcpp"</span>, <span class="st">"RcppArmadillo"</span>,</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2">                   <span class="st">"nloptr"</span>, <span class="st">"igraph"</span>, <span class="st">"grid"</span>, <span class="st">"gridExtra"</span>, <span class="st">"dplyr"</span>,</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3">                   <span class="st">"tidyr"</span>, <span class="st">"ggplot2"</span>, <span class="st">"corrplot"</span>, <span class="st">"magrittr"</span>, <span class="st">"devtools"</span>)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">not_installed_CRAN &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sets">setdiff</a></span>(required_CRAN, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">rownames</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/installed.packages">installed.packages</a></span>()))</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(not_installed_CRAN) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(not_installed_CRAN)</a></code></pre></div>
+<a class="sourceLine" id="cb1-4" data-line-number="4">not_installed_CRAN &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sets.html">setdiff</a></span>(required_CRAN, <span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span>()))</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="cf">if</span> (<span class="kw"><a href="https://rdrr.io/r/base/length.html">length</a></span>(not_installed_CRAN) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(not_installed_CRAN)</a></code></pre></div>
 </div>
 <div id="bioconductor-dependencies" class="section level4">
 <h4 class="hasAnchor">
 <a href="#bioconductor-dependencies" class="anchor"></a>Bioconductor dependencies</h4>
 <p><strong>PLNmodels</strong> also needs two BioConductor packages</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">required_BioC &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"phyloseq"</span>, <span class="st">"biomformat"</span>)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">not_installed_BioC &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sets">setdiff</a></span>(required_BioC, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">rownames</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/installed.packages">installed.packages</a></span>()))</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(not_installed_BioC) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) BiocManager<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/BiocManager/topics/install">install</a></span>(not_installed_BioC)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">required_BioC &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"phyloseq"</span>, <span class="st">"biomformat"</span>)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">not_installed_BioC &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sets.html">setdiff</a></span>(required_BioC, <span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span>()))</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="cf">if</span> (<span class="kw"><a href="https://rdrr.io/r/base/length.html">length</a></span>(not_installed_BioC) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) BiocManager<span class="op">::</span><span class="kw">install</span>(not_installed_BioC)</a></code></pre></div>
 </div>
 <div id="installing-plnmodels" class="section level4">
 <h4 class="hasAnchor">
@@ -147,15 +151,15 @@
 <ul>
 <li>For the last stable version, use the CRAN version</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"PLNmodels"</span>)</a></code></pre></div>
+<!-- end list --><div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"PLNmodels"</span>)</a></code></pre></div>
 <ul>
 <li>For the development version, use the github install</li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>)</a></code></pre></div>
+<!-- end list --><div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>)</a></code></pre></div>
 <ul>
 <li>For a specific tagged release, use</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(<span class="st">"jchiquet/PLNmodels@tag_number"</span>)</a></code></pre></div>
+<!-- end list --><div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span>(<span class="st">"jchiquet/PLNmodels@tag_number"</span>)</a></code></pre></div>
 </div>
 </div>
 </div>
@@ -163,8 +167,8 @@
 <h2 class="hasAnchor">
 <a href="#usage-and-main-fitting-functions" class="anchor"></a>Usage and main fitting functions</h2>
 <p>The package comes with an ecological data set to present the functionality</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PLNmodels)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(trichoptera)</a>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(PLNmodels)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(trichoptera)</a>
 <a class="sourceLine" id="cb6-3" data-line-number="3">trichoptera &lt;-<span class="st"> </span><span class="kw"><a href="reference/prepare_data.html">prepare_data</a></span>(trichoptera<span class="op">$</span>Abundance, trichoptera<span class="op">$</span>Covariate)</a></code></pre></div>
 <p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <a href="http://jchiquet.github.io/PLNmodels/articles/" class="uri">http://jchiquet.github.io/PLNmodels/articles/</a>).</p>
 <div id="unpenalized-poisson-lognormal-model-aka-pln" class="section level3">
@@ -225,13 +229,13 @@
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>Julien Chiquet <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3629-3429" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
-<li>Mahendra Mariadassou <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2986-354X" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
+<li>Julien Chiquet <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3629-3429" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID"></a> </li>
+<li>Mahendra Mariadassou <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2986-354X" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID"></a> </li>
 <li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
 
-      <div class="dev-status">
+  <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://travis-ci.org/jchiquet/PLNmodels"><img src="https://travis-ci.org/jchiquet/PLNmodels.svg?branch=master" alt="Travis-CI build status"></a></li>
@@ -242,7 +246,6 @@
 </ul>
 </div>
 </div>
-
 </div>
 
 
@@ -251,12 +254,14 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>
