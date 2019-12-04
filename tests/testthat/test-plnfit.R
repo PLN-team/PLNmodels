@@ -39,8 +39,8 @@ test_that("PLN fit: check classes, getters and field access",  {
   expect_equal(vcov(model), model$fisher$mat)
 
   ## S3 methods: class
-  expect_equal(class(coef(model)), "matrix")
-  expect_equal(class(sigma(model)), "matrix")
+  expect_true(inherits(coef(model), "matrix"))
+  expect_true(inherits(sigma(model), "matrix"))
   expect_true(class(vcov(model)) == "dgCMatrix")
 
   ## S3 methods: dimensions
