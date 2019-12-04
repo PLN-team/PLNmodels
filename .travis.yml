@@ -1,6 +1,7 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2019-12-04: try handling of bioconductor packages using only biocViews
 #  - 2019-03-16: suppressing requirements for system version of nlopt
 #  - 2019-03-04: some tweaks and clean up
 #  - 2019-01-29: deployment of pages with travis
@@ -24,15 +25,17 @@ warnings_are_errors: false
 brew_packages:
   - gcc
 
-use_bioc: true
-bioc_required: true
+# use_bioc: true
+# bioc_required: true
 
-bioc_packages:
-  - biomformat
-  - phyloseq
+# bioc_packages:
+#  - biomformat
+#  - phyloseq
 
 matrix:
   include:
+    - os: linux
+      r: release
     - os: linux
       r: bioc-devel
     - os: osx
