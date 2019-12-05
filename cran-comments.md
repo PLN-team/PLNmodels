@@ -1,7 +1,9 @@
 
-## Minor change to comply dev version of R
+## Minor change to comply with check in R-dev
 
-Some unitary tests were failing in for developement version of R, due to the 
+* added LazyData: true to the DESCRIPTION file to avoid warnings on CRAN dev version
+* corrected URI in vignette PLNPCA
+* changed some unitary tests which were failing in for developement version of R, due to the 
 change of class in matrix
 
 > class(matrix(1 : 4, 2, 2))

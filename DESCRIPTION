@@ -21,6 +21,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 RoxygenNote: 6.1.1
 Depends: R (>= 3.4)
+LazyData: true
 biocViews:
 Imports: 
   methods,
