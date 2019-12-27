@@ -79,7 +79,7 @@ case, edge names follow igraph naming convention." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3.9001</span>
       </span>
     </div>
 
@@ -159,9 +159,14 @@ during the stars stability selection procedure, as either a matrix or a named ve
 case, edge names follow igraph naming convention.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>extract_probs</span>(<span class='no'>Robject</span>, <span class='kw'>penalty</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>index</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"StARS"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>), <span class='kw'>format</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"matrix"</span>, <span class='st'>"vector"</span>),
-  <span class='kw'>tol</span> <span class='kw'>=</span> <span class='fl'>1e-05</span>)</pre>
+    <pre class="usage"><span class='fu'>extract_probs</span>(
+  <span class='no'>Robject</span>,
+  <span class='kw'>penalty</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>index</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"StARS"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>),
+  <span class='kw'>format</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"matrix"</span>, <span class='st'>"vector"</span>),
+  <span class='kw'>tol</span> <span class='kw'>=</span> <span class='fl'>1e-05</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

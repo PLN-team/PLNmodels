@@ -77,7 +77,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3.9001</span>
       </span>
     </div>
 
@@ -156,14 +156,16 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNPCAfamily</span>
-<span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ICL"</span>, <span class='st'>"BIC"</span>,
-  <span class='st'>"R_squared"</span>), <span class='no'>...</span>)
+<span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ICL"</span>, <span class='st'>"BIC"</span>, <span class='st'>"R_squared"</span>), <span class='no'>...</span>)
 
 <span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='no'>crit</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for PLNnetworkfamily</span>
-<span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"BIC"</span>,
-  <span class='st'>"loglik"</span>, <span class='st'>"R_squared"</span>, <span class='st'>"EBIC"</span>, <span class='st'>"StARS"</span>), <span class='no'>...</span>)</pre>
+<span class='fu'>getBestModel</span>(
+  <span class='no'>Robject</span>,
+  <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"loglik"</span>, <span class='st'>"R_squared"</span>, <span class='st'>"EBIC"</span>, <span class='st'>"StARS"</span>),
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

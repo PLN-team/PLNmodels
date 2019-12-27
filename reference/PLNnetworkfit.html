@@ -79,7 +79,7 @@ See the documentation for plot.PLNnetworkfit + methods inherited from PLNfit." /
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3.9001</span>
       </span>
     </div>
 
@@ -159,17 +159,35 @@ See the documentation for plot.PLNnetworkfit + methods inherited from PLNfit." /
 See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot.PLNnetworkfit</a></code> + methods inherited from PLNfit.</p>
     </div>
 
-    <pre class="usage"><span class='no'>PLNnetworkfit</span></pre>
 
 
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p>An object of class <code>R6ClassGenerator</code> of length 24.</p>
-    <h2 class="hasAnchor" id="fields"><a class="anchor" href="#fields"></a>Fields</h2>
+    <div class='dont-index'><p>The function <code><a href='PLNnetwork.html'>PLNnetwork</a></code>, the class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></div>
+    <h2 class="hasAnchor" id="super-class"><a class="anchor" href="#super-class"></a>Super class</h2>
 
-    
+    <p><code><a href='PLNfit.html'>PLNmodels::PLNfit</a></code> -&gt; <code>PLNnetworkfit</code></p>
+    <h2 class="hasAnchor" id="public-fields"><a class="anchor" href="#public-fields"></a>Public fields</h2>
 
-<dl class='dl-horizontal'>
+    <p><div class="r6-fields"></p><dl class='dl-horizontal'>
+<dt><code>var_par</code></dt><dd><p>a list with two matrices, M and S, which are the estimated parameters in the variational approximation</p></dd>
+
+<dt><code>latent</code></dt><dd><p>a matrix: values of the latent vector (Z in the model)</p></dd>
+
+<dt><code>optim_par</code></dt><dd><p>a list with parameters useful for monitoring the optimization</p></dd>
+
+<dt><code>loglik</code></dt><dd><p>variational lower bound of the loglikelihood</p></dd>
+
+<dt><code>BIC</code></dt><dd><p>variational lower bound of the BIC</p></dd>
+
+<dt><code>ICL</code></dt><dd><p>variational lower bound of the ICL</p></dd>
+
+<dt><code>R_squared</code></dt><dd><p>approximated goodness-of-fit criterion</p></dd>
+
+</dl><p></div></p>
+    <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
+
+    <p><div class="r6-active-bindings"></p><dl class='dl-horizontal'>
 <dt><code>penalty</code></dt><dd><p>the level of sparsity in the current model</p></dd>
 
 <dt><code>model_par</code></dt><dd><p>a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.</p></dd>
@@ -198,10 +216,116 @@ See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot.PLNnetwor
 
 <dt><code>criteria</code></dt><dd><p>a vector with loglik, BIC, ICL, R_squared and number of parameters</p></dd>
 
-</dl>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+</dl><p></div></p>
+    <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
-    <div class='dont-index'><p>The function <code><a href='PLNnetwork.html'>PLNnetwork</a></code>, the class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></div>
+    
+<h3>Public methods</h3>
+
+<ul>
+<li><p><a href='#method-new'><code>PLNnetworkfit$new()</code></a></p></li>
+<li><p><a href='#method-update'><code>PLNnetworkfit$update()</code></a></p></li>
+<li><p><a href='#method-optimize'><code>PLNnetworkfit$optimize()</code></a></p></li>
+<li><p><a href='#method-postTreatment'><code>PLNnetworkfit$postTreatment()</code></a></p></li>
+<li><p><a href='#method-latent_network'><code>PLNnetworkfit$latent_network()</code></a></p></li>
+<li><p><a href='#method-plot_network'><code>PLNnetworkfit$plot_network()</code></a></p></li>
+<li><p><a href='#method-show'><code>PLNnetworkfit$show()</code></a></p></li>
+<li><p><a href='#method-clone'><code>PLNnetworkfit$clone()</code></a></p></li>
+</ul>
+<p><details ><summary>Inherited methods</summary>
+<ul>
+<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher"><a href='../../PLNmodels/html/PLNfit.html#method-compute_fisher'><code>PLNmodels::PLNfit$compute_fisher()</code></a></span></p></li>
+<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href='../../PLNmodels/html/PLNfit.html#method-compute_standard_error'><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></p></li>
+<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="latent_pos"><a href='../../PLNmodels/html/PLNfit.html#method-latent_pos'><code>PLNmodels::PLNfit$latent_pos()</code></a></span></p></li>
+<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></p></li>
+<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-print'><code>PLNmodels::PLNfit$print()</code></a></span></p></li>
+<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></p></li>
+<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href='../../PLNmodels/html/PLNfit.html#method-VEstep'><code>PLNmodels::PLNfit$VEstep()</code></a></span></p></li>
+</ul>
+</details>
+
+<hr>
+<a id="method-new"></a></p><h3>Method <code>new()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNnetworkfit$new(
+  penalty,
+  responses,
+  covariates,
+  offsets,
+  weights,
+  model,
+  control
+)</pre><p></div></p>
+
+<p><hr>
+<a id="method-update"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/update.html'>update()</a></code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNnetworkfit$update(
+  penalty = NA,
+  Theta = NA,
+  Sigma = NA,
+  Omega = NA,
+  M = NA,
+  S = NA,
+  Z = NA,
+  A = NA,
+  Ji = NA,
+  R2 = NA,
+  monitoring = NA
+)</pre><p></div></p>
+
+<p><hr>
+<a id="method-optimize"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNnetworkfit$optimize(responses, covariates, offsets, weights, control)</pre><p></div></p>
+
+<p><hr>
+<a id="method-postTreatment"></a></p><h3>Method <code>postTreatment()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNnetworkfit$postTreatment(responses, covariates, offsets, weights, nullModel)</pre><p></div></p>
+
+<p><hr>
+<a id="method-latent_network"></a></p><h3>Method <code>latent_network()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNnetworkfit$latent_network(type = c("partial_cor", "support", "precision"))</pre><p></div></p>
+
+<p><hr>
+<a id="method-plot_network"></a></p><h3>Method <code>plot_network()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNnetworkfit$plot_network(
+  type = c("partial_cor", "support"),
+  output = c("igraph", "corrplot"),
+  edge.color = c("#F8766D", "#00BFC4"),
+  remove.isolated = FALSE,
+  node.labels = NULL,
+  layout = layout_in_circle,
+  plot = TRUE
+)</pre><p></div></p>
+
+<p><hr>
+<a id="method-show"></a></p><h3>Method <code>show()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNnetworkfit$show()</pre><p></div></p>
+
+<p><hr>
+<a id="method-clone"></a></p><h3>Method <code>clone()</code></h3>
+<p>The objects of this class are cloneable with this method.</p><h3>Usage</h3>
+<p><div class="r"></p><pre>PLNnetworkfit$clone(deep = FALSE)</pre><p></div></p>
+
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl class='dl-horizontal'>
+<dt><code>deep</code></dt><dd><p>Whether to make a deep clone.</p></dd>
+
+</dl><p></div></p>
+
+
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
@@ -216,9 +340,11 @@ See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot.PLNnetwor
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#format">Format</a></li>
-      <li><a href="#fields">Fields</a></li>
       <li><a href="#see-also">See also</a></li>
+      <li><a href="#super-class">Super class</a></li>
+      <li><a href="#public-fields">Public fields</a></li>
+      <li><a href="#active-bindings">Active bindings</a></li>
+      <li><a href="#methods">Methods</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

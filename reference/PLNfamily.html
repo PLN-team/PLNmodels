@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fisher information matrix for Theta — fisher • PLNmodels</title>
+<title>An R6 Class to represent a collection of PLNfit — PLNfamily • PLNmodels</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -42,8 +42,11 @@
 
 
 
-<meta property="og:title" content="Fisher information matrix for Theta — fisher" />
-<meta property="og:description" content="Extracts Fisher information matrix of \(\Theta\) from objects returned by PLN and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the full-data version (scaled by the number of observations), usually noted $$I_n(\theta)$$." />
+<meta property="og:title" content="An R6 Class to represent a collection of PLNfit — PLNfamily" />
+<meta property="og:description" content="super class for PLNPCAfamily and PLNnetworkfamily
+This class comes with a set of methods, some of them being useful for the user:
+See the documentation for getBestModel,
+getModel and  plot." />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -146,55 +149,112 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fisher information matrix for Theta</h1>
+    <h1>An R6 Class to represent a collection of PLNfit</h1>
     
-    <div class="hidden name"><code>fisher.Rd</code></div>
+    <div class="hidden name"><code>PLNfamily.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Extracts Fisher information matrix of \(\Theta\) from objects returned by <code><a href='PLN.html'>PLN</a></code> and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the full-data version (scaled by the number of observations), usually noted $$I_n(\theta)$$.</p>
+    <p>super class for <code><a href='PLNPCAfamily.html'>PLNPCAfamily</a></code> and <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p>
+<p>This class comes with a set of methods, some of them being useful for the user:
+See the documentation for <code><a href='getBestModel.html'>getBestModel</a></code>,
+<code><a href='getModel.html'>getModel</a></code> and  <code><a href='plot.PLNnetworkfamily.html'>plot</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fisher</span>(<span class='no'>object</span>, <span class='no'>type</span>)
 
-<span class='co'># S3 method for PLNfit</span>
-<span class='fu'>fisher</span>(<span class='no'>object</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"wald"</span>, <span class='st'>"louis"</span>))</pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>object</th>
-      <td><p>an R6 object with class PLNfit</p></td>
-    </tr>
-    <tr>
-      <th>type</th>
-      <td><p>Either `wald` (default) or `louis`. Approxomation scheme used to compute the Fisher information matrix</p></td>
-    </tr>
-    </table>
+    <h2 class="hasAnchor" id="public-fields"><a class="anchor" href="#public-fields"></a>Public fields</h2>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <p><div class="r6-fields"></p><dl class='dl-horizontal'>
+<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
 
-    <p>A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
-\(\Theta\) is a matrix of size d * p.</p>
-    <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
+<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
+
+<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
+
+<dt><code>weights</code></dt><dd><p>the vector of observation weights</p></dd>
+
+<dt><code>models</code></dt><dd><p>a list of <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code> object, one per penalty.</p></dd>
+
+<dt><code>inception</code></dt><dd><p>a <code><a href='PLNfit.html'>PLNfit</a></code> object, obtained when no sparsifying penalty is applied.</p></dd>
+
+</dl><p></div></p>
+    <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
+
+    <p><div class="r6-active-bindings"></p><dl class='dl-horizontal'>
+<dt><code>criteria</code></dt><dd><p>a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.</p></dd>
+
+</dl><p></div></p>
+    <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
-<ul>
-<li><p><code>PLNfit</code>: Fisher information matrix for PLNfit</p></li>
-</ul>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+<h3>Public methods</h3>
 
-    <div class='dont-index'><p><code><a href='standard_error.html'>standard_error</a></code> for standard errors</p></div>
+<ul>
+<li><p><a href='#method-new'><code>PLNfamily$new()</code></a></p></li>
+<li><p><a href='#method-postTreatment'><code>PLNfamily$postTreatment()</code></a></p></li>
+<li><p><a href='#method-getModel'><code>PLNfamily$getModel()</code></a></p></li>
+<li><p><a href='#method-plot'><code>PLNfamily$plot()</code></a></p></li>
+<li><p><a href='#method-show'><code>PLNfamily$show()</code></a></p></li>
+<li><p><a href='#method-print'><code>PLNfamily$print()</code></a></p></li>
+<li><p><a href='#method-clone'><code>PLNfamily$clone()</code></a></p></li>
+</ul>
+<p><hr>
+<a id="method-new"></a></p><h3>Method <code>new()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNfamily$new(responses, covariates, offsets, weights, control)</pre><p></div></p>
+
+<p><hr>
+<a id="method-postTreatment"></a></p><h3>Method <code>postTreatment()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNfamily$postTreatment()</pre><p></div></p>
+
+<p><hr>
+<a id="method-getModel"></a></p><h3>Method <code><a href='getModel.html'>getModel()</a></code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNfamily$getModel(var, index = NULL)</pre><p></div></p>
+
+<p><hr>
+<a id="method-plot"></a></p><h3>Method <code><a href='https://rdrr.io/r/graphics/plot.html'>plot()</a></code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNfamily$plot(criteria, annotate = TRUE)</pre><p></div></p>
+
+<p><hr>
+<a id="method-show"></a></p><h3>Method <code>show()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNfamily$show()</pre><p></div></p>
+
+<p><hr>
+<a id="method-print"></a></p><h3>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre>PLNfamily$print()</pre><p></div></p>
+
+<p><hr>
+<a id="method-clone"></a></p><h3>Method <code>clone()</code></h3>
+<p>The objects of this class are cloneable with this method.</p><h3>Usage</h3>
+<p><div class="r"></p><pre>PLNfamily$clone(deep = FALSE)</pre><p></div></p>
+
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl class='dl-horizontal'>
+<dt><code>deep</code></dt><dd><p>Whether to make a deep clone.</p></dd>
+
+</dl><p></div></p>
+
+
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#methods-by-class-">Methods (by class)</a></li>
-      <li><a href="#see-also">See also</a></li>
+      <li><a href="#public-fields">Public fields</a></li>
+      <li><a href="#active-bindings">Active bindings</a></li>
+      <li><a href="#methods">Methods</a></li>
     </ul>
 
   </div>
