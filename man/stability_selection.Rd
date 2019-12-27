@@ -4,8 +4,13 @@
 \alias{stability_selection}
 \title{Compute the stability path by stability selection}
 \usage{
-stability_selection(Robject, subsamples = NULL, control = list(),
-  mc.cores = 1, force = FALSE)
+stability_selection(
+  Robject,
+  subsamples = NULL,
+  control = list(),
+  mc.cores = 1,
+  force = FALSE
+)
 }
 \arguments{
 \item{Robject}{an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}}

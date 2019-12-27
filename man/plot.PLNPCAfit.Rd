@@ -4,10 +4,17 @@
 \alias{plot.PLNPCAfit}
 \title{PCA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object}
 \usage{
-\method{plot}{PLNPCAfit}(x, map = c("both", "individual", "variable"),
-  nb_axes = min(3, x$rank), axes = seq.int(min(2, x$rank)),
-  ind_cols = "ind_colors", var_cols = "var_colors", plot = TRUE,
-  main = NULL, ...)
+\method{plot}{PLNPCAfit}(
+  x,
+  map = c("both", "individual", "variable"),
+  nb_axes = min(3, x$rank),
+  axes = seq.int(min(2, x$rank)),
+  ind_cols = "ind_colors",
+  var_cols = "var_colors",
+  plot = TRUE,
+  main = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{an R6 object with class PLNPCAfit}

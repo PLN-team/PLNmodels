@@ -9,6 +9,7 @@
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
 #' @field offsets the matrix of offsets common to every models
+#' @field weights the vector of observation weights
 #' @field penalties the sparsity level of the network in the successively fitted models
 #' @field models a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.
 #' @field inception a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.

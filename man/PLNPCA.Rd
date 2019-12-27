@@ -4,8 +4,15 @@
 \alias{PLNPCA}
 \title{Poisson lognormal model towards Principal Component Analysis}
 \usage{
-PLNPCA(formula, data, subset, weights, ranks = 1:5,
-  control_init = list(), control_main = list())
+PLNPCA(
+  formula,
+  data,
+  subset,
+  weights,
+  ranks = 1:5,
+  control_init = list(),
+  control_main = list()
+)
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}

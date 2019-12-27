@@ -4,9 +4,14 @@
 \alias{extract_probs}
 \title{Extract edge selection frequency in bootstrap subsamples}
 \usage{
-extract_probs(Robject, penalty = NULL, index = NULL,
-  crit = c("StARS", "BIC", "EBIC"), format = c("matrix", "vector"),
-  tol = 1e-05)
+extract_probs(
+  Robject,
+  penalty = NULL,
+  index = NULL,
+  crit = c("StARS", "BIC", "EBIC"),
+  format = c("matrix", "vector"),
+  tol = 1e-05
+)
 }
 \arguments{
 \item{Robject}{an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}}

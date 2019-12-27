@@ -7,13 +7,15 @@
 \alias{getBestModel.PLNnetworkfamily}
 \title{Best model extraction from a collection of models}
 \usage{
-\method{getBestModel}{PLNPCAfamily}(Robject, crit = c("ICL", "BIC",
-  "R_squared"), ...)
+\method{getBestModel}{PLNPCAfamily}(Robject, crit = c("ICL", "BIC", "R_squared"), ...)
 
 getBestModel(Robject, crit, ...)
 
-\method{getBestModel}{PLNnetworkfamily}(Robject, crit = c("BIC",
-  "loglik", "R_squared", "EBIC", "StARS"), ...)
+\method{getBestModel}{PLNnetworkfamily}(
+  Robject,
+  crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"),
+  ...
+)
 }
 \arguments{
 \item{Robject}{an object with class PLNPCAfamilly ot PLNnetworkfamily}

@@ -4,8 +4,7 @@
 \alias{compute_offset}
 \title{Compute offsets from a count data using one of several normalization schemes}
 \usage{
-compute_offset(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"),
-  ...)
+compute_offset(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...)
 }
 \arguments{
 \item{counts}{Required. An abundance count table, preferably with dimensions names and species as columns.}

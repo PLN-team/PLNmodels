@@ -19,7 +19,7 @@ URL: https://jchiquet.github.io/PLNmodels/
 BugReports: https://github.com/jchiquet/PLNmodels/issues
 License: GPL (>= 3)
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Depends: R (>= 3.4)
 biocViews:
 Imports: 

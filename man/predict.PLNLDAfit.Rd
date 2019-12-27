@@ -4,9 +4,15 @@
 \alias{predict.PLNLDAfit}
 \title{Predict group of new samples}
 \usage{
-\method{predict}{PLNLDAfit}(object, newdata, type = c("posterior",
-  "response", "scores"), scale = c("log", "prob"), prior = NULL,
-  control = list(), ...)
+\method{predict}{PLNLDAfit}(
+  object,
+  newdata,
+  type = c("posterior", "response", "scores"),
+  scale = c("log", "prob"),
+  prior = NULL,
+  control = list(),
+  ...
+)
 }
 \arguments{
 \item{object}{an R6 object with class PLNLDAfit}
