@@ -6,7 +6,7 @@
 inline arma::mat logfact(arma::mat Y) {
   arma::mat v = Y.replace(0, 1);
   return sum(v % arma::log(v) - v + arma::log(8*pow(v,3) + 4*pow(v, 2) + v + 1/30)/6 + std::log(M_PI)/2, 1);
-};
+}
 
 typedef std::vector<double> stdvec;
 

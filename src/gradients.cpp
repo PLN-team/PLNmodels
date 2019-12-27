@@ -23,7 +23,7 @@ double fn_optim_PLN(unsigned N, const double *x, double *grad, void *data) {
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -52,7 +52,7 @@ double fn_optim_PLN_weighted(unsigned N, const double *x, double *grad, void *da
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -80,7 +80,7 @@ double fn_optim_PLN_spherical(unsigned N, const double *x, double *grad, void *d
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -109,7 +109,7 @@ double fn_optim_PLN_weighted_spherical(unsigned N, const double *x, double *grad
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -139,7 +139,7 @@ double fn_optim_PLN_diagonal(unsigned N, const double *x, double *grad, void *da
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -168,7 +168,7 @@ double fn_optim_PLN_weighted_diagonal(unsigned N, const double *x, double *grad,
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -197,7 +197,7 @@ double fn_optim_PLN_rank(unsigned N, const double *x, double *grad, void *data) 
 
   double objective = accu(A - dat->Y % Z) + .5 * accu(M % M + S - log(S) - 1) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -226,7 +226,7 @@ double fn_optim_PLN_weighted_rank(unsigned N, const double *x, double *grad, voi
 
   double objective = accu(diagmat(dat->w) * (A - dat->Y % Z)) + .5 * accu(diagmat(dat->w) * (M % M + S - log(S) - 1)) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -254,7 +254,7 @@ double fn_optim_PLN_sparse(unsigned N, const double *x, double *grad, void *data
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M),grd_S)) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -283,7 +283,7 @@ double fn_optim_PLN_weighted_sparse(unsigned N, const double *x, double *grad, v
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M),grd_S)) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
@@ -310,7 +310,7 @@ double fn_optim_VEstep_PLN(unsigned N, const double *x, double *grad, void *data
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
 
-  for (int i=0;i<N;i++) grad[i] = grad_std[i];
+  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
   return objective;
 }
