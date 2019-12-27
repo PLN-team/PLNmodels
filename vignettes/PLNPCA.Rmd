@@ -184,7 +184,7 @@ myPCA_ICL$rotation %>% head() %>% knitr::kable()
 myPCA_ICL$scores %>% head() %>% knitr::kable()
 ```
 
-`PLNPCAfit` also inherits from the methods of `PLNfit` (see the [appropriate vignette](articles/PLN.html)). Most are recalled via the show method:
+`PLNPCAfit` also inherits from the methods of `PLNfit` (see the [appropriate vignette](PLN.html)). Most are recalled via the show method:
 ```{r show PLNPCAfit}
 myPCA_ICL
 ```
