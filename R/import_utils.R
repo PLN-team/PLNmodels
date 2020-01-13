@@ -364,8 +364,8 @@ prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
 #' ## Requires the phyloseq package
 #' \dontrun{
 #' library(phyloseq)
-#' data(enterotypes)
-#' prepare_data_from_phyloseq(enterotypes)
+#' data(enterotype)
+#' prepare_data_from_phyloseq(enterotype)
 #' }
 prepare_data_from_phyloseq <- function(physeq, offset = "TSS", ...) {
   if (!inherits(physeq, "phyloseq")) stop("physeq should be a phyloseq object.")
