@@ -124,35 +124,71 @@ nrow(prepare_data(trichoptera$Abundance[-1, ], ## remove first sample
 
 Community composition data are quite popular in microbial ecology and usually stored in flat files using the [biom format](http://biom-format.org/) and/or imported in R as phyloseq-class objects [@phyloseq] using the Bioconductor [phyloseq](https://joey711.github.io/phyloseq/) package.
 
-We provide helper functions to directly import data from a biom file (or biom-class object) and a phyloseq-class object. 
+<!-- We provide helper functions to directly import data from a biom file (or biom-class object) and a phyloseq-class object.  -->
 
+We show here how to import data from a biom file (or biom-class object) and form a phyloseq-class object.  
 
 ### Reading from a biom file
 
-Note that the covariates **must** be stored in the biom object as they are automatically extracted, reading a biom without covariates results in an error. 
+Reading from a biom file requires the bioconductor package [biomformat](https://www.bioconductor.org/packages/release/bioc/html/biomformat.html). This package is **not** a standard dependency of PLNmodels and needs to be installed separately.
 
-```{r import_biom, error=TRUE}
+You can easily prepare your data from a biom file using the following steps:
+
+- read your biom file with `biomformat::read_biom()`
+- extract the count table with `biomformat::biom_data()`
+- extract the covariates with `biomformat::sample_metadata()` (or build your own)
+- feed them to `prepare_data`
+
+as illustrated below:
+<!-- Note that the covariates **must** be stored in the biom object as they are automatically extracted, reading a biom without covariates results in an error.  -->
+
+```{r import_biom,eval = FALSE}
+## If biomformat is not installed, uncomment the following lines
+# if (!requireNamespace("BiocManager", quietly = TRUE)) {
+#   install.packages("BiocManager")
+# }
+# BiocManager::install("biomformat")
 library(biomformat)
-## Biom file without covariates
-biomfile <- system.file("extdata", "min_dense_otu_table.biom", package = "biomformat")
-prepare_data_from_biom(biomfile)
-## Biom file with covariates, TSS offsets
 biomfile <- system.file("extdata", "rich_dense_otu_table.biom", package = "biomformat")
-str(prepare_data_from_biom(biomfile, offset = "TSS"))
+biom <- biomformat::read_biom(biomfile)
+## extract counts
+counts <- as(biomformat::biom_data(biom), "matrix")
+## extract covariates (or prepare your own)
+covariates <- biomformat::sample_metadata(biom)
+## prepare data
+my_data <- prepare_data(counts = counts, covariates = covariates)
+str(my_data)
 ```
 
 ### Reading from a phyloseq-class object
 
-Note that the covariates **must** be stored in the phyloseq-class object as they are automatically extracted, importing a phyloseq object with no `sample_data` component results in an error. 
+Likewise, preparing data from a phyloseq-class object requires the bioconductor package [phyloseq](https://www.bioconductor.org/packages/release/bioc/html/phyloseq.html). This package is **not** a standard dependency of PLNmodels and needs to be installed separately.
 
-```{r import_phyloseq, error = TRUE}
+You can easily prepare your data from a phyloseq object using the following steps:
+
+- extract the count table with `phyloseq::otu_table()`
+- extract the covariates with `phyloseq::sample_data()` (or build your own)
+- feed them to `prepare_data`
+
+as illustrated below:
+
+<!-- Note that the covariates **must** be stored in the phyloseq-class object as they are automatically extracted, importing a phyloseq object with no `sample_data` component results in an error.  -->
+
+```{r import_phyloseq, eval = FALSE}
+## If biomformat is not installed, uncomment the following lines
+# if (!requireNamespace("BiocManager", quietly = TRUE)) {
+#   install.packages("BiocManager")
+# }
+# BiocManager::install("phyloseq")
 library(phyloseq)
-## phyloseq object without covariates
-physeq <- phyloseq(otu_table(trichoptera$Abundance, taxa_are_rows = FALSE))
-prepare_data_from_phyloseq(physeq)
-## phyloseq object with covariates, TSS offsets
-data("GlobalPatterns")
-str(prepare_data_from_phyloseq(GlobalPatterns, offset = "TSS"))
+data("enterotype")
+## extract counts
+counts <- as(phyloseq::otu_table(enterotype), "matrix")
+## extract covariates (or prepare your own)
+covariates <- phyloseq::sample_data(enterotype)
+## prepare data
+my_data <- prepare_data(counts = counts, covariates = covariates)
+str(my_data)
 ```
 
 ## Mathematical details about the offsets

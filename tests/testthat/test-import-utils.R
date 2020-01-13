@@ -326,55 +326,55 @@ test_that("prepare_data succeeds when specifying a numeric offset", {
 
 ## Test prepare_data_* functions ------------------------------------------------------------------------
 
-test_that("prepare_data_from_biom fails when covariates data.frame is missing", {
-  biom <- biomformat::make_biom(data = t(counts), sample_metadata = NULL)
-  expect_error(prepare_data_from_biom(biom, offset = "none"))
-})
-
-test_that("prepare_data_from_biom succeeds on biom specified by file name.", {
-  biom_file <- system.file("extdata", "rich_sparse_otu_table.biom", package = "biomformat")
-  biom <- biomformat::read_biom(biom_file)
-  expect_equal(prepare_data_from_biom(biom_file),
-               prepare_data_from_biom(biom))
-})
-
-test_that("prepare_data_from_biom succeeds on proper biom objects (but converts all columns to character...)", {
-  biom <- biomformat::make_biom(data = t(counts),
-                               sample_metadata = lapply(covariates, as.character) %>% as.data.frame)
-  result_biom <- result
-  result_biom[-1] <- lapply(result_biom[-1], as.character)
-  rownames(result_biom) <- as.character(rownames(result_biom))
-  expect_equal(prepare_data_from_biom(biom, offset = "none"),
-               result_biom)
-})
-
-## massage rownames to fit phyloseq sample naming conventions
-rownames(counts) <- rownames(covariates) <- paste0("Sample", 1:nrow(covariates))
-
-test_that("prepare_data_from_phyloseq fails when covariate data.frame is missing", {
-  physeq <- phyloseq::phyloseq(phyloseq::otu_table(counts, taxa_are_rows = FALSE))
-  expect_error(prepare_data_from_phyloseq(physeq, offset = "none"),
-               "physeq should be a phyloseq object.")
-  physeq <- phyloseq::phyloseq(
-    phyloseq::otu_table(counts, taxa_are_rows = FALSE),
-    phyloseq::tax_table(matrix(rep("", ncol(counts)),
-                               dimnames = list(colnames(counts), "Kingdom")))
-  )
-  expect_error(prepare_data_from_phyloseq(physeq, offset = "none"),
-               paste("No covariates detected in physeq Consider:",
-                     "- extracting count data from biom with as(otu_table(physeq), \"matrix\")",
-                     "- preparing a covariates data.frame",
-                     "- using prepare_data instead of prepare_data_from_phyloseq",
-                     sep = "\n"),
-               fixed = TRUE)
-})
-
-test_that("prepare_data_from_phyloseq succeeds on proper phyloseq class objects", {
-  rownames(counts) <- rownames(covariates) <- paste0("Sample", 1:nrow(covariates))
-  physeq <- phyloseq::phyloseq(
-    phyloseq::otu_table(counts, taxa_are_rows = FALSE),
-    phyloseq::sample_data(covariates)
-    )
-  result_physeq <- result; rownames(result_physeq$Abundance) <- rownames(result_physeq) <- paste0("Sample", 1:nrow(covariates))
-  expect_equal(prepare_data_from_phyloseq(physeq, offset = "none"), result_physeq)
-})
+# test_that("prepare_data_from_biom fails when covariates data.frame is missing", {
+#   biom <- biomformat::make_biom(data = t(counts), sample_metadata = NULL)
+#   expect_error(prepare_data_from_biom(biom, offset = "none"))
+# })
+#
+# test_that("prepare_data_from_biom succeeds on biom specified by file name.", {
+#   biom_file <- system.file("extdata", "rich_sparse_otu_table.biom", package = "biomformat")
+#   biom <- biomformat::read_biom(biom_file)
+#   expect_equal(prepare_data_from_biom(biom_file),
+#                prepare_data_from_biom(biom))
+# })
+#
+# test_that("prepare_data_from_biom succeeds on proper biom objects (but converts all columns to character...)", {
+#   biom <- biomformat::make_biom(data = t(counts),
+#                                sample_metadata = lapply(covariates, as.character) %>% as.data.frame)
+#   result_biom <- result
+#   result_biom[-1] <- lapply(result_biom[-1], as.character)
+#   rownames(result_biom) <- as.character(rownames(result_biom))
+#   expect_equal(prepare_data_from_biom(biom, offset = "none"),
+#                result_biom)
+# })
+#
+# ## massage rownames to fit phyloseq sample naming conventions
+# rownames(counts) <- rownames(covariates) <- paste0("Sample", 1:nrow(covariates))
+#
+# test_that("prepare_data_from_phyloseq fails when covariate data.frame is missing", {
+#   physeq <- phyloseq::phyloseq(phyloseq::otu_table(counts, taxa_are_rows = FALSE))
+#   expect_error(prepare_data_from_phyloseq(physeq, offset = "none"),
+#                "physeq should be a phyloseq object.")
+#   physeq <- phyloseq::phyloseq(
+#     phyloseq::otu_table(counts, taxa_are_rows = FALSE),
+#     phyloseq::tax_table(matrix(rep("", ncol(counts)),
+#                                dimnames = list(colnames(counts), "Kingdom")))
+#   )
+#   expect_error(prepare_data_from_phyloseq(physeq, offset = "none"),
+#                paste("No covariates detected in physeq Consider:",
+#                      "- extracting count data from biom with as(otu_table(physeq), \"matrix\")",
+#                      "- preparing a covariates data.frame",
+#                      "- using prepare_data instead of prepare_data_from_phyloseq",
+#                      sep = "\n"),
+#                fixed = TRUE)
+# })
+#
+# test_that("prepare_data_from_phyloseq succeeds on proper phyloseq class objects", {
+#   rownames(counts) <- rownames(covariates) <- paste0("Sample", 1:nrow(covariates))
+#   physeq <- phyloseq::phyloseq(
+#     phyloseq::otu_table(counts, taxa_are_rows = FALSE),
+#     phyloseq::sample_data(covariates)
+#     )
+#   result_physeq <- result; rownames(result_physeq$Abundance) <- rownames(result_physeq) <- paste0("Sample", 1:nrow(covariates))
+#   expect_equal(prepare_data_from_phyloseq(physeq, offset = "none"), result_physeq)
+# })
