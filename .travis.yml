@@ -23,8 +23,9 @@ cache: packages
 
 warnings_are_errors: false
 
-brew_packages:
-  - gcc
+# brew_packages:
+#   - gcc
+
 
 # use_bioc: true
 # bioc_required: true
@@ -35,18 +36,17 @@ brew_packages:
 
 matrix:
   include:
+    - os: osx
+      r: release
+    - os: osx
+      disable_homebrew: true
+    - os: osx
+      osx_image: xcode8.2
+      disable_homebrew: true
     - os: linux
       r: release
     - os: linux
       r: devel
-    - os: osx
-      r: release
-#    - os: linux
-#      r: bioc-devel
-#    - os: osx
-#      r: bioc-release
-#    - os: linux
-#      r: bioc-release
       r_packages:
         - covr
         - pkgdown
