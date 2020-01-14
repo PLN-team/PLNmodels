@@ -1,41 +1,38 @@
 
-## Minor change to comply with check in R-dev
+## Minor changes to answer CRAN maintainer request
 
-* added LazyData: true to the DESCRIPTION file to avoid warnings on CRAN dev version
-* corrected URI in vignette PLNPCA
-* changed some unitary tests which were failing in for developement version of R, due to the 
-change of class in matrix
-
-> class(matrix(1 : 4, 2, 2))
-  [1] "matrix" "array"
+* small corrections in C++ to avoid warnings
+* remove direct dependencies to bioConductor packages (which was resulting 
+  in a compilation error for R devel Windows-64-gcc8)
 
 We correct this in this new minor release of PLNmodels
 
-
 ## Tested environments
 
-- local ubuntu 18.04 install, R 3.6.1
-- ubuntu 14.04 (on travis-ci), R 3.6.1
+- local ubuntu 18.04 install, R 3.6.2
+- ubuntu 14.04 (on travis-ci), R 3.6.2
 - ubuntu 14.04 (on travis-ci), R devel
-- Mac OS X (on travis-ci), R 3.6.1
-- windows (on appveyor), R 3.6.1
-- win-builder, R 3.6.1
+- Debian Linux, R-devel, GCC (on R hub), R 3.6.2
+- Debian Linux, R-devel, GCC (on R hub), R devel
+- Mac OS X (on travis-ci), R 3.6.2
+- windows (on appveyor), R 3.6.2
+- win-builder, R 3.6.2
+- win-builder, R devel
 
 ## R CMD check results
 
 On my computer I get (Ubuntu 18.04, Intel Xeon 3.5 GHz; 32 Go mem)
 
-── R CMD check results ──────────────────────────────────── PLNmodels 0.9.3 ────
-Duration: 3m 38.7s
+── R CMD check results ──────────────────────────────────── PLNmodels 0.9.4 ────
+Duration: 3m 51s
 
-❯ checking installed package size ... NOTE
-    installed size is 10.8Mb
+> checking installed package size ... NOTE
+    installed size is 11.0Mb
     sub-directories of 1Mb or more:
       doc    1.6Mb
-      libs   8.3Mb
+      libs   8.4Mb
 
-0 errors ✔ | 0 warnings ✔ | 1 note ✖
+0 errors ✓ | 0 warnings ✓ | 1 note x
 
 R CMD check succeeded
-
 
