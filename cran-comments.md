@@ -1,11 +1,10 @@
 
 ## Minor changes to answer CRAN maintainer request
 
-* small corrections in C++ to avoid warnings
+* small corrections in C++ to avoid warnings in pedantic mode
 * remove direct dependencies to bioConductor packages (which was resulting 
   in a compilation error for R devel Windows-64-gcc8)
-
-We correct this in this new minor release of PLNmodels
+* updated email of authors and maintainer
 
 ## Tested environments
 
