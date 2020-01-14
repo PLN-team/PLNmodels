@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.4</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
       <h1>Data importation in PLNmodels</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2019-12-27</h4>
+            <h4 class="date">2020-01-14</h4>
       
       
       <div class="hidden name"><code>Import_data.Rmd</code></div>
@@ -248,58 +248,67 @@
 <a href="#importing-data-from-biom-and-phyloseq-objects-using-prepare_data_from_phyloseqbiom" class="anchor"></a>Importing data from biom and phyloseq objects using <code>prepare_data_from_[phyloseq|biom]</code>
 </h2>
 <p>Community composition data are quite popular in microbial ecology and usually stored in flat files using the <a href="http://biom-format.org/">biom format</a> and/or imported in R as phyloseq-class objects <span class="citation">(McMurdie <a href="#ref-phyloseq">2013</a>)</span> using the Bioconductor <a href="https://joey711.github.io/phyloseq/">phyloseq</a> package.</p>
-<p>We provide helper functions to directly import data from a biom file (or biom-class object) and a phyloseq-class object.</p>
+<!-- We provide helper functions to directly import data from a biom file (or biom-class object) and a phyloseq-class object.  -->
+<p>We show here how to import data from a biom file (or biom-class object) and form a phyloseq-class object.</p>
 <div id="reading-from-a-biom-file" class="section level3">
 <h3 class="hasAnchor">
 <a href="#reading-from-a-biom-file" class="anchor"></a>Reading from a biom file</h3>
-<p>Note that the covariates <strong>must</strong> be stored in the biom object as they are automatically extracted, reading a biom without covariates results in an error.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(biomformat)</a>
-<a class="sourceLine" id="cb22-2" data-line-number="2">## Biom file without covariates</a>
-<a class="sourceLine" id="cb22-3" data-line-number="3">biomfile &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"min_dense_otu_table.biom"</span>, <span class="dt">package =</span> <span class="st">"biomformat"</span>)</a>
-<a class="sourceLine" id="cb22-4" data-line-number="4"><span class="kw"><a href="../reference/prepare_data_from_biom.html">prepare_data_from_biom</a></span>(biomfile)</a></code></pre></div>
-<pre><code>## Error in prepare_data_from_biom(biomfile): No covariates detected in biom. Consider:
-## - extracting count data from biom with biom_data()
-## - preparing a covariates data.frame
-## - using prepare_data instead of prepare_data_from_biom</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">## Biom file with covariates, TSS offsets</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">biomfile &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>, <span class="dt">package =</span> <span class="st">"biomformat"</span>)</a>
-<a class="sourceLine" id="cb24-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="kw"><a href="../reference/prepare_data_from_biom.html">prepare_data_from_biom</a></span>(biomfile, <span class="dt">offset =</span> <span class="st">"TSS"</span>))</a></code></pre></div>
-<pre><code>## 'data.frame':    6 obs. of  6 variables:
-##  $ Abundance           : num [1:6, 1:5] 0 0 1 0 0 0 5 1 0 2 ...
-##   ..- attr(*, "dimnames")=List of 2
-##   .. ..$ : chr  "Sample1" "Sample2" "Sample3" "Sample4" ...
-##   .. ..$ : chr  "GG_OTU_1" "GG_OTU_2" "GG_OTU_3" "GG_OTU_4" ...
-##  $ BarcodeSequence     : chr  "CGCTTATCGAGA" "CATACCAGTAGC" "CTCTCTACCTGT" "CTCTCGGCCTGT" ...
-##  $ LinkerPrimerSequence: chr  "CATGCTGCCTCCCGTAGGAGT" "CATGCTGCCTCCCGTAGGAGT" "CATGCTGCCTCCCGTAGGAGT" "CATGCTGCCTCCCGTAGGAGT" ...
-##  $ BODY_SITE           : chr  "gut" "gut" "gut" "skin" ...
-##  $ Description         : chr  "human gut" "human gut" "human gut" "human skin" ...
-##  $ Offset              : num  7 3 4 6 5 2</code></pre>
+<p>Reading from a biom file requires the bioconductor package <a href="https://www.bioconductor.org/packages/release/bioc/html/biomformat.html">biomformat</a>. This package is <strong>not</strong> a standard dependency of PLNmodels and needs to be installed separately.</p>
+<p>You can easily prepare your data from a biom file using the following steps:</p>
+<ul>
+<li>read your biom file with <code><a href="https://rdrr.io/pkg/biomformat/man/read_biom.html">biomformat::read_biom()</a></code>
+</li>
+<li>extract the count table with <code><a href="https://rdrr.io/pkg/biomformat/man/biom_data-methods.html">biomformat::biom_data()</a></code>
+</li>
+<li>extract the covariates with <code><a href="https://rdrr.io/pkg/biomformat/man/sample_metadata-methods.html">biomformat::sample_metadata()</a></code> (or build your own)</li>
+<li>feed them to <code>prepare_data</code>
+</li>
+</ul>
+<p>as illustrated below: <!-- Note that the covariates **must** be stored in the biom object as they are automatically extracted, reading a biom without covariates results in an error.  --></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">## If biomformat is not installed, uncomment the following lines</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="co"># if (!requireNamespace("BiocManager", quietly = TRUE)) {</span></a>
+<a class="sourceLine" id="cb22-3" data-line-number="3"><span class="co">#   install.packages("BiocManager")</span></a>
+<a class="sourceLine" id="cb22-4" data-line-number="4"><span class="co"># }</span></a>
+<a class="sourceLine" id="cb22-5" data-line-number="5"><span class="co"># BiocManager::install("biomformat")</span></a>
+<a class="sourceLine" id="cb22-6" data-line-number="6"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(biomformat)</a>
+<a class="sourceLine" id="cb22-7" data-line-number="7">biomfile &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>, <span class="dt">package =</span> <span class="st">"biomformat"</span>)</a>
+<a class="sourceLine" id="cb22-8" data-line-number="8">biom &lt;-<span class="st"> </span>biomformat<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/biomformat/man/read_biom.html">read_biom</a></span>(biomfile)</a>
+<a class="sourceLine" id="cb22-9" data-line-number="9">## extract counts</a>
+<a class="sourceLine" id="cb22-10" data-line-number="10">counts &lt;-<span class="st"> </span><span class="kw">as</span>(biomformat<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/biomformat/man/biom_data-methods.html">biom_data</a></span>(biom), <span class="st">"matrix"</span>)</a>
+<a class="sourceLine" id="cb22-11" data-line-number="11">## extract covariates (or prepare your own)</a>
+<a class="sourceLine" id="cb22-12" data-line-number="12">covariates &lt;-<span class="st"> </span>biomformat<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/biomformat/man/sample_metadata-methods.html">sample_metadata</a></span>(biom)</a>
+<a class="sourceLine" id="cb22-13" data-line-number="13">## prepare data</a>
+<a class="sourceLine" id="cb22-14" data-line-number="14">my_data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="dt">counts =</span> counts, <span class="dt">covariates =</span> covariates)</a>
+<a class="sourceLine" id="cb22-15" data-line-number="15"><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(my_data)</a></code></pre></div>
 </div>
 <div id="reading-from-a-phyloseq-class-object" class="section level3">
 <h3 class="hasAnchor">
 <a href="#reading-from-a-phyloseq-class-object" class="anchor"></a>Reading from a phyloseq-class object</h3>
-<p>Note that the covariates <strong>must</strong> be stored in the phyloseq-class object as they are automatically extracted, importing a phyloseq object with no <code>sample_data</code> component results in an error.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(phyloseq)</a>
-<a class="sourceLine" id="cb26-2" data-line-number="2">## phyloseq object without covariates</a>
-<a class="sourceLine" id="cb26-3" data-line-number="3">physeq &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/phyloseq/man/phyloseq.html">phyloseq</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html">otu_table</a></span>(trichoptera<span class="op">$</span>Abundance, <span class="dt">taxa_are_rows =</span> <span class="ot">FALSE</span>))</a>
-<a class="sourceLine" id="cb26-4" data-line-number="4"><span class="kw"><a href="../reference/prepare_data_from_phyloseq.html">prepare_data_from_phyloseq</a></span>(physeq)</a></code></pre></div>
-<pre><code>## Error in prepare_data_from_phyloseq(physeq): physeq should be a phyloseq object.</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">## phyloseq object with covariates, TSS offsets</a>
-<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"GlobalPatterns"</span>)</a>
-<a class="sourceLine" id="cb28-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="kw"><a href="../reference/prepare_data_from_phyloseq.html">prepare_data_from_phyloseq</a></span>(GlobalPatterns, <span class="dt">offset =</span> <span class="st">"TSS"</span>))</a></code></pre></div>
-<pre><code>## 'data.frame':    26 obs. of  9 variables:
-##  $ Abundance               : num [1:26, 1:19216] 0 0 0 0 0 0 0 0 0 0 ...
-##   ..- attr(*, "dimnames")=List of 2
-##   .. ..$ : chr  "CL3" "CC1" "SV1" "M31Fcsw" ...
-##   .. ..$ : chr  "549322" "522457" "951" "244423" ...
-##  $ X.SampleID              : Factor w/ 26 levels "AQC1cm","AQC4cm",..: 5 4 21 14 11 15 12 9 16 13 ...
-##  $ Primer                  : Factor w/ 26 levels "ILBC_01","ILBC_02",..: 1 2 3 4 5 6 7 8 9 10 ...
-##  $ Final_Barcode           : Factor w/ 26 levels "AACGCA","AACTCG",..: 1 2 3 4 5 6 7 8 9 10 ...
-##  $ Barcode_truncated_plus_T: Factor w/ 26 levels "AACTGT","ACAGGT",..: 24 13 3 20 9 5 17 7 19 11 ...
-##  $ Barcode_full_length     : Factor w/ 26 levels "AGAGAGACAGG",..: 10 6 18 21 8 9 16 19 26 20 ...
-##  $ SampleType              : Factor w/ 9 levels "Feces","Freshwater",..: 8 8 8 1 1 7 7 7 9 9 ...
-##  $ Description             : Factor w/ 25 levels "Allequash Creek, 0-1cm depth",..: 4 5 20 14 11 15 12 9 16 13 ...
-##  $ Offset                  : num  864077 1135457 697509 1543451 2076476 ...</code></pre>
+<p>Likewise, preparing data from a phyloseq-class object requires the bioconductor package <a href="https://www.bioconductor.org/packages/release/bioc/html/phyloseq.html">phyloseq</a>. This package is <strong>not</strong> a standard dependency of PLNmodels and needs to be installed separately.</p>
+<p>You can easily prepare your data from a phyloseq object using the following steps:</p>
+<ul>
+<li>extract the count table with <code><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html">phyloseq::otu_table()</a></code>
+</li>
+<li>extract the covariates with <code><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html">phyloseq::sample_data()</a></code> (or build your own)</li>
+<li>feed them to <code>prepare_data</code>
+</li>
+</ul>
+<p>as illustrated below:</p>
+<!-- Note that the covariates **must** be stored in the phyloseq-class object as they are automatically extracted, importing a phyloseq object with no `sample_data` component results in an error.  -->
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">## If biomformat is not installed, uncomment the following lines</a>
+<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="co"># if (!requireNamespace("BiocManager", quietly = TRUE)) {</span></a>
+<a class="sourceLine" id="cb23-3" data-line-number="3"><span class="co">#   install.packages("BiocManager")</span></a>
+<a class="sourceLine" id="cb23-4" data-line-number="4"><span class="co"># }</span></a>
+<a class="sourceLine" id="cb23-5" data-line-number="5"><span class="co"># BiocManager::install("phyloseq")</span></a>
+<a class="sourceLine" id="cb23-6" data-line-number="6"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(phyloseq)</a>
+<a class="sourceLine" id="cb23-7" data-line-number="7"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"enterotype"</span>)</a>
+<a class="sourceLine" id="cb23-8" data-line-number="8">## extract counts</a>
+<a class="sourceLine" id="cb23-9" data-line-number="9">counts &lt;-<span class="st"> </span><span class="kw">as</span>(phyloseq<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html">otu_table</a></span>(enterotype), <span class="st">"matrix"</span>)</a>
+<a class="sourceLine" id="cb23-10" data-line-number="10">## extract covariates (or prepare your own)</a>
+<a class="sourceLine" id="cb23-11" data-line-number="11">covariates &lt;-<span class="st"> </span>phyloseq<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html">sample_data</a></span>(enterotype)</a>
+<a class="sourceLine" id="cb23-12" data-line-number="12">## prepare data</a>
+<a class="sourceLine" id="cb23-13" data-line-number="13">my_data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="dt">counts =</span> counts, <span class="dt">covariates =</span> covariates)</a>
+<a class="sourceLine" id="cb23-14" data-line-number="14"><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(my_data)</a></code></pre></div>
 </div>
 </div>
 <div id="mathematical-details-about-the-offsets" class="section level2">
