@@ -1,3 +1,7 @@
+# PLNmodels 0.9.4 - minor release
+
+* removing dependencies to bioconductor packages, too cumbersome to maintain on CRAN
+
 # PLNmodels 0.9.3 - minor release
 
 * correction in test to comply new class of matrix object
