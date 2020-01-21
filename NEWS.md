@@ -1,3 +1,7 @@
+# PLNmodels 0.9.5 - minor release
+
+* include figure as a file in PLN.Rmd because figure generation fails on Solaris or OS X
+
 # PLNmodels 0.9.4 - minor release
 
 * removing dependencies to bioconductor packages, too cumbersome to maintain on CRAN
