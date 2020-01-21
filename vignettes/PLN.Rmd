@@ -62,11 +62,11 @@ The multivariate Poisson lognormal model (in short PLN, see @AiH89) relates some
 
 The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying residual structure of dependence between the $p$ variables.  The following figure provides insights about the role played by the different layers
 
-```{r geometricalInsight, echo = FALSE, fig.cap = "PLN: geometrical view", fig.width=7, fig.height=7, fig.align='center'}
-knitr::include_graphics("figures/PLN_geometry.jpg")
-```
+<!-- ```{r geometricalInsight, echo = FALSE, fig.cap = "PLN: geometrical view", fig.width=7, fig.height=7, fig.align='center'} -->
+<!-- knitr::include_graphics("figures/PLN_geometry.jpg") -->
+<!-- ``` -->
 
-<!-- ```{r geometricalInsight, echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "PLN: geometrical view", fig.width=7, fig.height=7, fig.align='center'}
+```{r geometricalInsight, echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "PLN: geometrical view", fig.width=7, fig.height=7, fig.align='center'}
 
 library(grid)
 library(gridExtra)
@@ -111,7 +111,6 @@ grid.arrange(p.latent + labs(x = "species 1", y = "species 2"),
              p.observation.only + labs(x = "species 1", y = "species 2"),
              ncol = 2)
 ```
--->
 
 #### Covariates and offsets
 
@@ -191,8 +190,11 @@ We can also reach the matrix of regression parameters $\mathbf{\Theta}$ and the 
 data.frame(
   rbind(t(coef(myPLN)), t(standard_error(myPLN))), 
   row.names = c("effect", "stderr")
- ) %>% rmarkdown::paged_table()
+ ) %>% select(1:5) %>% knitr::kable()
 ```
+
+<!-- rmarkdown::paged_table() causes re-building of vignette to fail on CRAN for OS X and Solaris flavor (probably due to a too old version of pandoc) -->
+
 
 The residual covariance matrix better displays as an image matrix: 
 
