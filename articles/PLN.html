@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.5</span>
       </span>
     </div>
 
@@ -104,14 +104,13 @@
 
       
 
-      </header><link href="PLN_files/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
-<script src="PLN_files/pagedtable-1.1/js/pagedtable.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Analyzing multivariate count data with the Poisson log-normal model</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2020-01-14</h4>
+            <h4 class="date">2020-01-22</h4>
       
       
       <div class="hidden name"><code>PLN.Rmd</code></div>
@@ -147,6 +146,9 @@
 <p>The multivariate Poisson lognormal model (in short PLN, see <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span>) relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> as follows</p>
 
 <p>The parameter <span class="math inline">\({\boldsymbol\mu}\)</span> corresponds to the main effects and the latent covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> describes the underlying residual structure of dependence between the <span class="math inline">\(p\)</span> variables. The following figure provides insights about the role played by the different layers</p>
+<!-- ```{r geometricalInsight, echo = FALSE, fig.cap = "PLN: geometrical view", fig.width=7, fig.height=7, fig.align='center'} -->
+<!-- knitr::include_graphics("figures/PLN_geometry.jpg") -->
+<!-- ``` -->
 <div class="figure" style="text-align: center">
 <img src="PLN_files/figure-html/geometricalInsight-1.png" alt="PLN: geometrical view" width="672"><p class="caption">
 PLN: geometrical view
@@ -245,13 +247,36 @@ fitted value vs. observation
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(</a>
 <a class="sourceLine" id="cb12-2" data-line-number="2">  <span class="kw"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span>(myPLN)), <span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="kw"><a href="../reference/standard_error.html">standard_error</a></span>(myPLN))), </a>
 <a class="sourceLine" id="cb12-3" data-line-number="3">  <span class="dt">row.names =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"effect"</span>, <span class="st">"stderr"</span>)</a>
-<a class="sourceLine" id="cb12-4" data-line-number="4"> ) <span class="op">%&gt;%</span><span class="st"> </span>rmarkdown<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rmarkdown/man/paged_table.html">paged_table</a></span>()</a></code></pre></div>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Che"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Hyc"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Hym"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Hys"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Psy"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Aga"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Glo"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["Ath"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["Cea"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["Ced"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["Set"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["All"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["Han"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["Hfo"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["Hsp"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["Hve"],"name":[16],"type":["dbl"],"align":["right"]},{"label":["Sta"],"name":[17],"type":["dbl"],"align":["right"]}],"data":[{"1":"-3.1750322","2":"-4.0611956","3":"1.04453402","4":"-2.3248854","5":"3.26181716","6":"-0.38186840","7":"-2.235447","8":"-1.6816161","9":"-3.382549","10":"0.34527773","11":"-0.64991947","12":"-0.8622836","13":"-1.31019371","14":"-2.2488003","15":"-0.30272431","16":"-2.7983587","17":"0.94601660","_rn_":"effect"},{"1":"0.5772813","2":"0.5772616","3":"0.07392656","4":"0.4082693","5":"0.01292272","6":"0.09578994","7":"0.267227","8":"0.2672609","9":"0.377945","10":"0.09284514","11":"0.07272028","12":"0.1386877","13":"0.07229008","14":"0.0867226","15":"0.04609167","16":"0.3333265","17":"0.05862003","_rn_":"stderr"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[5],"max":[5]},"pages":{}}}
-  </script>
-</div>
-<p>The residual covariance matrix better displays as an image matrix:</p>
+<a class="sourceLine" id="cb12-4" data-line-number="4"> ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</a></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th></th>
+<th align="right">Che</th>
+<th align="right">Hyc</th>
+<th align="right">Hym</th>
+<th align="right">Hys</th>
+<th align="right">Psy</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>effect</td>
+<td align="right">-3.1750322</td>
+<td align="right">-4.0611956</td>
+<td align="right">1.0445340</td>
+<td align="right">-2.3248854</td>
+<td align="right">3.2618172</td>
+</tr>
+<tr class="even">
+<td>stderr</td>
+<td align="right">0.5772813</td>
+<td align="right">0.5772616</td>
+<td align="right">0.0739266</td>
+<td align="right">0.4082693</td>
+<td align="right">0.0129227</td>
+</tr>
+</tbody>
+</table>
+<!-- rmarkdown::paged_table() causes re-building of vignette to fail on CRAN for OS X and Solaris flavor (probably due to a too old version of pandoc) --><p>The residual covariance matrix better displays as an image matrix:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/sigma.html">sigma</a></span>(myPLN), <span class="dt">is.corr =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <p><img src="PLN_files/figure-html/plot%20covariance-1.png" width="672"></p>
 </div>
