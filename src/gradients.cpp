@@ -17,9 +17,9 @@ double fn_optim_PLN(unsigned N, const double *x, double *grad, void *data) {
 
   double objective = accu(A - dat->Y % Z - .5*log(S)) - .5*n*real(log_det(Omega)) ;
 
-  arma::vec grd_Theta = vectorise(trans(A - dat->Y) * dat->X);
+  arma::vec grd_Theta = vectorise(trans(A - dat->Y) * dat->X) ;
   arma::vec grd_M     = vectorise(M * Omega + A - dat->Y) ;
-  arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(Omega).t() + A - pow(S, -1)));
+  arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(Omega).t() + A - pow(S, -1))) ;
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M), grd_S)) ;
 

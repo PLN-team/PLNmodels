@@ -3,11 +3,13 @@
 
 #include "nlopt_utils.h"
 #include "gradients.h"
+#include "hessians.h"
 
 // ---------------------------------------------------------------------------
 // ABSTRACT CLASS OPTIMIZER_PLN
 //
-// COMMON TO PLW WITH SPHERICAL, DIAGONAL AND FULLY PARAMETRIZED COVARIANCE
+// COMMON TO PLN WITH SPHERICAL, DIAGONAL, FULLY PARAMETRIZED COVARIANCES
+// MOTHER OF PLN WITH COVARIANCES HAVING RANK AND SPARSITY CONSTRAINTS
 class optimizer_PLN {
   protected:
 
@@ -25,6 +27,10 @@ class optimizer_PLN {
     // the function that computes the objective and thge gradient vector
     // double (*fn_optim) (const stdvec& , stdvec &, void *) ;
     double (*fn_optim) (unsigned , const double* , double* , void*) ;
+
+    // the function for preconditionning, when algorithm allows it
+    // void pre(unsigned n, const double *x, const double *v, double *vpre, void *f_data);
+    void (*fn_precond) (unsigned , const double* , const double* , double* , void*) ;
 
     // nlopt optimizer
     nlopt_opt optimizer ;

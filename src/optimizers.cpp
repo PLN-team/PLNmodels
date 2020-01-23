@@ -20,16 +20,18 @@ optimizer_PLN::optimizer_PLN(
   d = X.n_cols ;
 
   // Initialize NLOPT
-  fn_optim = NULL ;
-  optimizer = initNLOPT(par.n_elem, options)   ;
-  parameter = arma::conv_to<stdvec>::from(par) ;
+  fn_optim   = NULL ;
+  fn_precond = NULL ;
+  optimizer  = initNLOPT(par.n_elem, options)   ;
+  parameter  = arma::conv_to<stdvec>::from(par) ;
 }
 
 // FUNCTION THAT CALL NLOPT
 void optimizer_PLN::optimize()  {
   double objective ; // value of objective function at optimum
 
-  nlopt_set_min_objective(optimizer, fn_optim, &data);
+//  nlopt_set_min_objective(optimizer, fn_optim, &data);
+  nlopt_set_precond_min_objective(optimizer, fn_optim, fn_precond, &data);
   status = nlopt_optimize(optimizer, &parameter[0], &objective) ;
   nlopt_destroy(optimizer);
 }
