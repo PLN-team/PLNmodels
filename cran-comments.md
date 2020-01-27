@@ -8,6 +8,8 @@ Hoping for WARN suppression on solaris and os build, we
 
 ## Tested environments
 
+all status OK
+
 - local ubuntu 18.04 install, R 3.6.2
 - ubuntu 16.04 (on travis-ci), R 3.6.2
 - ubuntu 16.04 (on travis-ci), R devel
@@ -18,6 +20,9 @@ Hoping for WARN suppression on solaris and os build, we
 - windows (on appveyor), R 3.6.2
 - win-builder, R 3.6.2
 - win-builder, R devel
+- win-builder, R-devel ATC (alternative toolchain)
+- win-builder, R old release
+
 
 ## R CMD check results
 
