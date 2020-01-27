@@ -1,6 +1,7 @@
 # PLNmodels 0.9.5 - minor release
 
-* include figure as a file in PLN.Rmd because figure generation fails on Solaris or OS X
+* removed any use of rmarkdown::paged_table() in the vignettes
+* added screenshot.force = FALSE, in knitr options in the vignettes
 
 # PLNmodels 0.9.4 - minor release
 
