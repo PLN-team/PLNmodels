@@ -149,7 +149,7 @@ PLNfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
 
   optim_out <- private$optimizer(
-    c(private$Theta, private$M, private$S),
+    c(private$M, private$S),
     responses,
     covariates,
     offsets,
