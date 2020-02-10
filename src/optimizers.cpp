@@ -85,7 +85,8 @@ void optimizer_PLN_spherical::export_output() {
 
   // element-wise log-likelihood
   Z = data.O + M ;
-  loglik = sum(data.Y % Z - exp(Z.each_col() + .5 * S), 1) + .5 * (p*log(S/sigma2) - trace_term/sigma2) - logfact(data.Y) + (1+(1-p)* std::log(M_PI)) ;
+  A = exp(Z.each_col() + .5 * S) ;
+  loglik = sum(data.Y % Z - A, 1) + .5 * (p*log(S/sigma2) - trace_term/sigma2) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI)) ;
 }
 
 // ---------------------------------------------------------------------------
@@ -122,8 +123,8 @@ void optimizer_PLN_diagonal::export_output() {
 
   //element-wise log-likelihood
   Z = data.O + M;
-  loglik = sum(data.Y % Z - exp (Z + .5 * S) - .5* pow(M - mu, 2)*diagmat(pow(d, -1)) + .5 * log(S.each_row() / d), 1) - .5 * S * pow(d, -1) - logfact(data.Y) + (1+(1-p)* std::log(M_PI)) ;
-
+  A = exp (Z + .5 * S) ;
+  loglik = sum(data.Y % Z - A - .5* pow(M - mu, 2)*diagmat(pow(d, -1)) + .5 * log(S.each_row() / d), 1) - .5 * S * pow(d.t(), -1) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI)) ;
 }
 
 // ---------------------------------------------------------------------------
@@ -161,7 +162,7 @@ void optimizer_PLN_full::export_output () {
   // element-wise log-likelihood
   arma::mat Omega = inv_sympd(Sigma);
   A = exp (Z + .5 * S) ;
-  loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M - mu) * Omega) % (M - mu) + S * diagmat(Omega), 1) + .5 * real(log_det(Omega)) - logfact(data.Y) + (1+(1-p)* std::log(M_PI));
+  loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M - mu) * Omega) % (M - mu) + S * diagmat(Omega), 1) + .5 * real(log_det(Omega)) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI));
 }
 
 // ---------------------------------------------------------------------------

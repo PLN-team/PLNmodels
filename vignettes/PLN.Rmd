@@ -208,21 +208,21 @@ corrplot(sigma(myPLN), is.corr = FALSE)
 It is also possible to use observation weights like in standard (G)LMs:
 
 ```{r weighted, fig.width=7, fig.height=5}
-myPLN_weighted <- 
+myPLN_weighted <-
   PLN(
-    Abundance ~ 1, 
-    data    = trichoptera, 
+    Abundance ~ 1,
+    data    = trichoptera,
     weights = runif(nrow(trichoptera)),
     control = list(trace = 0)
   )
 data.frame(
   unweighted = as.vector(fitted(myPLN)),
   weighted   = as.vector(fitted(myPLN_weighted))
-) %>% 
-  ggplot(aes(x = unweighted, y = weighted)) + 
-    geom_point(size = .5, alpha =.25 ) + 
-    scale_x_log10() + 
-    scale_y_log10() + 
+) %>%
+  ggplot(aes(x = unweighted, y = weighted)) +
+    geom_point(size = .5, alpha =.25 ) +
+    scale_x_log10() +
+    scale_y_log10() +
     theme_bw() + annotation_logticks()
 ```
 

@@ -39,7 +39,7 @@ double fn_optim_PLN_weighted(unsigned N, const double *x, double *grad, void *da
   arma::mat A = exp (Z + .5 * S) ;
   arma::mat mu = dat->X * dat->XtWX_inv * dat->X.t() * (M.each_col() % dat->w) ;
 
-  arma::mat Omega = dat->w_bar * inv_sympd((M-mu).t() * diagmat(dat->w) * (M-mu % dat->w) + diagmat(sum(S.each_col() % dat->w, 0))) ;
+  arma::mat Omega = dat->w_bar * inv_sympd( (M-mu).t() * diagmat(dat->w) * (M-mu) + diagmat(sum(S.each_col() % dat->w, 0))) ;
 
   double objective = accu(diagmat(dat->w) *(A - dat->Y % Z - .5*log(S)) ) - .5 * dat->w_bar * real(log_det(Omega)) ;
 
@@ -59,8 +59,8 @@ double fn_optim_PLN_spherical(unsigned N, const double *x, double *grad, void *d
 
   int n = dat->n, p = dat->p ;
 
-  arma::mat M(&x[0], n,p);
-  arma::vec S(&x[n], n);
+  arma::mat M(&x[0]  , n,p);
+  arma::vec S(&x[n*p], n);
 
   // regression parameters
   arma::mat Mu = dat->X * dat->XtWX_inv * dat->X.t() * M ;
@@ -88,8 +88,8 @@ double fn_optim_PLN_weighted_spherical(unsigned N, const double *x, double *grad
 
   int n = dat->n, p = dat->p ;
 
-  arma::mat M(&x[0], n,p);
-  arma::vec S(&x[n], n);
+  arma::mat M(&x[0]  , n,p);
+  arma::vec S(&x[n*p], n);
 
   // regression parameters
   arma::mat mu = dat->X * dat->XtWX_inv * dat->X.t() * (M.each_col() % dat->w) ;

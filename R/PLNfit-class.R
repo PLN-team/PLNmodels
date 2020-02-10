@@ -158,7 +158,7 @@ function(responses, covariates, offsets, weights, control) {
   )
 
   self$update(
-    Theta      = optim_out$Theta,
+    Theta      = t(optim_out$Theta),
     Sigma      = optim_out$Sigma,
     M          = optim_out$M,
     S          = optim_out$S,
@@ -209,7 +209,8 @@ function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type
 #
 PLNfit$set("public", "latent_pos",
 function(covariates, offsets) {
-  latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
+  # latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
+  latentPos <- private$M + offsets
   latentPos
 })
 
