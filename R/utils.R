@@ -25,7 +25,8 @@ nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nr
 }
 
 fullModelPoisson <- function(responses, weights = rep(1, nrow(responses))) {
-  lambda <- log(sweep(responses, 1, weights, "*"))
+  lambda <- log(responses)
+  # lambda <- log(sweep(responses, 1, weights, "*"))
   lambda
 }
 
