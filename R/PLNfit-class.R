@@ -176,8 +176,8 @@ PLNfit$set("public", "set_R2",
 function(responses, covariates, offsets, weights, nullModel = NULL) {
   if (is.null(nullModel)) nullModel <- nullModelPoisson(responses, covariates, offsets, weights)
   loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets), weights)
-  lmin   <- logLikPoisson(responses, nullModel)
-  lmax   <- logLikPoisson(responses, fullModelPoisson(responses, weights))
+  lmin   <- logLikPoisson(responses, nullModel, weights)
+  lmax   <- logLikPoisson(responses, fullModelPoisson(responses, weights), weights)
   private$R2 <- (loglik - lmin) / (lmax - lmin)
 })
 
