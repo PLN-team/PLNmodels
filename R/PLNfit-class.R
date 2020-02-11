@@ -15,7 +15,7 @@
 #' @field latent a matrix: values of the latent vector (Z in the model)
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field model character: the model used for the coavariance (either "spherical", "diagonal" or "full")
-#' @field loglik variational lower bound of the loglikelihood
+#' @field loglik (weighted) variational lower bound of the loglikelihood
 #' @field loglik_vec element-wise variational lower bound of the loglikelihood
 #' @field BIC variational lower bound of the BIC
 #' @field ICL variational lower bound of the ICL
@@ -85,7 +85,7 @@ PLNfit <-
       },
       vcov_model = function() {private$covariance},
       optim_par  = function() {private$monitoring},
-      loglik     = function() {sum(private$Ji)},
+      loglik     = function() {if (is.null(attr(private$Ji, "weights"))) sum(private$Ji) else sum(attr(private$Ji, "weights") * private$Ji) },
       loglik_vec = function() {private$Ji},
       BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
       entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", self$q, 1))},
@@ -157,6 +157,8 @@ function(responses, covariates, offsets, weights, control) {
     control
   )
 
+  Ji <- optim_out$loglik
+  attr(Ji, "weights") <- weights
   self$update(
     Theta      = t(optim_out$Theta),
     Sigma      = optim_out$Sigma,
@@ -164,7 +166,7 @@ function(responses, covariates, offsets, weights, control) {
     S          = optim_out$S,
     Z          = optim_out$Z,
     A          = optim_out$A,
-    Ji         = optim_out$loglik,
+    Ji         = Ji,
     monitoring = list(
       iterations = optim_out$iterations,
       status     = optim_out$status,

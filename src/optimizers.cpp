@@ -77,16 +77,17 @@ void optimizer_PLN_spherical::export_output() {
 
   // regression parameters
   Theta = data.XtWX_inv * data.X.t() * (M.each_col() % data.w) ;
+  arma::mat mu = data.X * Theta ;
 
   // variance parameters
-  double trace_term = arma::as_scalar(dot(data.w, sum(pow(M - data.X * Theta, 2), 1) + p * S)) ;
+  double trace_term = arma::as_scalar(dot(data.w, sum(pow(M - mu, 2), 1) + p * S)) ;
   double sigma2 = trace_term / (p * accu (data.w)) ;
   Sigma = arma::eye(p,p) * sigma2 ;
 
   // element-wise log-likelihood
   Z = data.O + M ;
   A = exp(Z.each_col() + .5 * S) ;
-  loglik = sum(data.Y % Z - A, 1) + .5 * (p*log(S/sigma2) - trace_term/sigma2) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI)) ;
+  loglik = sum(data.Y % Z - A - .5 * pow(M - mu, 2)/sigma2, 1) + .5 * p*(log(S/sigma2)- S/sigma2) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI)) ;
 }
 
 // ---------------------------------------------------------------------------
@@ -124,7 +125,7 @@ void optimizer_PLN_diagonal::export_output() {
   //element-wise log-likelihood
   Z = data.O + M;
   A = exp (Z + .5 * S) ;
-  loglik = sum(data.Y % Z - A - .5* pow(M - mu, 2)*diagmat(pow(d, -1)) + .5 * log(S.each_row() / d), 1) - .5 * S * pow(d.t(), -1) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI)) ;
+  loglik = sum(data.Y % Z - A + .5 * log(S.each_row() / d) - .5* ((M - mu) * diagmat(pow(d, -1)) % (M - mu)), 1) - .5 * S * pow(d.t(), -1) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI)) ;
 }
 
 // ---------------------------------------------------------------------------
