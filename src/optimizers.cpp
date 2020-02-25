@@ -125,13 +125,13 @@ void optimizer_PLN_diagonal::export_output() {
   arma::mat mu = data.X * Theta ;
 
   // variance parameters
-  arma::rowvec d = (data.w).t() * (pow(M - mu, 2) + S) / data.w_bar;
-  Sigma = diagmat(d) ;
+  arma::vec sigma2 = (data.w).t() * (pow(M - mu, 2) + S) / data.w_bar;
+  Sigma = diagmat(sigma2) ;
 
   //element-wise log-likelihood
   Z = data.O + M;
   A = exp (Z + .5 * S) ;
-  loglik = sum(data.Y % Z - A + .5 * log(S.each_row() / d) - .5* ((M - mu) * diagmat(pow(d, -1)) % (M - mu)), 1) - .5 * S * pow(d.t(), -1) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI)) ;
+  loglik = sum(data.Y % Z - A + .5 * log(S.each_row() / sigma2) - .5* ((M - mu) * diagmat(pow(sigma2, -1)) % (M - mu)), 1) - .5 * S * pow(sigma2.t(), -1) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI)) ;
 }
 
 // ---------------------------------------------------------------------------

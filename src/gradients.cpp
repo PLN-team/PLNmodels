@@ -37,14 +37,14 @@ double fn_optim_PLN_weighted(unsigned N, const double *x, double *grad, void *da
   arma::mat S(&x[n*p], n,p);
   arma::mat Z = dat->O + M;
   arma::mat A = exp (Z + .5 * S) ;
-  arma::mat mu = dat->X * dat->XtWX_inv * dat->X.t() * (M.each_col() % dat->w) ;
+  arma::mat mu = dat->X * dat->Theta ;
 
-  arma::mat Omega = dat->w_bar * inv_sympd( (M-mu).t() * diagmat(dat->w) * (M-mu) + diagmat(sum(S.each_col() % dat->w, 0))) ;
+  arma::mat nSigma =  (M-mu).t() * diagmat(dat->w) * (M-mu) + diagmat(sum(S.each_col() % dat->w, 0)) ;
 
-  double objective = accu(diagmat(dat->w) *(A - dat->Y % Z - .5*log(S)) ) - .5 * dat->w_bar * real(log_det(Omega)) ;
+  double objective = accu(diagmat(dat->w) *(A - dat->Y % Z - .5*log(S)) ) - .5*(dat->w_bar*dat->log_det_Omega - trace(dat->Omega*nSigma))  ;
 
-  arma::vec grd_M = vectorise(diagmat(dat->w) * ( (M - mu) * Omega + A - dat->Y)) ;
-  arma::vec grd_S = vectorise(.5 * (dat->w * diagvec(Omega).t() + diagmat(dat->w) * (A - pow(S,-1)) ) );
+  arma::vec grd_M = vectorise(diagmat(dat->w) * ( (M - mu) * dat->Omega + A - dat->Y)) ;
+  arma::vec grd_S = vectorise(.5 * (dat->w * diagvec(dat->Omega).t() + diagmat(dat->w) * (A - pow(S,-1)) ) );
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
   for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
@@ -63,16 +63,18 @@ double fn_optim_PLN_spherical(unsigned N, const double *x, double *grad, void *d
   arma::vec S(&x[n*p], n);
 
   // regression parameters
-  arma::mat Mu = dat->X * dat->XtWX_inv * dat->X.t() * M ;
+  arma::mat mu = dat->X * dat->Theta ;
 
   arma::mat Z = dat->O + M;
   arma::mat A = exp (Z.each_col() + .5 * S) ;
-  double sigma2 = arma::as_scalar(accu(M % M) / (n * p) + accu(S)/n);
+  double n_sigma2 = arma::as_scalar(accu((M - mu) % (M - mu)) + p*accu(S));
 
-  double objective = accu(A - dat->Y % Z) - .5*p*accu(log(S/sigma2)) ;
+  double sigma2_inv = arma::as_scalar(dat->Omega(0,0)) ;
 
-  arma::vec grd_M = vectorise((M - Mu)/sigma2 + A - dat->Y ) ;
-  arma::vec grd_S = .5 * (sum(A,1) +  p/sigma2 - p * pow(S, -1));
+  double objective = accu(A - dat->Y % Z) - .5*(p*accu(log(S*sigma2_inv)) +  n_sigma2*sigma2_inv) ;
+
+  arma::vec grd_M = vectorise((M - mu)*sigma2_inv + A - dat->Y ) ;
+  arma::vec grd_S = .5 * (sum(A,1) +  p*sigma2_inv - p * pow(S, -1));
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
 
@@ -92,18 +94,20 @@ double fn_optim_PLN_weighted_spherical(unsigned N, const double *x, double *grad
   arma::vec S(&x[n*p], n);
 
   // regression parameters
-  arma::mat mu = dat->X * dat->XtWX_inv * dat->X.t() * (M.each_col() % dat->w) ;
+  arma::mat mu = dat->X * dat->Theta ;
 
   // variance parameters
-  double sigma2 = arma::as_scalar(dot(dat->w, sum(pow(M - mu, 2), 1) + p * S)) / (p * dat->w_bar) ;
+  double n_sigma2 = arma::as_scalar(dot(dat->w, sum(pow(M - mu, 2), 1) + p * S)) ;
+
+  double sigma2_inv = arma::as_scalar(dat->Omega(0,0)) ;
 
   arma::mat Z = dat->O + M;
   arma::mat A = exp (Z.each_col() + .5 * S) ;
 
-  double objective = accu(diagmat(dat->w) * (A - dat->Y % Z)) -.5 *p*dot(dat->w, log(S/sigma2)) ;
+  double objective = accu(diagmat(dat->w) * (A - dat->Y % Z)) -.5 * (p*dot(dat->w, log(S*sigma2_inv)) +  n_sigma2*sigma2_inv) ;
 
-  arma::vec grd_M     = vectorise(diagmat(dat->w) * ( (M - mu)/sigma2 + A - dat->Y)) ;
-  arma::vec grd_S     = .5 * dat->w % (sum(A,1) +  p/sigma2 - p * pow(S, -1));
+  arma::vec grd_M     = vectorise(diagmat(dat->w) * ( (M - mu) * sigma2_inv + A - dat->Y)) ;
+  arma::vec grd_S     = .5 * dat->w % (sum(A,1) +  p * sigma2_inv - p * pow(S, -1));
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
 
@@ -127,17 +131,19 @@ double fn_optim_PLN_diagonal(unsigned N, const double *x, double *grad, void *da
   arma::mat A = exp (Z + .5 * S) ;
 
   // regression parameters
-  arma::mat mu = dat->X * dat->XtWX_inv * dat->X.t() * M ;
+  arma::mat mu = dat->X * dat->Theta ;
 
   // variance parameters
-  arma::rowvec d = sum(pow(M - mu, 2) + S, 0) / n;
+  arma::vec inv_sigma2 = arma::diagvec(dat->Omega);
+
+  double term = accu((M - mu) * diagmat(inv_sigma2) % (M - mu)) + accu(S * inv_sigma2) ;
 
   // objective function
-  double objective = accu(A - dat->Y % Z - .5*log(S)) + .5 * n * accu(log(d)) ;
+  double objective = accu(A - dat->Y % Z - .5*log(S)) - .5 * dat->w_bar * accu(log(inv_sigma2)) + .5 * term ;
 
   // gradients
-  arma::vec grd_M = vectorise( (M - mu) * diagmat(pow(d, -1)) + A - dat->Y ) ;
-  arma::vec grd_S = vectorise(.5 * (arma::ones(n) * pow(d, -1) + A - pow(S,-1) ) );
+  arma::vec grd_M = vectorise( (M - mu) * dat->Omega + A - dat->Y ) ;
+  arma::vec grd_S = vectorise(.5 * (arma::ones(n) * inv_sigma2 + A - pow(S,-1) ) );
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
   for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
@@ -159,17 +165,18 @@ double fn_optim_PLN_weighted_diagonal(unsigned N, const double *x, double *grad,
   arma::mat A = exp (Z + .5 * S) ;
 
   // regression parameters
-  arma::mat mu = dat->X * dat->XtWX_inv * dat->X.t() * (M.each_col() % dat->w) ;
+  arma::mat mu = dat->X * dat->Theta ;
 
   // variance parameters
-  arma::rowvec d = (dat->w).t() * (pow(M - mu, 2) + S) / dat->w_bar;
+  arma::vec inv_sigma2 = arma::diagvec(dat->Omega);
 
   // objective function
-  double objective = accu(diagmat(dat->w) * (A - dat->Y % Z - .5*log(S))) + .5 * dat->w_bar * accu(log(d)) ;
+  double term = as_scalar((dat->w).t() * (sum((M - mu) * diagmat(inv_sigma2) % (M - mu), 1) + S * inv_sigma2)) ;
+  double objective = accu(diagmat(dat->w) * (A - dat->Y % Z - .5*log(S))) - .5 * dat->w_bar * accu(log(inv_sigma2)) + .5 * term ;
 
   // gradients
-  arma::vec grd_M     = vectorise(diagmat(dat->w) * ( (M - mu) * diagmat(pow(d, -1)) + A - dat->Y) ) ;
-  arma::vec grd_S     = vectorise(.5 * (dat->w * pow(d, -1) + diagmat(dat->w) * (A - pow(S,-1)) ) );
+  arma::vec grd_M = vectorise(diagmat(dat->w) * ( (M - mu) * diagmat(inv_sigma2) + A - dat->Y) ) ;
+  arma::vec grd_S = vectorise(.5 * (dat->w * inv_sigma2 + diagmat(dat->w) * (A - pow(S,-1)) ) );
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
   for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];

@@ -136,7 +136,9 @@ function(responses, covariates, offsets, weights, model, control) {
     private$M     <- do.call(cbind, lapply(LMs, residuals))
     private$S     <- matrix(10 * max(control$lower_bound), n, ifelse(control$covariance == "spherical", 1, p))
     if (control$covariance == "spherical") {
-      private$Sigma <- diag(crossprod(private$M)/n)
+      private$Sigma <- diag(sum(private$M^2)/(n*p), p, p)
+    } else  if (control$covariance == "diagonal") {
+      private$Sigma <- diag(diag(crossprod(private$M)/n), p, p)
     } else  {
       private$Sigma <- crossprod(private$M)/n + diag(colMeans(private$S), nrow = p)
     }
