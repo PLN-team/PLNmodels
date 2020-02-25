@@ -151,6 +151,9 @@ function(responses, covariates, offsets, weights, control) {
   cond <- FALSE; iter <- 0
   objective   <- numeric(control$maxit_out)
   convergence <- numeric(control$maxit_out)
+  inner_iterations <- integer(control$maxit_out)
+  inner_status     <- integer(control$maxit_out)
+  inner_message    <- character(control$maxit_out)
 
   par0 <- c(private$M, private$S)
   objective.old <- Inf
@@ -162,7 +165,7 @@ function(responses, covariates, offsets, weights, control) {
 
     ## VE Step
     optim_out <- private$optimizer(
-      c(private$M, private$S),
+      par0,
       responses,
       covariates,
       offsets,
@@ -178,6 +181,10 @@ function(responses, covariates, offsets, weights, control) {
     objective[iter]   <- -sum(weights * optim_out$loglik)
     convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
     if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+
+    inner_iterations[iter] <- optim_out$iterations
+    inner_status[iter]     <- optim_out$status
+    inner_message[iter]    <- statusToMessage(optim_out$status)
 
     ## Prepare next iterate
     par0  <- c(optim_out$M, optim_out$S)
@@ -197,9 +204,9 @@ function(responses, covariates, offsets, weights, control) {
     monitoring = list(objective        = objective[1:iter],
                       convergence      = convergence[1:iter],
                       outer_iterations = iter,
-                      inner_iterations = optim_out$iterations,
-                      inner_status     = optim_out$status,
-                      inner_message    = statusToMessage(optim_out$status))
+                      inner_iterations = inner_iterations[1:iter],
+                      inner_status     = inner_status[1:iter],
+                      inner_message    = inner_message[1:iter])
 
   )
 })
