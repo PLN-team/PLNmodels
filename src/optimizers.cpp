@@ -12,7 +12,13 @@ optimizer_PLN::optimizer_PLN(
           const arma::mat & X,
           const arma::mat & O,
           const arma::vec & w,
-          Rcpp::List options) : data(optim_data(Y, X, O, w)) {
+          Rcpp::List options) {
+
+  const arma::mat & Theta = Rcpp::as<arma::mat>(options["Theta"]);
+  const arma::mat & Omega = Rcpp::as<arma::mat>(options["Omega"]);
+
+  // overload the data structure
+  data = optim_data(Y, X, O, w, Theta, Omega) ;
 
   // problem dimension
   n = Y.n_rows ;

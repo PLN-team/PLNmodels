@@ -277,57 +277,57 @@ rbind(
 ) %>% knitr::kable()
 ```
 
-### Covariance models (full, diagonal, spherical)
+<!-- ### Covariance models (full, diagonal, spherical) -->
 
-It is possible to change a bit the parametrization used for modelling the residual covariance matrix $\boldsymbol\Sigma$, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence $p \times (p+1)/2$ parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix $\boldsymbol\Sigma_D$ with only $p$ parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix $\boldsymbol\Sigma = \sigma \mathbf{I}_p$. This can be tuned in `PLN` with the `control` argument, a list controlling various aspects of the underlying optimization process:
+<!-- It is possible to change a bit the parametrization used for modelling the residual covariance matrix $\boldsymbol\Sigma$, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence $p \times (p+1)/2$ parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix $\boldsymbol\Sigma_D$ with only $p$ parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix $\boldsymbol\Sigma = \sigma \mathbf{I}_p$. This can be tuned in `PLN` with the `control` argument, a list controlling various aspects of the underlying optimization process: -->
 
-```{r covariances models}
-myPLN_diagonal <- 
-  PLN(
-    Abundance ~ 1 + offset(log(Offset)),
-    data = trichoptera, control = list(covariance = "diagonal", trace = 0)
-  )
-myPLN_spherical <- 
-  PLN(
-    Abundance ~ 1 + offset(log(Offset)),
-    data = trichoptera, control = list(covariance = "spherical", trace = 0)
-  )
-```
+<!-- ```{r covariances models} -->
+<!-- myPLN_diagonal <-  -->
+<!--   PLN( -->
+<!--     Abundance ~ 1 + offset(log(Offset)), -->
+<!--     data = trichoptera, control = list(covariance = "diagonal", trace = 0) -->
+<!--   ) -->
+<!-- myPLN_spherical <-  -->
+<!--   PLN( -->
+<!--     Abundance ~ 1 + offset(log(Offset)), -->
+<!--     data = trichoptera, control = list(covariance = "spherical", trace = 0) -->
+<!--   ) -->
+<!-- ``` -->
 
-Note that, by default, the model chosen is \texttt{covariance = "spherical"}, so that the two following calls are equivalents:
-```{r PLN covariance full, evaluate = FALSE}
-myPLN_default <- 
-  PLN(Abundance ~ 1, data = trichoptera, )
-myPLN_full <- 
-  PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "full"))
-```
+<!-- Note that, by default, the model chosen is \texttt{covariance = "spherical"}, so that the two following calls are equivalents: -->
+<!-- ```{r PLN covariance full, evaluate = FALSE} -->
+<!-- myPLN_default <-  -->
+<!--   PLN(Abundance ~ 1, data = trichoptera, ) -->
+<!-- myPLN_full <-  -->
+<!--   PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "full")) -->
+<!-- ``` -->
 
-Different covariance models can then be compared with the usual criteria: it seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:
+<!-- Different covariance models can then be compared with the usual criteria: it seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters: -->
 
-```{r compare covariances}
-rbind(
-  myPLN_offsets$criteria,
-  myPLN_diagonal$criteria,
-  myPLN_spherical$criteria
-) %>% 
-  as.data.frame(row.names = c("full", "diagonal", "spherical")) %>%
-  knitr::kable()
-```
+<!-- ```{r compare covariances} -->
+<!-- rbind( -->
+<!--   myPLN_offsets$criteria, -->
+<!--   myPLN_diagonal$criteria, -->
+<!--   myPLN_spherical$criteria -->
+<!-- ) %>%  -->
+<!--   as.data.frame(row.names = c("full", "diagonal", "spherical")) %>% -->
+<!--   knitr::kable() -->
+<!-- ``` -->
 
-A final model that we can try is the diagonal one with the wind as a covariate, which gives a slight improvement.
+<!-- A final model that we can try is the diagonal one with the wind as a covariate, which gives a slight improvement. -->
 
-```{r final}
-myPLN_final <- 
-  PLN(
-    Abundance ~ 1 + Wind + offset(log(Offset)),
-    data    = trichoptera, control = list(covariance = "diagonal", trace = 0)
-  )
-rbind(
-  myPLN_wind$criteria,
-  myPLN_diagonal$criteria,
-  myPLN_final$criteria
-) %>% knitr::kable()
-```
+<!-- ```{r final} -->
+<!-- myPLN_final <-  -->
+<!--   PLN( -->
+<!--     Abundance ~ 1 + Wind + offset(log(Offset)), -->
+<!--     data    = trichoptera, control = list(covariance = "diagonal", trace = 0) -->
+<!--   ) -->
+<!-- rbind( -->
+<!--   myPLN_wind$criteria, -->
+<!--   myPLN_diagonal$criteria, -->
+<!--   myPLN_final$criteria -->
+<!-- ) %>% knitr::kable() -->
+<!-- ``` -->
 
 
 ## References

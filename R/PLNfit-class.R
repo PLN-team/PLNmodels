@@ -148,14 +148,41 @@ function(responses, covariates, offsets, weights, model, control) {
 PLNfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
 
-  optim_out <- private$optimizer(
-    c(private$M, private$S),
-    responses,
-    covariates,
-    offsets,
-    weights,
-    control
-  )
+  cond <- FALSE; iter <- 0
+  objective   <- numeric(control$maxit_out)
+  convergence <- numeric(control$maxit_out)
+
+  par0 <- c(private$M, private$S)
+  objective.old <- Inf
+  control$Theta <- t(self$model_par$Theta)
+  control$Omega <- solve(self$model_par$Sigma)
+  while (!cond) {
+    iter <- iter + 1
+    if (control$trace > 1) cat("", iter)
+
+    ## VE Step
+    optim_out <- private$optimizer(
+      c(private$M, private$S),
+      responses,
+      covariates,
+      offsets,
+      weights,
+      control
+    )
+
+    ## M Step
+    control$Theta <- optim_out$Theta
+    control$Omega <- solve(optim_out$Sigma)
+
+    ## Check convergence
+    objective[iter]   <- -sum(weights * optim_out$loglik)
+    convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
+    if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+
+    ## Prepare next iterate
+    par0  <- c(optim_out$M, optim_out$S)
+    objective.old <- objective[iter]
+  }
 
   Ji <- optim_out$loglik
   attr(Ji, "weights") <- weights
@@ -167,10 +194,13 @@ function(responses, covariates, offsets, weights, control) {
     Z          = optim_out$Z,
     A          = optim_out$A,
     Ji         = Ji,
-    monitoring = list(
-      iterations = optim_out$iterations,
-      status     = optim_out$status,
-      message    = statusToMessage(optim_out$status))
+    monitoring = list(objective        = objective[1:iter],
+                      convergence      = convergence[1:iter],
+                      outer_iterations = iter,
+                      inner_iterations = optim_out$iterations,
+                      inner_status     = optim_out$status,
+                      inner_message    = statusToMessage(optim_out$status))
+
   )
 })
 

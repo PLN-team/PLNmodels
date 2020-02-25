@@ -11,14 +11,14 @@ double fn_optim_PLN(unsigned N, const double *x, double *grad, void *data) {
   arma::mat S(&x[n*p], n,p);
   arma::mat Z = dat->O + M;
   arma::mat A = exp (Z + .5 * S) ;
-  arma::mat mu = dat->X * dat->XtWX_inv * dat->X.t() * M ;
+  arma::mat mu = dat->X * dat->Theta ;
 
-  arma::mat Omega = n * inv_sympd((M - mu).t()*(M-mu)  + diagmat(sum(S, 0)));
+  arma::mat nSigma = (M - mu).t()*(M-mu)  + diagmat(sum(S, 0));
 
-  double objective = accu(A - dat->Y % Z - .5*log(S)) - .5*n*real(log_det(Omega)) ;
+  double objective = accu(A - dat->Y % Z - .5*log(S)) - .5*(n*dat->log_det_Omega - trace(dat->Omega*nSigma)) ;
 
-  arma::vec grd_M     = vectorise( (M - mu) * Omega + A - dat->Y) ;
-  arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(Omega).t() + A - pow(S, -1))) ;
+  arma::vec grd_M     = vectorise( (M - mu) * dat->Omega + A - dat->Y) ;
+  arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(dat->Omega).t() + A - pow(S, -1))) ;
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
   for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];

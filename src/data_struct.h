@@ -37,8 +37,10 @@ typedef struct optim_data {
     optim_data(const arma::mat &responses,
                const arma::mat &covariates,
                const arma::mat &offsets,
-               const arma::mat &weights
-    ) : Y(responses), X(covariates), O(offsets), w(weights)
+               const arma::mat &weights,
+               const arma::mat &regression_parameters,
+               const arma::mat &covinv
+    ) : Y(responses), X(covariates), O(offsets), w(weights), Omega(covinv), Theta(regression_parameters), log_det_Omega(real(log_det(covinv)))
       {
         n = Y.n_rows ;
         p = Y.n_cols ;
@@ -71,7 +73,7 @@ typedef struct optim_data {
                const arma::mat &covariates,
                const arma::mat &offsets,
                const arma::mat &weights,
-               const arma::mat covinv
+               const arma::mat &covinv
     ) : Y(responses), X(covariates), O(offsets), w(weights), Omega(covinv), log_det_Omega(real(log_det(covinv)))
       {
         n = Y.n_rows ;
