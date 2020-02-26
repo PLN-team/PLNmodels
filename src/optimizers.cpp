@@ -79,7 +79,8 @@ void optimizer_PLN_spherical::export_output() {
   S = arma::mat(&parameter[n*p], n,1);
 
   // regression parameters
-  Theta = data.XtWX_inv * data.X.t() * (M.each_col() % data.w) ;
+  arma::mat XtWX_inv = arma::inv_sympd(data.X.t() * arma::diagmat(data.w) * data.X) ;
+  Theta = XtWX_inv * data.X.t() * (M.each_col() % data.w) ;
   arma::mat mu = data.X * Theta ;
 
   // variance parameters
@@ -116,7 +117,8 @@ void optimizer_PLN_diagonal::export_output() {
   Z = data.O + M;
 
   // model parameters
-  Theta = data.XtWX_inv * data.X.t() * (M.each_col() % data.w) ;
+  arma::mat XtWX_inv = arma::inv_sympd(data.X.t() * arma::diagmat(data.w) * data.X) ;
+  Theta = XtWX_inv * data.X.t() * (M.each_col() % data.w) ;
   arma::mat mu = data.X * Theta ;
 
   // variance parameters
@@ -153,7 +155,8 @@ void optimizer_PLN_full::export_output () {
   Z = data.O + M;
 
   // regression parameters
-  Theta = data.XtWX_inv * data.X.t() * (M.each_col() % data.w) ;
+  arma::mat XtWX_inv = arma::inv_sympd(data.X.t() * arma::diagmat(data.w) * data.X) ;
+  Theta = XtWX_inv * data.X.t() * (M.each_col() % data.w) ;
   arma::mat mu = data.X * Theta ;
 
   // variance parameters
@@ -163,6 +166,21 @@ void optimizer_PLN_full::export_output () {
   // element-wise log-likelihood
   A = exp (Z + .5 * S) ;
   loglik = sum(data.Y % Z - A + .5*log(S) - .5*( ((M - mu) * Omega) % (M - mu) + S * diagmat(Omega)), 1) + .5 * real(log_det(Omega)) + data.Ki ;
+}
+
+void optimizer_PLN_full::export_var_par () {
+
+  // variational parameters
+  M = arma::mat(&parameter[0]  , n,p);
+  S = arma::mat(&parameter[n*p], n,p);
+  Z = data.O + M;
+
+  // regression parameters
+  arma::mat mu = data.X * data.Theta ;
+
+  // element-wise log-likelihood
+  A = exp (Z + .5 * S) ;
+  loglik = sum(data.Y % Z - A + .5*log(S) - .5*( ((M - mu) * data.Omega) % (M - mu) + S * diagmat(data.Omega)), 1) + .5 * real(log_det(data.Omega)) + data.Ki ;
 }
 
 // ---------------------------------------------------------------------------

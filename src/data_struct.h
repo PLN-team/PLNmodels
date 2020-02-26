@@ -13,7 +13,6 @@ typedef std::vector<double> stdvec;
 typedef struct optim_data {
     arma::mat Y          ;
     arma::mat X          ;
-    arma::mat XtWX_inv   ;
     arma::mat O          ;
     arma::vec w          ;
     arma::mat Omega      ;
@@ -46,7 +45,6 @@ typedef struct optim_data {
         n = Y.n_rows ;
         p = Y.n_cols ;
         d = X.n_cols ;
-        XtWX_inv = arma::inv_sympd(X.t() * arma::diagmat(w) * X) ;
         iterations = 0     ;
         KYi = logfact(Y)   ;
         KY = accu(w % KYi) ;
@@ -64,7 +62,6 @@ typedef struct optim_data {
         n = Y.n_rows ;
         p = Y.n_cols ;
         d = X.n_cols ;
-        XtWX_inv = arma::inv_sympd(X.t() * arma::diagmat(w) * X) ;
         iterations = 0 ;
         KYi = logfact(Y) ;
         KY = accu(KYi) ;
@@ -81,7 +78,6 @@ typedef struct optim_data {
         n = Y.n_rows ;
         p = Y.n_cols ;
         d = X.n_cols ;
-        XtWX_inv = arma::inv_sympd(X.t() * arma::diagmat(w) * X) ;
         iterations = 0 ;
         KYi = logfact(Y) ;
         KY = accu(KYi) ;
@@ -99,7 +95,6 @@ typedef struct optim_data {
       n = Y.n_rows ;
       p = Y.n_cols ;
       d = X.n_cols ;
-      XtWX_inv = arma::inv_sympd(X.t() * arma::diagmat(w) * X) ;
       iterations = 0 ;
       KYi = logfact(Y) ;
       KY = accu(KYi) ;

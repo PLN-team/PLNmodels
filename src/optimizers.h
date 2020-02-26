@@ -71,7 +71,7 @@ class optimizer_PLN {
 
     // prepare/compute output according to problem dimension
     // will be defined in the child classes
-    virtual void export_output() =0;
+    virtual void export_output() =0 ;
 
     // export the output an Rcpp::List understandable by R
     virtual Rcpp::List get_output() ;
@@ -94,7 +94,8 @@ class optimizer_PLN_spherical: public optimizer_PLN {
       Rcpp::List options
     ) ;
 
-    void export_output() ;
+    void export_output()  ;
+    void export_var_par() ;
 };
 
 // DIAGONAL COVARIANCE
@@ -109,7 +110,8 @@ class optimizer_PLN_diagonal: public optimizer_PLN {
       Rcpp::List options
     ) ;
 
-    void export_output() ;
+    void export_output()  ;
+    void export_var_par() ;
 };
 
 // FULLY PARAMETRIZED COVARIANCE
@@ -124,7 +126,8 @@ class optimizer_PLN_full: public optimizer_PLN {
       Rcpp::List options
     ) ;
 
-    void export_output() ;
+    void export_output()  ;
+    void export_var_par() ;
 };
 
 // RANK-CONSTRAINED COVARIANCE (PCA)

@@ -260,38 +260,40 @@ function(covariates, offsets) {
 #
 # @name PLNfit_VEstep
 #
-# @param X A matrix of covariates.
-# @param O A matrix of offsets.
-# @param Y A matrix of counts.
+# @param covariates A matrix of covariates.
+# @param offsets A matrix of offsets.
+# @param responses A matrix of counts.
 # @param control a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.
 # @return A list with three components:
 #            the matrix M of variational means,
 #            the matrix S of variational variances
 #            the vector log.lik of (variational) log-likelihood of each new observation
 PLNfit$set("public", "VEstep",
-function(X, O, Y, control = list()) {
+function(covariates, offsets, responses, weights, control = list()) {
 
   # problem dimension
-  n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
+  n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
 
   ## define default control parameters for optim and overwrite by user defined parameters
   control$covariance <- self$vcov_model
-  ctrl <- PLN_param_VE(control, n, p, d)
+  control <- PLN_param(control, n, p, d)
+  control$Theta <- t(self$model_par$Theta)
+  control$Omega <- solve(self$model_par$Sigma)
 
-  ## optimisaiton
-  optim.out <- optimization_VEstep_PLN(
-    c(rep(0, n*p),
-      rep(10 * max(ctrl$lower_bound), ifelse(control$covariance == "spherical", n, n*p))
-    ),
-    Y, X, O,
-    self$model_par$Theta, self$model_par$Sigma,
-    ctrl
+  ## optimisation
+  optim_out <- VEstep_PLN(
+    c(private$M, private$S),
+    responses,
+    covariates,
+    offsets,
+    weights,
+    control
   )
 
   ## output
-  list(M       = optim.out$M,
-       S       = optim.out$S,
-       log.lik = setNames(optim.out$loglik, rownames(Y)))
+  list(M       = optim_out$M,
+       S       = optim_out$S,
+       log.lik = setNames(optim_out$loglik, rownames(responses)))
 })
 
 # Predict counts of a new sample

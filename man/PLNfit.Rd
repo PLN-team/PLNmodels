@@ -43,7 +43,7 @@ print(myPLN)
 
 \item{\code{model}}{character: the model used for the coavariance (either "spherical", "diagonal" or "full")}
 
-\item{\code{loglik}}{variational lower bound of the loglikelihood}
+\item{\code{loglik}}{(weighted) variational lower bound of the loglikelihood}
 
 \item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}
 
@@ -146,7 +146,7 @@ print(myPLN)
 \if{html}{\out{<a id="method-VEstep"></a>}}
 \subsection{Method \code{VEstep()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$VEstep(X, O, Y, control = list())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$VEstep(covariates, offsets, responses, weights, control = list())}\if{html}{\out{</div>}}
 }
 
 }
