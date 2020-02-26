@@ -308,30 +308,30 @@ myPLN_full <-
 
 Different covariance models can then be compared with the usual criteria: it seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:
 
-<!-- ```{r compare covariances} -->
-<!-- rbind( -->
-<!--   myPLN_offsets$criteria, -->
-<!--   myPLN_diagonal$criteria, -->
-<!--   myPLN_spherical$criteria -->
-<!-- ) %>% -->
-<!--   as.data.frame(row.names = c("full", "diagonal", "spherical")) %>% -->
-<!--   knitr::kable() -->
-<!-- ``` -->
+```{r compare covariances}
+rbind(
+  myPLN_offsets$criteria,
+  myPLN_diagonal$criteria,
+  myPLN_spherical$criteria
+) %>%
+  as.data.frame(row.names = c("full", "diagonal", "spherical")) %>%
+  knitr::kable()
+```
 
-<!-- A final model that we can try is the diagonal one with the wind as a covariate, which gives a slight improvement. -->
+A final model that we can try is the diagonal one with the wind as a covariate, which gives a slight improvement.
 
-<!-- ```{r final} -->
-<!-- myPLN_final <- -->
-<!--   PLN( -->
-<!--     Abundance ~ 1 + Wind + offset(log(Offset)), -->
-<!--     data    = trichoptera, control = list(covariance = "diagonal", trace = 0) -->
-<!--   ) -->
-<!-- rbind( -->
-<!--   myPLN_wind$criteria, -->
-<!--   myPLN_diagonal$criteria, -->
-<!--   myPLN_final$criteria -->
-<!-- ) %>% knitr::kable() -->
-<!-- ``` -->
+```{r final}
+myPLN_final <-
+  PLN(
+    Abundance ~ 1 + Wind + offset(log(Offset)),
+    data    = trichoptera, control = list(covariance = "diagonal", trace = 0)
+  )
+rbind(
+  myPLN_wind$criteria,
+  myPLN_diagonal$criteria,
+  myPLN_final$criteria
+) %>% knitr::kable()
+```
 
 
 ## References

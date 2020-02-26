@@ -86,14 +86,15 @@ void optimizer_PLN_spherical::export_output() {
   arma::mat mu = data.X * Theta ;
 
   // variance parameters
-  double trace_term = arma::as_scalar(dot(data.w, sum(pow(M - mu, 2), 1) + p * S)) ;
-  double sigma2 = trace_term / (p * accu (data.w)) ;
+  double n_sigma2  = arma::as_scalar(dot(data.w, sum(pow(M - mu, 2), 1) + p * S)) ;
+  double sigma2 = n_sigma2 / (p * accu (data.w)) ;
   Sigma = arma::eye(p,p) * sigma2 ;
+  arma::mat Omega = arma::eye(p,p) * pow(sigma2, -1) ;
 
   // element-wise log-likelihood
   Z = data.O + M ;
   A = exp(Z.each_col() + .5 * S) ;
-  loglik = sum(data.Y % Z - A - .5 * pow(M - mu, 2)/sigma2, 1) + .5 * p*(log(S/sigma2)- S/sigma2) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI)) ;
+  loglik = sum(data.Y % Z - A - .5* pow(M - mu, 2) / sigma2, 1) - .5*p*S/sigma2 + .5 *p*log(S/sigma2) + data.Ki ;
 }
 
 // ---------------------------------------------------------------------------
@@ -119,20 +120,23 @@ void optimizer_PLN_diagonal::export_output() {
   // variational parameters
   M = arma::mat(&parameter[0]  , n,p);
   S = arma::mat(&parameter[n*p], n,p);
+  Z = data.O + M;
 
   // model parameters
   Theta = data.XtWX_inv * data.X.t() * (M.each_col() % data.w) ;
   arma::mat mu = data.X * Theta ;
 
   // variance parameters
-  arma::vec sigma2 = (data.w).t() * (pow(M - mu, 2) + S) / data.w_bar;
+  arma::rowvec sigma2 = (data.w).t() * (pow(M - mu, 2) + S) / data.w_bar;
+  arma::vec omega2 = pow(sigma2.t(), -1) ;
   Sigma = diagmat(sigma2) ;
+  arma::mat Omega = diagmat(omega2) ;
 
   //element-wise log-likelihood
-  Z = data.O + M;
   A = exp (Z + .5 * S) ;
-  loglik = sum(data.Y % Z - A + .5 * log(S.each_row() / sigma2) - .5* ((M - mu) * diagmat(pow(sigma2, -1)) % (M - mu)), 1) - .5 * S * pow(sigma2.t(), -1) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI)) ;
+  loglik = sum(data.Y % Z - A + .5*log(S), 1) - .5 * (pow(M - mu, 2) + S) * omega2 + .5 * sum(log(omega2)) + data.Ki ;
 }
+
 
 // ---------------------------------------------------------------------------
 // CHILD CLASS WITH FULLY PARAMETRIZED COVARIANCE
@@ -165,11 +169,11 @@ void optimizer_PLN_full::export_output () {
 
   // variance parameters
   Sigma = ((M - mu) .t() * diagmat(data.w) * (M - mu) + diagmat(sum(S.each_col() % data.w, 0))) / data.w_bar ;
+  arma::mat Omega = inv_sympd(Sigma);
 
   // element-wise log-likelihood
-  arma::mat Omega = inv_sympd(Sigma);
   A = exp (Z + .5 * S) ;
-  loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M - mu) * Omega) % (M - mu) + S * diagmat(Omega), 1) + .5 * real(log_det(Omega)) - logfact(data.Y) + .5 * (1+(1-p)* std::log(M_PI));
+  loglik = sum(data.Y % Z - A + .5*log(S) - .5*( ((M - mu) * Omega) % (M - mu) + S * diagmat(Omega)), 1) + .5 * real(log_det(Omega)) + data.Ki ;
 }
 
 // ---------------------------------------------------------------------------
