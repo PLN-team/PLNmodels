@@ -1,6 +1,7 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2020-01-27: updating os X distribution tested
 #  - 2019-12-04: bioconductor dependencies handled with
 #                biocViews (rather than bioc-devel or bioc-release)
 #  - 2019-03-16: suppressing requirements for system version of nlopt
@@ -40,13 +41,10 @@ matrix:
       r: release
     - os: osx
       disable_homebrew: true
-    - os: osx
-      osx_image: xcode8.2
-      disable_homebrew: true
-    - os: linux
-      r: release
     - os: linux
       r: devel
+    - os: linux
+      r: release
       r_packages:
         - covr
         - pkgdown
