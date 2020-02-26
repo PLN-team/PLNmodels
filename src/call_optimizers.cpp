@@ -160,7 +160,7 @@ Rcpp::List VEstep_PLN(
   myPLN.export_var_par () ;
 
   // Output returned to R
-  return(myPLN.get_output());
+  return(myPLN.get_var_par());
 
 }
 

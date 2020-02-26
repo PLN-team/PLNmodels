@@ -58,6 +58,17 @@ Rcpp::List optimizer_PLN::get_output() {
     );
 }
 
+// CREATE THE RCPP::LIST FOR R
+Rcpp::List optimizer_PLN_full::get_var_par() {
+  return Rcpp::List::create(
+      Rcpp::Named("status"    ) = (int) status,
+      Rcpp::Named("M"         ) = M,
+      Rcpp::Named("S"         ) = S,
+      Rcpp::Named("iterations") = data.iterations,
+      Rcpp::Named("loglik"    ) = loglik
+    );
+}
+
 // ---------------------------------------------------------------------------
 // CHILD CLASS WITH SPHERICAL COVARIANCE
 

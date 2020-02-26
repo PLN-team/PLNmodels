@@ -128,6 +128,7 @@ class optimizer_PLN_full: public optimizer_PLN {
 
     void export_output()  ;
     void export_var_par() ;
+    Rcpp::List get_var_par()    ;
 };
 
 // RANK-CONSTRAINED COVARIANCE (PCA)
