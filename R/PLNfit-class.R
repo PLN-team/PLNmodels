@@ -163,7 +163,6 @@ function(responses, covariates, offsets, weights, control) {
   control$Omega <- solve(self$model_par$Sigma)
   while (!cond) {
     iter <- iter + 1
-    if (control$trace > 1) cat("", iter)
 
     ## VE Step
     optim_out <- private$optimizer(
