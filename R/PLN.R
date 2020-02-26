@@ -41,7 +41,7 @@ PLN <- function(formula, data, subset, weights, control = list()) {
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and eventually overwrite them by user-defined parameters
-  ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X), weighted = !missing(weights))
+  ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X))
 
   ## initialization
   if (ctrl$trace > 0) cat("\n Initialization...")
@@ -49,7 +49,6 @@ PLN <- function(formula, data, subset, weights, control = list()) {
 
   ## optimization
   if (ctrl$trace > 0) cat("\n Adjusting a PLN model with", ctrl$covariance,"covariance model")
-  if (ctrl$trace > 0 & ctrl$weighted) cat(" (with observation weigths)")
   myPLN$optimize(args$Y, args$X, args$O, args$w, ctrl)
 
   ## post-treatment

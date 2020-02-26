@@ -248,7 +248,7 @@ PLNLDAfit$set("public", "predict",
       # - remove intercept so that design matrix is compatible with the one used for inference
       xint <- match("(Intercept)", colnames(X), nomatch = 0L)
       if (xint > 0L) X <- X[, -xint, drop = FALSE]
-      ve_step <- self$VEstep(X, args$O, args$Y, control = control)
+      ve_step <- self$VEstep(X, args$O, args$Y, args$w, control = control)
       cond.log.lik[, k] <- ve_step$log.lik
       if (type == "scores") {
         latent_pos[ , k, ] <- ve_step$M + rep(1, n.new) %o% self$group_means[, k]

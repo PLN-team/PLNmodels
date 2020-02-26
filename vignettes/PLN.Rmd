@@ -208,21 +208,21 @@ corrplot(sigma(myPLN), is.corr = FALSE)
 It is also possible to use observation weights like in standard (G)LMs:
 
 ```{r weighted, fig.width=7, fig.height=5}
-myPLN_weighted <- 
+myPLN_weighted <-
   PLN(
-    Abundance ~ 1, 
-    data    = trichoptera, 
+    Abundance ~ 1,
+    data    = trichoptera,
     weights = runif(nrow(trichoptera)),
     control = list(trace = 0)
   )
 data.frame(
   unweighted = as.vector(fitted(myPLN)),
   weighted   = as.vector(fitted(myPLN_weighted))
-) %>% 
-  ggplot(aes(x = unweighted, y = weighted)) + 
-    geom_point(size = .5, alpha =.25 ) + 
-    scale_x_log10() + 
-    scale_y_log10() + 
+) %>%
+  ggplot(aes(x = unweighted, y = weighted)) +
+    geom_point(size = .5, alpha =.25 ) +
+    scale_x_log10() +
+    scale_y_log10() +
     theme_bw() + annotation_logticks()
 ```
 
@@ -281,24 +281,28 @@ rbind(
 
 It is possible to change a bit the parametrization used for modelling the residual covariance matrix $\boldsymbol\Sigma$, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence $p \times (p+1)/2$ parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix $\boldsymbol\Sigma_D$ with only $p$ parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix $\boldsymbol\Sigma = \sigma \mathbf{I}_p$. This can be tuned in `PLN` with the `control` argument, a list controlling various aspects of the underlying optimization process:
 
-```{r covariances models}
-myPLN_diagonal <- 
-  PLN(
-    Abundance ~ 1 + offset(log(Offset)),
-    data = trichoptera, control = list(covariance = "diagonal", trace = 0)
-  )
-myPLN_spherical <- 
+```{r covariances models spherical}
+myPLN_spherical <-
   PLN(
     Abundance ~ 1 + offset(log(Offset)),
     data = trichoptera, control = list(covariance = "spherical", trace = 0)
   )
 ```
 
+
+```{r covariances model diagonal}
+myPLN_diagonal <-
+  PLN(
+    Abundance ~ 1 + offset(log(Offset)),
+    data = trichoptera, control = list(covariance = "diagonal", trace = 0)
+  )
+```
+
 Note that, by default, the model chosen is \texttt{covariance = "spherical"}, so that the two following calls are equivalents:
 ```{r PLN covariance full, evaluate = FALSE}
-myPLN_default <- 
+myPLN_default <-
   PLN(Abundance ~ 1, data = trichoptera, )
-myPLN_full <- 
+myPLN_full <-
   PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "full"))
 ```
 
@@ -309,7 +313,7 @@ rbind(
   myPLN_offsets$criteria,
   myPLN_diagonal$criteria,
   myPLN_spherical$criteria
-) %>% 
+) %>%
   as.data.frame(row.names = c("full", "diagonal", "spherical")) %>%
   knitr::kable()
 ```
@@ -317,7 +321,7 @@ rbind(
 A final model that we can try is the diagonal one with the wind as a covariate, which gives a slight improvement.
 
 ```{r final}
-myPLN_final <- 
+myPLN_final <-
   PLN(
     Abundance ~ 1 + Wind + offset(log(Offset)),
     data    = trichoptera, control = list(covariance = "diagonal", trace = 0)

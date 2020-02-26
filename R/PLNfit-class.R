@@ -15,7 +15,7 @@
 #' @field latent a matrix: values of the latent vector (Z in the model)
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field model character: the model used for the coavariance (either "spherical", "diagonal" or "full")
-#' @field loglik variational lower bound of the loglikelihood
+#' @field loglik (weighted) variational lower bound of the loglikelihood
 #' @field loglik_vec element-wise variational lower bound of the loglikelihood
 #' @field BIC variational lower bound of the BIC
 #' @field ICL variational lower bound of the ICL
@@ -85,7 +85,7 @@ PLNfit <-
       },
       vcov_model = function() {private$covariance},
       optim_par  = function() {private$monitoring},
-      loglik     = function() {sum(private$Ji)},
+      loglik     = function() {sum(attr(private$Ji, "weights") * private$Ji) },
       loglik_vec = function() {private$Ji},
       BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
       entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", self$q, 1))},
@@ -136,7 +136,9 @@ function(responses, covariates, offsets, weights, model, control) {
     private$M     <- do.call(cbind, lapply(LMs, residuals))
     private$S     <- matrix(10 * max(control$lower_bound), n, ifelse(control$covariance == "spherical", 1, p))
     if (control$covariance == "spherical") {
-      private$Sigma <- diag(crossprod(private$M)/n)
+      private$Sigma <- diag(sum(private$M^2)/(n*p), p, p)
+    } else  if (control$covariance == "diagonal") {
+      private$Sigma <- diag(diag(crossprod(private$M)/n), p, p)
     } else  {
       private$Sigma <- crossprod(private$M)/n + diag(colMeans(private$S), nrow = p)
     }
@@ -148,27 +150,65 @@ function(responses, covariates, offsets, weights, model, control) {
 PLNfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
 
-  optim_out <- private$optimizer(
-    c(private$Theta, private$M, private$S),
-    responses,
-    covariates,
-    offsets,
-    weights,
-    control
-  )
+  cond <- FALSE; iter <- 0
+  objective   <- numeric(control$maxit_out)
+  convergence <- numeric(control$maxit_out)
+  inner_iterations <- integer(control$maxit_out)
+  inner_status     <- integer(control$maxit_out)
+  inner_message    <- character(control$maxit_out)
 
+  par0 <- c(private$M, private$S)
+  objective.old <- Inf
+  control$Theta <- t(self$model_par$Theta)
+  control$Omega <- solve(self$model_par$Sigma)
+  while (!cond) {
+    iter <- iter + 1
+
+    ## VE Step
+    optim_out <- private$optimizer(
+      par0,
+      responses,
+      covariates,
+      offsets,
+      weights,
+      control
+    )
+
+    ## M Step
+    control$Theta <- optim_out$Theta
+    control$Omega <- optim_out$Omega
+
+    ## Check convergence
+    objective[iter]   <- -sum(weights * optim_out$loglik)
+    convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
+    if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+
+    inner_iterations[iter] <- optim_out$iterations
+    inner_status[iter]     <- optim_out$status
+    inner_message[iter]    <- statusToMessage(optim_out$status)
+
+    ## Prepare next iterate
+    par0  <- c(optim_out$M, optim_out$S)
+    objective.old <- objective[iter]
+  }
+
+  Ji <- optim_out$loglik
+  attr(Ji, "weights") <- weights
   self$update(
-    Theta      = optim_out$Theta,
+    Theta      = t(optim_out$Theta),
     Sigma      = optim_out$Sigma,
     M          = optim_out$M,
     S          = optim_out$S,
     Z          = optim_out$Z,
     A          = optim_out$A,
-    Ji         = optim_out$loglik,
-    monitoring = list(
-      iterations = optim_out$iterations,
-      status     = optim_out$status,
-      message    = statusToMessage(optim_out$status))
+    Ji         = Ji,
+    monitoring = list(objective        = objective[1:iter],
+                      convergence      = convergence[1:iter],
+                      outer_iterations = iter,
+                      inner_iterations = inner_iterations[1:iter],
+                      inner_status     = inner_status[1:iter],
+                      inner_message    = inner_message[1:iter])
+
   )
 })
 
@@ -209,7 +249,8 @@ function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type
 #
 PLNfit$set("public", "latent_pos",
 function(covariates, offsets) {
-  latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
+  # latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
+  latentPos <- private$M + offsets
   latentPos
 })
 
@@ -218,38 +259,40 @@ function(covariates, offsets) {
 #
 # @name PLNfit_VEstep
 #
-# @param X A matrix of covariates.
-# @param O A matrix of offsets.
-# @param Y A matrix of counts.
+# @param covariates A matrix of covariates.
+# @param offsets A matrix of offsets.
+# @param responses A matrix of counts.
 # @param control a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.
 # @return A list with three components:
 #            the matrix M of variational means,
 #            the matrix S of variational variances
 #            the vector log.lik of (variational) log-likelihood of each new observation
 PLNfit$set("public", "VEstep",
-function(X, O, Y, control = list()) {
+function(covariates, offsets, responses, weights, control = list()) {
 
   # problem dimension
-  n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
+  n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
 
   ## define default control parameters for optim and overwrite by user defined parameters
   control$covariance <- self$vcov_model
-  ctrl <- PLN_param_VE(control, n, p, d)
+  control <- PLN_param(control, n, p, d)
+  control$Theta <- t(self$model_par$Theta)
+  control$Omega <- solve(self$model_par$Sigma)
 
-  ## optimisaiton
-  optim.out <- optimization_VEstep_PLN(
-    c(rep(0, n*p),
-      rep(10 * max(ctrl$lower_bound), ifelse(control$covariance == "spherical", n, n*p))
-    ),
-    Y, X, O,
-    self$model_par$Theta, self$model_par$Sigma,
-    ctrl
+  ## optimisation
+  optim_out <- VEstep_PLN(
+    c(private$M, private$S),
+    responses,
+    covariates,
+    offsets,
+    weights,
+    control
   )
 
   ## output
-  list(M       = optim.out$M,
-       S       = optim.out$S,
-       log.lik = setNames(optim.out$loglik, rownames(Y)))
+  list(M       = optim_out$M,
+       S       = optim_out$S,
+       log.lik = setNames(optim_out$loglik, rownames(responses)))
 })
 
 # Predict counts of a new sample

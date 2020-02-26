@@ -3,11 +3,13 @@
 
 #include "nlopt_utils.h"
 #include "gradients.h"
+#include "hessians.h"
 
 // ---------------------------------------------------------------------------
 // ABSTRACT CLASS OPTIMIZER_PLN
 //
-// COMMON TO PLW WITH SPHERICAL, DIAGONAL AND FULLY PARAMETRIZED COVARIANCE
+// COMMON TO PLN WITH SPHERICAL, DIAGONAL, FULLY PARAMETRIZED COVARIANCES
+// MOTHER OF PLN WITH COVARIANCES HAVING RANK AND SPARSITY CONSTRAINTS
 class optimizer_PLN {
   protected:
 
@@ -26,6 +28,10 @@ class optimizer_PLN {
     // double (*fn_optim) (const stdvec& , stdvec &, void *) ;
     double (*fn_optim) (unsigned , const double* , double* , void*) ;
 
+    // the function for preconditionning, when algorithm allows it
+    // void pre(unsigned n, const double *x, const double *v, double *vpre, void *f_data);
+    void (*fn_precond) (unsigned , const double* , const double* , double* , void*) ;
+
     // nlopt optimizer
     nlopt_opt optimizer ;
 
@@ -38,6 +44,7 @@ class optimizer_PLN {
     // matrices of parameters
     arma::mat Theta ;
     arma::mat Sigma ;
+    arma::mat Omega ;
     arma::mat M     ;
     arma::mat S     ;
     arma::mat Z     ;
@@ -64,7 +71,7 @@ class optimizer_PLN {
 
     // prepare/compute output according to problem dimension
     // will be defined in the child classes
-    virtual void export_output() =0;
+    virtual void export_output() =0 ;
 
     // export the output an Rcpp::List understandable by R
     virtual Rcpp::List get_output() ;
@@ -87,7 +94,8 @@ class optimizer_PLN_spherical: public optimizer_PLN {
       Rcpp::List options
     ) ;
 
-    void export_output() ;
+    void export_output()  ;
+    void export_var_par() ;
 };
 
 // DIAGONAL COVARIANCE
@@ -102,7 +110,8 @@ class optimizer_PLN_diagonal: public optimizer_PLN {
       Rcpp::List options
     ) ;
 
-    void export_output() ;
+    void export_output()  ;
+    void export_var_par() ;
 };
 
 // FULLY PARAMETRIZED COVARIANCE
@@ -117,7 +126,8 @@ class optimizer_PLN_full: public optimizer_PLN {
       Rcpp::List options
     ) ;
 
-    void export_output() ;
+    void export_output()  ;
+    void export_var_par() ;
 };
 
 // RANK-CONSTRAINED COVARIANCE (PCA)

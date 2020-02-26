@@ -19,7 +19,7 @@ test_that("PLNPCAfamily: main function, field access and methods", {
   w <- rep(1, nrow(Y))
 
   ## extract the data matrices and weights
-  ctrl_init <- PLNmodels:::PLN_param(list(), nrow(Y), ncol(Y), ncol(X), weighted = FALSE)
+  ctrl_init <- PLNmodels:::PLN_param(list(), nrow(Y), ncol(Y), ncol(X))
   ctrl_main <- PLNmodels:::PLNPCA_param(list(), weighted = FALSE)
 
   ## instantiate
