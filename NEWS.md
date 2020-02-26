@@ -1,3 +1,10 @@
+# PLNmodels 0.10.0 - major relase release
+
+* Use V-EM to adjust simple PLN models
+* Use alternative paramterisation in optimizaiton for PLN
+* correections 
+* Some bug fixed; some other added
+
 # PLNmodels 0.9.5 - minor release
 
 * include figure as a file in PLN.Rmd because figure generation fails on Solaris or OS X
