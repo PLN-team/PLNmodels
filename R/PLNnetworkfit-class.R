@@ -92,6 +92,7 @@ function(responses, covariates, offsets, weights, control) {
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
     control$Omega <- Omega
+    control$Theta <- matrix()
     optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, control)
 
     ## Check convergence
@@ -107,6 +108,8 @@ function(responses, covariates, offsets, weights, control) {
 
   ## ===========================================
   ## OUTPUT
+  Ji <- optim.out$loglik
+  attr(Ji, "weights") <- weights
   self$update(
     Theta = optim.out$Theta,
     Omega = Omega,
@@ -115,7 +118,7 @@ function(responses, covariates, offsets, weights, control) {
     S = optim.out$S,
     Z = optim.out$Z,
     A = optim.out$A,
-    Ji = optim.out$loglik,
+    Ji = Ji,
     monitoring = list(objective        = objective[1:iter],
                       convergence      = convergence[1:iter],
                       outer_iterations = iter,
