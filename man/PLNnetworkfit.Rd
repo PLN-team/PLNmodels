@@ -84,6 +84,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 \item \href{#method-update}{\code{PLNnetworkfit$update()}}
 \item \href{#method-optimize}{\code{PLNnetworkfit$optimize()}}
 \item \href{#method-postTreatment}{\code{PLNnetworkfit$postTreatment()}}
+\item \href{#method-latent_pos}{\code{PLNnetworkfit$latent_pos()}}
 \item \href{#method-latent_network}{\code{PLNnetworkfit$latent_network()}}
 \item \href{#method-plot_network}{\code{PLNnetworkfit$plot_network()}}
 \item \href{#method-show}{\code{PLNnetworkfit$show()}}
@@ -95,7 +96,6 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher">}\href{../../PLNmodels/html/PLNfit.html#method-compute_fisher}{\code{PLNmodels::PLNfit$compute_fisher()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="latent_pos">}\href{../../PLNmodels/html/PLNfit.html#method-latent_pos}{\code{PLNmodels::PLNfit$latent_pos()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict">}\href{../../PLNmodels/html/PLNfit.html#method-predict}{\code{PLNmodels::PLNfit$predict()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2">}\href{../../PLNmodels/html/PLNfit.html#method-set_R2}{\code{PLNmodels::PLNfit$set_R2()}}\out{</span>}
@@ -152,6 +152,14 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 \subsection{Method \code{postTreatment()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$postTreatment(responses, covariates, offsets, weights, nullModel)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-latent_pos"></a>}}
+\subsection{Method \code{latent_pos()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$latent_pos(covariates, offsets)}\if{html}{\out{</div>}}
 }
 
 }
