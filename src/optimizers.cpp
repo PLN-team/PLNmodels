@@ -68,11 +68,7 @@ optimizer_PLN_spherical::optimizer_PLN_spherical(
   const arma::vec & w,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
-  if (Rcpp::as<bool>(options["weighted"])) {
-    fn_optim = &fn_optim_PLN_weighted_spherical ;
-  } else {
-    fn_optim = &fn_optim_PLN_spherical ;
-  }
+  fn_optim = &fn_optim_PLN_spherical ;
 }
 
 void optimizer_PLN_spherical::export_output() {
@@ -108,11 +104,7 @@ optimizer_PLN_diagonal::optimizer_PLN_diagonal (
   const arma::vec & w,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
-  if (Rcpp::as<bool>(options["weighted"])) {
-    fn_optim = &fn_optim_PLN_weighted_diagonal ;
-  } else {
-    fn_optim = &fn_optim_PLN_diagonal ;
-  }
+  fn_optim = &fn_optim_PLN_diagonal ;
 }
 
 void optimizer_PLN_diagonal::export_output() {
@@ -149,11 +141,7 @@ optimizer_PLN_full::optimizer_PLN_full (
   const arma::vec & w,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
-  if (Rcpp::as<bool>(options["weighted"])) {
-    fn_optim = &fn_optim_PLN_weighted ;
-  } else {
-    fn_optim = &fn_optim_PLN ;
-  }
+  fn_optim = &fn_optim_PLN ;
 }
 
 void optimizer_PLN_full::export_output () {

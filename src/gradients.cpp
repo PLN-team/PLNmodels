@@ -13,32 +13,6 @@ double fn_optim_PLN(unsigned N, const double *x, double *grad, void *data) {
   arma::mat A = exp (Z + .5 * S) ;
 
   arma::mat mu = dat->X * dat->Theta ;
-  arma::mat nSigma = (M - mu).t()*(M - mu) + diagmat(sum(S, 0));
-
-  double objective = accu(A - dat->Y % Z - .5*log(S)) + .5*trace(dat->Omega*nSigma) ;
-
-  arma::vec grd_M     = vectorise( (M - mu) * dat->Omega + A - dat->Y) ;
-  arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(dat->Omega).t() + A - pow(S, -1))) ;
-
-  stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
-  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
-
-  return objective;
-}
-
-double fn_optim_PLN_weighted(unsigned N, const double *x, double *grad, void *data) {
-
-  optim_data *dat = (optim_data *) data;
-  dat->iterations++;
-
-  int n = dat->n, p = dat->p ;
-
-  arma::mat M(&x[0]  , n,p);
-  arma::mat S(&x[n*p], n,p);
-  arma::mat Z = dat->O + M;
-  arma::mat A = exp (Z + .5 * S) ;
-
-  arma::mat mu = dat->X * dat->Theta ;
   arma::mat nSigma =  (M-mu).t() * diagmat(dat->w) * (M-mu) + diagmat(sum(S.each_col() % dat->w, 0)) ;
 
   double objective = accu((dat->w).t()*(A - dat->Y % Z - .5*log(S))) + .5*trace(dat->Omega*nSigma) ;
@@ -61,35 +35,6 @@ double fn_optim_PLN_spherical(unsigned N, const double *x, double *grad, void *d
 
   arma::mat M(&x[0]  , n,p);
   arma::vec S(&x[n*p], n);
-  arma::mat Z = dat->O + M;
-  arma::mat A = exp (Z.each_col() + .5 * S) ;
-
-  arma::mat mu = dat->X * dat->Theta ;
-  double n_sigma2 = arma::as_scalar(accu((M - mu) % (M - mu)) + p*accu(S));
-  double omega2 = arma::as_scalar(dat->Omega(0,0)) ;
-
-  double objective = accu(A - dat->Y % Z) - .5* p*accu(log(S)) + .5*n_sigma2*omega2 ;
-
-  arma::vec grd_M = vectorise((M - mu)*omega2 + A - dat->Y ) ;
-  arma::vec grd_S = .5 * (sum(A,1) +  p*omega2 - p * pow(S, -1));
-
-  stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
-
-  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
-
-  return objective;
-}
-
-double fn_optim_PLN_weighted_spherical(unsigned N, const double *x, double *grad, void *data) {
-
-  optim_data *dat = (optim_data *) data;
-  dat->iterations++;
-
-  int n = dat->n, p = dat->p ;
-
-  arma::mat M(&x[0]  , n,p);
-  arma::vec S(&x[n*p], n);
-
 
   arma::mat mu = dat->X * dat->Theta ;
   double n_sigma2 = arma::as_scalar(dot(dat->w, sum(pow(M - mu, 2), 1) + p * S)) ;
@@ -112,34 +57,6 @@ double fn_optim_PLN_weighted_spherical(unsigned N, const double *x, double *grad
 
 
 double fn_optim_PLN_diagonal(unsigned N, const double *x, double *grad, void *data) {
-
-  optim_data *dat = (optim_data *) data;
-  dat->iterations++;
-
-  int n = dat->n, p = dat->p ;
-
-  // recurrent variables
-  arma::mat M(&x[0]  , n,p);
-  arma::mat S(&x[n*p], n,p);
-  arma::mat Z = dat->O + M;
-  arma::mat A = exp (Z + .5 * S) ;
-
-  arma::mat mu = dat->X * dat->Theta ;
-  arma::vec omega2 = arma::diagvec(dat->Omega);
-
-  double objective = accu(A - dat->Y % Z - .5*log(S)) + .5 * accu((pow(M - mu, 2) + S) * omega2) ;
-
-  // gradients
-  arma::vec grd_M = vectorise( (M - mu) * dat->Omega + A - dat->Y ) ;
-  arma::vec grd_S = vectorise(.5 * (arma::ones(n) * omega2.t() + A - pow(S,-1) ) );
-
-  stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
-  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
-
-  return objective;
-}
-
-double fn_optim_PLN_weighted_diagonal(unsigned N, const double *x, double *grad, void *data) {
 
   optim_data *dat = (optim_data *) data;
   dat->iterations++;

@@ -126,7 +126,7 @@ available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2")
 ##  Series of setter to default parameters for user's main functions
 ##
 ## should be ready to pass to nlopt optimizer
-PLN_param <- function(control, n, p, d, weighted = FALSE) {
+PLN_param <- function(control, n, p, d) {
   lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
@@ -143,7 +143,6 @@ PLN_param <- function(control, n, p, d, weighted = FALSE) {
     "xtol_abs"    = c(rep(0   , p*n), rep(xtol_abs   , ifelse(covariance == "spherical", n, n*p))),
     "lower_bound" = c(rep(-Inf, p*n), rep(lower_bound, ifelse(covariance == "spherical", n, n*p))),
     "trace"       = 1,
-    "weighted"    = weighted  ,
     "covariance"  = covariance,
     "inception"   = NULL
   )
