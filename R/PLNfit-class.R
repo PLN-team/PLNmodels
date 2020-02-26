@@ -85,7 +85,7 @@ PLNfit <-
       },
       vcov_model = function() {private$covariance},
       optim_par  = function() {private$monitoring},
-      loglik     = function() {if (is.null(attr(private$Ji, "weights"))) sum(private$Ji) else sum(attr(private$Ji, "weights") * private$Ji) },
+      loglik     = function() {sum(attr(private$Ji, "weights") * private$Ji) },
       loglik_vec = function() {private$Ji},
       BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
       entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", self$q, 1))},
@@ -177,7 +177,7 @@ function(responses, covariates, offsets, weights, control) {
 
     ## M Step
     control$Theta <- optim_out$Theta
-    control$Omega <- solve(optim_out$Sigma)
+    control$Omega <- optim_out$Omega
 
     ## Check convergence
     objective[iter]   <- -sum(weights * optim_out$loglik)

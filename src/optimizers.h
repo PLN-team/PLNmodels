@@ -44,6 +44,7 @@ class optimizer_PLN {
     // matrices of parameters
     arma::mat Theta ;
     arma::mat Sigma ;
+    arma::mat Omega ;
     arma::mat M     ;
     arma::mat S     ;
     arma::mat Z     ;

@@ -46,8 +46,9 @@ void optimizer_PLN::optimize()  {
 Rcpp::List optimizer_PLN::get_output() {
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
-      Rcpp::Named("Theta" )     = Theta,
-      Rcpp::Named("Sigma" )     = Sigma,
+      Rcpp::Named("Theta"     ) = Theta,
+      Rcpp::Named("Sigma"     ) = Sigma,
+      Rcpp::Named("Omega"     ) = Omega,
       Rcpp::Named("M"         ) = M,
       Rcpp::Named("S"         ) = S,
       Rcpp::Named("A"         ) = A,
@@ -85,7 +86,7 @@ void optimizer_PLN_spherical::export_output() {
   double n_sigma2  = arma::as_scalar(dot(data.w, sum(pow(M - mu, 2), 1) + p * S)) ;
   double sigma2 = n_sigma2 / (p * accu (data.w)) ;
   Sigma = arma::eye(p,p) * sigma2 ;
-  arma::mat Omega = arma::eye(p,p) * pow(sigma2, -1) ;
+  Omega = arma::eye(p,p) * pow(sigma2, -1) ;
 
   // element-wise log-likelihood
   Z = data.O + M ;
@@ -122,7 +123,7 @@ void optimizer_PLN_diagonal::export_output() {
   arma::rowvec sigma2 = (data.w).t() * (pow(M - mu, 2) + S) / data.w_bar;
   arma::vec omega2 = pow(sigma2.t(), -1) ;
   Sigma = diagmat(sigma2) ;
-  arma::mat Omega = diagmat(omega2) ;
+  Omega = diagmat(omega2) ;
 
   //element-wise log-likelihood
   A = exp (Z + .5 * S) ;
@@ -157,7 +158,7 @@ void optimizer_PLN_full::export_output () {
 
   // variance parameters
   Sigma = ((M - mu) .t() * diagmat(data.w) * (M - mu) + diagmat(sum(S.each_col() % data.w, 0))) / data.w_bar ;
-  arma::mat Omega = inv_sympd(Sigma);
+  Omega = inv_sympd(Sigma);
 
   // element-wise log-likelihood
   A = exp (Z + .5 * S) ;
