@@ -9,7 +9,7 @@ test_that("PLN fit: check classes, getters and field access",  {
                              control = list(trace = 2)),
 "
  Initialization...
- Use LM after log transformation to define the inceptive model
+ Use GLM Poisson to define the inceptive model
  Adjusting a PLN model with full covariance model
  Post-treatments...
  DONE!"
@@ -106,7 +106,7 @@ test_that("standard error fails for degenerate models", {
 test_that("PLN fit: Check prediction",  {
 
   model1 <- PLN(Abundance ~ 1, data = trichoptera, subset = 1:30)
-  model2 <- PLN(Abundance ~ Pressure + Humidity, data = trichoptera, subset = 1:30)
+  model2 <- PLN(Abundance ~ Pressure, data = trichoptera, subset = 1:30)
 
   newdata <- trichoptera[31:49, ]
   newdata$Abundance <- NULL
