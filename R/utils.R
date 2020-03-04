@@ -132,7 +132,7 @@ PLN_param <- function(control, n, p, d) {
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
   covariance  <- ifelse(is.null(control$inception), covariance, control$inception$vcov_model)
   ctrl <- list(
-    "ftol_out"  = 1e-4,
+    "ftol_out"  = 1e-5,
     "maxit_out" = 100,
     "algorithm"   = "CCSAQ",
     "maxeval"     = 10000  ,

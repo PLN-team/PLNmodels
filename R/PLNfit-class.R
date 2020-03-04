@@ -130,17 +130,19 @@ function(responses, covariates, offsets, weights, model, control) {
     private$Sigma <- control$inception$model_par$Sigma
     private$Ji    <- control$inception$loglik_vec
   } else {
-    if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-    LMs   <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset =  offsets[,j]) )
+    if (control$trace > 1) cat("\n Use GLM Poisson to define the inceptive model")
+##    LMs   <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset =  offsets[,j]) )
+    LMs   <- lapply(1:p, function(j) glm.fit(covariates, responses[,j], weights, offset =  offsets[,j],family= poisson(), intercept = FALSE))
     private$Theta <- do.call(rbind, lapply(LMs, coefficients))
-    private$M     <- do.call(cbind, lapply(LMs, residuals))
+    private$M     <- log(1 + responses)
+    residuals     <- do.call(cbind, lapply(LMs, residuals))
     private$S     <- matrix(10 * max(control$lower_bound), n, ifelse(control$covariance == "spherical", 1, p))
     if (control$covariance == "spherical") {
-      private$Sigma <- diag(sum(private$M^2)/(n*p), p, p)
+      private$Sigma <- diag(sum(residuals^2)/(n*p), p, p)
     } else  if (control$covariance == "diagonal") {
-      private$Sigma <- diag(diag(crossprod(private$M)/n), p, p)
+      private$Sigma <- diag(diag(crossprod(residuals)/n), p, p)
     } else  {
-      private$Sigma <- crossprod(private$M)/n + diag(colMeans(private$S), nrow = p)
+      private$Sigma <- crossprod(residuals)/n + diag(colMeans(private$S), nrow = p)
     }
   }
 
@@ -160,7 +162,9 @@ function(responses, covariates, offsets, weights, control) {
   par0 <- c(private$M, private$S)
   objective.old <- Inf
   control$Theta <- t(self$model_par$Theta)
-  control$Omega <- solve(self$model_par$Sigma)
+  ## Robust inversion using Matrix::solve
+  control$Omega <- as(Matrix::solve(Matrix::Matrix(self$model_par$Sigma)), 'matrix')
+  # control$Omega <- solve(self$model_par$Sigma)
   while (!cond) {
     iter <- iter + 1
 
@@ -277,7 +281,9 @@ function(covariates, offsets, responses, weights, control = list()) {
   control$covariance <- self$vcov_model
   control <- PLN_param(control, n, p, d)
   control$Theta <- t(self$model_par$Theta)
-  control$Omega <- solve(self$model_par$Sigma)
+  ## Robust inversion using Matrix::solve instead of solve.default
+  control$Omega <- as(Matrix::solve(Matrix::Matrix(self$model_par$Sigma)), 'matrix')
+  # control$Omega <- solve(self$model_par$Sigma)
 
   ## optimisation
   optim_out <- VEstep_PLN(

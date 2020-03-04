@@ -1,5 +1,7 @@
 library(PLNmodels)
 
+nb_cores <- 10
+
 ## get oaks data set
 load("inst/case_studies/oaks_mildew/oaks_alphitoides.RData")
 class(oaks$Abundancies) <- class(oaks$Abundancies)[-match("AsIs", class(oaks$Abundancies))]
@@ -24,12 +26,12 @@ myLDA_orientation <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), gro
 plot(myLDA_orientation)
 
 ## Dimension reduction with PCA
-system.time(myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control_main = list(cores = 10))) # about 55 sec.
-myPLNPCA <-
-plot(getBestModel(myPLNPCAs), ind_cols = oaks$treeStatus)
+system.time(myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control_main = list(cores = nb_cores))) # about 40 sec.
+myPLNPCA <- getBestModel(myPLNPCAs)
+plot(myPLNPCA, ind_cols = oaks$treeStatus)
 
 ## Network inference with sparce covariance estimation
 system.time(myPLNnets <- PLNnetwork(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control_main = list(trace = 2)))
-stability_selection(myPLNnets)
+stability_selection(myPLNnets, mc.cores = nb_cores)
 plot(getBestModel(myPLNnets, "StARS", stability = .985))
 
