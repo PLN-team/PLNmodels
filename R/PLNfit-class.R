@@ -164,6 +164,7 @@ function(responses, covariates, offsets, weights, control) {
   control$Theta <- t(self$model_par$Theta)
   ## Robust inversion using Matrix::solve
   control$Omega <- as(Matrix::solve(Matrix::Matrix(self$model_par$Sigma)), 'matrix')
+  # control$Omega <- solve(self$model_par$Sigma)
   while (!cond) {
     iter <- iter + 1
 
@@ -282,6 +283,7 @@ function(covariates, offsets, responses, weights, control = list()) {
   control$Theta <- t(self$model_par$Theta)
   ## Robust inversion using Matrix::solve instead of solve.default
   control$Omega <- as(Matrix::solve(Matrix::Matrix(self$model_par$Sigma)), 'matrix')
+  # control$Omega <- solve(self$model_par$Sigma)
 
   ## optimisation
   optim_out <- VEstep_PLN(
