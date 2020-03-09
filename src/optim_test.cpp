@@ -4,8 +4,9 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <tuple>       // packer system
 #include <type_traits> // remove_pointer
-#include <utility>     // move
+#include <utility>     // move, forward
 
 nlopt_algorithm algorithm_from_name(const std::string & name);
 
@@ -38,18 +39,128 @@ template <typename ObjectiveAndGradFn> OptimizerResult minimize_objective_on_par
     const ObjectiveAndGradFn & objective_and_grad_fn);
 
 // ---------------------------------------------------------------------------------------
+// Packing / unpacking utils
+
+// TODO keep ?
+// TODO doc
+
+template <typename T> struct PackedInfo;
+
+template <> struct PackedInfo<arma::vec> {
+    arma::uword offset;
+    arma::uword size;
+
+    PackedInfo(const arma::vec & v, arma::uword & current_offset) {
+        offset = current_offset;
+        size = v.n_elem;
+        current_offset += size;
+    }
+
+    arma::span span() const { return arma::span(offset, offset + size - 1); }
+
+    auto unpack(const arma::vec & packed) const -> decltype(packed.subvec(span())) { return packed.subvec(span()); }
+
+    template <typename Expr> void pack(arma::vec & packed, Expr && expr) const {
+        packed.subvec(span()) = std::forward<Expr>(expr);
+    }
+};
+
+template <> struct PackedInfo<arma::mat> {
+    arma::uword offset;
+    arma::uword rows;
+    arma::uword cols;
+
+    PackedInfo(const arma::mat & m, arma::uword & current_offset) {
+        offset = current_offset;
+        rows = m.n_rows;
+        cols = m.n_cols;
+        current_offset += rows * cols;
+    }
+
+    arma::span span() const { return arma::span(offset, offset + rows * cols - 1); }
+
+    auto unpack(const arma::vec & packed) const
+        -> decltype(arma::reshape(packed.subvec(span()), arma::size(rows, cols))) {
+        return arma::reshape(packed.subvec(span()), arma::size(rows, cols));
+    }
+
+    template <typename Expr> void pack(arma::vec & packed, Expr && expr) const {
+        packed.subvec(span()) = arma::vectorise(std::forward<Expr>(expr));
+    }
+};
+
+template <typename... ArmaTypes> struct Packer {
+    std::tuple<PackedInfo<ArmaTypes>...> elements; // Packing info for each element (offset, type, dimensions)
+    arma::uword size;                              // Total number of packed elements
+
+    template <std::size_t Index> auto unpack(const arma::vec & packed) const
+        -> decltype(std::get<Index>(elements).unpack(packed)) {
+        return std::get<Index>(elements).unpack(packed);
+    }
+    template <std::size_t Index, typename Expr> void pack(arma::vec & packed, Expr && expr) const {
+        std::get<Index>(elements).pack(packed, std::forward<Expr>(expr));
+    }
+};
+
+template <typename... ArmaTypes> Packer<ArmaTypes...> make_packer(const ArmaTypes &... arma_values) {
+    arma::uword current_offset = 0;
+    return {
+        {PackedInfo<ArmaTypes>(arma_values, current_offset)...}, // Increases offset sequentially for each arma value
+        current_offset,                                          // Final value
+    };
+}
+
+// ---------------------------------------------------------------------------------------
 // Optimization impls TODO
 
-void test() {
-    OptimizerConfiguration config{};
-    arma::vec params(10, 0.);
-    double blah = 42.;
-    auto objective_and_grad = [&](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        // Dummy test
-        grad_storage = parameters * blah;
-        return blah;
+void optim_full_2(
+    // Parameters
+    const arma::mat & theta,
+    const arma::mat & m,
+    const arma::mat & s,
+    // Data
+    const arma::mat & y, // responses
+    const arma::mat & x, // covariates
+    const arma::mat & o, // offsets
+    const arma::vec & w, // weights
+    // Config
+    bool weighted,
+    const OptimizerConfiguration & config //
+) {
+    const auto packer = make_packer(theta, m, s);
+    enum { THETA, M, S }; // Indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<THETA>(parameters, theta);
+    packer.pack<M>(parameters, m);
+    packer.pack<S>(parameters, s);
+
+    // Not weighted version. TODO handle switch
+    // Difference with weighted seems to be optimization only (replace w with ones(n) andsimplify).
+    auto objective_and_grad = [&packer, &o, &x, &y](const arma::vec & parameters, arma::vec & grad_storage) -> double {
+        arma::uword n = y.n_rows;
+
+        auto theta = packer.unpack<THETA>(parameters);
+        auto s = packer.unpack<S>(parameters);
+        auto m = packer.unpack<M>(parameters);
+
+        arma::mat z = o + x * theta.t() + m;
+        arma::mat a = exp(z + 0.5 * s);
+        arma::mat omega = double(n) * inv_sympd(m.t() * m + diagmat(sum(s, 0)));
+
+        double objective = accu(a - y % z - 0.5 * log(s)) - 0.5 * double(n) * real(log_det(omega));
+
+        packer.pack<THETA>(grad_storage, trans(a - y) * x);
+        packer.pack<M>(grad_storage, m * omega + a - y);
+        packer.pack<S>(grad_storage, 0.5 * (arma::ones(n) * diagvec(omega).t() + a - pow(s, -1)));
+
+        return objective;
     };
-    minimize_objective_on_parameters(params, config, objective_and_grad);
+    OptimizerResult optimized = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+
+    // unpack
+
+    // post process and generate output
 }
 
 // ---------------------------------------------------------------------------------------
@@ -116,7 +227,7 @@ template <typename ObjectiveAndGradFn> OptimizerResult minimize_objective_on_par
     // The closure can then be called. Additionnally raw arrays are wrapped as arma::vec.
     auto optim_fn = [](unsigned n, const double * x, double * grad, void * data) -> double {
         // Wrap raw C arrays from nlopt into arma::vec
-        const auto parameters = arma::vec(x, n); // Read only ; will do a copy, cannot
+        const auto parameters = arma::vec(const_cast<double *>(x), n, false, true);
         auto grad_storage = arma::vec(grad, n, false, true);
         // Restore objective_and_grad_fn and call it
         const ObjectiveAndGradFn & objective_and_grad_fn = *static_cast<const ObjectiveAndGradFn *>(data);
