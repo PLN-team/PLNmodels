@@ -290,6 +290,11 @@ Rcpp::List optimize_full_weighted(
     const auto packer = make_packer(init.theta, init.m, init.s);
     enum { THETA, M, S }; // Nice names for packer indexes
 
+    auto parameters = arma::vec(packer.size);
+    packer.pack<THETA>(parameters, init.theta);
+    packer.pack<M>(parameters, init.m);
+    packer.pack<S>(parameters, init.s);
+
     const auto config = OptimizerConfiguration::from_r_list(configuration, [&packer](Rcpp::List list) {
         auto values = OptimizeFullParameters(list);
         auto packed = arma::vec(packer.size);
@@ -298,11 +303,6 @@ Rcpp::List optimize_full_weighted(
         packer.pack<S>(packed, values.s);
         return packed;
     });
-
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA>(parameters, init.theta);
-    packer.pack<M>(parameters, init.m);
-    packer.pack<S>(parameters, init.s);
 
     const double w_bar = accu(w);
     int nb_iterations = 0;
@@ -332,12 +332,11 @@ Rcpp::List optimize_full_weighted(
     arma::mat m = packer.unpack<M>(parameters);
     arma::mat s = packer.unpack<S>(parameters);
 
+    const arma::uword p = y.n_cols;
     arma::mat z = o + x * theta.t() + m;
     arma::mat a = exp(z + 0.5 * s);
     arma::mat sigma = (1. / w_bar) * (m.t() * (m.each_col() % w) + diagmat(sum(s.each_col() % w, 0)));
-
     arma::mat omega = inv_sympd(sigma);
-    const arma::uword p = y.n_cols;
     arma::vec loglik = sum(y % z - a + 0.5 * log(s) - 0.5 * ((m * omega) % m + s * diagmat(omega)), 0) +
                        0.5 * real(log_det(omega)) - logfact(y) + 0.5 * double(p);
 
@@ -353,9 +352,38 @@ Rcpp::List optimize_full_weighted(
         Rcpp::Named("loglik", loglik));
 }
 
-#if 0
-// Lambda for non-weighted version
- [&packer, &o, &x, &y](const arma::vec & parameters, arma::vec & grad_storage) -> double {
+// [[Rcpp::export]]
+Rcpp::List optimize_full(
+    Rcpp::List init_parameters, // OptimizeFullParameters
+    const arma::mat & y,        // responses (n,p)
+    const arma::mat & x,        // covariates (n,d)
+    const arma::mat & o,        // offsets (n,p)
+    Rcpp::List configuration    // OptimizerConfiguration
+) {
+    // Conversion from R, prepare optimization
+    const auto init = OptimizeFullParameters(init_parameters);
+
+    const auto packer = make_packer(init.theta, init.m, init.s);
+    enum { THETA, M, S }; // Nice names for packer indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<THETA>(parameters, init.theta);
+    packer.pack<M>(parameters, init.m);
+    packer.pack<S>(parameters, init.s);
+
+    const auto config = OptimizerConfiguration::from_r_list(configuration, [&packer](Rcpp::List list) {
+        auto values = OptimizeFullParameters(list);
+        auto packed = arma::vec(packer.size);
+        packer.pack<THETA>(packed, values.theta);
+        packer.pack<M>(packed, values.m);
+        packer.pack<S>(packed, values.s);
+        return packed;
+    });
+
+    int nb_iterations = 0;
+
+    // Optimize
+    auto objective_and_grad = [&packer, &o, &x, &y](const arma::vec & parameters, arma::vec & grad_storage) -> double {
         arma::uword n = y.n_rows;
         auto theta = packer.unpack<THETA>(parameters);
         auto m = packer.unpack<M>(parameters);
@@ -371,4 +399,30 @@ Rcpp::List optimize_full_weighted(
         packer.pack<S>(grad_storage, 0.5 * (arma::ones(n) * diagvec(omega).t() + a - pow(s, -1)));
         return objective;
     };
-#endif
+    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+
+    // Post process
+    arma::mat theta = packer.unpack<THETA>(parameters);
+    arma::mat m = packer.unpack<M>(parameters);
+    arma::mat s = packer.unpack<S>(parameters);
+
+    const arma::uword n = y.n_rows;
+    const arma::uword p = y.n_cols;
+    arma::mat z = o + x * theta.t() + m;
+    arma::mat a = exp(z + 0.5 * s);
+    arma::mat sigma = (1. / double(n)) * (m.t() * m + diagmat(sum(s, 0)));
+    arma::mat omega = inv_sympd(sigma);
+    arma::vec loglik = sum(y % z - a + 0.5 * log(s) - 0.5 * ((m * omega) % m + s * diagmat(omega)), 0) +
+                       0.5 * real(log_det(omega)) - logfact(y) + 0.5 * double(p);
+
+    return Rcpp::List::create(
+        Rcpp::Named("status", static_cast<int>(result.status)),
+        Rcpp::Named("iterations", nb_iterations),
+        Rcpp::Named("Theta", theta),
+        Rcpp::Named("M", m),
+        Rcpp::Named("S", s),
+        Rcpp::Named("Z", z),
+        Rcpp::Named("A", a),
+        Rcpp::Named("Sigma", sigma),
+        Rcpp::Named("loglik", loglik));
+}
