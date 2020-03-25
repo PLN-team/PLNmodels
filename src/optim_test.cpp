@@ -29,16 +29,30 @@ struct OptimizerConfiguration {
     int maxeval;
     double maxtime;
 };
-// TODO from Rcpp::List
 
 struct OptimizerResult {
     nlopt_result status;
     double objective;
 };
-// TODO to Rcpp::List
 
 template <typename ObjectiveAndGradFn> OptimizerResult minimize_objective_on_parameters(
     arma::vec & parameters, const OptimizerConfiguration & config, const ObjectiveAndGradFn & objective_and_grad_fn);
+
+template <typename F> OptimizerConfiguration configuration_from_r_list(Rcpp::List list, F list_by_parameter_to_packed) {
+    return {
+        algorithm_from_name(Rcpp::as<std::string>(list["algorithm"])),
+
+        list_by_parameter_to_packed(Rcpp::as<Rcpp::List>(list["xtol_abs"])),
+        Rcpp::as<double>(list["xtol_rel"]),
+        list_by_parameter_to_packed(Rcpp::as<Rcpp::List>(list["lower_bounds"])),
+
+        Rcpp::as<double>(list["ftol_abs"]),
+        Rcpp::as<double>(list["ftol_rel"]),
+
+        Rcpp::as<int>(list["maxeval"]),
+        Rcpp::as<double>(list["maxtime"]),
+    };
+}
 
 // ---------------------------------------------------------------------------------------
 // Packing / unpacking utils
@@ -115,25 +129,45 @@ template <typename... ArmaTypes> Packer<ArmaTypes...> make_packer(const ArmaType
 // ---------------------------------------------------------------------------------------
 // Optimization impls TODO
 
+struct OptimizeFullParameters {
+    arma::mat theta; // (p,d)
+    arma::mat m;     // (n,p)
+    arma::mat s;     // (n,p)
+
+    explicit OptimizeFullParameters(Rcpp::List list)
+        : theta(Rcpp::as<arma::mat>(list["Theta"])),
+          m(Rcpp::as<arma::mat>(list["M"])),
+          s(Rcpp::as<arma::mat>(list["S"])) {}
+};
+
 // [[Rcpp::export]]
 Rcpp::List optimize_full_weighted(
-    const arma::mat & init_theta,         // (p,d)
-    const arma::mat & init_m,             // (n,p)
-    const arma::mat & init_s,             // (n,p)
-    const arma::mat & y,                  // responses (n,p)
-    const arma::mat & x,                  // covariates (n,d)
-    const arma::mat & o,                  // offsets (n,p)
-    const arma::vec & w,                  // weights (n)
-    const OptimizerConfiguration & config // FIXME enable packing of xabs/lower_bounds
+    Rcpp::List init_parameters, // OptimizeFullParameters
+    const arma::mat & y,        // responses (n,p)
+    const arma::mat & x,        // covariates (n,d)
+    const arma::mat & o,        // offsets (n,p)
+    const arma::vec & w,        // weights (n)
+    Rcpp::List configuration    // OptimizerConfiguration
 ) {
-    // Prepare optimization
-    const auto packer = make_packer(init_theta, init_m, init_s);
-    enum { THETA, M, S }; // Indexes
+    // Conversion from R, prepare optimization
+    const auto init = OptimizeFullParameters(init_parameters);
+
+    const auto packer = make_packer(init.theta, init.m, init.s);
+    enum { THETA, M, S }; // Nice names for packer indexes
+
+    const auto config = configuration_from_r_list(configuration, [&packer](Rcpp::List list) {
+        auto values = OptimizeFullParameters(list);
+        auto packed = arma::vec(packer.size);
+        packer.pack<THETA>(packed, values.theta);
+        packer.pack<M>(packed, values.m);
+        packer.pack<S>(packed, values.s);
+        return packed;
+    });
 
     auto parameters = arma::vec(packer.size);
-    packer.pack<THETA>(parameters, init_theta);
-    packer.pack<M>(parameters, init_m);
-    packer.pack<S>(parameters, init_s);
+    packer.pack<THETA>(parameters, init.theta);
+    packer.pack<M>(parameters, init.m);
+    packer.pack<S>(parameters, init.s);
 
     const double w_bar = accu(w);
     int nb_iterations = 0;
@@ -173,15 +207,15 @@ Rcpp::List optimize_full_weighted(
                        0.5 * real(log_det(omega)) - logfact(y) + 0.5 * double(p);
 
     return Rcpp::List::create(
-        Rcpp::Named("status") = static_cast<int>(result.status),
-        Rcpp::Named("iterations") = nb_iterations,
-        Rcpp::Named("Theta") = theta,
-        Rcpp::Named("M") = m,
-        Rcpp::Named("S") = s,
-        Rcpp::Named("Z") = z,
-        Rcpp::Named("A") = a,
-        Rcpp::Named("Sigma") = sigma,
-        Rcpp::Named("loglik") = loglik);
+        Rcpp::Named("status", static_cast<int>(result.status)),
+        Rcpp::Named("iterations", nb_iterations),
+        Rcpp::Named("Theta", theta),
+        Rcpp::Named("M", m),
+        Rcpp::Named("S", s),
+        Rcpp::Named("Z", z),
+        Rcpp::Named("A", a),
+        Rcpp::Named("Sigma", sigma),
+        Rcpp::Named("loglik", loglik));
 }
 
 #if 0
