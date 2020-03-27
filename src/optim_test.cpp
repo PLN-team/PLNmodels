@@ -75,8 +75,9 @@ struct OptimizerConfiguration {
 
     // Build from R list (with named elements).
     // xtol_abs and lower_bounds field should contain a sublist with values for each parameter.
-    // arma::vec list_by_parameter_to_packed(Rcpp::List) : should extract list values and pack them like the parameters.
-    template <typename F> static OptimizerConfiguration from_r_list(Rcpp::List list, F list_by_parameter_to_packed) {
+    // arma::vec list_by_parameter_to_packed(Rcpp::List) : extract list values and pack them like parameters.
+    template <typename F>
+    static OptimizerConfiguration from_r_list(const Rcpp::List & list, F list_by_parameter_to_packed) {
         return {
             algorithm_from_name(Rcpp::as<std::string>(list["algorithm"])),
 
@@ -269,7 +270,7 @@ struct OptimizeFullParameters {
     arma::mat m;     // (n,p)
     arma::mat s;     // (n,p)
 
-    explicit OptimizeFullParameters(Rcpp::List list)
+    explicit OptimizeFullParameters(const Rcpp::List & list)
         : theta(Rcpp::as<arma::mat>(list["Theta"])),
           m(Rcpp::as<arma::mat>(list["M"])),
           s(Rcpp::as<arma::mat>(list["S"])) {}
@@ -277,12 +278,12 @@ struct OptimizeFullParameters {
 
 // [[Rcpp::export]]
 Rcpp::List optimize_full_weighted(
-    Rcpp::List init_parameters, // OptimizeFullParameters
-    const arma::mat & y,        // responses (n,p)
-    const arma::mat & x,        // covariates (n,d)
-    const arma::mat & o,        // offsets (n,p)
-    const arma::vec & w,        // weights (n)
-    Rcpp::List configuration    // OptimizerConfiguration
+    const Rcpp::List & init_parameters, // OptimizeFullParameters
+    const arma::mat & y,                // responses (n,p)
+    const arma::mat & x,                // covariates (n,d)
+    const arma::mat & o,                // offsets (n,p)
+    const arma::vec & w,                // weights (n)
+    const Rcpp::List & configuration    // OptimizerConfiguration
 ) {
     // Conversion from R, prepare optimization
     const auto init = OptimizeFullParameters(init_parameters);
@@ -354,11 +355,11 @@ Rcpp::List optimize_full_weighted(
 
 // [[Rcpp::export]]
 Rcpp::List optimize_full(
-    Rcpp::List init_parameters, // OptimizeFullParameters
-    const arma::mat & y,        // responses (n,p)
-    const arma::mat & x,        // covariates (n,d)
-    const arma::mat & o,        // offsets (n,p)
-    Rcpp::List configuration    // OptimizerConfiguration
+    const Rcpp::List & init_parameters, // OptimizeFullParameters
+    const arma::mat & y,                // responses (n,p)
+    const arma::mat & x,                // covariates (n,d)
+    const arma::mat & o,                // offsets (n,p)
+    const Rcpp::List & configuration    // OptimizerConfiguration
 ) {
     // Conversion from R, prepare optimization
     const auto init = OptimizeFullParameters(init_parameters);
