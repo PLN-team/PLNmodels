@@ -112,7 +112,7 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
     depths <- rep(depths[1], n)
   }
   ## adjust depths
-  exp_depths <- rowSums(exp(diag(Sigma)/2 + mu)) ## sample-wise expected depths
+  exp_depths <- rowSums(exp(rep(1, n) %o% diag(Sigma)/2 + mu)) ## sample-wise expected depths
   offsets <- log(depths %o% rep(1, p)) - log(exp_depths)
   Z <- mu + mvrnorm(n, rep(0,ncol(Sigma)), as.matrix(Sigma)) + offsets
   Y <- matrix(rpois(n * p, as.vector(exp(Z))), n, p)
