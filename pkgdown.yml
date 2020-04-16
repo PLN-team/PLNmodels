@@ -1,5 +1,5 @@
 pandoc: '2.2'
-pkgdown: 1.4.1
+pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
   Import_data: Import_data.html
@@ -8,4 +8,5 @@ articles:
   PLNPCA: PLNPCA.html
   PLNnetwork: PLNnetwork.html
   Trichoptera: Trichoptera.html
+last_built: 2020-04-16T09:09Z
 

@@ -17,23 +17,27 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -48,7 +52,6 @@ This class comes with a set of methods, some of them being useful for the user:
 See the documentation for getBestModel,
 getModel and  plot." />
 <meta property="og:image" content="/logo.png" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -66,7 +69,7 @@ getModel and  plot." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -150,7 +153,7 @@ getModel and  plot." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>An R6 Class to represent a collection of PLNfit</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNfamily-class.R'><code>R/PLNfamily-class.R</code></a></small>
     <div class="hidden name"><code>PLNfamily.Rd</code></div>
     </div>
 
@@ -165,7 +168,7 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel</a></co
 
     <h2 class="hasAnchor" id="public-fields"><a class="anchor" href="#public-fields"></a>Public fields</h2>
 
-    <p><div class="r6-fields"></p><dl class='dl-horizontal'>
+    <p><div class="r6-fields"></p><dl'>
 <dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
 
 <dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
@@ -181,7 +184,7 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel</a></co
 </dl><p></div></p>
     <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
 
-    <p><div class="r6-active-bindings"></p><dl class='dl-horizontal'>
+    <p><div class="r6-active-bindings"></p><dl'>
 <dt><code>criteria</code></dt><dd><p>a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.</p></dd>
 
 </dl><p></div></p>
@@ -203,45 +206,45 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel</a></co
 <a id="method-new"></a></p><h3>Method <code>new()</code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre>PLNfamily$new(responses, covariates, offsets, weights, control)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>PLNfamily</span>$<span class='fu'>new</span>(<span class='no'>responses</span>, <span class='no'>covariates</span>, <span class='no'>offsets</span>, <span class='no'>weights</span>, <span class='no'>control</span>)</pre><p></div></p>
 
 <p><hr>
 <a id="method-postTreatment"></a></p><h3>Method <code>postTreatment()</code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre>PLNfamily$postTreatment()</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>PLNfamily</span>$<span class='fu'>postTreatment</span>()</pre><p></div></p>
 
 <p><hr>
 <a id="method-getModel"></a></p><h3>Method <code><a href='getModel.html'>getModel()</a></code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre>PLNfamily$getModel(var, index = NULL)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>PLNfamily</span>$<span class='fu'><a href='getModel.html'>getModel</a></span>(<span class='no'>var</span>, <span class='kw'>index</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre><p></div></p>
 
 <p><hr>
 <a id="method-plot"></a></p><h3>Method <code><a href='https://rdrr.io/r/graphics/plot.html'>plot()</a></code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre>PLNfamily$plot(criteria, annotate = TRUE)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>PLNfamily</span>$<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>criteria</span>, <span class='kw'>annotate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre><p></div></p>
 
 <p><hr>
 <a id="method-show"></a></p><h3>Method <code>show()</code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre>PLNfamily$show()</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>PLNfamily</span>$<span class='fu'>show</span>()</pre><p></div></p>
 
 <p><hr>
 <a id="method-print"></a></p><h3>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre>PLNfamily$print()</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>PLNfamily</span>$<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>()</pre><p></div></p>
 
 <p><hr>
 <a id="method-clone"></a></p><h3>Method <code>clone()</code></h3>
 <p>The objects of this class are cloneable with this method.</p><h3>Usage</h3>
-<p><div class="r"></p><pre>PLNfamily$clone(deep = FALSE)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>PLNfamily</span>$<span class='fu'>clone</span>(<span class='kw'>deep</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
-<p><div class="arguments"></p><dl class='dl-horizontal'>
+<p><div class="arguments"></p><dl'>
 <dt><code>deep</code></dt><dd><p>Whether to make a deep clone.</p></dd>
 
 </dl><p></div></p>
@@ -249,14 +252,10 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel</a></co
 
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#public-fields">Public fields</a></li>
-      <li><a href="#active-bindings">Active bindings</a></li>
-      <li><a href="#methods">Methods</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -267,7 +266,7 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel</a></co
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
