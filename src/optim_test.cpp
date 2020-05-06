@@ -287,10 +287,8 @@ Rcpp::List optimize_full_weighted(
 ) {
     // Conversion from R, prepare optimization
     const auto init = OptimizeFullParameters(init_parameters);
-
     const auto packer = make_packer(init.theta, init.m, init.s);
     enum { THETA, M, S }; // Nice names for packer indexes
-
     auto parameters = arma::vec(packer.size);
     packer.pack<THETA>(parameters, init.theta);
     packer.pack<M>(parameters, init.m);
@@ -363,10 +361,8 @@ Rcpp::List optimize_full(
 ) {
     // Conversion from R, prepare optimization
     const auto init = OptimizeFullParameters(init_parameters);
-
     const auto packer = make_packer(init.theta, init.m, init.s);
     enum { THETA, M, S }; // Nice names for packer indexes
-
     auto parameters = arma::vec(packer.size);
     packer.pack<THETA>(parameters, init.theta);
     packer.pack<M>(parameters, init.m);
@@ -384,7 +380,9 @@ Rcpp::List optimize_full(
     int nb_iterations = 0;
 
     // Optimize
-    auto objective_and_grad = [&packer, &o, &x, &y](const arma::vec & parameters, arma::vec & grad_storage) -> double {
+    auto objective_and_grad =
+        [&packer, &o, &x, &y, &nb_iterations](const arma::vec & parameters, arma::vec & grad_storage) -> double {
+        nb_iterations += 1;
         arma::uword n = y.n_rows;
         auto theta = packer.unpack<THETA>(parameters);
         auto m = packer.unpack<M>(parameters);
