@@ -829,7 +829,6 @@ Rcpp::List cpp_optimize_sparse(
     arma::mat m = packer.unpack<M>(parameters);
     arma::mat s = packer.unpack<S>(parameters);
     arma::mat z = o + x * theta.t() + m;
-    const arma::uword n = y.n_rows;
     const arma::uword p = y.n_cols;
     arma::mat sigma = (m.t() * (m.each_col() % w) + diagmat(sum(s.each_col() % w, 0))) / accu(w);
 
@@ -849,8 +848,85 @@ Rcpp::List cpp_optimize_sparse(
         Rcpp::Named("loglik", loglik));
 }
 
-// TODO
+// ---------------------------------------------------------------------------------------
+// Single VE step
 
-// VE step thing
+struct OptimizeVEParameters {
+    arma::mat m; // (n,p)
+    arma::mat s; // (n,p)
 
-// New model
+    explicit OptimizeVEParameters(const Rcpp::List & list)
+        : m(Rcpp::as<arma::mat>(list["M"])), s(Rcpp::as<arma::mat>(list["S"])) {}
+};
+
+// [[Rcpp::export]]
+Rcpp::List cpp_optimize_ve(
+    const Rcpp::List & init_parameters, // OptimizeVEParameters
+    const arma::mat & y,                // responses (n,p)
+    const arma::mat & x,                // covariates (n,d)
+    const arma::mat & o,                // offsets (n,p)
+    const arma::mat & theta,            // regression_parameters (p,d)
+    const arma::mat & sigma,            // (p,p)
+    const Rcpp::List & configuration    // OptimizerConfiguration
+) {
+    // Conversion from R, prepare optimization
+    const auto init = OptimizeVEParameters(init_parameters);
+    const auto packer = make_packer(init.m, init.s);
+    enum { M, S }; // Nice names for packer indexes
+    auto parameters = arma::vec(packer.size);
+    packer.pack<M>(parameters, init.m);
+    packer.pack<S>(parameters, init.s);
+
+    const auto config = OptimizerConfiguration::from_r_list(configuration, [&packer](Rcpp::List list) {
+        auto values = OptimizeVEParameters(list);
+        auto packed = arma::vec(packer.size);
+        packer.pack<M>(packed, values.m);
+        packer.pack<S>(packed, values.s);
+        return packed;
+    });
+
+    const arma::mat omega = inv_sympd(sigma); // (p,p)
+    const double log_det_omega = real(log_det(omega));
+    int nb_iterations = 0;
+
+    // Optimize
+    auto objective_and_grad = [&packer, &o, &x, &y, &theta, &omega, &log_det_omega, &nb_iterations](
+                                  const arma::vec & parameters, arma::vec & grad_storage) -> double {
+        auto m = packer.unpack<M>(parameters);
+        auto s = packer.unpack<S>(parameters);
+
+        const arma::uword n = y.n_rows;
+        arma::mat z = o + x * theta.t() + m;
+        arma::mat a = exp(z + 0.5 * s);
+        // 0.5 tr(\Omega M'M) + 0.5 tr(\bar{S} \Omega)
+        double prior = 0.5 * accu(omega % (m.t() * m)) + 0.5 * dot(arma::ones(n).t() * s, diagvec(omega));
+        // J(M, S, \Theta, \Omega, Y, X, O)
+        double objective = accu(a - y % z - 0.5 * log(s)) + prior - 0.5 * double(n) * log_det_omega;
+
+        packer.pack<M>(grad_storage, m * omega + a - y);
+        packer.pack<S>(grad_storage, 0.5 * (arma::ones(n) * diagvec(omega).t() + a - 1. / s));
+        nb_iterations += 1;
+        return objective;
+    };
+    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+
+    // Post process
+    arma::mat m = packer.unpack<M>(parameters);
+    arma::mat s = packer.unpack<S>(parameters);
+
+    const arma::uword p = y.n_cols;
+    arma::mat z = o + x * theta.t() + m;
+    arma::mat a = exp(z + 0.5 * s);
+    arma::vec loglik = arma::sum(y % z - a + 0.5 * log(s) - 0.5 * ((m * omega) % m + s * diagmat(omega)), 1) +
+                       0.5 * log_det_omega - logfact(y) + 0.5 * double(p);
+
+    return Rcpp::List::create(
+        Rcpp::Named("status", static_cast<int>(result.status)),
+        Rcpp::Named("iterations", nb_iterations),
+        Rcpp::Named("objective", result.objective + accu(logfact(y))),
+        Rcpp::Named("M", m),
+        Rcpp::Named("S", s),
+        Rcpp::Named("loglik", loglik));
+}
+
+// TODO : New model
