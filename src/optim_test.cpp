@@ -730,6 +730,125 @@ Rcpp::List cpp_optimize_rank(
         Rcpp::Named("loglik", loglik));
 }
 
+// ---------------------------------------------------------------------------------------
+// Sparse inverse covariance
+
+struct OptimizeSparseParameters {
+    arma::mat theta; // (p,d)
+    arma::mat m;     // (n,p)
+    arma::mat s;     // (n,p)
+
+    explicit OptimizeSparseParameters(const Rcpp::List & list)
+        : theta(Rcpp::as<arma::mat>(list["Theta"])),
+          m(Rcpp::as<arma::mat>(list["M"])),
+          s(Rcpp::as<arma::mat>(list["S"])) {}
+};
+
+// [[Rcpp::export]]
+Rcpp::List cpp_optimize_sparse(
+    const Rcpp::List & init_parameters, // OptimizeSparseParameters
+    const arma::mat & y,                // responses (n,p)
+    const arma::mat & x,                // covariates (n,d)
+    const arma::mat & o,                // offsets (n,p)
+    const arma::vec & w,                // weights (n)
+    const arma::mat & omega,            // covinv (p,p)
+    const Rcpp::List & configuration    // OptimizerConfiguration
+) {
+    // Conversion from R, prepare optimization
+    const auto init = OptimizeSparseParameters(init_parameters);
+    const auto packer = make_packer(init.theta, init.m, init.s);
+    enum { THETA, M, S }; // Nice names for packer indexes
+    auto parameters = arma::vec(packer.size);
+    packer.pack<THETA>(parameters, init.theta);
+    packer.pack<M>(parameters, init.m);
+    packer.pack<S>(parameters, init.s);
+
+    const auto config = OptimizerConfiguration::from_r_list(configuration, [&packer](Rcpp::List list) {
+        auto values = OptimizeSparseParameters(list);
+        auto packed = arma::vec(packer.size);
+        packer.pack<THETA>(packed, values.theta);
+        packer.pack<M>(packed, values.m);
+        packer.pack<S>(packed, values.s);
+        return packed;
+    });
+
+    const double log_det_omega = real(log_det(omega));
+    const double w_bar = accu(w);
+    int nb_iterations = 0;
+
+    // Optimize
+    OptimizerResult result;
+    if(all_ones(w)) {
+        // Version with manual simplifications for w = {1,...,1}
+        auto objective_and_grad = [&packer, &o, &x, &y, &omega, &log_det_omega, &nb_iterations](
+                                      const arma::vec & parameters, arma::vec & grad_storage) -> double {
+            auto theta = packer.unpack<THETA>(parameters);
+            auto m = packer.unpack<M>(parameters);
+            auto s = packer.unpack<S>(parameters);
+
+            const arma::uword n = y.n_rows;
+            const arma::uword p = y.n_cols;
+            arma::mat z = o + x * theta.t() + m;
+            arma::mat a = exp(z + 0.5 * s);
+            arma::mat nSigma = m.t() * m + diagmat(sum(s, 0));
+            double objective = accu(a - y % z - 0.5 * log(s)) -
+                               0.5 * (double(n) * log_det_omega + double(n * p) - trace(omega * nSigma));
+
+            packer.pack<THETA>(grad_storage, (a - y).t() * x);
+            packer.pack<M>(grad_storage, m * omega + a - y);
+            packer.pack<S>(grad_storage, 0.5 * (arma::ones(n) * diagvec(omega).t() + a - 1. / s));
+            nb_iterations += 1;
+            return objective;
+        };
+        result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+    } else {
+        auto objective_and_grad = [&packer, &o, &x, &y, &w, &w_bar, &omega, &log_det_omega, &nb_iterations](
+                                      const arma::vec & parameters, arma::vec & grad_storage) -> double {
+            auto theta = packer.unpack<THETA>(parameters);
+            arma::mat m = packer.unpack<M>(parameters);
+            arma::mat s = packer.unpack<S>(parameters);
+
+            const arma::uword p = y.n_cols;
+            arma::mat z = o + x * theta.t() + m;
+            arma::mat a = exp(z + 0.5 * s);
+            arma::mat nSigma = m.t() * (m.each_col() % w) + diagmat(sum(s.each_col() % w, 0));
+            double objective = accu(diagmat(w) * (a - y % z - 0.5 * log(s))) -
+                               0.5 * (w_bar * log_det_omega + w_bar * double(p) - trace(omega * nSigma));
+
+            packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
+            packer.pack<M>(grad_storage, diagmat(w) * (m * omega + a - y));
+            packer.pack<S>(grad_storage, 0.5 * (w * diagvec(omega).t() + diagmat(w) * (a - 1. / s)));
+            nb_iterations += 1;
+            return objective;
+        };
+        result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+    }
+
+    // Post process
+    arma::mat theta = packer.unpack<THETA>(parameters);
+    arma::mat m = packer.unpack<M>(parameters);
+    arma::mat s = packer.unpack<S>(parameters);
+    arma::mat z = o + x * theta.t() + m;
+    const arma::uword n = y.n_rows;
+    const arma::uword p = y.n_cols;
+    arma::mat sigma = (m.t() * (m.each_col() % w) + diagmat(sum(s.each_col() % w, 0))) / accu(w);
+
+    arma::mat a = exp(z + 0.5 * s);
+    arma::mat loglik = sum(y % z - a + 0.5 * log(s) - 0.5 * ((m * omega) % m + s * diagmat(omega)), 1) +
+                       0.5 * log_det_omega - logfact(y) + 0.5 * double(p);
+
+    return Rcpp::List::create(
+        Rcpp::Named("status", static_cast<int>(result.status)),
+        Rcpp::Named("iterations", nb_iterations),
+        Rcpp::Named("Theta", theta),
+        Rcpp::Named("M", m),
+        Rcpp::Named("S", s),
+        Rcpp::Named("Z", z),
+        Rcpp::Named("A", a),
+        Rcpp::Named("Sigma", sigma),
+        Rcpp::Named("loglik", loglik));
+}
+
 // TODO
 
 // Sparse
