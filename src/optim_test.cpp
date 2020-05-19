@@ -327,9 +327,9 @@ Rcpp::List cpp_optimize_full(
             arma::mat omega = double(n) * inv_sympd(m.t() * m + diagmat(sum(s, 0)));
             double objective = accu(a - y % z - 0.5 * log(s)) - 0.5 * double(n) * real(log_det(omega));
 
-            packer.pack<THETA>(grad_storage, trans(a - y) * x);
+            packer.pack<THETA>(grad_storage, (a - y).t() * x);
             packer.pack<M>(grad_storage, m * omega + a - y);
-            packer.pack<S>(grad_storage, 0.5 * (arma::ones(n) * diagvec(omega).t() + a - pow(s, -1)));
+            packer.pack<S>(grad_storage, 0.5 * (arma::ones(n) * diagvec(omega).t() + a - 1. / s));
             nb_iterations += 1;
             return objective;
         };
@@ -346,9 +346,9 @@ Rcpp::List cpp_optimize_full(
             arma::mat omega = w_bar * inv_sympd(m.t() * (m.each_col() % w) + diagmat(sum(s.each_col() % w, 0)));
             double objective = accu(diagmat(w) * (a - y % z - 0.5 * log(s))) - 0.5 * w_bar * real(log_det(omega));
 
-            packer.pack<THETA>(grad_storage, trans(a - y) * (x.each_col() % w));
+            packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
             packer.pack<M>(grad_storage, diagmat(w) * (m * omega + a - y));
-            packer.pack<S>(grad_storage, 0.5 * (w * diagvec(omega).t() + diagmat(w) * a - diagmat(w) * pow(s, -1)));
+            packer.pack<S>(grad_storage, 0.5 * (w * diagvec(omega).t() + diagmat(w) * (a - 1. / s)));
             nb_iterations += 1;
             return objective;
         };
@@ -442,9 +442,9 @@ Rcpp::List cpp_optimize_spherical(
             double objective =
                 accu(a - y % z) - 0.5 * double(p) * accu(log(s)) + 0.5 * double(n * p) * std::log(sigma2);
 
-            packer.pack<THETA>(grad_storage, trans(a - y) * x);
+            packer.pack<THETA>(grad_storage, (a - y).t() * x);
             packer.pack<M>(grad_storage, m / sigma2 + a - y);
-            packer.pack<S>(grad_storage, 0.5 * (sum(a, 1) - double(p) * pow(s, -1) - double(p) / sigma2));
+            packer.pack<S>(grad_storage, 0.5 * (sum(a, 1) - double(p) * (1. / s) - double(p) / sigma2));
             nb_iterations += 1;
             return objective;
         };
@@ -463,9 +463,9 @@ Rcpp::List cpp_optimize_spherical(
             double objective = accu(diagmat(w) * (a - y % z)) - 0.5 * double(p) * accu(w % log(s)) +
                                0.5 * w_bar * double(p) * log(sigma2);
 
-            packer.pack<THETA>(grad_storage, trans(a - y) * (x.each_col() % w));
+            packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
             packer.pack<M>(grad_storage, diagmat(w) * (m / sigma2 + a - y));
-            packer.pack<S>(grad_storage, w % (0.5 * (sum(a, 1) - double(p) * pow(s, -1) - double(p) / sigma2)));
+            packer.pack<S>(grad_storage, w % (0.5 * (sum(a, 1) - double(p) * (1. / s) - double(p) / sigma2)));
             nb_iterations += 1;
             return objective;
         };
@@ -557,9 +557,9 @@ Rcpp::List cpp_optimize_diagonal(
             arma::rowvec diag_sigma = sum(m % m + s, 0) / double(n);
             double objective = accu(a - y % z - 0.5 * log(s)) + 0.5 * double(n) * accu(log(diag_sigma));
 
-            packer.pack<THETA>(grad_storage, trans(a - y) * x);
+            packer.pack<THETA>(grad_storage, (a - y).t() * x);
             packer.pack<M>(grad_storage, (m.each_row() / diag_sigma) + a - y);
-            packer.pack<S>(grad_storage, 0.5 * (arma::ones(n) * pow(diag_sigma, -1) + a - pow(s, -1)));
+            packer.pack<S>(grad_storage, 0.5 * (arma::ones(n) * (1. / diag_sigma) + a - 1. / s));
             nb_iterations += 1;
             return objective;
         };
@@ -576,9 +576,9 @@ Rcpp::List cpp_optimize_diagonal(
             arma::rowvec diag_sigma = sum(m % (m.each_col() % w) + (s.each_col() % w), 0) / w_bar;
             double objective = accu(diagmat(w) * (a - y % z - 0.5 * log(s))) + 0.5 * w_bar * accu(log(diag_sigma));
 
-            packer.pack<THETA>(grad_storage, trans(a - y) * (x.each_col() % w));
+            packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
             packer.pack<M>(grad_storage, diagmat(w) * ((m.each_row() / diag_sigma) + a - y));
-            packer.pack<S>(grad_storage, 0.5 * (w * pow(diag_sigma, -1) + diagmat(w) * a - diagmat(w) * pow(s, -1)));
+            packer.pack<S>(grad_storage, 0.5 * (w * (1. / diag_sigma) + diagmat(w) * (a - 1. / s)));
             nb_iterations += 1;
             return objective;
         };
@@ -695,7 +695,7 @@ Rcpp::List cpp_optimize_rank(
             arma::mat a = exp(z + 0.5 * s * (b % b).t());
             double objective = accu(diagmat(w) * (a - y % z)) + 0.5 * accu(diagmat(w) * (m % m + s - log(s) - 1.));
 
-            packer.pack<THETA>(grad_storage, trans(a - y) * (x.each_col() % w));
+            packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
             packer.pack<B>(grad_storage, (diagmat(w) * (a - y)).t() * m + (a.t() * (s.each_col() % w)) % b);
             packer.pack<M>(grad_storage, diagmat(w) * ((a - y) * b + m));
             packer.pack<S>(grad_storage, .5 * diagmat(w) * (1. - 1. / s + a * (b % b)));
@@ -850,8 +850,6 @@ Rcpp::List cpp_optimize_sparse(
 }
 
 // TODO
-
-// Sparse
 
 // VE step thing
 
