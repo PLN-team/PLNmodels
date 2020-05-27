@@ -4,7 +4,8 @@
 \name{mollusk}
 \alias{mollusk}
 \title{Mollusk data set}
-\format{A list with 2 two data frames:
+\format{
+A list with 2 two data frames:
 \describe{
   \item{Abundance}{a 163 x 32 data frame of abundancies/counts (163 samples and 32 mollusk species)}
   \item{Covariate}{a 163 x 4 data frame of covariates:
@@ -18,7 +19,8 @@
 }
 
 In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use \code{\link[=prepare_data]{prepare_data}}.
-Original data set has been extracted from ade4.}
+Original data set has been extracted from ade4.
+}
 \source{
 Data from Richardot-Coulet, Chessel and Bournaud.
 }

@@ -4,7 +4,8 @@
 \name{trichoptera}
 \alias{trichoptera}
 \title{Trichoptera data set}
-\format{A list with 2 two data frames:
+\format{
+A list with 2 two data frames:
 \describe{
   \code{Abundance}{a 49 x 17 matrix of abundancies/counts (49 trapping nights and 17 trichoptera species)}
   \item{Covariate}{a 49 x 7 data frame of covariates:
@@ -21,7 +22,8 @@
 }
 
 In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use \code{\link[=prepare_data]{prepare_data}}.
-We only kept a subset of the original meteorological covariates for illustration purposes.}
+We only kept a subset of the original meteorological covariates for illustration purposes.
+}
 \source{
 Data from P. Usseglio-Polatera.
 }

@@ -86,6 +86,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$new(
@@ -102,6 +103,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$optimize(control)}\if{html}{\out{</div>}}
@@ -110,6 +112,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-stability_selection"></a>}}
+\if{latex}{\out{\hypertarget{method-stability_selection}{}}}
 \subsection{Method \code{stability_selection()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$stability_selection(
@@ -122,6 +125,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-coefficient_path"></a>}}
+\if{latex}{\out{\hypertarget{method-coefficient_path}{}}}
 \subsection{Method \code{coefficient_path()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$coefficient_path(precision = TRUE, corr = TRUE)}\if{html}{\out{</div>}}
@@ -130,6 +134,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getBestModel"></a>}}
+\if{latex}{\out{\hypertarget{method-getBestModel}{}}}
 \subsection{Method \code{getBestModel()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$getBestModel(
@@ -141,6 +146,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-plot}{}}}
 \subsection{Method \code{plot()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$plot(
@@ -153,6 +159,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_stars"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_stars}{}}}
 \subsection{Method \code{plot_stars()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$plot_stars(stability = 0.9, log.x = TRUE)}\if{html}{\out{</div>}}
@@ -161,6 +168,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_objective"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_objective}{}}}
 \subsection{Method \code{plot_objective()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$plot_objective()}\if{html}{\out{</div>}}
@@ -169,6 +177,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
+\if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$show()}\if{html}{\out{</div>}}
@@ -177,6 +186,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
