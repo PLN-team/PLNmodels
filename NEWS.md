@@ -1,7 +1,11 @@
-# PLNmodels 0.10.0 - major relase release
+# PLNmodels 0.10.1 - minor release
+
+* Fix bug in PLNPCAfit S3 plot() method
+
+# PLNmodels 0.10.0 - major release
 
 * Use V-EM to adjust simple PLN models
-* Use alternative paramterisation in optimizaiton for PLN
+* Use alternative paramterisation in optimization for PLN
 * correections 
 * Some bug fixed; some other added
 
