@@ -56,9 +56,9 @@ plot.PLNPCAfit <-
     }
 
     if (map == "individual")
-      p <- x$plot_individual_map(cols = ind_cols, main = main, plot = plot)
+      p <- x$plot_individual_map(axes = axes, cols = ind_cols, main = main, plot = plot)
     if (map == "variable")
-      p <- x$plot_correlation_circle(cols = var_cols, main = main, plot = plot)
+      p <- x$plot_correlation_circle(axes = axes, cols = var_cols, main = main, plot = plot)
     if (map == "both")
       p <- x$plot_PCA(nb_axes = nb_axes, ind_cols = ind_cols, var_cols = var_cols, plot = plot)
 
