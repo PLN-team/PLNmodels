@@ -9,7 +9,7 @@ test_that("PLN fit: check classes, getters and field access",  {
                              control = list(trace = 2)),
 "
  Initialization...
- Use GLM Poisson to define the inceptive model
+ Use LM after log transformation to define the inceptive model
  Adjusting a PLN model with full covariance model
  Post-treatments...
  DONE!"
