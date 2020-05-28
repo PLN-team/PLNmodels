@@ -216,15 +216,15 @@ double fn_optim_PLN_full_VEstep(unsigned N, const double *x, double *grad, void 
 
   arma::mat M(&x[0]  , n,p);
   arma::mat S(&x[n*p], n,p);
-  arma::mat Z = dat->O + M;
+  arma::mat Z = dat->O + dat->X * dat->Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
   arma::mat mu = dat->X * dat->Theta.t() ;
-  arma::mat nSigma =  (M-mu).t() * diagmat(dat->w) * (M-mu) + diagmat(sum(S.each_col() % dat->w, 0)) ;
+  arma::mat nSigma =  M.t() * diagmat(dat->w) * M + diagmat(sum(S.each_col() % dat->w, 0)) ;
 
-  double objective = accu((dat->w).t()*(A - dat->Y % Z - .5*log(S))) + .5*trace(dat->Omega*nSigma) ;
+  double objective = accu((dat->w).t()*(A - dat->Y % Z - .5*log(S))) + .5*trace(dat->Omega*nSigma);
 
-  arma::vec grd_M = vectorise(diagmat(dat->w) * ( (M - mu) * dat->Omega + A - dat->Y)) ;
+  arma::vec grd_M = vectorise(diagmat(dat->w) * ( M * dat->Omega + A - dat->Y)) ;
   arma::vec grd_S = vectorise(.5 * (dat->w * diagvec(dat->Omega).t() + diagmat(dat->w) * (A - pow(S,-1)) ) );
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
@@ -243,16 +243,15 @@ double fn_optim_PLN_spherical_VEstep(unsigned N, const double *x, double *grad, 
   arma::mat M(&x[0]  , n,p);
   arma::vec S(&x[n*p], n);
 
-  arma::mat mu = dat->X * dat->Theta.t() ;
-  double n_sigma2 = arma::as_scalar(dot(dat->w, sum(pow(M - mu, 2), 1) + p * S)) ;
+  double n_sigma2 = arma::as_scalar(dot(dat->w, sum(pow(M, 2), 1) + p * S)) ;
   double omega2 = arma::as_scalar(dat->Omega(0,0)) ;
 
-  arma::mat Z = dat->O + M;
+  arma::mat Z = dat->O + dat->X * dat->Theta.t() + M;
   arma::mat A = exp (Z.each_col() + .5 * S) ;
 
   double objective = accu((dat->w).t() * (A - dat->Y % Z)) -.5 * p*dot(dat->w, log(S)) +.5*n_sigma2*omega2 ;
 
-  arma::vec grd_M = vectorise(diagmat(dat->w) * ( (M - mu) * omega2 + A - dat->Y)) ;
+  arma::vec grd_M = vectorise(diagmat(dat->w) * ( M * omega2 + A - dat->Y)) ;
   arma::vec grd_S = .5 * dat->w % (sum(A,1) +  p * omega2 - p * pow(S, -1));
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
@@ -272,17 +271,16 @@ double fn_optim_PLN_diagonal_VEstep(unsigned N, const double *x, double *grad, v
   // recurrent variables
   arma::mat M(&x[0]  , n,p);
   arma::mat S(&x[n*p], n,p);
-  arma::mat Z = dat->O + M;
+  arma::mat Z = dat->O + dat->X * dat->Theta.t() + M;
   arma::mat A = exp (Z + .5 * S) ;
 
-  arma::mat mu = dat->X * dat->Theta.t() ;
   arma::vec omega2 = arma::diagvec(dat->Omega);
 
   // objective function
-  double objective = accu((dat->w).t()*(A - dat->Y % Z - .5*log(S))) + .5 * as_scalar((dat->w).t() * (pow(M - mu, 2) + S) * omega2)  ;
+  double objective = accu((dat->w).t()*(A - dat->Y % Z - .5*log(S))) + .5 * as_scalar((dat->w).t() * (pow(M, 2) + S) * omega2)  ;
 
   // gradients
-  arma::vec grd_M = vectorise(diagmat(dat->w) * ( (M - mu) * dat->Omega + A - dat->Y) ) ;
+  arma::vec grd_M = vectorise(diagmat(dat->w) * ( M * dat->Omega + A - dat->Y) ) ;
   arma::vec grd_S = vectorise(.5 * (dat->w * omega2.t() + diagmat(dat->w) * (A - pow(S,-1)) ) );
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(grd_M, grd_S)) ;
