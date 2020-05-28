@@ -94,17 +94,18 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher">}\href{../../PLNmodels/html/PLNfit.html#method-compute_fisher}{\code{PLNmodels::PLNfit$compute_fisher()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict">}\href{../../PLNmodels/html/PLNfit.html#method-predict}{\code{PLNmodels::PLNfit$predict()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2">}\href{../../PLNmodels/html/PLNfit.html#method-set_R2}{\code{PLNmodels::PLNfit$set_R2()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 }
 \out{</details>}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$new(
@@ -121,6 +122,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-update"></a>}}
+\if{latex}{\out{\hypertarget{method-update}{}}}
 \subsection{Method \code{update()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$update(
@@ -141,6 +143,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
@@ -149,6 +152,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$postTreatment(responses, covariates, offsets, weights, nullModel)}\if{html}{\out{</div>}}
@@ -157,6 +161,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-latent_pos"></a>}}
+\if{latex}{\out{\hypertarget{method-latent_pos}{}}}
 \subsection{Method \code{latent_pos()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$latent_pos(covariates, offsets)}\if{html}{\out{</div>}}
@@ -165,6 +170,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-latent_network"></a>}}
+\if{latex}{\out{\hypertarget{method-latent_network}{}}}
 \subsection{Method \code{latent_network()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$latent_network(type = c("partial_cor", "support", "precision"))}\if{html}{\out{</div>}}
@@ -173,6 +179,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_network"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_network}{}}}
 \subsection{Method \code{plot_network()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$plot_network(
@@ -189,6 +196,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
+\if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$show()}\if{html}{\out{</div>}}
@@ -197,6 +205,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

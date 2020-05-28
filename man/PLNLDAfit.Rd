@@ -94,18 +94,19 @@ The function \code{\link{PLNLDA}}.
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher">}\href{../../PLNmodels/html/PLNfit.html#method-compute_fisher}{\code{PLNmodels::PLNfit$compute_fisher()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="latent_pos">}\href{../../PLNmodels/html/PLNfit.html#method-latent_pos}{\code{PLNmodels::PLNfit$latent_pos()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2">}\href{../../PLNmodels/html/PLNfit.html#method-set_R2}{\code{PLNmodels::PLNfit$set_R2()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update">}\href{../../PLNmodels/html/PLNfit.html#method-update}{\code{PLNmodels::PLNfit$update()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 }
 \out{</details>}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$new(
@@ -122,6 +123,7 @@ The function \code{\link{PLNLDA}}.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$optimize(X, covar, design_group, control)}\if{html}{\out{</div>}}
@@ -130,6 +132,7 @@ The function \code{\link{PLNLDA}}.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setVisualization"></a>}}
+\if{latex}{\out{\hypertarget{method-setVisualization}{}}}
 \subsection{Method \code{setVisualization()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$setVisualization(scale.unit = FALSE)}\if{html}{\out{</div>}}
@@ -138,6 +141,7 @@ The function \code{\link{PLNLDA}}.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(responses, covariates, offsets)}\if{html}{\out{</div>}}
@@ -146,6 +150,7 @@ The function \code{\link{PLNLDA}}.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_individual_map"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_individual_map}{}}}
 \subsection{Method \code{plot_individual_map()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$plot_individual_map(
@@ -158,6 +163,7 @@ The function \code{\link{PLNLDA}}.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_correlation_map"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_correlation_map}{}}}
 \subsection{Method \code{plot_correlation_map()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$plot_correlation_map(
@@ -171,6 +177,7 @@ The function \code{\link{PLNLDA}}.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_LDA"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_LDA}{}}}
 \subsection{Method \code{plot_LDA()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$plot_LDA(
@@ -183,6 +190,7 @@ The function \code{\link{PLNLDA}}.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-predict}{}}}
 \subsection{Method \code{predict()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$predict(
@@ -198,6 +206,7 @@ The function \code{\link{PLNLDA}}.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
+\if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$show()}\if{html}{\out{</div>}}
@@ -206,6 +215,7 @@ The function \code{\link{PLNLDA}}.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
