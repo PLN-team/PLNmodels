@@ -148,13 +148,15 @@ Rcpp::List VEstep_PLN(
     const arma::mat & X,
     const arma::mat & O,
     const arma::vec & w,
+    const arma::mat & Theta,
+    const arma::mat & Omega,
     Rcpp::List options) {
 
   // Initialize
   optimizer_PLN_full myPLN = optimizer_PLN_full(par, Y, X, O, w, options) ;
 
   // Perform the optimization
-  myPLN.optimize() ;
+  myPLN.VEstep(Theta, Omega);
 
   // Format the output
   myPLN.export_var_par () ;

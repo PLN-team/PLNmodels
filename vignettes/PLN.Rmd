@@ -333,5 +333,4 @@ rbind(
 ) %>% knitr::kable()
 ```
 
-
 ## References

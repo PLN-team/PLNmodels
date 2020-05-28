@@ -28,6 +28,10 @@ class optimizer_PLN {
     // double (*fn_optim) (const stdvec& , stdvec &, void *) ;
     double (*fn_optim) (unsigned , const double* , double* , void*) ;
 
+    // the function that computes the objective and thge gradient vector
+    // double (*fn_optim_VE) (const stdvec& , stdvec &, void *) ;
+    double (*fn_optim_VE) (unsigned , const double* , double* , void*) ;
+
     // the function for preconditionning, when algorithm allows it
     // void pre(unsigned n, const double *x, const double *v, double *vpre, void *f_data);
     void (*fn_precond) (unsigned , const double* , const double* , double* , void*) ;
@@ -68,6 +72,8 @@ class optimizer_PLN {
     Rcpp::List output ;
 
     void optimize() ;
+
+    void VEstep(const arma::mat &, const arma::mat &) ;
 
     // prepare/compute output according to problem dimension
     // will be defined in the child classes

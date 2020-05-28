@@ -242,10 +242,6 @@ function(covariates, offsets, responses, weights, control = list()) {
   ## define default control parameters for optim and overwrite by user defined parameters
   control$covariance <- self$vcov_model
   control <- PLN_param(control, n, p, d)
-  control$Theta <- t(self$model_par$Theta)
-  ## Robust inversion using Matrix::solve instead of solve.default
-  control$Omega <- as(Matrix::solve(Matrix::Matrix(self$model_par$Sigma)), 'matrix')
-  # control$Omega <- solve(self$model_par$Sigma)
 
   ## optimisation
   optim_out <- VEstep_PLN(
@@ -254,6 +250,9 @@ function(covariates, offsets, responses, weights, control = list()) {
     covariates,
     offsets,
     weights,
+    Theta = self$model_par$Theta,
+    ## Robust inversion using Matrix::solve instead of solve.default
+    Omega = as(Matrix::solve(Matrix::Matrix(self$model_par$Sigma)), 'matrix'),
     control
   )
 
