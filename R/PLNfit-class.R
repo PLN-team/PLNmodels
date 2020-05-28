@@ -130,12 +130,13 @@ function(responses, covariates, offsets, weights, model, control) {
     private$Sigma <- control$inception$model_par$Sigma
     private$Ji    <- control$inception$loglik_vec
   } else {
-    if (control$trace > 1) cat("\n Use GLM Poisson to define the inceptive model")
-##    LMs   <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset =  offsets[,j]) )
-    LMs   <- lapply(1:p, function(j) glm.fit(covariates, responses[,j], weights, offset =  offsets[,j],family= poisson(), intercept = FALSE))
+    # if (control$trace > 1) cat("\n Use GLM Poisson to define the inceptive model")
+    # LMs   <- lapply(1:p, function(j) glm.fit(covariates, responses[,j], weights, offset =  offsets[,j], family = poisson(), intercept = FALSE))
+    if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
+    LMs   <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset =  offsets[,j]) )
     private$Theta <- do.call(rbind, lapply(LMs, coefficients))
-    private$M     <- log(1 + responses)
     residuals     <- do.call(cbind, lapply(LMs, residuals))
+    private$M     <- residuals
     private$S     <- matrix(10 * max(control$lower_bound), n, ifelse(control$covariance == "spherical", 1, p))
     if (control$covariance == "spherical") {
       private$Sigma <- diag(sum(residuals^2)/(n*p), p, p)
@@ -152,67 +153,29 @@ function(responses, covariates, offsets, weights, model, control) {
 PLNfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
 
-  cond <- FALSE; iter <- 0
-  objective   <- numeric(control$maxit_out)
-  convergence <- numeric(control$maxit_out)
-  inner_iterations <- integer(control$maxit_out)
-  inner_status     <- integer(control$maxit_out)
-  inner_message    <- character(control$maxit_out)
-
-  par0 <- c(private$M, private$S)
-  objective.old <- Inf
-  control$Theta <- t(self$model_par$Theta)
-  ## Robust inversion using Matrix::solve
-  control$Omega <- as(Matrix::solve(Matrix::Matrix(self$model_par$Sigma)), 'matrix')
-  # control$Omega <- solve(self$model_par$Sigma)
-  while (!cond) {
-    iter <- iter + 1
-
-    ## VE Step
-    optim_out <- private$optimizer(
-      par0,
-      responses,
-      covariates,
-      offsets,
-      weights,
-      control
-    )
-
-    ## M Step
-    control$Theta <- optim_out$Theta
-    control$Omega <- optim_out$Omega
-
-    ## Check convergence
-    objective[iter]   <- -sum(weights * optim_out$loglik)
-    convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
-    if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
-
-    inner_iterations[iter] <- optim_out$iterations
-    inner_status[iter]     <- optim_out$status
-    inner_message[iter]    <- statusToMessage(optim_out$status)
-
-    ## Prepare next iterate
-    par0  <- c(optim_out$M, optim_out$S)
-    objective.old <- objective[iter]
-  }
+  optim_out <- private$optimizer(
+    c(private$Theta, private$M, private$S),
+    responses,
+    covariates,
+    offsets,
+    weights,
+    control
+  )
 
   Ji <- optim_out$loglik
   attr(Ji, "weights") <- weights
   self$update(
-    Theta      = t(optim_out$Theta),
+    Theta      = optim_out$Theta,
     Sigma      = optim_out$Sigma,
     M          = optim_out$M,
     S          = optim_out$S,
     Z          = optim_out$Z,
     A          = optim_out$A,
     Ji         = Ji,
-    monitoring = list(objective        = objective[1:iter],
-                      convergence      = convergence[1:iter],
-                      outer_iterations = iter,
-                      inner_iterations = inner_iterations[1:iter],
-                      inner_status     = inner_status[1:iter],
-                      inner_message    = inner_message[1:iter])
-
+    monitoring = list(
+      iterations = optim_out$iterations,
+      status     = optim_out$status,
+      message    = statusToMessage(optim_out$status))
   )
 })
 
@@ -253,8 +216,7 @@ function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type
 #
 PLNfit$set("public", "latent_pos",
 function(covariates, offsets) {
-  # latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
-  latentPos <- private$M + offsets
+  latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
   latentPos
 })
 
