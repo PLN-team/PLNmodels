@@ -51,7 +51,9 @@ extract_model <- function(call, envir) {
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-  list(Y = Y, X = X, O = O, w = w, model = call$formula)
+  ## Save levels for predict methods
+  xlevels <- .getXlevels(terms(frame), frame)
+  list(Y = Y, X = X, O = O, w = w, model = call$formula, xlev = xlevels)
 }
 
 edge_to_node <- function(x, n = max(x)) {
