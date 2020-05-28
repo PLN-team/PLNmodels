@@ -45,7 +45,7 @@ PLN <- function(formula, data, subset, weights, control = list()) {
 
   ## initialization
   if (ctrl$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNfit$new(args$Y, args$X, args$O, args$w, args$model, ctrl)
+  myPLN <- PLNfit$new(args$Y, args$X, args$O, args$w, args$model, args$xlev, ctrl)
 
   ## optimization
   if (ctrl$trace > 0) cat("\n Adjusting a PLN model with", ctrl$covariance,"covariance model")

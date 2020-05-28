@@ -51,6 +51,7 @@ PLNfit <-
     ),
     private = list(
       model      = NA, # the formula call for the model as specified by the user
+      xlevels    = NA, # factor levels present in the original data, useful for predict() methods.
       Theta      = NA, # the model parameters for the covariable
       Sigma      = NA, # the covariance matrix
       S          = NA, # the variational parameters for the variances
@@ -103,13 +104,14 @@ PLNfit <-
 ## or take a user defined PLN model.
 #' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
 PLNfit$set("public", "initialize",
-function(responses, covariates, offsets, weights, model, control) {
+function(responses, covariates, offsets, weights, model, xlevels, control) {
 
   ## problem dimensions
   n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
 
   ## save the formula call as specified by the user
   private$model      <- model
+  private$xlevels    <- xlevels
   ## initialize the covariance model
   private$covariance <- control$covariance
   private$optimizer  <-
@@ -307,7 +309,7 @@ PLNfit$set("public", "predict",
     type = match.arg(type)
 
     ## Extract the model matrices from the new data set with initial formula
-    X <- model.matrix(formula(private$model)[-2], newdata)
+    X <- model.matrix(formula(private$model)[-2], newdata, xlev = private$xlevels)
     O <- model.offset(model.frame(formula(private$model)[-2], newdata))
 
     ## mean latent positions in the parameter space
