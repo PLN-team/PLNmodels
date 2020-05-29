@@ -250,9 +250,7 @@ function(covariates, offsets, responses, weights, control = list()) {
     switch(control$covariance,
       "spherical" = VEstep_PLN_spherical,
       "diagonal"  = VEstep_PLN__diagonal ,
-      "full"      = VEstep_PLN_full     #,
-#      "rank"      = optim_rank     ,
-#      "sparse"    = optim_sparse
+      "full"      = VEstep_PLN_full
     )
 
   ## optimisation
