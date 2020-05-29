@@ -50,12 +50,12 @@ PLNnetworkfamily <-
 )
 
 PLNnetworkfamily$set("public", "initialize",
-  function(penalties, responses, covariates, offsets, weights, model, control) {
+  function(penalties, responses, covariates, offsets, weights, model, xlevels, control) {
 
     ## initialize fields shared by the super class
     super$initialize(responses, covariates, offsets, weights, control)
     ## A basic model for inception
-    myPLN <- PLNfit$new(responses, covariates, offsets, weights, model, control)
+    myPLN <- PLNfit$new(responses, covariates, offsets, weights, model, xlevels, control)
     myPLN$optimize(responses, covariates, offsets, weights, control)
     control$inception <- myPLN
     ## Get an appropriate grid of penalties
@@ -71,7 +71,7 @@ PLNnetworkfamily$set("public", "initialize",
     ## instantiate as many models as penalties
     private$params <- sort(penalties, decreasing = TRUE)
     self$models <- lapply(private$params, function(penalty) {
-      PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, model, control)
+      PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, model, xlevels, control)
     })
 
 })
