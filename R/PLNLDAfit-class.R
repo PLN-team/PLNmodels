@@ -35,8 +35,8 @@ PLNLDAfit <-
   R6Class(classname = "PLNLDAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(grouping, responses, covariates, offsets, weights, model, control) {
-        super$initialize(responses, covariates, offsets, weights, model, control)
+      initialize = function(grouping, responses, covariates, offsets, weights, model, xlevels, control) {
+        super$initialize(responses, covariates, offsets, weights, model, xlevels, control)
         private$grouping <- grouping
         super$optimize(responses, covariates, offsets, weights, control)
       },
@@ -222,7 +222,8 @@ PLNLDAfit$set("public", "predict",
     if (type == "scores") scale <- "prob"
     scale = match.arg(scale)
 
-    args <- extract_model(call("PLNLDA", formula = private$model, data = newdata), envir)
+    ## Extract the model matrices from the new data set with initial formula
+    args <- extract_model(call("PLNLDA", formula = private$model, data = newdata, xlev = private$xlevels), envir)
 
     ## Problem dimensions
     n.new  <- nrow(args$Y)
