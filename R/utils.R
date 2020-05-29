@@ -30,7 +30,8 @@ fullModelPoisson <- function(responses, weights = rep(1, nrow(responses))) {
   lambda
 }
 
-extract_model <- function(call, envir) {
+#' @importFrom stats .getXlevels
+extract_model <- function(call, envir, xlev = NULL) {
 
   ## create the call for the model frame
   call_frame <- call[c(1L, match(c("formula", "data", "subset", "weights"), names(call), 0L))]
@@ -41,7 +42,7 @@ extract_model <- function(call, envir) {
   ## create the set of matrices to fit the PLN model
   Y <- frame[[1L]] ## model.response oversimplifies into a numeric when a single variable is involved
   if (ncol(Y) == 1 & is.null(colnames(Y))) colnames(Y) <- "Y"
-  X <- model.matrix(terms(frame), frame)
+  X <- model.matrix(terms(frame), frame, xlev = xlev)
   O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
   if (is.vector(O)) O <- O %o% rep(1, ncol(Y))
@@ -51,7 +52,9 @@ extract_model <- function(call, envir) {
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-  list(Y = Y, X = X, O = O, w = w, model = call$formula)
+  ## Save encoutered levels for predict methods
+  xlevels <- .getXlevels(terms(frame), frame)
+  list(Y = Y, X = X, O = O, w = w, model = call$formula, xlevels = xlevels)
 }
 
 edge_to_node <- function(x, n = max(x)) {

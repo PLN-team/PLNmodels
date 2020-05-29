@@ -94,6 +94,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
   offsets,
   weights,
   model,
+  xlevels,
   control
 )}\if{html}{\out{</div>}}
 }

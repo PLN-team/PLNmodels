@@ -35,8 +35,8 @@ PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(rank, responses, covariates, offsets, weights, model, control) {
-        super$initialize(responses, covariates, offsets, weights, model, control)
+      initialize = function(rank, responses, covariates, offsets, weights, model, xlevels, control) {
+        super$initialize(responses, covariates, offsets, weights, model, xlevels, control)
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {

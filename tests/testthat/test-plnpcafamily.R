@@ -17,13 +17,14 @@ test_that("PLNPCAfamily: main function, field access and methods", {
   Y <- as.matrix(trichoptera$Abundance)
   O <- matrix(0, nrow = nrow(Y), ncol = ncol(Y))
   w <- rep(1, nrow(Y))
+  xlevels <- NULL
 
   ## extract the data matrices and weights
   ctrl_init <- PLNmodels:::PLN_param(list(), nrow(Y), ncol(Y), ncol(X))
   ctrl_main <- PLNmodels:::PLNPCA_param(list())
 
   ## instantiate
-  myPLN <- PLNmodels:::PLNPCAfamily$new(1:5, Y, X, O, w, Abundance ~ 1, ctrl_init)
+  myPLN <- PLNmodels:::PLNPCAfamily$new(1:5, Y, X, O, w, Abundance ~ 1, xlevels, ctrl_init)
 
   ## optimize
   myPLN$optimize(ctrl_main)

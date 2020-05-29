@@ -13,6 +13,7 @@ test_that("PLNnetwork: main function, fields access and methods", {
   Y <- as.matrix(trichoptera$Abundance)
   O <- matrix(0, nrow(Y),ncol(Y))
   w <- rep(1, nrow(Y))
+  xlevels <- NULL
 
   ## extract the data matrices and weights
   ctrl_main <- PLNmodels:::PLNnetwork_param(list(), nrow(Y), ncol(Y),ncol(X))
@@ -21,7 +22,8 @@ test_that("PLNnetwork: main function, fields access and methods", {
   ctrl_init$penalty_weights <- ctrl_main$penalty_weights
 
   ## instantiate
-  myPLN <- PLNmodels:::PLNnetworkfamily$new(NULL, Y, X, O, w, Abundance ~ 1, ctrl_init)
+  myPLN <- PLNmodels:::PLNnetworkfamily$new(NULL, Y, X, O, w, Abundance ~ 1,
+                                            xlevels, ctrl_init)
 
   ## optimize
   myPLN$optimize(ctrl_main)
