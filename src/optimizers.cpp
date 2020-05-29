@@ -264,7 +264,7 @@ void optimizer_PLN_rank::export_output () {
 
   // element-wise log-likelihood
   A = exp (Z + .5 * S * (B % B).t() ) ;
-  loglik = arma::sum(data.Y % Z - A, 1) - .5 * sum(M % M + S - log(S) - 1, 1) - logfact(data.Y);
+  loglik = arma::sum(data.Y % Z - A, 1) - .5 * sum(M % M + S - log(S) - 1, 1) + data.Ki;
 }
 
 // override mother's method for getting output
@@ -318,5 +318,5 @@ void optimizer_PLN_sparse::export_output () {
 
   // element-wise log-likelihood
   A = exp (Z + .5 * S) ;
-  loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M * data.Omega) % M + S * diagmat(data.Omega)), 1) + .5 * data.log_det_Omega - logfact(data.Y) + .5 * p;
+  loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M * data.Omega) % M + S * diagmat(data.Omega)), 1) + .5 * data.log_det_Omega  + data.Ki ;
 }
