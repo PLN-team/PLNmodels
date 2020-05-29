@@ -53,7 +53,7 @@ extract_model <- function(call, envir) {
   }
   ## Save levels for predict methods
   xlevels <- .getXlevels(terms(frame), frame)
-  list(Y = Y, X = X, O = O, w = w, model = call$formula, xlev = xlevels)
+  list(Y = Y, X = X, O = O, w = w, model = call$formula, xlevels = xlevels)
 }
 
 edge_to_node <- function(x, n = max(x)) {
