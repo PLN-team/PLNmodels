@@ -12,7 +12,7 @@ test_that("PLNfamily: main function, field access and methods", {
 
   ## extract the data matrices and weights
   ctrl_init <- PLNmodels:::PLN_param(list(), nrow(Y), ncol(Y), ncol(X))
-  ctrl_main <- PLNmodels:::PLNPCA_param(list(), weighted = FALSE)
+  ctrl_main <- PLNmodels:::PLNPCA_param(list())
 
   ## Simple PLN models
   model1 <- PLN(Abundance ~ 1, data = trichoptera)

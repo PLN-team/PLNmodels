@@ -139,7 +139,7 @@ PLNnetworkfamily$set("public", "stability_selection",
                                     model      = private$model,
                                     weights    = self$weights   [subsample], control = ctrl_init)
 
-      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d, !all(self$weights == 1))
+      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d)
       ctrl_main$trace <- 0
       myPLN$optimize(ctrl_main)
       nets <- do.call(cbind, lapply(myPLN$models, function(model) {
