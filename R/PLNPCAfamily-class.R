@@ -32,7 +32,7 @@ PLNPCAfamily <-
 )
 
 PLNPCAfamily$set("public", "initialize",
-  function(ranks, responses, covariates, offsets, weights, model, control) {
+  function(ranks, responses, covariates, offsets, weights, model, xlevels, control) {
   ## initialize the required fields
   super$initialize(responses, covariates, offsets, weights, control)
   private$params <- ranks
@@ -44,7 +44,7 @@ PLNPCAfamily$set("public", "initialize",
 
   ## instantiate as many models as ranks
   self$models <- lapply(ranks, function(rank){
-    model <- PLNPCAfit$new(rank, responses, covariates, offsets, weights, model, control)
+    model <- PLNPCAfit$new(rank, responses, covariates, offsets, weights, model, xlevels, control)
     model
   })
 })
