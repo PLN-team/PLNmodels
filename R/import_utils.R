@@ -230,7 +230,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
     rownames(counts) <- rownames(covariates) <- samples
     if (is.numeric(offset)) rownames(offset) <- samples
   }
-  counts <- counts[samples, ]
+  counts <- counts[samples, , drop = FALSE]
   ## Replace NA with 0s
   if (any(is.na(counts))) {
     counts[is.na(counts)] <- 0
