@@ -20,6 +20,7 @@ test_that("PLNnetwork: main function, fields access and methods", {
   ctrl_init <- PLNmodels:::PLN_param(list(), nrow(Y), ncol(Y), ncol(X))
   ctrl_init$trace <- 0; ctrl_init$nPenalties <- 30; ctrl_init$min.ratio   <- .1
   ctrl_init$penalty_weights <- ctrl_main$penalty_weights
+  ctrl_init$penalize_diagonal <- ctrl_main$penalize_diagonal
 
   ## instantiate
   myPLN <- PLNmodels:::PLNnetworkfamily$new(NULL, Y, X, O, w, Abundance ~ 1,
