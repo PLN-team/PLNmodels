@@ -1,3 +1,4 @@
+## Need Shift + Ctrl + F10 first
 rm(list=ls())
 ## get oaks data set
 load("inst/case_studies/oaks_mildew/oaks_alphitoides.RData")
