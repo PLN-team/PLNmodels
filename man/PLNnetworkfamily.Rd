@@ -96,6 +96,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
   offsets,
   weights,
   model,
+  xlevels,
   control
 )}\if{html}{\out{</div>}}
 }
