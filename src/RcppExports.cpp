@@ -86,9 +86,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// VEstep_PLN
-Rcpp::List VEstep_PLN(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Theta, const arma::mat& Omega, Rcpp::List options);
-RcppExport SEXP _PLNmodels_VEstep_PLN(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP ThetaSEXP, SEXP OmegaSEXP, SEXP optionsSEXP) {
+// VEstep_PLN_full
+Rcpp::List VEstep_PLN_full(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Theta, const arma::mat& Omega, Rcpp::List options);
+RcppExport SEXP _PLNmodels_VEstep_PLN_full(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP ThetaSEXP, SEXP OmegaSEXP, SEXP optionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -100,7 +100,43 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
-    rcpp_result_gen = Rcpp::wrap(VEstep_PLN(par, Y, X, O, w, Theta, Omega, options));
+    rcpp_result_gen = Rcpp::wrap(VEstep_PLN_full(par, Y, X, O, w, Theta, Omega, options));
+    return rcpp_result_gen;
+END_RCPP
+}
+// VEstep_PLN_diagonal
+Rcpp::List VEstep_PLN_diagonal(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Theta, const arma::mat& Omega, Rcpp::List options);
+RcppExport SEXP _PLNmodels_VEstep_PLN_diagonal(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP ThetaSEXP, SEXP OmegaSEXP, SEXP optionsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(VEstep_PLN_diagonal(par, Y, X, O, w, Theta, Omega, options));
+    return rcpp_result_gen;
+END_RCPP
+}
+// VEstep_PLN_spherical
+Rcpp::List VEstep_PLN_spherical(arma::vec par, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Theta, const arma::mat& Omega, Rcpp::List options);
+RcppExport SEXP _PLNmodels_VEstep_PLN_spherical(SEXP parSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP ThetaSEXP, SEXP OmegaSEXP, SEXP optionsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(VEstep_PLN_spherical(par, Y, X, O, w, Theta, Omega, options));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -111,7 +147,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optim_full", (DL_FUNC) &_PLNmodels_optim_full, 6},
     {"_PLNmodels_optim_rank", (DL_FUNC) &_PLNmodels_optim_rank, 6},
     {"_PLNmodels_optim_sparse", (DL_FUNC) &_PLNmodels_optim_sparse, 6},
-    {"_PLNmodels_VEstep_PLN", (DL_FUNC) &_PLNmodels_VEstep_PLN, 8},
+    {"_PLNmodels_VEstep_PLN_full", (DL_FUNC) &_PLNmodels_VEstep_PLN_full, 8},
+    {"_PLNmodels_VEstep_PLN_diagonal", (DL_FUNC) &_PLNmodels_VEstep_PLN_diagonal, 8},
+    {"_PLNmodels_VEstep_PLN_spherical", (DL_FUNC) &_PLNmodels_VEstep_PLN_spherical, 8},
     {NULL, NULL, 0}
 };
 

@@ -70,7 +70,7 @@ Rcpp::List optimizer_PLN::get_output() {
 }
 
 // CREATE THE RCPP::LIST FOR R
-Rcpp::List optimizer_PLN_full::get_var_par() {
+Rcpp::List optimizer_PLN::get_var_par() {
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
       Rcpp::Named("M"         ) = M,
@@ -116,6 +116,20 @@ void optimizer_PLN_spherical::export_output() {
   loglik = sum(data.Y % Z - A - .5* pow(M, 2) / sigma2, 1) - .5*p*S/sigma2 + .5 *p*log(S/sigma2) + data.Ki ;
 }
 
+void optimizer_PLN_spherical::export_var_par() {
+
+  // variational parameters
+  M = arma::mat(&parameter[p*d]    , n,p);
+  S = arma::mat(&parameter[p*(d+n)], n,1);
+
+  double omega2 = data.Omega[0,0] ;
+
+  // element-wise log-likelihood
+  Z = data.O + data.X * Theta.t() + M;
+  A = exp(Z.each_col() + .5 * S) ;
+  loglik = sum(data.Y % Z - A - .5* pow(M, 2) * omega2, 1) - .5*p*S*omega2 + .5 *p*log(S*omega2) + data.Ki ;
+}
+
 // ---------------------------------------------------------------------------
 // CHILD CLASS WITH DIAGONAL COVARIANCE
 
@@ -145,6 +159,19 @@ void optimizer_PLN_diagonal::export_output() {
   arma::vec omega2 = pow(sigma2.t(), -1) ;
   Sigma = diagmat(sigma2) ;
   Omega = diagmat(omega2) ;
+
+  //element-wise log-likelihood
+  Z = data.O + data.X * Theta.t() + M;
+  A = exp (Z + .5 * S) ;
+  loglik = sum(data.Y % Z - A + .5*log(S), 1) - .5 * (pow(M, 2) + S) * omega2 + .5 * sum(log(omega2)) + data.Ki ;
+}
+
+void optimizer_PLN_diagonal::export_var_par () {
+
+  // variational parameters
+  M = arma::mat(&parameter[0]  , n,p);
+  S = arma::mat(&parameter[n*p], n,p);
+  arma::vec omega2 = data.Omega.diag() ;
 
   //element-wise log-likelihood
   Z = data.O + data.X * Theta.t() + M;

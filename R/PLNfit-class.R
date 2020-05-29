@@ -120,6 +120,7 @@ function(responses, covariates, offsets, weights, model, control) {
       "rank"      = optim_rank     ,
       "sparse"    = optim_sparse
     )
+
   if (isPLNfit(control$inception)) {
     if (control$trace > 1) cat("\n User defined inceptive PLN model")
     stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))))
@@ -243,8 +244,17 @@ function(covariates, offsets, responses, weights, control = list()) {
   control$covariance <- self$vcov_model
   control <- PLN_param(control, n, p, d)
 
+  VEstep_optimizer  <-
+    switch(control$covariance,
+      "spherical" = VEstep_PLN_spherical,
+      "diagonal"  = VEstep_PLN__diagonal ,
+      "full"      = VEstep_PLN_full     #,
+#      "rank"      = optim_rank     ,
+#      "sparse"    = optim_sparse
+    )
+
   ## optimisation
-  optim_out <- VEstep_PLN(
+  optim_out <- VEstep_optimizer(
     c(private$M, private$S),
     responses,
     covariates,

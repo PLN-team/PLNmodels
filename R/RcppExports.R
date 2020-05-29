@@ -21,7 +21,15 @@ optim_sparse <- function(par, Y, X, O, w, options) {
     .Call('_PLNmodels_optim_sparse', PACKAGE = 'PLNmodels', par, Y, X, O, w, options)
 }
 
-VEstep_PLN <- function(par, Y, X, O, w, Theta, Omega, options) {
-    .Call('_PLNmodels_VEstep_PLN', PACKAGE = 'PLNmodels', par, Y, X, O, w, Theta, Omega, options)
+VEstep_PLN_full <- function(par, Y, X, O, w, Theta, Omega, options) {
+    .Call('_PLNmodels_VEstep_PLN_full', PACKAGE = 'PLNmodels', par, Y, X, O, w, Theta, Omega, options)
+}
+
+VEstep_PLN_diagonal <- function(par, Y, X, O, w, Theta, Omega, options) {
+    .Call('_PLNmodels_VEstep_PLN_diagonal', PACKAGE = 'PLNmodels', par, Y, X, O, w, Theta, Omega, options)
+}
+
+VEstep_PLN_spherical <- function(par, Y, X, O, w, Theta, Omega, options) {
+    .Call('_PLNmodels_VEstep_PLN_spherical', PACKAGE = 'PLNmodels', par, Y, X, O, w, Theta, Omega, options)
 }
 
