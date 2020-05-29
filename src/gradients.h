@@ -17,8 +17,6 @@ double fn_VEstep_PLN_diagonal(unsigned N, const double *x, double *grad, void *d
 
 double fn_optim_PLN_rank(unsigned N, const double *x, double *grad, void *data) ;
 
-double fn_optim_PLN_weighted_rank(unsigned N, const double *x, double *grad, void *data) ;
-
 double fn_optim_PLN_sparse(unsigned N, const double *x, double *grad, void *data) ;
 
 #endif

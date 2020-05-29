@@ -173,7 +173,7 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
 }
 
 
-PLNPCA_param <- function(control, weighted = FALSE) {
+PLNPCA_param <- function(control) {
   ctrl <- list(
       "algorithm"   = "CCSAQ" ,
       "ftol_rel"    = 1e-8    ,
@@ -185,7 +185,6 @@ PLNPCA_param <- function(control, weighted = FALSE) {
       "maxtime"     = -1      ,
       "trace"       = 1       ,
       "cores"       = 1       ,
-      "weighted"    = weighted  ,
       "covariance"  = "rank"
     )
   ctrl[names(control)] <- control
@@ -193,7 +192,7 @@ PLNPCA_param <- function(control, weighted = FALSE) {
   ctrl
 }
 
-PLNnetwork_param <- function(control, n, p, d, weighted = FALSE) {
+PLNnetwork_param <- function(control, n, p, d) {
   lower_bound <- ifelse(is.null(control$lower_bound), 1e-4, control$lower_bound)
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4, control$xtol_abs)
   ctrl <-  list(
@@ -211,7 +210,6 @@ PLNnetwork_param <- function(control, n, p, d, weighted = FALSE) {
     "maxeval"     = 10000   ,
     "maxtime"     = -1      ,
     "trace"       = 1       ,
-    "weighted"    = weighted,
     "covariance"  = "sparse"
   )
   ctrl[names(control)] <- control

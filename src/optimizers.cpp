@@ -238,11 +238,8 @@ optimizer_PLN_rank::optimizer_PLN_rank (
   const arma::vec & w,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
-  if (Rcpp::as<bool>(options["weighted"])) {
-    fn_optim = &fn_optim_PLN_weighted_rank ;
-  } else {
-    fn_optim = &fn_optim_PLN_rank ;
-  }
+
+  fn_optim = &fn_optim_PLN_rank ;
 
   // initialize the rank
   q = Rcpp::as<int>(options["rank"]);
