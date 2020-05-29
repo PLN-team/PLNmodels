@@ -120,20 +120,22 @@ test_that("plot_LDA works for 4 or more axes:", {
 
 ## add tests for predictions, tests for fit --------------------------------------------
 test_that("Predictions have the right dimensions.", {
+  predictions_response <- predict(model, newdata = trichoptera, type = "response")
+  predictions_post <- predict(model, newdata = trichoptera)
+  predictions_prob <- predict(model, newdata = trichoptera, scale = "prob")
+  predictions_score <- predict(model, newdata = trichoptera)
   ## Train = Test
-  expect_length(predict(model, newdata = trichoptera, type = "response"),
-                nrow(trichoptera))
-  expect_is(predict(model, newdata = trichoptera, type = "response"),
-            "factor")
-  expect_equal(dim(predict(model, newdata = trichoptera)),
+  expect_length(predictions_response, nrow(trichoptera))
+  expect_is(predictions_response, "factor")
+  expect_equal(dim(predictions_post),
                c(nrow(trichoptera), length(levels(trichoptera$Group))))
-  expect_equal(dim(predict(model, newdata = trichoptera, type = "scores")),
+  expect_equal(dim(predicitions_score),
                c(nrow(trichoptera), model$rank))
   ## log-posterior probabilities are nonpositive
-  expect_lt(max(predict(model, newdata = trichoptera)), 0)
+  expect_lt(max(predictions_post), 0)
   ## Posterior probabilities are between 0 and 1
-  expect_lte(max(predict(model, newdata = trichoptera, scale = "prob")), 1)
-  expect_gte(min(predict(model, newdata = trichoptera, scale = "prob")), 0)
+  expect_lte(max(predictions_prob), 1)
+  expect_gte(min(predictions_prob), 0)
   ## Train != Test
   test <- 1:nrow(trichoptera) < (nrow(trichoptera)/2)
   expect_equal(dim(predict(model, newdata = trichoptera[test, ], type = "scores")),
