@@ -207,7 +207,7 @@ double fn_optim_PLN_weighted_sparse(unsigned N, const double *x, double *grad, v
 }
 
 
-double fn_optim_PLN_full_VEstep(unsigned N, const double *x, double *grad, void *data) {
+double fn_VEstep_PLN_full(unsigned N, const double *x, double *grad, void *data) {
 
   optim_data *dat = (optim_data *) data;
   dat->iterations++;
@@ -233,7 +233,7 @@ double fn_optim_PLN_full_VEstep(unsigned N, const double *x, double *grad, void 
   return objective;
 }
 
-double fn_optim_PLN_spherical_VEstep(unsigned N, const double *x, double *grad, void *data) {
+double fn_VEstep_PLN_spherical(unsigned N, const double *x, double *grad, void *data) {
 
   optim_data *dat = (optim_data *) data;
   dat->iterations++;
@@ -261,7 +261,7 @@ double fn_optim_PLN_spherical_VEstep(unsigned N, const double *x, double *grad, 
   return objective;
 }
 
-double fn_optim_PLN_diagonal_VEstep(unsigned N, const double *x, double *grad, void *data) {
+double fn_VEstep_PLN_diagonal(unsigned N, const double *x, double *grad, void *data) {
 
   optim_data *dat = (optim_data *) data;
   dat->iterations++;

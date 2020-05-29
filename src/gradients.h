@@ -5,15 +5,15 @@
 
 double fn_optim_PLN_full(unsigned N, const double *x, double *grad, void *data) ;
 
-double fn_optim_PLN_full_VEstep(unsigned N, const double *x, double *grad, void *data) ;
+double fn_VEstep_PLN_full(unsigned N, const double *x, double *grad, void *data) ;
 
 double fn_optim_PLN_spherical(unsigned N, const double *x, double *grad, void *data) ;
 
-double fn_optim_PLN_spherical_VEstep(unsigned N, const double *x, double *grad, void *data) ;
+double fn_VEstep_PLN_spherical(unsigned N, const double *x, double *grad, void *data) ;
 
 double fn_optim_PLN_diagonal(unsigned N, const double *x, double *grad, void *data) ;
 
-double fn_optim_PLN_diagonal_VEstep(unsigned N, const double *x, double *grad, void *data) ;
+double fn_VEstep_PLN_diagonal(unsigned N, const double *x, double *grad, void *data) ;
 
 double fn_optim_PLN_rank(unsigned N, const double *x, double *grad, void *data) ;
 

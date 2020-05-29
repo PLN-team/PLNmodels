@@ -23,11 +23,11 @@ optimizer_PLN::optimizer_PLN(
   d = X.n_cols ;
 
   // Initialize NLOPT
-  fn_optim    = NULL ;
-  fn_optim_VE = NULL ;
-  fn_precond  = NULL ;
-  optimizer   = initNLOPT(par.n_elem, options)   ;
-  parameter   = arma::conv_to<stdvec>::from(par) ;
+  fn_optim   = NULL ;
+  fn_VEstep  = NULL ;
+  fn_precond = NULL ;
+  optimizer  = initNLOPT(par.n_elem, options)   ;
+  parameter  = arma::conv_to<stdvec>::from(par) ;
 }
 
 // FUNCTION THAT CALL NLOPT
@@ -47,7 +47,7 @@ void optimizer_PLN::VEstep(const arma::mat & Theta, const arma::mat & Omega)  {
   data.Theta = Theta ;
   data.Omega = Omega ;
 
-  nlopt_set_min_objective(optimizer, fn_optim_VE, &data);
+  nlopt_set_min_objective(optimizer, fn_VEstep, &data);
   // nlopt_set_precond_min_objective(optimizer, fn_optim, fn_precond, &data);
   status = nlopt_optimize(optimizer, &parameter[0], &objective) ;
   nlopt_destroy(optimizer);
@@ -91,8 +91,8 @@ optimizer_PLN_spherical::optimizer_PLN_spherical(
   const arma::vec & w,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
-  fn_optim    = &fn_optim_PLN_spherical    ;
-  fn_optim_VE = &fn_optim_PLN_spherical_VEstep ;
+  fn_optim  = &fn_optim_PLN_spherical  ;
+  fn_VEstep = &fn_VEstep_PLN_spherical ;
 }
 
 void optimizer_PLN_spherical::export_output() {
@@ -141,8 +141,8 @@ optimizer_PLN_diagonal::optimizer_PLN_diagonal (
   const arma::vec & w,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
-  fn_optim    = &fn_optim_PLN_diagonal ;
-  fn_optim_VE = &fn_optim_PLN_diagonal_VEstep ;
+  fn_optim  = &fn_optim_PLN_diagonal ;
+  fn_VEstep = &fn_VEstep_PLN_diagonal ;
 }
 
 void optimizer_PLN_diagonal::export_output() {
@@ -191,8 +191,8 @@ optimizer_PLN_full::optimizer_PLN_full (
   const arma::vec & w,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
-  fn_optim    = &fn_optim_PLN_full ;
-  fn_optim_VE = &fn_optim_PLN_full_VEstep ;
+  fn_optim  = &fn_optim_PLN_full ;
+  fn_VEstep = &fn_VEstep_PLN_full ;
 }
 
 void optimizer_PLN_full::export_output () {
@@ -294,11 +294,11 @@ optimizer_PLN_sparse::optimizer_PLN_sparse (
   const arma::vec & w,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
-  if (Rcpp::as<bool>(options["weighted"])) {
+//  if (Rcpp::as<bool>(options["weighted"])) {
     fn_optim = &fn_optim_PLN_weighted_sparse ;
-  } else {
-    fn_optim = &fn_optim_PLN_sparse ;
-  }
+//  } else {
+//    fn_optim = &fn_optim_PLN_sparse ;
+//  }
 
   const arma::mat & Omega = Rcpp::as<arma::mat>(options["Omega"]);
 

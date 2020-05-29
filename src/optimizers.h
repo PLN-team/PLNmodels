@@ -30,7 +30,7 @@ class optimizer_PLN {
 
     // the function that computes the objective and thge gradient vector
     // double (*fn_optim_VE) (const stdvec& , stdvec &, void *) ;
-    double (*fn_optim_VE) (unsigned , const double* , double* , void*) ;
+    double (*fn_VEstep) (unsigned , const double* , double* , void*) ;
 
     // the function for preconditionning, when algorithm allows it
     // void pre(unsigned n, const double *x, const double *v, double *vpre, void *f_data);
