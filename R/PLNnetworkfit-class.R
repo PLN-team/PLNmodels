@@ -92,7 +92,6 @@ function(responses, covariates, offsets, weights, control) {
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
     control$Omega <- Omega
-    control$Theta <- matrix()
     optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, control)
 
     ## Check convergence
@@ -133,20 +132,6 @@ function(responses, covariates, offsets, weights, nullModel) {
   super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
   dimnames(private$Omega) <- dimnames(private$Sigma)
   colnames(private$S) <- 1:self$p
-})
-
-# Positions in the (Euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
-#
-# @name PLNfit_latent_pos
-#
-# @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
-# @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
-#
-PLNnetworkfit$set("public", "latent_pos",
-function(covariates, offsets) {
-  latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
-#  latentPos <- private$M + offsets
-  latentPos
 })
 
 #' @importFrom Matrix Matrix

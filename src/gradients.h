@@ -21,6 +21,4 @@ double fn_optim_PLN_weighted_rank(unsigned N, const double *x, double *grad, voi
 
 double fn_optim_PLN_sparse(unsigned N, const double *x, double *grad, void *data) ;
 
-double fn_optim_PLN_weighted_sparse(unsigned N, const double *x, double *grad, void *data) ;
-
 #endif

@@ -159,34 +159,6 @@ double fn_optim_PLN_sparse(unsigned N, const double *x, double *grad, void *data
   arma::mat Theta(&x[0]      , p,d) ;
   arma::mat     M(&x[p*d]    , n,p) ;
   arma::mat     S(&x[p*(d+n)], n,p) ;
-
-  arma::mat nSigma = M.t() * M ; nSigma.diag() += sum(S, 0);
-  arma::mat Z = dat->O + dat->X * Theta.t() + M;
-  arma::mat A = exp (Z + .5 * S) ;
-
-  double objective = accu(A - dat->Y % Z - .5*log(S)) -.5*(n*dat->log_det_Omega + n*p - trace(dat->Omega*nSigma)) ;
-
-  arma::vec grd_Theta = vectorise((A - dat->Y).t() * dat->X);
-  arma::vec grd_M     = vectorise(M * dat->Omega + A - dat->Y) ;
-  arma::vec grd_S     = vectorise(.5 * (arma::ones(n) * diagvec(dat->Omega).t() + A - 1/S));
-
-  stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_M),grd_S)) ;
-
-  for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
-
-  return objective;
-}
-
-double fn_optim_PLN_weighted_sparse(unsigned N, const double *x, double *grad, void *data) {
-
-  optim_data *dat = (optim_data *) data;
-  dat->iterations++;
-
-  int n = dat->n, p = dat->p, d = dat->d ;
-
-  arma::mat Theta(&x[0]      , p,d) ;
-  arma::mat     M(&x[p*d]    , n,p) ;
-  arma::mat     S(&x[p*(d+n)], n,p) ;
   double w_bar = accu(dat->w) ;
 
   arma::mat nSigma = M.t() * (M.each_col() % dat->w) + diagmat(sum(S.each_col() % dat->w, 0));

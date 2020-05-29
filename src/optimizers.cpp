@@ -294,11 +294,8 @@ optimizer_PLN_sparse::optimizer_PLN_sparse (
   const arma::vec & w,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
-//  if (Rcpp::as<bool>(options["weighted"])) {
-    fn_optim = &fn_optim_PLN_weighted_sparse ;
-//  } else {
-//    fn_optim = &fn_optim_PLN_sparse ;
-//  }
+
+  fn_optim = &fn_optim_PLN_sparse ;
 
   const arma::mat & Omega = Rcpp::as<arma::mat>(options["Omega"]);
 
