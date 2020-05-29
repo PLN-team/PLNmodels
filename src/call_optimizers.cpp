@@ -98,10 +98,11 @@ Rcpp::List optim_rank (
     const arma::mat & X,
     const arma::mat & O,
     const arma::vec & w,
+    const int & q,
     Rcpp::List options) {
 
   // Initialize
-  optimizer_PLN_rank myPLN = optimizer_PLN_rank(par, Y, X, O, w, options) ;
+  optimizer_PLN_rank myPLN = optimizer_PLN_rank(par, Y, X, O, w, q, options) ;
 
   // Perform the optimization
   myPLN.optimize() ;
@@ -124,10 +125,11 @@ Rcpp::List optim_sparse (
     const arma::mat & X,
     const arma::mat & O,
     const arma::vec & w,
+    const arma::mat & Omega,
     Rcpp::List options) {
 
   // Initialize
-  optimizer_PLN_sparse myPLN = optimizer_PLN_sparse(par, Y, X, O, w, options) ;
+  optimizer_PLN_sparse myPLN = optimizer_PLN_sparse(par, Y, X, O, w, Omega, options) ;
 
   // Perform the optimization
   myPLN.optimize() ;

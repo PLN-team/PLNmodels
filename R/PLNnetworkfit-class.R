@@ -91,8 +91,7 @@ function(responses, covariates, offsets, weights, control) {
     Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-    control$Omega <- Omega
-    optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, control)
+    optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, Omega, control)
 
     ## Check convergence
     objective[iter]   <- -sum(weights * optim.out$loglik) + self$penalty * sum(abs(Omega))

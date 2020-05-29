@@ -109,7 +109,7 @@ function(responses, covariates, offsets, weights, control) {
   opts$Omega <- matrix()
   optim_out <- optim_rank(
     c(private$Theta, private$B, private$M, private$S),
-    responses, covariates, offsets, weights, opts
+    responses, covariates, offsets, weights, self$q, opts
   )
 
   Ji <- optim_out$loglik

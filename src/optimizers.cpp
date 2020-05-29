@@ -30,17 +30,16 @@ optimizer_PLN::optimizer_PLN(
   parameter  = arma::conv_to<stdvec>::from(par) ;
 }
 
-// FUNCTION THAT CALL NLOPT
+// METHOD TO OPTIMIZE THE MAIN CRITERION
 void optimizer_PLN::optimize()  {
   double objective ; // value of objective function at optimum
 
   nlopt_set_min_objective(optimizer, fn_optim, &data);
-  // nlopt_set_precond_min_objective(optimizer, fn_optim, fn_precond, &data);
   status = nlopt_optimize(optimizer, &parameter[0], &objective) ;
   nlopt_destroy(optimizer);
 }
 
-// FUNCTION THAT CALL NLOPT
+// METHOD TO PERFORM A VE-STEP IN PLN
 void optimizer_PLN::VEstep(const arma::mat & Theta, const arma::mat & Omega)  {
   double objective ; // value of objective function at optimum
 
@@ -48,7 +47,6 @@ void optimizer_PLN::VEstep(const arma::mat & Theta, const arma::mat & Omega)  {
   data.Omega = Omega ;
 
   nlopt_set_min_objective(optimizer, fn_VEstep, &data);
-  // nlopt_set_precond_min_objective(optimizer, fn_optim, fn_precond, &data);
   status = nlopt_optimize(optimizer, &parameter[0], &objective) ;
   nlopt_destroy(optimizer);
 }
@@ -122,7 +120,7 @@ void optimizer_PLN_spherical::export_var_par() {
   M = arma::mat(&parameter[p*d]    , n,p);
   S = arma::mat(&parameter[p*(d+n)], n,1);
 
-  double omega2 = data.Omega[0,0] ;
+  double omega2 = arma::as_scalar(data.Omega(0,0)) ;
 
   // element-wise log-likelihood
   Z = data.O + data.X * Theta.t() + M;
@@ -229,24 +227,24 @@ void optimizer_PLN_full::export_var_par () {
 
 // ---------------------------------------------------------------------------
 // CHILD CLASS WITH RANK-CONSTRAINED COVARIANCE
-
 optimizer_PLN_rank::optimizer_PLN_rank (
   arma::vec par,
   const arma::mat & Y,
   const arma::mat & X,
   const arma::mat & O,
   const arma::vec & w,
+  const int rank,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
 
   fn_optim = &fn_optim_PLN_rank ;
 
   // initialize the rank
-  q = Rcpp::as<int>(options["rank"]);
+  q = rank ;
 
-  // overload the data structure
-  data = optim_data(Y, X, O, w, q) ;
-
+  // complete the data structure
+  data = optim_data(Y, X, O, w) ;
+  data.q = rank ;
 }
 
 void optimizer_PLN_rank::export_output () {
@@ -289,16 +287,15 @@ optimizer_PLN_sparse::optimizer_PLN_sparse (
   const arma::mat & X,
   const arma::mat & O,
   const arma::vec & w,
+  const arma::mat & Omega,
   Rcpp::List options
 ) : optimizer_PLN(par, Y, X, O, w, options) {
 
   fn_optim = &fn_optim_PLN_sparse ;
 
-  const arma::mat & Omega = Rcpp::as<arma::mat>(options["Omega"]);
-
-  // overload the data structure
-  data = optim_data(Y, X, O, w, Omega) ;
-
+  // complete the data structure
+  data.Omega = Omega ;
+  data.log_det_Omega = (real(log_det(Omega))) ;
 }
 
 void optimizer_PLN_sparse::export_output () {

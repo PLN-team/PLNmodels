@@ -148,6 +148,7 @@ class optimizer_PLN_rank: public optimizer_PLN {
       const arma::mat & X,
       const arma::mat & O,
       const arma::vec & w,
+      const int rank,
       Rcpp::List options
     ) ;
 
@@ -174,6 +175,7 @@ class optimizer_PLN_sparse: public optimizer_PLN {
       const arma::mat & X,
       const arma::mat & O,
       const arma::vec & w,
+      const arma::mat & Omega,
       Rcpp::List options
     ) ;
 

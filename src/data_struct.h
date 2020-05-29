@@ -46,38 +46,6 @@ typedef struct optim_data {
         Ki = - logfact(Y) + .5 * (1+(1-p)* std::log(2*M_PI)) ;
       } ;
 
-    // Rank-Constrained constructor
-    optim_data(const arma::mat &responses,
-               const arma::mat &covariates,
-               const arma::mat &offsets,
-               const arma::mat &weights,
-               const int rank
-    ) : Y(responses), X(covariates), O(offsets), w(weights), q(rank)
-      {
-        n = Y.n_rows ;
-        p = Y.n_cols ;
-        d = X.n_cols ;
-        iterations = 0 ;
-        w_bar = accu(w)    ;
-        Ki = - logfact(Y) + .5 * (1+(1-p)* std::log(2*M_PI)) ;
-      } ;
-
-    // Sparse covariance constructor
-    optim_data(const arma::mat &responses,
-               const arma::mat &covariates,
-               const arma::mat &offsets,
-               const arma::mat &weights,
-               const arma::mat &covinv
-    ) : Y(responses), X(covariates), O(offsets), w(weights), Omega(covinv), log_det_Omega(real(log_det(covinv)))
-      {
-        n = Y.n_rows ;
-        p = Y.n_cols ;
-        d = X.n_cols ;
-        iterations = 0 ;
-        w_bar = accu(w)    ;
-        Ki = - logfact(Y) + .5 * (1+(1-p)* std::log(2*M_PI)) ;
-      } ;
-
 } optim_data ;
 
 #endif
