@@ -30,6 +30,7 @@ fullModelPoisson <- function(responses, weights = rep(1, nrow(responses))) {
   lambda
 }
 
+#' @importFrom stats .getXlevels
 extract_model <- function(call, envir, xlev = NULL) {
 
   ## create the call for the model frame
@@ -51,7 +52,7 @@ extract_model <- function(call, envir, xlev = NULL) {
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-  ## Save levels for predict methods
+  ## Save encoutered levels for predict methods
   xlevels <- .getXlevels(terms(frame), frame)
   list(Y = Y, X = X, O = O, w = w, model = call$formula, xlevels = xlevels)
 }
