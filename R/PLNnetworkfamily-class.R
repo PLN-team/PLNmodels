@@ -137,6 +137,7 @@ PLNnetworkfamily$set("public", "stability_selection",
                                     covariates = self$covariates[subsample, , drop = FALSE],
                                     offsets    = self$offsets   [subsample, , drop = FALSE],
                                     model      = private$model,
+                                    xlevels    = xlevels,
                                     weights    = self$weights   [subsample], control = ctrl_init)
 
       ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d, !all(self$weights == 1))
