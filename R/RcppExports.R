@@ -21,7 +21,7 @@ optim_sparse <- function(par, Y, X, O, w, options) {
     .Call('_PLNmodels_optim_sparse', PACKAGE = 'PLNmodels', par, Y, X, O, w, options)
 }
 
-VEstep_PLN <- function(par, Y, X, O, w, options) {
-    .Call('_PLNmodels_VEstep_PLN', PACKAGE = 'PLNmodels', par, Y, X, O, w, options)
+VEstep_PLN <- function(par, Y, X, O, w, Theta, Omega, options) {
+    .Call('_PLNmodels_VEstep_PLN', PACKAGE = 'PLNmodels', par, Y, X, O, w, Theta, Omega, options)
 }
 
