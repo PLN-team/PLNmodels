@@ -1,13 +1,9 @@
-# PLNmodels 0.10.1 - minor release
+# PLNmodels 0.10.2 - medium release
 
 * Fix bug in PLNPCAfit S3 plot() method
-
-# PLNmodels 0.10.0 - major release
-
-* Use V-EM to adjust simple PLN models
-* Use alternative paramterisation in optimization for PLN
-* correections 
-* Some bug fixed; some other added
+* Some simplification in C++ code
+* correction/changes in PLN likelihoods? + added constant terms in all likelihoods of all PLN models
+* VEstep now avaialble for all model of covariance in PLN (full, diagonal, spherical)
 
 # PLNmodels 0.9.5 - minor release
 
