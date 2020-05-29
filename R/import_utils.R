@@ -245,7 +245,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
     samples <- samples[-empty_samples]
     counts <- counts[samples, ,drop = FALSE]
   }
-  covariates <- covariates[samples, ]
+  covariates <- covariates[samples, , drop = FALSE]
   if (is.null(names(covariates))) names(covariates) <- paste0("Variable", seq_along(covariates))
   ## compute offset
   offset     <- compute_offset(counts, offset, ...)
