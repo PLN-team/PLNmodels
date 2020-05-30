@@ -106,7 +106,7 @@ test_that("standard error fails for degenerate models", {
 test_that("PLN fit: Check prediction",  {
 
   model1 <- PLN(Abundance ~ 1, data = trichoptera, subset = 1:30)
-  model2 <- PLN(Abundance ~ Pressure + Humidity, data = trichoptera, subset = 1:30)
+  model2 <- PLN(Abundance ~ Pressure, data = trichoptera, subset = 1:30)
 
   newdata <- trichoptera[31:49, ]
   newdata$Abundance <- NULL
@@ -123,6 +123,16 @@ test_that("PLN fit: Check prediction",  {
   newdata$Offset <- NULL
   ## without offsets, predictions should be the same for all samples
   expect_equal(unname(apply(predictions, 2, sd)), rep(0, ncol(predictions)))
+
+  ## Unequal factor levels in train and prediction datasets
+  suppressWarnings(
+    toy_data <- prepare_data(
+    counts     = matrix(c(1, 3, 1, 1), ncol = 1),
+    covariates = data.frame(Cov = c("A", "B", "A", "A")),
+    offset     = rep(1, 4))
+  )
+  model <- PLN(Abundance ~ Cov + offset(log(Offset)), data = toy_data[1:2,])
+  expect_length(predict(model, newdata = toy_data[3:4, ], type = "r"), 2L)
 })
 
 test_that("PLN fit: Check number of parameters",  {

@@ -84,6 +84,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$new(
@@ -93,6 +94,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
   offsets,
   weights,
   model,
+  xlevels,
   control
 )}\if{html}{\out{</div>}}
 }
@@ -100,6 +102,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$optimize(control)}\if{html}{\out{</div>}}
@@ -108,6 +111,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getBestModel"></a>}}
+\if{latex}{\out{\hypertarget{method-getBestModel}{}}}
 \subsection{Method \code{getBestModel()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$getBestModel(crit = c("BIC", "ICL", "R_squared"))}\if{html}{\out{</div>}}
@@ -116,6 +120,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-plot}{}}}
 \subsection{Method \code{plot()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$plot(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE)}\if{html}{\out{</div>}}
@@ -124,6 +129,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
+\if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$show()}\if{html}{\out{</div>}}
@@ -132,6 +138,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

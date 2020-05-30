@@ -64,13 +64,16 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
 
   ## Consistency of the diagonal of the fisher matrix
   fim.diag <- Matrix::diag(vcov(myPLN)) / nrow(trichoptera)
+  ## Values computed on the 2018/12/11 with PLNmodels version 0.5.9601)
   expected.fim.diag <- c(0.0612123698810698, 0.0612384161054906, 3.73462487824109, 0.122467107738817,
                          122.19280897578, 2.2230572191967, 0.285741065637069, 0.285687659219944,
                          0.142744327711051, 2.36736421753514, 3.85859113231971, 1.06111199011525,
                          3.90356517005791, 2.72098275756987, 9.59722821630398, 0.183645852556891,
                          5.93888146445577)
+
   ## Consistency of the standard error matrix
   sem <- standard_error(myPLN) %>% as.numeric()
+  ## Values computed on the 2018/12/11 with PLNmodels version 0.5.9601)
   expected.sem <- c(0.577407423403546, 0.577284617461014, 0.0739228099688871, 0.40821807394677,
                     0.0129234699024801, 0.0958134855472534, 0.267248717630853, 0.267273696185322,
                     0.378113801869815, 0.0928473302527288, 0.072725644559697, 0.138682400064212,

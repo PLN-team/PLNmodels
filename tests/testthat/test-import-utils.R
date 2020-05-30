@@ -324,6 +324,16 @@ test_that("prepare_data succeeds when specifying a numeric offset", {
                    res)
 })
 
+test_that("prepare_data works on 1 column abundance matrices", {
+  expect_warning(toy_data <- prepare_data(
+    counts     = matrix(c(1, 3, 1, 1), ncol = 1),
+    covariates = data.frame(Cov = c("A", "B", "A", "A")),
+    offset     = rep(0, 4)
+  ))
+  expect_equal(dim(toy_data), c(4, 3))
+  expect_equal(dim(toy_data$Abundance), c(4, 1))
+})
+
 ## Test prepare_data_* functions ------------------------------------------------------------------------
 
 # test_that("prepare_data_from_biom fails when covariates data.frame is missing", {

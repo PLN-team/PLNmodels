@@ -110,14 +110,25 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$new(rank, responses, covariates, offsets, weights, model, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$new(
+  rank,
+  responses,
+  covariates,
+  offsets,
+  weights,
+  model,
+  xlevels,
+  control
+)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-update"></a>}}
+\if{latex}{\out{\hypertarget{method-update}{}}}
 \subsection{Method \code{update()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$update(
@@ -137,6 +148,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setVisualization"></a>}}
+\if{latex}{\out{\hypertarget{method-setVisualization}{}}}
 \subsection{Method \code{setVisualization()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$setVisualization(scale.unit = FALSE)}\if{html}{\out{</div>}}
@@ -145,6 +157,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
@@ -153,6 +166,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$postTreatment(responses, covariates, offsets, weights, nullModel)}\if{html}{\out{</div>}}
@@ -161,6 +175,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-latent_pos"></a>}}
+\if{latex}{\out{\hypertarget{method-latent_pos}{}}}
 \subsection{Method \code{latent_pos()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$latent_pos(covariates, offsets)}\if{html}{\out{</div>}}
@@ -169,6 +184,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_individual_map"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_individual_map}{}}}
 \subsection{Method \code{plot_individual_map()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$plot_individual_map(
@@ -182,6 +198,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_correlation_circle"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_correlation_circle}{}}}
 \subsection{Method \code{plot_correlation_circle()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$plot_correlation_circle(
@@ -195,6 +212,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_PCA"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_PCA}{}}}
 \subsection{Method \code{plot_PCA()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$plot_PCA(
@@ -208,6 +226,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-compute_fisher"></a>}}
+\if{latex}{\out{\hypertarget{method-compute_fisher}{}}}
 \subsection{Method \code{compute_fisher()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$compute_fisher(type = c("wald", "louis"), X = NULL)}\if{html}{\out{</div>}}
@@ -216,6 +235,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
+\if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$show()}\if{html}{\out{</div>}}
@@ -224,6 +244,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

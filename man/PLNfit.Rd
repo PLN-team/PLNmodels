@@ -43,7 +43,7 @@ print(myPLN)
 
 \item{\code{model}}{character: the model used for the coavariance (either "spherical", "diagonal" or "full")}
 
-\item{\code{loglik}}{variational lower bound of the loglikelihood}
+\item{\code{loglik}}{(weighted) variational lower bound of the loglikelihood}
 
 \item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}
 
@@ -79,6 +79,7 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-update"></a>}}
+\if{latex}{\out{\hypertarget{method-update}{}}}
 \subsection{Method \code{update()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$update(
@@ -97,14 +98,16 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$new(responses, covariates, offsets, weights, model, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$new(responses, covariates, offsets, weights, model, xlevels, control)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
@@ -113,6 +116,7 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-set_R2"></a>}}
+\if{latex}{\out{\hypertarget{method-set_R2}{}}}
 \subsection{Method \code{set_R2()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$set_R2(responses, covariates, offsets, weights, nullModel = NULL)}\if{html}{\out{</div>}}
@@ -121,6 +125,7 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$postTreatment(
@@ -136,6 +141,7 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-latent_pos"></a>}}
+\if{latex}{\out{\hypertarget{method-latent_pos}{}}}
 \subsection{Method \code{latent_pos()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$latent_pos(covariates, offsets)}\if{html}{\out{</div>}}
@@ -144,14 +150,16 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-VEstep"></a>}}
+\if{latex}{\out{\hypertarget{method-VEstep}{}}}
 \subsection{Method \code{VEstep()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$VEstep(X, O, Y, control = list())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$VEstep(covariates, offsets, responses, weights, control = list())}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-predict}{}}}
 \subsection{Method \code{predict()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$predict(newdata, type = c("link", "response"), envir = parent.frame())}\if{html}{\out{</div>}}
@@ -160,6 +168,7 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-compute_fisher"></a>}}
+\if{latex}{\out{\hypertarget{method-compute_fisher}{}}}
 \subsection{Method \code{compute_fisher()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$compute_fisher(type = c("wald", "louis"), X = NULL)}\if{html}{\out{</div>}}
@@ -168,6 +177,7 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-compute_standard_error"></a>}}
+\if{latex}{\out{\hypertarget{method-compute_standard_error}{}}}
 \subsection{Method \code{compute_standard_error()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$compute_standard_error()}\if{html}{\out{</div>}}
@@ -176,6 +186,7 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
+\if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$show(
@@ -187,6 +198,7 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
+\if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$print()}\if{html}{\out{</div>}}
@@ -195,6 +207,7 @@ print(myPLN)
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

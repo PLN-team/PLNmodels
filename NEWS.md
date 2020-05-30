@@ -1,3 +1,11 @@
+# PLNmodels 0.10.2 - medium release
+
+* Fix bug in predict() methods when factor levels differ between train and test datasets. 
+* Fix bug in PLNPCAfit S3 plot() method
+* Some simplification in C++ code
+* correction/changes in PLN likelihoods? + added constant terms in all likelihoods of all PLN models
+* VEstep now avaialble for all model of covariance in PLN (full, diagonal, spherical)
+
 # PLNmodels 0.9.5 - minor release
 
 * removed any use of rmarkdown::paged_table() in the vignettes

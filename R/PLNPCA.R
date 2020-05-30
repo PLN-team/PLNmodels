@@ -42,12 +42,13 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control_init = l
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X), weighted = !missing(weights))
-  ctrl_main <- PLNPCA_param(control_main, weighted = !missing(weights))
+  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
+  ctrl_main <- PLNPCA_param(control_main)
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank
   if (ctrl_main$trace > 0) cat("\n Initialization...")
-  myPCA <- PLNPCAfamily$new(ranks, args$Y, args$X, args$O, args$w, args$model, ctrl_init)
+  myPCA <- PLNPCAfamily$new(ranks, args$Y, args$X, args$O, args$w,
+                            args$model, args$xlevels, ctrl_init)
 
   ## Adjust the PLN models
   if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.\n")

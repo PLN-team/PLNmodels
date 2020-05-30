@@ -98,10 +98,11 @@ Rcpp::List optim_rank (
     const arma::mat & X,
     const arma::mat & O,
     const arma::vec & w,
+    const int & q,
     Rcpp::List options) {
 
   // Initialize
-  optimizer_PLN_rank myPLN = optimizer_PLN_rank(par, Y, X, O, w, options) ;
+  optimizer_PLN_rank myPLN = optimizer_PLN_rank(par, Y, X, O, w, q, options) ;
 
   // Perform the optimization
   myPLN.optimize() ;
@@ -124,10 +125,11 @@ Rcpp::List optim_sparse (
     const arma::mat & X,
     const arma::mat & O,
     const arma::vec & w,
+    const arma::mat & Omega,
     Rcpp::List options) {
 
   // Initialize
-  optimizer_PLN_sparse myPLN = optimizer_PLN_sparse(par, Y, X, O, w, options) ;
+  optimizer_PLN_sparse myPLN = optimizer_PLN_sparse(par, Y, X, O, w, Omega, options) ;
 
   // Perform the optimization
   myPLN.optimize() ;
@@ -139,53 +141,83 @@ Rcpp::List optim_sparse (
   return(myPLN.get_output());
 }
 
-// function to perform a single VE Step
 
+// ---------------------------------------------------------------------------------------
+//
+// function to perform a single VE Step
+//
 // [[Rcpp::export]]
-Rcpp::List optimization_VEstep_PLN(
+Rcpp::List VEstep_PLN_full(
     arma::vec par,
     const arma::mat & Y,
     const arma::mat & X,
     const arma::mat & O,
+    const arma::vec & w,
     const arma::mat & Theta,
-    const arma::mat & Sigma,
+    const arma::mat & Omega,
     Rcpp::List options) {
 
-  // Create optim data structure
-  const arma::mat Omega = inv_sympd(Sigma);
-  const double log_det_Omega = real(log_det(Omega));
-  optim_data my_optim_data(Y, X, O, Theta, Omega, log_det_Omega);
-
-  // Initialize the NLOPT optimizer
-  nlopt_opt opt = initNLOPT(par.n_elem, options) ;
+  // Initialize
+  optimizer_PLN_full myPLN = optimizer_PLN_full(par, Y, X, O, w, options) ;
 
   // Perform the optimization
-  double f_optimized ;
-  stdvec x_optimized = arma::conv_to<stdvec>::from(par);
-
-  nlopt_set_min_objective(opt, fn_optim_VEstep_PLN, &my_optim_data);
-  nlopt_result status = nlopt_optimize(opt, &x_optimized[0], &f_optimized);
-  nlopt_destroy(opt);
+  myPLN.VEstep(Theta, Omega);
 
   // Format the output
-  int n = Y.n_rows, p = Y.n_cols;
-  arma::mat M(&x_optimized[0]    , n,p);
-  arma::mat S(&x_optimized[n*p]  , n,p);
+  myPLN.export_var_par () ;
 
-  // Compute element-wise log-likelihood
-  arma::mat Z = O + X * Theta.t() + M;
-  arma::mat A = exp (Z + .5 * S);
-  // sum(., 1) = rowSums(.)
-  arma::vec loglik = arma::sum(-A + Y % Z + .5*log(S) - .5*( (M * Omega) % M + S * diagmat(Omega)), 1) +
-    .5*log_det_Omega - logfact(Y) + .5 * p;
+  // Output returned to R
+  return(myPLN.get_var_par());
 
-  return Rcpp::List::create(
-    Rcpp::Named("status"    ) = (int) status,
-    Rcpp::Named("objective" ) = f_optimized + my_optim_data.KY ,
-    Rcpp::Named("M"         ) = M,
-    Rcpp::Named("S"         ) = S,
-    Rcpp::Named("loglik"    ) = loglik,
-    Rcpp::Named("iterations") = my_optim_data.iterations
-  );
+}
+
+// [[Rcpp::export]]
+Rcpp::List VEstep_PLN_diagonal(
+    arma::vec par,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
+    const arma::vec & w,
+    const arma::mat & Theta,
+    const arma::mat & Omega,
+    Rcpp::List options) {
+
+  // Initialize
+  optimizer_PLN_diagonal myPLN = optimizer_PLN_diagonal(par, Y, X, O, w, options) ;
+
+  // Perform the optimization
+  myPLN.VEstep(Theta, Omega);
+
+  // Format the output
+  myPLN.export_var_par () ;
+
+  // Output returned to R
+  return(myPLN.get_var_par());
+
+}
+
+// [[Rcpp::export]]
+Rcpp::List VEstep_PLN_spherical(
+    arma::vec par,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
+    const arma::vec & w,
+    const arma::mat & Theta,
+    const arma::mat & Omega,
+    Rcpp::List options) {
+
+  // Initialize
+  optimizer_PLN_spherical myPLN = optimizer_PLN_spherical(par, Y, X, O, w, options) ;
+
+  // Perform the optimization
+  myPLN.VEstep(Theta, Omega);
+
+  // Format the output
+  myPLN.export_var_par () ;
+
+  // Output returned to R
+  return(myPLN.get_var_par());
+
 }
 

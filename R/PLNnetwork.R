@@ -50,16 +50,18 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y),ncol(args$X), weighted = !missing(weights))
+  ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y),ncol(args$X))
   if (is.null(control_init$trace)) control_init$trace <- 0
-  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X), weighted = !missing(weights))
+  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
   if (is.null(ctrl_init$nPenalties)) ctrl_init$nPenalties <- 30
   if (is.null(ctrl_init$min.ratio)) ctrl_init$min.ratio   <- .1
-  ctrl_init$penalty_weights <- ctrl_main$penalty_weights
+  ctrl_init$penalty_weights   <- ctrl_main$penalty_weights
+  ctrl_init$penalize_diagonal <- ctrl_main$penalize_diagonal
 
   ## Instantiate the collection of models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNnetworkfamily$new(penalties, args$Y, args$X, args$O, args$w, args$model, ctrl_init)
+  myPLN <- PLNnetworkfamily$new(penalties, args$Y, args$X, args$O, args$w,
+                                args$model, args$xlevels, ctrl_init)
 
   ## Optimization
   if (ctrl_main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")

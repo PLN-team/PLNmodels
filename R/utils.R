@@ -25,11 +25,13 @@ nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nr
 }
 
 fullModelPoisson <- function(responses, weights = rep(1, nrow(responses))) {
-  lambda <- log(sweep(responses, 1, weights, "*"))
+  lambda <- log(responses)
+  # lambda <- log(sweep(responses, 1, weights, "*"))
   lambda
 }
 
-extract_model <- function(call, envir) {
+#' @importFrom stats .getXlevels
+extract_model <- function(call, envir, xlev = NULL) {
 
   ## create the call for the model frame
   call_frame <- call[c(1L, match(c("formula", "data", "subset", "weights"), names(call), 0L))]
@@ -40,7 +42,7 @@ extract_model <- function(call, envir) {
   ## create the set of matrices to fit the PLN model
   Y <- frame[[1L]] ## model.response oversimplifies into a numeric when a single variable is involved
   if (ncol(Y) == 1 & is.null(colnames(Y))) colnames(Y) <- "Y"
-  X <- model.matrix(terms(frame), frame)
+  X <- model.matrix(terms(frame), frame, xlev = xlev)
   O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
   if (is.vector(O)) O <- O %o% rep(1, ncol(Y))
@@ -50,7 +52,9 @@ extract_model <- function(call, envir) {
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-  list(Y = Y, X = X, O = O, w = w, model = call$formula)
+  ## Save encoutered levels for predict methods
+  xlevels <- .getXlevels(terms(frame), frame)
+  list(Y = Y, X = X, O = O, w = w, model = call$formula, xlevels = xlevels)
 }
 
 edge_to_node <- function(x, n = max(x)) {
@@ -125,7 +129,7 @@ available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2")
 ##  Series of setter to default parameters for user's main functions
 ##
 ## should be ready to pass to nlopt optimizer
-PLN_param <- function(control, n, p, d, weighted = FALSE) {
+PLN_param <- function(control, n, p, d) {
   lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
@@ -140,7 +144,6 @@ PLN_param <- function(control, n, p, d, weighted = FALSE) {
     "xtol_abs"    = c(rep(0   , p*d), rep(0   , p*n), rep(xtol_abs   , ifelse(covariance == "spherical", n, n*p))),
     "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(lower_bound, ifelse(covariance == "spherical", n, n*p))),
     "trace"       = 1,
-    "weighted"    = weighted  ,
     "covariance"  = covariance,
     "inception"   = NULL
   )
@@ -173,7 +176,7 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
 }
 
 
-PLNPCA_param <- function(control, weighted = FALSE) {
+PLNPCA_param <- function(control) {
   ctrl <- list(
       "algorithm"   = "CCSAQ" ,
       "ftol_rel"    = 1e-8    ,
@@ -185,7 +188,6 @@ PLNPCA_param <- function(control, weighted = FALSE) {
       "maxtime"     = -1      ,
       "trace"       = 1       ,
       "cores"       = 1       ,
-      "weighted"    = weighted  ,
       "covariance"  = "rank"
     )
   ctrl[names(control)] <- control
@@ -193,7 +195,7 @@ PLNPCA_param <- function(control, weighted = FALSE) {
   ctrl
 }
 
-PLNnetwork_param <- function(control, n, p, d, weighted = FALSE) {
+PLNnetwork_param <- function(control, n, p, d) {
   lower_bound <- ifelse(is.null(control$lower_bound), 1e-4, control$lower_bound)
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4, control$xtol_abs)
   ctrl <-  list(
@@ -211,7 +213,6 @@ PLNnetwork_param <- function(control, n, p, d, weighted = FALSE) {
     "maxeval"     = 10000   ,
     "maxtime"     = -1      ,
     "trace"       = 1       ,
-    "weighted"    = weighted,
     "covariance"  = "sparse"
   )
   ctrl[names(control)] <- control

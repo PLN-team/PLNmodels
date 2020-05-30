@@ -34,8 +34,8 @@ PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(penalty, responses, covariates, offsets, weights, model, control) {
-        super$initialize(responses, covariates, offsets, weights, model, control)
+      initialize = function(penalty, responses, covariates, offsets, weights, model, xlevels, control) {
+        super$initialize(responses, covariates, offsets, weights, model, xlevels, control)
         private$lambda <- penalty
       },
       update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
@@ -91,8 +91,7 @@ function(responses, covariates, offsets, weights, control) {
     Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-    control$Omega <- Omega
-    optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, control)
+    optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, Omega, control)
 
     ## Check convergence
     objective[iter]   <- -sum(weights * optim.out$loglik) + self$penalty * sum(abs(Omega))
@@ -107,6 +106,8 @@ function(responses, covariates, offsets, weights, control) {
 
   ## ===========================================
   ## OUTPUT
+  Ji <- optim.out$loglik
+  attr(Ji, "weights") <- weights
   self$update(
     Theta = optim.out$Theta,
     Omega = Omega,
@@ -115,7 +116,7 @@ function(responses, covariates, offsets, weights, control) {
     S = optim.out$S,
     Z = optim.out$Z,
     A = optim.out$A,
-    Ji = optim.out$loglik,
+    Ji = Ji,
     monitoring = list(objective        = objective[1:iter],
                       convergence      = convergence[1:iter],
                       outer_iterations = iter,

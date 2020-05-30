@@ -35,8 +35,8 @@ PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(rank, responses, covariates, offsets, weights, model, control) {
-        super$initialize(responses, covariates, offsets, weights, model, control)
+      initialize = function(rank, responses, covariates, offsets, weights, model, xlevels, control) {
+        super$initialize(responses, covariates, offsets, weights, model, xlevels, control)
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {
@@ -89,14 +89,12 @@ PLNPCAfit <-
         rownames(rotation) <- rownames(private$Sigma)
         rotation
       }
-### Why not sending back the rotation matrix ?
     )
 )
 
 ## Call to the C++ optimizer and update of the relevant fields
 PLNPCAfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
-
   ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
   opts <- control
   opts$xtol_abs <- c(rep(0, self$p*(self$d + self$q) + self$n * self$q),
@@ -106,11 +104,16 @@ function(responses, covariates, offsets, weights, control) {
                         rep(-Inf, self$n*self$q) , # M
                         rep(control$lower_bound,self$n*self$q)) # S
   opts$rank <- self$q
+  ## TWO LINES TEMPORARY...
+  opts$Theta <- matrix()
+  opts$Omega <- matrix()
   optim_out <- optim_rank(
     c(private$Theta, private$B, private$M, private$S),
-    responses, covariates, offsets, weights, opts
+    responses, covariates, offsets, weights, self$q, opts
   )
 
+  Ji <- optim_out$loglik
+  attr(Ji, "weights") <- weights
   self$update(
     B     = optim_out$B,
     Theta = optim_out$Theta,
@@ -119,7 +122,7 @@ function(responses, covariates, offsets, weights, control) {
     S     = optim_out$S,
     A     = optim_out$A,
     Z     = optim_out$Z,
-    Ji    = optim_out$loglik,
+    Ji    = Ji,
     monitoring = list(
       iterations = optim_out$iterations,
       status     = optim_out$status,

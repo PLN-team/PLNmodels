@@ -9,6 +9,14 @@ system.time(myPLN <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEff
 system.time(myPLN_diagonal <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "diagonal")))
 system.time(myPLN_spherical <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "spherical")))
 
+rbind(
+  myPLN$criteria,
+  myPLN_diagonal$criteria,
+  myPLN_spherical$criteria
+) %>%
+  as.data.frame(row.names = c("full", "diagonal", "spherical")) %>%
+  knitr::kable()
+
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks)
 plot(myLDA_tree)
@@ -24,12 +32,12 @@ myLDA_orientation <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), gro
 plot(myLDA_orientation)
 
 ## Dimension reduction with PCA
-system.time(myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control_main = list(cores = 10))) # about 55 sec.
-myPLNPCA <-
-plot(getBestModel(myPLNPCAs), ind_cols = oaks$treeStatus)
+system.time(myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control_main = list(cores = 10))) # about 40 sec.
+myPLNPCA <- getBestModel(myPLNPCAs)
+plot(myPLNPCA, ind_cols = oaks$treeStatus)
 
 ## Network inference with sparce covariance estimation
-myPLNnets <- PLNnetwork(Abundancies ~ 1 + treeStatus + offset(log(sequencingEffort)), data = oaks)
-stability_selection(myPLNnets)
+myPLNnets <- PLNnetwork(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks)
+stability_selection(myPLNnets, mc.cores = 10)
 plot(getBestModel(myPLNnets, "StARS", stability = .985))
 
