@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.2-9005</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
       <h1 data-toc-skip>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2020-04-16</h4>
+            <h4 class="date">2020-05-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNPCA.Rmd"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -229,41 +229,41 @@
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">34</td>
-<td align="right">-1458.2559</td>
-<td align="right">-1524.417</td>
-<td align="right">-1537.400</td>
+<td align="right">-2154.204</td>
+<td align="right">-2220.365</td>
+<td align="right">-2233.348</td>
 <td align="right">0.4881006</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">51</td>
-<td align="right">-1146.3962</td>
-<td align="right">-1245.638</td>
-<td align="right">-1278.650</td>
+<td align="right">-1842.344</td>
+<td align="right">-1941.585</td>
+<td align="right">-1974.598</td>
 <td align="right">0.7138562</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">68</td>
-<td align="right">-1057.8700</td>
-<td align="right">-1190.192</td>
-<td align="right">-1247.954</td>
+<td align="right">-1753.818</td>
+<td align="right">-1886.140</td>
+<td align="right">-1943.901</td>
 <td align="right">0.8035052</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">85</td>
-<td align="right">-1012.6385</td>
-<td align="right">-1178.041</td>
-<td align="right">-1267.495</td>
+<td align="right">-1708.586</td>
+<td align="right">-1873.989</td>
+<td align="right">-1963.443</td>
 <td align="right">0.8607348</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">102</td>
-<td align="right">-995.1051</td>
-<td align="right">-1193.588</td>
-<td align="right">-1330.300</td>
+<td align="right">-1691.053</td>
+<td align="right">-1889.536</td>
+<td align="right">-2026.248</td>
 <td align="right">0.8926364</td>
 </tr>
 </tbody>
@@ -323,7 +323,7 @@
 <a href="#model-selection-of-rank-q" class="anchor"></a>Model selection of rank <span class="math inline">\(q\)</span>
 </h4>
 <p>The <code>plot</code> method of <code>PLNPCAfamily</code> displays evolution of the criteria mentioned above, and is a good starting point for model selection:</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">PCA_models</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">PCA_models</span>)</pre></body></html></div>
 <p><img src="PLNPCA_files/figure-html/plot%20nocov-1.png" width="672"></p>
 <p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of <span class="math inline">\(q\)</span> (see <span class="citation">(Chiquet, Mariadassou, and Robin <a href="#ref-PLNPCA">2018</a>)</span> for details on its computation).</p>
 <p>From this plot, we can see that the best model in terms of BIC or ICL is obtained for a rank <span class="math inline">\(q=4\)</span> or <span class="math inline">\(q=3\)</span>. We may extract the corresponding model with the method <code><a href="../reference/getBestModel.html">getBestModel("ICL")</a></code>. A model with a specific rank can be extracted with the <code><a href="../reference/getModel.html">getModel()</a></code> method:</p>
@@ -335,7 +335,7 @@
 <a href="#structure-of-plnpcafit" class="anchor"></a>Structure of <code>PLNPCAfit</code>
 </h4>
 <p>Objects <code>myPCA_ICL</code> and <code>myPCA_BIC</code> are <code>R6Class</code> objects of class <code>PLNPCAfit</code> which in turns own a couple of methods, some inherited from <code>PLNfit</code> and some others specific, mostly for vizualization purposes. The <code>plot</code> method provides individual maps and correlation circles as in usual PCA. If an additional classification exists for the observations – which is the case here with the available classification of the trapping nights – , it can be passed as an argument to the function.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">myPCA_ICL</span>, <span class="kw">ind_cols</span> <span class="kw">=</span> <span class="no">trichoptera</span>$<span class="no">Group</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">myPCA_ICL</span>, <span class="kw">ind_cols</span> <span class="kw">=</span> <span class="no">trichoptera</span>$<span class="no">Group</span>)</pre></body></html></div>
 <p><img src="PLNPCA_files/figure-html/map-1.png" width="768"></p>
 <!-- Indeed, let us vizualize the first three axes of model $q=3$: -->
 <!-- ```{r map q3, fig.width=8, fig.height=8} -->
@@ -466,8 +466,8 @@
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">myPCA_ICL</span></pre></body></html></div>
 <pre><code>## Poisson Lognormal with rank constrained for PCA (rank = 3)
 ## ==================================================================
-##  nb_param   loglik       BIC       ICL R_squared
-##        68 -1057.87 -1190.192 -1247.954     0.804
+##  nb_param    loglik      BIC       ICL R_squared
+##        68 -1753.818 -1886.14 -1943.901     0.804
 ## ==================================================================
 ## * Useful fields
 ##     $model_par, $latent, $var_par, $optim_par
@@ -502,13 +502,13 @@
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">PCA_models_cov</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">PCA_models_cov</span>)</pre></body></html></div>
 <p><img src="PLNPCA_files/figure-html/extraction%20cov-1.png" width="672"></p>
 <div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">myPCA_cov</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span>(<span class="no">PCA_models_cov</span>, <span class="st">"ICL"</span>)</pre></body></html></div>
 <p>Suppose that we want to have a closer look to the first two axes. This can be done thanks to the plot method:</p>
 <div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="kw pkg">gridExtra</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html">grid.arrange</a></span>(
-  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">myPCA_cov</span>, <span class="kw">map</span> <span class="kw">=</span> <span class="st">"individual"</span>, <span class="kw">ind_cols</span> <span class="kw">=</span> <span class="no">trichoptera</span>$<span class="no">Group</span>, <span class="kw">plot</span> <span class="kw">=</span> <span class="fl">FALSE</span>),
-  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">myPCA_cov</span>, <span class="kw">map</span> <span class="kw">=</span> <span class="st">"variable"</span>, <span class="kw">plot</span> <span class="kw">=</span> <span class="fl">FALSE</span>),
+  <span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">myPCA_cov</span>, <span class="kw">map</span> <span class="kw">=</span> <span class="st">"individual"</span>, <span class="kw">ind_cols</span> <span class="kw">=</span> <span class="no">trichoptera</span>$<span class="no">Group</span>, <span class="kw">plot</span> <span class="kw">=</span> <span class="fl">FALSE</span>),
+  <span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">myPCA_cov</span>, <span class="kw">map</span> <span class="kw">=</span> <span class="st">"variable"</span>, <span class="kw">plot</span> <span class="kw">=</span> <span class="fl">FALSE</span>),
   <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">2</span>
 )</pre></body></html></div>
 <p><img src="PLNPCA_files/figure-html/maps-1.png" width="672"></p>

@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.2-9005</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
       <h1 data-toc-skip>Analyzing multivariate count data with the Poisson log-normal model</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2020-04-16</h4>
+            <h4 class="date">2020-05-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLN.Rmd"><code>vignettes/PLN.Rmd</code></a></small>
       <div class="hidden name"><code>PLN.Rmd</code></div>
@@ -204,8 +204,8 @@ PLN: geometrical view
 <div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">myPLN</span></pre></body></html></div>
 <pre><code>## A multivariate Poisson Lognormal fit with full covariance model.
 ## ==================================================================
-##  nb_param   loglik       BIC      ICL R_squared
-##       170 -1129.48 -1460.284 -2305.22      0.99
+##  nb_param    loglik       BIC      ICL R_squared
+##       170 -2241.904 -2572.708 -3416.37      0.99
 ## ==================================================================
 ## * Useful fields
 ##     $model_par, $latent, $var_par, $optim_par
@@ -219,10 +219,10 @@ PLN: geometrical view
 <a href="#field-access" class="anchor"></a>Field access</h4>
 <p>Accessing public fields of a <code>PLNfit</code> object can be done just like with a traditional list, <em>e.g.</em>,</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">myPLN</span>$<span class="no">loglik</span>, <span class="no">myPLN</span>$<span class="no">BIC</span>, <span class="no">myPLN</span>$<span class="no">ICL</span>, <span class="no">myPLN</span>$<span class="no">R_squared</span>)</pre></body></html></div>
-<pre><code>## [1] -1129.4796137 -1460.2843390 -2305.2203458     0.9898247</code></pre>
+<pre><code>## [1] -2241.9036435 -2572.7083688 -3416.3703721     0.9898227</code></pre>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">myPLN</span>$<span class="no">criteria</span></pre></body></html></div>
-<pre><code>##   nb_param   loglik       BIC      ICL R_squared
-## 1      170 -1129.48 -1460.284 -2305.22 0.9898247</code></pre>
+<pre><code>##   nb_param    loglik       BIC      ICL R_squared
+## 1      170 -2241.904 -2572.708 -3416.37 0.9898227</code></pre>
 </div>
 <div id="glm-like-interface" class="section level4">
 <h4 class="hasAnchor">
@@ -260,19 +260,19 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td>effect</td>
-<td align="right">-3.1750322</td>
-<td align="right">-4.0611956</td>
-<td align="right">1.0445340</td>
-<td align="right">-2.3248854</td>
-<td align="right">3.2618172</td>
+<td align="right">-3.1542086</td>
+<td align="right">-4.0639104</td>
+<td align="right">1.0452225</td>
+<td align="right">-2.3236266</td>
+<td align="right">3.2609860</td>
 </tr>
 <tr class="even">
 <td>stderr</td>
-<td align="right">0.5772813</td>
-<td align="right">0.5772616</td>
-<td align="right">0.0739266</td>
-<td align="right">0.4082693</td>
-<td align="right">0.0129227</td>
+<td align="right">0.5772808</td>
+<td align="right">0.5773558</td>
+<td align="right">0.0739241</td>
+<td align="right">0.4082681</td>
+<td align="right">0.0129224</td>
 </tr>
 </tbody>
 </table>
@@ -338,17 +338,17 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1129.480</td>
-<td align="right">-1460.284</td>
-<td align="right">-2305.220</td>
-<td align="right">0.9898247</td>
+<td align="right">-2241.904</td>
+<td align="right">-2572.708</td>
+<td align="right">-3416.370</td>
+<td align="right">0.9898227</td>
 </tr>
 <tr class="even">
 <td align="right">170</td>
-<td align="right">-1051.456</td>
-<td align="right">-1382.261</td>
-<td align="right">-2199.653</td>
-<td align="right">0.9223267</td>
+<td align="right">-2164.034</td>
+<td align="right">-2494.839</td>
+<td align="right">-3323.766</td>
+<td align="right">0.9220680</td>
 </tr>
 </tbody>
 </table>
@@ -375,17 +375,17 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1051.456</td>
-<td align="right">-1382.261</td>
-<td align="right">-2199.653</td>
-<td align="right">0.9223267</td>
+<td align="right">-2164.034</td>
+<td align="right">-2494.839</td>
+<td align="right">-3323.766</td>
+<td align="right">0.9220680</td>
 </tr>
 <tr class="even">
 <td align="right">187</td>
-<td align="right">-1027.802</td>
-<td align="right">-1391.688</td>
-<td align="right">-2093.602</td>
-<td align="right">0.8902910</td>
+<td align="right">-2140.265</td>
+<td align="right">-2504.150</td>
+<td align="right">-3203.156</td>
+<td align="right">0.8904111</td>
 </tr>
 </tbody>
 </table>
@@ -394,25 +394,25 @@ fitted value vs. observation
 <h3 class="hasAnchor">
 <a href="#covariance-models-full-diagonal-spherical" class="anchor"></a>Covariance models (full, diagonal, spherical)</h3>
 <p>It is possible to change a bit the parametrization used for modelling the residual covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence <span class="math inline">\(p \times (p+1)/2\)</span> parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix <span class="math inline">\(\boldsymbol\Sigma_D\)</span> with only <span class="math inline">\(p\)</span> parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix <span class="math inline">\(\boldsymbol\Sigma = \sigma \mathbf{I}_p\)</span>. This can be tuned in <code>PLN</code> with the <code>control</code> argument, a list controlling various aspects of the underlying optimization process:</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">myPLN_diagonal</span> <span class="kw">&lt;-</span>
-  <span class="fu"><a href="../reference/PLN.html">PLN</a></span>(
-    <span class="no">Abundance</span> ~ <span class="fl">1</span> + <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">Offset</span>)),
-    <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>, <span class="kw">control</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">covariance</span> <span class="kw">=</span> <span class="st">"diagonal"</span>, <span class="kw">trace</span> <span class="kw">=</span> <span class="fl">0</span>)
-  )
-<span class="no">myPLN_spherical</span> <span class="kw">&lt;-</span>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">myPLN_spherical</span> <span class="kw">&lt;-</span>
   <span class="fu"><a href="../reference/PLN.html">PLN</a></span>(
     <span class="no">Abundance</span> ~ <span class="fl">1</span> + <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">Offset</span>)),
     <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>, <span class="kw">control</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">covariance</span> <span class="kw">=</span> <span class="st">"spherical"</span>, <span class="kw">trace</span> <span class="kw">=</span> <span class="fl">0</span>)
   )</pre></body></html></div>
+<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">myPLN_diagonal</span> <span class="kw">&lt;-</span>
+  <span class="fu"><a href="../reference/PLN.html">PLN</a></span>(
+    <span class="no">Abundance</span> ~ <span class="fl">1</span> + <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">Offset</span>)),
+    <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>, <span class="kw">control</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">covariance</span> <span class="kw">=</span> <span class="st">"diagonal"</span>, <span class="kw">trace</span> <span class="kw">=</span> <span class="fl">0</span>)
+  )</pre></body></html></div>
 <p>Note that, by default, the model chosen is , so that the two following calls are equivalents:</p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">myPLN_default</span> <span class="kw">&lt;-</span>
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">myPLN_default</span> <span class="kw">&lt;-</span>
   <span class="fu"><a href="../reference/PLN.html">PLN</a></span>(<span class="no">Abundance</span> ~ <span class="fl">1</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>, )</pre></body></html></div>
 <pre><code>## 
 ##  Initialization...
 ##  Adjusting a PLN model with full covariance model
 ##  Post-treatments...
 ##  DONE!</code></pre>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">myPLN_full</span> <span class="kw">&lt;-</span>
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">myPLN_full</span> <span class="kw">&lt;-</span>
   <span class="fu"><a href="../reference/PLN.html">PLN</a></span>(<span class="no">Abundance</span> ~ <span class="fl">1</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>, <span class="kw">control</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">covariance</span> <span class="kw">=</span> <span class="st">"full"</span>))</pre></body></html></div>
 <pre><code>## 
 ##  Initialization...
@@ -420,7 +420,7 @@ fitted value vs. observation
 ##  Post-treatments...
 ##  DONE!</code></pre>
 <p>Different covariance models can then be compared with the usual criteria: it seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:</p>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(
+<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(
   <span class="no">myPLN_offsets</span>$<span class="no">criteria</span>,
   <span class="no">myPLN_diagonal</span>$<span class="no">criteria</span>,
   <span class="no">myPLN_spherical</span>$<span class="no">criteria</span>
@@ -440,31 +440,31 @@ fitted value vs. observation
 <tr class="odd">
 <td>full</td>
 <td align="right">170</td>
-<td align="right">-1051.456</td>
-<td align="right">-1382.261</td>
-<td align="right">-2199.653</td>
-<td align="right">0.9223267</td>
+<td align="right">-2164.034</td>
+<td align="right">-2494.839</td>
+<td align="right">-3323.766</td>
+<td align="right">0.9220680</td>
 </tr>
 <tr class="even">
 <td>diagonal</td>
 <td align="right">34</td>
-<td align="right">-1109.357</td>
-<td align="right">-1175.518</td>
-<td align="right">-2050.778</td>
+<td align="right">-2221.805</td>
+<td align="right">-2287.966</td>
+<td align="right">-3163.226</td>
 <td align="right">0.9166840</td>
 </tr>
 <tr class="odd">
 <td>spherical</td>
 <td align="right">18</td>
-<td align="right">-1792.270</td>
-<td align="right">-1827.297</td>
-<td align="right">-2691.099</td>
+<td align="right">-2904.718</td>
+<td align="right">-2939.745</td>
+<td align="right">-3803.547</td>
 <td align="right">0.8634665</td>
 </tr>
 </tbody>
 </table>
 <p>A final model that we can try is the diagonal one with the wind as a covariate, which gives a slight improvement.</p>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">myPLN_final</span> <span class="kw">&lt;-</span>
+<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">myPLN_final</span> <span class="kw">&lt;-</span>
   <span class="fu"><a href="../reference/PLN.html">PLN</a></span>(
     <span class="no">Abundance</span> ~ <span class="fl">1</span> + <span class="no">Wind</span> + <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">Offset</span>)),
     <span class="kw">data</span>    <span class="kw">=</span> <span class="no">trichoptera</span>, <span class="kw">control</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">covariance</span> <span class="kw">=</span> <span class="st">"diagonal"</span>, <span class="kw">trace</span> <span class="kw">=</span> <span class="fl">0</span>)
@@ -485,23 +485,23 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">187</td>
-<td align="right">-1027.802</td>
-<td align="right">-1391.688</td>
-<td align="right">-2093.602</td>
-<td align="right">0.8902910</td>
+<td align="right">-2140.265</td>
+<td align="right">-2504.150</td>
+<td align="right">-3203.156</td>
+<td align="right">0.8904111</td>
 </tr>
 <tr class="even">
 <td align="right">34</td>
-<td align="right">-1109.357</td>
-<td align="right">-1175.518</td>
-<td align="right">-2050.778</td>
+<td align="right">-2221.805</td>
+<td align="right">-2287.966</td>
+<td align="right">-3163.226</td>
 <td align="right">0.9166840</td>
 </tr>
 <tr class="odd">
 <td align="right">51</td>
-<td align="right">-1072.818</td>
-<td align="right">-1172.060</td>
-<td align="right">-1767.163</td>
+<td align="right">-2185.266</td>
+<td align="right">-2284.507</td>
+<td align="right">-2879.610</td>
 <td align="right">0.8759575</td>
 </tr>
 </tbody>

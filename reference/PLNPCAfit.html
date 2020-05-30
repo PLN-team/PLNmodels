@@ -83,7 +83,7 @@ plot.PLNPCAfit methods for PCA vizualization" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.2-9005</span>
       </span>
     </div>
 
@@ -259,7 +259,16 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 <a id="method-new"></a></p><h3>Method <code>new()</code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNPCAfit</span>$<span class='fu'>new</span>(<span class='no'>rank</span>, <span class='no'>responses</span>, <span class='no'>covariates</span>, <span class='no'>offsets</span>, <span class='no'>weights</span>, <span class='no'>model</span>, <span class='no'>control</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>PLNPCAfit</span>$<span class='fu'>new</span>(
+  <span class='no'>rank</span>,
+  <span class='no'>responses</span>,
+  <span class='no'>covariates</span>,
+  <span class='no'>offsets</span>,
+  <span class='no'>weights</span>,
+  <span class='no'>model</span>,
+  <span class='no'>xlevels</span>,
+  <span class='no'>control</span>
+)</pre><p></div></p>
 
 <p><hr>
 <a id="method-update"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/update.html'>update()</a></code></h3>
@@ -372,8 +381,8 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 #&gt;  DONE!</div><div class='input'><span class='no'>myPCA</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='getBestModel.html'>getBestModel</a></span>(<span class='no'>myPCAs</span>)
 <span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='no'>myPCA</span>)</div><div class='output co'>#&gt; [1] "PLNPCAfit" "PLNfit"    "R6"       </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>myPCA</span>)</div><div class='output co'>#&gt; Poisson Lognormal with rank constrained for PCA (rank = 3)
 #&gt; ==================================================================
-#&gt;  nb_param   loglik       BIC       ICL R_squared
-#&gt;        68 -1057.87 -1190.192 -1247.954     0.804
+#&gt;  nb_param    loglik      BIC       ICL R_squared
+#&gt;        68 -1753.818 -1886.14 -1943.901     0.804
 #&gt; ==================================================================
 #&gt; * Useful fields
 #&gt;     $model_par, $latent, $var_par, $optim_par

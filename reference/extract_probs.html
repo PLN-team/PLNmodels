@@ -82,7 +82,7 @@ case, edge names follow igraph naming convention." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.2-9005</span>
       </span>
     </div>
 
@@ -214,7 +214,7 @@ case, edge names follow igraph naming convention.</p>
 #&gt;  Initialization...
 #&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
 #&gt; 	Joint optimization alternating gradient descent and graphical-lasso
-#&gt; 	sparsifying penalty = 3.652546 	sparsifying penalty = 3.37375 	sparsifying penalty = 3.116235 	sparsifying penalty = 2.878375 	sparsifying penalty = 2.658671 	sparsifying penalty = 2.455737 	sparsifying penalty = 2.268293 	sparsifying penalty = 2.095156 	sparsifying penalty = 1.935234 	sparsifying penalty = 1.78752 	sparsifying penalty = 1.65108 	sparsifying penalty = 1.525054 	sparsifying penalty = 1.408648 	sparsifying penalty = 1.301127 	sparsifying penalty = 1.201813 	sparsifying penalty = 1.11008 	sparsifying penalty = 1.025349 	sparsifying penalty = 0.9470846 	sparsifying penalty = 0.8747944 	sparsifying penalty = 0.8080221 	sparsifying penalty = 0.7463465 	sparsifying penalty = 0.6893785 	sparsifying penalty = 0.6367588 	sparsifying penalty = 0.5881556 	sparsifying penalty = 0.5432622 	sparsifying penalty = 0.5017954 	sparsifying penalty = 0.4634938 	sparsifying penalty = 0.4281157 	sparsifying penalty = 0.395438 	sparsifying penalty = 0.3652546 
+#&gt; 	sparsifying penalty = 3.566997 	sparsifying penalty = 3.294731 	sparsifying penalty = 3.043247 	sparsifying penalty = 2.810959 	sparsifying penalty = 2.596401 	sparsifying penalty = 2.39822 	sparsifying penalty = 2.215166 	sparsifying penalty = 2.046084 	sparsifying penalty = 1.889908 	sparsifying penalty = 1.745653 	sparsifying penalty = 1.612409 	sparsifying penalty = 1.489335 	sparsifying penalty = 1.375655 	sparsifying penalty = 1.270653 	sparsifying penalty = 1.173665 	sparsifying penalty = 1.08408 	sparsifying penalty = 1.001333 	sparsifying penalty = 0.9249023 	sparsifying penalty = 0.8543053 	sparsifying penalty = 0.7890969 	sparsifying penalty = 0.7288658 	sparsifying penalty = 0.6732321 	sparsifying penalty = 0.6218449 	sparsifying penalty = 0.57438 	sparsifying penalty = 0.5305381 	sparsifying penalty = 0.4900425 	sparsifying penalty = 0.452638 	sparsifying penalty = 0.4180885 	sparsifying penalty = 0.3861762 	sparsifying penalty = 0.3566997 
 #&gt;  Post-treatments
 #&gt;  DONE!</div><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='stability_selection.html'>stability_selection</a></span>(<span class='no'>nets</span>)
@@ -225,7 +225,7 @@ case, edge names follow igraph naming convention.</p>
 <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='co'>## Add edge attributes to graph using igraph</span>
 <span class='no'>net_stars</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='getBestModel.html'>getBestModel</a></span>(<span class='no'>nets</span>, <span class='st'>"StARS"</span>)
-<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>net_stars</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"partial_cor"</span>, <span class='kw'>plot</span><span class='kw'>=</span><span class='no'>F</span>)
+<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>net_stars</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"partial_cor"</span>, <span class='kw'>plot</span><span class='kw'>=</span><span class='no'>F</span>)
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>igraph</span>)
 <span class='fu'><a href='https://rdrr.io/pkg/igraph/man/E.html'>E</a></span>(<span class='no'>g</span>)$<span class='no'>prob</span> <span class='kw'>&lt;-</span> <span class='no'>probs</span>[<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/as_ids.html'>as_ids</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/E.html'>E</a></span>(<span class='no'>g</span>))]
 <span class='no'>g</span>

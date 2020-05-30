@@ -83,7 +83,7 @@ getModel and  plot." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.2-9005</span>
       </span>
     </div>
 
@@ -244,6 +244,7 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel</a></co
   <span class='no'>offsets</span>,
   <span class='no'>weights</span>,
   <span class='no'>model</span>,
+  <span class='no'>xlevels</span>,
   <span class='no'>control</span>
 )</pre><p></div></p>
 
@@ -279,10 +280,10 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel</a></co
 )</pre><p></div></p>
 
 <p><hr>
-<a id="method-plot"></a></p><h3>Method <code><a href='https://rdrr.io/r/graphics/plot.html'>plot()</a></code></h3>
+<a id="method-plot"></a></p><h3>Method <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(
+<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
   <span class='kw'>criteria</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"pen_loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>),
   <span class='kw'>log.x</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='no'>annotate</span>
@@ -326,7 +327,7 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel</a></co
 #&gt;  Initialization...
 #&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
 #&gt; 	Joint optimization alternating gradient descent and graphical-lasso
-#&gt; 	sparsifying penalty = 7.331617 	sparsifying penalty = 6.772001 	sparsifying penalty = 6.2551 	sparsifying penalty = 5.777653 	sparsifying penalty = 5.33665 	sparsifying penalty = 4.929308 	sparsifying penalty = 4.553058 	sparsifying penalty = 4.205527 	sparsifying penalty = 3.884523 	sparsifying penalty = 3.588021 	sparsifying penalty = 3.31415 	sparsifying penalty = 3.061184 	sparsifying penalty = 2.827526 	sparsifying penalty = 2.611704 	sparsifying penalty = 2.412354 	sparsifying penalty = 2.228222 	sparsifying penalty = 2.058143 	sparsifying penalty = 1.901047 	sparsifying penalty = 1.755942 	sparsifying penalty = 1.621912 	sparsifying penalty = 1.498113 	sparsifying penalty = 1.383763 	sparsifying penalty = 1.278142 	sparsifying penalty = 1.180582 	sparsifying penalty = 1.09047 	sparsifying penalty = 1.007235 	sparsifying penalty = 0.9303536 	sparsifying penalty = 0.8593405 	sparsifying penalty = 0.7937478 	sparsifying penalty = 0.7331617 
+#&gt; 	sparsifying penalty = 7.384741 	sparsifying penalty = 6.82107 	sparsifying penalty = 6.300423 	sparsifying penalty = 5.819517 	sparsifying penalty = 5.375319 	sparsifying penalty = 4.965025 	sparsifying penalty = 4.586049 	sparsifying penalty = 4.236 	sparsifying penalty = 3.91267 	sparsifying penalty = 3.614019 	sparsifying penalty = 3.338164 	sparsifying penalty = 3.083365 	sparsifying penalty = 2.848014 	sparsifying penalty = 2.630628 	sparsifying penalty = 2.429834 	sparsifying penalty = 2.244367 	sparsifying penalty = 2.073056 	sparsifying penalty = 1.914822 	sparsifying penalty = 1.768665 	sparsifying penalty = 1.633664 	sparsifying penalty = 1.508968 	sparsifying penalty = 1.39379 	sparsifying penalty = 1.287403 	sparsifying penalty = 1.189137 	sparsifying penalty = 1.098371 	sparsifying penalty = 1.014533 	sparsifying penalty = 0.9370948 	sparsifying penalty = 0.8655672 	sparsifying penalty = 0.7994992 	sparsifying penalty = 0.7384741 
 #&gt;  Post-treatments
 #&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='no'>fits</span>)</div><div class='output co'>#&gt; [1] "PLNnetworkfamily" "PLNfamily"        "R6"              </div></pre>
   </div>
