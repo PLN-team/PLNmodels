@@ -130,8 +130,8 @@ available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2")
 ##
 ## should be ready to pass to nlopt optimizer
 PLN_param <- function(control, n, p, d) {
-  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
+  lower_bound <- ifelse(is.null(control$lower_bound), sqrt(1e-4)  , control$lower_bound)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0  , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
   covariance  <- ifelse(is.null(control$inception), covariance, control$inception$vcov_model)
   ctrl <- list(

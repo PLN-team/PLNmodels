@@ -129,7 +129,7 @@ function(responses, covariates, offsets, weights, model, xlevels, control) {
     stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
     private$Theta <- control$inception$model_par$Theta
     private$M     <- control$inception$var_par$M
-    private$S     <- control$inception$var_par$S
+    private$S     <- sqrt(control$inception$var_par$S)
     private$Sigma <- control$inception$model_par$Sigma
     private$Ji    <- control$inception$loglik_vec
   } else {
