@@ -112,7 +112,7 @@ void optimizer_PLN_spherical::export_output() {
   // element-wise log-likelihood
   Z = data.O + data.X * Theta.t() + M;
   A = exp(Z.each_col() + .5 * S2) ;
-  loglik = sum(data.Y % Z - A - .5* pow(M, 2) / sigma2, 1) - p*S/sigma2 + .5 *p*log(S/sigma2) + data.Ki ;
+  loglik = sum(data.Y % Z - A - .5* pow(M, 2) / sigma2, 1) - p*S/sigma2 + .5 *p*log(S2/sigma2) + data.Ki ;
   S = S2 ;
 }
 
@@ -164,7 +164,7 @@ void optimizer_PLN_diagonal::export_output() {
   //element-wise log-likelihood
   Z = data.O + data.X * Theta.t() + M;
   A = exp (Z + .5 * S2) ;
-  loglik = sum(data.Y % Z - A + log(S), 1) - .5 * (pow(M, 2) + S2) * omega2 + .5 * sum(log(omega2)) + data.Ki ;
+  loglik = sum(data.Y % Z - A + .5 * log(S2), 1) - .5 * (pow(M, 2) + S2) * omega2 + .5 * sum(log(omega2)) + data.Ki ;
   S = S2 ;
 }
 
@@ -214,7 +214,7 @@ void optimizer_PLN_full::export_output () {
   // element-wise log-likelihood
   Z = data.O + data.X * Theta.t() + M ;
   A = exp (Z + .5 * S2) ;
-  loglik = sum(data.Y % Z - A + log(S) - .5*( (M * Omega) % M + S2 * diagmat(Omega)), 1) + .5 * real(log_det(Omega)) + data.Ki ;
+  loglik = sum(data.Y % Z - A + .5* log(S2) - .5*( (M * Omega) % M + S2 * diagmat(Omega)), 1) + .5 * real(log_det(Omega)) + data.Ki ;
   S = S2 ;
 }
 
@@ -223,13 +223,13 @@ void optimizer_PLN_full::export_var_par () {
   // variational parameters
   M = arma::mat(&parameter[0]  , n,p);
   S = arma::mat(&parameter[n*p], n,p);
-  S = S % S;
+  arma::mat S2 = S % S;
 
   // element-wise log-likelihood
   Z = data.O + data.X * data.Theta.t() + M    ;
-  A = exp (Z + .5 * S) ;
-  loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M * data.Omega) % M + S * diagmat(data.Omega)), 1) + .5 * real(log_det(data.Omega)) + data.Ki ;
-
+  A = exp (Z + .5 * S2) ;
+  loglik = sum(data.Y % Z - A + .5*log(S2) - .5*( (M * data.Omega) % M + S * diagmat(data.Omega)), 1) + .5 * real(log_det(data.Omega)) + data.Ki ;
+  S = S2 ;
 }
 
 // ---------------------------------------------------------------------------
@@ -311,10 +311,13 @@ void optimizer_PLN_sparse::export_output () {
   Theta = arma::mat(&parameter[0]  , p,d);
   M = arma::mat(&parameter[p*d]    , n,p);
   S = arma::mat(&parameter[p*(d+n)], n,p);
+  arma::mat S2 = S % S ;
   Z = data.O + data.X * Theta.t() + M;
-  Sigma = (M.t() * (M.each_col() % data.w) + diagmat(sum(S.each_col() % data.w, 0))) / accu(data.w) ;
+  A = exp (Z + .5 * S2) ;
+
+  Sigma = (M.t() * (M.each_col() % data.w) + diagmat(data.w.t() * S2) )/ data.w_bar ;
 
   // element-wise log-likelihood
-  A = exp (Z + .5 * S) ;
-  loglik = sum(data.Y % Z - A + .5*log(S) - .5*( (M * data.Omega) % M + S * diagmat(data.Omega)), 1) + .5 * data.log_det_Omega  + data.Ki ;
+  loglik = sum(data.Y % Z - A + .5*log(S2) - .5*( (M * data.Omega) % M + S2 * diagmat(data.Omega)), 1) + .5 * data.log_det_Omega  + data.Ki ;
+  S = S2 ;
 }

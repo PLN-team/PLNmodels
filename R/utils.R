@@ -123,18 +123,19 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
   Y
 }
 
-available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2")
+available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR2")
 
 ## -----------------------------------------------------------------
 ##  Series of setter to default parameters for user's main functions
 ##
 ## should be ready to pass to nlopt optimizer
 PLN_param <- function(control, n, p, d) {
-  lower_bound <- ifelse(is.null(control$lower_bound), sqrt(1e-4)  , control$lower_bound)
+  lower_bound <- ifelse(is.null(control$lower_bound), -Inf  , control$lower_bound)
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0  , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
   covariance  <- ifelse(is.null(control$inception), covariance, control$inception$vcov_model)
   ctrl <- list(
+    "constrained" = FALSE,
     "algorithm"   = "CCSAQ",
     "maxeval"     = 10000  ,
     "maxtime"     = -1     ,
@@ -178,6 +179,7 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
 
 PLNPCA_param <- function(control) {
   ctrl <- list(
+      "constrained" = TRUE,
       "algorithm"   = "CCSAQ" ,
       "ftol_rel"    = 1e-8    ,
       "ftol_abs"    = 0       ,
@@ -196,9 +198,10 @@ PLNPCA_param <- function(control) {
 }
 
 PLNnetwork_param <- function(control, n, p, d) {
-  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4, control$lower_bound)
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4, control$xtol_abs)
+  lower_bound <- ifelse(is.null(control$lower_bound), -Inf, control$lower_bound)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0, control$xtol_abs)
   ctrl <-  list(
+    "constrained" = FALSE,
     "ftol_out"  = 1e-5,
     "maxit_out" = 50,
     "penalize_diagonal" = TRUE,

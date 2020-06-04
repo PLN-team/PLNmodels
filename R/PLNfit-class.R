@@ -140,7 +140,7 @@ function(responses, covariates, offsets, weights, model, xlevels, control) {
     private$Theta <- do.call(rbind, lapply(LMs, coefficients))
     residuals     <- do.call(cbind, lapply(LMs, residuals))
     private$M     <- residuals
-    private$S     <- matrix(10 * max(control$lower_bound), n, ifelse(control$covariance == "spherical", 1, p))
+    private$S     <- matrix(1, n, ifelse(control$covariance == "spherical", 1, p))
     if (control$covariance == "spherical") {
       private$Sigma <- diag(sum(residuals^2)/(n*p), p, p)
     } else  if (control$covariance == "diagonal") {
