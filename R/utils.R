@@ -130,8 +130,9 @@ available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR
 ##
 ## should be ready to pass to nlopt optimizer
 PLN_param <- function(control, n, p, d) {
-  covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
-  covariance  <- ifelse(is.null(control$inception), covariance, control$inception$vcov_model)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
+  covariance  <- ifelse(is.null(control$covariance) , "full"    , control$covariance)
+  covariance  <- ifelse(is.null(control$inception)  , covariance, control$inception$vcov_model)
   ctrl <- list(
     "algorithm"   = "CCSAQ",
     "maxeval"     = 10000  ,
@@ -139,7 +140,7 @@ PLN_param <- function(control, n, p, d) {
     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-4,
-    "xtol_abs"    = rep(0, p*d + n*p + ifelse(covariance == "spherical", n, n*p)),
+    "xtol_abs"    = rep(xtol_abs, p*d + n*p + ifelse(covariance == "spherical", n, n*p)),
     "trace"       = 1,
     "covariance"  = covariance,
     "inception"   = NULL
@@ -150,6 +151,7 @@ PLN_param <- function(control, n, p, d) {
 }
 
 PLN_param_VE <- function(control, n, p, weighted = FALSE) {
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
   ctrl <- list(
     "algorithm"   = "CCSAQ",
@@ -158,7 +160,7 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-4,
-    "xtol_abs"    = rep(0, p*n +  ifelse(covariance == "spherical", n, n*p)),
+    "xtol_abs"    = rep(xtol_abs, p*n +  ifelse(covariance == "spherical", n, n*p)),
     "trace"       = 1,
     "covariance"  = covariance,
     "inception"   = NULL
@@ -188,6 +190,7 @@ PLNPCA_param <- function(control) {
 }
 
 PLNnetwork_param <- function(control, n, p, d) {
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
   ctrl <-  list(
     "ftol_out"  = 1e-5,
     "maxit_out" = 20,
@@ -195,10 +198,10 @@ PLNnetwork_param <- function(control, n, p, d) {
     "penalty_weights"   = matrix(1, p, p),
     "warm"        = FALSE,
     "algorithm"   = "CCSAQ",
-    "ftol_rel"    = 1e-8    ,
+    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0       ,
     "xtol_rel"    = 1e-4    ,
-    "xtol_abs"    = rep(0, p*d + 2*n*p),
+    "xtol_abs"    = rep(xtol_abs, p*d + 2*n*p),
     "maxeval"     = 10000   ,
     "maxtime"     = -1      ,
     "trace"       = 1       ,
