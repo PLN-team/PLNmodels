@@ -43,7 +43,7 @@ PLNPCAfit <-
           svdM <- svd(private$M, nu = rank, nv = self$p)
         }
         private$M <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
-        private$S <- matrix(max(control$lower_bound), self$n, rank)
+        private$S <- matrix(0.1, self$n, rank)
         private$B <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
         private$covariance <- "rank"
       },
@@ -104,11 +104,8 @@ function(responses, covariates, offsets, weights, control) {
                         rep(-Inf, self$n*self$q) , # M
                         rep(control$lower_bound,self$n*self$q)) # S
   opts$rank <- self$q
-  ## TWO LINES TEMPORARY...
-  opts$Theta <- matrix()
-  opts$Omega <- matrix()
   optim_out <- optim_rank(
-    c(private$Theta, private$B, private$M, private$S),
+    c(private$Theta, private$B, private$M, sqrt(private$S)),
     responses, covariates, offsets, weights, self$q, opts
   )
 

@@ -104,18 +104,19 @@ double fn_optim_PLN_rank(unsigned N, const double *x, double *grad, void *data) 
   arma::mat B(&x[p*d]        , p,q) ;
   arma::mat M(&x[p*(d+q)]    , n,q) ;
   arma::mat S(&x[p*(d+q)+n*q], n,q) ;
+  arma::mat S2 = S % S ;
 
   arma::mat Z = dat->O + dat->X * Theta.t() + M * B.t();
-  arma::mat A = exp (Z + .5 * S * (B%B).t() ) ;
+  arma::mat A = exp (Z + .5 * S2 * (B%B).t() ) ;
 
   arma::vec grd_Theta = vectorise(trans(A - dat->Y) * (dat->X.each_col() % dat->w));
-  arma::vec grd_B     = vectorise((diagmat(dat->w) * (A - dat->Y)).t() * M + (A.t() * (S.each_col() % dat->w)) % B) ;
+  arma::vec grd_B     = vectorise((diagmat(dat->w) * (A - dat->Y)).t() * M + (A.t() * (S2.each_col() % dat->w)) % B) ;
   arma::vec grd_M     = vectorise(diagmat(dat->w) * ((A-dat->Y) * B + M)) ;
-  arma::vec grd_S     = .5 * vectorise(diagmat(dat->w) * (1 - 1/S + A * (B%B) ));
+  arma::vec grd_S     = vectorise(diagmat(dat->w) * (S - 1/S + A * (B%B) % S ));
 
   stdvec grad_std = arma::conv_to<stdvec>::from(join_vert(join_vert(grd_Theta, grd_B), join_vert(grd_M, grd_S))) ;
 
-  double objective = accu(diagmat(dat->w) * (A - dat->Y % Z)) + .5 * accu(diagmat(dat->w) * (M % M + S - log(S) - 1)) ;
+  double objective = accu(diagmat(dat->w) * (A - dat->Y % Z)) + .5 * accu(diagmat(dat->w) * (M % M + S2 - log(S2) - 1)) ;
 
   for (unsigned int i=0;i<N;i++) grad[i] = grad_std[i];
 
