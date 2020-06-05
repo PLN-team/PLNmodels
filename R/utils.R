@@ -130,8 +130,6 @@ available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR
 ##
 ## should be ready to pass to nlopt optimizer
 PLN_param <- function(control, n, p, d) {
-  lower_bound <- ifelse(is.null(control$lower_bound), -Inf  , control$lower_bound)
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0  , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
   covariance  <- ifelse(is.null(control$inception), covariance, control$inception$vcov_model)
   ctrl <- list(
@@ -142,8 +140,7 @@ PLN_param <- function(control, n, p, d) {
     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-4,
-    "xtol_abs"    = c(rep(0   , p*d), rep(0   , p*n), rep(xtol_abs   , ifelse(covariance == "spherical", n, n*p))),
-    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(lower_bound, ifelse(covariance == "spherical", n, n*p))),
+    "xtol_abs"    = rep(0, p*d + n*p + ifelse(covariance == "spherical", n, n*p)),
     "trace"       = 1,
     "covariance"  = covariance,
     "inception"   = NULL
@@ -179,13 +176,13 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
 
 PLNPCA_param <- function(control) {
   ctrl <- list(
-      "constrained" = TRUE,
+      "constrained" = FALSE,
       "algorithm"   = "CCSAQ" ,
       "ftol_rel"    = 1e-8    ,
       "ftol_abs"    = 0       ,
       "xtol_rel"    = 1e-4    ,
-      "xtol_abs"    = 1e-4    ,
-      "lower_bound" = 1e-4    ,
+      "xtol_abs"    = 0       ,
+      "lower_bound" = -Inf    ,
       "maxeval"     = 10000   ,
       "maxtime"     = -1      ,
       "trace"       = 1       ,
@@ -198,8 +195,6 @@ PLNPCA_param <- function(control) {
 }
 
 PLNnetwork_param <- function(control, n, p, d) {
-  lower_bound <- ifelse(is.null(control$lower_bound), -Inf, control$lower_bound)
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0, control$xtol_abs)
   ctrl <-  list(
     "constrained" = FALSE,
     "ftol_out"  = 1e-5,
@@ -211,8 +206,7 @@ PLNnetwork_param <- function(control, n, p, d) {
     "ftol_rel"    = 1e-8    ,
     "ftol_abs"    = 0       ,
     "xtol_rel"    = 1e-4    ,
-    "xtol_abs"    = c(rep(0, p*d), rep(0, n*p), rep(xtol_abs, n*p)),
-    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, n*p), rep(lower_bound, n*p)),
+    "xtol_abs"    = rep(0, p*d + 2*n*p),
     "maxeval"     = 10000   ,
     "maxtime"     = -1      ,
     "trace"       = 1       ,
