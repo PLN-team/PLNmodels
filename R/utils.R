@@ -133,7 +133,6 @@ PLN_param <- function(control, n, p, d) {
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
   covariance  <- ifelse(is.null(control$inception), covariance, control$inception$vcov_model)
   ctrl <- list(
-    "constrained" = FALSE,
     "algorithm"   = "CCSAQ",
     "maxeval"     = 10000  ,
     "maxtime"     = -1     ,
@@ -151,8 +150,6 @@ PLN_param <- function(control, n, p, d) {
 }
 
 PLN_param_VE <- function(control, n, p, weighted = FALSE) {
-  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
   ctrl <- list(
     "algorithm"   = "CCSAQ",
@@ -161,10 +158,8 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-4,
-    "xtol_abs"    = c(rep(0   , p*n), rep(xtol_abs   , ifelse(covariance == "spherical", n, n*p))),
-    "lower_bound" = c(rep(-Inf, p*n), rep(lower_bound, ifelse(covariance == "spherical", n, n*p))),
+    "xtol_abs"    = rep(0, p*n +  ifelse(covariance == "spherical", n, n*p)),
     "trace"       = 1,
-    "weighted"    = weighted  ,
     "covariance"  = covariance,
     "inception"   = NULL
   )
@@ -176,13 +171,11 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
 
 PLNPCA_param <- function(control) {
   ctrl <- list(
-      "constrained" = FALSE,
       "algorithm"   = "CCSAQ" ,
       "ftol_rel"    = 1e-8    ,
       "ftol_abs"    = 0       ,
       "xtol_rel"    = 1e-4    ,
       "xtol_abs"    = 0       ,
-      "lower_bound" = -Inf    ,
       "maxeval"     = 10000   ,
       "maxtime"     = -1      ,
       "trace"       = 1       ,
@@ -196,9 +189,8 @@ PLNPCA_param <- function(control) {
 
 PLNnetwork_param <- function(control, n, p, d) {
   ctrl <-  list(
-    "constrained" = FALSE,
     "ftol_out"  = 1e-5,
-    "maxit_out" = 50,
+    "maxit_out" = 20,
     "penalize_diagonal" = TRUE,
     "penalty_weights"   = matrix(1, p, p),
     "warm"        = FALSE,

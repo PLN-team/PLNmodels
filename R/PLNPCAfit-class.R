@@ -99,10 +99,6 @@ function(responses, covariates, offsets, weights, control) {
   opts <- control
   opts$xtol_abs <- c(rep(0, self$p*(self$d + self$q) + self$n * self$q),
                      rep(control$xtol_abs, self$n*self$q))
-  opts$lower_bound <- c(rep(-Inf, self$p*self$d), # Theta
-                        rep(-Inf, self$p*self$q) , # B
-                        rep(-Inf, self$n*self$q) , # M
-                        rep(control$lower_bound,self$n*self$q)) # S
   opts$rank <- self$q
   optim_out <- optim_rank(
     c(private$Theta, private$B, private$M, sqrt(private$S)),

@@ -61,11 +61,5 @@ nlopt_opt initNLOPT(int n_param, Rcpp::List options) {
   nlopt_set_maxtime     (opt, Rcpp::as<double>(options["maxtime" ]));
   nlopt_set_xtol_abs    (opt, &xtol_abs[0]   );
 
-  bool constrained = Rcpp::as<bool>(options["constrained"]) ;
-  if (constrained) {
-    stdvec lower_bound = Rcpp::as<stdvec>(options["lower_bound"]) ;
-    nlopt_set_lower_bounds(opt, &lower_bound[0]) ;
-  }
-
   return opt;
 }
