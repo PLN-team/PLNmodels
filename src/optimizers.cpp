@@ -25,7 +25,6 @@ optimizer_PLN::optimizer_PLN(
   // Initialize NLOPT
   fn_optim   = NULL ;
   fn_VEstep  = NULL ;
-  fn_precond = NULL ;
   optimizer  = initNLOPT(par.n_elem, options)   ;
   parameter  = arma::conv_to<stdvec>::from(par) ;
 }
