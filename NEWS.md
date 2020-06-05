@@ -1,10 +1,16 @@
-# PLNmodels 0.10.2 - medium release
+# PLNmodels 0.10.3
+
+* Change in optimization for all PLN models (PLNs, PCA, LDA, networks): solving in S such that 
+S = S² for the variational parameters, thus avoiding lower bound and constrained optimization. 
+Slightly finer results/estimations for similar computational cost, but easier to maintain.
+
+# PLNmodels 0.10.2
 
 * Fix bug in predict() methods when factor levels differ between train and test datasets. 
 * Fix bug in PLNPCAfit S3 plot() method
 * Some simplification in C++ code
 * correction/changes in PLN likelihoods? + added constant terms in all likelihoods of all PLN models
-* VEstep now avaialble for all model of covariance in PLN (full, diagonal, spherical)
+* VEstep now available for all model of covariance in PLN (full, diagonal, spherical)
 
 # PLNmodels 0.9.5 - minor release
 
