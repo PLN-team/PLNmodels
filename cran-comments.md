@@ -1,39 +1,42 @@
-## Resubmission 3
 
-Removing RcppArmadillo from the Imports field (only LinkingTo)
+## Minor changes to answer CRAN maintainer request
 
-## Resubmission 2
+Hoping for WARN suppression on solaris and os build, we
 
-This is a second resubmission. In this version we
-
-- include NLopt via nloptr for portability
-- corrected several bugs
-- boosted code coverage with more tests 
-
-## Resubmission 1
-
-This is a resubmission. In this version I have
-
-- added references in the description field of DESCRIPTION
-- corrected a typo in the description field of DESCRIPTION
-- added examples to almost all the documented functions (Rd files)
-- limited the use of \dontrun whenever possible (to keep examples runtimes < 5 sec.)
-- added more tests via testthat
+* removed any use of rmarkdown::paged_table() in the vignettes
+* added screenshot.force = FALSE, in knitr options in the vignettes
 
 ## Tested environments
 
-- local ubuntu 18.04 install, R 3.5.3
-- ubuntu 14.04 (on travis-ci), R 3.5.3
-- ubuntu 14.04 (on travis-ci), R devel
-- Mac OS X (on travis-ci), R 3.5.3
-- windows (on appveyor), R 3.5.3
-- win-builder, R 3.5.3
+all status OK
+
+- local ubuntu 18.04 install, R 3.6.2
+- ubuntu 16.04 (on travis-ci), R 3.6.2
+- ubuntu 16.04 (on travis-ci), R devel
+- Mac OS X (on travis-ci), R 3.6.2
+- Mac OS X (on travis-ci), R devel
+- Debian Linux, R-devel, GCC (on R hub), R 3.6.2
+- Debian Linux, R-devel, GCC (on R hub), R devel
+- windows (on appveyor), R 3.6.2
+- win-builder, R 3.6.2
+- win-builder, R devel
+- win-builder, R-devel ATC (alternative toolchain)
+- win-builder, R old release
+
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+On my computer I get (Ubuntu 18.04, Intel Xeon 3.5 GHz; 32 Go mem)
 
-* Installed size is 10.8Mb
-  sub-directories of 1Mb or more:
-    - doc    2.2Mb
-    - libs   7.8Mb
+── R CMD check results ──────────────────────────────────── PLNmodels 0.9.5 ────
+Duration: 3m 44.1s
+
+> checking installed package size ... NOTE
+    installed size is 10.9Mb
+    sub-directories of 1Mb or more:
+      doc    1.6Mb
+      libs   8.4Mb
+
+0 errors ✓ | 0 warnings ✓ | 1 note x
+
+R CMD check succeeded

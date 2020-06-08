@@ -4,8 +4,15 @@
 \alias{PLNPCA}
 \title{Poisson lognormal model towards Principal Component Analysis}
 \usage{
-PLNPCA(formula, data, subset, weights, ranks = 1:5,
-  control_init = list(), control_main = list())
+PLNPCA(
+  formula,
+  data,
+  subset,
+  weights,
+  ranks = 1:5,
+  control_init = list(),
+  control_main = list()
+)
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
@@ -35,8 +42,7 @@ The list of parameters \code{control_main} controls the optimization of the main
  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8}
  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0}
  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
- \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
- \item{"lower_bound"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-4.}
+ \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0}
  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
  \item{"maxtime"}{stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)}
  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
@@ -48,7 +54,7 @@ The list of parameters \code{control_main} controls the optimization of the main
 \examples{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:6)
+myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
 }
 \seealso{
 The classes \code{\link[=PLNPCAfamily]{PLNPCAfamily}} and \code{\link[=PLNPCAfit]{PLNPCAfit}}

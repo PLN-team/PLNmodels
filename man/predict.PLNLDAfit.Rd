@@ -4,9 +4,15 @@
 \alias{predict.PLNLDAfit}
 \title{Predict group of new samples}
 \usage{
-\method{predict}{PLNLDAfit}(object, newdata, type = c("posterior",
-  "response", "scores"), scale = c("log", "prob"), prior = NULL,
-  control = list(), ...)
+\method{predict}{PLNLDAfit}(
+  object,
+  newdata,
+  type = c("posterior", "response", "scores"),
+  scale = c("log", "prob"),
+  prior = NULL,
+  control = list(),
+  ...
+)
 }
 \arguments{
 \item{object}{an R6 object with class PLNLDAfit}
@@ -35,8 +41,10 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myLDA <- PLNLDA(Abundance ~ 0 + offset(log(Offset)),
                 grouping = Group,
                 data = trichoptera)
+\dontrun{
 post_probs <- predict(myLDA, newdata = trichoptera, type = "posterior", scale = "prob")
 head(round(post_probs, digits = 3))
 predicted_group <- predict(myLDA, newdata = trichoptera, type = "response")
 table(predicted_group, trichoptera$Group, dnn = c("predicted", "true"))
+}
 }

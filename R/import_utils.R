@@ -230,7 +230,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
     rownames(counts) <- rownames(covariates) <- samples
     if (is.numeric(offset)) rownames(offset) <- samples
   }
-  counts <- counts[samples, ]
+  counts <- counts[samples, , drop = FALSE]
   ## Replace NA with 0s
   if (any(is.na(counts))) {
     counts[is.na(counts)] <- 0
@@ -245,7 +245,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
     samples <- samples[-empty_samples]
     counts <- counts[samples, ,drop = FALSE]
   }
-  covariates <- covariates[samples, ]
+  covariates <- covariates[samples, , drop = FALSE]
   if (is.null(names(covariates))) names(covariates) <- paste0("Variable", seq_along(covariates))
   ## compute offset
   offset     <- compute_offset(counts, offset, ...)
@@ -306,80 +306,78 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
   offset_function(counts, ...)
 }
 
-#' Prepare data for use in PLN models from a biom object
-#'
-#' @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "biom" class object
-#' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
-#'
-#' @param biom Required. Either a biom-class object from which the count table and covariates data.frame are extracted or a file name where to read the biom.
-#' @inheritParams prepare_data
-#' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
-#'
-#' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
-#' @export
-#'
-#' @details This functions depends on the biomformat package which is not a proper dependency of PLNmodels as it is not available on CRAN
-#'
-#' @importFrom biomformat read_biom sample_metadata biom_data
-#' @examples
-#' ## Requires the biomformat package
-#' \dontrun{
-#' library(biomformat)
-#' biom_file <- system.file("extdata", "rich_sparse_otu_table.biom", package = "biomformat")
-#' biom <- read_biom(biom_file)
-#' prepare_data_from_biom(biom)
-#' }
-prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
-  if (is.character(biom)) biom <- biomformat::read_biom(biom)
-  sdf <- biomformat::sample_metadata(biom)
-  if (is.null(sdf) || all(is.na(sdf))) {
-    stop(paste("No covariates detected in biom. Consider:",
-               "- extracting count data from biom with biom_data()",
-               "- preparing a covariates data.frame",
-               "- using prepare_data instead of prepare_data_from_biom",
-               sep = "\n"))
-  }
-  prepare_data(counts     = biomformat::biom_data(biom) %>% as("matrix"),
-               covariates = sdf,
-               offset     = offset,
-               ...)
-}
+# Prepare data for use in PLN models from a biom object
+#
+# @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "biom" class object
+# before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
+#
+# @param biom Required. Either a biom-class object from which the count table and covariates data.frame are extracted or a file name where to read the biom.
+# @inheritParams prepare_data
+# @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
+#
+# @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
+# @export
+#
+# @details This functions depends on the biomformat package which is not a proper dependency of PLNmodels as it is not available on CRAN
+#
+# @importFrom biomformat read_biom sample_metadata biom_data
+# @examples
+# ## Requires the biomformat package
+# \dontrun{
+# library(biomformat)
+# biom_file <- system.file("extdata", "rich_sparse_otu_table.biom", package = "biomformat")
+# biom <- read_biom(biom_file)
+# prepare_data_from_biom(biom)
+# }
+# prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
+#   if (is.character(biom)) biom <- biomformat::read_biom(biom)
+#   sdf <- biomformat::sample_metadata(biom)
+#   if (is.null(sdf) || all(is.na(sdf))) {
+#     stop(paste("No covariates detected in biom. Consider:",
+#                "- extracting count data from biom with biom_data()",
+#                "- preparing a covariates data.frame",
+#                "- using prepare_data instead of prepare_data_from_biom",
+#                sep = "\n"))
+#   }
+#   prepare_data(counts     = biomformat::biom_data(biom) %>% as("matrix"),
+#                covariates = sdf,
+#                offset     = offset,
+#                ...)
+# }
 
-#' Prepare data for use in PLN models from a phyloseq object
-#'
-#' @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "phyloseq" class object
-#' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
-#'
-#' @param physeq Required. A phyloseq class object from which the count table and covariates data.frame are extracted.
-#' @inheritParams prepare_data
-#' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
-#'
-#' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
-#' @export
-#'
-#' @details This functions depends on the phyloseq package which is not a proper dependency of PLNmodels as it is not available on CRAN
-#'
-#' @importFrom phyloseq sample_data otu_table
-#' @examples
-#' ## Requires the phyloseq package
-#' \dontrun{
-#' library(phyloseq)
-#' data(enterotypes)
-#' prepare_data_from_phyloseq(enterotypes)
-#' }
-prepare_data_from_phyloseq <- function(physeq, offset = "TSS", ...) {
-  if (!inherits(physeq, "phyloseq")) stop("physeq should be a phyloseq object.")
-  if (is.null(phyloseq::sample_data(physeq, errorIfNULL = FALSE))) {
-    stop(paste("No covariates detected in physeq Consider:",
-               "- extracting count data from biom with as(otu_table(physeq), \"matrix\")",
-               "- preparing a covariates data.frame",
-               "- using prepare_data instead of prepare_data_from_phyloseq",
-               sep = "\n"))
-  }
-  prepare_data(counts     = phyloseq::otu_table(physeq) %>% as("matrix"),
-               covariates = phyloseq::sample_data(physeq) %>% as("data.frame"),
-               offset     = offset,
-               ...)
-}
-
-
+# Prepare data for use in PLN models from a phyloseq object
+#
+# @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "phyloseq" class object
+# before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
+#
+# @param physeq Required. A phyloseq class object from which the count table and covariates data.frame are extracted.
+# @inheritParams prepare_data
+# @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
+#
+# @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
+# @export
+#
+# @details This functions depends on the phyloseq package which is not a proper dependency of PLNmodels as it is not available on CRAN
+#
+# @importFrom phyloseq sample_data otu_table
+# @examples
+# ## Requires the phyloseq package
+# \dontrun{
+# library(phyloseq)
+# data(enterotype)
+# prepare_data_from_phyloseq(enterotype)
+# }
+# prepare_data_from_phyloseq <- function(physeq, offset = "TSS", ...) {
+#   if (!inherits(physeq, "phyloseq")) stop("physeq should be a phyloseq object.")
+#   if (is.null(phyloseq::sample_data(physeq, errorIfNULL = FALSE))) {
+#     stop(paste("No covariates detected in physeq Consider:",
+#                "- extracting count data from biom with as(otu_table(physeq), \"matrix\")",
+#                "- preparing a covariates data.frame",
+#                "- using prepare_data instead of prepare_data_from_phyloseq",
+#                sep = "\n"))
+#   }
+#   prepare_data(counts     = phyloseq::otu_table(physeq) %>% as("matrix"),
+#                covariates = phyloseq::sample_data(physeq) %>% as("data.frame"),
+#                offset     = offset,
+#                ...)
+# }

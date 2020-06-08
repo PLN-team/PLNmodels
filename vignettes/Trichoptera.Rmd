@@ -17,6 +17,7 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
+  screenshot.force = FALSE, 
   echo = TRUE,
   rows.print = 5,
   message = FALSE,
@@ -31,9 +32,6 @@ The packages required to run the vignette are the following:
 
 ```{r packages}
 library(PLNmodels)
-library(tidyverse)
-library(GGally)
-library(corrplot)
 ```
 
 ## The trichopterata data set 
@@ -79,7 +77,7 @@ In all other vignettes and journal papers associated with **PLNmodels**, the cou
 A basic representation of the matrix of counts (here transposed and log-transformed), shows the typical huge dispersion between low and highly abundant species.
 
 ```{r count diplay, fig.width = 7, fig.cap = "log-counts in the trichoptera data set"}
-corrplot(
+corrplot::corrplot(
   t(log(1 + trichoptera$Abundance)),
   is.corr = FALSE,
   addgrid.col = NA
@@ -91,17 +89,17 @@ corrplot(
 Additional information was collected during the sampling, which corresponds to external covariates the effect of which may or may not be taken into account in the model (depending on the question at play). In the trichoptera data set, those covariates correspond to meteorological factors plus a categorical variable indicating the family of the caughts specimens.
 
 ```{r covariates_trichoptera}
-select(trichoptera, -Offset, -Abundance) %>% head() %>% knitr::kable()
+dplyr::select(trichoptera, -Offset, -Abundance) %>% head() %>% knitr::kable()
 ```
 
 The design matrix arising from the covariates is denoted by $\mathbf{X}$ in our mathematical model and `X` within the `R` environment.
 
-A first glance at the pairs plot between the covariates shows no particular structure regarding the trichoptera groups.
+<!-- A first glance at the pairs plot between the covariates shows no particular structure regarding the trichoptera groups. -->
 
-```{r pairs, fig.dim = c(7, 7), fig.cap ="Pairs plot of the covariates in the trichoptera data set"}
-select(trichoptera, -Offset, -Abundance) %>% 
-ggpairs(columns = 1:6, mapping = aes(colour = Group))
-```
+<!-- ```{r pairs, fig.dim = c(7, 7), fig.cap ="Pairs plot of the covariates in the trichoptera data set"} -->
+<!-- select(trichoptera, -Offset, -Abundance) %>%  -->
+<!-- ggpairs(columns = 1:6, mapping = aes(colour = Group)) -->
+<!-- ``` -->
 
 ### Offsets and the compositionality issue
 

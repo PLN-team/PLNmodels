@@ -21,19 +21,21 @@
 #' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
 #' @include PLNnetworkfit-class.R
 #' @examples
+#' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' nets <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 #' myPLNnet <- getBestModel(nets)
 #' class(myPLNnet)
 #' print(myPLNnet)
+#' }
 #' @seealso The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}
 PLNnetworkfit <-
   R6Class(classname = "PLNnetworkfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(penalty, responses, covariates, offsets, weights, model, control) {
-        super$initialize(responses, covariates, offsets, weights, model, control)
+      initialize = function(penalty, responses, covariates, offsets, weights, model, xlevels, control) {
+        super$initialize(responses, covariates, offsets, weights, model, xlevels, control)
         private$lambda <- penalty
       },
       update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
@@ -47,7 +49,7 @@ PLNnetworkfit <-
       lambda = NA  # the sparsity tuning parameter
     ),
     active = list(
-      penalty         = function() {private$lambda},
+      penalty    = function() {private$lambda},
       n_edges    = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
       nb_param   = function() {self$p * self$d + self$n_edges},
       pen_loglik = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
@@ -69,14 +71,14 @@ PLNnetworkfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
 
   ## shall we penalize the diagonal? in glassoFast
-  rho <- matrix(self$penalty, self$p, self$p)
+  rho <- self$penalty * control$penalty_weights
   if (!control$penalize_diagonal) diag(rho) <- 0
 
   cond <- FALSE; iter <- 0
   objective   <- numeric(control$maxit_out)
   convergence <- numeric(control$maxit_out)
   ## start from the standard PLN at initialization
-  par0  <- c(private$Theta, private$M, private$S)
+  par0  <- c(private$Theta, private$M, sqrt(private$S))
   Sigma <- private$Sigma
   objective.old <- -self$loglik
   while (!cond) {
@@ -89,8 +91,7 @@ function(responses, covariates, offsets, weights, control) {
     Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-    control$Omega <- Omega
-    optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, control)
+    optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, Omega, control)
 
     ## Check convergence
     objective[iter]   <- -sum(weights * optim.out$loglik) + self$penalty * sum(abs(Omega))
@@ -99,12 +100,14 @@ function(responses, covariates, offsets, weights, control) {
 
     ## Prepare next iterate
     Sigma <- optim.out$Sigma
-    par0  <- c(optim.out$Theta, optim.out$M, optim.out$S)
+    par0  <- c(optim.out$Theta, optim.out$M, sqrt(optim.out$S))
     objective.old <- objective[iter]
   }
 
   ## ===========================================
   ## OUTPUT
+  Ji <- optim.out$loglik
+  attr(Ji, "weights") <- weights
   self$update(
     Theta = optim.out$Theta,
     Omega = Omega,
@@ -113,7 +116,7 @@ function(responses, covariates, offsets, weights, control) {
     S = optim.out$S,
     Z = optim.out$Z,
     A = optim.out$A,
-    Ji = optim.out$loglik,
+    Ji = Ji,
     monitoring = list(objective        = objective[1:iter],
                       convergence      = convergence[1:iter],
                       outer_iterations = iter,

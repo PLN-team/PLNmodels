@@ -4,8 +4,7 @@
 \alias{predict.PLNfit}
 \title{Predict counts of a new sample}
 \usage{
-\method{predict}{PLNfit}(object, newdata, type = c("link", "response"),
-  ...)
+\method{predict}{PLNfit}(object, newdata, type = c("link", "response"), ...)
 }
 \arguments{
 \item{object}{an R6 object with class PLNfit}

@@ -1,26 +1,27 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 0.9.1
+Version: 0.10.3-900
 Authors@R: c(
-  person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inra.fr",
+  person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inrae.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
-  person("Mahendra", "Mariadassou", role = "aut", email = "mahendra.mariadassou@inra.fr", 
+  person("Mahendra", "Mariadassou", role = "aut", email = "mahendra.mariadassou@inrae.fr", 
       comment = c(ORCID = "0000-0003-2986-354X")),
-  person("Stéphane", "Robin", role ="ctb", email = "stephane.robin@inra.fr")
+  person("Stéphane", "Robin", role ="ctb", email = "stephane.robin@inrae.fr")
   )
 Description: The Poisson-lognormal model and variants can be used for 
     a variety of multivariate problems when count data are at play, including 
     principal component analysis for count data (Chiquet, Mariadassou and Robin, 
     2018 <doi:10.1214/18-AOAS1177>), discriminant analysis and 
-    network inference (Chiquet, Mariadassou and Robin, 2018 <arXiv:1806.03120>). 
+    network inference (Chiquet, Mariadassou and Robin, 2018 <http://proceedings.mlr.press/v97/chiquet19a.html>). 
     Implements variational algorithms to fit such models accompanied with a set of 
     functions for visualization and diagnostic. 
 URL: https://jchiquet.github.io/PLNmodels/
 BugReports: https://github.com/jchiquet/PLNmodels/issues
 License: GPL (>= 3)
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Depends: R (>= 3.4)
+LazyData: true
 biocViews:
 Imports: 
   methods,
@@ -39,17 +40,15 @@ Imports:
   tidyr,
   ggplot2,
   corrplot,
-  magrittr,
-  biomformat,
-  phyloseq
+  magrittr
 Suggests: 
     knitr,
     rmarkdown,
-    tidyverse,
-    GGally,
     testthat,
     covr,
-    pkgdown
+    pkgdown,
+    biomformat,
+    phyloseq
 LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)
 VignetteBuilder: knitr
 Collate: 
@@ -82,4 +81,5 @@ Collate:
     'mollusk.R'
     'plot_utils.R'
     'trichoptera.R'
+    'utils-pipe.R'
     'utils.R'

@@ -34,8 +34,10 @@ Model extraction from a collection of models
 }}
 
 \examples{
+\dontrun{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:4)
+myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
 myModel <- getModel(myPCA, 2)
+}
 }

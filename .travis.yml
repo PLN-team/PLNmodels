@@ -1,6 +1,9 @@
 # Travis CI for automatic building.
 #
 # Changelog:
+#  - 2020-01-27: updating os X distribution tested
+#  - 2019-12-04: bioconductor dependencies handled with
+#                biocViews (rather than bioc-devel or bioc-release)
 #  - 2019-03-16: suppressing requirements for system version of nlopt
 #  - 2019-03-04: some tweaks and clean up
 #  - 2019-01-29: deployment of pages with travis
@@ -21,24 +24,27 @@ cache: packages
 
 warnings_are_errors: false
 
-brew_packages:
-  - gcc
+# brew_packages:
+#   - gcc
 
-use_bioc: true
-bioc_required: true
 
-bioc_packages:
-  - biomformat
-  - phyloseq
+# use_bioc: true
+# bioc_required: true
+
+# bioc_packages:
+#  - biomformat
+#  - phyloseq
 
 matrix:
   include:
-    - os: linux
-      r: bioc-devel
     - os: osx
-      r: bioc-release
+      r: release
+    - os: osx
+      disable_homebrew: true
     - os: linux
-      r: bioc-release
+      r: devel
+    - os: linux
+      r: release
       r_packages:
         - covr
         - pkgdown

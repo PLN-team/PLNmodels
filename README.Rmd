@@ -15,33 +15,26 @@ knitr::opts_chunk$set(
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jchiquet/PLNmodels?branch=master&svg=true)](https://ci.appveyor.com/project/jchiquet/PLNmodels)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c031ad73ccdb4c88ba11dfd74fab1255)](https://www.codacy.com/app/jchiquet/PLNmodels?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jchiquet/PLNmodels&amp;utm_campaign=Badge_Grade)
 [![Coverage status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/jchiquet/PLNmodels?branch=master)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 
 > The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA, LDA and network inference for count data). This package implements efficient algorithms to fit such models accompanied with a set of functions for vizualisation and diagnostic. 
 
 ## Installation
 
+**PLNmodels** is available on [CRAN](https://cran.r-project.org/package=PLNmodels). The development version is available on [Github](https://github.com/jchiquet/PLNmodels).
+
 ### R Package installation
 
 #### CRAN dependencies
 
-**PLNmodels** needs the following CRAN R packages, so check that their are installed on your computer.
+**PLNmodels** needs the following CRAN R packages, so check that they are are installed on your computer.
 
-```{r dependencies CRAN, eval = FALSE}
-library(R6)
-library(glassoFast)
-library(Matrix)
-library(Rcpp)
-library(RcppArmadillo)
-library(nloptr)
-library(igraph)
-library(grid)
-library(gridExtra)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(corrplot)
-library(magrittr)
-# use install.packages() if needed
+```{r CRAN dependencies, eval = FALSE}
+required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo",
+                   "nloptr", "igraph", "grid", "gridExtra", "dplyr",
+                   "tidyr", "ggplot2", "corrplot", "magrittr", "devtools")
+not_installed_CRAN <- setdiff(required_CRAN, rownames(installed.packages()))
+if (length(not_installed_CRAN) > 0) install.packages(not_installed_CRAN)
 ```
 
 #### Bioconductor dependencies
@@ -49,31 +42,34 @@ library(magrittr)
 **PLNmodels** also needs two BioConductor packages
 
 ```{r Bioconductor dependencies, eval = FALSE}
-library(phyloseq)
-library(biomformat)
-## use BiocManager::install() if needed
+required_BioC <- c("phyloseq", "biomformat")
+not_installed_BioC <- setdiff(required_BioC, rownames(installed.packages()))
+if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
 ```
 
 #### Installing PLNmodels
 
-- For the development version, use
+- For the last stable version, use the CRAN version
 
-```{r package, eval = FALSE}
-devtools::install_github("jchiquet/PLNmodels")
+```{r package CRAN, eval = FALSE}
+install.packages("PLNmodels")
 ```
 
-- For the last tagged release, use
+- For the development version, use the github install
+
+```{r package github, eval = FALSE}
+remotes::install_github("jchiquet/PLNmodels")
+```
+
+- For a specific tagged release, use
 
 ```{r package tag, eval = FALSE}
-devtools::install_github("jchiquet/PLNmodels@v0.8.2")
+remotes::install_github("jchiquet/PLNmodels@tag_number")
 ```
-
-- Windows users may want to use [the binary version of the package](https://github.com/jchiquet/PLNmodels/releases/download/v0.8.2/PLNmodels_0.8.2.zip)
-
 
 ## Usage and main fitting functions
 
-The package comes with a ecological data to present the functionality 
+The package comes with an ecological data set to present the functionality 
 
 ```{r load PLNmodels, eval = FALSE}
 library(PLNmodels)
@@ -113,5 +109,11 @@ Please cite our work using the following references:
 
 - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 12: 2674–2698, 2018. [link](http://dx.doi.org/10.1214/18-AOAS1177)
 
-- J. Chiquet, M. Mariadassou and S. Robin: Variational inference for sparse network reconstruction from count data, arXiv preprint, 2018. [link](https://arxiv.org/abs/1806.03120)
+- J. Chiquet, M. Mariadassou and S. Robin: Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019. 
+[link](http://proceedings.mlr.press/v97/chiquet19a.html)
+
+
+
+
+
 

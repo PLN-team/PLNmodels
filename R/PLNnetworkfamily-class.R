@@ -9,6 +9,7 @@
 #' @field responses the matrix of responses common to every models
 #' @field covariates the matrix of covariates common to every models
 #' @field offsets the matrix of offsets common to every models
+#' @field weights the vector of observation weights
 #' @field penalties the sparsity level of the network in the successively fitted models
 #' @field models a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.
 #' @field inception a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.
@@ -49,17 +50,19 @@ PLNnetworkfamily <-
 )
 
 PLNnetworkfamily$set("public", "initialize",
-  function(penalties, responses, covariates, offsets, weights, model, control) {
+  function(penalties, responses, covariates, offsets, weights, model, xlevels, control) {
 
     ## initialize fields shared by the super class
     super$initialize(responses, covariates, offsets, weights, control)
+    ## A basic model for inception
+    myPLN <- PLNfit$new(responses, covariates, offsets, weights, model, xlevels, control)
+    myPLN$optimize(responses, covariates, offsets, weights, control)
+    control$inception <- myPLN
     ## Get an appropriate grid of penalties
     if (is.null(penalties)) {
       if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
-      myPLN <- PLNfit$new(responses, covariates, offsets, weights, model, control)
-      myPLN$optimize(responses, covariates, offsets, weights, control)
-      max_pen <- max(abs(myPLN$model_par$Sigma))
-      control$inception <- myPLN
+      Sigma_hat <- myPLN$model_par$Sigma / control$penalty_weights
+      max_pen <- max(abs(Sigma_hat[upper.tri(Sigma_hat, diag = control$penalize_diagonal)]))
       penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min.ratio), len = control$nPenalties)
     } else {
       if (control$trace > 1) cat("\nPenalties already set by the user")
@@ -69,14 +72,13 @@ PLNnetworkfamily$set("public", "initialize",
     ## instantiate as many models as penalties
     private$params <- sort(penalties, decreasing = TRUE)
     self$models <- lapply(private$params, function(penalty) {
-      PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, model, control)
+      PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, model, xlevels, control)
     })
 
 })
 
 PLNnetworkfamily$set("public", "optimize",
   function(control) {
-
   ## Go along the penalty grid (i.e the models)
   for (m in seq_along(self$models))  {
 
@@ -136,9 +138,10 @@ PLNnetworkfamily$set("public", "stability_selection",
                                     covariates = self$covariates[subsample, , drop = FALSE],
                                     offsets    = self$offsets   [subsample, , drop = FALSE],
                                     model      = private$model,
+                                    xlevels    = private$xlevels,
                                     weights    = self$weights   [subsample], control = ctrl_init)
 
-      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d, !all(self$weights == 1))
+      ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d)
       ctrl_main$trace <- 0
       myPLN$optimize(ctrl_main)
       nets <- do.call(cbind, lapply(myPLN$models, function(model) {

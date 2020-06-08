@@ -15,10 +15,10 @@
 ##'
 ##' @details The list of parameters \code{control_main} controls the optimization of the main process, with the following entries
 ##'  \itemize{
-##'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
-##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
-##'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
-##'  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
+#'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.}
+#'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0}
+##'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter. Default is 1e-4}
+##'  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs. Default is 0}
 ##'  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
 ##'  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
 ##'     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
@@ -27,6 +27,7 @@
 ##'  \item{"ftol_out"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
 ##'  \item{"maxit_out"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
 ##'  \item{"penalize_diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}
+##'  \item{"penalty_weights"}{p x p matrix of weights (defaut filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
 ##' }
 ##'
 ##' The list of parameters \code{control_init} controls the optimization process in the initialization and in the function \code{\link[=PLN]{PLN}}, plus two additional parameters:
@@ -49,15 +50,18 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
+  ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y),ncol(args$X))
   if (is.null(control_init$trace)) control_init$trace <- 0
-  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X), weighted = !missing(weights))
+  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
   if (is.null(ctrl_init$nPenalties)) ctrl_init$nPenalties <- 30
   if (is.null(ctrl_init$min.ratio)) ctrl_init$min.ratio   <- .1
-  ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y),ncol(args$X), weighted = !missing(weights))
+  ctrl_init$penalty_weights   <- ctrl_main$penalty_weights
+  ctrl_init$penalize_diagonal <- ctrl_main$penalize_diagonal
 
   ## Instantiate the collection of models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNnetworkfamily$new(penalties, args$Y, args$X, args$O, args$w, args$model, ctrl_init)
+  myPLN <- PLNnetworkfamily$new(penalties, args$Y, args$X, args$O, args$w,
+                                args$model, args$xlevels, ctrl_init)
 
   ## Optimization
   if (ctrl_main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")

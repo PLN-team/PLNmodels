@@ -35,15 +35,15 @@ PLNPCAfit <-
   R6Class(classname = "PLNPCAfit",
     inherit = PLNfit,
     public  = list(
-      initialize = function(rank, responses, covariates, offsets, weights, model, control) {
-        super$initialize(responses, covariates, offsets, weights, model, control)
+      initialize = function(rank, responses, covariates, offsets, weights, model, xlevels, control) {
+        super$initialize(responses, covariates, offsets, weights, model, xlevels, control)
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {
           svdM <- svd(private$M, nu = rank, nv = self$p)
         }
         private$M <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
-        private$S <- matrix(max(control$lower_bound), self$n, rank)
+        private$S <- matrix(0.1, self$n, rank)
         private$B <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
         private$covariance <- "rank"
       },
@@ -89,28 +89,24 @@ PLNPCAfit <-
         rownames(rotation) <- rownames(private$Sigma)
         rotation
       }
-### Why not sending back the rotation matrix ?
     )
 )
 
 ## Call to the C++ optimizer and update of the relevant fields
 PLNPCAfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
-
   ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
   opts <- control
   opts$xtol_abs <- c(rep(0, self$p*(self$d + self$q) + self$n * self$q),
                      rep(control$xtol_abs, self$n*self$q))
-  opts$lower_bound <- c(rep(-Inf, self$p*self$d), # Theta
-                        rep(-Inf, self$p*self$q) , # B
-                        rep(-Inf, self$n*self$q) , # M
-                        rep(control$lower_bound,self$n*self$q)) # S
   opts$rank <- self$q
   optim_out <- optim_rank(
-    c(private$Theta, private$B, private$M, private$S),
-    responses, covariates, offsets, weights, opts
+    c(private$Theta, private$B, private$M, sqrt(private$S)),
+    responses, covariates, offsets, weights, self$q, opts
   )
 
+  Ji <- optim_out$loglik
+  attr(Ji, "weights") <- weights
   self$update(
     B     = optim_out$B,
     Theta = optim_out$Theta,
@@ -119,7 +115,7 @@ function(responses, covariates, offsets, weights, control) {
     S     = optim_out$S,
     A     = optim_out$A,
     Z     = optim_out$Z,
-    Ji    = optim_out$loglik,
+    Ji    = Ji,
     monitoring = list(
       iterations = optim_out$iterations,
       status     = optim_out$status,

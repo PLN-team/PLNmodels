@@ -4,10 +4,17 @@
 \alias{plot.PLNnetworkfit}
 \title{Extract and plot the network (aprtial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object}
 \usage{
-\method{plot}{PLNnetworkfit}(x, type = c("partial_cor", "support"),
-  output = c("igraph", "corrplot"), edge.color = c("#F8766D",
-  "#00BFC4"), remove.isolated = FALSE, node.labels = NULL,
-  layout = layout_in_circle, plot = TRUE, ...)
+\method{plot}{PLNnetworkfit}(
+  x,
+  type = c("partial_cor", "support"),
+  output = c("igraph", "corrplot"),
+  edge.color = c("#F8766D", "#00BFC4"),
+  remove.isolated = FALSE,
+  node.labels = NULL,
+  layout = layout_in_circle,
+  plot = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{an R6 object with class PLNnetworkfit}

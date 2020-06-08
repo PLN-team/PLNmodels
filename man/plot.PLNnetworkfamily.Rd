@@ -4,9 +4,15 @@
 \alias{plot.PLNnetworkfamily}
 \title{Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)}
 \usage{
-\method{plot}{PLNnetworkfamily}(x, type = c("criteria", "stability",
-  "diagnostic"), criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
-  log.x = TRUE, stability = 0.9, annotate = TRUE, ...)
+\method{plot}{PLNnetworkfamily}(
+  x,
+  type = c("criteria", "stability", "diagnostic"),
+  criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
+  log.x = TRUE,
+  stability = 0.9,
+  annotate = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{an R6 object with class PLNfamily}

@@ -9,6 +9,7 @@ Status](https://ci.appveyor.com/api/projects/status/github/jchiquet/PLNmodels?br
 Badge](https://api.codacy.com/project/badge/Grade/c031ad73ccdb4c88ba11dfd74fab1255)](https://www.codacy.com/app/jchiquet/PLNmodels?utm_source=github.com&utm_medium=referral&utm_content=jchiquet/PLNmodels&utm_campaign=Badge_Grade)
 [![Coverage
 status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/jchiquet/PLNmodels?branch=master)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 
 > The Poisson lognormal model and variants can be used for a variety of
 > multivariate problems when count data are at play (including PCA, LDA
@@ -18,29 +19,24 @@ status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)]
 
 ## Installation
 
+**PLNmodels** is available on
+[CRAN](https://cran.r-project.org/package=PLNmodels). The development
+version is available on [Github](https://github.com/jchiquet/PLNmodels).
+
 ### R Package installation
 
 #### CRAN dependencies
 
-**PLNmodels** needs the following CRAN R packages, so check that their
-are installed on your computer.
+**PLNmodels** needs the following CRAN R packages, so check that they
+are are installed on your
+computer.
 
 ``` r
-library(R6)
-library(glassoFast)
-library(Matrix)
-library(Rcpp)
-library(RcppArmadillo)
-library(nloptr)
-library(igraph)
-library(grid)
-library(gridExtra)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(corrplot)
-library(magrittr)
-# use install.packages() if needed
+required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo",
+                   "nloptr", "igraph", "grid", "gridExtra", "dplyr",
+                   "tidyr", "ggplot2", "corrplot", "magrittr", "devtools")
+not_installed_CRAN <- setdiff(required_CRAN, rownames(installed.packages()))
+if (length(not_installed_CRAN) > 0) install.packages(not_installed_CRAN)
 ```
 
 #### Bioconductor dependencies
@@ -48,35 +44,41 @@ library(magrittr)
 **PLNmodels** also needs two BioConductor packages
 
 ``` r
-library(phyloseq)
-library(biomformat)
-## use BiocManager::install() if needed
+required_BioC <- c("phyloseq", "biomformat")
+not_installed_BioC <- setdiff(required_BioC, rownames(installed.packages()))
+if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
 ```
 
 #### Installing PLNmodels
 
-  - For the development version, use
+  - For the last stable version, use the CRAN version
 
 <!-- end list -->
 
 ``` r
-devtools::install_github("jchiquet/PLNmodels")
+install.packages("PLNmodels")
 ```
 
-  - For the last tagged release, use
+  - For the development version, use the github install
 
 <!-- end list -->
 
 ``` r
-devtools::install_github("jchiquet/PLNmodels@v0.8.2")
+remotes::install_github("jchiquet/PLNmodels")
 ```
 
-  - Windows users may want to use [the binary version of the
-    package](https://github.com/jchiquet/PLNmodels/releases/download/v0.8.2/PLNmodels_0.8.2.zip)
+  - For a specific tagged release, use
+
+<!-- end list -->
+
+``` r
+remotes::install_github("jchiquet/PLNmodels@tag_number")
+```
 
 ## Usage and main fitting functions
 
-The package comes with a ecological data to present the functionality
+The package comes with an ecological data set to present the
+functionality
 
 ``` r
 library(PLNmodels)
@@ -123,5 +125,6 @@ Please cite our work using the following references:
     2674–2698, 2018. [link](http://dx.doi.org/10.1214/18-AOAS1177)
 
   - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
-    sparse network reconstruction from count data, arXiv preprint, 2018.
-    [link](https://arxiv.org/abs/1806.03120)
+    sparse network reconstruction from count data, Proceedings of the
+    36th International Conference on Machine Learning (ICML), 2019.
+    [link](http://proceedings.mlr.press/v97/chiquet19a.html)

@@ -3,7 +3,6 @@
 \docType{package}
 \name{PLNmodels}
 \alias{PLNmodels}
-\alias{PLNmodels-package}
 \title{PLNmodels}
 \description{
 The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including

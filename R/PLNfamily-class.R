@@ -1,4 +1,20 @@
-## COMMON TO EVERY COLLECTIONS OF MODELS BASED ON PLN (PLNPCA, PLNnetwork)
+#' An R6 Class to represent a collection of PLNfit
+#'
+#' @description super class for \code{\link{PLNPCAfamily}} and \code{\link{PLNnetworkfamily}}
+#'
+#' This class comes with a set of methods, some of them being useful for the user:
+#' See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestModel}},
+#' \code{\link[=getModel.PLNnetworkfamily]{getModel}} and  \code{\link[=plot.PLNnetworkfamily]{plot}}.
+#'
+#' @field responses the matrix of responses common to every models
+#' @field covariates the matrix of covariates common to every models
+#' @field offsets the matrix of offsets common to every models
+#' @field weights the vector of observation weights
+#' @field models a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.
+#' @field inception a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.
+#' @field criteria a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
+#' @include PLNfamily-class.R
+#' @importFrom R6 R6Class
 PLNfamily <-
   R6Class(classname = "PLNfamily",
     public = list(

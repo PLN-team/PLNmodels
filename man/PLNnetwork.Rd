@@ -4,8 +4,15 @@
 \alias{PLNnetwork}
 \title{Poisson lognormal model towards sparse network inference}
 \usage{
-PLNnetwork(formula, data, subset, weights, penalties = NULL,
-  control_init = list(), control_main = list())
+PLNnetwork(
+  formula,
+  data,
+  subset,
+  weights,
+  penalties = NULL,
+  control_init = list(),
+  control_main = list()
+)
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
@@ -32,10 +39,10 @@ Fit the sparse inverse covariance variant of the Poisson lognormal with a variat
 \details{
 The list of parameters \code{control_main} controls the optimization of the main process, with the following entries
  \itemize{
- \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
- \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
- \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
- \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
+ \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.}
+ \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0}
+ \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter. Default is 1e-4}
+ \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs. Default is 0}
  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
@@ -44,6 +51,7 @@ The list of parameters \code{control_main} controls the optimization of the main
  \item{"ftol_out"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
  \item{"maxit_out"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
  \item{"penalize_diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}
+ \item{"penalty_weights"}{p x p matrix of weights (defaut filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
 }
 
 The list of parameters \code{control_init} controls the optimization process in the initialization and in the function \code{\link[=PLN]{PLN}}, plus two additional parameters:

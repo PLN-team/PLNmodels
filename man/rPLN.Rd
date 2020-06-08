@@ -4,8 +4,12 @@
 \alias{rPLN}
 \title{PLN RNG}
 \usage{
-rPLN(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
-  depths = rep(10000, n))
+rPLN(
+  n = 10,
+  mu = rep(0, ncol(Sigma)),
+  Sigma = diag(1, 5, 5),
+  depths = rep(10000, n)
+)
 }
 \arguments{
 \item{n}{the sample size}
