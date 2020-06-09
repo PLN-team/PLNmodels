@@ -4,8 +4,8 @@
 #' Objects produced by the functions [PLNnetwork()], [PLNPCA()] and [PLNLDA()] also enjoy the methods of [PLNfit()] by inheritance.
 #'
 #' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-#' See the documentation for [coef.PLNfit()], [sigma.PLNfit()],
-#' [predict.PLNfit()], [vcov.PLNfit()] and [standard_error.PLNfit()].
+#' See the documentation for [coef()], [sigma()],
+#' [predict()], [vcov()] and [standard_error()].
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'
@@ -21,6 +21,7 @@
 #'
 #' @inherit PLN details
 #'
+#' @rdname PLNfit
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #'
@@ -393,7 +394,7 @@ PLNfit <- R6Class(
   )
 
   ## ----------------------------------------------------------
-  ##  REST OF THE CLASS
+  ##  END OF THE CLASS
   ## ----------------------------------------------------------
 
 )
