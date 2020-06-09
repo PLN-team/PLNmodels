@@ -7,7 +7,7 @@
 #'
 #' @field penalty the level of sparsity in the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.
-#' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
+#' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
 #' @field latent a matrix: values of the latent vector (Z in the model)
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field loglik variational lower bound of the loglikelihood
@@ -38,8 +38,8 @@ PLNnetworkfit <-
         super$initialize(responses, covariates, offsets, weights, model, xlevels, control)
         private$lambda <- penalty
       },
-      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+      update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S2=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, M, S2 = S2, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(penalty)) private$lambda <- penalty
         if (!anyNA(Omega))   private$Omega  <- Omega
       }
@@ -78,7 +78,7 @@ function(responses, covariates, offsets, weights, control) {
   objective   <- numeric(control$maxit_out)
   convergence <- numeric(control$maxit_out)
   ## start from the standard PLN at initialization
-  par0  <- c(private$Theta, private$M, sqrt(private$S))
+  par0  <- c(private$Theta, private$M, sqrt(private$S2))
   Sigma <- private$Sigma
   objective.old <- -self$loglik
   while (!cond) {
@@ -91,38 +91,38 @@ function(responses, covariates, offsets, weights, control) {
     Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
     ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-    optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, Omega, control)
+    optim_out <- optim_sparse(par0, responses, covariates, offsets, weights, Omega, control)
 
     ## Check convergence
-    objective[iter]   <- -sum(weights * optim.out$loglik) + self$penalty * sum(abs(Omega))
+    objective[iter]   <- -sum(weights * optim_out$loglik) + self$penalty * sum(abs(Omega))
     convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
     if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
 
     ## Prepare next iterate
-    Sigma <- optim.out$Sigma
-    par0  <- c(optim.out$Theta, optim.out$M, sqrt(optim.out$S))
+    Sigma <- optim_out$Sigma
+    par0  <- c(optim_out$Theta, optim_out$M, optim_out$S)
     objective.old <- objective[iter]
   }
 
   ## ===========================================
   ## OUTPUT
-  Ji <- optim.out$loglik
+  Ji <- optim_out$loglik
   attr(Ji, "weights") <- weights
   self$update(
-    Theta = optim.out$Theta,
+    Theta = optim_out$Theta,
     Omega = Omega,
-    Sigma = optim.out$Sigma,
-    M = optim.out$M,
-    S = optim.out$S,
-    Z = optim.out$Z,
-    A = optim.out$A,
+    Sigma = optim_out$Sigma,
+    M  = optim_out$M,
+    S2 = (optim_out$S)**2,
+    Z  = optim_out$Z,
+    A  = optim_out$A,
     Ji = Ji,
     monitoring = list(objective        = objective[1:iter],
                       convergence      = convergence[1:iter],
                       outer_iterations = iter,
-                      inner_iterations = optim.out$iterations,
-                      inner_status     = optim.out$status,
-                      inner_message    = statusToMessage(optim.out$status)))
+                      inner_iterations = optim_out$iterations,
+                      inner_status     = optim_out$status,
+                      inner_message    = statusToMessage(optim_out$status)))
 
 })
 
@@ -130,7 +130,7 @@ PLNnetworkfit$set("public", "postTreatment",
 function(responses, covariates, offsets, weights, nullModel) {
   super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
   dimnames(private$Omega) <- dimnames(private$Sigma)
-  colnames(private$S) <- 1:self$p
+  colnames(private$S2) <- 1:self$p
 })
 
 #' @importFrom Matrix Matrix

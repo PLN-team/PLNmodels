@@ -8,7 +8,7 @@
 #'
 #' @field rank the dimension of the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
-#' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
+#' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
 #' @field latent a matrix: values of the latent vector (Z in the model)
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field loglik variational lower bound of the loglikelihood
@@ -42,13 +42,13 @@ PLNPCAfit <-
         } else {
           svdM <- svd(private$M, nu = rank, nv = self$p)
         }
-        private$M <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
-        private$S <- matrix(0.1, self$n, rank)
-        private$B <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
+        private$M  <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
+        private$S2 <- matrix(0.1, self$n, rank)
+        private$B  <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
         private$covariance <- "rank"
       },
-      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M = M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S2=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, M = M, S2 = S2, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(B)) private$B <- B
       },
       setVisualization = function(scale.unit=FALSE) {
@@ -63,7 +63,7 @@ PLNPCAfit <-
     active = list(
       rank = function() {ncol(private$B)},
       nb_param = function() {self$p * (self$d + self$rank)},
-      entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)))},
+      entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)))},
       model_par = function() {
         par <- super$model_par
         par$B <- private$B
@@ -101,7 +101,7 @@ function(responses, covariates, offsets, weights, control) {
                      rep(control$xtol_abs, self$n*self$q))
   opts$rank <- self$q
   optim_out <- optim_rank(
-    c(private$Theta, private$B, private$M, sqrt(private$S)),
+    c(private$Theta, private$B, private$M, sqrt(private$S2)),
     responses, covariates, offsets, weights, self$q, opts
   )
 
@@ -112,7 +112,7 @@ function(responses, covariates, offsets, weights, control) {
     Theta = optim_out$Theta,
     Sigma = optim_out$Sigma,
     M     = optim_out$M,
-    S     = optim_out$S,
+    S2    = (optim_out$S)**2,
     A     = optim_out$A,
     Z     = optim_out$Z,
     Ji    = Ji,
@@ -128,7 +128,7 @@ function(responses, covariates, offsets, weights, nullModel) {
   super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
   colnames(private$B) <- colnames(private$M) <- 1:self$q
   rownames(private$B) <- colnames(responses)
-  if (private$covariance != "spherical") colnames(private$S) <- 1:self$q
+  if (private$covariance != "spherical") colnames(private$S2) <- 1:self$q
   self$setVisualization()
 })
 

@@ -29,7 +29,7 @@ The function \code{\link{PLNLDA}}.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
+\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
@@ -52,7 +52,7 @@ The function \code{\link{PLNLDA}}.
 
 \item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), B (latent loadings), P (latent position) and Mu (group means)}
 
-\item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
+\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 

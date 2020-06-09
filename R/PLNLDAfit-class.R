@@ -9,7 +9,7 @@
 #'
 #' @field rank the dimension of the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), B (latent loadings), P (latent position) and Mu (group means)
-#' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
+#' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
 #' @field optim_par a list with parameters useful for monitoring the optimization
 #' @field loglik variational lower bound of the loglikelihood
 #' @field BIC variational lower bound of the BIC
@@ -104,7 +104,7 @@ PLNLDAfit$set("public", "postTreatment",
 function(responses, covariates, offsets) {
   super$postTreatment(responses, covariates, offsets)
   rownames(private$B) <- colnames(private$B) <- colnames(responses)
-  if (private$covariance != "spherical") colnames(private$S) <- 1:self$q
+  if (private$covariance != "spherical") colnames(private$S2) <- 1:self$q
   self$setVisualization()
 })
 

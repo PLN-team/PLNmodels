@@ -23,7 +23,7 @@ PLNnetwork(
 
 \item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
 
-\item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
+\item{penalties}{an optional vector of positive real number controling the level of sparsity of the underlying network. if NULL (the default), will be set internally}
 
 \item{control_init}{a list for controling the optimization of the PLN model used at initialization. See details.}
 

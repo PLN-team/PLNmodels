@@ -26,7 +26,7 @@ print(myPLN)
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{model}}{character: the model used for the coavariance (either "spherical", "diagonal" or "full")}
+\item{\code{model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
 }
 \if{html}{\out{</div>}}
 }
@@ -35,13 +35,13 @@ print(myPLN)
 \describe{
 \item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
 
-\item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
+\item{\code{var_par}}{a list with two matrices, M and SS, which are the estimated parameters in the variational approximation}
 
 \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
-\item{\code{model}}{character: the model used for the coavariance (either "spherical", "diagonal" or "full")}
+\item{\code{model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
 
 \item{\code{loglik}}{(weighted) variational lower bound of the loglikelihood}
 
@@ -86,7 +86,7 @@ print(myPLN)
   Theta = NA,
   Sigma = NA,
   M = NA,
-  S = NA,
+  S2 = NA,
   Ji = NA,
   R2 = NA,
   Z = NA,

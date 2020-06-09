@@ -11,10 +11,10 @@
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'
 #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
-#' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
+#' @field var_par a list with two matrices, M and SS, which are the estimated parameters in the variational approximation
 #' @field latent a matrix: values of the latent vector (Z in the model)
 #' @field optim_par a list with parameters useful for monitoring the optimization
-#' @field model character: the model used for the coavariance (either "spherical", "diagonal" or "full")
+#' @field model character: the model used for the covariance (either "spherical", "diagonal" or "full")
 #' @field loglik (weighted) variational lower bound of the loglikelihood
 #' @field loglik_vec element-wise variational lower bound of the loglikelihood
 #' @field BIC variational lower bound of the BIC
@@ -37,11 +37,11 @@ PLNfit <-
     public = list(
       ## constructor: function initialize, see below
       ## "setter" function
-      update = function(Theta=NA, Sigma=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
+      update = function(Theta=NA, Sigma=NA, M=NA, S2=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
         if (!anyNA(Theta))      private$Theta  <- Theta
         if (!anyNA(Sigma))      private$Sigma  <- Sigma
         if (!anyNA(M))          private$M      <- M
-        if (!anyNA(S))          private$S      <- S
+        if (!anyNA(S2))         private$S2     <- S2
         if (!anyNA(Z))          private$Z      <- Z
         if (!anyNA(A))          private$A      <- A
         if (!anyNA(Ji))         private$Ji     <- Ji
@@ -54,7 +54,7 @@ PLNfit <-
       xlevels    = NA, # factor levels present in the original data, useful for predict() methods.
       Theta      = NA, # the model parameters for the covariable
       Sigma      = NA, # the covariance matrix
-      S          = NA, # the variational parameters for the variances
+      S2         = NA, # the variational parameters for the variances
       M          = NA, # the variational parameters for the means
       Z          = NA, # the matrix of latent variable
       A          = NA, # the matrix of expected counts
@@ -77,7 +77,7 @@ PLNfit <-
       model_par  = function() {list(Theta = private$Theta, Sigma = private$Sigma)},
       fisher     = function() {list(mat = private$FIM, type = private$FIM_type) },
       std_err    = function() {private$.std_err },
-      var_par    = function() {list(M = private$M, S = private$S)},
+      var_par    = function() {list(M = private$M, S2 = private$S2)},
       latent     = function() {private$Z},
       fitted     = function() {private$A},
       nb_param   = function() {
@@ -89,7 +89,7 @@ PLNfit <-
       loglik     = function() {sum(attr(private$Ji, "weights") * private$Ji) },
       loglik_vec = function() {private$Ji},
       BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
-      entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", self$q, 1))},
+      entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)) * ifelse(private$covariance == "spherical", self$q, 1))},
       ICL        = function() {self$BIC - self$entropy},
       R_squared  = function() {private$R2},
       criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
@@ -129,7 +129,7 @@ function(responses, covariates, offsets, weights, model, xlevels, control) {
     stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
     private$Theta <- control$inception$model_par$Theta
     private$M     <- control$inception$var_par$M
-    private$S     <- control$inception$var_par$S
+    private$S2    <- control$inception$var_par$S2
     private$Sigma <- control$inception$model_par$Sigma
     private$Ji    <- control$inception$loglik_vec
   } else {
@@ -140,13 +140,13 @@ function(responses, covariates, offsets, weights, model, xlevels, control) {
     private$Theta <- do.call(rbind, lapply(LMs, coefficients))
     residuals     <- do.call(cbind, lapply(LMs, residuals))
     private$M     <- residuals
-    private$S     <- matrix(0.1, n, ifelse(control$covariance == "spherical", 1, p))
+    private$S2    <- matrix(0.1, n, ifelse(control$covariance == "spherical", 1, p))
     if (control$covariance == "spherical") {
       private$Sigma <- diag(sum(residuals^2)/(n*p), p, p)
     } else  if (control$covariance == "diagonal") {
       private$Sigma <- diag(diag(crossprod(residuals)/n), p, p)
     } else  {
-      private$Sigma <- crossprod(residuals)/n + diag(colMeans(private$S), nrow = p)
+      private$Sigma <- crossprod(residuals)/n + diag(colMeans(private$S2), nrow = p)
     }
   }
 
@@ -157,7 +157,7 @@ PLNfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
 
   optim_out <- private$optimizer(
-    c(private$Theta, private$M, sqrt(private$S)),
+    c(private$Theta, private$M, sqrt(private$S2)),
     responses,
     covariates,
     offsets,
@@ -171,7 +171,7 @@ function(responses, covariates, offsets, weights, control) {
     Theta      = optim_out$Theta,
     Sigma      = optim_out$Sigma,
     M          = optim_out$M,
-    S          = optim_out$S,
+    S2         = (optim_out$S)**2,
     Z          = optim_out$Z,
     A          = optim_out$A,
     Ji         = Ji,
@@ -201,7 +201,7 @@ function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type
   rownames(private$Theta) <- colnames(responses)
   colnames(private$Theta) <- colnames(covariates)
   rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
-  rownames(private$M) <- rownames(private$S) <- rownames(responses)
+  rownames(private$M) <- rownames(private$S2) <- rownames(responses)
   ## compute and store Fisher Information matrix
   type <- match.arg(type)
   private$FIM <- self$compute_fisher(type, X = covariates)
@@ -255,7 +255,7 @@ function(covariates, offsets, responses, weights, control = list()) {
 
   ## optimisation
   optim_out <- VEstep_optimizer(
-    c(private$M, sqrt(private$S)),
+    c(private$M, sqrt(private$S2)),
     responses,
     covariates,
     offsets,
@@ -268,7 +268,7 @@ function(covariates, offsets, responses, weights, control = list()) {
 
   ## output
   list(M       = optim_out$M,
-       S       = optim_out$S,
+       S2      = (optim_out$S)**2,
        log.lik = setNames(optim_out$loglik, rownames(responses)))
 })
 

@@ -27,7 +27,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
+\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
 
 \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
@@ -52,7 +52,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 
 \item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)}
 
-\item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
+\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
 
 \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
@@ -136,7 +136,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
   Sigma = NA,
   B = NA,
   M = NA,
-  S = NA,
+  S2 = NA,
   Z = NA,
   A = NA,
   Ji = NA,

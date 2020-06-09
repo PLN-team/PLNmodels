@@ -1,3 +1,7 @@
+# PLNmodels 0.10.4
+
+* Change name of variational variance parameters to S2 (use to be S)
+
 # PLNmodels 0.10.3
 
 * Change in optimization for all PLN models (PLNs, PCA, LDA, networks): solving in S such that 

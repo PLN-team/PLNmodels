@@ -58,7 +58,7 @@ Rcpp::List optimizer_PLN::get_output() {
       Rcpp::Named("Sigma"     ) = Sigma,
       Rcpp::Named("Omega"     ) = Omega,
       Rcpp::Named("M"         ) = M,
-      Rcpp::Named("S"         ) = S % S,
+      Rcpp::Named("S"         ) = S,
       Rcpp::Named("A"         ) = A,
       Rcpp::Named("Z"         ) = Z,
       Rcpp::Named("iterations") = data.iterations,
@@ -71,7 +71,7 @@ Rcpp::List optimizer_PLN::get_var_par() {
   return Rcpp::List::create(
       Rcpp::Named("status"    ) = (int) status,
       Rcpp::Named("M"         ) = M,
-      Rcpp::Named("S"         ) = S % S,
+      Rcpp::Named("S"         ) = S,
       Rcpp::Named("iterations") = data.iterations,
       Rcpp::Named("loglik"    ) = loglik
     );
