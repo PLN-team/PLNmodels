@@ -7,7 +7,7 @@
 status](https://github.com/jchiquet/PLNmodels/workflows/R-CMD-check/badge.svg)](https://github.com/jchiquet/PLNmodels/actions)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 [![Lifecycle:
-maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![](https://img.shields.io/github/last-commit/jchiquet/PLNmodels.svg)](https://github.com/jchiquet/PLNmodels/commits/master)
 <!-- badges: end -->
 
