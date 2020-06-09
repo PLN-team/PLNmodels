@@ -1,28 +1,30 @@
 #' An R6 Class to represent a collection of PLNfit
 #'
-#' @description super class for \code{\link{PLNPCAfamily}} and \code{\link{PLNnetworkfamily}}
+#' @description super class for [`PLNPCAfamily`] and [`PLNnetworkfamily`]
 #'
-#' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestModel}},
-#' \code{\link[=getModel.PLNnetworkfamily]{getModel}} and  \code{\link[=plot.PLNnetworkfamily]{plot}}.
 #'
-#' @field responses the matrix of responses common to every models
-#' @field covariates the matrix of covariates common to every models
-#' @field offsets the matrix of offsets common to every models
-#' @field weights the vector of observation weights
-#' @field models a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.
-#' @field inception a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.
-#' @field criteria a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.
+#'
+#' @details This class comes with a set of methods, some of them being useful for the user:
+#' See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestModel()}},
+#' \code{\link[=getModel.PLNnetworkfamily]{getModel()}} and  \code{\link[=plot.PLNnetworkfamily]{plot()}}.
+#'
+#' @md
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 PLNfamily <-
   R6Class(classname = "PLNfamily",
     public = list(
+      #' @field responses the matrix of responses common to every models
       responses  = NULL, # the Y matrix
+      #' @field covariates the matrix of covariates common to every models
       covariates = NULL, # the X matrix
+      #' @field offsets the matrix of offsets common to every models
       offsets    = NULL, # the O matrix
+      #' @field weights the vector of observation weights
       weights    = NULL, # the vector of obervation weights
+      #' @field inception a [PLNfit] object, obtained when no sparsifying penalty is applied.
       inception  = NULL, # the basic model in the collection (no regularization, nor sparsity, nor rank)
+      #' @field models a list of [PLNfit] object, one per penalty.
       models     = NULL  # the collection of fitted models
     ),
     private = list(
@@ -32,12 +34,12 @@ PLNfamily <-
       d          = NULL  # number of covariates
     ),
     active = list(
-      # send back a data frame with some criteria associated with the collection of fits
+      #' @field criteria a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the collection of models / fits
       criteria = function() {
         res <- do.call(rbind, lapply(self$models, function(model) {model$criteria}))
         data.frame(param = private$params, res)
       },
-      # send back a data frame with some quantities associated with the optimization process
+      #' @field convergence sends back a data frame with some convergence diagnostics associated with the optimization process (method, optimal value, etc)
       convergence = function() {
         res <- do.call(rbind, lapply(self$models, function(model) {
           c(nb_param = model$nb_param, sapply(model$optim_par, function(x) x[length(x)]))
@@ -47,6 +49,18 @@ PLNfamily <-
     )
 )
 
+#' @description
+#' Create a new [`PLNfamily`] object.
+#' @param responses the matrix of responses common to every models
+#' @param covariates the matrix of covariates common to every models
+#' @param offsets the matrix of offsets common to every models
+#' @param weights the vector of observation weights
+#' @param control a list for controlling the optimization. See details.
+#'
+#' @inherit PLN details
+#' @md
+#'
+#' @return A new [`PLNfamily`] object
 PLNfamily$set("public", "initialize",
   function(responses, covariates, offsets, weights, control) {
 
@@ -68,6 +82,10 @@ PLNfamily$set("public", "initialize",
 })
 
 ## a method to compute and set fields after optimization
+#' @description
+#' Update and set some fields (`R^2`, `vcov`, etc) after optimization
+#' @md
+#' @return An updated [`PLNfamily`] object
 PLNfamily$set("public", "postTreatment",
 function() {
   nullModel <- nullModelPoisson(self$responses, self$covariates, self$offsets, self$weights)
@@ -81,6 +99,13 @@ function() {
     )
 })
 
+## a method to compute and set fields after optimization
+#' @description
+#' Extract a model from a collection of models
+#' @inheritParams getModel
+#' @md
+#' @return A [`PLNfit`] object (potentially a [`PLNPCAfit`] or [`PLNnetworkfit`])
+#' @seealso [getModel()]
 PLNfamily$set("public", "getModel",
 function(var, index = NULL) {
   ## Extraction by index
@@ -102,6 +127,14 @@ function(var, index = NULL) {
   }
 })
 
+
+## a method to plot a collection of models
+#' @description
+#' Lineplot of selected criteria for all models in the collection
+#' @param criteria A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)
+#' @param annotate Logical. Should R2 be added to the plot (defaults to `TRUE`)
+#' @md
+#' @return A [`ggplot2`] object
 PLNfamily$set("public", "plot",
 function(criteria, annotate = TRUE) {
   stopifnot(!anyNA(self$criteria[criteria]))
@@ -118,6 +151,10 @@ function(criteria, annotate = TRUE) {
   p
 })
 
+## Print method
+#' @description
+#' Base print method for collections of models.
+#' @md
 PLNfamily$set("public", "show",
 function() {
   cat("--------------------------------------------------------\n")
@@ -125,5 +162,9 @@ function() {
   cat("--------------------------------------------------------\n")
 })
 
+## Print method
+#' @description
+#' Base print method for collections of models.
+#' @md
 PLNfamily$set("public", "print", function() self$show())
 
