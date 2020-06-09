@@ -174,9 +174,9 @@
 <p>It is common practice when modeling count data to introduce an offset term to control for different sampling efforts, exposures, baselines, etc. The <em>proper way</em> to compute sample-specific offsets in still debated and may vary depending on the field. There are nevertheless a few popular methods:</p>
 <ul>
 <li>Total Sum Scaling (TSS), where the offset of a sample is the total count in that sample</li>
-<li>Cumulative Sum Scaling (CSS), introduced in <span class="citation">(Paulson et al. <a href="#ref-CSS">2013</a>)</span>, where the offset of a sample if the cumulative sum of counts in that sample, up to a quantile determined in a data driven way.</li>
-<li>Relative Log-Expression (RLE), implemented in <span class="citation">(Anders and Huber <a href="#ref-DESeq2">2010</a>)</span>, where all samples are used to compute a reference sample, each sample is compared to the reference sample using log-ratios and the offset is the median log-ratio.</li>
-<li>Geometric Mean of Pairwise Ratio (GMPR), introduced in <span class="citation">(Chen et al. <a href="#ref-GMPR">2018</a>)</span> where each sample is compared to each other to compute a median log-ratio and the offset of a sample is the geometric means of those pairwise ratios.</li>
+<li>Cumulative Sum Scaling (CSS), introduced in <span class="citation">(Paulson et al. <a href="#ref-CSS" role="doc-biblioref">2013</a>)</span>, where the offset of a sample if the cumulative sum of counts in that sample, up to a quantile determined in a data driven way.</li>
+<li>Relative Log-Expression (RLE), implemented in <span class="citation">(Anders and Huber <a href="#ref-DESeq2" role="doc-biblioref">2010</a>)</span>, where all samples are used to compute a reference sample, each sample is compared to the reference sample using log-ratios and the offset is the median log-ratio.</li>
+<li>Geometric Mean of Pairwise Ratio (GMPR), introduced in <span class="citation">(Chen et al. <a href="#ref-GMPR" role="doc-biblioref">2018</a>)</span> where each sample is compared to each other to compute a median log-ratio and the offset of a sample is the geometric means of those pairwise ratios.</li>
 </ul>
 <p>Each of these offset be computed from a counts matrix using the <code>compute_offset</code> function and changing its <code>offset</code> argument:</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co">## same as compute_offset(trichoptera$Abundance, offset = "TSS")</span>
@@ -247,7 +247,7 @@
 <h2 class="hasAnchor">
 <a href="#importing-data-from-biom-and-phyloseq-objects-using-prepare_data_from_phyloseqbiom" class="anchor"></a>Importing data from biom and phyloseq objects using <code>prepare_data_from_[phyloseq|biom]</code>
 </h2>
-<p>Community composition data are quite popular in microbial ecology and usually stored in flat files using the <a href="http://biom-format.org/">biom format</a> and/or imported in R as phyloseq-class objects <span class="citation">(McMurdie <a href="#ref-phyloseq">2013</a>)</span> using the Bioconductor <a href="https://joey711.github.io/phyloseq/">phyloseq</a> package.</p>
+<p>Community composition data are quite popular in microbial ecology and usually stored in flat files using the <a href="http://biom-format.org/">biom format</a> and/or imported in R as phyloseq-class objects <span class="citation">(McMurdie <a href="#ref-phyloseq" role="doc-biblioref">2013</a>)</span> using the Bioconductor <a href="https://joey711.github.io/phyloseq/">phyloseq</a> package.</p>
 <!-- We provide helper functions to directly import data from a biom file (or biom-class object) and a phyloseq-class object.  -->
 <p>We show here how to import data from a biom file (or biom-class object) and form a phyloseq-class object.</p>
 <div id="reading-from-a-biom-file" class="section level3">
@@ -329,7 +329,7 @@ O_i = \sum_{j=1}^J c_{ij}
 q_i^l = \min \{q \text{ such that } \sum_j 1_{c_{ij} \leq q} \geq l \sum_j 1_{c_{ij} &gt; 0} \} \qquad s_i^l = \sum_{j: c_{ij} \leq q_i^l} c_{ij}
 \]</span> The sample-specific quantiles are then used to compute reference quantiles defined as <span class="math inline">\(q^l = \text{median} \{q^i_l\}\)</span> and median average deviation around the quantile <span class="math inline">\(q^l\)</span> as <span class="math inline">\(d^l = \text{median} |q_i^l - q^l|\)</span>. The method then searches for the smallest quantile <span class="math inline">\(l\)</span> for which it detects instability, defined as large relative increase in the <span class="math inline">\(d^l\)</span>. Formally, <span class="math inline">\(\hat{l}\)</span> is the smallest <span class="math inline">\(l\)</span> satisfying <span class="math inline">\(\frac{d^{l+1} - d^l}{d^l} \geq 0.1\)</span>. The scaling sample-specific offset are then chosen as: <span class="math display">\[
 O_i = s_i^{\hat{l}} / \text{median}_i \{ s_i^{\hat{l}} \}
-\]</span> Dividing by the median of the <span class="math inline">\(s_i^{\hat{l}}\)</span> ensures that offsets are centered around <span class="math inline">\(1\)</span> and compare sizes differences with respect to the reference sample. Note also that the reference quantiles <span class="math inline">\(q^l\)</span> can be computed using either the median (default, as in the original <span class="citation">Paulson et al. (<a href="#ref-CSS">2013</a>)</span> paper) or the mean, by specifying <code>reference = mean</code>, as implemented in <code>metagenomeseq</code>.</p>
+\]</span> Dividing by the median of the <span class="math inline">\(s_i^{\hat{l}}\)</span> ensures that offsets are centered around <span class="math inline">\(1\)</span> and compare sizes differences with respect to the reference sample. Note also that the reference quantiles <span class="math inline">\(q^l\)</span> can be computed using either the median (default, as in the original <span class="citation">Paulson et al. (<a href="#ref-CSS" role="doc-biblioref">2013</a>)</span> paper) or the mean, by specifying <code>reference = mean</code>, as implemented in <code>metagenomeseq</code>.</p>
 </div>
 <div id="relative-log-expression" class="section level3">
 <h3 class="hasAnchor">
@@ -355,23 +355,23 @@ O_i = \text{median}_{i' != i} r_{ii'}
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-DESeq2">
-<p>Anders, Simon, and Wolfgang Huber. 2010. “Differential Expression Analysis for Sequence Count Data.” <em>Genome Biology</em> 11 (10): R106. <a href="https://doi.org/10.1186/gb-2010-11-10-r106" class="uri">https://doi.org/10.1186/gb-2010-11-10-r106</a>.</p>
+<p>Anders, Simon, and Wolfgang Huber. 2010. “Differential Expression Analysis for Sequence Count Data.” <em>Genome Biology</em> 11 (10): R106. <a href="https://doi.org/10.1186/gb-2010-11-10-r106">https://doi.org/10.1186/gb-2010-11-10-r106</a>.</p>
 </div>
 <div id="ref-GMPR">
-<p>Chen, Li, James Reeve, Lujun Zhang, Shengbing Huang, Xuefeng Wang, and Jun Chen. 2018. “GMPR: A Robust Normalization Method for Zero-Inflated Count Data with Application to Microbiome Sequencing Data.” <em>PeerJ</em> 6 (April): e4600. <a href="https://doi.org/10.7717/peerj.4600" class="uri">https://doi.org/10.7717/peerj.4600</a>.</p>
+<p>Chen, Li, James Reeve, Lujun Zhang, Shengbing Huang, Xuefeng Wang, and Jun Chen. 2018. “GMPR: A Robust Normalization Method for Zero-Inflated Count Data with Application to Microbiome Sequencing Data.” <em>PeerJ</em> 6 (April): e4600. <a href="https://doi.org/10.7717/peerj.4600">https://doi.org/10.7717/peerj.4600</a>.</p>
 </div>
 <div id="ref-phyloseq">
-<p>McMurdie, Paul J. AND Holmes. 2013. “Phyloseq: An R Package for Reproducible Interactive Analysis and Graphics of Microbiome Census Data.” <em>PLoS ONE</em> 8 (4). Public Library of Science: e61217. <a href="https://doi.org/10.1371/journal.pone.0061217" class="uri">https://doi.org/10.1371/journal.pone.0061217</a>.</p>
+<p>McMurdie, Paul J. AND Holmes. 2013. “Phyloseq: An R Package for Reproducible Interactive Analysis and Graphics of Microbiome Census Data.” <em>PLoS ONE</em> 8 (4): e61217. <a href="https://doi.org/10.1371/journal.pone.0061217">https://doi.org/10.1371/journal.pone.0061217</a>.</p>
 </div>
 <div id="ref-CSS">
-<p>Paulson, Joseph N, O. Colin Stine, Héctor Corrada Bravo, and Mihai Pop. 2013. “Differential Abundance Analysis for Microbial Marker-Gene Surveys.” <em>Nat Methods</em> 10 (September): 1200–1202. <a href="https://doi.org/10.1038/nmeth.2658" class="uri">https://doi.org/10.1038/nmeth.2658</a>.</p>
+<p>Paulson, Joseph N, O. Colin Stine, Héctor Corrada Bravo, and Mihai Pop. 2013. “Differential Abundance Analysis for Microbial Marker-Gene Surveys.” <em>Nat Methods</em> 10 (September): 1200–1202. <a href="https://doi.org/10.1038/nmeth.2658">https://doi.org/10.1038/nmeth.2658</a>.</p>
 </div>
 </div>
 </div>
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>although a <code>data.frame</code> is technically a <code>list</code><a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>although a <code>data.frame</code> is technically a <code>list</code><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>
@@ -391,7 +391,7 @@ O_i = \text{median}_{i' != i} r_{ii'}
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

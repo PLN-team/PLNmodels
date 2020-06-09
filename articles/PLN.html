@@ -143,8 +143,13 @@
 <div id="mathematical-background" class="section level3">
 <h3 class="hasAnchor">
 <a href="#mathematical-background" class="anchor"></a>Mathematical background</h3>
-<p>The multivariate Poisson lognormal model (in short PLN, see <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span>) relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> as follows</p>
-
+<p>The multivariate Poisson lognormal model (in short PLN, see <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span>) relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> as follows</p>
+<p><span class="math display">\[\begin{equation}
+  \begin{array}{rcl}
+  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp;   \mathbf{Y}_i | \mathbf{Z}_i\sim\mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right).
+  \end{array}
+\end{equation}\]</span></p>
 <p>The parameter <span class="math inline">\({\boldsymbol\mu}\)</span> corresponds to the main effects and the latent covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> describes the underlying residual structure of dependence between the <span class="math inline">\(p\)</span> variables. The following figure provides insights about the role played by the different layers</p>
 <!-- ```{r geometricalInsight, echo = FALSE, fig.cap = "PLN: geometrical view", fig.width=7, fig.height=7, fig.align='center'} -->
 <!-- knitr::include_graphics("figures/PLN_geometry.jpg") -->
@@ -174,7 +179,7 @@ PLN: geometrical view
 <div id="optimization-by-variational-inference" class="section level4">
 <h4 class="hasAnchor">
 <a href="#optimization-by-variational-inference" class="anchor"></a>Optimization by Variational inference</h4>
-<p>Technically speaking, we adopt in <strong>PLNmodels</strong> a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02">2002</a>)</span> implemented in the C++ library <span class="citation">(Johnson <a href="#ref-nlopt">2011</a>)</span>, which we link to the package.</p>
+<p>Technically speaking, we adopt in <strong>PLNmodels</strong> a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library <span class="citation">(Johnson <a href="#ref-nlopt" role="doc-biblioref">2011</a>)</span>, which we link to the package.</p>
 </div>
 </div>
 </div>
@@ -204,8 +209,8 @@ PLN: geometrical view
 <div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">myPLN</span></pre></body></html></div>
 <pre><code>## A multivariate Poisson Lognormal fit with full covariance model.
 ## ==================================================================
-##  nb_param   loglik       BIC       ICL R_squared
-##       170 -2242.02 -2572.824 -3387.645      0.99
+##  nb_param    loglik      BIC       ICL R_squared
+##       170 -2241.945 -2572.75 -3389.763      0.99
 ## ==================================================================
 ## * Useful fields
 ##     $model_par, $latent, $var_par, $optim_par
@@ -219,10 +224,10 @@ PLN: geometrical view
 <a href="#field-access" class="anchor"></a>Field access</h4>
 <p>Accessing public fields of a <code>PLNfit</code> object can be done just like with a traditional list, <em>e.g.</em>,</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">myPLN</span>$<span class="no">loglik</span>, <span class="no">myPLN</span>$<span class="no">BIC</span>, <span class="no">myPLN</span>$<span class="no">ICL</span>, <span class="no">myPLN</span>$<span class="no">R_squared</span>)</pre></body></html></div>
-<pre><code>## [1] -2242.019543 -2572.824269 -3387.644749     0.989682</code></pre>
+<pre><code>## [1] -2241.9454719 -2572.7501972 -3389.7634772     0.9897021</code></pre>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">myPLN</span>$<span class="no">criteria</span></pre></body></html></div>
-<pre><code>##   nb_param   loglik       BIC       ICL R_squared
-## 1      170 -2242.02 -2572.824 -3387.645  0.989682</code></pre>
+<pre><code>##   nb_param    loglik      BIC       ICL R_squared
+## 1      170 -2241.945 -2572.75 -3389.763 0.9897021</code></pre>
 </div>
 <div id="glm-like-interface" class="section level4">
 <h4 class="hasAnchor">
@@ -260,19 +265,19 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td>effect</td>
-<td align="right">-2.932086</td>
-<td align="right">-4.0280192</td>
-<td align="right">1.0497148</td>
-<td align="right">-2.2766195</td>
-<td align="right">3.2820728</td>
+<td align="right">-2.9426293</td>
+<td align="right">-4.0637649</td>
+<td align="right">1.050714</td>
+<td align="right">-2.2658729</td>
+<td align="right">3.2760083</td>
 </tr>
 <tr class="even">
 <td>stderr</td>
-<td align="right">0.577083</td>
-<td align="right">0.5773225</td>
-<td align="right">0.0739226</td>
-<td align="right">0.4080678</td>
-<td align="right">0.0129223</td>
+<td align="right">0.5773243</td>
+<td align="right">0.5772329</td>
+<td align="right">0.073920</td>
+<td align="right">0.4082075</td>
+<td align="right">0.0129226</td>
 </tr>
 </tbody>
 </table>
@@ -338,17 +343,17 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-2242.020</td>
-<td align="right">-2572.824</td>
-<td align="right">-3387.645</td>
-<td align="right">0.9896820</td>
+<td align="right">-2241.945</td>
+<td align="right">-2572.750</td>
+<td align="right">-3389.763</td>
+<td align="right">0.9897021</td>
 </tr>
 <tr class="even">
 <td align="right">170</td>
-<td align="right">-2163.923</td>
-<td align="right">-2494.728</td>
-<td align="right">-3315.379</td>
-<td align="right">0.9222769</td>
+<td align="right">-2164.000</td>
+<td align="right">-2494.805</td>
+<td align="right">-3320.927</td>
+<td align="right">0.9220657</td>
 </tr>
 </tbody>
 </table>
@@ -375,17 +380,17 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-2163.923</td>
-<td align="right">-2494.728</td>
-<td align="right">-3315.379</td>
-<td align="right">0.9222769</td>
+<td align="right">-2164.000</td>
+<td align="right">-2494.805</td>
+<td align="right">-3320.927</td>
+<td align="right">0.9220657</td>
 </tr>
 <tr class="even">
 <td align="right">187</td>
-<td align="right">-2140.250</td>
-<td align="right">-2504.135</td>
-<td align="right">-3185.081</td>
-<td align="right">0.8903716</td>
+<td align="right">-2140.275</td>
+<td align="right">-2504.160</td>
+<td align="right">-3187.877</td>
+<td align="right">0.8903628</td>
 </tr>
 </tbody>
 </table>
@@ -440,18 +445,18 @@ fitted value vs. observation
 <tr class="odd">
 <td>full</td>
 <td align="right">170</td>
-<td align="right">-2163.923</td>
-<td align="right">-2494.728</td>
-<td align="right">-3315.379</td>
-<td align="right">0.9222769</td>
+<td align="right">-2164.000</td>
+<td align="right">-2494.805</td>
+<td align="right">-3320.927</td>
+<td align="right">0.9220657</td>
 </tr>
 <tr class="even">
 <td>diagonal</td>
 <td align="right">34</td>
-<td align="right">-2221.824</td>
-<td align="right">-2287.985</td>
-<td align="right">-3164.409</td>
-<td align="right">0.9164763</td>
+<td align="right">-2221.823</td>
+<td align="right">-2287.984</td>
+<td align="right">-3165.974</td>
+<td align="right">0.9167747</td>
 </tr>
 <tr class="odd">
 <td>spherical</td>
@@ -485,24 +490,24 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">187</td>
-<td align="right">-2140.250</td>
-<td align="right">-2504.135</td>
-<td align="right">-3185.081</td>
-<td align="right">0.8903716</td>
+<td align="right">-2140.275</td>
+<td align="right">-2504.160</td>
+<td align="right">-3187.877</td>
+<td align="right">0.8903628</td>
 </tr>
 <tr class="even">
 <td align="right">34</td>
-<td align="right">-2221.824</td>
-<td align="right">-2287.985</td>
-<td align="right">-3164.409</td>
-<td align="right">0.9164763</td>
+<td align="right">-2221.823</td>
+<td align="right">-2287.984</td>
+<td align="right">-3165.974</td>
+<td align="right">0.9167747</td>
 </tr>
 <tr class="odd">
 <td align="right">51</td>
-<td align="right">-2185.213</td>
-<td align="right">-2284.455</td>
-<td align="right">-2857.922</td>
-<td align="right">0.8756329</td>
+<td align="right">-2185.282</td>
+<td align="right">-2284.523</td>
+<td align="right">-2856.316</td>
+<td align="right">0.8753638</td>
 </tr>
 </tbody>
 </table>
@@ -513,21 +518,21 @@ fitted value vs. observation
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-AiH89">
-<p>Aitchison, J., and C.H. Ho. 1989. “The Multivariate Poisson-Log Normal Distribution.” <em>Biometrika</em> 76 (4). Oxford University Press: 643–53.</p>
+<p>Aitchison, J., and C. H. Ho. 1989. “The Multivariate Poisson-Log Normal Distribution.” <em>Biometrika</em> 76 (4): 643–53.</p>
 </div>
 <div id="ref-nlopt">
-<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="http://ab-initio.mit.edu/nlopt" class="uri">http://ab-initio.mit.edu/nlopt</a>.</p>
+<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="http://ab-initio.mit.edu/nlopt">http://ab-initio.mit.edu/nlopt</a>.</p>
 </div>
 <div id="ref-Svan02">
-<p>Svanberg, Krister. 2002. “A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.” <em>SIAM Journal on Optimization</em> 12 (2). SIAM: 555–73.</p>
+<p>Svanberg, Krister. 2002. “A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.” <em>SIAM Journal on Optimization</em> 12 (2): 555–73.</p>
 </div>
 </div>
 </div>
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>We use a log-log scale in our plot in order not to give an excessive importance to the higher counts in the fit<a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p>In <strong>PLNmodels</strong> the R-squared is a pseudo-R-squared that can only be trusted between model where the same offsets term was used<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>We use a log-log scale in our plot in order not to give an excessive importance to the higher counts in the fit<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>In <strong>PLNmodels</strong> the R-squared is a pseudo-R-squared that can only be trusted between model where the same offsets term was used<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>
@@ -547,7 +552,7 @@ fitted value vs. observation
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

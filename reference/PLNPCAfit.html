@@ -174,7 +174,7 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
     <p><code><a href='PLNfit.html'>PLNmodels::PLNfit</a></code> -&gt; <code>PLNPCAfit</code></p>
     <h2 class="hasAnchor" id="public-fields"><a class="anchor" href="#public-fields"></a>Public fields</h2>
 
-    <p><div class="r6-fields"></p><dl'>
+    <p><div class="r6-fields"></p><dl>
 <dt><code>var_par</code></dt><dd><p>a list with two matrices, M and S, which are the estimated parameters in the variational approximation</p></dd>
 
 <dt><code>latent</code></dt><dd><p>a matrix: values of the latent vector (Z in the model)</p></dd>
@@ -194,7 +194,7 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 </dl><p></div></p>
     <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
 
-    <p><div class="r6-active-bindings"></p><dl'>
+    <p><div class="r6-active-bindings"></p><dl>
 <dt><code>rank</code></dt><dd><p>the dimension of the current model</p></dd>
 
 <dt><code>model_par</code></dt><dd><p>a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)</p></dd>
@@ -362,7 +362,7 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 <p><div class="r"></p><pre><span class='no'>PLNPCAfit</span>$<span class='fu'>clone</span>(<span class='kw'>deep</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
-<p><div class="arguments"></p><dl'>
+<p><div class="arguments"></p><dl>
 <dt><code>deep</code></dt><dd><p>Whether to make a deep clone.</p></dd>
 
 </dl><p></div></p>
@@ -381,8 +381,8 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 #&gt;  DONE!</div><div class='input'><span class='no'>myPCA</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='getBestModel.html'>getBestModel</a></span>(<span class='no'>myPCAs</span>)
 <span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='no'>myPCA</span>)</div><div class='output co'>#&gt; [1] "PLNPCAfit" "PLNfit"    "R6"       </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>myPCA</span>)</div><div class='output co'>#&gt; Poisson Lognormal with rank constrained for PCA (rank = 3)
 #&gt; ==================================================================
-#&gt;  nb_param    loglik       BIC      ICL R_squared
-#&gt;        68 -1750.015 -1882.337 -1942.39     0.803
+#&gt;  nb_param    loglik       BIC       ICL R_squared
+#&gt;        68 -1749.954 -1882.276 -1942.365     0.803
 #&gt; ==================================================================
 #&gt; * Useful fields
 #&gt;     $model_par, $latent, $var_par, $optim_par
@@ -408,7 +408,7 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>
