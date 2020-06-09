@@ -27,7 +27,7 @@ library(PLNmodels, lib.loc = "~/R/x86_64-pc-linux-gnu-library/4.0/")
 cat("\nVersion", as.character(packageVersion("PLNmodels")), "\n")
 
 ## simple PLN
-time_dev <- system.time(myPLN_dev <- PLNnetwork(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control_main = list(trace = 0)))
+time_dev <- system.time(myPLN_dev <- PLNnetwork(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control_main = list(trace = 2)))
 
 detach("package:PLNmodels")
 
@@ -35,5 +35,5 @@ library(PLNmodels, lib.loc = "~/R/x86_64-pc-linux-gnu-library/PLNmodels_9.5/")
 cat("\nVersion", as.character(packageVersion("PLNmodels")), "\n")
 
 ## simple PLN
-time_CRAN <- system.time(myPLN_CRAN <- PLNnetwork(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control_main = list(trace = 0)))
+time_CRAN <- system.time(myPLN_CRAN <- PLNnetwork(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control_main = list(trace = 2)))
 

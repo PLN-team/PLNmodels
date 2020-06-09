@@ -140,7 +140,7 @@ function(responses, covariates, offsets, weights, model, xlevels, control) {
     private$Theta <- do.call(rbind, lapply(LMs, coefficients))
     residuals     <- do.call(cbind, lapply(LMs, residuals))
     private$M     <- residuals
-    private$S     <- matrix(10 * max(control$lower_bound), n, ifelse(control$covariance == "spherical", 1, p))
+    private$S     <- matrix(0.1, n, ifelse(control$covariance == "spherical", 1, p))
     if (control$covariance == "spherical") {
       private$Sigma <- diag(sum(residuals^2)/(n*p), p, p)
     } else  if (control$covariance == "diagonal") {
@@ -157,7 +157,7 @@ PLNfit$set("public", "optimize",
 function(responses, covariates, offsets, weights, control) {
 
   optim_out <- private$optimizer(
-    c(private$Theta, private$M, private$S),
+    c(private$Theta, private$M, sqrt(private$S)),
     responses,
     covariates,
     offsets,
@@ -255,7 +255,7 @@ function(covariates, offsets, responses, weights, control = list()) {
 
   ## optimisation
   optim_out <- VEstep_optimizer(
-    c(private$M, private$S),
+    c(private$M, sqrt(private$S)),
     responses,
     covariates,
     offsets,

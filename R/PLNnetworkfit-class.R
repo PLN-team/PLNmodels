@@ -49,7 +49,7 @@ PLNnetworkfit <-
       lambda = NA  # the sparsity tuning parameter
     ),
     active = list(
-      penalty         = function() {private$lambda},
+      penalty    = function() {private$lambda},
       n_edges    = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
       nb_param   = function() {self$p * self$d + self$n_edges},
       pen_loglik = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
@@ -78,7 +78,7 @@ function(responses, covariates, offsets, weights, control) {
   objective   <- numeric(control$maxit_out)
   convergence <- numeric(control$maxit_out)
   ## start from the standard PLN at initialization
-  par0  <- c(private$Theta, private$M, private$S)
+  par0  <- c(private$Theta, private$M, sqrt(private$S))
   Sigma <- private$Sigma
   objective.old <- -self$loglik
   while (!cond) {
@@ -100,7 +100,7 @@ function(responses, covariates, offsets, weights, control) {
 
     ## Prepare next iterate
     Sigma <- optim.out$Sigma
-    par0  <- c(optim.out$Theta, optim.out$M, optim.out$S)
+    par0  <- c(optim.out$Theta, optim.out$M, sqrt(optim.out$S))
     objective.old <- objective[iter]
   }
 
