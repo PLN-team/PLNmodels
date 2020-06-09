@@ -8,15 +8,16 @@
 #' [predict()] method for prediction
 #'
 ## Inheritance seems not to work for R6 classes
-#' @inheritParams PLNfit
-#' @inheritParams PLNLDAfit.predict
-#' @inheritParams PLNLDAfit.plot
+# @inheritParams PLNfit
+# @inheritParams PLNLDAfit.predict
+# @inheritParams PLNLDAfit.plot
 #'
 ## Parameters common to many PLNLDAfit methods (shared with PLNfit but inheritance does not work)
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
+#' @param grouping a factor specifying the class of each observation used for discriminant analysis.
 #' @param model model used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
@@ -103,7 +104,7 @@ PLNLDAfit <- R6Class(
     ## -----------------------------------
     ## Graphical methods -----------------
     #' @description Plot the factorial map of the LDA
-    #' @inheritParams plot.PLNLDAfit
+    # @inheritParams plot.PLNLDAfit
     #' @return a [`ggplot`] graphic
     plot_individual_map = function(axes = 1:min(2,self$rank), main = "Individual Factor Map", plot = TRUE) {
 
@@ -119,7 +120,7 @@ PLNLDAfit <- R6Class(
     },
 
     #' @description Plot the correlation circle of a specified axis for a [`PLNLDAfit`] object
-    #' @inheritParams plot.PLNLDAfit
+    # @inheritParams plot.PLNLDAfit
     #' @param cols a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.
     #' @return a [`ggplot`] graphic
     plot_correlation_map = function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "default", plot=TRUE) {
@@ -138,7 +139,7 @@ PLNLDAfit <- R6Class(
                 },
 
     #' @description Plot a summary of the [`PLNLDAfit`] object
-    #' @inheritParams plot.PLNLDAfit
+    # @inheritParams plot.PLNLDAfit
     #' @importFrom gridExtra grid.arrange arrangeGrob
     #' @importFrom grid nullGrob textGrob
     #' @return a [`grob`] object
@@ -206,9 +207,13 @@ PLNLDAfit <- R6Class(
     ## ---------------------------------------
     ## Prediction methods --------------------
     #' @description Predict group of new samples
-    #' @inheritParams predict.PLNLDAfit
-    #' @inherit predict.PLNLDAfit return
-    #' @inherit predict.PLNLDAfit examples
+    # @inheritParams predict.PLNLDAfit
+    #' @param newdata A data frame in which to look for variables, offsets and counts  with which to predict.
+    #' @param type The type of prediction required. The default are posterior probabilities for each group (in either unnormalized log-scale or natural probabilities, see "scale" for details), "response" is the group with maximal posterior probability and "scores" is the average score along each separation axis in the latent space, with weights equal to the posterior probabilities.
+    #' @param scale The scale used for the posterior probability. Either log-scale ("log", default) or natural probabilities summing up to 1 ("prob").
+    #' @param prior User-specified prior group probabilities in the new data. If NULL (default), prior probabilities are computed from the learning set.
+    #' @param control a list for controlling the optimization. See [PLN()] for details.
+    #' @param envir Environment in which the prediction is evaluated
     predict = function(newdata,
                        type = c("posterior", "response", "scores"),
                        scale = c("log", "prob"),
