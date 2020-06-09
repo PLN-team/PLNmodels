@@ -225,6 +225,7 @@ PLNfit <- R6Class(
 
     #' @description Compute univariate standard error for coefficients of Theta from the FIM
     #' @return a matrix of standard devations.
+    #' @importFrom Matrix diag solve
     compute_standard_error = function() {
       if (self$d > 0) {
         ## self$fisher$mat : Fisher Information matrix I_n(\Theta) = n * I(\Theta)
