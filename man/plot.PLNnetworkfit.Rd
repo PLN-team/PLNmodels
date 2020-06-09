@@ -19,7 +19,7 @@
 \arguments{
 \item{x}{an R6 object with class PLNnetworkfit}
 
-\item{type}{character. Value of the weigth of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is \code{"partial_cor"}.}
+\item{type}{character. Value of the weight of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is \code{"partial_cor"}.}
 
 \item{output}{the type of output used: either 'igraph' or 'corrplot'. Default is 'igraph'.}
 
@@ -36,7 +36,7 @@
 \item{...}{Not used (S3 compatibility).}
 }
 \value{
-Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionaly displays a graph (via igraph or corrplot for large ones)
+Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionally displays a graph (via igraph or corrplot for large ones)
 }
 \description{
 Extract and plot the network (aprtial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object

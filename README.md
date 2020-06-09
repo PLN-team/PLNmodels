@@ -22,7 +22,7 @@ stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://www.tid
 > multivariate problems when count data are at play (including PCA, LDA
 > and network inference for count data). This package implements
 > efficient algorithms to fit such models accompanied with a set of
-> functions for vizualisation and diagnostic.
+> functions for visualization and diagnostic.
 
 ## Installation
 

@@ -2,7 +2,7 @@
 ##'
 ##'The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including
 ##' PCA or LDA for count data, network inference). This package implements efficients
-##' variational algorithms to fit such models accompanied with a set of functions for vizualisation and diagnostic.
+##' variational algorithms to fit such models accompanied with a set of functions for visualization and diagnostic.
 ##'
 ##' @section Unpenalized Poisson lognormal model (aka PLN):
 ##'

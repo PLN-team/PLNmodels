@@ -49,7 +49,7 @@ The covariates include, among others, the wind, pressure and humidity.
 names(trichoptera$Covariate)
 ```
 
-In the PLN framework, we model the counts from the covariates, let's say wind and pressure, using a Poisson Log-Normal model. Most models in R use the so-called _formula interface_ and it would thus be naturel to write something like 
+In the PLN framework, we model the counts from the covariates, let's say wind and pressure, using a Poisson Log-Normal model. Most models in R use the so-called _formula interface_ and it would thus be natural to write something like 
 ```{r first_try, eval = FALSE}
 PLN(Abundance ~ Wind + Pressure, data = trichoptera)
 ```

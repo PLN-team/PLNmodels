@@ -16,7 +16,7 @@ getModel(Robject, var, index)
 \arguments{
 \item{Robject}{an R6 object with class PLNPCAfamily or PLNnetworkfamily}
 
-\item{var}{value of the parameter (rank for PLNPCA, sparisty for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
+\item{var}{value of the parameter (rank for PLNPCA, sparsity for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
 
 \item{index}{Integer index of the model to be returned. Only the first value is taken into account.}
 }

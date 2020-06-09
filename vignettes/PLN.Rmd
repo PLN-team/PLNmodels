@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 ## Preliminaries
 
-This vignette illustrates the use of the `PLN` function and the methods accompaning the R6 class `PLNfit`. 
+This vignette illustrates the use of the `PLN` function and the methods accompanying the R6 class `PLNfit`. 
 
 From the statistical point of view, the function `PLN` adjusts a multivariate Poisson lognormal model to a table of counts, possibly after correcting for effects of offsets and covariates. `PLN` is the building block for all the multivariate models found in the `PLNmodels` package: having a basic understanding of both the mathematical background and the associated set of `R` functions is a good place to start. 
 
@@ -146,7 +146,7 @@ In order to become familiar with the function `PLN` and its outputs, let us firs
 myPLN <- PLN(Abundance ~ 1, trichoptera)
 ```
 
-Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the term `~ 1` in the right-hand-side of the formula. `Abundance` is a variable in the data frame `trichoptera` correspondings to a matrix of 17 columns and the _response_ in the model, occurring on the left-hand-side of the formula.
+Note the use of the `formula` object to specify the model: the vector $\boldsymbol\mu$ of main effects in the mathematical formulation (one per column species) is specified in the call with the term `~ 1` in the right-hand-side of the formula. `Abundance` is a variable in the data frame `trichoptera` corresponding to a matrix of 17 columns and the _response_ in the model, occurring on the left-hand-side of the formula.
 
 #### The `PLNfit` object 
 
@@ -171,7 +171,7 @@ myPLN$criteria
 
 We provide a set of S3-methods for `PLNfit` that mimic the standard (G)LM-like interface of `R::stats`, which we present now.
 
-One can access the fitted value of the counts (`Abundance` -- $\hat{\mathbf{Y}}$) and check that the algorithm basically learnt correctly from the data^[We use a log-log scale in our plot in order not to give an excessive importance to the higher counts in the fit]:
+One can access the fitted value of the counts (`Abundance` -- $\hat{\mathbf{Y}}$) and check that the algorithm basically learned correctly from the data^[We use a log-log scale in our plot in order not to give an excessive importance to the higher counts in the fit]:
 
 ```{r fitted, fig.cap = "fitted value vs. observation", fig.dim=c(7,5)}
 data.frame(
@@ -185,7 +185,7 @@ data.frame(
     theme_bw() + annotation_logticks()
 ```
 
-We can also reach the matrix of regression parameters $\mathbf{\Theta}$ and the residual variance/covariance matrix $\boldsymbol{\Sigma}$ of the latent variable with the traditional functions found in `R` for (G)LM manipulation: for the regression coefficents, we can use the `coef` (or `coefficients`) method. Approximated standard errors of the coefficients are also accessible via `standard_error`:
+We can also reach the matrix of regression parameters $\mathbf{\Theta}$ and the residual variance/covariance matrix $\boldsymbol{\Sigma}$ of the latent variable with the traditional functions found in `R` for (G)LM manipulation: for the regression coefficients, we can use the `coef` (or `coefficients`) method. Approximated standard errors of the coefficients are also accessible via `standard_error`:
 
 ```{r coef}
 data.frame(
@@ -268,7 +268,7 @@ Let us try to correct for the wind effect in our model:
 myPLN_wind <- PLN(Abundance ~ 1 + Wind + offset(log(Offset)), data = trichoptera)
 ```
 
-When we compare the models, the gain is clear in terms of log-likelihood. However, the BIC choses not to include this variable:
+When we compare the models, the gain is clear in terms of log-likelihood. However, the BIC chooses not to include this variable:
 
 ```{r compare models}
 rbind(
@@ -279,7 +279,7 @@ rbind(
 
 ### Covariance models (full, diagonal, spherical)
 
-It is possible to change a bit the parametrization used for modelling the residual covariance matrix $\boldsymbol\Sigma$, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence $p \times (p+1)/2$ parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix $\boldsymbol\Sigma_D$ with only $p$ parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix $\boldsymbol\Sigma = \sigma \mathbf{I}_p$. This can be tuned in `PLN` with the `control` argument, a list controlling various aspects of the underlying optimization process:
+It is possible to change a bit the parametrization used for modeling the residual covariance matrix $\boldsymbol\Sigma$, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence $p \times (p+1)/2$ parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix $\boldsymbol\Sigma_D$ with only $p$ parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix $\boldsymbol\Sigma = \sigma \mathbf{I}_p$. This can be tuned in `PLN` with the `control` argument, a list controlling various aspects of the underlying optimization process:
 
 ```{r covariances models spherical}
 myPLN_spherical <-
@@ -298,7 +298,7 @@ myPLN_diagonal <-
   )
 ```
 
-Note that, by default, the model chosen is \texttt{covariance = "spherical"}, so that the two following calls are equivalents:
+Note that, by default, the model chosen is `covariance = "spherical"`, so that the two following calls are equivalents:
 ```{r PLN covariance full, evaluate = FALSE}
 myPLN_default <-
   PLN(Abundance ~ 1, data = trichoptera, )

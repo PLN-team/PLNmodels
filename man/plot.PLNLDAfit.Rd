@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNLDAfit-S3methods.R
 \name{plot.PLNLDAfit}
 \alias{plot.PLNLDAfit}
-\title{LDA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object}
+\title{LDA visualization (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object}
 \usage{
 \method{plot}{PLNLDAfit}(
   x,
@@ -18,7 +18,7 @@
 \arguments{
 \item{x}{an R6 object with class PLNPCAfit}
 
-\item{map}{the type of output for the PCA vizualization: either "individual", "variable" or "both". Default is "both".}
+\item{map}{the type of output for the PCA visualization: either "individual", "variable" or "both". Default is "both".}
 
 \item{nb_axes}{scalar: the number of axes to be considered when map = "both". The default is min(3,rank).}
 
@@ -36,7 +36,7 @@
 displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a ggplot2 or gtable object
 }
 \description{
-LDA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object
+LDA visualization (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object
 }
 \examples{
 data(trichoptera)

@@ -4,7 +4,7 @@
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}}, the
-#' \code{\link[=plot.PLNLDAfit]{plot.PLNPCAfit}} method for LDA vizualization and
+#' \code{\link[=plot.PLNLDAfit]{plot.PLNPCAfit}} method for LDA visualization and
 #' \code{\link[=predict.PLNLDAfit]{predict.PLNPCAfit}} method for prediction
 #'
 #' @field rank the dimension of the current model

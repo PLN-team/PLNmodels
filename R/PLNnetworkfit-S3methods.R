@@ -12,7 +12,7 @@ isPLNnetworkfit <- function(Robject) {inherits(Robject, "PLNnetworkfit")}
 #' @name plot.PLNnetworkfit
 #'
 #' @param x an R6 object with class PLNnetworkfit
-#' @param type character. Value of the weigth of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is \code{"partial_cor"}.
+#' @param type character. Value of the weight of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is \code{"partial_cor"}.
 #' @param output the type of output used: either 'igraph' or 'corrplot'. Default is 'igraph'.
 #' @param edge.color 2D numeric. Color for positive/negative edges. Default is c("#F8766D", "#00BFC4"). Only relevant for igraph output.
 #' @param node.labels vector of character. The labels of the nodes. The Default will use the column names ot the response matrix.
@@ -21,7 +21,7 @@ isPLNnetworkfit <- function(Robject) {inherits(Robject, "PLNnetworkfit")}
 #' @param plot logical. Should the final network be displayed or only sent back to the user. Default is \code{TRUE}.
 #' @param ... Not used (S3 compatibility).
 #'
-#' @return Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionaly displays a graph (via igraph or corrplot for large ones)
+#' @return Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionally displays a graph (via igraph or corrplot for large ones)
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)

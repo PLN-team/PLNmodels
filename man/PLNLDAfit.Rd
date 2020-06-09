@@ -8,7 +8,7 @@ The function \code{\link{PLNLDA}} produces an instance of an object with class \
 
 This class comes with a set of methods, some of them being useful for the user:
 See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}}, the
-\code{\link[=plot.PLNLDAfit]{plot.PLNPCAfit}} method for LDA vizualization and
+\code{\link[=plot.PLNLDAfit]{plot.PLNPCAfit}} method for LDA visualization and
 \code{\link[=predict.PLNLDAfit]{predict.PLNPCAfit}} method for prediction
 }
 \examples{
@@ -94,13 +94,13 @@ The function \code{\link{PLNLDA}}.
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher">}\href{../../PLNmodels/html/PLNfit.html#method-compute_fisher}{\code{PLNmodels::PLNfit$compute_fisher()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="latent_pos">}\href{../../PLNmodels/html/PLNfit.html#method-latent_pos}{\code{PLNmodels::PLNfit$latent_pos()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2">}\href{../../PLNmodels/html/PLNfit.html#method-set_R2}{\code{PLNmodels::PLNfit$set_R2()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update">}\href{../../PLNmodels/html/PLNfit.html#method-update}{\code{PLNmodels::PLNfit$update()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 }
 \out{</details>}
 }

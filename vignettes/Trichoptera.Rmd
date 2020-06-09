@@ -34,7 +34,7 @@ The packages required to run the vignette are the following:
 library(PLNmodels)
 ```
 
-## The trichopterata data set 
+## The trichoptera data set 
 
 The order Trichoptera (or caddisflies) are a group of insects with aquatic larvae and terrestrial adults. The ecological data set trichoptera [@trichoptera] describes abundances of Trichoptera species (hereafter the _counts_), accompanied with some meteorological factors (hereafter the _covariates_) that may influence their presence during the sampling^[The original data set is available in the **ade4** package. We consider here a different version where we only keep a subset of the original meteorological features, for illutrative purposes].
 
@@ -50,7 +50,7 @@ data(trichoptera)
 
 ### Formatting
 
-Data are originaly stored in a list of two data frames for abundances and covariates. We first prepare the data [see the corresponding vignette](Import_data.html) for easy use in the multivariate framework of **PLNmodels**. Offsets are automatically computed:
+Data are originally stored in a list of two data frames for abundances and covariates. We first prepare the data [see the corresponding vignette](Import_data.html) for easy use in the multivariate framework of **PLNmodels**. Offsets are automatically computed:
 
 ```{r prepare_data}
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)

@@ -29,7 +29,7 @@ mollusk
 }
 \description{
 This data set gives the abundance of 32 mollusk species in 163 samples.
-For each sample, 4 additional informations (covariates) are knowne.
+For each sample, 4 additional covariates are known.
 }
 \examples{
 data(mollusk)

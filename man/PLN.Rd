@@ -28,7 +28,7 @@ The parameter \code{control} is a list controlling the optimization with the fol
 \itemize{
  \item{"covariance"}{character setting the model for the covariance matrix. Either "full", "diagonal" or "spherical". Default is "full".}
  \item{"trace"}{integer for verbosity.}
- \item{"inception"}{Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previsous fit), which sometimes speeds up the inference.}
+ \item{"inception"}{Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit), which sometimes speeds up the inference.}
  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.}
  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0}
  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}

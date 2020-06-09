@@ -105,7 +105,7 @@ offset_tss <- function(counts) {
   rowSums(counts)
 }
 
-## Geometric Mean Pairwise Ratio (GMPR) normalisation (as presented in doi.org/10.7717/peerj.4600)
+## Geometric Mean Pairwise Ratio (GMPR) normalization (as presented in doi.org/10.7717/peerj.4600)
 offset_gmpr <- function(counts) {
   if (nrow(counts) == 1) stop("GMPR is not defined when there is only one sample.")
   ## median of (non-null, non-infinite) pairwise ratios between counts of samples i and j
@@ -190,7 +190,7 @@ offset_css <- function(counts, reference = median) {
 #'
 #' @param counts Required. An abundance count table, preferably with dimensions names and species as columns.
 #' @param covariates Required. A covariates data frame, preferably with row names.
-#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
+#' @param offset Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
 #' @param ... Additional parameters passed on to \code{\link[=compute_offset]{compute_offset}}
 #'
 #' @references Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \url{https://doi.org/10.7717/peerj.4600}
@@ -201,7 +201,7 @@ offset_css <- function(counts, reference = median) {
 #' @note User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
 #'
 #'
-#' @seealso \code{\link[=compute_offset]{compute_offset}} for details on the different normalisation schemes
+#' @seealso \code{\link[=compute_offset]{compute_offset}} for details on the different normalization schemes
 #'
 #' @export
 #'

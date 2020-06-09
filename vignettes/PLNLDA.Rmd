@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 ## Preliminaries
 
-This vignette illustrates the basical use of the `PLNLDA` function and the methods accompaning the R6 Classes `PLNLDA` and `PLNLDAfit`.
+This vignette illustrates the standard use of the `PLNLDA` function and the methods accompanying the R6 Classes `PLNLDA` and `PLNLDAfit`.
 
 ### Requirements
 
@@ -44,7 +44,7 @@ data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ```
 
-The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.) In the following, we're particularly interested in the `trichoptera$Group` **discrete** covariate which corresponds to disjoint time spans during which the catching took place. The correspondance between group label and time spans is:
+The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.) In the following, we're particularly interested in the `trichoptera$Group` **discrete** covariate which corresponds to disjoint time spans during which the catching took place. The correspondence between group label and time spans is:
 
 ```{r description, echo = FALSE}
 data.frame(Label = 1:12, 
@@ -57,9 +57,9 @@ data.frame(Label = 1:12,
 
 ### Mathematical background
 
-In the vein of @Fi36 and @Rao48, we introduce a multi-class LDA model for multivariate count data which is a variant of the Poisson Lognormal model of @AiH89 (see [the PLN vignette](PLN.html) as a reminder). Indeed, it can viewed as a PLN model with a discrete group structure in the latent gaussian space.
+In the vein of @Fi36 and @Rao48, we introduce a multi-class LDA model for multivariate count data which is a variant of the Poisson Lognormal model of @AiH89 (see [the PLN vignette](PLN.html) as a reminder). Indeed, it can viewed as a PLN model with a discrete group structure in the latent Gaussian space.
 
-This PLN-LDA model can be written in a hierachical framework where a sample of $p$-dimensional observation vectors $\mathbf{Y}_i$ is related to some  $p$-dimensional vectors of latent variables $\mathbf{Z}_i$ and a discrete structure with $K$ groups in the following way: 
+This PLN-LDA model can be written in a hierarchical framework where a sample of $p$-dimensional observation vectors $\mathbf{Y}_i$ is related to some  $p$-dimensional vectors of latent variables $\mathbf{Z}_i$ and a discrete structure with $K$ groups in the following way: 
 \begin{equation} 
   \begin{array}{rcl}
     \text{group structure }   & \mathbf{\mu}_i = \mu_{g_i} & g_i \in \{1, \dots, K\}  \\
@@ -69,7 +69,7 @@ This PLN-LDA model can be written in a hierachical framework where a sample of $
 \end{equation}
 where $g_i$ denotes the group sample $i$ belongs to. 
 
-The different parameters ${\boldsymbol\mu}_k \in\mathbb{R}^p$ corresponds to the group-specific main effects and the variance matrix $\boldsymbol{\Sigma}$ is shared among groups. An equivalent way of writting this model is the following:
+The different parameters ${\boldsymbol\mu}_k \in\mathbb{R}^p$ corresponds to the group-specific main effects and the variance matrix $\boldsymbol{\Sigma}$ is shared among groups. An equivalent way of writing this model is the following:
 \begin{equation} 
   \begin{array}{rcl}
   \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i,\boldsymbol\Sigma) & \boldsymbol{\mu}_i = \mathbf{g}_i^\top \mathbf{M} \\
@@ -215,7 +215,7 @@ predicted.class <- predict(myLDA_nocov, newdata = trichoptera,  type = "response
 predicted.class
 ```
 
-We can assess that the predictions are quite similar to the real group (*this is not a proper validation of the method as we used dataset for both model fitting and prediction and are thus at risk of overfitting*). 
+We can assess that the predictions are quite similar to the real group (*this is not a proper validation of the method as we used data set for both model fitting and prediction and are thus at risk of overfitting*). 
 
 ```{r check_predicted_class}
 table(predicted.class, trichoptera$Group, dnn = c("predicted", "true"))
@@ -236,7 +236,7 @@ plot(myLDA_nocov, map = "individual", nb_axes = 2, plot = FALSE) +
 
 
 
-### A model with latent main effects and meterological covariates
+### A model with latent main effects and meteorological covariates
 
 It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  :
 ```{r, warning=FALSE}
@@ -275,7 +275,7 @@ We can again predict the most likely group for each sample :
 predicted.class_cov <- predict(myLDA_cov, newdata = trichoptera, type = "response")
 ```
 
-and check that we recover the correct class in most cases (again, we used the same dataset for model fitting and group prediction only for ease of exposition):
+and check that we recover the correct class in most cases (again, we used the same data set for model fitting and group prediction only for ease of exposition):
 
 ```{r check_predicted_class_cov}
 table(predicted.class_cov, trichoptera$Group, dnn = c("predicted", "true"))

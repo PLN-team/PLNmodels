@@ -15,7 +15,7 @@
 #' \itemize{
 #'  \item{"covariance"}{character setting the model for the covariance matrix. Either "full" or "spherical". Default is "full".}
 #'  \item{"trace"}{integer for verbosity.}
-#'  \item{"inception"}{Set up the intialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previsous fit), which often speed up the inference.}
+#'  \item{"inception"}{Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previous fit), which often speed up the inference.}
 #'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8}
 #'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0}
 #'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
@@ -67,7 +67,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   if (ctrl$trace > 0) cat("\n Performing discriminant Analysis...")
   myLDA$optimize(args$X, covar, design_group, ctrl)
 
-  ## Post-treatment: prepare LDA vizualization
+  ## Post-treatment: prepare LDA visualization
   myLDA$postTreatment(args$Y, args$X, args$O)
 
   if (ctrl$trace > 0) cat("\n DONE!\n")

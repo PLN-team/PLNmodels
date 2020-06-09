@@ -8,7 +8,7 @@
 ## Auxiliary functions to check the given class of an objet
 isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
 
-#' Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)
+#' Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)
 #'
 #' @name plot.PLNnetworkfamily
 #'
@@ -16,7 +16,7 @@ isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
 #' @param type a character, either "criteria", "stability" or "diagnostic" for the type of plot.
 #' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
 #' Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when type equals "criteria".
-#' @param log.x logical: should the x-axis be repsented in log-scale? Default is \code{TRUE}.
+#' @param log.x logical: should the x-axis be represented in log-scale? Default is \code{TRUE}.
 #' @param stability scalar: the targeted level of stability in stability plot. Default is .9.
 #' @param annotate logical: should the value of approximated R squared be added to the plot of criteria? Default is \code{TRUE}.
 #' @param ... additional parameters for S3 compatibility. Not used
@@ -94,7 +94,7 @@ coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
 #' @description This function computes the StARS stability criteria over a path of penalties. If a path has already been computed, the functions stops with a message unless \code{force = TRUE} has been specified.
 #'
 #' @param Robject an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}
-#' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
+#' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
 #' @param control a list controling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.
 #' @param mc.cores the number of cores to used. Default is 1.
 #' @param force force computation of the stability path, even if a previous one has been detected.

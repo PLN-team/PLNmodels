@@ -32,7 +32,7 @@ getBestModel <- function(Robject, crit, ...) {UseMethod("getBestModel", Robject)
 #' Model extraction from a collection of models
 #'
 #' @param Robject an R6 object with class PLNPCAfamily or PLNnetworkfamily
-#' @param var value of the parameter (rank for PLNPCA, sparisty for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
+#' @param var value of the parameter (rank for PLNPCA, sparsity for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
 #' @param index Integer index of the model to be returned. Only the first value is taken into account.
 #'
 #' @return Sends back an object with class \code{\link[=PLNPCAfit]{PLNPCAfit}} or \code{\link[=PLNPCAfit]{PLNnetworkfit}}.

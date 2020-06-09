@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 [![](https://img.shields.io/github/last-commit/jchiquet/PLNmodels.svg)](https://github.com/jchiquet/PLNmodels/commits/master)
 <!-- badges: end -->
 
-> The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA, LDA and network inference for count data). This package implements efficient algorithms to fit such models accompanied with a set of functions for vizualisation and diagnostic. 
+> The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA, LDA and network inference for count data). This package implements efficient algorithms to fit such models accompanied with a set of functions for visualization and diagnostic. 
 
 ## Installation
 

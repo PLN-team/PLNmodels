@@ -4,7 +4,7 @@
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}} and the
-#' \code{\link[=plot.PLNPCAfit]{plot.PLNPCAfit}} methods for PCA vizualization
+#' \code{\link[=plot.PLNPCAfit]{plot.PLNPCAfit}} methods for PCA visualization
 #'
 #' @field rank the dimension of the current model
 #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)

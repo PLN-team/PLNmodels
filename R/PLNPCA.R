@@ -24,7 +24,7 @@
 ##'  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
 ##'     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
 ##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
-##'  \item{"cores"}{The number of core used to paralellize jobs over the \code{ranks} vector. Default is 1.}
+##'  \item{"cores"}{The number of core used to parallelize jobs over the \code{ranks} vector. Default is 1.}
 ##' }
 ##'
 ##' @rdname PLNPCA

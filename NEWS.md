@@ -1,6 +1,7 @@
 # PLNmodels 0.10.4
 
 * Change name of variational variance parameters to S2 (use to be S)
+* use spell_check to check spelling, found many typos
 
 # PLNmodels 0.10.3
 
