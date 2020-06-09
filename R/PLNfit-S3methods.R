@@ -11,11 +11,11 @@ isPLNfit <- function(Robject) {inherits(Robject, "PLNfit"          )}
 #'
 #' @name predict.PLNfit
 #'
-#' @param object an R6 object with class PLNfit
+#' @param object an R6 object with class [`PLNfit`]
 #' @param newdata A data frame in which to look for variables and offsets with which to predict
 #' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)
 #' @param ... additional parameters for S3 compatibility. Not used
-#' @return A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
+#' @return A matrix of predicted log-counts (if `type = "link"`) or predicted counts (if `type = "response"`).
 #' @export
 predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
   stopifnot(isPLNfit(object))
@@ -24,16 +24,16 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
 
 #' Extract model coefficients
 #'
-#' @description Extracts model coefficients from objects returned by \code{\link[=PLN]{PLN}} and its variants
+#' @description Extracts model coefficients from objects returned by [PLN()] and its variants
 #'
 #' @name coef.PLNfit
 #'
-#' @param object an R6 object with class PLNfit
+#' @param object an R6 object with class [`PLNfit`]
 #' @param type type of parameter that should be extracted. Either "main" (default) for \deqn{\Theta} or "covariance" for \deqn{\Sigma}
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of coefficients extracted from the PLNfit model.
 #'
-#' @seealso \code{\link[=sigma.PLNfit]{sigma}}, \code{\link[=vcov.PLNfit]{vcov}}, \code{\link[=standard_error.PLNfit]{standard_error}}
+#' @seealso [sigma.PLNfit()], [vcov.PLNfit()], [standard_error.PLNfit()]
 #'
 #' @export
 #' @examples
@@ -49,7 +49,7 @@ coef.PLNfit <- function(object, type = c("main", "covariance"), ...) {
          covariance = object$model_par$Sigma)
 }
 
-#' Extracts model fitted values from objects returned by \code{\link[=PLN]{PLN}} and its variants
+#' Extracts model fitted values from objects returned by [PLN()] and its variants
 #'
 #' @name fitted.PLNfit
 #'
@@ -62,17 +62,17 @@ fitted.PLNfit <- function(object, ...) {
   object$fitted
 }
 
-#' Calculate Variance-Covariance Matrix for a fitted \code{\link[=PLN]{PLN}} model object
+#' Calculate Variance-Covariance Matrix for a fitted [PLN()] model object
 #'
 #' @name vcov.PLNfit
 #'
-#' @description Returns the variance-covariance matrix of the main parameters of a fitted \code{\link[=PLN]{PLN}} model object. The main parameters of the model correspond to \deqn{\Theta}, as returned by \code{\link[=coef.PLNfit]{coef}}. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via \code{\link[=sigma.PLNfit]{sigma}}
+#' @description Returns the variance-covariance matrix of the main parameters of a fitted [PLN()] model object. The main parameters of the model correspond to \deqn{\Theta}, as returned by [coef.PLNfit()]. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via [sigma.PLNfit()]
 #'
 #' @inheritParams coef.PLNfit
 #' @return A matrix of variance/covariance extracted from the PLNfit model. If type="main" and \eqn{\Theta} is a matrix of size d * p, the result is a block-diagonal matrix with p (number of species) blocks of size d (number of covariates). if type="main", it is a symmetric matrix of size p.
 #' .
 #'
-#' @seealso \code{\link[=sigma.PLNfit]{sigma}}, \code{\link[=coef.PLNfit]{coef}}, \code{\link[=standard_error.PLNfit]{standard_error}}
+#' @seealso [sigma.PLNfit()], [coef.PLNfit()], [standard_error.PLNfit()]
 #'
 #' @export
 #'
@@ -101,7 +101,7 @@ vcov.PLNfit <- function(object, type = c("main", "covariance"), ...) {
 #'
 #' @export
 #'
-#' @seealso \code{\link[=coef.PLNfit]{coef}}, \code{\link[=standard_error.PLNfit]{standard_error}} and \code{\link[=vcov.PLNfit]{vcov}} for other ways to access \deqn{\Sigma}.
+#' @seealso [coef.PLNfit()], [standard_error.PLNfit()] and [vcov.PLNfit()] for other ways to access \deqn{\Sigma}.
 #'
 #' @importFrom stats sigma
 #' @examples
@@ -116,12 +116,12 @@ sigma.PLNfit <- function(object, ...) {
 
 #' Component-wise standard errors of Theta
 #'
-#' @description Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate) Fisher information matrix. See \code{\link[=fisher.PLNfit]{fisher}} for more details on the approximations.
+#' @description Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate) Fisher information matrix. See [fisher.PLNfit()] for more details on the approximations.
 #'
 #' @param object an R6 object with class PLNfit
 #' @param type Either `Wald` (default) or `Louis`. Approximation scheme used to compute the Fisher information matrix
 #'
-#' @seealso \code{\link[=vcov.PLNfit]{vcov}} for the complete Fisher information matrix
+#' @seealso [vcov.PLNfit()] for the complete Fisher information matrix
 #'
 #' @return A p * d positive matrix (same size as \eqn{\Theta}) with standard errors for the coefficients of \eqn{\Theta}
 #' @examples
@@ -134,7 +134,7 @@ standard_error <- function(object, type) {
   UseMethod("standard_error", object)
 }
 
-#' @describeIn standard_error Component-wise standard errors of Theta in PLNfit
+#' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit`]
 #' @export
 standard_error.PLNfit <- function(object, type = c("wald", "louis")) {
   stopifnot(isPLNfit(object))
