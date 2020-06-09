@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.2-9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.3-900</span>
       </span>
     </div>
 
@@ -197,8 +197,7 @@
 <li><p>"ftol_rel"stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n &lt; p, 1e-8 otherwise.</p></li>
 <li><p>"ftol_abs"stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0</p></li>
 <li><p>"xtol_rel"stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4</p></li>
-<li><p>"xtol_abs"stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4 for the variational variance parameters, 0 otherwise.</p></li>
-<li><p>"lower_bound"the lower bound (box constraint) for the variational variance parameters. Default is 1e-4.</p></li>
+<li><p>"xtol_abs"stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0</p></li>
 <li><p>"maxeval"stop when the number of iteration exceeds maxeval. Default is 10000</p></li>
 <li><p>"maxtime"stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)</p></li>
 <li><p>"algorithm"the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
