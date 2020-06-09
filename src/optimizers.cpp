@@ -276,7 +276,7 @@ Rcpp::List optimizer_PLN_rank::get_output() {
       Rcpp::Named("B"         ) = B    ,
       Rcpp::Named("A"         ) = A    ,
       Rcpp::Named("M"         ) = M,
-      Rcpp::Named("S"         ) = S % S,
+      Rcpp::Named("S"         ) = S    ,
       Rcpp::Named("Z"         ) = Z,
       Rcpp::Named("iterations") = data.iterations,
       Rcpp::Named("loglik"    ) = loglik

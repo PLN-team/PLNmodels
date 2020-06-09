@@ -63,7 +63,7 @@ PLNPCAfit <-
     active = list(
       rank = function() {ncol(private$B)},
       nb_param = function() {self$p * (self$d + self$rank)},
-      entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)))},
+      # entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)))},
       model_par = function() {
         par <- super$model_par
         par$B <- private$B
