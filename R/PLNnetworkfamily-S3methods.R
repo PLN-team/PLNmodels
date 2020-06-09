@@ -72,7 +72,7 @@ getBestModel.PLNnetworkfamily <- function(Robject, crit = c("BIC", "loglik", "R_
 #'
 #' @name coefficient_path
 #' @param Robject an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}
-#' @param precision a logical, should the coefficients of the precision matrix Omega or the covariance matrice Sigma be sent back. Default is \code{TRUE}.
+#' @param precision a logical, should the coefficients of the precision matrix Omega or the covariance matrix Sigma be sent back. Default is \code{TRUE}.
 #' @param corr a logical, should the correlation (partial in case  precision = TRUE) be sent back. Default is \code{TRUE}.
 #'
 #' @return  Send back a tibble/data.frame.
@@ -95,7 +95,7 @@ coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
 #'
 #' @param Robject an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}
 #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
-#' @param control a list controling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.
+#' @param control a list controlling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.
 #' @param mc.cores the number of cores to used. Default is 1.
 #' @param force force computation of the stability path, even if a previous one has been detected.
 #'
@@ -131,7 +131,7 @@ stability_selection <- function(Robject, subsamples = NULL, control = list(),
 #' @inheritParams getModel
 #' @inheritParams getBestModel
 #' @param Robject an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}
-#' @param penalty penalty used for the boostrap subsamples
+#' @param penalty penalty used for the bootstrap subsamples
 #' @param format output format. Either a matrix (default) or a named vector.
 #' @param tol tolerance for rounding error when comparing penalties.
 #'

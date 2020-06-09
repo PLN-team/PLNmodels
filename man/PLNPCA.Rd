@@ -25,9 +25,9 @@ PLNPCA(
 
 \item{ranks}{a vector of integer containing the successive ranks (or number of axes to be considered)}
 
-\item{control_init}{a list for controling the optimization at initialization.  See details of function \code{\link[=PLN]{PLN}}.}
+\item{control_init}{a list for controlling the optimization at initialization.  See details of function \code{\link[=PLN]{PLN}}.}
 
-\item{control_main}{a list for controling the main optimization process. See details.}
+\item{control_main}{a list for controlling the main optimization process. See details.}
 }
 \value{
 an R6 object with class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}, which contains

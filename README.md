@@ -93,7 +93,7 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ```
 
 The main fitting functions work with the usual `R formula` notations,
-with mutivariate responses on the left hand side. You probably want to
+with multivariate responses on the left hand side. You probably want to
 start by one of them. Check the corresponding vignette and documentation
 page. There is a dedicated vignettes for each model in the package (See
 <http://jchiquet.github.io/PLNmodels/articles/>).
@@ -104,7 +104,7 @@ page. There is a dedicated vignettes for each model in the package (See
 myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 ```
 
-### Rank Contraint Poisson lognormal for Poisson Principal Component Analysis (aka PLNPCA)
+### Rank Constrained Poisson lognormal for Poisson Principal Component Analysis (aka PLNPCA)
 
 ``` r
 myPCA <- PLNPCA(Abundance ~ 1, data = trichoptera, ranks = 1:8)

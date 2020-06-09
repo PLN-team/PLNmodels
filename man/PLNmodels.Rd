@@ -6,7 +6,7 @@
 \title{PLNmodels}
 \description{
 The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including
-PCA or LDA for count data, network inference). This package implements efficients
+PCA or LDA for count data, network inference). This package implements efficient
 variational algorithms to fit such models accompanied with a set of functions for visualization and diagnostic.
 }
 \section{Unpenalized Poisson lognormal model (aka PLN)}{
@@ -17,12 +17,12 @@ See the main function \code{\link{PLN}} and the associated methods for manipulat
 Also try vignette("PLN_trichoptera", package="PLNmodels") for an overview.
 }
 
-\section{Rank Contraint Poisson lognormal for Poisson Principal Component Analysis (ala PLNPCA)}{
+\section{Rank Constrained Poisson lognormal for Poisson Principal Component Analysis (ala PLNPCA)}{
 
 
 See the main function \code{\link{PLNPCA}} and the associated methods for manipulation.
 
-The Poisson PCA and the associated variational inference is fully explained in CHiquet el al (2018), see reference below.
+The Poisson PCA and the associated variational inference is fully explained in Chiquet el al (2018), see reference below.
 
 Also try vignette("PLNPCA_trichoptera", package="PLNmodels") for an overview.
 }

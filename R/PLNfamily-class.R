@@ -50,7 +50,7 @@ PLNfamily <-
 PLNfamily$set("public", "initialize",
   function(responses, covariates, offsets, weights, control) {
 
-    ## set data matrice and dimension
+    ## set data matrix and dimension
     self$responses  <- responses
     self$covariates <- covariates
     self$offsets    <- offsets

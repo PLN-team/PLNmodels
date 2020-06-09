@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNnetworkfit-S3methods.R
 \name{plot.PLNnetworkfit}
 \alias{plot.PLNnetworkfit}
-\title{Extract and plot the network (aprtial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object}
+\title{Extract and plot the network (partial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object}
 \usage{
 \method{plot}{PLNnetworkfit}(
   x,
@@ -39,7 +39,7 @@
 Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionally displays a graph (via igraph or corrplot for large ones)
 }
 \description{
-Extract and plot the network (aprtial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object
+Extract and plot the network (partial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object
 }
 \examples{
 data(trichoptera)

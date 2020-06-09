@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNLDA.R
 \name{PLNLDA}
 \alias{PLNLDA}
-\title{Poisson lognormal model towards Linear Disciminant Analysis}
+\title{Poisson lognormal model towards Linear Discriminant Analysis}
 \usage{
 PLNLDA(formula, data, subset, weights, grouping, control = list())
 }
@@ -17,7 +17,7 @@ PLNLDA(formula, data, subset, weights, grouping, control = list())
 
 \item{grouping}{a factor specifying the class of each observation used for discriminant analysis.}
 
-\item{control}{a list for controling the optimization process. See details.}
+\item{control}{a list for controlling the optimization process. See details.}
 }
 \value{
 an R6 object with class \code{\link[=PLNLDAfit]{PLNLDAfit}}

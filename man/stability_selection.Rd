@@ -17,7 +17,7 @@ stability_selection(
 
 \item{subsamples}{a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.}
 
-\item{control}{a list controling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.}
+\item{control}{a list controlling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.}
 
 \item{mc.cores}{the number of cores to used. Default is 1.}
 

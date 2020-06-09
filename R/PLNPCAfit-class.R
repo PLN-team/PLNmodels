@@ -19,7 +19,7 @@
 #' @field nb_param number of parameters in the current PLN model
 #' @field percent_var the percent of variance explained by each axis
 #' @field corr_circle a matrix of correlations to plot the correlation circles
-#' @field scores a matrix of scores to plot the individual factor maps (a.k.a. principal comonents)
+#' @field scores a matrix of scores to plot the individual factor maps (a.k.a. principal components)
 #' @field rotation a matrix of rotation of the latent space
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class

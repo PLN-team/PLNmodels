@@ -16,7 +16,7 @@ extract_probs(
 \arguments{
 \item{Robject}{an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}}
 
-\item{penalty}{penalty used for the boostrap subsamples}
+\item{penalty}{penalty used for the bootstrap subsamples}
 
 \item{index}{Integer index of the model to be returned. Only the first value is taken into account.}
 

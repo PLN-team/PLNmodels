@@ -7,7 +7,7 @@
 ## Auxiliary functions to check the given class of an objet
 isPLNnetworkfit <- function(Robject) {inherits(Robject, "PLNnetworkfit")}
 
-#' Extract and plot the network (aprtial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object
+#' Extract and plot the network (partial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object
 #'
 #' @name plot.PLNnetworkfit
 #'
