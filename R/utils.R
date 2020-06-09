@@ -123,17 +123,16 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
   Y
 }
 
-available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2")
+available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR2")
 
 ## -----------------------------------------------------------------
 ##  Series of setter to default parameters for user's main functions
 ##
 ## should be ready to pass to nlopt optimizer
 PLN_param <- function(control, n, p, d) {
-  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
-  covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
-  covariance  <- ifelse(is.null(control$inception), covariance, control$inception$vcov_model)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
+  covariance  <- ifelse(is.null(control$covariance) , "full"    , control$covariance)
+  covariance  <- ifelse(is.null(control$inception)  , covariance, control$inception$vcov_model)
   ctrl <- list(
     "algorithm"   = "CCSAQ",
     "maxeval"     = 10000  ,
@@ -141,8 +140,7 @@ PLN_param <- function(control, n, p, d) {
     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-4,
-    "xtol_abs"    = c(rep(0   , p*d), rep(0   , p*n), rep(xtol_abs   , ifelse(covariance == "spherical", n, n*p))),
-    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, p*n), rep(lower_bound, ifelse(covariance == "spherical", n, n*p))),
+    "xtol_abs"    = rep(xtol_abs, p*d + n*p + ifelse(covariance == "spherical", n, n*p)),
     "trace"       = 1,
     "covariance"  = covariance,
     "inception"   = NULL
@@ -153,8 +151,7 @@ PLN_param <- function(control, n, p, d) {
 }
 
 PLN_param_VE <- function(control, n, p, weighted = FALSE) {
-  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4  , control$lower_bound)
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4  , control$xtol_abs)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
   ctrl <- list(
     "algorithm"   = "CCSAQ",
@@ -163,10 +160,8 @@ PLN_param_VE <- function(control, n, p, weighted = FALSE) {
     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-4,
-    "xtol_abs"    = c(rep(0   , p*n), rep(xtol_abs   , ifelse(covariance == "spherical", n, n*p))),
-    "lower_bound" = c(rep(-Inf, p*n), rep(lower_bound, ifelse(covariance == "spherical", n, n*p))),
+    "xtol_abs"    = rep(xtol_abs, p*n +  ifelse(covariance == "spherical", n, n*p)),
     "trace"       = 1,
-    "weighted"    = weighted  ,
     "covariance"  = covariance,
     "inception"   = NULL
   )
@@ -182,8 +177,7 @@ PLNPCA_param <- function(control) {
       "ftol_rel"    = 1e-8    ,
       "ftol_abs"    = 0       ,
       "xtol_rel"    = 1e-4    ,
-      "xtol_abs"    = 1e-4    ,
-      "lower_bound" = 1e-4    ,
+      "xtol_abs"    = 0       ,
       "maxeval"     = 10000   ,
       "maxtime"     = -1      ,
       "trace"       = 1       ,
@@ -196,20 +190,18 @@ PLNPCA_param <- function(control) {
 }
 
 PLNnetwork_param <- function(control, n, p, d) {
-  lower_bound <- ifelse(is.null(control$lower_bound), 1e-4, control$lower_bound)
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 1e-4, control$xtol_abs)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
   ctrl <-  list(
     "ftol_out"  = 1e-5,
-    "maxit_out" = 50,
+    "maxit_out" = 20,
     "penalize_diagonal" = TRUE,
     "penalty_weights"   = matrix(1, p, p),
     "warm"        = FALSE,
     "algorithm"   = "CCSAQ",
-    "ftol_rel"    = 1e-8    ,
+    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0       ,
     "xtol_rel"    = 1e-4    ,
-    "xtol_abs"    = c(rep(0, p*d), rep(0, n*p), rep(xtol_abs, n*p)),
-    "lower_bound" = c(rep(-Inf, p*d), rep(-Inf, n*p), rep(lower_bound, n*p)),
+    "xtol_abs"    = rep(xtol_abs, p*d + 2*n*p),
     "maxeval"     = 10000   ,
     "maxtime"     = -1      ,
     "trace"       = 1       ,

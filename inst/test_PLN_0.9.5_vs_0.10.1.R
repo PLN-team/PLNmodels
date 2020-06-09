@@ -26,13 +26,13 @@ library(PLNmodels, lib.loc = "~/R/x86_64-pc-linux-gnu-library/4.0/")
 cat("\nVersion", as.character(packageVersion("PLNmodels")), "\n")
 
 ## simple PLN
-time_full      <- system.time(myPLN <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0)))
-time_diagonal  <- system.time(myPLN_diagonal <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0, covariance = "diagonal")))
-time_spherical <- system.time(myPLN_spherical <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0, covariance = "spherical")))
+time_full      <- system.time(myPLN_full_new <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0)))
+time_diagonal  <- system.time(myPLN_diagonal_new <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0, covariance = "diagonal")))
+time_spherical <- system.time(myPLN_spherical_new <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0, covariance = "spherical")))
 
-data.frame(nb_param = c(myPLN$nb_param, myPLN_diagonal$nb_param, myPLN_spherical$nb_param),
+data.frame(nb_param = c(myPLN_full_new$nb_param, myPLN_diagonal_new$nb_param, myPLN_spherical_new$nb_param),
             time = c(time_full[3], time_diagonal[3], time_spherical[3]),
-            loglik = c(sum(loglik_param(myPLN)), sum(loglik_param(myPLN_diagonal)), sum(loglik_param(myPLN_spherical))),
+            loglik = c(sum(loglik_param(myPLN_full_new)), sum(loglik_param(myPLN_diagonal_new)), sum(loglik_param(myPLN_spherical_new))),
            row.names = c("full", "diagonal", "spherical")) %>%
   knitr::kable() %>% print()
 
@@ -43,13 +43,13 @@ library(PLNmodels, lib.loc = "~/R/x86_64-pc-linux-gnu-library/PLNmodels_9.5/")
 cat("\nVersion", as.character(packageVersion("PLNmodels")), "\n")
 
 ## simple PLN
-time_full      <- system.time(myPLN <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0)))
-time_diagonal  <- system.time(myPLN_diagonal <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0, covariance = "diagonal")))
-time_spherical <- system.time(myPLN_spherical <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0, covariance = "spherical")))
+time_full      <- system.time(myPLN_full_cran <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0)))
+time_diagonal  <- system.time(myPLN_diagonal_cran <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0, covariance = "diagonal")))
+time_spherical <- system.time(myPLN_spherical_cran <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(trace = 0, covariance = "spherical")))
 
-data.frame(nb_param = c(myPLN$nb_param, myPLN_diagonal$nb_param, myPLN_spherical$nb_param),
+data.frame(nb_param = c(myPLN_full_cran$nb_param, myPLN_diagonal_cran$nb_param, myPLN_spherical_cran$nb_param),
             time = c(time_full[3], time_diagonal[3], time_spherical[3]),
-            loglik = c(sum(loglik_param(myPLN)), sum(loglik_param(myPLN_diagonal)), sum(loglik_param(myPLN_spherical))),
+            loglik = c(sum(loglik_param(myPLN_full_cran)), sum(loglik_param(myPLN_diagonal_cran)), sum(loglik_param(myPLN_spherical_cran))),
            row.names = c("full", "diagonal", "spherical")) %>%
   knitr::kable() %>% print()
 
