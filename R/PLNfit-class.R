@@ -4,8 +4,8 @@
 #' Objects produced by the functions [PLNnetwork()], [PLNPCA()] and [PLNLDA()] also enjoy the methods of [PLNfit()] by inheritance.
 #'
 #' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-#' See the documentation for \code{\link[=coef.PLNfit]{coef()}}, \code{\link[=sigma.PLNfit]{sigma.PLNfit()}},
-#' \code{\link[=predict.PLNfit]{predict()}}, \code{\link[=vcov.PLNfit]{vcov()}} and \code{\link[=standard_error.PLNfit]{standard_error()}}.
+#' See the documentation for [coef.PLNfit()], [sigma.PLNfit()],
+#' [predict.PLNfit()], [vcov.PLNfit()] and [standard_error.PLNfit()].
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'
@@ -23,7 +23,7 @@
 #'
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
-#' @md
+#'
 #' @examples
 #' \dontrun{
 #' data(trichoptera)
@@ -147,9 +147,9 @@ PLNfit <- R6Class(
 
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
     #' @return A list with three components:
-    #  * the matrix `M` of variational means,
-    #  * the matrix `S` of variational variances
-    #  * the vector `log.lik` of (variational) log-likelihood of each new observation
+    #'  * the matrix `M` of variational means,
+    #'  * the matrix `S` of variational variances
+    #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
     VEstep = function(covariates, offsets, responses, weights, control = list()) {
       # problem dimension
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
