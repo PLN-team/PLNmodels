@@ -17,7 +17,7 @@ isPLNfamily <- function(Robject) {inherits(Robject, 'PLNfamily'       )}
 #'  If StARS (Stability Approach to Regularization Selection) is chosen and stability selection
 #'  was not yet performed, the function will call the method [stability_selection()] with default argument.
 #' @param ... additional parameters for StARS criterion (only for `PLNnetwork`). `stability`, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.
-#' @return  Send back an object with class `PLNPCAfit` or [`PLNnetworkfit`]
+#' @return  Send back an object with class [`PLNPCAfit`] or [`PLNnetworkfit`]
 #'
 #' @examples
 #' \dontrun{
@@ -35,7 +35,7 @@ getBestModel <- function(Robject, crit, ...) {UseMethod("getBestModel", Robject)
 #' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
 #' @param index Integer index of the model to be returned. Only the first value is taken into account.
 #'
-#' @return Sends back an object with class `PLNPCAfit` or [`PLNnetworkfit`].
+#' @return Sends back an object with class [`PLNPCAfit`] or [`PLNnetworkfit`].
 #' @examples
 #' \dontrun{
 #' data(trichoptera)

@@ -1,6 +1,6 @@
 #' An R6 Class to represent a collection of PLNfit
 #'
-#' @description super class for [`PLNPCAfamily`] and [`PLNnetworkfamily`]
+#' @description super class for [`PLNPCAfamily`] and [`PLNnetworkfamily`]. The R6 class benefits from S3 methods such as [getBestModel()], [getModel()] and [`plot()`][plot.PLNPCAfamily()].
 #'
 #' @param responses the matrix of responses common to every models
 #' @param covariates the matrix of covariates common to every models
@@ -10,11 +10,9 @@
 #'
 #' @inherit PLN details
 #'
-#' @details This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for [getBestModel.PLNnetworkfamily()],
-#' [getModel.PLNnetworkfamily()] and  [plot.PLNnetworkfamily()].
+#' @seealso
 #'
-#' @md
+#' @rdname PLNfamily
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 PLNfamily <-
