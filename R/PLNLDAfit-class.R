@@ -60,7 +60,7 @@ PLNLDAfit <- R6Class(
     },
 
     ## -----------------------------------
-    ## Post treatment -------------------
+    ## Optimization ----------------------
     #' @description Compute group means and axis of the LDA (noted B in the model) in the
     #' latent space, update corresponding fields
     #' @param X Abundance matrix.
@@ -83,6 +83,8 @@ PLNLDAfit <- R6Class(
       private$B <- Mu %*% diag(nk) %*% t(Mu) / self$n - Mu_bar %o% Mu_bar
     },
 
+    ## -----------------------------------
+    ## Post treatment --------------------
     #' @description  Update R2, fisher and std_err fields and visualisation
     #' after optimization
     postTreatment = function(responses, covariates, offsets) {

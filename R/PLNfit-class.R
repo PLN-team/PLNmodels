@@ -52,7 +52,7 @@ PLNfit <- R6Class(
     #' @param Z     matrix of latent vectors (includes covariates and offset effects)
     #' @param A     matrix of fitted values
     #' @param monitoring a list with optimization monitoring quantities
-    #' @return A [`PLNfit`] object
+    #' @return Update the current [`PLNfit`] object
     update = function(Theta=NA, Sigma=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
       if (!anyNA(Theta))      private$Theta  <- Theta
       if (!anyNA(Sigma))      private$Sigma  <- Sigma

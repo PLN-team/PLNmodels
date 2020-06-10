@@ -23,7 +23,7 @@
 ##' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
 ##'     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
 ##' * "trace" integer for verbosity. Useless when `cores` > 1
-##' * "cores" The number of core used to paralellize jobs over the `ranks` vector. Default is 1.}
+##' * "cores" The number of core used to paralellize jobs over the `ranks` vector. Default is 1.
 ##'
 ##'
 ##' @rdname PLNPCA
