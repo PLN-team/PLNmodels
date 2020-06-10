@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 0.10.3-900
+Version: 0.10.5
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inrae.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -49,7 +49,8 @@ Suggests:
     covr,
     pkgdown,
     biomformat,
-    phyloseq
+    phyloseq,
+    spelling
 LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)
 VignetteBuilder: knitr
 Collate: 
@@ -80,3 +81,4 @@ Collate:
     'trichoptera.R'
     'utils-pipe.R'
     'utils.R'
+Language: en-US

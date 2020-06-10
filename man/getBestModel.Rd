@@ -21,23 +21,23 @@ getBestModel(Robject, crit, ...)
 \item{Robject}{an object with class PLNPCAfamilly ot PLNnetworkfamily}
 
 \item{crit}{a character for the criterion used to performed the selection. Either
-"BIC", "ICL", "EBIC", "StARS", "R_squared". Default is \code{ICL} for PLNPCA, and \code{BIC} for PLNnetwork.
- If StARS (Stability Approach to Regularization Selection) is chosen and stability selection
- was not yet performed, the function will call the method stability_selection with default argument.}
+"BIC", "ICL", "EBIC", "StARS", "R_squared". Default is \code{ICL} for \code{PLNPCA}, and \code{BIC} for \code{PLNnetwork}.
+If StARS (Stability Approach to Regularization Selection) is chosen and stability selection
+was not yet performed, the function will call the method \code{\link[=stability_selection]{stability_selection()}} with default argument.}
 
-\item{...}{additional parameters for StARS criterion (only for PLNnetwork). stability, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.}
+\item{...}{additional parameters for StARS criterion (only for \code{PLNnetwork}). \code{stability}, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.}
 }
 \value{
-Send back an object with class \code{\link[=PLNPCAfit]{PLNPCAfit}} or \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
+Send back an object with class \code{\link{PLNPCAfit}} or \code{\link{PLNnetworkfit}}
 }
 \description{
 Best model extraction from a collection of models
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{PLNPCAfamily}: Model extraction for PLNPCAfamily
+\item \code{PLNPCAfamily}: Model extraction for \code{\link{PLNPCAfamily}}
 
-\item \code{PLNnetworkfamily}: Model extraction for PLNnetworkfamily
+\item \code{PLNnetworkfamily}: Model extraction for \code{\link{PLNnetworkfamily}}
 }}
 
 \examples{

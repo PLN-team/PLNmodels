@@ -2,12 +2,12 @@
 % Please edit documentation in R/PLNfit-S3methods.R
 \name{fitted.PLNfit}
 \alias{fitted.PLNfit}
-\title{Extracts model fitted values from objects returned by \code{\link[=PLN]{PLN}} and its variants}
+\title{Extracts model fitted values from objects returned by \code{\link[=PLN]{PLN()}} and its variants}
 \usage{
 \method{fitted}{PLNfit}(object, ...)
 }
 \arguments{
-\item{object}{an R6 object with class PLNfit}
+\item{object}{an R6 object with class \code{\link{PLNfit}}}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
@@ -15,5 +15,5 @@
 A matrix of Fitted values extracted from the object object.
 }
 \description{
-Extracts model fitted values from objects returned by \code{\link[=PLN]{PLN}} and its variants
+Extracts model fitted values from objects returned by \code{\link[=PLN]{PLN()}} and its variants
 }

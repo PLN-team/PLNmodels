@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNPCAfit-S3methods.R
 \name{plot.PLNPCAfit}
 \alias{plot.PLNPCAfit}
-\title{PCA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object}
+\title{PCA visualization (individual and/or variable factor map(s)) for a \code{\link{PLNPCAfit}} object}
 \usage{
 \method{plot}{PLNPCAfit}(
   x,
@@ -19,27 +19,27 @@
 \arguments{
 \item{x}{an R6 object with class PLNPCAfit}
 
-\item{map}{the type of output for the PCA vizualization: either "individual", "variable" or "both". Default is "both".}
+\item{map}{the type of output for the PCA visualization: either "individual", "variable" or "both". Default is "both".}
 
-\item{nb_axes}{scalar: the number of axes to be considered when map = "both". The default is min(3,rank).}
+\item{nb_axes}{scalar: the number of axes to be considered when \code{map = "both"}. The default is \code{min(3,rank)}.}
 
-\item{axes}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
+\item{axes}{numeric, the axes to use for the plot when \code{map = "individual"} or \code{map = "variable"}. Default it \code{c(1,min(rank))}}
 
 \item{ind_cols}{a character, factor or numeric to define the color associated with the individuals. By default, all variables receive the default color of the current palette.}
 
 \item{var_cols}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
 
-\item{plot}{logical. Should the plot be displayed or sent back as ggplot object}
+\item{plot}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
 
 \item{main}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
 
 \item{...}{Not used (S3 compatibility).}
 }
 \value{
-displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a ggplot2 or gtable object
+displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a \code{\link{ggplot}} or gtable object
 }
 \description{
-PCA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object
+PCA visualization (individual and/or variable factor map(s)) for a \code{\link{PLNPCAfit}} object
 }
 \examples{
 data(trichoptera)

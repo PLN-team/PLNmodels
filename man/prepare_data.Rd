@@ -11,12 +11,12 @@ prepare_data(counts, covariates, offset = "TSS", ...)
 
 \item{covariates}{Required. A covariates data frame, preferably with row names.}
 
-\item{offset}{Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).}
+\item{offset}{Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).}
 
-\item{...}{Additional parameters passed on to \code{\link[=compute_offset]{compute_offset}}}
+\item{...}{Additional parameters passed on to \code{\link[=compute_offset]{compute_offset()}}}
 }
 \value{
-A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
+A data.frame suited for use in \code{\link[=PLN]{PLN()}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
 }
 \description{
 Prepare data in proper format for use in PLN model and its variants. The function (i) merges a count table and
@@ -43,5 +43,5 @@ Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential ab
 Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
 }
 \seealso{
-\code{\link[=compute_offset]{compute_offset}} for details on the different normalisation schemes
+\code{\link[=compute_offset]{compute_offset()}} for details on the different normalization schemes
 }
