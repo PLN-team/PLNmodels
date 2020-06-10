@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 ## Preliminaries
 
-This vignette illustrates the basical use of the `PLNPCA` function and the methods accompaning the R6 Classes `PLNPCAfamily` and `PLNPCAfit`.
+This vignette illustrates the standard use of the `PLNPCA` function and the methods accompanying the R6 Classes `PLNPCAfamily` and `PLNPCAfit`.
 
 ### Requirements
 
@@ -52,7 +52,7 @@ The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`)
 
 In the vein of @TiB99, we introduce in @PLNPCA a probabilistic PCA model for multivariate count data which is a variant of the Poisson Lognormal model of @AiH89 (see [the PLN vignette](PLN.html) as a reminder). Indeed, it can viewed as a PLN model with an additional rank constraint on the covariance matrix $\boldsymbol\Sigma$ such that $\mathrm{rank}(\boldsymbol\Sigma)= q$.
 
-This PLN-PCA model can be written in a hierachical framework where a sample of $p$-dimensional observation vectors $\mathbf{Y}_i$ is related to some  $q$-dimensional vectors of latent variables $\mathbf{W}_i$ as follows:
+This PLN-PCA model can be written in a hierarchical framework where a sample of $p$-dimensional observation vectors $\mathbf{Y}_i$ is related to some  $q$-dimensional vectors of latent variables $\mathbf{W}_i$ as follows:
 \begin{equation} 
   \begin{array}{rcl}
     \text{latent space }  & \mathbf{W}_i \quad \text{i.i.d.} & \mathbf{W}_i \sim      \mathcal{N}(\mathbf{0}_q, \mathbf{I}_q)  \\
@@ -61,7 +61,7 @@ This PLN-PCA model can be written in a hierachical framework where a sample of $
   \end{array}
 \end{equation}
 
-The parameter ${\boldsymbol\mu}\in\mathbb{R}^p$ corresponds to the main effects, the $p\times q$ matrix $\mathbf{B}$  to the \emph{rescaled} loadings in the parameter spaces and $\mathbf{W}_i$ to the scores of the $i$-th observation in the low-dimensional latent subspace of the parameter space. The dimension of the latent space $q$ corresponds to the number of axes in the PCA or, in other words, to the rank of $\mathbf{B}\mathbf{B}^\intercal$. An hopefully more intuitive way of writting this model is the following:
+The parameter ${\boldsymbol\mu}\in\mathbb{R}^p$ corresponds to the main effects, the $p\times q$ matrix $\mathbf{B}$  to the \emph{rescaled} loadings in the parameter spaces and $\mathbf{W}_i$ to the scores of the $i$-th observation in the low-dimensional latent subspace of the parameter space. The dimension of the latent space $q$ corresponds to the number of axes in the PCA or, in other words, to the rank of $\mathbf{B}\mathbf{B}^\intercal$. An hopefully more intuitive way of writing this model is the following:
 \begin{equation} 
   \begin{array}{rcl}
   \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{B}\mathbf{B}^\top \\
@@ -80,7 +80,7 @@ where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters.
 
 #### Optimization by Variational inference
 
-Dimension reduction and vizualization is the main objective in (PLN)-PCA. To reach this goal, we need to first estimate the model parameters. Inference in PLN-PCA focuses on the regression parameters $\boldsymbol\Theta$ and on the covariance matrix $\boldsymbol\Sigma$. Technically speaking, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package. Technical details can be found in @PLNPCA.
+Dimension reduction and visualization is the main objective in (PLN)-PCA. To reach this goal, we need to first estimate the model parameters. Inference in PLN-PCA focuses on the regression parameters $\boldsymbol\Theta$ and on the covariance matrix $\boldsymbol\Sigma$. Technically speaking, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package. Technical details can be found in @PLNPCA.
 
 ## Analysis of trichoptera data with a PLNPCA model
 
@@ -88,7 +88,7 @@ In the package, the PLNPCA model is adjusted with the function `PLNPCA`, which w
 
 The class `PLNPCAfit` inherits from the class `PLNfit`, so we strongly recommend the reader to be comfortable with `PLN` and `PLNfit` before using `PLNPCA` (see [the PLN vignette](PLN.html)).
 
-### A model with latent main effects for the Trichopetra data set
+### A model with latent main effects for the Trichoptera data set
 
 #### Adjusting a collection of fits
 
@@ -145,14 +145,14 @@ myPCA_BIC <- getModel(PCA_models, 3) # getBestModel(PCA_models, "BIC")  is equiv
 
 #### Structure of `PLNPCAfit`
 
-Objects `myPCA_ICL` and `myPCA_BIC` are `R6Class` objects of class `PLNPCAfit` which in turns own a couple of methods, some inherited from `PLNfit` and some others specific, mostly for vizualization purposes. The `plot` method provides individual maps and correlation circles as in usual PCA. If an additional classification exists for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument to the function.^[With our PLN-PCA (and any pPCA model for count data, where successive models are not nested), it is important to performed the model selection of $q$ prior to vizualization, since the model with rank $q=3$ is not nested in the model with rank $q=4$. Hence, percentage of variance must be interpreted with care: it sums to 100% but must be put in perspective with the model $R^2$, giving an approximation of the total percentage of variance explained with the current model.]
+Objects `myPCA_ICL` and `myPCA_BIC` are `R6Class` objects of class `PLNPCAfit` which in turns own a couple of methods, some inherited from `PLNfit` and some others specific, mostly for visualization purposes. The `plot` method provides individual maps and correlation circles as in usual PCA. If an additional classification exists for the observations -- which is the case here with the available classification of the trapping nights -- , it can be passed as an argument to the function.^[With our PLN-PCA (and any pPCA model for count data, where successive models are not nested), it is important to performed the model selection of $q$ prior to visualization, since the model with rank $q=3$ is not nested in the model with rank $q=4$. Hence, percentage of variance must be interpreted with care: it sums to 100% but must be put in perspective with the model $R^2$, giving an approximation of the total percentage of variance explained with the current model.]
 
 
 ```{r map, fig.width=8, fig.height=8}
 plot(myPCA_ICL, ind_cols = trichoptera$Group)
 ```
 
-<!-- Indeed, let us vizualize the first three axes of model $q=3$: -->
+<!-- Indeed, let us visualize the first three axes of model $q=3$: -->
 
 <!-- ```{r map q3, fig.width=8, fig.height=8} -->
 <!-- plot(myPCA_BIC, ind_cols = trichoptera$Group) -->
@@ -192,7 +192,7 @@ myPCA_ICL
 
 ### A model accounting for meteorological covariates
 
-A contribution of PLN-PCA is to let the possibility to taking into account some covariates in the parameter space. Such a strategy often completly changes the interpretation of PCA. Indeed, the covariates are often responsible for some strong structure in the data. The effect of the covariates should be removed since they are often quite obvious for the analyst and may hide some more important and subtile effects.
+A contribution of PLN-PCA is to let the possibility to taking into account some covariates in the parameter space. Such a strategy often completely changes the interpretation of PCA. Indeed, the covariates are often responsible for some strong structure in the data. The effect of the covariates should be removed since they are often quite obvious for the analyst and may hide some more important and subtle effects.
 
 In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the temperature, the wind and the cloudiness. This can be done thanks to the model formula:
 
