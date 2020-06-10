@@ -81,7 +81,7 @@ For each sample, 4 additional covariates are known." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -166,17 +166,17 @@ For each sample, 4 additional covariates are known.</p>
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
     <p>A list with 2 two data frames:</p><dl>
-  <dt>Abundance</dt><dd><p>a 163 x 32 data frame of abundancies/counts (163 samples and 32 mollusk species)</p></dd>
-  <dt>Covariate</dt><dd><p>a 163 x 4 data frame of covariates:
-  <dl>
-    <dt>site</dt><dd><p>a factor with 8 levels indicating the sampling site</p></dd>
-    <dt>season</dt><dd><p>a factor with 4 levels indicating the season</p></dd>
-    <dt>method</dt><dd><p>a factor with 2 levels for the method of sampling - wood or string</p></dd>
-    <dt>duration</dt><dd><p>a numeric with 3 levels for the time of exposure in week</p></dd></dl></p></dd>
+<dt>Abundance</dt><dd><p>a 163 x 32 data frame of abundancies/counts (163 samples and 32 mollusk species)</p></dd>
+<dt>Covariate</dt><dd><p>a 163 x 4 data frame of covariates:
+<dl>
+<dt>site</dt><dd><p>a factor with 8 levels indicating the sampling site</p></dd>
+<dt>season</dt><dd><p>a factor with 4 levels indicating the season</p></dd>
+<dt>method</dt><dd><p>a factor with 2 levels for the method of sampling - wood or string</p></dd>
+<dt>duration</dt><dd><p>a numeric with 3 levels for the time of exposure in week</p></dd></dl></p></dd>
 
 </dl>
 
-<p>In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use <code><a href='prepare_data.html'>prepare_data</a></code>.
+<p>In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use <code><a href='prepare_data.html'>prepare_data()</a></code>.
 Original data set has been extracted from ade4.</p>
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
 
@@ -186,7 +186,7 @@ Original data set has been extracted from ade4.</p>
     <p>Richardot-Coulet, M., Chessel D. and Bournaud M. (1986) Typological value of the benthos of old beds of a large river. Methodological approach. Archiv fùr Hydrobiologie, 107, 363–383.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='prepare_data.html'>prepare_data</a></code></p></div>
+    <div class='dont-index'><p><code><a href='prepare_data.html'>prepare_data()</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>mollusk</span>)

@@ -81,7 +81,7 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -179,13 +179,13 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Additional parameters passed on to <code><a href='compute_offset.html'>compute_offset</a></code></p></td>
+      <td><p>Additional parameters passed on to <code><a href='compute_offset.html'>compute_offset()</a></code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data.frame suited for use in <code><a href='PLN.html'>PLN</a></code> and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")</p>
+    <p>A data.frame suited for use in <code><a href='PLN.html'>PLN()</a></code> and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
     <p>User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.</p>
@@ -196,7 +196,7 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
 <p>Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 <a href='https://doi.org/10.1186/gb-2010-11-10-r106'>https://doi.org/10.1186/gb-2010-11-10-r106</a></p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='compute_offset.html'>compute_offset</a></code> for details on the different normalization schemes</p></div>
+    <div class='dont-index'><p><code><a href='compute_offset.html'>compute_offset()</a></code> for details on the different normalization schemes</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)

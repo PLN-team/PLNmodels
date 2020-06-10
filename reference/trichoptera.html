@@ -85,7 +85,7 @@ contiguous nights between summer 1959 and summer 1960." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -174,20 +174,20 @@ contiguous nights between summer 1959 and summer 1960.</p>
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
     <p>A list with 2 two data frames:</p><dl>
-  Abundancea 49 x 17 matrix of abundancies/counts (49 trapping nights and 17 trichoptera species)
-  <dt>Covariate</dt><dd><p>a 49 x 7 data frame of covariates:
-  <dl>
-  <dt>Temperature</dt><dd><p>Evening Temperature in Celsius</p></dd>
-  <dt>Wind</dt><dd><p>Wind in m/s</p></dd>
-  <dt>Pressure</dt><dd><p>Pressure in mm Hg</p></dd>
-  <dt>Humidity</dt><dd><p>relative to evening humidity in percent</p></dd>
-  <dt>Cloudiness</dt><dd><p>proportion of sky coverage at 9pm</p></dd>
-  <dt>Precipitation</dt><dd><p>Nighttime precipitation in mm</p></dd>
-  <dt>Group</dt><dd><p>a factor of 12 levels for the definition of the consecutive night groups</p></dd></dl></p></dd>
+Abundancea 49 x 17 matrix of abundancies/counts (49 trapping nights and 17 trichoptera species)
+<dt>Covariate</dt><dd><p>a 49 x 7 data frame of covariates:
+<dl>
+<dt>Temperature</dt><dd><p>Evening Temperature in Celsius</p></dd>
+<dt>Wind</dt><dd><p>Wind in m/s</p></dd>
+<dt>Pressure</dt><dd><p>Pressure in mm Hg</p></dd>
+<dt>Humidity</dt><dd><p>relative to evening humidity in percent</p></dd>
+<dt>Cloudiness</dt><dd><p>proportion of sky coverage at 9pm</p></dd>
+<dt>Precipitation</dt><dd><p>Nighttime precipitation in mm</p></dd>
+<dt>Group</dt><dd><p>a factor of 12 levels for the definition of the consecutive night groups</p></dd></dl></p></dd>
 
 </dl>
 
-<p>In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use <code><a href='prepare_data.html'>prepare_data</a></code>.
+<p>In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use <code><a href='prepare_data.html'>prepare_data()</a></code>.
 We only kept a subset of the original meteorological covariates for illustration purposes.</p>
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
 
@@ -198,7 +198,7 @@ We only kept a subset of the original meteorological covariates for illustration
 See a data description at <a href='http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf'>http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf</a> (in French)</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='prepare_data.html'>prepare_data</a></code></p></div>
+    <div class='dont-index'><p><code><a href='prepare_data.html'>prepare_data()</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)

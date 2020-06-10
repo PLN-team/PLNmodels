@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -179,7 +179,7 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>If offset = "none", NULL else a vector of length <code><a href='https://rdrr.io/r/base/nrow.html'>nrow(counts)</a></code> with one offset per sample.</p>
+    <p>If <code>offset = "none"</code>, <code>NULL</code> else a vector of length <code><a href='https://rdrr.io/r/base/nrow.html'>nrow(counts)</a></code> with one offset per sample.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>RLE has an additional <code>pseudocounts</code> arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional <code>reference</code> argument to choose the location function used to compute the reference quantiles (defaults to <code>median</code> as in the Nature publication but can be set to <code>mean</code> to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.</p>

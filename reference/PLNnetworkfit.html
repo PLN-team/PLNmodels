@@ -47,9 +47,9 @@
 
 
 <meta property="og:title" content="An R6 Class to represent a PLNfit in a sparse inverse covariance framework — PLNnetworkfit" />
-<meta property="og:description" content="The function PLNnetwork produces a collection of models which are instances of object with class PLNnetworkfit.
+<meta property="og:description" content="The function PLNnetwork() produces a collection of models which are instances of object with class PLNnetworkfit.
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for plot.PLNnetworkfit + methods inherited from PLNfit." />
+See the documentation for plot() and methods inherited from PLNfit." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -82,7 +82,7 @@ See the documentation for plot.PLNnetworkfit + methods inherited from PLNfit." /
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -157,67 +157,38 @@ See the documentation for plot.PLNnetworkfit + methods inherited from PLNfit." /
     </div>
 
     <div class="ref-description">
-    <p>The function <code><a href='PLNnetwork.html'>PLNnetwork</a></code> produces a collection of models which are instances of object with class <code>PLNnetworkfit</code>.</p>
+    <p>The function <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> produces a collection of models which are instances of object with class <code>PLNnetworkfit</code>.</p>
 <p>This class comes with a set of methods, some of them being useful for the user:
-See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot.PLNnetworkfit</a></code> + methods inherited from PLNfit.</p>
+See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot()</a></code> and methods inherited from <code><a href='PLNfit.html'>PLNfit</a></code>.</p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The function <code><a href='PLNnetwork.html'>PLNnetwork</a></code>, the class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></div>
+    <div class='dont-index'><p>The function <code><a href='PLNnetwork.html'>PLNnetwork()</a></code>, the class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></div>
     <h2 class="hasAnchor" id="super-class"><a class="anchor" href="#super-class"></a>Super class</h2>
 
     <p><code><a href='PLNfit.html'>PLNmodels::PLNfit</a></code> -&gt; <code>PLNnetworkfit</code></p>
-    <h2 class="hasAnchor" id="public-fields"><a class="anchor" href="#public-fields"></a>Public fields</h2>
-
-    <p><div class="r6-fields"></p><dl>
-<dt><code>var_par</code></dt><dd><p>a list with two matrices, M and S2, which are the estimated parameters in the variational approximation</p></dd>
-
-<dt><code>latent</code></dt><dd><p>a matrix: values of the latent vector (Z in the model)</p></dd>
-
-<dt><code>optim_par</code></dt><dd><p>a list with parameters useful for monitoring the optimization</p></dd>
-
-<dt><code>loglik</code></dt><dd><p>variational lower bound of the loglikelihood</p></dd>
-
-<dt><code>BIC</code></dt><dd><p>variational lower bound of the BIC</p></dd>
-
-<dt><code>ICL</code></dt><dd><p>variational lower bound of the ICL</p></dd>
-
-<dt><code>R_squared</code></dt><dd><p>approximated goodness-of-fit criterion</p></dd>
-
-</dl><p></div></p>
     <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
 
     <p><div class="r6-active-bindings"></p><dl>
 <dt><code>penalty</code></dt><dd><p>the level of sparsity in the current model</p></dd>
 
-<dt><code>model_par</code></dt><dd><p>a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.</p></dd>
-
-<dt><code>var_par</code></dt><dd><p>a list with two matrices, M and S2, which are the estimated parameters in the variational approximation</p></dd>
-
-<dt><code>latent</code></dt><dd><p>a matrix: values of the latent vector (Z in the model)</p></dd>
-
-<dt><code>optim_par</code></dt><dd><p>a list with parameters useful for monitoring the optimization</p></dd>
-
-<dt><code>loglik</code></dt><dd><p>variational lower bound of the loglikelihood</p></dd>
-
-<dt><code>pen_loglik</code></dt><dd><p>variational lower bound of the l1-penalized loglikelihood</p></dd>
-
-<dt><code>BIC</code></dt><dd><p>variational lower bound of the BIC</p></dd>
-
-<dt><code>EBIC</code></dt><dd><p>variational lower bound of the EBIC</p></dd>
-
-<dt><code>ICL</code></dt><dd><p>variational lower bound of the ICL</p></dd>
-
-<dt><code>R_squared</code></dt><dd><p>approximated goodness-of-fit criterion</p></dd>
+<dt><code>n_edges</code></dt><dd><p>number of edges if the network (non null coefficient of the sparse precision matrix)</p></dd>
 
 <dt><code>nb_param</code></dt><dd><p>number of parameters in the current PLN model</p></dd>
 
+<dt><code>pen_loglik</code></dt><dd><p>variational lower bound of the l1-penalized loglikelihood</p></dd>
+
+<dt><code>model_par</code></dt><dd><p>a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.</p></dd>
+
+<dt><code>EBIC</code></dt><dd><p>variational lower bound of the EBIC</p></dd>
+
 <dt><code>density</code></dt><dd><p>proportion of non-null edges in the network</p></dd>
 
-<dt><code>criteria</code></dt><dd><p>a vector with loglik, BIC, ICL, R_squared and number of parameters</p></dd>
+<dt><code>criteria</code></dt><dd><p>a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges,
+and graph density</p></dd>
 
 </dl><p></div></p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
@@ -249,8 +220,7 @@ See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot.PLNnetwor
 
 <hr>
 <a id="method-new"></a></p><h3>Method <code>new()</code></h3>
-
-<h3>Usage</h3>
+<p>Initialize a <code>PLNnetworkfit</code> object</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>new</span>(
   <span class='no'>penalty</span>,
   <span class='no'>responses</span>,
@@ -262,10 +232,28 @@ See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot.PLNnetwor
   <span class='no'>control</span>
 )</pre><p></div></p>
 
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl>
+<dt><code>penalty</code></dt><dd><p>a positive real number controlling the level of sparsity of the underlying network.</p></dd>
+
+<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
+
+<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
+
+<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
+
+<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+
+<dt><code>model</code></dt><dd><p>model used for fitting, extracted from the formula in the upper-level call</p></dd>
+
+<dt><code>xlevels</code></dt><dd><p>named listed of factor levels included in the models, extracted from the formula in <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> call</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization of the PLN model used at initialization. See <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></dd>
+
+</dl><p></div></p>
 <p><hr>
 <a id="method-update"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/update.html'>update()</a></code></h3>
-
-<h3>Usage</h3>
+<p>Update fields of a <code>PLNnetworkfit</code> object</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'><a href='https://rdrr.io/r/stats/update.html'>update</a></span>(
   <span class='kw'>penalty</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
   <span class='kw'>Theta</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
@@ -280,28 +268,82 @@ See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot.PLNnetwor
   <span class='kw'>monitoring</span> <span class='kw'>=</span> <span class='fl'>NA</span>
 )</pre><p></div></p>
 
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl>
+<dt><code>penalty</code></dt><dd><p>a positive real number controlling the level of sparsity of the underlying network.</p></dd>
+
+<dt><code>Theta</code></dt><dd><p>matrix of regression matrix</p></dd>
+
+<dt><code>Sigma</code></dt><dd><p>variance-covariance matrix of the latent variables</p></dd>
+
+<dt><code>Omega</code></dt><dd><p>precision matrix of the latent variables. Inverse of Sigma.</p></dd>
+
+<dt><code>M</code></dt><dd><p>matrix of mean vectors for the variational approximation</p></dd>
+
+<dt><code>S2</code></dt><dd><p>matrix of variance vectors for the variational approximation</p></dd>
+
+<dt><code>Z</code></dt><dd><p>matrix of latent vectors (includes covariates and offset effects)</p></dd>
+
+<dt><code>A</code></dt><dd><p>matrix of fitted values</p></dd>
+
+<dt><code>Ji</code></dt><dd><p>vector of variational lower bounds of the log-likelihoods (one value per sample)</p></dd>
+
+<dt><code>R2</code></dt><dd><p>approximate R^2 goodness-of-fit criterion</p></dd>
+
+<dt><code>monitoring</code></dt><dd><p>a list with optimization monitoring quantities</p></dd>
+
+</dl><p></div></p>
 <p><hr>
 <a id="method-optimize"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
-
-<h3>Usage</h3>
+<p>Call to the C++ optimizer and update of the relevant fields</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='no'>responses</span>, <span class='no'>covariates</span>, <span class='no'>offsets</span>, <span class='no'>weights</span>, <span class='no'>control</span>)</pre><p></div></p>
 
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl>
+<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
+
+<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
+
+<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
+
+<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization of the PLN model used at initialization. See <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></dd>
+
+</dl><p></div></p>
 <p><hr>
 <a id="method-postTreatment"></a></p><h3>Method <code>postTreatment()</code></h3>
-
-<h3>Usage</h3>
+<p>Compute PCA scores in the latent space and update corresponding fields.</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>postTreatment</span>(<span class='no'>responses</span>, <span class='no'>covariates</span>, <span class='no'>offsets</span>, <span class='no'>weights</span>, <span class='no'>nullModel</span>)</pre><p></div></p>
 
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl>
+<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
+
+<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
+
+<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
+
+<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+
+<dt><code>nullModel</code></dt><dd><p>null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.</p></dd>
+
+</dl><p></div></p>
 <p><hr>
 <a id="method-latent_network"></a></p><h3>Method <code>latent_network()</code></h3>
-
-<h3>Usage</h3>
+<p>Extract interaction network in the latent space</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>latent_network</span>(<span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"partial_cor"</span>, <span class='st'>"support"</span>, <span class='st'>"precision"</span>))</pre><p></div></p>
 
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl>
+<dt><code>type</code></dt><dd><p>edge value in the network. Can be "support" (binary edges), "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species)</p></dd>
+
+</dl><p></div></p>
+<h3>Returns</h3>
+<p>a square matrix of size <code>PLNnetworkfit$n</code></p>
 <p><hr>
 <a id="method-plot_network"></a></p><h3>Method <code>plot_network()</code></h3>
-
-<h3>Usage</h3>
+<p>plot the latent network.</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>plot_network</span>(
   <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"partial_cor"</span>, <span class='st'>"support"</span>),
   <span class='kw'>output</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"igraph"</span>, <span class='st'>"corrplot"</span>),
@@ -312,10 +354,26 @@ See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot.PLNnetwor
   <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre><p></div></p>
 
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl>
+<dt><code>type</code></dt><dd><p>edge value in the network. Either "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species).</p></dd>
+
+<dt><code>output</code></dt><dd><p>Output type. Either <code>igraph</code> (for the network) or <code>corrplot</code> (for the adjacency matrix)</p></dd>
+
+<dt><code>edge.color</code></dt><dd><p>Length 2 color vector. Color for positive/negative edges. Default is <code><a href='https://rdrr.io/r/base/c.html'>c("#F8766D", "#00BFC4")</a></code>. Only relevant for igraph output.</p></dd>
+
+<dt><code>remove.isolated</code></dt><dd><p>if <code>TRUE</code>, isolated node are remove before plotting. Only relevant for igraph output.</p></dd>
+
+<dt><code>node.labels</code></dt><dd><p>vector of character. The labels of the nodes. The default will use the column names ot the response matrix.</p></dd>
+
+<dt><code>layout</code></dt><dd><p>an optional igraph layout. Only relevant for igraph output.</p></dd>
+
+<dt><code>plot</code></dt><dd><p>logical. Should the final network be displayed or only sent back to the user. Default is <code>TRUE</code>.</p></dd>
+
+</dl><p></div></p>
 <p><hr>
 <a id="method-show"></a></p><h3>Method <code>show()</code></h3>
-
-<h3>Usage</h3>
+<p>User friendly print method</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>show</span>()</pre><p></div></p>
 
 <p><hr>

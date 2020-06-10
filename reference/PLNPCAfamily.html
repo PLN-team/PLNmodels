@@ -47,10 +47,10 @@
 
 
 <meta property="og:title" content="An R6 Class to represent a collection of PLNPCAfit — PLNPCAfamily" />
-<meta property="og:description" content="The function PLNPCA produces an instance of this class.
+<meta property="og:description" content="The function PLNPCA() produces an instance of this class.
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for getBestModel,
-getModel and  plot." />
+See the documentation for getBestModel(),
+getModel() and plot()." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -83,7 +83,7 @@ getModel and  plot." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -158,56 +158,24 @@ getModel and  plot." />
     </div>
 
     <div class="ref-description">
-    <p>The function <code><a href='PLNPCA.html'>PLNPCA</a></code> produces an instance of this class.</p>
+    <p>The function <code><a href='PLNPCA.html'>PLNPCA()</a></code> produces an instance of this class.</p>
 <p>This class comes with a set of methods, some of them being useful for the user:
-See the documentation for <code><a href='getBestModel.html'>getBestModel</a></code>,
-<code><a href='getModel.html'>getModel</a></code> and  <code><a href='plot.PLNPCAfamily.html'>plot</a></code>.</p>
+See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></code>,
+<code><a href='getModel.html'>getModel()</a></code> and <code><a href='plot.PLNPCAfamily.html'>plot()</a></code>.</p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The function <code><a href='PLNPCA.html'>PLNPCA</a></code>, the class <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code></p></div>
+    <div class='dont-index'><p>The function <code><a href='PLNPCA.html'>PLNPCA()</a></code>, the class <code><a href='PLNPCAfit.html'>PLNPCAfit()</a></code></p></div>
     <h2 class="hasAnchor" id="super-class"><a class="anchor" href="#super-class"></a>Super class</h2>
 
     <p><code><a href='PLNfamily.html'>PLNmodels::PLNfamily</a></code> -&gt; <code>PLNPCAfamily</code></p>
-    <h2 class="hasAnchor" id="public-fields"><a class="anchor" href="#public-fields"></a>Public fields</h2>
-
-    <p><div class="r6-fields"></p><dl>
-<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
-
-<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
-
-<dt><code>weights</code></dt><dd><p>the vector of observation weights</p></dd>
-
-<dt><code>models</code></dt><dd><p>a list of <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> object, one per rank.</p></dd>
-
-<dt><code>inception</code></dt><dd><p>a <code><a href='PLNfit.html'>PLNfit</a></code> object, obtained when full rank is considered.</p></dd>
-
-<dt><code>criteria</code></dt><dd><p>a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.</p></dd>
-
-</dl><p></div></p>
     <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
 
     <p><div class="r6-active-bindings"></p><dl>
-<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
-
-<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
-
-<dt><code>weights</code></dt><dd><p>the vector of observation weights</p></dd>
-
 <dt><code>ranks</code></dt><dd><p>the dimensions of the successively fitted models</p></dd>
-
-<dt><code>models</code></dt><dd><p>a list of <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> object, one per rank.</p></dd>
-
-<dt><code>inception</code></dt><dd><p>a <code><a href='PLNfit.html'>PLNfit</a></code> object, obtained when full rank is considered.</p></dd>
-
-<dt><code>criteria</code></dt><dd><p>a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.</p></dd>
 
 </dl><p></div></p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
@@ -233,8 +201,7 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel</a></co
 
 <hr>
 <a id="method-new"></a></p><h3>Method <code>new()</code></h3>
-
-<h3>Usage</h3>
+<p>Initialize all models in the collection.</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'>new</span>(
   <span class='no'>ranks</span>,
   <span class='no'>responses</span>,
@@ -246,28 +213,65 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel</a></co
   <span class='no'>control</span>
 )</pre><p></div></p>
 
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl>
+<dt><code>ranks</code></dt><dd><p>the dimensions of the successively fitted models</p></dd>
+
+<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
+
+<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
+
+<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
+
+<dt><code>weights</code></dt><dd><p>the vector of observation weights</p></dd>
+
+<dt><code>model</code></dt><dd><p>model used for fitting, extracted from the formula in the upper-level call</p></dd>
+
+<dt><code>xlevels</code></dt><dd><p>named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
+
+</dl><p></div></p>
 <p><hr>
 <a id="method-optimize"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
-
-<h3>Usage</h3>
+<p>Call to the C++ optimizer on all models of the collection</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='no'>control</span>)</pre><p></div></p>
 
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl>
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
+
+</dl><p></div></p>
 <p><hr>
 <a id="method-getBestModel"></a></p><h3>Method <code><a href='getBestModel.html'>getBestModel()</a></code></h3>
-
-<h3>Usage</h3>
+<p>Extract best model in the collection</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'><a href='getBestModel.html'>getBestModel</a></span>(<span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"ICL"</span>, <span class='st'>"R_squared"</span>))</pre><p></div></p>
 
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl>
+<dt><code>crit</code></dt><dd><p>a character for the criterion used to performed the selection. Either
+"BIC", "ICL", or "R_squared". Default is <code>BIC</code></p></dd>
+
+</dl><p></div></p>
+<h3>Returns</h3>
+<p>a <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> object</p>
 <p><hr>
 <a id="method-plot"></a></p><h3>Method <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code></h3>
-
-<h3>Usage</h3>
+<p>Lineplot of selected criteria for all models in the collection</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='kw'>criteria</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"ICL"</span>), <span class='kw'>annotate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre><p></div></p>
 
+<h3>Arguments</h3>
+<p><div class="arguments"></p><dl>
+<dt><code>criteria</code></dt><dd><p>A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).</p></dd>
+
+<dt><code>annotate</code></dt><dd><p>Logical. Should R2 be added to the plot (defaults to <code>TRUE</code>)</p></dd>
+
+</dl><p></div></p>
+<h3>Returns</h3>
+<p>A <code>ggplot2</code> object</p>
 <p><hr>
 <a id="method-show"></a></p><h3>Method <code>show()</code></h3>
-
-<h3>Usage</h3>
+<p>User friendly print method</p><h3>Usage</h3>
 <p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'>show</span>()</pre><p></div></p>
 
 <p><hr>
