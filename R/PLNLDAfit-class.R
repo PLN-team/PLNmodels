@@ -46,11 +46,11 @@
 PLNLDAfit <- R6Class(
   classname = "PLNLDAfit",
   inherit = PLNfit,
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNLDAfit`] object
     initialize = function(grouping, responses, covariates, offsets, weights, model, xlevels, control) {
@@ -59,7 +59,7 @@ PLNLDAfit <- R6Class(
       super$optimize(responses, covariates, offsets, weights, control)
     },
 
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimization ----------------------
     #' @description Compute group means and axis of the LDA (noted B in the model) in the
     #' latent space, update corresponding fields
@@ -83,7 +83,7 @@ PLNLDAfit <- R6Class(
       private$B <- Mu %*% diag(nk) %*% t(Mu) / self$n - Mu_bar %o% Mu_bar
     },
 
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Post treatment --------------------
     #' @description  Update R2, fisher and std_err fields and visualisation
     #' after optimization
@@ -103,7 +103,7 @@ PLNLDAfit <- R6Class(
       private$P <- scale(P, TRUE, scale.unit)
     },
 
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Graphical methods -----------------
     #' @description Plot the factorial map of the LDA
     # @inheritParams plot.PLNLDAfit
@@ -206,7 +206,7 @@ PLNLDAfit <- R6Class(
                     invisible(p)
                   },
 
-    ## ---------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Prediction methods --------------------
     #' @description Predict group of new samples
     # @inheritParams predict.PLNLDAfit
@@ -296,7 +296,7 @@ PLNLDAfit <- R6Class(
       res
     },
 
-    ## ---------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Print methods -------------------------
     #' @description User friendly print method
     show = function() {
@@ -307,13 +307,13 @@ PLNLDAfit <- R6Class(
       cat("    plot.PLNLDAfit(), predict.PLNLDAfit()\n")
     }
 
-    ## Other functions ----------------
-
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Other functions -----------------------
   ),
 
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PRIVATE MEMBERS
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
     B        = NULL,
     P        = NULL,
@@ -322,9 +322,9 @@ PLNLDAfit <- R6Class(
     svdLDA   = NULL
   ),
 
-  ## ----------------------------------------------------------
-  ##  ACTIVE BINDINGS
-  ## ----------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  ACTIVE BINDINGS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   active = list(
     #' @field rank the dimension of the current model
     rank = function() {nlevels(private$grouping) - 1},
@@ -361,7 +361,7 @@ PLNLDAfit <- R6Class(
     }
   )
 
-  ## ----------------------------------------------------------
-  ##  END OF THE CLASS
-  ## ----------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  END OF THE CLASS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 )

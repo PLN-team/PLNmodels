@@ -32,11 +32,11 @@
 PLNnetworkfit <- R6Class(
   classname = "PLNnetworkfit",
   inherit = PLNfit,
-  ## ----------------------------------------------------------------------
-  ## PUBLIC MEMBERS
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PUBLIC MEMBERS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
     initialize = function(penalty, responses, covariates, offsets, weights, model, xlevels, control) {
@@ -60,7 +60,7 @@ PLNnetworkfit <- R6Class(
       if (!anyNA(Omega))   private$Omega  <- Omega
     },
 
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimization ----------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
@@ -121,7 +121,7 @@ PLNnetworkfit <- R6Class(
 
     },
 
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Post treatment --------------------
     #' @description Compute PCA scores in the latent space and update corresponding fields.
     postTreatment = function(responses, covariates, offsets, weights, nullModel) {
@@ -130,7 +130,7 @@ PLNnetworkfit <- R6Class(
       colnames(private$S) <- 1:self$p
     },
 
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Extractors ------------------------
     #' @description Extract interaction network in the latent space
     #' @param type edge value in the network. Can be "support" (binary edges), "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species)
@@ -151,7 +151,7 @@ PLNnetworkfit <- R6Class(
       Matrix(net, sparse = TRUE)
     },
 
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Graphical methods------------------
     #' @description plot the latent network.
     #' @param type edge value in the network. Either "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species).
@@ -215,7 +215,7 @@ PLNnetworkfit <- R6Class(
       invisible(G)
     },
 
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Print methods ---------------------
     #' @description User friendly print method
     show = function() {
@@ -228,17 +228,17 @@ PLNnetworkfit <- R6Class(
 
   ),
 
-  ## ----------------------------------------------------------------------
-  ## PRIVATE MEMBERS
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PRIVATE MEMBERS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
     Omega  = NA, # the p x p precision matrix
     lambda = NA  # the sparsity tuning parameter
   ),
 
-  ## ----------------------------------------------------------------------
-  ## ACTIVE BINDINGS
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## ACTIVE BINDINGS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   active = list(
     #' @field penalty the level of sparsity in the current model
     penalty    = function() {private$lambda},
@@ -264,7 +264,7 @@ PLNnetworkfit <- R6Class(
     #' and graph density
     criteria  = function() {data.frame(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik, density = self$density)}
   )
-  ## ----------------------------------------------------------------------
-  ## END OF CLASS
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## END OF CLASS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 )

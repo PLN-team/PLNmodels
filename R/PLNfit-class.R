@@ -35,11 +35,11 @@
 #' }
 PLNfit <- R6Class(
   classname = "PLNfit",
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public = list(
-    ## -----------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description
     #' Update a [`PLNfit`] object
@@ -116,8 +116,8 @@ PLNfit <- R6Class(
 
     },
 
-    ## -----------------------------------
-    ## Optimizers ------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Optimizers ----------------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
       optim_out <- private$optimizer(
@@ -184,8 +184,8 @@ PLNfit <- R6Class(
            log.lik = setNames(optim_out$loglik, rownames(responses)))
     },
 
-    ## -----------------------------------------
-    ## Post treatment functions ----------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Post treatment functions --------------
     #' @description Update R2 field afer optimization
     set_R2 = function(responses, covariates, offsets, weights, nullModel = NULL) {
       if (is.null(nullModel)) nullModel <- nullModelPoisson(responses, covariates, offsets, weights)
@@ -268,7 +268,7 @@ PLNfit <- R6Class(
       private$.std_err <- self$compute_standard_error()
     },
 
-    ## ---------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Helper functions ----------------------
     #' @description Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualisation
     #' @return a n x q matrix of latent positions.
@@ -301,7 +301,7 @@ PLNfit <- R6Class(
       results
     },
 
-    ## ---------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Print functions -----------------------
     #' @description User friendly print method
     #' @param model First line of the print output
@@ -319,12 +319,13 @@ PLNfit <- R6Class(
     #' @description User friendly print method
     print = function() { self$show() }
 
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Other functions ----------------
   ),
 
-  ## ----------------------------------------------------------------------
-  ## PRIVATE MEMBERS
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PRIVATE MEMBERS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
     model      = NA, # the formula call for the model as specified by the user
     xlevels    = NA, # factor levels present in the original data, useful for predict() methods.
@@ -344,9 +345,9 @@ PLNfit <- R6Class(
     optimizer  = NA, # link to the function that performs the optimization
     monitoring = NA  # a list with optimization monitoring quantities
   ),
-  ## ----------------------------------------------------------
-  ##  ACTIVE BINDINGS
-  ## ----------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  ACTIVE BINDINGS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   active = list(
     #' @field n number of samples
     n = function() {nrow(private$M)},
@@ -393,9 +394,9 @@ PLNfit <- R6Class(
     criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
   )
 
-  ## ----------------------------------------------------------
-  ##  END OF THE CLASS
-  ## ----------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  END OF THE CLASS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 )
 

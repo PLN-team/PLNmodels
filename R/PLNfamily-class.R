@@ -20,11 +20,11 @@
 PLNfamily <-
   R6Class(
     classname = "PLNfamily",
-    ## ----------------------------------------------------------------------
-    ## PUBLIC MEMBERS
-    ## ----------------------------------------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PUBLIC MEMBERS ------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     public = list(
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Public fields ---------------------
       #' @field responses the matrix of responses common to every models
       responses  = NULL, # the Y matrix
@@ -39,7 +39,7 @@ PLNfamily <-
       #' @field models a list of [PLNfit] object, one per penalty.
       models     = NULL,  # the collection of fitted models
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Creator functions -----------------
       #' @description Create a new [`PLNfamily`] object.
       #' @return A new [`PLNfamily`] object
@@ -62,7 +62,7 @@ PLNfamily <-
 
       },
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Update fields after optimization
       postTreatment = function() {
@@ -77,7 +77,7 @@ PLNfamily <-
           )
       },
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Extractors ------------------------
       #' @description
       #' Extract a model from a collection of models
@@ -104,8 +104,8 @@ PLNfamily <-
         }
       },
 
-      ## -----------------------------------
-      ## Graphical methods------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      ## Graphical methods -----------------
       #' @description
       #' Lineplot of selected criteria for all models in the collection
       #' @param criteria A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)
@@ -126,7 +126,7 @@ PLNfamily <-
         p
       },
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Print methods ---------------------
       #' @description User friendly print method
       show = function() {
@@ -138,15 +138,15 @@ PLNfamily <-
       #' @description User friendly print method
       print = function() { self$show() }
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Other public members --------------
 
 
     ),
 
-    ## ----------------------------------------------------------------------
-    ## PRIVATE MEMBERS
-    ## ----------------------------------------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE MEMBERS ----
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     private = list(
       params     = NULL, # vector of parameters that indexes the models (either sparsity, rank, etc.)
       n          = NULL, # number of samples
@@ -154,9 +154,9 @@ PLNfamily <-
       d          = NULL  # number of covariates
     ),
 
-    ## ----------------------------------------------------------------------
-    ## ACTIVE BINDINGS
-    ## ----------------------------------------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## ACTIVE BINDINGS ----
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     active = list(
       #' @field criteria a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the collection of models / fits
       criteria = function() {
@@ -172,8 +172,8 @@ PLNfamily <-
       }
     )
 
-    ## ----------------------------------------------------------
-    ##  REST OF THE CLASS
-    ## ----------------------------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ##  END OF CLASS ----
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 )
 

@@ -5,9 +5,9 @@
 #' See the documentation for the methods inherited by  [`PLNfit`] and the [plot()] methods for PCA vizualization
 #'
 ## Parameters common to many PLNPCAfit methods (shared with PLNfit but inheritance does not work)
-#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
 #' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
 #' @param model model used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
@@ -38,11 +38,11 @@
 PLNPCAfit <- R6Class(
     classname = "PLNPCAfit",
     inherit = PLNfit,
-    ## ----------------------------------------------------------------------
-    ## PUBLIC MEMBERS
-    ## ----------------------------------------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PUBLIC MEMBERS ----
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     public  = list(
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Creation functions ----------------
       #' @description Initialize a [`PLNPCAfit`] object
       initialize = function(rank, responses, covariates, offsets, weights, model, xlevels, control) {
@@ -74,7 +74,7 @@ PLNPCAfit <- R6Class(
         if (!anyNA(B)) private$B <- B
       },
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Optimization ----------------------
       #' @description Call to the C++ optimizer and update of the relevant fields
       optimize = function(responses, covariates, offsets, weights, control) {
@@ -106,7 +106,7 @@ PLNPCAfit <- R6Class(
         )
       },
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Compute PCA scores in the latent space and update corresponding fields.
       #' @param scale.unit Logical. Should PCA scores be rescaled to have unit variance
@@ -136,7 +136,7 @@ PLNPCAfit <- R6Class(
         super$compute_fisher(type = "wald", X = X)
       },
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Extractors ------------------------
       #' @description Compute matrix of latent positions, noted as Z in the model.
       #' Useful to compute the likelihood or for data visualisation
@@ -146,7 +146,7 @@ PLNPCAfit <- R6Class(
         latentPos
       },
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -----------------
 
       #' @description Plot the factorial map of the PCA
@@ -183,6 +183,7 @@ PLNPCAfit <- R6Class(
         if (plot) print(p)
         invisible(p)
       },
+
       #' @description Plot a summary of the [`PLNPCAfit`] object
       # @inheritParams plot.PLNPCAfit
       #' @importFrom gridExtra grid.arrange arrangeGrob
@@ -250,7 +251,7 @@ PLNPCAfit <- R6Class(
         invisible(p)
       },
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Print methods ---------------------
 
       #' @description User friendly print method
@@ -262,21 +263,21 @@ PLNPCAfit <- R6Class(
         cat("    plot.PLNPCAfit()\n")
       }
 
-      ## -----------------------------------
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Other methods ---------------------
     ),
 
-    ## ----------------------------------------------------------------------
-    ## PRIVATE MEMBERS
-    ## ----------------------------------------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE MEMBERS ----
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     private = list(
       B     = NULL,
       svdBM = NULL
     ),
 
-    ## ----------------------------------------------------------
-    ##  ACTIVE BINDINGS
-    ## ----------------------------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ##  ACTIVE BINDINGS ----
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     active = list(
       #' @field rank the dimension of the current model
       rank = function() {ncol(private$B)},
@@ -315,9 +316,9 @@ PLNPCAfit <- R6Class(
         rotation
       }
     )
-    ## ----------------------------------------------------------
-    ##  END OF CLASS
-    ## ----------------------------------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ##  END OF CLASS ----
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 )
 

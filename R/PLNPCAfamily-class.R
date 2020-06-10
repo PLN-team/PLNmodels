@@ -31,12 +31,12 @@
 PLNPCAfamily <- R6Class(
   classname = "PLNPCAfamily",
   inherit = PLNfamily,
-  ## ----------------------------------------------------------------------
-  ## PUBLIC MEMBERS
-  ## ----------------------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PUBLIC MEMBERS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   public = list(
-    ## --------------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation -----------------------
     #' @description Initialize all models in the collection.
     initialize = function(ranks, responses, covariates, offsets, weights, model, xlevels, control) {
@@ -56,8 +56,8 @@ PLNPCAfamily <- R6Class(
       })
     },
 
-    ## -----------------------------------
-    ## Optimization ----------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Optimization -------------------
     #' @description Call to the C++ optimizer on all models of the collection
     optimize = function(control) {
       self$models <- mclapply(self$models, function(model) {
@@ -74,8 +74,8 @@ PLNPCAfamily <- R6Class(
       }, mc.cores = control$cores, mc.allow.recursive = FALSE)
     },
 
-    ## -----------------------------------
-    ## Extractors   ----------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Extractors   -------------------
     #' @description Extract best model in the collection
     #' @param crit a character for the criterion used to performed the selection. Either
     #' "BIC", "ICL", or "R_squared". Default is `BIC`
@@ -91,8 +91,8 @@ PLNPCAfamily <- R6Class(
       model
     },
 
-    ## -----------------------------------
-    ## Graphical methdods ----------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Graphical methdods -------------
     #' @description
     #' Lineplot of selected criteria for all models in the collection
     #' @param criteria A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).
@@ -104,8 +104,8 @@ PLNPCAfamily <- R6Class(
       p
     },
 
-    ## -----------------------------------
-    ## Print methods ---------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Print methods ------------------
     #' @description User friendly print method
     show = function() {
       super$show()
@@ -116,19 +116,19 @@ PLNPCAfamily <- R6Class(
       cat(" - Best model (greater ICL): rank = ", self$getBestModel("ICL")$rank, " - R2 = ", round(self$getBestModel("ICL")$R_squared, 2), "\n", sep = "")
     }
 
-    ## -----------------------------------
-    ## End of methods ---------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## End of methods -----------------
 
   ),
-  ## ----------------------------------------------------------
-  ##  ACTIVE BINDINGS
-  ## ----------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  ACTIVE BINDINGS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   active = list(
     #' @field ranks the dimensions of the successively fitted models
     ranks = function() private$params
   )
 
-  ## ----------------------------------------------------------
-  ##  END OF CLASS
-  ## ----------------------------------------------------------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  END OF CLASS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 )
