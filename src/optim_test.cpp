@@ -2,6 +2,7 @@
 #include <nlopt.h>
 
 #include <cstddef>
+#include <functional> // lambda wrapping
 #include <memory>
 #include <string>
 #include <tuple>       // packer system
@@ -80,15 +81,14 @@ struct OptimizerConfiguration {
 
     // Build from R list (with named elements).
     // xtol_abs and lower_bounds field should contain a sublist with values for each parameter.
-    // arma::vec list_by_parameter_to_packed(Rcpp::List) : extract list values and pack them like parameters.
-    template <typename F>
-    static OptimizerConfiguration from_r_list(const Rcpp::List & list, F list_by_parameter_to_packed) {
+    // arma::vec packed_from_r_list(Rcpp::List) : extract list values and pack them like parameters.
+    template <typename F> static OptimizerConfiguration from_r_list(const Rcpp::List & list, F packed_from_r_list) {
         return {
             algorithm_from_name(Rcpp::as<std::string>(list["algorithm"])),
 
-            list_by_parameter_to_packed(Rcpp::as<Rcpp::List>(list["xtol_abs"])),
+            packed_from_r_list(Rcpp::as<Rcpp::List>(list["xtol_abs"])),
             Rcpp::as<double>(list["xtol_rel"]),
-            list_by_parameter_to_packed(Rcpp::as<Rcpp::List>(list["lower_bounds"])),
+            packed_from_r_list(Rcpp::as<Rcpp::List>(list["lower_bounds"])),
 
             Rcpp::as<double>(list["ftol_abs"]),
             Rcpp::as<double>(list["ftol_rel"]),
@@ -102,35 +102,38 @@ struct OptimizerConfiguration {
 struct OptimizerResult {
     nlopt_result status;
     double objective;
+    int nb_iterations;
 };
 
-// nlopt uses an opaque pointer to a declared-but-not-defined struct.
-// Retrieve the struct type to use it in a std::unique_ptr
-using Optimizer = std::remove_pointer<nlopt_opt>::type;
-
-// Deleter = cleanup function called by unique_ptr, just forward to nlopt_destroy
-struct OptimizerDeleter {
-    void operator()(Optimizer * optimizer) const { nlopt_destroy(optimizer); }
-};
-
-// Create and configure an optimizer with everything except the optimized function.
-// This function is split from templated optimize() to enable some code reuse in the compiler.
-// The optimizer is stored in a unique_ptr, so it will automatically be destroyed when out of scope.
-std::unique_ptr<Optimizer, OptimizerDeleter> create_configured_optimizer(
-    arma::uword nb_parameters, const OptimizerConfiguration & config) {
-    // Check bounds
-    if(!(config.xtol_abs.n_elem == nb_parameters)) {
+// Find parameters minimizing the given objective function, under the given configuration.
+OptimizerResult minimize_objective_on_parameters(
+    // Parameters are modified in place
+    arma::vec & parameters,
+    const OptimizerConfiguration & config,
+    // Computation step function (usually initialised with a stateful lambda / closure).
+    // It should compute and return the objective value for the given parameters, and store computed gradients.
+    // Both vectors are of size nb_parameters.
+    std::function<double(const arma::vec & parameters, arma::vec & gradients)> objective_and_grad_fn //
+) {
+    // Check basic bounds
+    if(!(config.xtol_abs.n_elem == parameters.n_elem)) {
         throw Rcpp::exception("config.xtol_abs size");
     }
-    if(!(config.lower_bounds.n_elem == nb_parameters)) {
+    if(!(config.lower_bounds.n_elem == parameters.n_elem)) {
         throw Rcpp::exception("config.lower_bounds size");
     }
-    // Create
-    auto optimizer = std::unique_ptr<Optimizer, OptimizerDeleter>(nlopt_create(config.algorithm, nb_parameters));
+
+    // Create optimizer, stored in a unique_ptr to ensure automatic destruction.
+    using Optimizer = std::remove_pointer<nlopt_opt>::type; // Retrieve struct type hidden by nlopt_opt typedef
+    struct Deleter {
+        void operator()(Optimizer * optimizer) const { nlopt_destroy(optimizer); }
+    };
+    auto optimizer = std::unique_ptr<Optimizer, Deleter>(nlopt_create(config.algorithm, parameters.n_elem));
     if(!optimizer) {
         throw Rcpp::exception("nlopt_create");
     }
-    // Set config
+
+    // Set optimizer configuration, with error checking
     auto check = [](nlopt_result r, const char * reason) {
         if(r != NLOPT_SUCCESS) {
             throw Rcpp::exception(reason);
@@ -143,47 +146,34 @@ std::unique_ptr<Optimizer, OptimizerDeleter> create_configured_optimizer(
     check(nlopt_set_ftol_rel(optimizer.get(), config.ftol_rel), "nlopt_set_ftol_rel");
     check(nlopt_set_maxeval(optimizer.get(), config.maxeval), "nlopt_set_maxeval");
     check(nlopt_set_maxtime(optimizer.get(), config.maxtime), "nlopt_set_maxtime");
-    return optimizer;
-}
 
-// Find parameters minimizing the given objective function, under the given configuration.
-template <typename ObjectiveAndGradFn> OptimizerResult minimize_objective_on_parameters(
-    // Parameters are modified in place
-    arma::vec & parameters,
-    const OptimizerConfiguration & config,
-    // The function should be a closure (stateful lambda) with the given prototype:
-    // double objective_and_grad(const arma::vec & parameters, arma::vec & grad_storage);
-    // It should compute and return the objective value, and store computed gradients in grad_storage.
-    // Both vectors are of size nb_parameters.
-    const ObjectiveAndGradFn & objective_and_grad_fn //
-) {
-    // Setup optimizer
-    auto optimizer = create_configured_optimizer(parameters.n_elem, config);
-
-    // A closure (stateful lambda, functor) is a struct instance with an operator() method.
+    // Optimize.
     // nlopt requires a pair of function pointer and custom data pointer for the objective function.
-    // The closure can fit this interface by passing the closure pointer as custom data.
-    // A raw function 'optim_fn' (stateless lambda) is used to cast back the data pointer to the closure struct type.
-    // The closure can then be called. Additionnally raw arrays are wrapped as arma::vec.
+    // The OptimData struct stores iteration count and the step function ; it is used as void* data.
+    // optim_fn is a stateless lambda, and can be cast to a function pointer as required by nlopt.
+    // It is an adapter: convert nlopt raw arrays to arma values, and call the closure.
+    struct OptimData {
+        int nb_iterations;
+        std::function<double(const arma::vec &, arma::vec &)> objective_and_grad_fn;
+    };
+    OptimData optim_data = {0, std::move(objective_and_grad_fn)};
+
     auto optim_fn = [](unsigned n, const double * x, double * grad, void * data) -> double {
-        // Wrap raw C arrays from nlopt into arma::vec
+        // Wrap raw C arrays from nlopt into arma::vec (no copy)
         const auto parameters = arma::vec(const_cast<double *>(x), n, false, true);
         auto grad_storage = arma::vec(grad, n, false, true);
-        // Restore objective_and_grad_fn and call it
-        const ObjectiveAndGradFn & objective_and_grad_fn = *static_cast<const ObjectiveAndGradFn *>(data);
-        return objective_and_grad_fn(parameters, grad_storage);
+        // Restore optim_data and use it to perform computation step
+        OptimData & optim_data = *static_cast<OptimData *>(data);
+        optim_data.nb_iterations += 1;
+        return optim_data.objective_and_grad_fn(parameters, grad_storage);
     };
-    if(nlopt_set_min_objective(
-           optimizer.get(),
-           optim_fn,
-           const_cast<ObjectiveAndGradFn *>(&objective_and_grad_fn) // Make non-const for cast to void*
-           ) != NLOPT_SUCCESS) {
+    if(nlopt_set_min_objective(optimizer.get(), optim_fn, &optim_data) != NLOPT_SUCCESS) {
         throw Rcpp::exception("nlopt_set_min_objective");
     }
 
     double objective = 0.;
     nlopt_result status = nlopt_optimize(optimizer.get(), parameters.memptr(), &objective);
-    return {status, objective};
+    return OptimizerResult{status, objective, optim_data.nb_iterations};
 }
 
 // ---------------------------------------------------------------------------------------
@@ -309,11 +299,10 @@ Rcpp::List cpp_optimize_full(
     });
 
     const double w_bar = accu(w);
-    int nb_iterations = 0;
 
     // Optimize
-    auto objective_and_grad = [&packer, &y, &x, &o, &w, &w_bar, &nb_iterations](
-                                  const arma::vec & parameters, arma::vec & grad_storage) -> double {
+    auto objective_and_grad =
+        [&packer, &y, &x, &o, &w, &w_bar](const arma::vec & parameters, arma::vec & grad_storage) -> double {
         auto theta = packer.unpack<THETA>(parameters);
         arma::mat m = packer.unpack<M>(parameters);
         arma::mat s = packer.unpack<S>(parameters);
@@ -327,7 +316,6 @@ Rcpp::List cpp_optimize_full(
         packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
         packer.pack<M>(grad_storage, diagmat(w) * (m * omega + a - y));
         packer.pack<S>(grad_storage, diagmat(w) * (s.each_row() % diagvec(omega).t() + s % a - pow(s, -1)));
-        nb_iterations += 1;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
@@ -349,7 +337,7 @@ Rcpp::List cpp_optimize_full(
 
     return Rcpp::List::create(
         Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", nb_iterations),
+        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("Theta", theta),
         Rcpp::Named("M", m),
         Rcpp::Named("S", s),
@@ -402,11 +390,10 @@ Rcpp::List cpp_optimize_spherical(
     });
 
     const double w_bar = accu(w);
-    int nb_iterations = 0;
 
     // Optimize
-    auto objective_and_grad = [&packer, &o, &x, &y, &w, &w_bar, &nb_iterations](
-                                  const arma::vec & parameters, arma::vec & grad_storage) -> double {
+    auto objective_and_grad =
+        [&packer, &o, &x, &y, &w, &w_bar](const arma::vec & parameters, arma::vec & grad_storage) -> double {
         auto theta = packer.unpack<THETA>(parameters);
         arma::mat m = packer.unpack<M>(parameters);
         auto s = packer.unpack<S>(parameters);
@@ -422,7 +409,6 @@ Rcpp::List cpp_optimize_spherical(
         packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
         packer.pack<M>(grad_storage, diagmat(w) * (m / sigma2 + a - y));
         packer.pack<S>(grad_storage, w % (s * sum(a, 1) - double(p) * pow(s, -1) - double(p) * s / sigma2));
-        nb_iterations += 1;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
@@ -447,7 +433,7 @@ Rcpp::List cpp_optimize_spherical(
 
     return Rcpp::List::create(
         Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", nb_iterations),
+        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("Theta", theta),
         Rcpp::Named("M", m),
         Rcpp::Named("S", s),
@@ -500,11 +486,10 @@ Rcpp::List cpp_optimize_diagonal(
     });
 
     const double w_bar = accu(w);
-    int nb_iterations = 0;
 
     // Optimize
-    auto objective_and_grad = [&packer, &o, &x, &y, &w, &w_bar, &nb_iterations](
-                                  const arma::vec & parameters, arma::vec & grad_storage) -> double {
+    auto objective_and_grad =
+        [&packer, &o, &x, &y, &w, &w_bar](const arma::vec & parameters, arma::vec & grad_storage) -> double {
         auto theta = packer.unpack<THETA>(parameters);
         arma::mat m = packer.unpack<M>(parameters);
         arma::mat s = packer.unpack<S>(parameters);
@@ -518,7 +503,6 @@ Rcpp::List cpp_optimize_diagonal(
         packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
         packer.pack<M>(grad_storage, diagmat(w) * ((m.each_row() / diag_sigma) + a - y));
         packer.pack<S>(grad_storage, diagmat(w) * (s.each_row() % pow(diag_sigma, -1) + s % a - pow(s, -1)));
-        nb_iterations += 1;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
@@ -542,7 +526,7 @@ Rcpp::List cpp_optimize_diagonal(
 
     return Rcpp::List::create(
         Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", nb_iterations),
+        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("Theta", theta),
         Rcpp::Named("M", m),
         Rcpp::Named("S", s),
@@ -600,11 +584,9 @@ Rcpp::List cpp_optimize_rank(
         return packed;
     });
 
-    int nb_iterations = 0;
-
     // Optimize
     auto objective_and_grad =
-        [&packer, &o, &x, &y, &w, &nb_iterations](const arma::vec & parameters, arma::vec & grad_storage) -> double {
+        [&packer, &o, &x, &y, &w](const arma::vec & parameters, arma::vec & grad_storage) -> double {
         auto theta = packer.unpack<THETA>(parameters);
         auto b = packer.unpack<B>(parameters);
         auto m = packer.unpack<M>(parameters);
@@ -619,7 +601,6 @@ Rcpp::List cpp_optimize_rank(
         packer.pack<B>(grad_storage, (diagmat(w) * (a - y)).t() * m + (a.t() * (s2.each_col() % w)) % b);
         packer.pack<M>(grad_storage, diagmat(w) * ((a - y) * b + m));
         packer.pack<S>(grad_storage, diagmat(w) * (s - pow(s, -1) + a * (b % b) % s));
-        nb_iterations += 1;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
@@ -638,7 +619,7 @@ Rcpp::List cpp_optimize_rank(
 
     return Rcpp::List::create(
         Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", nb_iterations),
+        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("Theta", theta),
         Rcpp::Named("B", b),
         Rcpp::Named("M", m),
@@ -691,11 +672,9 @@ Rcpp::List cpp_optimize_sparse(
         return packed;
     });
 
-    int nb_iterations = 0;
-
     // Optimize
-    auto objective_and_grad = [&packer, &o, &x, &y, &w, &omega, &nb_iterations](
-                                  const arma::vec & parameters, arma::vec & grad_storage) -> double {
+    auto objective_and_grad =
+        [&packer, &o, &x, &y, &w, &omega](const arma::vec & parameters, arma::vec & grad_storage) -> double {
         auto theta = packer.unpack<THETA>(parameters);
         arma::mat m = packer.unpack<M>(parameters);
         arma::mat s = packer.unpack<S>(parameters);
@@ -709,7 +688,6 @@ Rcpp::List cpp_optimize_sparse(
         packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
         packer.pack<M>(grad_storage, diagmat(w) * (m * omega + a - y));
         packer.pack<S>(grad_storage, diagmat(w) * (s.each_row() % diagvec(omega).t() + s % a - pow(s, -1)));
-        nb_iterations += 1;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
@@ -728,7 +706,7 @@ Rcpp::List cpp_optimize_sparse(
 
     return Rcpp::List::create(
         Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", nb_iterations),
+        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("Theta", theta),
         Rcpp::Named("M", m),
         Rcpp::Named("S", s),
@@ -778,10 +756,9 @@ Rcpp::List cpp_optimize_ve(
 
     const arma::mat omega = inv_sympd(sigma); // (p,p)
     const double log_det_omega = real(log_det(omega));
-    int nb_iterations = 0;
 
     // Optimize
-    auto objective_and_grad = [&packer, &o, &x, &y, &theta, &omega, &log_det_omega, &nb_iterations](
+    auto objective_and_grad = [&packer, &o, &x, &y, &theta, &omega, &log_det_omega](
                                   const arma::vec & parameters, arma::vec & grad_storage) -> double {
         auto m = packer.unpack<M>(parameters);
         auto s = packer.unpack<S>(parameters);
@@ -796,7 +773,6 @@ Rcpp::List cpp_optimize_ve(
 
         packer.pack<M>(grad_storage, m * omega + a - y);
         packer.pack<S>(grad_storage, 0.5 * (arma::ones(n) * diagvec(omega).t() + a - 1. / s));
-        nb_iterations += 1;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
@@ -813,7 +789,7 @@ Rcpp::List cpp_optimize_ve(
 
     return Rcpp::List::create(
         Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", nb_iterations),
+        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("objective", result.objective + accu(logfact(y))),
         Rcpp::Named("M", m),
         Rcpp::Named("S", s),
