@@ -7,7 +7,7 @@
 #' [getModel()] and [plot()][plot.PLNnetworkfamily()]
 #'
 ## Parameters shared by many methods
-#' @param penalties a vector of positive real number controling the level of sparsity of the underlying network.
+#' @param penalties a vector of positive real number controlling the level of sparsity of the underlying network.
 #' @param responses the matrix of responses common to every models
 #' @param covariates the matrix of covariates common to every models
 #' @param offsets the matrix of offsets common to every models
@@ -86,7 +86,7 @@ PLNnetworkfamily <- R6Class(
                                  Theta = self$models[[m]]$model_par$Theta,
                                  Sigma = self$models[[m]]$model_par$Sigma,
                                  M     = self$models[[m]]$var_par$M,
-                                 S     = self$models[[m]]$var_par$S
+                                 S2    = self$models[[m]]$var_par$S2
                                )
 
                              if (control$trace > 1) {
@@ -101,8 +101,8 @@ PLNnetworkfamily <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Stability -------------------------
     #' @description Compute the stability path by stability selection
-    #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.
-    #' @param control a list controling the main optimization process in each call to PLNnetwork. See [PLNnetwork()] for details.
+    #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
+    #' @param control a list controlling the main optimization process in each call to PLNnetwork. See [PLNnetwork()] for details.
     #' @param mc.cores the number of cores to used. Default is 1.
     stability_selection = function(subsamples = NULL, control = list(), mc.cores = 1) {
 
@@ -120,8 +120,8 @@ PLNnetworkfamily <- R6Class(
                              cat("+")
                              inception_ <- self$getModel(self$penalties[1])
                              inception_$update(
-                               M = inception_$var_par$M[subsample, ],
-                               S = inception_$var_par$S[subsample, ]
+                               M  = inception_$var_par$M[subsample, ],
+                               S2 = inception_$var_par$S2[subsample, ]
                              )
 
                              ctrl_init <- PLN_param(list(), inception_$n, inception_$p, inception_$d)
@@ -214,9 +214,9 @@ PLNnetworkfamily <- R6Class(
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Graphical methods -----------------
-    #' @description Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a [`PLNnetworkfamily`])
+    #' @description Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a [`PLNnetworkfamily`])
     #' @param criteria vector of characters. The criteria to plot in `c("loglik", "pen_loglik", "BIC", "EBIC")`. Defaults to all of them.
-    #' @param log.x logical: should the x-axis be repsented in log-scale? Default is `TRUE`.
+    #' @param log.x logical: should the x-axis be represented in log-scale? Default is `TRUE`.
     #' @param annotate logical: should the value of approximated R squared be added to the plot of criteria? Default is `TRUE`.
     #' @return a [`ggplot`] graph
     plot = function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE, annotate) {
@@ -228,7 +228,7 @@ PLNnetworkfamily <- R6Class(
 
   #' @description Plot stability path
   #' @param stability scalar: the targeted level of stability in stability plot. Default is `0.9`.
-  #' @param log.x logical: should the x-axis be repsented in log-scale? Default is `TRUE`.
+  #' @param log.x logical: should the x-axis be represented in log-scale? Default is `TRUE`.
   #' @return a [`ggplot`] graph
   plot_stars = function(stability = 0.9, log.x = TRUE) {
                            if (anyNA(self$stability)) stop("stability selection has not yet been performed! Use stability_selection()")

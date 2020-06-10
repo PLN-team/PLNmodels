@@ -3,9 +3,8 @@
 #' @description The function [PLNLDA()] produces an instance of an object with class [`PLNPLDAfit`].
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for the methods inherited by [PLNfit()], the
-#' [plot()] method for LDA vizualization and
-#' [predict()] method for prediction
+#' See the documentation for the methods inherited by [PLNfit()], the [plot()] method for
+#' LDA visualization and [predict()] method for prediction
 #'
 ## Inheritance seems not to work for R6 classes
 # @inheritParams PLNfit
@@ -23,7 +22,7 @@
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 ## Parameters common to many PLNLDAfit graphical methods
-#' @param map the type of output for the PCA vizualization: either "individual", "variable" or "both". Default is "both".
+#' @param map the type of output for the PCA visualization: either "individual", "variable" or "both". Default is "both".
 #' @param nb_axes scalar: the number of axes to be considered when map = "both". The default is min(3,rank).
 #' @param axes numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))
 #' @param ind_cols a character, factor or numeric to define the color associated with the individuals. By default, all variables receive the default color of the current palette.
@@ -85,12 +84,12 @@ PLNLDAfit <- R6Class(
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Post treatment --------------------
-    #' @description  Update R2, fisher and std_err fields and visualisation
+    #' @description  Update R2, fisher and std_err fields and visualization
     #' after optimization
     postTreatment = function(responses, covariates, offsets) {
       super$postTreatment(responses, covariates, offsets)
       rownames(private$B) <- colnames(private$B) <- colnames(responses)
-      if (private$covariance != "spherical") colnames(private$S) <- 1:self$q
+      if (private$covariance != "spherical") colnames(private$S2) <- 1:self$q
       self$setVisualization()
     },
 
@@ -127,18 +126,18 @@ PLNLDAfit <- R6Class(
     #' @return a [`ggplot`] graphic
     plot_correlation_map = function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "default", plot=TRUE) {
 
-                  ## data frame with correlations between variables and PCs
-                  correlations <- as.data.frame(self$corr_map[, axes, drop = FALSE])
-                  colnames(correlations) <- paste0("axe", 1:length(axes))
-                  correlations$labels <- cols
-                  correlations$names  <- rownames(correlations)
-                  axes_label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
+      ## data frame with correlations between variables and PCs
+      correlations <- as.data.frame(self$corr_map[, axes, drop = FALSE])
+      colnames(correlations) <- paste0("axe", 1:length(axes))
+      correlations$labels <- cols
+      correlations$names  <- rownames(correlations)
+      axes_label <- paste(paste("axis",axes), paste0("(", round(100*self$percent_var,3)[axes], "%)"))
 
-                  p <- get_ggplot_corr_square(correlations, axes_label, main)
+      p <- get_ggplot_corr_square(correlations, axes_label, main)
 
-                  if (plot) print(p)
-                  invisible(p)
-                },
+      if (plot) print(p)
+      invisible(p)
+    },
 
     #' @description Plot a summary of the [`PLNLDAfit`] object
     # @inheritParams plot.PLNLDAfit
@@ -147,64 +146,64 @@ PLNLDAfit <- R6Class(
     #' @return a [`grob`] object
     plot_LDA = function(nb_axes = min(3, self$rank), var_cols = "default", plot = TRUE) {
 
-                    axes <- 1:nb_axes
-                    if (nb_axes > 1) {
-                      pairs.axes <- combn(axes, 2, simplify = FALSE)
+      axes <- 1:nb_axes
+      if (nb_axes > 1) {
+        pairs.axes <- combn(axes, 2, simplify = FALSE)
 
-                      ## get back all individual maps
-                      ind.plot <- lapply(pairs.axes, function(pair) {
-                        ggobj <- self$plot_individual_map(axes = pair, plot = FALSE, main="") + theme(legend.position="none")
-                        return(ggplotGrob(ggobj))
-                      })
+        ## get back all individual maps
+        ind.plot <- lapply(pairs.axes, function(pair) {
+          ggobj <- self$plot_individual_map(axes = pair, plot = FALSE, main="") + theme(legend.position="none")
+          return(ggplotGrob(ggobj))
+        })
 
-                      ## get back all correlation circle
-                      cor.plot <- lapply(pairs.axes, function(pair) {
-                        ggobj <- self$plot_correlation_map(axes = pair, plot = FALSE, main = "", cols = var_cols)
-                        return(ggplotGrob(ggobj))
-                      })
+        ## get back all correlation circle
+        cor.plot <- lapply(pairs.axes, function(pair) {
+          ggobj <- self$plot_correlation_map(axes = pair, plot = FALSE, main = "", cols = var_cols)
+          return(ggplotGrob(ggobj))
+        })
 
-                      ## plot that appear on the diagonal
-                      crit <- setNames(c(NA,NA,NA), c("loglikelihood", "BIC", "ICL"))
-                      criteria.text <- paste("Model Selection\n\n", paste(names(crit), round(crit, 2), sep=" = ", collapse="\n"))
-                      percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percent_var[axes],3), "%"), collapse="\n"))
+        ## plot that appear on the diagonal
+        crit <- setNames(c(NA,NA,NA), c("loglikelihood", "BIC", "ICL"))
+        criteria.text <- paste("Model Selection\n\n", paste(names(crit), round(crit, 2), sep=" = ", collapse="\n"))
+        percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percent_var[axes],3), "%"), collapse="\n"))
 
-                      diag.grobs <- list(textGrob(percentV.text),
-                                         g_legend(self$plot_individual_map(plot=FALSE) + guides(colour = guide_legend(nrow = 4, title="classification"))),
-                                         textGrob(criteria.text))
-                      if (nb_axes > 3)
-                        diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb_axes - 3))
+        diag.grobs <- list(textGrob(percentV.text),
+                           g_legend(self$plot_individual_map(plot=FALSE) + guides(colour = guide_legend(nrow = 4, title="classification"))),
+                           textGrob(criteria.text))
+        if (nb_axes > 3)
+          diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb_axes - 3))
 
 
-                      grobs <- vector("list", nb_axes^2)
-                      i.cor <- 1; i.ind <- 1; i.dia <- 1
-                      ind <- 0
-                      for (i in 1:nb_axes) {
-                        for (j in 1:nb_axes) {
-                          ind <- ind+1
-                          if (j > i) { ## upper triangular  -> cor plot
-                            grobs[[ind]] <- cor.plot[[i.ind]]
-                            i.ind <- i.ind + 1
-                          } else if (i == j) { ## diagonal
-                            grobs[[ind]] <- diag.grobs[[i.dia]]
-                            i.dia <- i.dia + 1
-                          } else {
-                            grobs[[ind]] <- ind.plot[[i.cor]]
-                            i.cor <- i.cor + 1
-                          }
-                        }
-                      }
-                      p <- arrangeGrob(grobs = grobs, ncol = nb_axes)
-                    } else {
-                      p <- arrangeGrob(grobs = list(
-                        self$plot_individual_map(plot = FALSE),
-                        self$plot_correlation_map(plot = FALSE)
-                      ), ncol = 1)
-                    }
-                    if (plot)
-                      grid.arrange(p)
+        grobs <- vector("list", nb_axes^2)
+        i.cor <- 1; i.ind <- 1; i.dia <- 1
+        ind <- 0
+        for (i in 1:nb_axes) {
+          for (j in 1:nb_axes) {
+            ind <- ind+1
+            if (j > i) { ## upper triangular  -> cor plot
+              grobs[[ind]] <- cor.plot[[i.ind]]
+              i.ind <- i.ind + 1
+            } else if (i == j) { ## diagonal
+              grobs[[ind]] <- diag.grobs[[i.dia]]
+              i.dia <- i.dia + 1
+            } else {
+              grobs[[ind]] <- ind.plot[[i.cor]]
+              i.cor <- i.cor + 1
+            }
+          }
+        }
+        p <- arrangeGrob(grobs = grobs, ncol = nb_axes)
+      } else {
+        p <- arrangeGrob(grobs = list(
+          self$plot_individual_map(plot = FALSE),
+          self$plot_correlation_map(plot = FALSE)
+        ), ncol = 1)
+      }
+      if (plot)
+        grid.arrange(p)
 
-                    invisible(p)
-                  },
+      invisible(p)
+    },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Prediction methods --------------------

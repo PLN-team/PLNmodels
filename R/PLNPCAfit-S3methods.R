@@ -7,12 +7,12 @@
 ## Auxiliary functions to check the given class of an objet
 isPLNPCAfit <- function(Robject) {inherits(Robject, "PLNPCAfit"       )}
 
-#' PCA vizualiation (individual and/or variable factor map(s)) for a [`PLNPCAfit`] object
+#' PCA visualization (individual and/or variable factor map(s)) for a [`PLNPCAfit`] object
 #'
 #' @name plot.PLNPCAfit
 #'
 #' @param x an R6 object with class PLNPCAfit
-#' @param map the type of output for the PCA vizualization: either "individual", "variable" or "both". Default is "both".
+#' @param map the type of output for the PCA visualization: either "individual", "variable" or "both". Default is "both".
 #' @param nb_axes scalar: the number of axes to be considered when `map = "both"`. The default is `min(3,rank)`.
 #' @param axes numeric, the axes to use for the plot when `map = "individual"` or `map = "variable"`. Default it `c(1,min(rank))`
 #' @param ind_cols a character, factor or numeric to define the color associated with the individuals. By default, all variables receive the default color of the current palette.
@@ -63,5 +63,5 @@ plot.PLNPCAfit <-
       p <- x$plot_PCA(nb_axes = nb_axes, ind_cols = ind_cols, var_cols = var_cols, plot = plot)
 
     invisible(p)
-}
+  }
 

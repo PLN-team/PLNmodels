@@ -10,8 +10,8 @@
 #' @param offsets the matrix of offsets common to every models
 #' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 #' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
-#' @param penalty a positive real number controling the level of sparsity of the underlying network.
-#' @param control a list for controling the optimization of the PLN model used at initialization. See [PLNnetwork()] for details.
+#' @param penalty a positive real number controlling the level of sparsity of the underlying network.
+#' @param control a list for controlling the optimization of the PLN model used at initialization. See [PLNnetwork()] for details.
 #' @param model model used for fitting, extracted from the formula in the upper-level call
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in [PLNnetwork()] call
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
@@ -48,14 +48,14 @@ PLNnetworkfit <- R6Class(
     #' @param Sigma variance-covariance matrix of the latent variables
     #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
     #' @param M     matrix of mean vectors for the variational approximation
-    #' @param S     matrix of variance vectors for the variational approximation
+    #' @param S2    matrix of variance vectors for the variational approximation
     #' @param Z     matrix of latent vectors (includes covariates and offset effects)
     #' @param A     matrix of fitted values
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
     #' @param R2    approximate R^2 goodness-of-fit criterion
     #' @param monitoring a list with optimization monitoring quantities
-    update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-      super$update(Theta = Theta, Sigma = Sigma, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+    update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S2=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+      super$update(Theta = Theta, Sigma = Sigma, M, S2 = S2, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
       if (!anyNA(penalty)) private$lambda <- penalty
       if (!anyNA(Omega))   private$Omega  <- Omega
     },
@@ -73,7 +73,7 @@ PLNnetworkfit <- R6Class(
       objective   <- numeric(control$maxit_out)
       convergence <- numeric(control$maxit_out)
       ## start from the standard PLN at initialization
-      par0  <- c(private$Theta, private$M, sqrt(private$S))
+      par0  <- c(private$Theta, private$M, sqrt(private$S2))
       Sigma <- private$Sigma
       objective.old <- -self$loglik
       while (!cond) {
@@ -86,38 +86,38 @@ PLNnetworkfit <- R6Class(
         Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
         ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-        optim.out <- optim_sparse(par0, responses, covariates, offsets, weights, Omega, control)
+        optim_out <- optim_sparse(par0, responses, covariates, offsets, weights, Omega, control)
 
         ## Check convergence
-        objective[iter]   <- -sum(weights * optim.out$loglik) + self$penalty * sum(abs(Omega))
+        objective[iter]   <- -sum(weights * optim_out$loglik) + self$penalty * sum(abs(Omega))
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
         if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate
-        Sigma <- optim.out$Sigma
-        par0  <- c(optim.out$Theta, optim.out$M, sqrt(optim.out$S))
+        Sigma <- optim_out$Sigma
+        par0  <- c(optim_out$Theta, optim_out$M, optim_out$S)
         objective.old <- objective[iter]
       }
 
-      ## ===========================================
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## OUTPUT
-      Ji <- optim.out$loglik
+      Ji <- optim_out$loglik
       attr(Ji, "weights") <- weights
       self$update(
-        Theta = optim.out$Theta,
+        Theta = optim_out$Theta,
         Omega = Omega,
-        Sigma = optim.out$Sigma,
-        M = optim.out$M,
-        S = optim.out$S,
-        Z = optim.out$Z,
-        A = optim.out$A,
+        Sigma = optim_out$Sigma,
+        M  = optim_out$M,
+        S2 = (optim_out$S)**2,
+        Z  = optim_out$Z,
+        A  = optim_out$A,
         Ji = Ji,
         monitoring = list(objective        = objective[1:iter],
                           convergence      = convergence[1:iter],
                           outer_iterations = iter,
-                          inner_iterations = optim.out$iterations,
-                          inner_status     = optim.out$status,
-                          inner_message    = statusToMessage(optim.out$status)))
+                          inner_iterations = optim_out$iterations,
+                          inner_status     = optim_out$status,
+                          inner_message    = statusToMessage(optim_out$status)))
 
     },
 
@@ -127,7 +127,7 @@ PLNnetworkfit <- R6Class(
     postTreatment = function(responses, covariates, offsets, weights, nullModel) {
       super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
       dimnames(private$Omega) <- dimnames(private$Sigma)
-      colnames(private$S) <- 1:self$p
+      colnames(private$S2) <- 1:self$p
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

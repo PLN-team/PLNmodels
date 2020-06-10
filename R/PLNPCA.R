@@ -7,8 +7,8 @@
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
 ##' @param ranks a vector of integer containing the successive ranks (or number of axes to be considered)
-##' @param control_init a list for controling the optimization at initialization.  See details of function [PLN()].
-##' @param control_main a list for controling the main optimization process. See details.
+##' @param control_init a list for controlling the optimization at initialization.  See details of function [PLN()].
+##' @param control_main a list for controlling the main optimization process. See details.
 ##'
 ##' @return an R6 object with class [`PLNPCAfamily`], which contains
 ##' a collection of models with class [`PLNPCAfit`]
@@ -23,7 +23,7 @@
 ##' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
 ##'     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
 ##' * "trace" integer for verbosity. Useless when `cores` > 1
-##' * "cores" The number of core used to paralellize jobs over the `ranks` vector. Default is 1.
+##' * "cores" The number of core used to parallelize jobs over the `ranks` vector. Default is 1.
 ##'
 ##'
 ##' @rdname PLNPCA

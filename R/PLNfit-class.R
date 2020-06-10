@@ -46,18 +46,18 @@ PLNfit <- R6Class(
     #' @param Theta matrix of regression matrix
     #' @param Sigma variance-covariance matrix of the latent variables
     #' @param M     matrix of mean vectors for the variational approximation
-    #' @param S     matrix of variance vectors for the variational approximation
+    #' @param S2    matrix of variance vectors for the variational approximation
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
     #' @param R2    approximate R^2 goodness-of-fit criterion
     #' @param Z     matrix of latent vectors (includes covariates and offset effects)
     #' @param A     matrix of fitted values
     #' @param monitoring a list with optimization monitoring quantities
     #' @return Update the current [`PLNfit`] object
-    update = function(Theta=NA, Sigma=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
+    update = function(Theta=NA, Sigma=NA, M=NA, S2=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
       if (!anyNA(Theta))      private$Theta  <- Theta
       if (!anyNA(Sigma))      private$Sigma  <- Sigma
       if (!anyNA(M))          private$M      <- M
-      if (!anyNA(S))          private$S      <- S
+      if (!anyNA(S2))         private$S2     <- S2
       if (!anyNA(Z))          private$Z      <- Z
       if (!anyNA(A))          private$A      <- A
       if (!anyNA(Ji))         private$Ji     <- Ji
@@ -93,7 +93,7 @@ PLNfit <- R6Class(
         stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
         private$Theta <- control$inception$model_par$Theta
         private$M     <- control$inception$var_par$M
-        private$S     <- control$inception$var_par$S
+        private$S2    <- control$inception$var_par$S2
         private$Sigma <- control$inception$model_par$Sigma
         private$Ji    <- control$inception$loglik_vec
       } else {
@@ -104,13 +104,13 @@ PLNfit <- R6Class(
         private$Theta <- do.call(rbind, lapply(LMs, coefficients))
         residuals     <- do.call(cbind, lapply(LMs, residuals))
         private$M     <- residuals
-        private$S     <- matrix(0.1, n, ifelse(control$covariance == "spherical", 1, p))
+        private$S2    <- matrix(0.1, n, ifelse(control$covariance == "spherical", 1, p))
         if (control$covariance == "spherical") {
           private$Sigma <- diag(sum(residuals^2)/(n*p), p, p)
         } else  if (control$covariance == "diagonal") {
           private$Sigma <- diag(diag(crossprod(residuals)/n), p, p)
         } else  {
-          private$Sigma <- crossprod(residuals)/n + diag(colMeans(private$S), nrow = p)
+          private$Sigma <- crossprod(residuals)/n + diag(colMeans(private$S2), nrow = p)
         }
       }
 
@@ -121,7 +121,7 @@ PLNfit <- R6Class(
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
       optim_out <- private$optimizer(
-        c(private$Theta, private$M, sqrt(private$S)),
+        c(private$Theta, private$M, sqrt(private$S2)),
         responses,
         covariates,
         offsets,
@@ -135,7 +135,7 @@ PLNfit <- R6Class(
         Theta      = optim_out$Theta,
         Sigma      = optim_out$Sigma,
         M          = optim_out$M,
-        S          = optim_out$S,
+        S2         = (optim_out$S)**2,
         Z          = optim_out$Z,
         A          = optim_out$A,
         Ji         = Ji,
@@ -152,8 +152,10 @@ PLNfit <- R6Class(
     #'  * the matrix `S` of variational variances
     #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
     VEstep = function(covariates, offsets, responses, weights, control = list()) {
+
       # problem dimension
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
+
       ## define default control parameters for optim and overwrite by user defined parameters
       control$covariance <- self$vcov_model
       control <- PLN_param(control, n, p, d)
@@ -161,13 +163,12 @@ PLNfit <- R6Class(
       VEstep_optimizer  <-
         switch(control$covariance,
                "spherical" = VEstep_PLN_spherical,
-               "diagonal"  = VEstep_PLN__diagonal ,
+               "diagonal"  = VEstep_PLN__diagonal,
                "full"      = VEstep_PLN_full
         )
 
-      ## optimisation
       optim_out <- VEstep_optimizer(
-        c(private$M, sqrt(private$S)),
+        c(private$M, sqrt(private$S2)),
         responses,
         covariates,
         offsets,
@@ -180,13 +181,13 @@ PLNfit <- R6Class(
 
       ## output
       list(M       = optim_out$M,
-           S       = optim_out$S,
+           S2      = (optim_out$S)**2,
            log.lik = setNames(optim_out$loglik, rownames(responses)))
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Post treatment functions --------------
-    #' @description Update R2 field afer optimization
+    #' @description Update R2 field after optimization
     set_R2 = function(responses, covariates, offsets, weights, nullModel = NULL) {
       if (is.null(nullModel)) nullModel <- nullModelPoisson(responses, covariates, offsets, weights)
       loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets), weights)
@@ -225,7 +226,7 @@ PLNfit <- R6Class(
     },
 
     #' @description Compute univariate standard error for coefficients of Theta from the FIM
-    #' @return a matrix of standard devations.
+    #' @return a matrix of standard deviations.
     #' @importFrom Matrix diag solve
     compute_standard_error = function() {
       if (self$d > 0) {
@@ -259,7 +260,7 @@ PLNfit <- R6Class(
       rownames(private$Theta) <- colnames(responses)
       colnames(private$Theta) <- colnames(covariates)
       rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
-      rownames(private$M) <- rownames(private$S) <- rownames(responses)
+      rownames(private$M) <- rownames(private$S2) <- rownames(responses)
       ## compute and store Fisher Information matrix
       type <- match.arg(type)
       private$FIM <- self$compute_fisher(type, X = covariates)
@@ -270,7 +271,7 @@ PLNfit <- R6Class(
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Helper functions ----------------------
-    #' @description Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualisation
+    #' @description Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization
     #' @return a n x q matrix of latent positions.
     latent_pos = function(covariates, offsets) {
       latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
@@ -316,6 +317,7 @@ PLNfit <- R6Class(
       cat("* Useful S3 methods\n")
       cat("    print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()\n")
     },
+
     #' @description User friendly print method
     print = function() { self$show() }
 
@@ -331,7 +333,7 @@ PLNfit <- R6Class(
     xlevels    = NA, # factor levels present in the original data, useful for predict() methods.
     Theta      = NA, # the model parameters for the covariable
     Sigma      = NA, # the covariance matrix
-    S          = NA, # the variational parameters for the variances
+    S2         = NA, # the variational parameters for the variances
     M          = NA, # the variational parameters for the means
     Z          = NA, # the matrix of latent variable
     A          = NA, # the matrix of expected counts
@@ -363,8 +365,8 @@ PLNfit <- R6Class(
     fisher     = function() {list(mat = private$FIM, type = private$FIM_type) },
     #' @field std_err Variational approximation of the variance-covariance matrix of model parameters estimates.
     std_err    = function() {private$.std_err },
-    #' @field var_par a list with two matrices, M and S, which are the estimated parameters in the variational approximation
-    var_par    = function() {list(M = private$M, S = private$S)},
+    #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
+    var_par    = function() {list(M = private$M, S2 = private$S2)},
     #' @field latent a matrix: values of the latent vector (Z in the model)
     latent     = function() {private$Z},
     #' @field fitted a matrix: fitted values of the observations (A in the model)
@@ -374,7 +376,7 @@ PLNfit <- R6Class(
       res <- self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)
       as.integer(res)
     },
-    #' @field vcov_model character: the model used for the coavariance (either "spherical", "diagonal" or "full")
+    #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal" or "full")
     vcov_model = function() {private$covariance},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par  = function() {private$monitoring},
@@ -385,7 +387,7 @@ PLNfit <- R6Class(
     #' @field BIC variational lower bound of the BIC
     BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
     #' @field entropy Entropy of the variational distribution
-    entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S)) * ifelse(private$covariance == "spherical", self$q, 1))},
+    entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)) * ifelse(private$covariance == "spherical", self$q, 1))},
     #' @field ICL variational lower bound of the ICL
     ICL        = function() {self$BIC - self$entropy},
     #' @field R_squared approximated goodness-of-fit criterion

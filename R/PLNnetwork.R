@@ -6,9 +6,9 @@
 ##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
-##' @param penalties an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally
-##' @param control_init a list for controling the optimization of the PLN model used at initialization. See details.
-##' @param control_main a list for controling the main optimization process. See details.
+##' @param penalties an optional vector of positive real number controlling the level of sparsity of the underlying network. if NULL (the default), will be set internally
+##' @param control_init a list for controlling the optimization of the PLN model used at initialization. See details.
+##' @param control_main a list for controlling the main optimization process. See details.
 ##'
 ##' @return an R6 object with class [`PLNnetworkfamily`], which contains
 ##' a collection of models with class [`PLNnetworkfit`]
@@ -26,7 +26,7 @@
 ##' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
 ##' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
 ##' * "penalize_diagonal" boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.
-##' * "penalty_weights" p x p matrix of weights (defaut filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
+##' * "penalty_weights" p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 ##'
 ##'
 ##' The list of parameters `control_init` controls the optimization process in the initialization and in the function [PLN()], plus two additional parameters:
@@ -39,7 +39,7 @@
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
-##' @seealso The classes \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
+##' @seealso The classes [`PLNnetworkfamily`] and [`PLNnetworkfit`]
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
 PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control_init = list(), control_main = list()) {

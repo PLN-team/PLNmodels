@@ -1,4 +1,4 @@
-#' Poisson lognormal model towards Linear Disciminant Analysis
+#' Poisson lognormal model towards Linear Discriminant Analysis
 #'
 #' Fit the Poisson lognormal for LDA with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 #'
@@ -7,14 +7,14 @@
 #' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 #' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
 #' @param grouping a factor specifying the class of each observation used for discriminant analysis.
-#' @param control a list for controling the optimization process. See details.
+#' @param control a list for controlling the optimization process. See details.
 #'
 #' @return an R6 object with class [PLNLDAfit()]
 #'
 #' @details The parameter `control` is a list controlling the optimization with the following entries:
 #' * "covariance" character setting the model for the covariance matrix. Either "full" or "spherical". Default is "full".
 #' * "trace" integer for verbosity.
-#' * "inception" Set up the intialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previsous fit), which often speed up the inference.
+#' * "inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previous fit), which often speed up the inference.
 #' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
 #' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
 #' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4
@@ -65,7 +65,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   if (ctrl$trace > 0) cat("\n Performing discriminant Analysis...")
   myLDA$optimize(args$X, covar, design_group, ctrl)
 
-  ## Post-treatment: prepare LDA vizualization
+  ## Post-treatment: prepare LDA visualization
   myLDA$postTreatment(args$Y, args$X, args$O)
 
   if (ctrl$trace > 0) cat("\n DONE!\n")
