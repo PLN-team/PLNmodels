@@ -71,7 +71,6 @@ struct OptimizerConfiguration {
 
     arma::vec xtol_abs; // of size nb_parameters
     double xtol_rel;
-    arma::vec lower_bounds; // of size nb_parameters
 
     double ftol_abs;
     double ftol_rel;
@@ -88,7 +87,6 @@ struct OptimizerConfiguration {
 
             packed_from_r_list(Rcpp::as<Rcpp::List>(list["xtol_abs"])),
             Rcpp::as<double>(list["xtol_rel"]),
-            packed_from_r_list(Rcpp::as<Rcpp::List>(list["lower_bounds"])),
 
             Rcpp::as<double>(list["ftol_abs"]),
             Rcpp::as<double>(list["ftol_rel"]),
@@ -115,12 +113,8 @@ OptimizerResult minimize_objective_on_parameters(
     // Both vectors are of size nb_parameters.
     std::function<double(const arma::vec & parameters, arma::vec & gradients)> objective_and_grad_fn //
 ) {
-    // Check basic bounds
     if(!(config.xtol_abs.n_elem == parameters.n_elem)) {
         throw Rcpp::exception("config.xtol_abs size");
-    }
-    if(!(config.lower_bounds.n_elem == parameters.n_elem)) {
-        throw Rcpp::exception("config.lower_bounds size");
     }
 
     // Create optimizer, stored in a unique_ptr to ensure automatic destruction.
@@ -141,7 +135,6 @@ OptimizerResult minimize_objective_on_parameters(
     };
     check(nlopt_set_xtol_abs(optimizer.get(), config.xtol_abs.memptr()), "nlopt_set_xtol_abs");
     check(nlopt_set_xtol_rel(optimizer.get(), config.xtol_rel), "nlopt_set_xtol_rel");
-    check(nlopt_set_lower_bounds(optimizer.get(), config.lower_bounds.memptr()), "nlopt_set_lower_bounds");
     check(nlopt_set_ftol_abs(optimizer.get(), config.ftol_abs), "nlopt_set_ftol_abs");
     check(nlopt_set_ftol_rel(optimizer.get(), config.ftol_rel), "nlopt_set_ftol_rel");
     check(nlopt_set_maxeval(optimizer.get(), config.maxeval), "nlopt_set_maxeval");
