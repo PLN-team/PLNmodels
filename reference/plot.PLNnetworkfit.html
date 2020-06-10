@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extract and plot the network (aprtial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object — plot.PLNnetworkfit • PLNmodels</title>
+<title>Extract and plot the network (partial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object — plot.PLNnetworkfit • PLNmodels</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Extract and plot the network (aprtial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object — plot.PLNnetworkfit" />
-<meta property="og:description" content="Extract and plot the network (aprtial correlation, support or inverse covariance) from a PLNnetworkfit object" />
+<meta property="og:title" content="Extract and plot the network (partial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object — plot.PLNnetworkfit" />
+<meta property="og:description" content="Extract and plot the network (partial correlation, support or inverse covariance) from a PLNnetworkfit object" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.3-900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
       </span>
     </div>
 
@@ -149,13 +149,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Extract and plot the network (aprtial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object</h1>
+    <h1>Extract and plot the network (partial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object</h1>
     <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfit-S3methods.R'><code>R/PLNnetworkfit-S3methods.R</code></a></small>
     <div class="hidden name"><code>plot.PLNnetworkfit.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Extract and plot the network (aprtial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object</p>
+    <p>Extract and plot the network (partial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNnetworkfit</span>
@@ -180,7 +180,7 @@
     </tr>
     <tr>
       <th>type</th>
-      <td><p>character. Value of the weigth of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is <code>"partial_cor"</code>.</p></td>
+      <td><p>character. Value of the weight of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is <code>"partial_cor"</code>.</p></td>
     </tr>
     <tr>
       <th>output</th>
@@ -214,7 +214,7 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionaly displays a graph (via igraph or corrplot for large ones)</p>
+    <p>Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionally displays a graph (via igraph or corrplot for large ones)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)

@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.3-900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
       <h1 data-toc-skip>Description of the Trichoptera data set</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2020-06-09</h4>
+            <h4 class="date">2020-06-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/Trichoptera.Rmd"><code>vignettes/Trichoptera.Rmd</code></a></small>
       <div class="hidden name"><code>Trichoptera.Rmd</code></div>
@@ -122,13 +122,13 @@
 <div id="preliminaries" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preliminaries" class="anchor"></a>Preliminaries</h2>
-<p>This vignette describes the data set <code>trichoptera</code>, which is used in all examples, tests and other vignettes of the package <strong>PLNmodels</strong>. This data set regroups the main striking characteristics of ecological count data (encompassing tables of abundances and covariates). The low dimensional space of the data also ensures that it is well suited for illutrative purposes.</p>
+<p>This vignette describes the data set <code>trichoptera</code>, which is used in all examples, tests and other vignettes of the package <strong>PLNmodels</strong>. This data set regroups the main striking characteristics of ecological count data (encompassing tables of abundances and covariates). The low dimensional space of the data also ensures that it is well suited for illustrative purposes.</p>
 <p>The packages required to run the vignette are the following:</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">PLNmodels</span>)</pre></body></html></div>
 </div>
-<div id="the-trichopterata-data-set" class="section level2">
+<div id="the-trichoptera-data-set" class="section level2">
 <h2 class="hasAnchor">
-<a href="#the-trichopterata-data-set" class="anchor"></a>The trichopterata data set</h2>
+<a href="#the-trichoptera-data-set" class="anchor"></a>The trichoptera data set</h2>
 <p>The order Trichoptera (or caddisflies) are a group of insects with aquatic larvae and terrestrial adults. The ecological data set trichoptera <span class="citation">(Usseglio-Polatera and Auda <a href="#ref-trichoptera" role="doc-biblioref">1987</a>)</span> describes abundances of Trichoptera species (hereafter the <em>counts</em>), accompanied with some meteorological factors (hereafter the <em>covariates</em>) that may influence their presence during the sampling<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
 <div class="figure" style="text-align: center">
 <img src="figures/macronema_zebratum.jpg" alt="Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001."><p class="caption">
@@ -140,7 +140,7 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 <div id="formatting" class="section level3">
 <h3 class="hasAnchor">
 <a href="#formatting" class="anchor"></a>Formatting</h3>
-<p>Data are originaly stored in a list of two data frames for abundances and covariates. We first prepare the data <a href="Import_data.html">see the corresponding vignette</a> for easy use in the multivariate framework of <strong>PLNmodels</strong>. Offsets are automatically computed:</p>
+<p>Data are originally stored in a list of two data frames for abundances and covariates. We first prepare the data <a href="Import_data.html">see the corresponding vignette</a> for easy use in the multivariate framework of <strong>PLNmodels</strong>. Offsets are automatically computed:</p>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">trichoptera</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>, <span class="no">trichoptera</span>$<span class="no">Covariate</span>)</pre></body></html></div>
 <p>Data are now stored in the <code>trichoptera</code> data frame which includes 49 rows (the observations - or trapping nights) and 9 columns. As can be seen, there are 2 multivariate columns (matrices of counts and offsets) and 7 univariate columns (vectors of covariates):</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">trichoptera</span>)</pre></body></html></div>
@@ -419,7 +419,7 @@ log-counts in the trichoptera data set
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>The original data set is available in the <strong>ade4</strong> package. We consider here a different version where we only keep a subset of the original meteorological features, for illutrative purposes<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>The original data set is available in the <strong>ade4</strong> package. We consider here a different version where we only keep a subset of the original meteorological features, for illustrative purposes<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>

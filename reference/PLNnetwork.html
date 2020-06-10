@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.3-900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
       </span>
     </div>
 
@@ -189,15 +189,15 @@
     </tr>
     <tr>
       <th>penalties</th>
-      <td><p>an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally</p></td>
+      <td><p>an optional vector of positive real number controlling the level of sparsity of the underlying network. if NULL (the default), will be set internally</p></td>
     </tr>
     <tr>
       <th>control_init</th>
-      <td><p>a list for controling the optimization of the PLN model used at initialization. See details.</p></td>
+      <td><p>a list for controlling the optimization of the PLN model used at initialization. See details.</p></td>
     </tr>
     <tr>
       <th>control_main</th>
-      <td><p>a list for controling the main optimization process. See details.</p></td>
+      <td><p>a list for controlling the main optimization process. See details.</p></td>
     </tr>
     </table>
 
@@ -220,7 +220,7 @@ a collection of models with class <code><a href='PLNnetworkfit.html'>PLNnetworkf
 <li><p>"ftol_out"outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6</p></li>
 <li><p>"maxit_out"outer solver stops when the number of iteration exceeds out.maxit. Default is 50</p></li>
 <li><p>"penalize_diagonal"boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.</p></li>
-<li><p>"penalty_weights"p x p matrix of weights (defaut filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.</p></li>
+<li><p>"penalty_weights"p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.</p></li>
 </ul>
 
 <p>The list of parameters <code>control_init</code> controls the optimization process in the initialization and in the function <code><a href='PLN.html'>PLN</a></code>, plus two additional parameters:</p><ul>

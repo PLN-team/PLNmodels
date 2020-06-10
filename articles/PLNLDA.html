@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.3-900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
       <h1 data-toc-skip>Supervized classification of multivariate count table with the Poisson discriminant Analysis</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2020-06-09</h4>
+            <h4 class="date">2020-06-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNLDA.Rmd"><code>vignettes/PLNLDA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNLDA.Rmd</code></div>
@@ -122,7 +122,7 @@
 <div id="preliminaries" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preliminaries" class="anchor"></a>Preliminaries</h2>
-<p>This vignette illustrates the basical use of the <code>PLNLDA</code> function and the methods accompaning the R6 Classes <code>PLNLDA</code> and <code>PLNLDAfit</code>.</p>
+<p>This vignette illustrates the standard use of the <code>PLNLDA</code> function and the methods accompanying the R6 Classes <code>PLNLDA</code> and <code>PLNLDAfit</code>.</p>
 <div id="requirements" class="section level3">
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
@@ -135,7 +135,7 @@
 <p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>. Data preparation is also detailed in <a href="Import_data.html">the specific vignette</a>.</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">trichoptera</span>)
 <span class="no">trichoptera</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>, <span class="no">trichoptera</span>$<span class="no">Covariate</span>)</pre></body></html></div>
-<p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.) In the following, we’re particularly interested in the <code>trichoptera$Group</code> <strong>discrete</strong> covariate which corresponds to disjoint time spans during which the catching took place. The correspondance between group label and time spans is:</p>
+<p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.) In the following, we’re particularly interested in the <code>trichoptera$Group</code> <strong>discrete</strong> covariate which corresponds to disjoint time spans during which the catching took place. The correspondence between group label and time spans is:</p>
 <table class="table">
 <thead><tr class="header">
 <th align="center">Label</th>
@@ -209,15 +209,15 @@
 <div id="mathematical-background" class="section level3">
 <h3 class="hasAnchor">
 <a href="#mathematical-background" class="anchor"></a>Mathematical background</h3>
-<p>In the vein of <span class="citation">Fisher (<a href="#ref-Fi36" role="doc-biblioref">1936</a>)</span> and <span class="citation">Rao (<a href="#ref-Rao48" role="doc-biblioref">1948</a>)</span>, we introduce a multi-class LDA model for multivariate count data which is a variant of the Poisson Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span> (see <a href="PLN.html">the PLN vignette</a> as a reminder). Indeed, it can viewed as a PLN model with a discrete group structure in the latent gaussian space.</p>
-<p>This PLN-LDA model can be written in a hierachical framework where a sample of <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> is related to some <span class="math inline">\(p\)</span>-dimensional vectors of latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> and a discrete structure with <span class="math inline">\(K\)</span> groups in the following way: <span class="math display">\[\begin{equation} 
+<p>In the vein of <span class="citation">Fisher (<a href="#ref-Fi36" role="doc-biblioref">1936</a>)</span> and <span class="citation">Rao (<a href="#ref-Rao48" role="doc-biblioref">1948</a>)</span>, we introduce a multi-class LDA model for multivariate count data which is a variant of the Poisson Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span> (see <a href="PLN.html">the PLN vignette</a> as a reminder). Indeed, it can viewed as a PLN model with a discrete group structure in the latent Gaussian space.</p>
+<p>This PLN-LDA model can be written in a hierarchical framework where a sample of <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> is related to some <span class="math inline">\(p\)</span>-dimensional vectors of latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> and a discrete structure with <span class="math inline">\(K\)</span> groups in the following way: <span class="math display">\[\begin{equation} 
   \begin{array}{rcl}
     \text{group structure }   &amp; \mathbf{\mu}_i = \mu_{g_i} &amp; g_i \in \{1, \dots, K\}  \\
     \text{latent space }   &amp; \mathbf{Z}_i \quad \text{indep.} &amp; \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i, \boldsymbol{\Sigma})  &amp; \\
     \text{observation space } &amp; Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
 \end{equation}\]</span> where <span class="math inline">\(g_i\)</span> denotes the group sample <span class="math inline">\(i\)</span> belongs to.</p>
-<p>The different parameters <span class="math inline">\({\boldsymbol\mu}_k \in\mathbb{R}^p\)</span> corresponds to the group-specific main effects and the variance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span> is shared among groups. An equivalent way of writting this model is the following: <span class="math display">\[\begin{equation} 
+<p>The different parameters <span class="math inline">\({\boldsymbol\mu}_k \in\mathbb{R}^p\)</span> corresponds to the group-specific main effects and the variance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span> is shared among groups. An equivalent way of writing this model is the following: <span class="math display">\[\begin{equation} 
   \begin{array}{rcl}
   \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i,\boldsymbol\Sigma) &amp; \boldsymbol{\mu}_i = \mathbf{g}_i^\top \mathbf{M} \\
   \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
@@ -824,7 +824,7 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 ## 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 
 ## 12  5  4  5  6  7  7  7  8  8  8  8  8  1 10  9  9 10 10 10 10 11 12 
 ## Levels: 1 2 3 4 5 6 7 8 9 10 11 12</code></pre>
-<p>We can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used dataset for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
+<p>We can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used data set for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">predicted.class</span>, <span class="no">trichoptera</span>$<span class="no">Group</span>, <span class="kw">dnn</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"predicted"</span>, <span class="st">"true"</span>))</pre></body></html></div>
 <pre><code>##          true
 ## predicted 1 2 3 4 5 6 7 8 9 10 11 12
@@ -852,9 +852,9 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <p><img src="PLNLDA_files/figure-html/predicted_scores-1.png" width="672"></p>
 </div>
 </div>
-<div id="a-model-with-latent-main-effects-and-meterological-covariates" class="section level3">
+<div id="a-model-with-latent-main-effects-and-meteorological-covariates" class="section level3">
 <h3 class="hasAnchor">
-<a href="#a-model-with-latent-main-effects-and-meterological-covariates" class="anchor"></a>A model with latent main effects and meterological covariates</h3>
+<a href="#a-model-with-latent-main-effects-and-meteorological-covariates" class="anchor"></a>A model with latent main effects and meteorological covariates</h3>
 <p>It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we’re going to use <code>Wind</code> as a covariate and illustrate the main differences with before :</p>
 <div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">myLDA_cov</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/PLNLDA.html">PLNLDA</a></span>(<span class="no">Abundance</span> ~ <span class="no">Wind</span> + <span class="fl">0</span> + <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">Offset</span>)),
                     <span class="kw">grouping</span> <span class="kw">=</span> <span class="no">Group</span>,
@@ -1016,7 +1016,7 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <a href="#predict-method-1" class="anchor"></a><code>predict</code> method</h4>
 <p>We can again predict the most likely group for each sample :</p>
 <div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">predicted.class_cov</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">myLDA_cov</span>, <span class="kw">newdata</span> <span class="kw">=</span> <span class="no">trichoptera</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"response"</span>)</pre></body></html></div>
-<p>and check that we recover the correct class in most cases (again, we used the same dataset for model fitting and group prediction only for ease of exposition):</p>
+<p>and check that we recover the correct class in most cases (again, we used the same data set for model fitting and group prediction only for ease of exposition):</p>
 <div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">predicted.class_cov</span>, <span class="no">trichoptera</span>$<span class="no">Group</span>, <span class="kw">dnn</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"predicted"</span>, <span class="st">"true"</span>))</pre></body></html></div>
 <pre><code>##          true
 ## predicted 1 2 3 4 5 6 7 8 9 10 11 12

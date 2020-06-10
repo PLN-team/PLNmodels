@@ -44,7 +44,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.3-900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
       </span>
     </div>
 
@@ -125,7 +125,7 @@
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jchiquet/PLNmodels?branch=master&svg=true)](https://ci.appveyor.com/project/jchiquet/PLNmodels)
  -->
 <blockquote>
-<p>The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA, LDA and network inference for count data). This package implements efficient algorithms to fit such models accompanied with a set of functions for vizualisation and diagnostic.</p>
+<p>The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA, LDA and network inference for count data). This package implements efficient algorithms to fit such models accompanied with a set of functions for visualization and diagnostic.</p>
 </blockquote>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -177,15 +177,15 @@
 <div class="sourceCode" id="cb6"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">PLNmodels</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">trichoptera</span>)
 <span class="no">trichoptera</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/prepare_data.html">prepare_data</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>, <span class="no">trichoptera</span>$<span class="no">Covariate</span>)</pre></div>
-<p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <a href="http://jchiquet.github.io/PLNmodels/articles/" class="uri">http://jchiquet.github.io/PLNmodels/articles/</a>).</p>
+<p>The main fitting functions work with the usual <code>R formula</code> notations, with multivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <a href="http://jchiquet.github.io/PLNmodels/articles/" class="uri">http://jchiquet.github.io/PLNmodels/articles/</a>).</p>
 <div id="unpenalized-poisson-lognormal-model-aka-pln" class="section level3">
 <h3 class="hasAnchor">
 <a href="#unpenalized-poisson-lognormal-model-aka-pln" class="anchor"></a>Unpenalized Poisson lognormal model (aka PLN)</h3>
 <div class="sourceCode" id="cb7"><pre class="r"><span class="no">myPLN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/PLN.html">PLN</a></span>(<span class="no">Abundance</span> ~ <span class="fl">1</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>)</pre></div>
 </div>
-<div id="rank-contraint-poisson-lognormal-for-poisson-principal-component-analysis-aka-plnpca" class="section level3">
+<div id="rank-constrained-poisson-lognormal-for-poisson-principal-component-analysis-aka-plnpca" class="section level3">
 <h3 class="hasAnchor">
-<a href="#rank-contraint-poisson-lognormal-for-poisson-principal-component-analysis-aka-plnpca" class="anchor"></a>Rank Contraint Poisson lognormal for Poisson Principal Component Analysis (aka PLNPCA)</h3>
+<a href="#rank-constrained-poisson-lognormal-for-poisson-principal-component-analysis-aka-plnpca" class="anchor"></a>Rank Constrained Poisson lognormal for Poisson Principal Component Analysis (aka PLNPCA)</h3>
 <div class="sourceCode" id="cb8"><pre class="r"><span class="no">myPCA</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/PLNPCA.html">PLNPCA</a></span>(<span class="no">Abundance</span> ~ <span class="fl">1</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>, <span class="kw">ranks</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">8</span>)</pre></div>
 </div>
 <div id="poisson-lognormal-discriminant-analysis-aka-plnlda" class="section level3">
@@ -249,7 +249,7 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/jchiquet/PLNmodels/actions"><img src="https://github.com/jchiquet/PLNmodels/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="https://cran.r-project.org/package=PLNmodels"><img src="http://www.r-pkg.org/badges/version/PLNmodels" alt="CRAN_Status_Badge"></a></li>
-<li><a href="https://www.tidyverse.org/lifecycle/#maturing"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
+<li><a href="https://www.tidyverse.org/lifecycle/#stable"><img src="https://img.shields.io/badge/lifecycle-stable-blue.svg" alt="Lifecycle: stable"></a></li>
 <li><a href="https://github.com/jchiquet/PLNmodels/commits/master"><img src="https://img.shields.io/github/last-commit/jchiquet/PLNmodels.svg"></a></li>
 </ul>
 </div>

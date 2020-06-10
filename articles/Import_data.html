@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.3-900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
       <h1 data-toc-skip>Data importation in PLNmodels</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2020-06-09</h4>
+            <h4 class="date">2020-06-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/Import_data.Rmd"><code>vignettes/Import_data.Rmd</code></a></small>
       <div class="hidden name"><code>Import_data.Rmd</code></div>
@@ -139,7 +139,7 @@
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">trichoptera</span>$<span class="no">Covariate</span>)</pre></body></html></div>
 <pre><code>## [1] "Temperature"   "Wind"          "Pressure"      "Humidity"     
 ## [5] "Cloudiness"    "Precipitation" "Group"</code></pre>
-<p>In the PLN framework, we model the counts from the covariates, let’s say wind and pressure, using a Poisson Log-Normal model. Most models in R use the so-called <em>formula interface</em> and it would thus be naturel to write something like</p>
+<p>In the PLN framework, we model the counts from the covariates, let’s say wind and pressure, using a Poisson Log-Normal model. Most models in R use the so-called <em>formula interface</em> and it would thus be natural to write something like</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="../reference/PLN.html">PLN</a></span>(<span class="no">Abundance</span> ~ <span class="no">Wind</span> + <span class="no">Pressure</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>)</pre></body></html></div>
 <p>Unfortunately and unlike many generalized linear models, the response in PLN is intrinsically <strong>multivariate</strong>: it has 17 dimensions in our example. The left hand side (LHS) must encode a multivariate response across multiple samples, using a 2D-array (e.g. a matrix or a data frame).</p>
 <p>We must therefore prepare a data structure where <code>Abundance</code> refers to a count <em>matrix</em> whereas <code>Wind</code> and <code>Pressure</code> refer to <em>vectors</em> before feeding it to <code>PLN</code>. That’s the purpose of <code>prepare_data</code>.</p>

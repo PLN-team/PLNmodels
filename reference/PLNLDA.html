@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Poisson lognormal model towards Linear Disciminant Analysis — PLNLDA • PLNmodels</title>
+<title>Poisson lognormal model towards Linear Discriminant Analysis — PLNLDA • PLNmodels</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Poisson lognormal model towards Linear Disciminant Analysis — PLNLDA" />
+<meta property="og:title" content="Poisson lognormal model towards Linear Discriminant Analysis — PLNLDA" />
 <meta property="og:description" content="Fit the Poisson lognormal for LDA with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets)." />
 <meta property="og:image" content="/logo.png" />
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.3-900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.4</span>
       </span>
     </div>
 
@@ -149,7 +149,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Poisson lognormal model towards Linear Disciminant Analysis</h1>
+    <h1>Poisson lognormal model towards Linear Discriminant Analysis</h1>
     <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNLDA.R'><code>R/PLNLDA.R</code></a></small>
     <div class="hidden name"><code>PLNLDA.Rd</code></div>
     </div>
@@ -185,7 +185,7 @@
     </tr>
     <tr>
       <th>control</th>
-      <td><p>a list for controling the optimization process. See details.</p></td>
+      <td><p>a list for controlling the optimization process. See details.</p></td>
     </tr>
     </table>
 
@@ -197,7 +197,7 @@
     <p>The parameter <code>control</code> is a list controlling the optimization with the following entries</p><ul>
 <li><p>"covariance"character setting the model for the covariance matrix. Either "full" or "spherical". Default is "full".</p></li>
 <li><p>"trace"integer for verbosity.</p></li>
-<li><p>"inception"Set up the intialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previsous fit), which often speed up the inference.</p></li>
+<li><p>"inception"Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previous fit), which often speed up the inference.</p></li>
 <li><p>"ftol_rel"stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8</p></li>
 <li><p>"ftol_abs"stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0</p></li>
 <li><p>"xtol_rel"stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4</p></li>
