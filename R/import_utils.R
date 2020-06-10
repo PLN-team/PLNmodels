@@ -1,6 +1,6 @@
-###########################
-##  INTERNAL FUNCTIONS   ##
-###########################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  INTERNAL FUNCTIONS ---------------------
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Internal function to find the most comprehensive set of common samples between a count table and a covariates data.frame
 common_samples <- function(counts, covariates) {
@@ -52,7 +52,7 @@ common_samples <- function(counts, covariates) {
               default_names    = default_names))
 }
 
-## Internal functions to compute scaling factors from a count table
+## scaling functions --------
 
 ## Sanitize offset to ensure consistency with count matrix
 sanitize_offset <- function(counts, offset, ...) {
@@ -178,9 +178,9 @@ offset_css <- function(counts, reference = median) {
   return(size_factors %>% unname())
 }
 
-###########################
-##  EXPORTED FUNCTIONS   ##
-###########################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+## EXPORTED FUNCTIONS ---------------------
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' @title Prepare data for use in PLN models
 #' @name prepare_data
@@ -191,17 +191,17 @@ offset_css <- function(counts, reference = median) {
 #' @param counts Required. An abundance count table, preferably with dimensions names and species as columns.
 #' @param covariates Required. A covariates data frame, preferably with row names.
 #' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
-#' @param ... Additional parameters passed on to \code{\link[=compute_offset]{compute_offset}}
+#' @param ... Additional parameters passed on to [compute_offset()]
 #'
 #' @references Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \url{https://doi.org/10.7717/peerj.4600}
 #' @references Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \url{http://dx.doi.org/10.1038/nmeth.2658}
 #' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
 #'
-#' @return A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
+#' @return A data.frame suited for use in [PLN()] and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
 #' @note User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
 #'
 #'
-#' @seealso \code{\link[=compute_offset]{compute_offset}} for details on the different normalisation schemes
+#' @seealso [compute_offset()] for details on the different normalisation schemes
 #'
 #' @export
 #'
@@ -269,9 +269,9 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' @param ... Additional parameters passed on to specific methods (for now CSS and RLE)
 #' @inherit prepare_data references
 #'
-#' @details RLE has an additional \code{pseudocounts} arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional \code{reference} argument to choose the location function used to compute the reference quantiles (defaults to \code{median} as in the Nature publication but can be set to \code{mean} to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
+#' @details RLE has an additional `pseudocounts` arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional `reference` argument to choose the location function used to compute the reference quantiles (defaults to `median` as in the Nature publication but can be set to `mean` to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
 #'
-#' @return If offset = "none", NULL else a vector of length \code{nrow(counts)} with one offset per sample.
+#' @return If `offset = "none"`, `NULL` else a vector of length `nrow(counts)` with one offset per sample.
 #'
 #' @importFrom stats mad median quantile
 #' @export
