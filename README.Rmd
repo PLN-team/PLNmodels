@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R build status](https://github.com/jchiquet/PLNmodels/workflows/R-CMD-check/badge.svg)](https://github.com/jchiquet/PLNmodels/actions)
+[![Coverage status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/jchiquet/PLNmodels?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![](https://img.shields.io/github/last-commit/jchiquet/PLNmodels.svg)](https://github.com/jchiquet/PLNmodels/commits/master)

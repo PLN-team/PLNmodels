@@ -5,18 +5,13 @@
 
 [![R build
 status](https://github.com/jchiquet/PLNmodels/workflows/R-CMD-check/badge.svg)](https://github.com/jchiquet/PLNmodels/actions)
+[![Coverage
+status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/jchiquet/PLNmodels?branch=master)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![](https://img.shields.io/github/last-commit/jchiquet/PLNmodels.svg)](https://github.com/jchiquet/PLNmodels/commits/master)
 <!-- badges: end -->
-
-<!-- old badges
-[![Coverage status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/jchiquet/PLNmodels?branch=master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c031ad73ccdb4c88ba11dfd74fab1255)](https://www.codacy.com/app/jchiquet/PLNmodels?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jchiquet/PLNmodels&amp;utm_campaign=Badge_Grade)
-[![Travis-CI build status](https://travis-ci.org/jchiquet/PLNmodels.svg?branch=master)](https://travis-ci.org/jchiquet/PLNmodels)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jchiquet/PLNmodels?branch=master&svg=true)](https://ci.appveyor.com/project/jchiquet/PLNmodels)
- -->
 
 > The Poisson lognormal model and variants can be used for a variety of
 > multivariate problems when count data are at play (including PCA, LDA
@@ -93,7 +88,7 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ```
 
 The main fitting functions work with the usual `R formula` notations,
-with multivariate responses on the left hand side. You probably want to
+with mutivariate responses on the left hand side. You probably want to
 start by one of them. Check the corresponding vignette and documentation
 page. There is a dedicated vignettes for each model in the package (See
 <http://jchiquet.github.io/PLNmodels/articles/>).
