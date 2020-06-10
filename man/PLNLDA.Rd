@@ -20,25 +20,24 @@ PLNLDA(formula, data, subset, weights, grouping, control = list())
 \item{control}{a list for controlling the optimization process. See details.}
 }
 \value{
-an R6 object with class \code{\link[=PLNLDAfit]{PLNLDAfit}}
+an R6 object with class \code{\link[=PLNLDAfit]{PLNLDAfit()}}
 }
 \description{
 Fit the Poisson lognormal for LDA with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \details{
-The parameter \code{control} is a list controlling the optimization with the following entries
+The parameter \code{control} is a list controlling the optimization with the following entries:
 \itemize{
- \item{"covariance"}{character setting the model for the covariance matrix. Either "full" or "spherical". Default is "full".}
- \item{"trace"}{integer for verbosity.}
- \item{"inception"}{Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previous fit), which often speed up the inference.}
- \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8}
- \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0}
- \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4}
- \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0}
- \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
- \item{"maxtime"}{stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)}
- \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
-    "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
+\item "covariance" character setting the model for the covariance matrix. Either "full" or "spherical". Default is "full".
+\item "trace" integer for verbosity.
+\item "inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data. However, the user can provide a PLNfit (typically obtained from a previous fit), which often speed up the inference.
+\item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
+\item "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
+\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4
+\item "xtol_abs" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0
+\item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+\item "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)
+\item "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
 }
 }
 \examples{
@@ -47,5 +46,5 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
 }
 \seealso{
-The class \code{\link[=PLNLDAfit]{PLNLDAfit}}
+The class \code{\link{PLNLDAfit}}
 }

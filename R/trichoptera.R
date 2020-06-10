@@ -23,10 +23,10 @@
 ##'   }
 ##' }
 ##'
-##' In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use \code{\link[=prepare_data]{prepare_data}}.
+##' In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use [prepare_data()].
 ##' We only kept a subset of the original meteorological covariates for illustration purposes.
 ##'
-##' @seealso \code{\link[=prepare_data]{prepare_data}}
+##' @seealso [prepare_data()]
 ##' @references Usseglio-Polatera, P. and Auda, Y. (1987) Influence des facteurs météorologiques sur les résultats de piégeage lumineux. Annales de Limnologie, 23, 65–79. (code des espèces p. 76)
 ##' See a data description at \href{http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf}{http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf} (in French)
 #' @examples
