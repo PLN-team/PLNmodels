@@ -72,31 +72,31 @@ PLNnetworkfamily <- R6Class(
       ## Go along the penalty grid (i.e the models)
       for (m in seq_along(self$models))  {
 
-                             if (control$trace == 1) {
-                               cat("\tsparsifying penalty =", self$models[[m]]$penalty, "\r")
-                               flush.console()
-                             }
-                             if (control$trace > 1) {
-                               cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
-                             }
-                             self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
-                             ## Save time by starting the optimization of model m+1  with optimal parameters of model m
-                             if (m < length(self$penalties))
-                               self$models[[m + 1]]$update(
-                                 Theta = self$models[[m]]$model_par$Theta,
-                                 Sigma = self$models[[m]]$model_par$Sigma,
-                                 M     = self$models[[m]]$var_par$M,
-                                 S2    = self$models[[m]]$var_par$S2
-                               )
+        if (control$trace == 1) {
+          cat("\tsparsifying penalty =", self$models[[m]]$penalty, "\r")
+          flush.console()
+        }
+        if (control$trace > 1) {
+          cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
+        }
+        self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
+        ## Save time by starting the optimization of model m+1  with optimal parameters of model m
+        if (m < length(self$penalties))
+          self$models[[m + 1]]$update(
+            Theta = self$models[[m]]$model_par$Theta,
+            Sigma = self$models[[m]]$model_par$Sigma,
+            M     = self$models[[m]]$var_par$M,
+            S2    = self$models[[m]]$var_par$S2
+          )
 
-                             if (control$trace > 1) {
-                               cat("\r                                                                                    \r")
-                               flush.console()
-                             }
+        if (control$trace > 1) {
+          cat("\r                                                                                    \r")
+          flush.console()
+        }
 
-                           }
+      }
 
-                         },
+    },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Stability -------------------------
@@ -106,11 +106,11 @@ PLNnetworkfamily <- R6Class(
     #' @param mc.cores the number of cores to used. Default is 1.
     stability_selection = function(subsamples = NULL, control = list(), mc.cores = 1) {
 
-                           ## select default subsamples according
-                           if (is.null(subsamples)) {
-                             subsample.size <- round(ifelse(private$n >= 144, 10*sqrt(private$n), 0.8*private$n))
-                             subsamples <- replicate(20, sample.int(private$n, subsample.size), simplify = FALSE)
-                           }
+      ## select default subsamples according
+      if (is.null(subsamples)) {
+        subsample.size <- round(ifelse(private$n >= 144, 10*sqrt(private$n), 0.8*private$n))
+        subsamples <- replicate(20, sample.int(private$n, subsample.size), simplify = FALSE)
+      }
 
                            ## got for stability selection
                            cat("\nStability Selection for PLNnetwork: ")

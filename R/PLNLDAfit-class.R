@@ -1,6 +1,6 @@
 #' An R6 Class to represent a PLNfit in a LDA framework
 #'
-#' @description The function [PLNLDA()] produces an instance of an object with class [`PLNPLDAfit`].
+#' @description The function [PLNLDA()] produces an instance of an object with class [`PLNLDAfit`].
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for the methods inherited by [PLNfit()], the [plot()] method for

@@ -83,7 +83,7 @@ PLNfamily <-
       #' Extract a model from a collection of models
       # @inheritParams getModel
       #' @return A [`PLNfit`] object
-      #' @seealso [getmodel()]
+      #' @seealso [getModel()]
       getModel = function(var, index = NULL) {
         ## Extraction by index
         if (!is.null(index) && index <= length(self$models)) {

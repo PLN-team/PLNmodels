@@ -21,7 +21,7 @@ isPLNPCAfit <- function(Robject) {inherits(Robject, "PLNPCAfit"       )}
 #' @param main character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.
 #' @param ... Not used (S3 compatibility).
 #'
-#' @return displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a [`ggplot`] or [`gtable`] object
+#' @return displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a [`ggplot`] or gtable object
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)

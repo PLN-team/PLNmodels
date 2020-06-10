@@ -65,7 +65,7 @@ PLNfit <- R6Class(
       if (!anyNA(monitoring)) private$monitoring <- monitoring
     },
 
-    #' @description Initialize a [`PLNfit model`]
+    #' @description Initialize a [`PLNfit`] model
     #' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
     ## TODO: Once "set" is supported by Roxygen go back to external definition using
     ## PLNfit$set("public", "initialize", { ... })

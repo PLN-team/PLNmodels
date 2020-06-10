@@ -12,7 +12,7 @@ isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
 #'
 #' @name plot.PLNnetworkfamily
 #'
-#' @param x an R6 object with class [`PLNfamilyfit`]
+#' @param x an R6 object with class [`PLNnetworkfamily`]
 #' @param type a character, either "criteria", "stability" or "diagnostic" for the type of plot.
 #' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
 #' Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when `type = "criteria"`.
