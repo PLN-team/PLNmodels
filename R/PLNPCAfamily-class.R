@@ -12,6 +12,7 @@
 #' @param covariates the matrix of covariates common to every models
 #' @param offsets the matrix of offsets common to every models
 #' @param weights the vector of observation weights
+#' @param model model used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
 #' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
@@ -38,7 +39,6 @@ PLNPCAfamily <- R6Class(
     ## --------------------------------
     ## Creation -----------------------
     #' @description Initialize all models in the collection.
-    #' @param model model used for fitting, extracted from the formula in the upper-level call
     initialize = function(ranks, responses, covariates, offsets, weights, model, xlevels, control) {
       ## initialize the required fields
       super$initialize(responses, covariates, offsets, weights, control)
