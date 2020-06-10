@@ -10,31 +10,29 @@
 ##' @param control_init a list for controling the optimization of the PLN model used at initialization. See details.
 ##' @param control_main a list for controling the main optimization process. See details.
 ##'
-##' @return an R6 object with class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}, which contains
-##' a collection of models with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
+##' @return an R6 object with class [`PLNnetworkfamily`], which contains
+##' a collection of models with class [`PLNnetworkfit`]
 ##'
-##' @details The list of parameters \code{control_main} controls the optimization of the main process, with the following entries
-##'  \itemize{
-#'  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.}
-#'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0}
-##'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter. Default is 1e-4}
-##'  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs. Default is 0}
-##'  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
-##'  \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
-##'     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
-##'  \item{"cores"}{integer for number of cores used. Default is 1.}
-##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
-##'  \item{"ftol_out"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
-##'  \item{"maxit_out"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
-##'  \item{"penalize_diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}
-##'  \item{"penalty_weights"}{p x p matrix of weights (defaut filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
-##' }
+##' @details The list of parameters `control_main` controls the optimization of the main process, with the following entries:
+#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
+#' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
+##' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter. Default is 1e-4
+##' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0
+##' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+##' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
+##'     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
+##' * "cores" integer for number of cores used. Default is 1.
+##' * "trace" integer for verbosity. Useless when `cores > 1`
+##' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
+##' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
+##' * "penalize_diagonal" boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.
+##' * "penalty_weights" p x p matrix of weights (defaut filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 ##'
-##' The list of parameters \code{control_init} controls the optimization process in the initialization and in the function \code{\link[=PLN]{PLN}}, plus two additional parameters:
-##' \itemize{
-##'  \item{"nPenalties"}{an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non NULL}
-##'  \item{"min.ratio"}{the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min.ratio}. Default is 0.1.}
-##' }
+##'
+##' The list of parameters `control_init` controls the optimization process in the initialization and in the function [PLN()], plus two additional parameters:
+##' * "nPenalties" an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`
+##' * "min.ratio" the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by `min.ratio`. Default is 0.1.
+##'
 ##'
 ##' @rdname PLNnetwork
 #' @examples
