@@ -148,7 +148,7 @@ PLNfamily <-
     ## PRIVATE MEMBERS ----
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     private = list(
-      params     = NULL, # vector of parameters that indexes the models (either sparsity, rank, etc.)
+      params     = NULL, # vector of parameters that indexes the models (either sparsity, rank, number of cluster, etc.)
       n          = NULL, # number of samples
       p          = NULL, # number of responses
       d          = NULL  # number of covariates

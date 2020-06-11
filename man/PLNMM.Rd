@@ -4,8 +4,14 @@
 \alias{PLNMM}
 \title{Poisson lognormal mixture model}
 \usage{
-PLNMM(formula, data, subset, clusters = 1:10, control_init = list(),
-  control_main = list())
+PLNMM(
+  formula,
+  data,
+  subset,
+  clusters = 1:10,
+  control_init = list(),
+  control_main = list()
+)
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
@@ -30,18 +36,18 @@ Fit the mixture variants of the Poisson lognormal with a variational algorithm. 
 \details{
 The list of parameters \code{control_init} and \code{control_main} control the optimization of the intialization and the main process, with the following entries
 \itemize{
-  \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
- \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
- \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
- \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
- \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
- \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ"  "MMA", "LBFGS",
-    "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
-    "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "CCSAQ".}
- \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
- \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
- \item{"inception"}{a PLNfit to start with. If NULL, a PLN is fitted on the . If an R6 object with class 'PLNfit' is given, it is used to initialize the model.}
- \item{"cores"}{The number of core used to paralellize jobs over the \code{ranks} vector. Default is 1.}
+\item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
+\item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
+\item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
+\item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
+\item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
+\item{"method"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ"  "MMA", "LBFGS",
+"TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
+"TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "CCSAQ".}
+\item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
+\item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
+\item{"inception"}{a PLNfit to start with. If NULL, a PLN is fitted on the . If an R6 object with class 'PLNfit' is given, it is used to initialize the model.}
+\item{"cores"}{The number of core used to paralellize jobs over the \code{ranks} vector. Default is 1.}
 }
 }
 \examples{

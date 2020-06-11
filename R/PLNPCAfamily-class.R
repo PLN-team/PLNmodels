@@ -92,7 +92,7 @@ PLNPCAfamily <- R6Class(
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## Graphical methdods -------------
+    ## Graphical methods -------------
     #' @description
     #' Lineplot of selected criteria for all models in the collection
     #' @param criteria A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).
