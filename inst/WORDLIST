@@ -10,7 +10,6 @@ Archiv
 arg
 Auda
 benthos
-BFC
 bioconductor
 BioConductor
 biom
@@ -40,6 +39,7 @@ espèces
 et
 facteurs
 fastglasso
+FIM
 frac
 ftol
 fùr
@@ -48,7 +48,6 @@ ggplot
 github
 Github
 GMPR
-gtable
 http
 Hydrobiologie
 i'j
@@ -70,6 +69,7 @@ leq
 les
 Lifecycle
 Limnologie
+Lineplot
 Liu
 lm
 LM
@@ -129,6 +129,7 @@ Richardot
 RLE
 rmarkdown
 Robject
+Roxygen
 sparsification
 sparsifying
 StARS
@@ -145,6 +146,7 @@ underset
 Usseglio
 variational
 Variational
+VE
 VEstep
 wald
 xtol

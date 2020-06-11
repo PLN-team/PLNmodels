@@ -4,11 +4,9 @@
 \alias{PLNPCAfit}
 \title{An R6 Class to represent a PLNfit in a PCA framework}
 \description{
-The function \code{\link{PLNPCA}} produces a collection of models which are instances of object with class \code{PLNPCAfit}.
-
+The function \code{\link[=PLNPCA]{PLNPCA()}} produces a collection of models which are instances of object with class \code{\link{PLNPCAfit}}.
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}} and the
-\code{\link[=plot.PLNPCAfit]{plot.PLNPCAfit}} methods for PCA visualization
+See the documentation for the methods inherited by  \code{\link{PLNfit}} and the \code{\link[=plot]{plot()}} methods for PCA visualization
 }
 \examples{
 data(trichoptera)
@@ -24,51 +22,16 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \section{Super class}{
 \code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{PLNPCAfit}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
-
-\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
-
-\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
-
-\item{\code{loglik}}{variational lower bound of the loglikelihood}
-
-\item{\code{BIC}}{variational lower bound of the BIC}
-
-\item{\code{ICL}}{variational lower bound of the ICL}
-
-\item{\code{R_squared}}{approximated goodness-of-fit criterion}
-
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
-}
-\if{html}{\out{</div>}}
-}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{rank}}{the dimension of the current model}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)}
-
-\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
-
-\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
-
-\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
-
-\item{\code{loglik}}{variational lower bound of the loglikelihood}
-
-\item{\code{BIC}}{variational lower bound of the BIC}
-
-\item{\code{ICL}}{variational lower bound of the ICL}
-
-\item{\code{R_squared}}{approximated goodness-of-fit criterion}
-
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
-
 \item{\code{nb_param}}{number of parameters in the current PLN model}
+
+\item{\code{entropy}}{entropy of the variational distribution}
+
+\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)}
 
 \item{\code{percent_var}}{the percent of variance explained by each axis}
 
@@ -85,14 +48,14 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \itemize{
 \item \href{#method-new}{\code{PLNPCAfit$new()}}
 \item \href{#method-update}{\code{PLNPCAfit$update()}}
-\item \href{#method-setVisualization}{\code{PLNPCAfit$setVisualization()}}
 \item \href{#method-optimize}{\code{PLNPCAfit$optimize()}}
+\item \href{#method-setVisualization}{\code{PLNPCAfit$setVisualization()}}
 \item \href{#method-postTreatment}{\code{PLNPCAfit$postTreatment()}}
+\item \href{#method-compute_fisher}{\code{PLNPCAfit$compute_fisher()}}
 \item \href{#method-latent_pos}{\code{PLNPCAfit$latent_pos()}}
 \item \href{#method-plot_individual_map}{\code{PLNPCAfit$plot_individual_map()}}
 \item \href{#method-plot_correlation_circle}{\code{PLNPCAfit$plot_correlation_circle()}}
 \item \href{#method-plot_PCA}{\code{PLNPCAfit$plot_PCA()}}
-\item \href{#method-compute_fisher}{\code{PLNPCAfit$compute_fisher()}}
 \item \href{#method-show}{\code{PLNPCAfit$show()}}
 \item \href{#method-clone}{\code{PLNPCAfit$clone()}}
 }
@@ -112,6 +75,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize a \code{\link{PLNPCAfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$new(
   rank,
@@ -125,11 +89,33 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{rank}}{rank of the PCA (or equivalently, dimension of the latent space)}
+
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+
+\item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-update"></a>}}
 \if{latex}{\out{\hypertarget{method-update}{}}}
 \subsection{Method \code{update()}}{
+Update a \code{\link{PLNPCAfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$update(
   Theta = NA,
@@ -145,47 +131,153 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 )}\if{html}{\out{</div>}}
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setVisualization"></a>}}
-\if{latex}{\out{\hypertarget{method-setVisualization}{}}}
-\subsection{Method \code{setVisualization()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$setVisualization(scale.unit = FALSE)}\if{html}{\out{</div>}}
-}
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{Theta}}{matrix of regression matrix}
 
+\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
+
+\item{\code{B}}{matrix of PCA loadings (in the latent space)}
+
+\item{\code{M}}{matrix of mean vectors for the variational approximation}
+
+\item{\code{S2}}{matrix of variance vectors for the variational approximation}
+
+\item{\code{Z}}{matrix of latent vectors (includes covariates and offset effects)}
+
+\item{\code{A}}{matrix of fitted values}
+
+\item{\code{Ji}}{vector of variational lower bounds of the log-likelihoods (one value per sample)}
+
+\item{\code{R2}}{approximate R^2 goodness-of-fit criterion}
+
+\item{\code{monitoring}}{a list with optimization monitoring quantities}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Update the current \code{\link{PLNPCAfit}} object
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
+Call to the C++ optimizer and update of the relevant fields
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-setVisualization"></a>}}
+\if{latex}{\out{\hypertarget{method-setVisualization}{}}}
+\subsection{Method \code{setVisualization()}}{
+Compute PCA scores in the latent space and update corresponding fields.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$setVisualization(scale.unit = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{scale.unit}}{Logical. Should PCA scores be rescaled to have unit variance}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
+Update R2, fisher, std_err fields and set up visualization
+after optimization
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$postTreatment(responses, covariates, offsets, weights, nullModel)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+
+\item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-compute_fisher"></a>}}
+\if{latex}{\out{\hypertarget{method-compute_fisher}{}}}
+\subsection{Method \code{compute_fisher()}}{
+Safely compute the fisher information matrix (FIM)
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$compute_fisher(type = c("wald", "louis"), X = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{approximation scheme to compute the fisher information matrix. Either \code{wald} (default) or \code{louis}. \code{type = "louis"} results in smaller confidence intervals.}
+
+\item{\code{X}}{design matrix used to compute the FIM}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a sparse matrix with sensible dimension names
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-latent_pos"></a>}}
 \if{latex}{\out{\hypertarget{method-latent_pos}{}}}
 \subsection{Method \code{latent_pos()}}{
+Compute matrix of latent positions, noted as Z in the model.
+Useful to compute the likelihood or for data visualization
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$latent_pos(covariates, offsets)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a n x q matrix of latent positions.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_individual_map"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_individual_map}{}}}
 \subsection{Method \code{plot_individual_map()}}{
+Plot the factorial map of the PCA
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$plot_individual_map(
   axes = 1:min(2, self$rank),
@@ -195,11 +287,28 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
+
+\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+
+\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+
+\item{\code{cols}}{a character, factor or numeric to define the color associated with the individuals. By default, all individuals receive the default color of the current palette.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{ggplot}} graphic
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_correlation_circle"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_correlation_circle}{}}}
 \subsection{Method \code{plot_correlation_circle()}}{
+Plot the correlation circle of a specified axis for a \code{\link{PLNLDAfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$plot_correlation_circle(
   axes = 1:min(2, self$rank),
@@ -209,11 +318,28 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
+
+\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+
+\item{\code{cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
+
+\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{ggplot}} graphic
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_PCA"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_PCA}{}}}
 \subsection{Method \code{plot_PCA()}}{
+Plot a summary of the \code{\link{PLNPCAfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$plot_PCA(
   nb_axes = min(3, self$rank),
@@ -223,20 +349,28 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 )}\if{html}{\out{</div>}}
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-compute_fisher"></a>}}
-\if{latex}{\out{\hypertarget{method-compute_fisher}{}}}
-\subsection{Method \code{compute_fisher()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$compute_fisher(type = c("wald", "louis"), X = NULL)}\if{html}{\out{</div>}}
-}
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{nb_axes}}{scalar: the number of axes to be considered when map = "both". The default is min(3,rank).}
 
+\item{\code{ind_cols}}{a character, factor or numeric to define the color associated with the individuals. By default, all variables receive the default color of the current palette.}
+
+\item{\code{var_cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
+
+\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{grob}} object
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
 \if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$show()}\if{html}{\out{</div>}}
 }

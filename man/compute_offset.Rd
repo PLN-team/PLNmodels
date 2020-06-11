@@ -14,7 +14,7 @@ compute_offset(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...)
 \item{...}{Additional parameters passed on to specific methods (for now CSS and RLE)}
 }
 \value{
-If offset = "none", NULL else a vector of length \code{nrow(counts)} with one offset per sample.
+If \code{offset = "none"}, \code{NULL} else a vector of length \code{nrow(counts)} with one offset per sample.
 }
 \description{
 Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature.

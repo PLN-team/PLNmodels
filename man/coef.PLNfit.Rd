@@ -7,7 +7,7 @@
 \method{coef}{PLNfit}(object, type = c("main", "covariance"), ...)
 }
 \arguments{
-\item{object}{an R6 object with class PLNfit}
+\item{object}{an R6 object with class \code{\link{PLNfit}}}
 
 \item{type}{type of parameter that should be extracted. Either "main" (default) for \deqn{\Theta} or "covariance" for \deqn{\Sigma}}
 
@@ -17,7 +17,7 @@
 A matrix of coefficients extracted from the PLNfit model.
 }
 \description{
-Extracts model coefficients from objects returned by \code{\link[=PLN]{PLN}} and its variants
+Extracts model coefficients from objects returned by \code{\link[=PLN]{PLN()}} and its variants
 }
 \examples{
 data(trichoptera)
@@ -27,5 +27,5 @@ coef(myPLN) ## Theta
 coef(myPLN, type = "covariance") ## Sigma
 }
 \seealso{
-\code{\link[=sigma.PLNfit]{sigma}}, \code{\link[=vcov.PLNfit]{vcov}}, \code{\link[=standard_error.PLNfit]{standard_error}}
+\code{\link[=sigma.PLNfit]{sigma.PLNfit()}}, \code{\link[=vcov.PLNfit]{vcov.PLNfit()}}, \code{\link[=standard_error.PLNfit]{standard_error.PLNfit()}}
 }

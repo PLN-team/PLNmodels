@@ -4,10 +4,10 @@
 \alias{PLNnetworkfit}
 \title{An R6 Class to represent a PLNfit in a sparse inverse covariance framework}
 \description{
-The function \code{\link{PLNnetwork}} produces a collection of models which are instances of object with class \code{PLNnetworkfit}.
+The function \code{\link[=PLNnetwork]{PLNnetwork()}} produces a collection of models which are instances of object with class \code{\link{PLNnetworkfit}}.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=plot.PLNnetworkfit]{plot.PLNnetworkfit}} + methods inherited from PLNfit.
+See the documentation for \code{\link[=plot.PLNnetworkfit]{plot()}} and methods inherited from \code{\link{PLNfit}}.
 }
 \examples{
 \dontrun{
@@ -20,60 +20,30 @@ print(myPLNnet)
 }
 }
 \seealso{
-The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}
+The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNnetworkfamily}}
 }
 \section{Super class}{
 \code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{PLNnetworkfit}
-}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
-
-\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
-
-\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
-
-\item{\code{loglik}}{variational lower bound of the loglikelihood}
-
-\item{\code{BIC}}{variational lower bound of the BIC}
-
-\item{\code{ICL}}{variational lower bound of the ICL}
-
-\item{\code{R_squared}}{approximated goodness-of-fit criterion}
-}
-\if{html}{\out{</div>}}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{penalty}}{the level of sparsity in the current model}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.}
-
-\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
-
-\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
-
-\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
-
-\item{\code{loglik}}{variational lower bound of the loglikelihood}
-
-\item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood}
-
-\item{\code{BIC}}{variational lower bound of the BIC}
-
-\item{\code{EBIC}}{variational lower bound of the EBIC}
-
-\item{\code{ICL}}{variational lower bound of the ICL}
-
-\item{\code{R_squared}}{approximated goodness-of-fit criterion}
+\item{\code{n_edges}}{number of edges if the network (non null coefficient of the sparse precision matrix)}
 
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
+\item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood}
+
+\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.}
+
+\item{\code{EBIC}}{variational lower bound of the EBIC}
+
 \item{\code{density}}{proportion of non-null edges in the network}
 
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
+\item{\code{criteria}}{a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges,
+and graph density}
 }
 \if{html}{\out{</div>}}
 }
@@ -107,6 +77,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize a \code{\link{PLNnetworkfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$new(
   penalty,
@@ -120,11 +91,33 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{penalty}}{a positive real number controlling the level of sparsity of the underlying network.}
+
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+
+\item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in \code{\link[=PLNnetwork]{PLNnetwork()}} call}
+
+\item{\code{control}}{a list for controlling the optimization of the PLN model used at initialization. See \code{\link[=PLNnetwork]{PLNnetwork()}} for details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-update"></a>}}
 \if{latex}{\out{\hypertarget{method-update}{}}}
 \subsection{Method \code{update()}}{
+Update fields of a \code{\link{PLNnetworkfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$update(
   penalty = NA,
@@ -141,38 +134,109 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{penalty}}{a positive real number controlling the level of sparsity of the underlying network.}
+
+\item{\code{Theta}}{matrix of regression matrix}
+
+\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
+
+\item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
+
+\item{\code{M}}{matrix of mean vectors for the variational approximation}
+
+\item{\code{S2}}{matrix of variance vectors for the variational approximation}
+
+\item{\code{Z}}{matrix of latent vectors (includes covariates and offset effects)}
+
+\item{\code{A}}{matrix of fitted values}
+
+\item{\code{Ji}}{vector of variational lower bounds of the log-likelihoods (one value per sample)}
+
+\item{\code{R2}}{approximate R^2 goodness-of-fit criterion}
+
+\item{\code{monitoring}}{a list with optimization monitoring quantities}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
+Call to the C++ optimizer and update of the relevant fields
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+
+\item{\code{control}}{a list for controlling the optimization of the PLN model used at initialization. See \code{\link[=PLNnetwork]{PLNnetwork()}} for details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
+Compute PCA scores in the latent space and update corresponding fields.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$postTreatment(responses, covariates, offsets, weights, nullModel)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+
+\item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-latent_network"></a>}}
 \if{latex}{\out{\hypertarget{method-latent_network}{}}}
 \subsection{Method \code{latent_network()}}{
+Extract interaction network in the latent space
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$latent_network(type = c("partial_cor", "support", "precision"))}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{edge value in the network. Can be "support" (binary edges), "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a square matrix of size \code{PLNnetworkfit$n}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_network"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_network}{}}}
 \subsection{Method \code{plot_network()}}{
+plot the latent network.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$plot_network(
   type = c("partial_cor", "support"),
@@ -185,11 +249,31 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfamily]{
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{edge value in the network. Either "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species).}
+
+\item{\code{output}}{Output type. Either \code{igraph} (for the network) or \code{corrplot} (for the adjacency matrix)}
+
+\item{\code{edge.color}}{Length 2 color vector. Color for positive/negative edges. Default is \code{c("#F8766D", "#00BFC4")}. Only relevant for igraph output.}
+
+\item{\code{remove.isolated}}{if \code{TRUE}, isolated node are remove before plotting. Only relevant for igraph output.}
+
+\item{\code{node.labels}}{vector of character. The labels of the nodes. The default will use the column names ot the response matrix.}
+
+\item{\code{layout}}{an optional igraph layout. Only relevant for igraph output.}
+
+\item{\code{plot}}{logical. Should the final network be displayed or only sent back to the user. Default is \code{TRUE}.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
 \if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$show()}\if{html}{\out{</div>}}
 }

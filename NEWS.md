@@ -1,6 +1,10 @@
+# PLNmodels 0.10.5
+
+* Refactor code of R6 classes to benefit from Roxygen 7.0.0 R6-related new features for documentation
+
 # PLNmodels 0.10.4
 
-* Change name of variational variance parameters to S2 (use to be S)
+* Change name of variational variance parameters to S2 (used to be S)
 * use spell_check to check spelling, found many typos
 
 # PLNmodels 0.10.3
