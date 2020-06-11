@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNnetworkfamily-S3methods.R
 \name{plot.PLNnetworkfamily}
 \alias{plot.PLNnetworkfamily}
-\title{Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)}
+\title{Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a \code{\link{PLNnetworkfamily}})}
 \usage{
 \method{plot}{PLNnetworkfamily}(
   x,
@@ -15,14 +15,14 @@
 )
 }
 \arguments{
-\item{x}{an R6 object with class PLNfamily}
+\item{x}{an R6 object with class \code{\link{PLNnetworkfamily}}}
 
 \item{type}{a character, either "criteria", "stability" or "diagnostic" for the type of plot.}
 
 \item{criteria}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
-Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when type equals "criteria".}
+Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when \code{type = "criteria"}.}
 
-\item{log.x}{logical: should the x-axis be repsented in log-scale? Default is \code{TRUE}.}
+\item{log.x}{logical: should the x-axis be represented in log-scale? Default is \code{TRUE}.}
 
 \item{stability}{scalar: the targeted level of stability in stability plot. Default is .9.}
 
@@ -36,7 +36,7 @@ highlighting the best model in terms of BIC and EBIC (the greater, the better).
 These criteria have the form 'loglik - 1/2 * penalty' so that they are on the same scale as the model loglikelihood.
 }
 \description{
-Display various ouputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)
+Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a \code{\link{PLNnetworkfamily}})
 }
 \examples{
 data(trichoptera)

@@ -7,7 +7,7 @@
 \method{sigma}{PLNfit}(object, ...)
 }
 \arguments{
-\item{object}{an R6 object with class PLNfit}
+\item{object}{an R6 object with class \code{\link{PLNfit}}}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
@@ -24,5 +24,5 @@ myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 sigma(myPLN) ## Sigma
 }
 \seealso{
-\code{\link[=coef.PLNfit]{coef}}, \code{\link[=standard_error.PLNfit]{standard_error}} and \code{\link[=vcov.PLNfit]{vcov}} for other ways to access \deqn{\Sigma}.
+\code{\link[=coef.PLNfit]{coef.PLNfit()}}, \code{\link[=standard_error.PLNfit]{standard_error.PLNfit()}} and \code{\link[=vcov.PLNfit]{vcov.PLNfit()}} for other ways to access \deqn{\Sigma}.
 }

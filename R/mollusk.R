@@ -1,7 +1,7 @@
 ##' Mollusk data set
 ##'
 ##' This data set gives the abundance of 32 mollusk species in 163 samples.
-##' For each sample, 4 additional informations (covariates) are knowne.
+##' For each sample, 4 additional covariates are known.
 ##'
 ##' @format A list with 2 two data frames:
 ##' \describe{
@@ -16,10 +16,10 @@
 ##'   }
 ##' }
 ##'
-##' In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use \code{\link[=prepare_data]{prepare_data}}.
+##' In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use [prepare_data()].
 ##' Original data set has been extracted from ade4.
 ##'
-##' @seealso \code{\link[=prepare_data]{prepare_data}}
+##' @seealso [prepare_data()]
 ##' @references Richardot-Coulet, M., Chessel D. and Bournaud M. (1986) Typological value of the benthos of old beds of a large river. Methodological approach. Archiv fùr Hydrobiologie, 107, 363–383.
 #' @examples
 #' data(mollusk)

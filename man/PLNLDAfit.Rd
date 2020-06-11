@@ -4,12 +4,11 @@
 \alias{PLNLDAfit}
 \title{An R6 Class to represent a PLNfit in a LDA framework}
 \description{
-The function \code{\link{PLNLDA}} produces an instance of an object with class \code{PLNPLDAfit}.
+The function \code{\link[=PLNLDA]{PLNLDA()}} produces an instance of an object with class \code{\link{PLNLDAfit}}.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for the methods inherited by  \code{\link[=PLNfit]{PLNfit}}, the
-\code{\link[=plot.PLNLDAfit]{plot.PLNPCAfit}} method for LDA vizualization and
-\code{\link[=predict.PLNLDAfit]{predict.PLNPCAfit}} method for prediction
+See the documentation for the methods inherited by \code{\link[=PLNfit]{PLNfit()}}, the \code{\link[=plot]{plot()}} method for
+LDA visualization and \code{\link[=predict]{predict()}} method for prediction
 }
 \examples{
 \dontrun{
@@ -26,53 +25,22 @@ The function \code{\link{PLNLDA}}.
 \section{Super class}{
 \code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{PLNLDAfit}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
-
-\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
-
-\item{\code{loglik}}{variational lower bound of the loglikelihood}
-
-\item{\code{BIC}}{variational lower bound of the BIC}
-
-\item{\code{ICL}}{variational lower bound of the ICL}
-
-\item{\code{R_squared}}{approximated goodness-of-fit criterion}
-
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
-}
-\if{html}{\out{</div>}}
-}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{rank}}{the dimension of the current model}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), B (latent loadings), P (latent position) and Mu (group means)}
-
-\item{\code{var_par}}{a list with two matrices, M and S, which are the estimated parameters in the variational approximation}
-
-\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
-
-\item{\code{loglik}}{variational lower bound of the loglikelihood}
-
-\item{\code{BIC}}{variational lower bound of the BIC}
-
-\item{\code{ICL}}{variational lower bound of the ICL}
-
-\item{\code{R_squared}}{approximated goodness-of-fit criterion}
-
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
-
 \item{\code{nb_param}}{number of parameters in the current PLN model}
+
+\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), B (latent loadings), P (latent position) and Mu (group means)}
 
 \item{\code{percent_var}}{the percent of variance explained by each axis}
 
 \item{\code{corr_map}}{a matrix of correlations to plot the correlation circles}
 
 \item{\code{scores}}{a matrix of scores to plot the individual factor maps}
+
+\item{\code{group_means}}{a matrix of group mean vectors in the latent space.}
 }
 \if{html}{\out{</div>}}
 }
@@ -81,8 +49,8 @@ The function \code{\link{PLNLDA}}.
 \itemize{
 \item \href{#method-new}{\code{PLNLDAfit$new()}}
 \item \href{#method-optimize}{\code{PLNLDAfit$optimize()}}
-\item \href{#method-setVisualization}{\code{PLNLDAfit$setVisualization()}}
 \item \href{#method-postTreatment}{\code{PLNLDAfit$postTreatment()}}
+\item \href{#method-setVisualization}{\code{PLNLDAfit$setVisualization()}}
 \item \href{#method-plot_individual_map}{\code{PLNLDAfit$plot_individual_map()}}
 \item \href{#method-plot_correlation_map}{\code{PLNLDAfit$plot_correlation_map()}}
 \item \href{#method-plot_LDA}{\code{PLNLDAfit$plot_LDA()}}
@@ -94,13 +62,13 @@ The function \code{\link{PLNLDA}}.
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher">}\href{../../PLNmodels/html/PLNfit.html#method-compute_fisher}{\code{PLNmodels::PLNfit$compute_fisher()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="latent_pos">}\href{../../PLNmodels/html/PLNfit.html#method-latent_pos}{\code{PLNmodels::PLNfit$latent_pos()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2">}\href{../../PLNmodels/html/PLNfit.html#method-set_R2}{\code{PLNmodels::PLNfit$set_R2()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update">}\href{../../PLNmodels/html/PLNfit.html#method-update}{\code{PLNmodels::PLNfit$update()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -108,6 +76,7 @@ The function \code{\link{PLNLDA}}.
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize a \code{\link{PLNLDAfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$new(
   grouping,
@@ -121,38 +90,96 @@ The function \code{\link{PLNLDA}}.
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
+
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+
+\item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
+Compute group means and axis of the LDA (noted B in the model) in the
+latent space, update corresponding fields
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$optimize(X, covar, design_group, control)}\if{html}{\out{</div>}}
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setVisualization"></a>}}
-\if{latex}{\out{\hypertarget{method-setVisualization}{}}}
-\subsection{Method \code{setVisualization()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$setVisualization(scale.unit = FALSE)}\if{html}{\out{</div>}}
-}
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{X}}{Abundance matrix.}
 
+\item{\code{covar}}{design matrix. Automatically built from the covariates and the formula from the call}
+
+\item{\code{design_group}}{design matrix for the grouping variable}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
+Update R2, fisher and std_err fields and visualization
+after optimization
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(responses, covariates, offsets)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-setVisualization"></a>}}
+\if{latex}{\out{\hypertarget{method-setVisualization}{}}}
+\subsection{Method \code{setVisualization()}}{
+Compute LDA scores in the latent space and update corresponding fields.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$setVisualization(scale.unit = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{scale.unit}}{Logical. Should LDA scores be rescaled to have unit variance}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_individual_map"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_individual_map}{}}}
 \subsection{Method \code{plot_individual_map()}}{
+Plot the factorial map of the LDA
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$plot_individual_map(
   axes = 1:min(2, self$rank),
@@ -161,11 +188,26 @@ The function \code{\link{PLNLDA}}.
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
+
+\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+
+\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{ggplot}} graphic
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_correlation_map"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_correlation_map}{}}}
 \subsection{Method \code{plot_correlation_map()}}{
+Plot the correlation circle of a specified axis for a \code{\link{PLNLDAfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$plot_correlation_map(
   axes = 1:min(2, self$rank),
@@ -175,11 +217,28 @@ The function \code{\link{PLNLDA}}.
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
+
+\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+
+\item{\code{cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
+
+\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{ggplot}} graphic
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_LDA"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_LDA}{}}}
 \subsection{Method \code{plot_LDA()}}{
+Plot a summary of the \code{\link{PLNLDAfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$plot_LDA(
   nb_axes = min(3, self$rank),
@@ -188,11 +247,26 @@ The function \code{\link{PLNLDA}}.
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{nb_axes}}{scalar: the number of axes to be considered when map = "both". The default is min(3,rank).}
+
+\item{\code{var_cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
+
+\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{grob}} object
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-predict}{}}}
 \subsection{Method \code{predict()}}{
+Predict group of new samples
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$predict(
   newdata,
@@ -204,11 +278,29 @@ The function \code{\link{PLNLDA}}.
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{newdata}}{A data frame in which to look for variables, offsets and counts  with which to predict.}
+
+\item{\code{type}}{The type of prediction required. The default are posterior probabilities for each group (in either unnormalized log-scale or natural probabilities, see "scale" for details), "response" is the group with maximal posterior probability and "scores" is the average score along each separation axis in the latent space, with weights equal to the posterior probabilities.}
+
+\item{\code{scale}}{The scale used for the posterior probability. Either log-scale ("log", default) or natural probabilities summing up to 1 ("prob").}
+
+\item{\code{prior}}{User-specified prior group probabilities in the new data. If NULL (default), prior probabilities are computed from the learning set.}
+
+\item{\code{control}}{a list for controlling the optimization. See \code{\link[=PLN]{PLN()}} for details.}
+
+\item{\code{envir}}{Environment in which the prediction is evaluated}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
 \if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$show()}\if{html}{\out{</div>}}
 }

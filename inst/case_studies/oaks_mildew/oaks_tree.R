@@ -33,6 +33,7 @@ plot(myLDA_orientation)
 
 ## Dimension reduction with PCA
 system.time(myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control_main = list(cores = 10))) # about 40 sec.
+plot(myPLNPCAs)
 myPLNPCA <- getBestModel(myPLNPCAs)
 plot(myPLNPCA, ind_cols = oaks$treeStatus)
 

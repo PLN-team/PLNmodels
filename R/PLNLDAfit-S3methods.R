@@ -7,20 +7,20 @@
 ## Auxiliary functions to check the given class of an objet
 isPLNLDAfit <- function(Robject) {inherits(Robject, "PLNLDAfit"       )}
 
-#' LDA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object
+#' LDA visualization (individual and/or variable factor map(s)) for a [`PLNPCAfit`] object
 #'
 #' @name plot.PLNLDAfit
 #'
 #' @param x an R6 object with class PLNPCAfit
-#' @param map the type of output for the PCA vizualization: either "individual", "variable" or "both". Default is "both".
+#' @param map the type of output for the PCA visualization: either "individual", "variable" or "both". Default is "both".
 #' @param nb_axes scalar: the number of axes to be considered when map = "both". The default is min(3,rank).
 #' @param axes numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))
 #' @param var_cols a character or factor to define the color associated with the variables. By default, all variables receive the default color of the current palette.
-#' @param plot logical. Should the plot be displayed or sent back as ggplot object
+#' @param plot logical. Should the plot be displayed or sent back as [`ggplot2`] object
 #' @param main character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.
 #' @param ... Not used (S3 compatibility).
 #'
-#' @return displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a ggplot2 or gtable object
+#' @return displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a [`ggplot2`] or gtable object
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
@@ -64,12 +64,12 @@ plot.PLNLDAfit <-
 #'
 #' @name predict.PLNLDAfit
 #'
-#' @param object an R6 object with class PLNLDAfit
+#' @param object an R6 object with class [`PLNLDAfit`]
 #' @param newdata A data frame in which to look for variables, offsets and counts  with which to predict.
 #' @param type The type of prediction required. The default are posterior probabilities for each group (in either unnormalized log-scale or natural probabilities, see "scale" for details), "response" is the group with maximal posterior probability and "scores" is the average score along each separation axis in the latent space, with weights equal to the posterior probabilities.
 #' @param scale The scale used for the posterior probability. Either log-scale ("log", default) or natural probabilities summing up to 1 ("prob").
 #' @param prior User-specified prior group probabilities in the new data. If NULL (default), prior probabilities are computed from the learning set.
-#' @param control a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.
+#' @param control a list for controlling the optimization. See [PLN()] for details.
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of posterior probabilities for each group (if type = "posterior"), a matrix of (average) scores in the latent space (if type = "scores") or a vector of predicted groups (if type = "response").
 #' @export
@@ -94,9 +94,9 @@ predict.PLNLDAfit <- function(object, newdata,
   object$predict(newdata, type, scale, prior, control, parent.frame())
 }
 
-#' Extracts model coefficients from objects returned by \code{\link[=PLNLDA]{PLNLDA}}
+#' Extracts model coefficients from objects returned by [PLNLDA()]
 #'
-#' @description The method for objects returned by \code{\link[=PLNLDA]{PLNLDA}} only returns
+#' @description The method for objects returned by [PLNLDA()] only returns
 #'              coefficients associated to the \deqn{\Theta} part of the model (see the PLNLDA vignette
 #'              for mathematical details).
 #'

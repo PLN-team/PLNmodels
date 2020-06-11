@@ -12,7 +12,7 @@ fisher(object, type)
 \arguments{
 \item{object}{an R6 object with class PLNfit}
 
-\item{type}{Either `wald` (default) or `louis`. Approxomation scheme used to compute the Fisher information matrix}
+\item{type}{Either \code{wald} (default) or \code{louis}. Approximation scheme used to compute the Fisher information matrix}
 }
 \value{
 A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming

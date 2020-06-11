@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNnetworkfit-S3methods.R
 \name{plot.PLNnetworkfit}
 \alias{plot.PLNnetworkfit}
-\title{Extract and plot the network (aprtial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object}
+\title{Extract and plot the network (partial correlation, support or inverse covariance) from a \code{\link{PLNnetworkfit}} object}
 \usage{
 \method{plot}{PLNnetworkfit}(
   x,
@@ -17,17 +17,17 @@
 )
 }
 \arguments{
-\item{x}{an R6 object with class PLNnetworkfit}
+\item{x}{an R6 object with class \code{\link{PLNnetworkfit}}}
 
-\item{type}{character. Value of the weigth of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is \code{"partial_cor"}.}
+\item{type}{character. Value of the weight of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is \code{"partial_cor"}.}
 
-\item{output}{the type of output used: either 'igraph' or 'corrplot'. Default is 'igraph'.}
+\item{output}{the type of output used: either 'igraph' or 'corrplot'. Default is \code{'igraph'}.}
 
-\item{edge.color}{2D numeric. Color for positive/negative edges. Default is c("#F8766D", "#00BFC4"). Only relevant for igraph output.}
+\item{edge.color}{Length 2 color vector. Color for positive/negative edges. Default is \code{c("#F8766D", "#00BFC4")}. Only relevant for igraph output.}
 
 \item{remove.isolated}{if \code{TRUE}, isolated node are remove before plotting. Only relevant for igraph output.}
 
-\item{node.labels}{vector of character. The labels of the nodes. The Default will use the column names ot the response matrix.}
+\item{node.labels}{vector of character. The labels of the nodes. The default will use the column names ot the response matrix.}
 
 \item{layout}{an optional igraph layout. Only relevant for igraph output.}
 
@@ -36,10 +36,10 @@
 \item{...}{Not used (S3 compatibility).}
 }
 \value{
-Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionaly displays a graph (via igraph or corrplot for large ones)
+Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionally displays a graph (via igraph or corrplot for large ones)
 }
 \description{
-Extract and plot the network (aprtial correlation, support or inverse covariance) from a \code{PLNnetworkfit} object
+Extract and plot the network (partial correlation, support or inverse covariance) from a \code{\link{PLNnetworkfit}} object
 }
 \examples{
 data(trichoptera)

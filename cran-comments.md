@@ -1,41 +1,43 @@
 
-## Minor changes to answer CRAN maintainer request
+## Intermediate release with various updates
 
-Hoping for WARN suppression on solaris and os build, we
-
-* removed any use of rmarkdown::paged_table() in the vignettes
-* added screenshot.force = FALSE, in knitr options in the vignettes
+* refactor code to benefit from Roxygen 7.0.0 R6-related new features for documentation
+* used spell_check to check spelling, found many typos
+* updated optimization routines
+* fix bugs, some simplification in C++ code
+* add a couple of features
 
 ## Tested environments
 
-all status OK
+- macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
+- macOS Catalina 10.15, R-release (github action)
+- macOS Catalina 10.15, R-devel (github action)
+- Linux ubuntu 16.04, R-release (github-action)
+- Linux ubuntu 18.04 R-release, (local)
+- Debian Linux, R-devel, GCC (on R hub),
+- Windows Server 2019, R-release (github action)
+- Windows Server 2008 R2 SP1, R-release  (on R hub)
 
-- local ubuntu 18.04 install, R 3.6.2
-- ubuntu 16.04 (on travis-ci), R 3.6.2
-- ubuntu 16.04 (on travis-ci), R devel
-- Mac OS X (on travis-ci), R 3.6.2
-- Mac OS X (on travis-ci), R devel
-- Debian Linux, R-devel, GCC (on R hub), R 3.6.2
-- Debian Linux, R-devel, GCC (on R hub), R devel
-- windows (on appveyor), R 3.6.2
-- win-builder, R 3.6.2
-- win-builder, R devel
-- win-builder, R-devel ATC (alternative toolchain)
-- win-builder, R old release
+all status OK except for one note:
 
+* checking installed package size ... NOTE
+  installed size is  5.1Mb
+  sub-directories of 1Mb or more:
+    doc    1.6Mb
+    libs   2.6Mb
 
 ## R CMD check results
 
 On my computer I get (Ubuntu 18.04, Intel Xeon 3.5 GHz; 32 Go mem)
 
-── R CMD check results ──────────────────────────────────── PLNmodels 0.9.5 ────
-Duration: 3m 44.1s
+── R CMD check results ─────────────────────────────────── PLNmodels 0.10.4 ────
+Duration: 2m 53.1s
 
 > checking installed package size ... NOTE
-    installed size is 10.9Mb
+    installed size is 10.7Mb
     sub-directories of 1Mb or more:
       doc    1.6Mb
-      libs   8.4Mb
+      libs   8.1Mb
 
 0 errors ✓ | 0 warnings ✓ | 1 note x
 

@@ -13,18 +13,18 @@ stability_selection(
 )
 }
 \arguments{
-\item{Robject}{an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}}
+\item{Robject}{an object with class \code{\link{PLNnetworkfamily}}, i.e. an output from \code{\link[=PLNnetwork]{PLNnetwork()}}}
 
-\item{subsamples}{a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommandations.}
+\item{subsamples}{a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.}
 
-\item{control}{a list controling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork}} for details.}
+\item{control}{a list controlling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork()}} for details.}
 
 \item{mc.cores}{the number of cores to used. Default is 1.}
 
 \item{force}{force computation of the stability path, even if a previous one has been detected.}
 }
 \value{
-the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields stability_path of the initial Robject with class PLNnetworkfamily
+the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields \code{stability_path} of the initial Robject with class \code{\link{PLNnetworkfamily}}
 }
 \description{
 This function computes the StARS stability criteria over a path of penalties. If a path has already been computed, the functions stops with a message unless \code{force = TRUE} has been specified.
