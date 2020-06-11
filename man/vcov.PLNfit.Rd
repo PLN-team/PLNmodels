@@ -2,12 +2,12 @@
 % Please edit documentation in R/PLNfit-S3methods.R
 \name{vcov.PLNfit}
 \alias{vcov.PLNfit}
-\title{Calculate Variance-Covariance Matrix for a fitted \code{\link[=PLN]{PLN}} model object}
+\title{Calculate Variance-Covariance Matrix for a fitted \code{\link[=PLN]{PLN()}} model object}
 \usage{
 \method{vcov}{PLNfit}(object, type = c("main", "covariance"), ...)
 }
 \arguments{
-\item{object}{an R6 object with class PLNfit}
+\item{object}{an R6 object with class \code{\link{PLNfit}}}
 
 \item{type}{type of parameter that should be extracted. Either "main" (default) for \deqn{\Theta} or "covariance" for \deqn{\Sigma}}
 
@@ -18,7 +18,7 @@ A matrix of variance/covariance extracted from the PLNfit model. If type="main" 
 .
 }
 \description{
-Returns the variance-covariance matrix of the main parameters of a fitted \code{\link[=PLN]{PLN}} model object. The main parameters of the model correspond to \deqn{\Theta}, as returned by \code{\link[=coef.PLNfit]{coef}}. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via \code{\link[=sigma.PLNfit]{sigma}}
+Returns the variance-covariance matrix of the main parameters of a fitted \code{\link[=PLN]{PLN()}} model object. The main parameters of the model correspond to \deqn{\Theta}, as returned by \code{\link[=coef.PLNfit]{coef.PLNfit()}}. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via \code{\link[=sigma.PLNfit]{sigma.PLNfit()}}
 }
 \examples{
 data(trichoptera)
@@ -28,5 +28,5 @@ vcov(myPLN) ## variance-covariance of Theta
 vcov(myPLN, type = "covariance") ## Sigma
 }
 \seealso{
-\code{\link[=sigma.PLNfit]{sigma}}, \code{\link[=coef.PLNfit]{coef}}, \code{\link[=standard_error.PLNfit]{standard_error}}
+\code{\link[=sigma.PLNfit]{sigma.PLNfit()}}, \code{\link[=coef.PLNfit]{coef.PLNfit()}}, \code{\link[=standard_error.PLNfit]{standard_error.PLNfit()}}
 }
