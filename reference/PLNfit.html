@@ -300,7 +300,7 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 <dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
 
-<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
 <dt><code>model</code></dt><dd><p>model used for fitting, extracted from the formula in the upper-level call</p></dd>
 
@@ -322,7 +322,7 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 <dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
 
-<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
 <dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
 
@@ -340,7 +340,7 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 <dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
 
-<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
 <dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
 
@@ -365,7 +365,7 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 <dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
 
-<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
 <dt><code>nullModel</code></dt><dd><p>null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.</p></dd>
 
@@ -411,7 +411,7 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 <dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
 
-<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
 <dt><code>type</code></dt><dd><p>approximation scheme to compute the fisher information matrix. Either <code>wald</code> (default) or <code>louis</code>. <code>type = "louis"</code> results in smaller confidence intervals.</p></dd>
 

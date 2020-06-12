@@ -243,7 +243,7 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 
 <dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
-<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
 <dt><code>model</code></dt><dd><p>model used for fitting, extracted from the formula in the upper-level call</p></dd>
 
@@ -306,7 +306,7 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 
 <dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
-<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
 <dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
 
@@ -335,7 +335,7 @@ after optimization</p><h3>Usage</h3>
 
 <dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
-<dt><code>weights</code></dt><dd><p>an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.</p></dd>
+<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
 <dt><code>nullModel</code></dt><dd><p>null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.</p></dd>
 

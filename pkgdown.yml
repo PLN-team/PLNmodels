@@ -1,6 +1,6 @@
 pandoc: 2.7.3
 pkgdown: 1.5.1.9000
-pkgdown_sha: ee70a69b5de661b82b6dd086f4e97b2d3d7fd4ab
+pkgdown_sha: e3235d58b2c539f6aa34a0be88363c6998c9d5ca
 articles:
   Import_data: Import_data.html
   PLN: PLN.html
@@ -8,5 +8,5 @@ articles:
   PLNPCA: PLNPCA.html
   PLNnetwork: PLNnetwork.html
   Trichoptera: Trichoptera.html
-last_built: 2020-06-11T14:39Z
+last_built: 2020-06-12T05:32Z
 
