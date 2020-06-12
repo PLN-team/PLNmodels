@@ -63,13 +63,13 @@ and graph density}
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher">}\href{../../PLNmodels/html/PLNfit.html#method-compute_fisher}{\code{PLNmodels::PLNfit$compute_fisher()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="latent_pos">}\href{../../PLNmodels/html/PLNfit.html#method-latent_pos}{\code{PLNmodels::PLNfit$latent_pos()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict">}\href{../../PLNmodels/html/PLNfit.html#method-predict}{\code{PLNmodels::PLNfit$predict()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2">}\href{../../PLNmodels/html/PLNfit.html#method-set_R2}{\code{PLNmodels::PLNfit$set_R2()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -102,7 +102,7 @@ Initialize a \code{\link{PLNnetworkfit}} object
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
 
@@ -180,7 +180,7 @@ Call to the C++ optimizer and update of the relevant fields
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{control}}{a list for controlling the optimization of the PLN model used at initialization. See \code{\link[=PLNnetwork]{PLNnetwork()}} for details.}
 }
@@ -205,7 +205,7 @@ Compute PCA scores in the latent space and update corresponding fields.
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }

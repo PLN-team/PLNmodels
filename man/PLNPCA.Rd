@@ -21,7 +21,7 @@ PLNPCA(
 
 \item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
 
-\item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{weights}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{ranks}{a vector of integer containing the successive ranks (or number of axes to be considered)}
 

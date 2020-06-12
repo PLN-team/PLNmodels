@@ -21,7 +21,7 @@ PLNnetwork(
 
 \item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
 
-\item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{weights}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{penalties}{an optional vector of positive real number controlling the level of sparsity of the underlying network. if NULL (the default), will be set internally}
 
