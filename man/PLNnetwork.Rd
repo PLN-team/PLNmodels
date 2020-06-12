@@ -23,11 +23,11 @@ PLNnetwork(
 
 \item{weights}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{penalties}{an optional vector of positive real number controlling the level of sparsity of the underlying network. if NULL (the default), will be set internally}
+\item{penalties}{an optional vector of positive real number controlling the level of sparsity of the underlying network. if NULL (the default), will be set internally. See \code{control_init} and \code{control_main} options for additional tuning of the penalty.}
 
-\item{control_init}{a list for controlling the optimization of the PLN model used at initialization. See details.}
+\item{control_init}{a list for controlling the optimization of the PLN model used at initialization, and how the vector of \code{penalties} is generated. See details.}
 
-\item{control_main}{a list for controlling the main optimization process. See details.}
+\item{control_main}{a list for controlling the main optimization process. Can be used to specify adaptive penalty weights. See details.}
 }
 \value{
 an R6 object with class \code{\link{PLNnetworkfamily}}, which contains
