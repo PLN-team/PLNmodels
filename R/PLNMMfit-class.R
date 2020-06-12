@@ -20,6 +20,13 @@
 #' @seealso The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfamily]{PLNMMfamily}}
 PLNMMfit <-
   R6Class(classname = "PLNMMfit",
+    private = list(
+      comp       = NA, # list of mixture components (PLNfit)
+      tau        = NA, # posterior probabilities of cluster belonging
+      R2         = NA, # approximated goodness of fit criterion
+      J          = NA, # approximated loglikelihood
+      monitoring = NA  # a list with optimization monitoring quantities
+    ),
     public  = list(
       initialize = function(inception, tau, J=NA, monitoring=NA, R2=NA) {
         private$tau  <- tau
@@ -37,6 +44,7 @@ PLNMMfit <-
         if (!anyNA(R2))         private$R2     <- R2
         if (!anyNA(monitoring)) private$monitoring <- monitoring
       },
+      ## multi core ???
       optimize = function(responses, covariates, offsets, tau, opts) {
         for (k_ in seq.int(self$k)) {
           self$components[[k_]]$optimize(responses, covariates, offsets, tau[, k_], opts)
@@ -63,28 +71,22 @@ PLNMMfit <-
       },
       print = function() self$show()
     ),
-    private = list(
-      comp       = NA, # list of mixture components
-      tau        = NA, # posterior probabilities of calss belonging
-      R2         = NA, # approximated goodness of fit criterion
-      J          = NA, # approximated loglikelihood
-      monitoring = NA  # a list with optimization monitoring quantities
-    ),
     active = list(
       n = function() {nrow(private$tau)},
       k = function() {ncol(private$tau)},
-      components = function() {private$comp},
+      components    = function() {private$comp},
       posteriorProb = function() {private$tau},
-      memberships = function(value) {apply(private$tau, 1, which.max)},
-      mixtureParam = function() {colMeans(private$tau)},
-      optim_par = function() {private$monitoring},
-      nb_param  = function() {self$k + sum(sapply(self$components, function(model) model$nb_param))},
-      entropy   = function() {sum(self$mixtureParam * sapply(self$components, function(model) model$entropy))},
-      loglik    = function() {private$J},
-      BIC       = function() {self$loglik - .5 * log(self$n) * self$nb_param},
-      ICL       = function() {self$BIC - self$entropy},
-      R_squared = function() {sum(self$mixtureParam * sapply(self$components, function(model) model$R_squared))},
-      criteria  = function() {c(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
+      memberships   = function(value) {apply(private$tau, 1, which.max)},
+      mixtureParam  = function() {colMeans(private$tau)},
+      optim_par     = function() {private$monitoring},
+      nb_param      = function() {(self$k-1) + sum(sapply(self$components, function(model) model$nb_param))},
+      ## probably wrong
+      entropy       = function() {sum(self$mixtureParam * sapply(self$components, function(model) model$entropy))},
+      loglik        = function() {private$J},
+      BIC           = function() {self$loglik - .5 * log(self$n) * self$nb_param},
+      ICL           = function() {self$BIC - self$entropy},
+      R_squared     = function() {sum(self$mixtureParam * sapply(self$components, function(model) model$R_squared))},
+      criteria      = function() {c(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
 )
 

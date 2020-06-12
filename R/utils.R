@@ -153,7 +153,7 @@ PLN_param <- function(control, n, p, d) {
 ## should be ready to pass to nlopt optimizer
 PLNMM_param <- function(control, n, p, d) {
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
-  covariance  <- ifelse(is.null(control$covariance) , "diagonal", control$covariance)
+  covariance  <- ifelse(is.null(control$covariance) , "spherical", control$covariance)
   covariance  <- ifelse(is.null(control$inception), covariance  , control$inception$model)
   ctrl <- list(
     "ftol_out"    = 1e-5,
@@ -167,6 +167,7 @@ PLNMM_param <- function(control, n, p, d) {
     "xtol_abs"    = rep(xtol_abs, p*d + n*p + ifelse(covariance == "spherical", n, n*p)),
     "trace"       = 1,
     "covariance"  = covariance,
+    "cores"       = 1       ,
     "inception"   = NULL
   )
   ctrl[names(control)] <- control

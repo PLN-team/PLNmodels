@@ -38,19 +38,20 @@ PLNMMfamily <-
         super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
         private$params <- clusters
 
-        if (control$trace > 0) cat("\n Perform GMM on the inceptive model for initializing...")
+        if (control$trace > 0) cat("\n Perform GMM on the latent layer of the inceptive model...")
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), model, xlevels, control)
         myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
-
-        data0 <- myPLN$var_par$M + tcrossprod(covariates, myPLN$model_par$Theta)
-        initMclust <- mclust::hc(data0, "EII")
-
+        modelName <- switch(control$covariance,
+                              "spherical" = "VII",
+                              "diagonal"  = "VVI",
+                              "full"      = "VVV")
+        initMclust <- mclust::hc(myPLN$latent, modelName)
         ## instantiate as many PLNMMfit as choices for the number of components
         self$models <- lapply(clusters, function(k) {
           mclust_out <- mclust::Mclust(
-            data           = data0,
+            data           = myPLN$latent,
             G              = k,
-            modelNames     = "EII",
+            modelNames     = modelName,
             initialization = list(hcPairs = initMclust),
             verbose        = FALSE)
           ## each PLNMMfit will itself instantiate as many PLNmodels
@@ -61,18 +62,9 @@ PLNMMfamily <-
       optimize = function(control) {
         ## ===========================================
         ## GO ALONG THE NUMBER OF CLUSTER (i.e the models)
-        for (m in seq_along(self$models))  {
+        for (model in self$models)  {
           ## k is the total number of cluster
-          k <- self$models[[m]]$k
-
-          ## ===========================================
-          ## INITIALISATION
-          tau <- self$models[[m]]$posteriorProb
-          loglikObs_component <- sapply(self$models[[m]]$components, function(model) model$loglik_vec)
-          objective    <- numeric(control$maxit_out)
-          objective[1] <- -sum(tau * loglikObs_component) + sum(.xlogx(tau )) - sum(tau * log(self$models[[m]]$mixtureParam))
-          convergence <- numeric(control$maxit_out)
-
+          k <- model$k
           if (control$trace == 1) {
             cat("\tnumber of cluster =", k, "\r")
             flush.console()
@@ -82,35 +74,46 @@ PLNMMfamily <-
           }
 
           ## ===========================================
+          ## INITIALISATION
+          tau  <- model$posteriorProb
+          prop <- colMeans(tau)
+          J_ic <- sapply(model$components, function(comp) comp$loglik_vec)
+          objective_old <- -sum(tau * J_ic) + sum(.xlogx(tau )) - private$n * sum(.xlogx(prop))
+
+          ## ===========================================
           ## OPTIMISATION
           cond <- FALSE; iter <- 0
+          objective   <- numeric(control$maxit_out)
+          convergence <- numeric(control$maxit_out)
           while (!cond) {
             iter <- iter + 1
             if (control$trace > 1) cat("", iter)
 
             ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNMM
-            self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, tau, control)
-            loglikObs_component <- sapply(self$models[[m]]$components, function(model) model$loglik_vec)
+            model$optimize(self$responses, self$covariates, self$offsets, tau, control)
+            J_ic <- sapply(model$components, function(comp) comp$loglik_vec)
 
             ## UPDATE THE POSTERIOR PROBABILITIES
             if (k > 1) { # only needed when at least 2 components!
-              tau <- t(apply(sweep(loglikObs_component, 2, colMeans(tau), "+"), 1, .softmax))
+              tau <- t(apply(sweep(J_ic, 2, log(prop), "+"), 1, .softmax))
               tau[tau < .Machine$double.eps] <- .Machine$double.eps
               tau[tau > 1 - .Machine$double.eps] <- 1 - .Machine$double.eps
             }
-            objective[iter + 1] <- -sum(tau * loglikObs_component) + sum(.xlogx(tau)) - sum(tau * log(colMeans(tau)))
-            convergence[iter]   <- abs(objective[iter + 1] - objective[iter])/abs(objective[iter])
+            prop <- colMeans(tau)
+            objective[iter]   <- -sum(tau * J_ic) + sum(.xlogx(tau)) - private$n * sum(prop * log(prop))
+            convergence[iter] <- abs(objective[iter] - objective_old)/abs(objective[iter])
 
             ## Check convergence
             if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+            objective_old <- objective[iter]
           }
 
           ## ===========================================
           ## OUTPUT
           ## formating parameters for output
 
-          self$models[[m]]$update(tau = tau, J = -objective[iter + 1],
-            monitoring = list(objective        = objective[1:(iter + 1)],
+          model$update(tau = tau, J = -objective[iter],
+            monitoring = list(objective        = objective[1:iter],
                               convergence      = convergence[1:iter],
                               outer_iterations = iter))
           if (control$trace > 1) {
@@ -131,7 +134,21 @@ PLNMMfamily <-
         # vlines <- sapply(intersect(criteria, c("BIC", "ICL")), function(crit) self$getBestModel(crit)$k)
         p <- super$plot(criteria, annotate) + xlab("# of clusters") # + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
         p
-      },
+       },
+
+    #'   #' @description Plot objective value of the optimization problem along the penalty path
+    #'   #' @return a [`ggplot`] graph
+    #'   plot_objective = function() {
+    #'     objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
+    #'     changes <- cumsum(unlist(lapply(self$models, function(model) model$optim_par$outer_iterations)))
+    #'     dplot <- data.frame(iteration = 1:length(objective), objective = objective)
+    #'     p <- ggplot(dplot, aes(x = iteration, y = objective)) + geom_line() +
+    #'       geom_vline(xintercept = changes, linetype="dashed", alpha = 0.25) +
+    #'       ggtitle("Objective along the alternate algorithm") + xlab("iteration (+ changes of model)") +
+    #'       annotate("text", x = changes, y = min(dplot$objective), angle = 90, label = paste("penalty=", format(self$criteria$param, digits = 1)), hjust = -.1, size = 3, alpha = 0.7) + theme_bw()
+    #' p
+    #'   },
+
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Extractors   -------------------
       #' @description Extract best model in the collection
