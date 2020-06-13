@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNLDAfit-S3methods.R
 \name{coef.PLNLDAfit}
 \alias{coef.PLNLDAfit}
-\title{Extracts model coefficients from objects returned by \code{\link[=PLNLDA]{PLNLDA}}}
+\title{Extracts model coefficients from objects returned by \code{\link[=PLNLDA]{PLNLDA()}}}
 \usage{
 \method{coef}{PLNLDAfit}(object, ...)
 }
@@ -15,9 +15,9 @@
 Either NULL or a matrix of coefficients extracted from the PLNLDAfit model.
 }
 \description{
-The method for objects returned by \code{\link[=PLNLDA]{PLNLDA}} only returns
-             coefficients associated to the \deqn{\Theta} part of the model (see the PLNLDA vignette
-             for mathematical details).
+The method for objects returned by \code{\link[=PLNLDA]{PLNLDA()}} only returns
+coefficients associated to the \deqn{\Theta} part of the model (see the PLNLDA vignette
+for mathematical details).
 }
 \examples{
 data(trichoptera)

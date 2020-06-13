@@ -4,8 +4,12 @@
 \alias{rPLN}
 \title{PLN RNG}
 \usage{
-rPLN(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
-  depths = rep(10000, n))
+rPLN(
+  n = 10,
+  mu = rep(0, ncol(Sigma)),
+  Sigma = diag(1, 5, 5),
+  depths = rep(10000, n)
+)
 }
 \arguments{
 \item{n}{the sample size}
@@ -14,18 +18,18 @@ rPLN(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
 
 \item{Sigma}{covariance matrix of the latent variable}
 
-\item{depths}{Numeric vector of target depths. The first is recycled if there are not `n` values}
+\item{depths}{Numeric vector of target depths. The first is recycled if there are not \code{n} values}
 }
 \value{
 a n * p count matrix, with row-sums close to depths
 }
 \description{
 Random generation for the PLN model with latent mean equal to mu, latent covariance matrix
-             equal to Sigma and average depths (sum of counts in a sample) equal to depths
+equal to Sigma and average depths (sum of counts in a sample) equal to depths
 }
 \details{
 The default value for mu and Sigma assume equal abundances and no correlation between
-         the different species.
+the different species.
 }
 \examples{
 ## 10 samples of 5 species with equal abundances, no covariance and target depths of 10,000

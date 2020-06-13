@@ -11,7 +11,7 @@ isPLNPCAfamily     <- function(Robject) {inherits(Robject, "PLNPCAfamily"    )}
 #'
 #' @name plot.PLNPCAfamily
 #'
-#' @param x an R6 object with class PLNfamily
+#' @param x an R6 object with class [`PLNfamily`]
 #' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared").
 #' Default is  c("loglik", "BIC", "ICL").
 #' @param annotate logical: should the value of approximated R squared be added to the plot?
@@ -33,14 +33,14 @@ plot.PLNPCAfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), annotate 
   x$plot(criteria, annotate)
 }
 
-#' @describeIn getModel Model extraction for PLNPCAfamily
+#' @describeIn getModel Model extraction for [`PLNPCAfamily`]
 #' @export
 getModel.PLNPCAfamily <- function(Robject, var, index = NULL) {
   stopifnot(isPLNPCAfamily(Robject))
   Robject$getModel(var, index)
 }
 
-#' @describeIn getBestModel Model extraction for PLNPCAfamily
+#' @describeIn getBestModel Model extraction for [`PLNPCAfamily`]
 #' @export
 getBestModel.PLNPCAfamily <- function(Robject, crit = c("ICL", "BIC", "R_squared"), ...) {
   stopifnot(isPLNPCAfamily(Robject))

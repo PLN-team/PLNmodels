@@ -4,11 +4,10 @@
 \alias{plot.PLNPCAfamily}
 \title{Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)}
 \usage{
-\method{plot}{PLNPCAfamily}(x, criteria = c("loglik", "BIC", "ICL"),
-  annotate = TRUE, ...)
+\method{plot}{PLNPCAfamily}(x, criteria = c("loglik", "BIC", "ICL"), annotate = TRUE, ...)
 }
 \arguments{
-\item{x}{an R6 object with class PLNfamily}
+\item{x}{an R6 object with class \code{\link{PLNfamily}}}
 
 \item{criteria}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared").
 Default is  c("loglik", "BIC", "ICL").}

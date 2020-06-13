@@ -4,11 +4,10 @@
 \alias{predict.PLNfit}
 \title{Predict counts of a new sample}
 \usage{
-\method{predict}{PLNfit}(object, newdata, type = c("link", "response"),
-  ...)
+\method{predict}{PLNfit}(object, newdata, type = c("link", "response"), ...)
 }
 \arguments{
-\item{object}{an R6 object with class PLNfit}
+\item{object}{an R6 object with class \code{\link{PLNfit}}}
 
 \item{newdata}{A data frame in which to look for variables and offsets with which to predict}
 
@@ -17,7 +16,7 @@
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
 \value{
-A matrix of predicted log-counts (if type = "link") or predicted counts (if type = "response").
+A matrix of predicted log-counts (if \code{type = "link"}) or predicted counts (if \code{type = "response"}).
 }
 \description{
 Predict counts of a new sample

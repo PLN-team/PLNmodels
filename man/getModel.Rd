@@ -14,23 +14,23 @@ getModel(Robject, var, index)
 \method{getModel}{PLNnetworkfamily}(Robject, var, index = NULL)
 }
 \arguments{
-\item{Robject}{an R6 object with class PLNPCAfamily or PLNnetworkfamily}
+\item{Robject}{an R6 object with class \code{\link{PLNPCAfamily}} or \code{\link{PLNnetworkfamily}}}
 
-\item{var}{value of the parameter (rank for PLNPCA, sparisty for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
+\item{var}{value of the parameter (\code{rank} for PLNPCA, \code{sparsity} for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
 
 \item{index}{Integer index of the model to be returned. Only the first value is taken into account.}
 }
 \value{
-Sends back an object with class \code{\link[=PLNPCAfit]{PLNPCAfit}} or \code{\link[=PLNPCAfit]{PLNnetworkfit}}.
+Sends back an object with class \code{\link{PLNPCAfit}} or \code{\link{PLNnetworkfit}}.
 }
 \description{
 Model extraction from a collection of models
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{PLNPCAfamily}: Model extraction for PLNPCAfamily
+\item \code{PLNPCAfamily}: Model extraction for \code{\link{PLNPCAfamily}}
 
-\item \code{PLNnetworkfamily}: Model extraction for PLNnetworkfamily
+\item \code{PLNnetworkfamily}: Model extraction for \code{\link{PLNnetworkfamily}}
 }}
 
 \examples{

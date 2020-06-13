@@ -19,47 +19,47 @@ test_that("PLN: Check consistency of initialization - fully parametrized covaria
   tol <- 1e-4
 
   ## use default initialization (LM)
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0, ftol_out = 1e-6))
 
   ## initialization with the previous fit
-  model2 <- PLN(Abundance ~ 1, data = trichoptera, control = list(inception = model1, trace = 0))
+  model2 <- PLN(Abundance ~ 1, data = trichoptera, control = list(inception = model1, trace = 0, ftol_out = 1e-6))
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
   expect_equal(model2$model_par, model1$model_par, tolerance = tol)
   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
 })
 
-# test_that("PLN: Check consistency of initialization - diagonal covariance",  {
-#   tol <- 1e-4
-#
-#   ## use default initialization (LM)
-#   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0, covariance = "diagonal"))
-#
-#   ## initialization with the previous fit
-#   model2 <- PLN(Abundance ~ 1, data = trichoptera, control = list(inception = model1, trace = 0, covariance = "diagonal"))
-#
-#   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
-#   expect_equal(model2$model_par, model1$model_par, tolerance = tol)
-#   expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
-# })
-#
-# test_that("PLN: Check consistency of observation weights - fully parameterized covariance",  {
-#   tol <- 1e-2
-#
-#   ## no weights
-#   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
-#
-#   ## equivalent weigths
-#   expect_output(model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(trace = 1)),
-#                 paste("\n Initialization...",
-#                       "Adjusting a PLN model with full covariance model (with observation weigths)",
-#                       "Post-treatments...",
-#                       "DONE!", sep = "\n "), fixed = TRUE)
-#
-#   expect_equal(model2$loglik, model1$loglik, tolerance = tol)
-#
-#
-# })
+test_that("PLN: Check consistency of initialization - diagonal covariance",  {
+  tol <- 1e-2
+
+  ## use default initialization (GLM)
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0, covariance = "diagonal"))
+
+  ## initialization with the previous fit
+  model2 <- PLN(Abundance ~ 1, data = trichoptera, control = list(inception = model1, trace = 0, covariance = "diagonal"))
+
+  expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
+  expect_equal(model2$model_par, model1$model_par, tolerance = tol)
+  expect_equal(model2$var_par  , model1$var_par  , tolerance = tol)
+})
+
+test_that("PLN: Check consistency of observation weights - fully parameterized covariance",  {
+  tol <- 1e-2
+
+  ## no weights
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
+
+  ## equivalent weigths
+  expect_output(model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(trace = 1)),
+                paste("\n Initialization...",
+                      "Adjusting a PLN model with full covariance model",
+                      "Post-treatments...",
+                      "DONE!", sep = "\n "), fixed = TRUE)
+
+  expect_equal(model2$loglik, model1$loglik, tolerance = tol)
+
+
+})
 
 test_that("PLN: Check consistency of observation weights - diagonal covariance",  {
   tol <- 1e-2

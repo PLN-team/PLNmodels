@@ -53,7 +53,6 @@ nlopt_opt initNLOPT(int n_param, Rcpp::List options) {
   nlopt_opt opt = nlopt_create(algo, n_param);
 
   stdvec xtol_abs    = Rcpp::as<stdvec>(options["xtol_abs"   ]) ;
-  stdvec lower_bound = Rcpp::as<stdvec>(options["lower_bound"]) ;
 
   nlopt_set_xtol_rel    (opt, Rcpp::as<double>(options["xtol_rel"]));
   nlopt_set_ftol_abs    (opt, Rcpp::as<double>(options["ftol_abs"]));
@@ -61,7 +60,6 @@ nlopt_opt initNLOPT(int n_param, Rcpp::List options) {
   nlopt_set_maxeval     (opt, Rcpp::as<int>   (options["maxeval" ]));
   nlopt_set_maxtime     (opt, Rcpp::as<double>(options["maxtime" ]));
   nlopt_set_xtol_abs    (opt, &xtol_abs[0]   );
-  nlopt_set_lower_bounds(opt, &lower_bound[0]) ;
 
   return opt;
 }

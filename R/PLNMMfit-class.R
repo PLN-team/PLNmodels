@@ -6,22 +6,27 @@
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for ...
 #'
-#' @field cluster the number of clusters of the current model
-#' @field components a list with cluster component element, each of whom is a \code{PLNfit}.
-#' @field model_par a list with the matrices associated with the final estimated parameters of the mixture model: Theta (covariates), Sigma (latent covariance), mu (vector of means/centers) and pi (vector of cluster proportions)
-#' @field posteriorProbabilities matrix of posterior probabilities of class belonging
-#' @field mixtureParam vector of cluster proportions
-#' @field loglik variational lower bound of the loglikelihood
-#' @field BIC variational lower bound of the BIC
-#' @field ICL variational lower bound of the ICL
-#' @field R_squared approximated goodness-of-fit criterion
-#' @field criteria a vector with loglik, BIC, ICL, R_squared and degrees of freedom
-#' @field degrees_freedom number of parameters in the current model
+#' @param cluster the number of clusters of the current model
+#' @param components a list with cluster component element, each of whom is a \code{PLNfit}.
+#' @param model_par a list with the matrices associated with the final estimated parameters of the mixture model: Theta (covariates), Sigma (latent covariance), mu (vector of means/centers) and pi (vector of cluster proportions)
+#' @param posteriorProbabilities matrix of posterior probabilities of class belonging
+#' @param mixtureParam vector of cluster proportions
+#' @param loglik variational lower bound of the loglikelihood
+#' @param BIC variational lower bound of the BIC
+#' @param ICL variational lower bound of the ICL
+#' @param R_squared approximated goodness-of-fit criterion
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #' @seealso The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfamily]{PLNMMfamily}}
 PLNMMfit <-
   R6Class(classname = "PLNMMfit",
+    private = list(
+      comp       = NA, # list of mixture components (PLNfit)
+      tau        = NA, # posterior probabilities of cluster belonging
+      R2         = NA, # approximated goodness of fit criterion
+      J          = NA, # approximated loglikelihood
+      monitoring = NA  # a list with optimization monitoring quantities
+    ),
     public  = list(
       initialize = function(inception, tau, J=NA, monitoring=NA, R2=NA) {
         private$tau  <- tau
@@ -38,40 +43,52 @@ PLNMMfit <-
         if (!anyNA(J))          private$J      <- J
         if (!anyNA(R2))         private$R2     <- R2
         if (!anyNA(monitoring)) private$monitoring <- monitoring
-      }
-    ),
-    private = list(
-      comp       = NA, # list of mixture components
-      tau        = NA, # posterior probabilities of calss belonging
-      R2         = NA, # approximated goodness of fit criterion
-      J          = NA, # approximated loglikelihood
-      monitoring = NA  # a list with optimization monitoring quantities
+      },
+      ## multi core ???
+      optimize = function(responses, covariates, offsets, tau, opts) {
+        for (k_ in seq.int(self$k)) {
+          self$components[[k_]]$optimize(responses, covariates, offsets, tau[, k_], opts)
+        }
+      },
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      ## Post treatment --------------------
+      #' @description Update fields after optimization
+      postTreatment = function(responses, covariates, offsets, weights, nullModel) {
+        for (comp in self$components)
+          comp$postTreatment(
+            responses,
+            covariates,
+            offsets,
+            weights,
+            nullModel = nullModel
+          )
+      },
+      show = function() {
+        cat("Poisson Lognormal mixture model with",self$k,"components.\n")
+        cat("* check fields $posteriorProb, $memberships, $mixtureParam and $components\n")
+        cat("* each $component[[i]] is a PLNfit \n")
+        cat("* average R2 is,",self$R_squared,"\n")
+      },
+      print = function() self$show()
     ),
     active = list(
       n = function() {nrow(private$tau)},
       k = function() {ncol(private$tau)},
-      components = function() {private$comp},
+      components    = function() {private$comp},
       posteriorProb = function() {private$tau},
-      memberships = function(value) {apply(private$tau, 1, which.max)},
-      mixtureParam = function() {colMeans(private$tau)},
-      optim_par = function() {private$monitoring},
-      degrees_freedom = function() {self$k + sum(sapply(self$components, function(model) model$degrees_freedom))},
-      loglik    = function() {private$J},
-      BIC       = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
-      ## ICL is wrong in this context
-      ICL       = function() {self$loglik - .5 * log(self$n) * self$degrees_freedom},
-      R_squared = function() {private$R2},
-      criteria  = function() {c(degrees_freedom = self$degrees_freedom, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
+      memberships   = function(value) {apply(private$tau, 1, which.max)},
+      mixtureParam  = function() {colMeans(private$tau)},
+      optim_par     = function() {private$monitoring},
+      nb_param      = function() {(self$k-1) + sum(sapply(self$components, function(model) model$nb_param))},
+      ## probably wrong
+      entropy       = function() {sum(self$mixtureParam * sapply(self$components, function(model) model$entropy))},
+      loglik        = function() {private$J},
+      BIC           = function() {self$loglik - .5 * log(self$n) * self$nb_param},
+      ICL           = function() {self$BIC - self$entropy},
+      R_squared     = function() {sum(self$mixtureParam * sapply(self$components, function(model) model$R_squared))},
+      criteria      = function() {c(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
     )
 )
-
-PLNMMfit$set("public", "optimize",
-function(responses, covariates, offsets, tau, opts) {
-  browser()
-  for (k_ in seq.int(self$k)) {
-    self$components[[k_]]$optimize(responses, covariates, offsets, tau[, k_], opts)
-  }
-})
 
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
@@ -93,13 +110,4 @@ function(responses, covariates, offsets, tau, opts) {
 ## ----------------------------------------------------------------------
 ## PUBLIC METHODS FOR THE USERS
 ## ----------------------------------------------------------------------
-
-PLNMMfit$set("public", "show",
-function() {
-  super$show(paste0("Poisson Lognormal mxiture model with ",self$k," components.\n"))
-  cat("* Additional fields for PLNMM\n")
-  cat("    coming... \n")
-  cat("* Additional methods for PLNMM\n")
-  cat("    coming... \n")
-})
 

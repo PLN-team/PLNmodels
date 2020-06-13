@@ -4,12 +4,18 @@
 \alias{predict.PLNLDAfit}
 \title{Predict group of new samples}
 \usage{
-\method{predict}{PLNLDAfit}(object, newdata, type = c("posterior",
-  "response", "scores"), scale = c("log", "prob"), prior = NULL,
-  control = list(), ...)
+\method{predict}{PLNLDAfit}(
+  object,
+  newdata,
+  type = c("posterior", "response", "scores"),
+  scale = c("log", "prob"),
+  prior = NULL,
+  control = list(),
+  ...
+)
 }
 \arguments{
-\item{object}{an R6 object with class PLNLDAfit}
+\item{object}{an R6 object with class \code{\link{PLNLDAfit}}}
 
 \item{newdata}{A data frame in which to look for variables, offsets and counts  with which to predict.}
 
@@ -19,7 +25,7 @@
 
 \item{prior}{User-specified prior group probabilities in the new data. If NULL (default), prior probabilities are computed from the learning set.}
 
-\item{control}{a list for controlling the optimization. See \code{\link[=PLN]{PLN}} for details.}
+\item{control}{a list for controlling the optimization. See \code{\link[=PLN]{PLN()}} for details.}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }

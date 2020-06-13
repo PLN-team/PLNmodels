@@ -4,6 +4,7 @@ data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 models <- PLNPCA(Abundance ~ 1, data = trichoptera)
 X <- model.matrix(Abundance ~ 1, data = trichoptera)
+myPLNfit <- getBestModel(models)
 
 test_that("PLNPCA fit: check classes, getters and field access", {
 
@@ -11,8 +12,6 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   n <- nrow(Y); p <- ncol(Y)
   O <- matrix(0, nrow = n, ncol = p)
   w <- rep(1, n)
-
-  myPLNfit <- getBestModel(models)
 
   ## fields and active bindings
   expect_equal(dim(myPLNfit$latent_pos(X, O)), dim(Y))
@@ -24,7 +23,7 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_equal(sum(myPLNfit$loglik_vec), myPLNfit$loglik)
   expect_lt(myPLNfit$BIC, myPLNfit$loglik)
   expect_lt(myPLNfit$ICL, myPLNfit$loglik)
-  expect_lt(myPLNfit$ICL, myPLNfit$BIC)
+#  expect_lt(myPLNfit$ICL, myPLNfit$BIC) ## entropy could be positive
   expect_gt(myPLNfit$R_squared, 0)
   expect_equal(myPLNfit$nb_param, p + p * myPLNfit$rank)
   expect_equal(dim(myPLNfit$rotation), c(p, myPLNfit$rank))
@@ -53,8 +52,7 @@ test_that("PLNPCA fit: check classes, getters and field access", {
 })
 
 test_that("Louis-type Fisher matrices are not available for PLNPCA", {
-  model <- getBestModel(models)
-  expect_error(model$compute_fisher(type = "louis", X = X),
+  expect_error(myPLNfit$compute_fisher(type = "louis", X = X),
                "Louis approximation scheme not available yet for object of class PLNPLCA, use type = \"wald\" instead.")
 })
 
@@ -71,12 +69,10 @@ test_that("plot_PCA works for 4 or more axes:", {
 
 test_that("PLNPCA fit: check print message",  {
 
-  model <- getBestModel(models)
-
   output <- paste(
 "Poisson Lognormal with rank constrained for PCA (rank = 4)
 ==================================================================",
-capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names = ""))),
+capture_output(print(as.data.frame(round(myPLNfit$criteria, digits = 3), row.names = ""))),
 "==================================================================
 * Useful fields
     $model_par, $latent, $var_par, $optim_par
@@ -89,7 +85,7 @@ capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names 
     plot.PLNPCAfit()",
 sep = "\n")
 
-  expect_output(model$show(),
+  expect_output(myPLNfit$show(),
                 output,
                 fixed = TRUE)
 })

@@ -1,6 +1,6 @@
-###########################
-##  INTERNAL FUNCTIONS   ##
-###########################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  INTERNAL FUNCTIONS ---------------------
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Internal function to find the most comprehensive set of common samples between a count table and a covariates data.frame
 common_samples <- function(counts, covariates) {
@@ -52,7 +52,7 @@ common_samples <- function(counts, covariates) {
               default_names    = default_names))
 }
 
-## Internal functions to compute scaling factors from a count table
+## scaling functions --------
 
 ## Sanitize offset to ensure consistency with count matrix
 sanitize_offset <- function(counts, offset, ...) {
@@ -105,7 +105,7 @@ offset_tss <- function(counts) {
   rowSums(counts)
 }
 
-## Geometric Mean Pairwise Ratio (GMPR) normalisation (as presented in doi.org/10.7717/peerj.4600)
+## Geometric Mean Pairwise Ratio (GMPR) normalization (as presented in doi.org/10.7717/peerj.4600)
 offset_gmpr <- function(counts) {
   if (nrow(counts) == 1) stop("GMPR is not defined when there is only one sample.")
   ## median of (non-null, non-infinite) pairwise ratios between counts of samples i and j
@@ -178,9 +178,9 @@ offset_css <- function(counts, reference = median) {
   return(size_factors %>% unname())
 }
 
-###########################
-##  EXPORTED FUNCTIONS   ##
-###########################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+## EXPORTED FUNCTIONS ---------------------
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' @title Prepare data for use in PLN models
 #' @name prepare_data
@@ -190,18 +190,18 @@ offset_css <- function(counts, reference = median) {
 #'
 #' @param counts Required. An abundance count table, preferably with dimensions names and species as columns.
 #' @param covariates Required. A covariates data frame, preferably with row names.
-#' @param offset Optional. Normalisation scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
-#' @param ... Additional parameters passed on to \code{\link[=compute_offset]{compute_offset}}
+#' @param offset Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
+#' @param ... Additional parameters passed on to [compute_offset()]
 #'
 #' @references Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \url{https://doi.org/10.7717/peerj.4600}
 #' @references Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \url{http://dx.doi.org/10.1038/nmeth.2658}
 #' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
 #'
-#' @return A data.frame suited for use in \code{\link[=PLN]{PLN}} and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
+#' @return A data.frame suited for use in [PLN()] and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
 #' @note User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
 #'
 #'
-#' @seealso \code{\link[=compute_offset]{compute_offset}} for details on the different normalisation schemes
+#' @seealso [compute_offset()] for details on the different normalization schemes
 #'
 #' @export
 #'
@@ -230,7 +230,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
     rownames(counts) <- rownames(covariates) <- samples
     if (is.numeric(offset)) rownames(offset) <- samples
   }
-  counts <- counts[samples, ]
+  counts <- counts[samples, , drop = FALSE]
   ## Replace NA with 0s
   if (any(is.na(counts))) {
     counts[is.na(counts)] <- 0
@@ -245,7 +245,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
     samples <- samples[-empty_samples]
     counts <- counts[samples, ,drop = FALSE]
   }
-  covariates <- covariates[samples, ]
+  covariates <- covariates[samples, , drop = FALSE]
   if (is.null(names(covariates))) names(covariates) <- paste0("Variable", seq_along(covariates))
   ## compute offset
   offset     <- compute_offset(counts, offset, ...)
@@ -269,9 +269,9 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' @param ... Additional parameters passed on to specific methods (for now CSS and RLE)
 #' @inherit prepare_data references
 #'
-#' @details RLE has an additional \code{pseudocounts} arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional \code{reference} argument to choose the location function used to compute the reference quantiles (defaults to \code{median} as in the Nature publication but can be set to \code{mean} to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
+#' @details RLE has an additional `pseudocounts` arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional `reference` argument to choose the location function used to compute the reference quantiles (defaults to `median` as in the Nature publication but can be set to `mean` to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
 #'
-#' @return If offset = "none", NULL else a vector of length \code{nrow(counts)} with one offset per sample.
+#' @return If `offset = "none"`, `NULL` else a vector of length `nrow(counts)` with one offset per sample.
 #'
 #' @importFrom stats mad median quantile
 #' @export
@@ -306,80 +306,78 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
   offset_function(counts, ...)
 }
 
-#' Prepare data for use in PLN models from a biom object
-#'
-#' @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "biom" class object
-#' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
-#'
-#' @param biom Required. Either a biom-class object from which the count table and covariates data.frame are extracted or a file name where to read the biom.
-#' @inheritParams prepare_data
-#' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
-#'
-#' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
-#' @export
-#'
-#' @details This functions depends on the biomformat package which is not a proper dependency of PLNmodels as it is not available on CRAN
-#'
-#' @importFrom biomformat read_biom sample_metadata biom_data
-#' @examples
-#' ## Requires the biomformat package
-#' \dontrun{
-#' library(biomformat)
-#' biom_file <- system.file("extdata", "rich_sparse_otu_table.biom", package = "biomformat")
-#' biom <- read_biom(biom_file)
-#' prepare_data_from_biom(biom)
-#' }
-prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
-  if (is.character(biom)) biom <- biomformat::read_biom(biom)
-  sdf <- biomformat::sample_metadata(biom)
-  if (is.null(sdf) || all(is.na(sdf))) {
-    stop(paste("No covariates detected in biom. Consider:",
-               "- extracting count data from biom with biom_data()",
-               "- preparing a covariates data.frame",
-               "- using prepare_data instead of prepare_data_from_biom",
-               sep = "\n"))
-  }
-  prepare_data(counts     = biomformat::biom_data(biom) %>% as("matrix"),
-               covariates = sdf,
-               offset     = offset,
-               ...)
-}
+# Prepare data for use in PLN models from a biom object
+#
+# @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "biom" class object
+# before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
+#
+# @param biom Required. Either a biom-class object from which the count table and covariates data.frame are extracted or a file name where to read the biom.
+# @inheritParams prepare_data
+# @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
+#
+# @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
+# @export
+#
+# @details This functions depends on the biomformat package which is not a proper dependency of PLNmodels as it is not available on CRAN
+#
+# @importFrom biomformat read_biom sample_metadata biom_data
+# @examples
+# ## Requires the biomformat package
+# \dontrun{
+# library(biomformat)
+# biom_file <- system.file("extdata", "rich_sparse_otu_table.biom", package = "biomformat")
+# biom <- read_biom(biom_file)
+# prepare_data_from_biom(biom)
+# }
+# prepare_data_from_biom <- function(biom, offset = "TSS", ...) {
+#   if (is.character(biom)) biom <- biomformat::read_biom(biom)
+#   sdf <- biomformat::sample_metadata(biom)
+#   if (is.null(sdf) || all(is.na(sdf))) {
+#     stop(paste("No covariates detected in biom. Consider:",
+#                "- extracting count data from biom with biom_data()",
+#                "- preparing a covariates data.frame",
+#                "- using prepare_data instead of prepare_data_from_biom",
+#                sep = "\n"))
+#   }
+#   prepare_data(counts     = biomformat::biom_data(biom) %>% as("matrix"),
+#                covariates = sdf,
+#                offset     = offset,
+#                ...)
+# }
 
-#' Prepare data for use in PLN models from a phyloseq object
-#'
-#' @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "phyloseq" class object
-#' before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
-#'
-#' @param physeq Required. A phyloseq class object from which the count table and covariates data.frame are extracted.
-#' @inheritParams prepare_data
-#' @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
-#'
-#' @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
-#' @export
-#'
-#' @details This functions depends on the phyloseq package which is not a proper dependency of PLNmodels as it is not available on CRAN
-#'
-#' @importFrom phyloseq sample_data otu_table
-#' @examples
-#' ## Requires the phyloseq package
-#' \dontrun{
-#' library(phyloseq)
-#' data(enterotypes)
-#' prepare_data_from_phyloseq(enterotypes)
-#' }
-prepare_data_from_phyloseq <- function(physeq, offset = "TSS", ...) {
-  if (!inherits(physeq, "phyloseq")) stop("physeq should be a phyloseq object.")
-  if (is.null(phyloseq::sample_data(physeq, errorIfNULL = FALSE))) {
-    stop(paste("No covariates detected in physeq Consider:",
-               "- extracting count data from biom with as(otu_table(physeq), \"matrix\")",
-               "- preparing a covariates data.frame",
-               "- using prepare_data instead of prepare_data_from_phyloseq",
-               sep = "\n"))
-  }
-  prepare_data(counts     = phyloseq::otu_table(physeq) %>% as("matrix"),
-               covariates = phyloseq::sample_data(physeq) %>% as("data.frame"),
-               offset     = offset,
-               ...)
-}
-
-
+# Prepare data for use in PLN models from a phyloseq object
+#
+# @description Wrapper around \code{\link[=prepare_data]{prepare_data}}, extracts the count table and the covariates data.frame from a "phyloseq" class object
+# before passing them to \code{\link[=prepare_data]{prepare_data}}. See \code{\link[=prepare_data]{prepare_data}} for details.
+#
+# @param physeq Required. A phyloseq class object from which the count table and covariates data.frame are extracted.
+# @inheritParams prepare_data
+# @param ... Addtional arguments passed on to \code{\link[=compute_offset]{compute_offset}}
+#
+# @seealso \code{\link[=compute_offset]{compute_offset}} and \code{\link[=prepare_data]{prepare_data}}
+# @export
+#
+# @details This functions depends on the phyloseq package which is not a proper dependency of PLNmodels as it is not available on CRAN
+#
+# @importFrom phyloseq sample_data otu_table
+# @examples
+# ## Requires the phyloseq package
+# \dontrun{
+# library(phyloseq)
+# data(enterotype)
+# prepare_data_from_phyloseq(enterotype)
+# }
+# prepare_data_from_phyloseq <- function(physeq, offset = "TSS", ...) {
+#   if (!inherits(physeq, "phyloseq")) stop("physeq should be a phyloseq object.")
+#   if (is.null(phyloseq::sample_data(physeq, errorIfNULL = FALSE))) {
+#     stop(paste("No covariates detected in physeq Consider:",
+#                "- extracting count data from biom with as(otu_table(physeq), \"matrix\")",
+#                "- preparing a covariates data.frame",
+#                "- using prepare_data instead of prepare_data_from_phyloseq",
+#                sep = "\n"))
+#   }
+#   prepare_data(counts     = phyloseq::otu_table(physeq) %>% as("matrix"),
+#                covariates = phyloseq::sample_data(physeq) %>% as("data.frame"),
+#                offset     = offset,
+#                ...)
+# }

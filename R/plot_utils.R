@@ -1,6 +1,9 @@
 get_ggplot_ind_map <- function(scores, axes_label, main) {
 
   if (length(axes_label) > 1 ) {
+    if (length(axes_label) >= 3) {
+      message("Three axes or more provided. Using only the first two")
+    }
     p <- ggplot(scores, aes_(x = ~a1, y = ~a2, label = ~names, colour = ~labels)) +
       geom_hline(yintercept = 0, colour = "gray65") +
       geom_vline(xintercept = 0, colour = "gray65") +
@@ -21,6 +24,9 @@ get_ggplot_ind_map <- function(scores, axes_label, main) {
 
 get_ggplot_corr <- function(correlations, axes_label, main) {
   if (length(axes_label) > 1 ) {
+    if (length(axes_label) >= 3) {
+      message("Three axes or more provided. Using only the first two")
+    }
     ## data frame with arrows coordinates
     arrows <- data.frame(x1 = rep(0, nrow(correlations)), y1 = rep(0, nrow(correlations)),
                          x2 = correlations$axe1,  y2 = correlations$axe2,

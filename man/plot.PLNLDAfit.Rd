@@ -2,16 +2,23 @@
 % Please edit documentation in R/PLNLDAfit-S3methods.R
 \name{plot.PLNLDAfit}
 \alias{plot.PLNLDAfit}
-\title{LDA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object}
+\title{LDA visualization (individual and/or variable factor map(s)) for a \code{\link{PLNPCAfit}} object}
 \usage{
-\method{plot}{PLNLDAfit}(x, map = c("both", "individual", "variable"),
-  nb_axes = min(3, x$rank), axes = seq.int(min(2, x$rank)),
-  var_cols = "var_colors", plot = TRUE, main = NULL, ...)
+\method{plot}{PLNLDAfit}(
+  x,
+  map = c("both", "individual", "variable"),
+  nb_axes = min(3, x$rank),
+  axes = seq.int(min(2, x$rank)),
+  var_cols = "var_colors",
+  plot = TRUE,
+  main = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{an R6 object with class PLNPCAfit}
 
-\item{map}{the type of output for the PCA vizualization: either "individual", "variable" or "both". Default is "both".}
+\item{map}{the type of output for the PCA visualization: either "individual", "variable" or "both". Default is "both".}
 
 \item{nb_axes}{scalar: the number of axes to be considered when map = "both". The default is min(3,rank).}
 
@@ -19,17 +26,17 @@
 
 \item{var_cols}{a character or factor to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
 
-\item{plot}{logical. Should the plot be displayed or sent back as ggplot object}
+\item{plot}{logical. Should the plot be displayed or sent back as \code{\link{ggplot2}} object}
 
 \item{main}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
 
 \item{...}{Not used (S3 compatibility).}
 }
 \value{
-displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a ggplot2 or gtable object
+displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a \code{\link{ggplot2}} or gtable object
 }
 \description{
-LDA vizualiation (individual and/or variable factor map(s)) for a \code{PLNPCAfit} object
+LDA visualization (individual and/or variable factor map(s)) for a \code{\link{PLNPCAfit}} object
 }
 \examples{
 data(trichoptera)

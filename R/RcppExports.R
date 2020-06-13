@@ -13,15 +13,23 @@ optim_full <- function(par, Y, X, O, w, options) {
     .Call('_PLNmodels_optim_full', PACKAGE = 'PLNmodels', par, Y, X, O, w, options)
 }
 
-optim_rank <- function(par, Y, X, O, w, options) {
-    .Call('_PLNmodels_optim_rank', PACKAGE = 'PLNmodels', par, Y, X, O, w, options)
+optim_rank <- function(par, Y, X, O, w, q, options) {
+    .Call('_PLNmodels_optim_rank', PACKAGE = 'PLNmodels', par, Y, X, O, w, q, options)
 }
 
-optim_sparse <- function(par, Y, X, O, w, options) {
-    .Call('_PLNmodels_optim_sparse', PACKAGE = 'PLNmodels', par, Y, X, O, w, options)
+optim_sparse <- function(par, Y, X, O, w, Omega, options) {
+    .Call('_PLNmodels_optim_sparse', PACKAGE = 'PLNmodels', par, Y, X, O, w, Omega, options)
 }
 
-optimization_VEstep_PLN <- function(par, Y, X, O, Theta, Sigma, options) {
-    .Call('_PLNmodels_optimization_VEstep_PLN', PACKAGE = 'PLNmodels', par, Y, X, O, Theta, Sigma, options)
+VEstep_PLN_full <- function(par, Y, X, O, w, Theta, Omega, options) {
+    .Call('_PLNmodels_VEstep_PLN_full', PACKAGE = 'PLNmodels', par, Y, X, O, w, Theta, Omega, options)
+}
+
+VEstep_PLN_diagonal <- function(par, Y, X, O, w, Theta, Omega, options) {
+    .Call('_PLNmodels_VEstep_PLN_diagonal', PACKAGE = 'PLNmodels', par, Y, X, O, w, Theta, Omega, options)
+}
+
+VEstep_PLN_spherical <- function(par, Y, X, O, w, Theta, Omega, options) {
+    .Call('_PLNmodels_VEstep_PLN_spherical', PACKAGE = 'PLNmodels', par, Y, X, O, w, Theta, Omega, options)
 }
 
