@@ -5,6 +5,13 @@
   exp(x - b) / sum(exp(x - b))
 }
 
+.check_boundaries <- function(x, zero = .Machine$double.eps) {
+  x[is.nan(x)] <- zero
+  x[x > 1 - zero] <- 1 - zero
+  x[x <     zero] <-     zero
+  x
+}
+
 .logfactorial <- function(n) { # Ramanujan's formula
   n[n == 0] <- 1 ## 0! = 1!
   return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)

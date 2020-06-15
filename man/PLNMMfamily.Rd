@@ -4,12 +4,10 @@
 \alias{PLNMMfamily}
 \title{An R6 Class to represent a collection of PLNMMfit}
 \description{
-The function \code{\link{PLNMM}} produces an instance of this class.
+The function \code{\link[=PLNMM]{PLNMM()}} produces an instance of this class.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=PLNfamily_getBestModel]{getBestModel}},
-\code{\link[=PLNfamily_getModel]{getModel}}, \code{\link[=plot.PLNfamily]{plot}}
-and \code{\link[=predict.PLNfit]{predict}}.
+See the documentation for \code{\link[=getBestModel]{getBestModel()}}, \code{\link[=getModel]{getModel()}} and \code{\link[=plot.PLNPCAfamily]{plot()}}.
 }
 \seealso{
 The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfit]{PLNMMfit}}
@@ -17,48 +15,14 @@ The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfit]{PLNMMfit}}
 \section{Super class}{
 \code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{PLNMMfamily}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{models}}{a list of \code{\link[=PLNMMfit]{PLNMMfit}} object, one for each number of clusters considered.}
-
-\item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when one single class is considered.}
-
-\item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
-}
-\if{html}{\out{</div>}}
-}
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{clusters}}{the dimensions of the successively fitted models}
-
-\item{\code{models}}{a list of \code{\link[=PLNMMfit]{PLNMMfit}} object, one for each number of clusters considered.}
-
-\item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when one single class is considered.}
-
-\item{\code{criteria}}{a data frame with the value of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{PLNMMfamily$new()}}
 \item \href{#method-optimize}{\code{PLNMMfamily$optimize()}}
 \item \href{#method-plot}{\code{PLNMMfamily$plot()}}
+\item \href{#method-plot_objective}{\code{PLNMMfamily$plot_objective()}}
+\item \href{#method-getBestModel}{\code{PLNMMfamily$getBestModel()}}
 \item \href{#method-show}{\code{PLNMMfamily$show()}}
 \item \href{#method-print}{\code{PLNMMfamily$print()}}
 \item \href{#method-clone}{\code{PLNMMfamily$clone()}}
@@ -76,10 +40,40 @@ The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfit]{PLNMMfit}}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize all models in the collection.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNMMfamily$new(clusters, responses, covariates, offsets, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNMMfamily$new(
+  clusters,
+  responses,
+  covariates,
+  offsets,
+  model,
+  xlevels,
+  control
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{clusters}}{the dimensions of the successively fitted models}
+
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call #'}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
@@ -89,15 +83,71 @@ The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfit]{PLNMMfit}}
 \if{html}{\out{<div class="r">}}\preformatted{PLNMMfamily$optimize(control)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{control}}{a list for controlling the optimization. See details.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot"></a>}}
 \if{latex}{\out{\hypertarget{method-plot}{}}}
 \subsection{Method \code{plot()}}{
+Lineplot of selected criteria for all models in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNMMfamily$plot(criteria = c("loglik", "BIC", "ICL"))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNMMfamily$plot(criteria = c("loglik", "BIC", "ICL"), annotate = FALSE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{criteria}}{A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).}
+
+\item{\code{annotate}}{Logical. Should R2 be added to the plot (defaults to \code{TRUE})}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{\link{ggplot2}} object
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-plot_objective"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_objective}{}}}
+\subsection{Method \code{plot_objective()}}{
+Plot objective value of the optimization problem along the penalty path
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNMMfamily$plot_objective()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+a \code{\link{ggplot}} graph
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getBestModel"></a>}}
+\if{latex}{\out{\hypertarget{method-getBestModel}{}}}
+\subsection{Method \code{getBestModel()}}{
+Extract best model in the collection
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNMMfamily$getBestModel(crit = c("BIC", "ICL", "R_squared"))}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{crit}}{a character for the criterion used to performed the selection. Either
+"BIC", "ICL", or "R_squared". Default is \code{BIC}}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{PLNPCAfit}} object
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}

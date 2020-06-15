@@ -24,15 +24,13 @@ PLNMMfit <-
       comp       = NA, # list of mixture components (PLNfit)
       tau        = NA, # posterior probabilities of cluster belonging
       R2         = NA, # approximated goodness of fit criterion
-      J          = NA, # approximated loglikelihood
       monitoring = NA  # a list with optimization monitoring quantities
     ),
     public  = list(
-      initialize = function(inception, tau, J=NA, monitoring=NA, R2=NA) {
+      initialize = function(inception, tau, monitoring=NA, R2=NA) {
         private$tau  <- tau
         components <- list()
         for (k_ in 1:ncol(tau)) components[[k_]] <- inception$clone()
-        private$J    <- J
         private$monitoring <- monitoring
         private$comp <- components
       },
@@ -40,15 +38,60 @@ PLNMMfit <-
         ## Theta=NA, Sigma=NA, M=NA, S=NA,
         ## later ... super$update(Theta, Sigma, M, S, J, R2, monitoring)
         if (!anyNA(tau))        private$tau    <- tau
-        if (!anyNA(J))          private$J      <- J
         if (!anyNA(R2))         private$R2     <- R2
         if (!anyNA(monitoring)) private$monitoring <- monitoring
       },
       ## multi core ???
-      optimize = function(responses, covariates, offsets, tau, opts) {
-        for (k_ in seq.int(self$k)) {
-          self$components[[k_]]$optimize(responses, covariates, offsets, tau[, k_], opts)
-        }
+      optimize = function(responses, covariates, offsets, control) {
+
+          ## ===========================================
+          ## INITIALISATION
+          tau  <- private$tau
+          prop <- colMeans(private$tau)
+          J_ic <- sapply(private$comp, function(comp) comp$loglik_vec)
+          objective_old <- -sum(tau * J_ic) + sum(.xlogx(tau )) - self$n * sum(.xlogx(prop))
+
+          ## ===========================================
+          ## OPTIMISATION
+          cond <- FALSE; iter <- 0
+          objective   <- numeric(control$maxit_out)
+          convergence <- numeric(control$maxit_out)
+          while (!cond) {
+            iter <- iter + 1
+            if (control$trace > 1) cat("", iter)
+
+            ## ---------------------------------------------------
+            ## M - STEP
+            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNMM
+            for (k_ in seq.int(self$k)) {
+              self$components[[k_]]$optimize(responses, covariates, offsets, tau[, k_], control)
+            }
+            prop <- colMeans(tau)
+
+            ## ---------------------------------------------------
+            ## E - STEP
+            ## UPDATE THE POSTERIOR PROBABILITIES
+            if (self$k > 1) { # only needed when at least 2 components!
+              J_ic <- sapply(private$comp, function(comp) comp$loglik_vec)
+              tau <- sweep(J_ic, 2, log(prop), "+") %>%
+                apply(1, .softmax) %>% t() %>% .check_boundaries()
+            }
+            objective[iter]   <- -self$loglik
+            convergence[iter] <- (objective[iter] - objective_old)/abs(objective[iter])
+
+            ## Check convergence
+            if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+            objective_old <- objective[iter]
+
+          }
+
+          ## ===========================================
+          ## OUTPUT
+          ## formating parameters for output
+          private$tau <- tau
+          private$monitoring = list(objective        = objective[1:iter],
+                                    convergence      = convergence[1:iter],
+                                    outer_iterations = iter)
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
@@ -72,21 +115,40 @@ PLNMMfit <-
       print = function() self$show()
     ),
     active = list(
+      #' @field n number of samples
       n = function() {nrow(private$tau)},
+      #' @field k number of components
       k = function() {ncol(private$tau)},
+      #' @field components components of the mixture (PLNfits)
       components    = function() {private$comp},
+      #' @field posteriorProb matrix ofposterior probability for cluster belonging
       posteriorProb = function() {private$tau},
+      #' @field meberships vector for cluster index
       memberships   = function(value) {apply(private$tau, 1, which.max)},
+      #' @field mixtureParam vector of cluster proporitions
       mixtureParam  = function() {colMeans(private$tau)},
-      optim_par     = function() {private$monitoring},
+      #' @field optim_par a list with parameters useful for monitoring the optimization
+      optim_par  = function() {private$monitoring},
+      #' @field nb_param number of parameters in the current PLN model
       nb_param      = function() {(self$k-1) + sum(sapply(self$components, function(model) model$nb_param))},
-      ## probably wrong
-      entropy       = function() {sum(self$mixtureParam * sapply(self$components, function(model) model$entropy))},
-      loglik        = function() {private$J},
-      BIC           = function() {self$loglik - .5 * log(self$n) * self$nb_param},
-      ICL           = function() {self$BIC - self$entropy},
+      #' @field entropy Entropy of the variational distribution of the cluster (multinomial)
+      entropy       = function() {-sum(.xlogx(private$tau))},
+      #' @field loglik variational lower bound of the loglikelihood
+      loglik = function() {sum(self$loglik_vec)},
+      #' @field loglik_vec element-wise variational lower bound of the loglikelihood
+      loglik_vec = function() {
+        J_ik <- sapply(private$comp, function(comp_) comp_$loglik_vec)
+        rowSums(private$tau * J_ik) - rowSums(.xlogx(private$tau)) + rowSums(sweep(private$tau, 2, self$mixtureParam, "*"))
+        },
+      #' @field BIC variational lower bound of the BIC
+      BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
+      #' @field ICL variational lower bound of the ICL
+      ICL        = function() {self$BIC - self$entropy},
+      #' @field R_squared approximated goodness-of-fit criterion
       R_squared     = function() {sum(self$mixtureParam * sapply(self$components, function(model) model$R_squared))},
-      criteria      = function() {c(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
+      #' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
+      criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
+
     )
 )
 

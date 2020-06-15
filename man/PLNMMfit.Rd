@@ -16,38 +16,34 @@ The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfamily]{PLNMMfamil
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{cluster}}{the number of clusters of the current model}
-
-\item{\code{model_par}}{a list with the matrices associated with the final estimated parameters of the mixture model: Theta (covariates), Sigma (latent covariance), mu (vector of means/centers) and pi (vector of cluster proportions)}
-
-\item{\code{posteriorProbabilities}}{matrix of posterior probabilities of class belonging}
+\item{\code{meberships}}{vector for cluster index}
 }
 \if{html}{\out{</div>}}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{cluster}}{the number of clusters of the current model}
+\item{\code{n}}{number of samples}
 
-\item{\code{components}}{a list with cluster component element, each of whom is a \code{PLNfit}.}
+\item{\code{k}}{number of components}
 
-\item{\code{model_par}}{a list with the matrices associated with the final estimated parameters of the mixture model: Theta (covariates), Sigma (latent covariance), mu (vector of means/centers) and pi (vector of cluster proportions)}
+\item{\code{components}}{components of the mixture (PLNfits)}
 
-\item{\code{posteriorProbabilities}}{matrix of posterior probabilities of class belonging}
+\item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
 
-\item{\code{mixtureParam}}{vector of cluster proportions}
+\item{\code{meberships}}{vector for cluster index}
+
+\item{\code{mixtureParam}}{vector of cluster proporitions}
+
+\item{\code{nb_param}}{number of parameters in the current PLN model}
+
+\item{\code{entropy}}{Entropy of the variational distribution of the cluster (multinomial)}
 
 \item{\code{loglik}}{variational lower bound of the loglikelihood}
 
-\item{\code{BIC}}{variational lower bound of the BIC}
-
-\item{\code{ICL}}{variational lower bound of the ICL}
+\item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
-
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and degrees of freedom}
-
-\item{\code{degrees_freedom}}{number of parameters in the current model}
 }
 \if{html}{\out{</div>}}
 }
@@ -57,7 +53,9 @@ The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfamily]{PLNMMfamil
 \item \href{#method-new}{\code{PLNMMfit$new()}}
 \item \href{#method-update}{\code{PLNMMfit$update()}}
 \item \href{#method-optimize}{\code{PLNMMfit$optimize()}}
+\item \href{#method-postTreatment}{\code{PLNMMfit$postTreatment()}}
 \item \href{#method-show}{\code{PLNMMfit$show()}}
+\item \href{#method-print}{\code{PLNMMfit$print()}}
 \item \href{#method-clone}{\code{PLNMMfit$clone()}}
 }
 }
@@ -66,7 +64,7 @@ The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfamily]{PLNMMfamil
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNMMfit$new(inception, tau, J = NA, monitoring = NA, R2 = NA)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNMMfit$new(inception, tau, monitoring = NA, R2 = NA)}\if{html}{\out{</div>}}
 }
 
 }
@@ -89,11 +87,30 @@ The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfamily]{PLNMMfamil
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
+\subsection{Method \code{postTreatment()}}{
+Update fields after optimization
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNMMfit$postTreatment(responses, covariates, offsets, weights, nullModel)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
 \if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNMMfit$show()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-print"></a>}}
+\if{latex}{\out{\hypertarget{method-print}{}}}
+\subsection{Method \code{print()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNMMfit$print()}\if{html}{\out{</div>}}
 }
 
 }

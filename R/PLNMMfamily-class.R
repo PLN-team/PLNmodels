@@ -56,66 +56,27 @@ PLNMMfamily <-
             verbose        = FALSE)
           ## each PLNMMfit will itself instantiate as many PLNmodels
           ## as the current choice of number of components
-          PLNMMfit$new(inception = myPLN, tau = mclust_out$z)
+          ## random guess tau <- .check_boundaries(t(rmultinom(nrow(responses), 1, rep(1:k)/k)))
+          tau <- mclust_out$z
+          PLNMMfit$new(inception = myPLN, tau = tau)
         })
       },
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      ## Optimization ----------------------
+      #' @description Call to the optimizer on all models of the collection
       optimize = function(control) {
-        ## ===========================================
-        ## GO ALONG THE NUMBER OF CLUSTER (i.e the models)
-        for (model in self$models)  {
-          ## k is the total number of cluster
-          k <- model$k
+        ## go along the number of clusters (i.e the models)
+        for (m in seq_along(self$models))  {
           if (control$trace == 1) {
-            cat("\tnumber of cluster =", k, "\r")
+            cat("\tnumber of cluster =", self$models[[m]]$k, "\r")
             flush.console()
           }
           if (control$trace > 1) {
-            cat("\tnumber of cluster =", k, "- iteration:")
+            cat("\tnumber of cluster =", self$models[[m]]$k, "- iteration:")
           }
 
-          ## ===========================================
-          ## INITIALISATION
-          tau  <- model$posteriorProb
-          prop <- colMeans(tau)
-          J_ic <- sapply(model$components, function(comp) comp$loglik_vec)
-          objective_old <- -sum(tau * J_ic) + sum(.xlogx(tau )) - private$n * sum(.xlogx(prop))
+          self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, control)
 
-          ## ===========================================
-          ## OPTIMISATION
-          cond <- FALSE; iter <- 0
-          objective   <- numeric(control$maxit_out)
-          convergence <- numeric(control$maxit_out)
-          while (!cond) {
-            iter <- iter + 1
-            if (control$trace > 1) cat("", iter)
-
-            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNMM
-            model$optimize(self$responses, self$covariates, self$offsets, tau, control)
-            J_ic <- sapply(model$components, function(comp) comp$loglik_vec)
-
-            ## UPDATE THE POSTERIOR PROBABILITIES
-            if (k > 1) { # only needed when at least 2 components!
-              tau <- t(apply(sweep(J_ic, 2, log(prop), "+"), 1, .softmax))
-              tau[tau < .Machine$double.eps] <- .Machine$double.eps
-              tau[tau > 1 - .Machine$double.eps] <- 1 - .Machine$double.eps
-            }
-            prop <- colMeans(tau)
-            objective[iter]   <- -sum(tau * J_ic) + sum(.xlogx(tau)) - private$n * sum(prop * log(prop))
-            convergence[iter] <- abs(objective[iter] - objective_old)/abs(objective[iter])
-
-            ## Check convergence
-            if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
-            objective_old <- objective[iter]
-          }
-
-          ## ===========================================
-          ## OUTPUT
-          ## formating parameters for output
-
-          model$update(tau = tau, J = -objective[iter],
-            monitoring = list(objective        = objective[1:iter],
-                              convergence      = convergence[1:iter],
-                              outer_iterations = iter))
           if (control$trace > 1) {
             cat("\r                                                                                    \r")
             flush.console()
@@ -135,26 +96,24 @@ PLNMMfamily <-
         p <- super$plot(criteria, annotate) + xlab("# of clusters") # + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
         p
        },
-
-    #'   #' @description Plot objective value of the optimization problem along the penalty path
-    #'   #' @return a [`ggplot`] graph
-    #'   plot_objective = function() {
-    #'     objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
-    #'     changes <- cumsum(unlist(lapply(self$models, function(model) model$optim_par$outer_iterations)))
-    #'     dplot <- data.frame(iteration = 1:length(objective), objective = objective)
-    #'     p <- ggplot(dplot, aes(x = iteration, y = objective)) + geom_line() +
-    #'       geom_vline(xintercept = changes, linetype="dashed", alpha = 0.25) +
-    #'       ggtitle("Objective along the alternate algorithm") + xlab("iteration (+ changes of model)") +
-    #'       annotate("text", x = changes, y = min(dplot$objective), angle = 90, label = paste("penalty=", format(self$criteria$param, digits = 1)), hjust = -.1, size = 3, alpha = 0.7) + theme_bw()
-    #' p
-    #'   },
+      #' @description Plot objective value of the optimization problem along the penalty path
+      #' @return a [`ggplot`] graph
+      plot_objective = function() {
+        objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
+        changes <- cumsum(unlist(lapply(self$models, function(model) model$optim_par$outer_iterations)))
+        dplot <- data.frame(iteration = 1:length(objective), objective = objective)
+        p <- ggplot(dplot, aes(x = iteration, y = objective)) + geom_line() +
+          geom_vline(xintercept = changes, linetype="dashed", alpha = 0.25) +
+          ggtitle("Objective along the alternate algorithm") + xlab("iteration (+ changes of model)") + theme_bw()
+        p
+      },
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Extractors   -------------------
       #' @description Extract best model in the collection
       #' @param crit a character for the criterion used to performed the selection. Either
       #' "BIC", "ICL", or "R_squared". Default is `BIC`
-      #' @return a [`PLNPCAfit`] object
+      #' @return a [`PLNMMfit`] object
       getBestModel = function(crit = c("BIC", "ICL", "R_squared")){
         crit <- match.arg(crit)
         stopifnot(!anyNA(self$criteria[[crit]]))
