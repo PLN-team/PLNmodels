@@ -20,7 +20,6 @@ kmeans_cl <- kmeans(log(1 + count), centers = 3)$cl
 aricode::ARI(kmeans_cl, iris$Species)
 pairs(iris[, 1:4], col = kmeans_cl, pch = as.numeric(iris$Species) )
 
-
 aricode::ARI(bestModel$memberships, kmeans_cl)
 
 data("mollusk")

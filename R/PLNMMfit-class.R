@@ -27,14 +27,16 @@ PLNMMfit <-
       monitoring = NA  # a list with optimization monitoring quantities
     ),
     public  = list(
-      initialize = function(inception, tau, monitoring=NA, R2=NA) {
-        private$tau  <- tau
+      initialize = function(responses, covariates, offsets, tau, model, xlevels, control) {
         components <- list()
-        for (k_ in 1:ncol(tau)) components[[k_]] <- inception$clone()
-        private$monitoring <- monitoring
+        for (k_ in 1:ncol(tau)) {
+          components[[k_]] <- PLNfit$new(responses, covariates, offsets, tau[, k_], model, xlevels, control)
+          components[[k_]]$optimize(responses, covariates, offsets, tau[, k_], control)
+        }
         private$comp <- components
+        private$tau  <- tau
       },
-      update = function(tau=NA, J=NA, R2=NA, monitoring=NA) {
+      update = function(tau=NA, R2=NA, monitoring=NA) {
         ## Theta=NA, Sigma=NA, M=NA, S=NA,
         ## later ... super$update(Theta, Sigma, M, S, J, R2, monitoring)
         if (!anyNA(tau))        private$tau    <- tau
@@ -43,41 +45,36 @@ PLNMMfit <-
       },
       ## multi core ???
       optimize = function(responses, covariates, offsets, control) {
-
           ## ===========================================
           ## INITIALISATION
-          tau  <- private$tau
-          prop <- colMeans(private$tau)
-          J_ic <- sapply(private$comp, function(comp) comp$loglik_vec)
-          objective_old <- -sum(tau * J_ic) + sum(.xlogx(tau )) - self$n * sum(.xlogx(prop))
+          cond <- FALSE; iter <- 1
+          objective   <- numeric(control$maxit_out); objective[iter]   <- -self$loglik
+          convergence <- numeric(control$maxit_out); convergence[iter] <- NA
 
           ## ===========================================
           ## OPTIMISATION
-          cond <- FALSE; iter <- 0
-          objective   <- numeric(control$maxit_out)
-          convergence <- numeric(control$maxit_out)
           while (!cond) {
             iter <- iter + 1
             if (control$trace > 1) cat("", iter)
-
-            ## ---------------------------------------------------
-            ## M - STEP
-            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNMM
-            for (k_ in seq.int(self$k)) {
-              self$components[[k_]]$optimize(responses, covariates, offsets, tau[, k_], control)
-            }
-            prop <- colMeans(tau)
 
             ## ---------------------------------------------------
             ## E - STEP
             ## UPDATE THE POSTERIOR PROBABILITIES
             if (self$k > 1) { # only needed when at least 2 components!
               J_ic <- sapply(private$comp, function(comp) comp$loglik_vec)
-              tau <- sweep(J_ic, 2, log(prop), "+") %>%
+              private$tau <- sweep(J_ic, 2, log(colMeans(private$tau)), "+") %>%
                 apply(1, .softmax) %>% t() %>% .check_boundaries()
             }
+
+            ## ---------------------------------------------------
+            ## M - STEP
+            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNMM
+            for (k_ in seq.int(self$k)) {
+              self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
+            }
+
             objective[iter]   <- -self$loglik
-            convergence[iter] <- (objective[iter] - objective_old)/abs(objective[iter])
+            convergence[iter] <- (objective[iter-1] - objective[iter])/abs(objective[iter])
 
             ## Check convergence
             if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
@@ -88,7 +85,6 @@ PLNMMfit <-
           ## ===========================================
           ## OUTPUT
           ## formating parameters for output
-          private$tau <- tau
           private$monitoring = list(objective        = objective[1:iter],
                                     convergence      = convergence[1:iter],
                                     outer_iterations = iter)
