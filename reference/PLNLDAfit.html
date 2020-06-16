@@ -83,7 +83,7 @@ LDA visualization and predict() method for prediction" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -158,9 +158,9 @@ LDA visualization and predict() method for prediction" />
     </div>
 
     <div class="ref-description">
-    <p>The function <code><a href='PLNLDA.html'>PLNLDA()</a></code> produces an instance of an object with class <code>PLNLDAfit</code>.</p>
+    <p>The function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNLDA.html'>PLNLDA()</a></code> produces an instance of an object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNLDAfit.html'>PLNLDAfit</a></code>.</p>
 <p>This class comes with a set of methods, some of them being useful for the user:
-See the documentation for the methods inherited by <code><a href='PLNfit.html'>PLNfit()</a></code>, the <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code> method for
+See the documentation for the methods inherited by <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfit.html'>PLNfit()</a></code>, the <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code> method for
 LDA visualization and <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code> method for prediction</p>
     </div>
 
@@ -168,10 +168,10 @@ LDA visualization and <code><a href='https://rdrr.io/r/stats/predict.html'>predi
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The function <code><a href='PLNLDA.html'>PLNLDA</a></code>.</p></div>
+    <div class='dont-index'><p>The function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNLDA.html'>PLNLDA</a></code>.</p></div>
     <h2 class="hasAnchor" id="super-class"><a class="anchor" href="#super-class"></a>Super class</h2>
 
-    <p><code><a href='PLNfit.html'>PLNmodels::PLNfit</a></code> -&gt; <code>PLNLDAfit</code></p>
+    <p><code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfit.html'>PLNmodels::PLNfit</a></code> -&gt; <code>PLNLDAfit</code></p>
     <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
 
     <p><div class="r6-active-bindings"></p><dl>
@@ -221,16 +221,16 @@ LDA visualization and <code><a href='https://rdrr.io/r/stats/predict.html'>predi
 
 <hr>
 <a id="method-new"></a></p><h3>Method <code>new()</code></h3>
-<p>Initialize a <code>PLNLDAfit</code> object</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNLDAfit</span>$<span class='fu'>new</span>(
-  <span class='no'>grouping</span>,
-  <span class='no'>responses</span>,
-  <span class='no'>covariates</span>,
-  <span class='no'>offsets</span>,
-  <span class='no'>weights</span>,
-  <span class='no'>model</span>,
-  <span class='no'>xlevels</span>,
-  <span class='no'>control</span>
+<p>Initialize a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNLDAfit.html'>PLNLDAfit</a></code> object</p><h3>Usage</h3>
+<p><div class="r"></p><pre><span class='kw'>PLNLDAfit</span><span class='op'>$</span><span class='fu'>new</span>(
+  <span class='kw'>grouping</span>,
+  <span class='kw'>responses</span>,
+  <span class='kw'>covariates</span>,
+  <span class='kw'>offsets</span>,
+  <span class='kw'>weights</span>,
+  <span class='kw'>model</span>,
+  <span class='kw'>xlevels</span>,
+  <span class='kw'>control</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -256,7 +256,7 @@ LDA visualization and <code><a href='https://rdrr.io/r/stats/predict.html'>predi
 <a id="method-optimize"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
 <p>Compute group means and axis of the LDA (noted B in the model) in the
 latent space, update corresponding fields</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNLDAfit</span>$<span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='no'>X</span>, <span class='no'>covar</span>, <span class='no'>design_group</span>, <span class='no'>control</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNLDAfit</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='kw'>X</span>, <span class='kw'>covar</span>, <span class='kw'>design_group</span>, <span class='kw'>control</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -273,7 +273,7 @@ latent space, update corresponding fields</p><h3>Usage</h3>
 <a id="method-postTreatment"></a></p><h3>Method <code>postTreatment()</code></h3>
 <p>Update R2, fisher and std_err fields and visualization
 after optimization</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNLDAfit</span>$<span class='fu'>postTreatment</span>(<span class='no'>responses</span>, <span class='no'>covariates</span>, <span class='no'>offsets</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNLDAfit</span><span class='op'>$</span><span class='fu'>postTreatment</span>(<span class='kw'>responses</span>, <span class='kw'>covariates</span>, <span class='kw'>offsets</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -287,7 +287,7 @@ after optimization</p><h3>Usage</h3>
 <p><hr>
 <a id="method-setVisualization"></a></p><h3>Method <code>setVisualization()</code></h3>
 <p>Compute LDA scores in the latent space and update corresponding fields.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNLDAfit</span>$<span class='fu'>setVisualization</span>(<span class='kw'>scale.unit</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNLDAfit</span><span class='op'>$</span><span class='fu'>setVisualization</span>(scale.unit = <span class='fl'>FALSE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -297,10 +297,10 @@ after optimization</p><h3>Usage</h3>
 <p><hr>
 <a id="method-plot_individual_map"></a></p><h3>Method <code>plot_individual_map()</code></h3>
 <p>Plot the factorial map of the LDA</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNLDAfit</span>$<span class='fu'>plot_individual_map</span>(
-  <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>2</span>, <span class='no'>self</span>$<span class='no'>rank</span>),
-  <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Individual Factor Map"</span>,
-  <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+<p><div class="r"></p><pre><span class='kw'>PLNLDAfit</span><span class='op'>$</span><span class='fu'>plot_individual_map</span>(
+  axes = <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>2</span>, <span class='kw'>self</span><span class='op'>$</span><span class='kw'>rank</span>),
+  main = <span class='st'>"Individual Factor Map"</span>,
+  plot = <span class='fl'>TRUE</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -316,12 +316,12 @@ after optimization</p><h3>Usage</h3>
 <p>a <code>ggplot</code> graphic</p>
 <p><hr>
 <a id="method-plot_correlation_map"></a></p><h3>Method <code>plot_correlation_map()</code></h3>
-<p>Plot the correlation circle of a specified axis for a <code>PLNLDAfit</code> object</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNLDAfit</span>$<span class='fu'>plot_correlation_map</span>(
-  <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>2</span>, <span class='no'>self</span>$<span class='no'>rank</span>),
-  <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Variable Factor Map"</span>,
-  <span class='kw'>cols</span> <span class='kw'>=</span> <span class='st'>"default"</span>,
-  <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+<p>Plot the correlation circle of a specified axis for a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNLDAfit.html'>PLNLDAfit</a></code> object</p><h3>Usage</h3>
+<p><div class="r"></p><pre><span class='kw'>PLNLDAfit</span><span class='op'>$</span><span class='fu'>plot_correlation_map</span>(
+  axes = <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>2</span>, <span class='kw'>self</span><span class='op'>$</span><span class='kw'>rank</span>),
+  main = <span class='st'>"Variable Factor Map"</span>,
+  cols = <span class='st'>"default"</span>,
+  plot = <span class='fl'>TRUE</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -339,11 +339,11 @@ after optimization</p><h3>Usage</h3>
 <p>a <code>ggplot</code> graphic</p>
 <p><hr>
 <a id="method-plot_LDA"></a></p><h3>Method <code>plot_LDA()</code></h3>
-<p>Plot a summary of the <code>PLNLDAfit</code> object</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNLDAfit</span>$<span class='fu'>plot_LDA</span>(
-  <span class='kw'>nb_axes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>3</span>, <span class='no'>self</span>$<span class='no'>rank</span>),
-  <span class='kw'>var_cols</span> <span class='kw'>=</span> <span class='st'>"default"</span>,
-  <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+<p>Plot a summary of the <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNLDAfit.html'>PLNLDAfit</a></code> object</p><h3>Usage</h3>
+<p><div class="r"></p><pre><span class='kw'>PLNLDAfit</span><span class='op'>$</span><span class='fu'>plot_LDA</span>(
+  nb_axes = <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>3</span>, <span class='kw'>self</span><span class='op'>$</span><span class='kw'>rank</span>),
+  var_cols = <span class='st'>"default"</span>,
+  plot = <span class='fl'>TRUE</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -360,13 +360,13 @@ after optimization</p><h3>Usage</h3>
 <p><hr>
 <a id="method-predict"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code></h3>
 <p>Predict group of new samples</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNLDAfit</span>$<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(
-  <span class='no'>newdata</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"posterior"</span>, <span class='st'>"response"</span>, <span class='st'>"scores"</span>),
-  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"log"</span>, <span class='st'>"prob"</span>),
-  <span class='kw'>prior</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>control</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  <span class='kw'>envir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>()
+<p><div class="r"></p><pre><span class='kw'>PLNLDAfit</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(
+  <span class='kw'>newdata</span>,
+  type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"posterior"</span>, <span class='st'>"response"</span>, <span class='st'>"scores"</span>),
+  scale = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"log"</span>, <span class='st'>"prob"</span>),
+  prior = <span class='kw'>NULL</span>,
+  control = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
+  envir = <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>()
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -379,7 +379,7 @@ after optimization</p><h3>Usage</h3>
 
 <dt><code>prior</code></dt><dd><p>User-specified prior group probabilities in the new data. If NULL (default), prior probabilities are computed from the learning set.</p></dd>
 
-<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See <code><a href='PLN.html'>PLN()</a></code> for details.</p></dd>
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLN.html'>PLN()</a></code> for details.</p></dd>
 
 <dt><code>envir</code></dt><dd><p>Environment in which the prediction is evaluated</p></dd>
 
@@ -387,12 +387,12 @@ after optimization</p><h3>Usage</h3>
 <p><hr>
 <a id="method-show"></a></p><h3>Method <code>show()</code></h3>
 <p>User friendly print method</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNLDAfit</span>$<span class='fu'>show</span>()</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNLDAfit</span><span class='op'>$</span><span class='fu'>show</span>()</pre><p></div></p>
 
 <p><hr>
 <a id="method-clone"></a></p><h3>Method <code>clone()</code></h3>
 <p>The objects of this class are cloneable with this method.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNLDAfit</span>$<span class='fu'>clone</span>(<span class='kw'>deep</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNLDAfit</span><span class='op'>$</span><span class='fu'>clone</span>(deep = <span class='fl'>FALSE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -403,12 +403,12 @@ after optimization</p><h3>Usage</h3>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
-<span class='no'>myPLNLDA</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNLDA.html'>PLNLDA</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span>, <span class='kw'>grouping</span> <span class='kw'>=</span> <span class='no'>Group</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='no'>myPLNLDA</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>myPLNLDA</span>)
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
+<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
+<span class='kw'>myPLNLDA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNLDA.html'>PLNLDA</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, grouping = <span class='kw'>Group</span>, data = <span class='kw'>trichoptera</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='kw'>myPLNLDA</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>myPLNLDA</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

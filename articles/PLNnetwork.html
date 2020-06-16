@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
       <h1 data-toc-skip>Sparse structure estimation for multivariate count data with PLN-network</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2020-06-12</h4>
+            <h4 class="date">2020-06-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNnetwork.Rmd"><code>vignettes/PLNnetwork.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -127,15 +127,19 @@
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">PLNmodels</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://jchiquet.github.io/PLNmodels">PLNmodels</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span>)
+</pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
 <a href="#data-set" class="anchor"></a>Data set</h3>
 <p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>. Data preparation is also detailed in <a href="Import_data.html">the specific vignette</a>.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">trichoptera</span>)
-<span class="no">trichoptera</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>, <span class="no">trichoptera</span>$<span class="no">Covariate</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="kw">trichoptera</span>)
+<span class="kw">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>, <span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Covariate</span>)
+</pre></div>
 <p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
 </div>
 <div id="mathematical-background" class="section level3">
@@ -176,7 +180,9 @@
 <h3 class="hasAnchor">
 <a href="#adjusting-a-collection-of-network---a-k-a--a-regularization-path" class="anchor"></a>Adjusting a collection of network - a.k.a. a regularization path</h3>
 <p><code>PLNnetwork</code> finds an hopefully appropriate set of penalties on its own. This set can be controlled by the user, but use it with care and check details in <code><a href="../reference/PLNnetwork.html">?PLNnetwork</a></code>. The collection of models is fitted as follows:</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">network_models</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/PLNnetwork.html">PLNnetwork</a></span>(<span class="no">Abundance</span> ~ <span class="fl">1</span> + <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">Offset</span>)), <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="kw">network_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNnetwork.html">PLNnetwork</a></span>(<span class="kw">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="kw">Offset</span>)), data = <span class="kw">trichoptera</span>)
+</pre></div>
 <pre><code>## 
 ##  Initialization...
 ##  Adjusting 30 PLN with sparse inverse covariance estimation
@@ -220,7 +226,9 @@
 <a href="#structure-of-plnnetworkfamily" class="anchor"></a>Structure of <code>PLNnetworkfamily</code>
 </h3>
 <p>The <code>network_models</code> variable is an <code>R6</code> object with class <code>PLNnetworkfamily</code>, which comes with a couple of methods. The most basic is the <code>show/print</code> method, which sends a very basic summary of the estimation process:</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">network_models</span></pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="kw">network_models</span>
+</pre></div>
 <pre><code>## --------------------------------------------------------
 ## COLLECTION OF 30 POISSON LOGNORMAL MODELS
 ## --------------------------------------------------------
@@ -230,7 +238,9 @@
 ##  - Best model (greater BIC): lambda = 1.4 
 ##  - Best model (greater EBIC): lambda = 1.4</code></pre>
 <p>One can also easily access the successive values of the criteria in the collection</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">network_models</span>$<span class="no">criteria</span> <span class="kw">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>() <span class="kw">%&gt;%</span> <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit">
+<span class="kw">network_models</span><span class="op">$</span><span class="kw">criteria</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>() <span class="op">%&gt;%</span> <span class="kw">knitr</span>::<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()
+</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">param</th>
@@ -327,7 +337,9 @@
 </tbody>
 </table>
 <p>A diagnostic of the optimization process is available via the <code>convergence</code> field:</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">network_models</span>$<span class="no">convergence</span> <span class="kw">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>() <span class="kw">%&gt;%</span> <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="kw">network_models</span><span class="op">$</span><span class="kw">convergence</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>() <span class="op">%&gt;%</span> <span class="kw">knitr</span>::<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>()
+</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">param</th>
@@ -403,35 +415,47 @@
 </tbody>
 </table>
 <p>An nicer view of this output comes with the option “diagnostic” in the <code>plot</code> method:</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">network_models</span>, <span class="st">"diagnostic"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">network_models</span>, <span class="st">"diagnostic"</span>)
+</pre></div>
 <p><img src="PLNnetwork_files/figure-html/diagnostic-1.png" width="672"></p>
 </div>
 <div id="exploring-the-path-of-networks" class="section level3">
 <h3 class="hasAnchor">
 <a href="#exploring-the-path-of-networks" class="anchor"></a>Exploring the path of networks</h3>
 <p>By default, the <code>plot</code> method of <code>PLNnetworkfamily</code> displays evolution of the criteria mentioned above, and is a good starting point for model selection:</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">network_models</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb10"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">network_models</span>)
+</pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot-1.png" width="672"></p>
 <p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with a lower level of penalty (meaning more edges in the network). The same holds true for the penalized counterpart of the variational surrogate. Generally, smoothness of these criteria is a good sanity check of optimization process. BIC and its extended-version high-dimensional version EBIC are classically used for selecting the correct amount of penalization with sparse estimator like the one used by PLN-network. However, we will consider later a more robust albeit more computationally intensive strategy to chose the appropriate number of edges in the network.</p>
 <p>To pursue the analysis, we can represent the coefficient path (i.e., value of the edges in the network according to the penalty level) to see if some edges clearly come off. An alternative and more intuitive view consists in plotting the values of the partial correlations along the path, which can be obtained with the options <code>corr = TRUE</code>. To this end, we provide the S3 function <code>coefficient_path</code>:</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(<span class="no">network_models</span>, <span class="kw">corr</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">Penalty</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">Coeff</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="no">Edge</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">Edge</span>)) +
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="kw">show.legend</span> <span class="kw">=</span> <span class="fl">FALSE</span>) +  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_trans.html">coord_trans</a></span>(<span class="kw">x</span><span class="kw">=</span><span class="st">"log10"</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="fu"><a href="../reference/coefficient_path.html">coefficient_path</a></span>(<span class="kw">network_models</span>, corr = <span class="fl">TRUE</span>) <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">Penalty</span>, y = <span class="kw">Coeff</span>, group = <span class="kw">Edge</span>, colour = <span class="kw">Edge</span>)) <span class="op">+</span> 
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(show.legend = <span class="fl">FALSE</span>) <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_trans.html">coord_trans</a></span>(x=<span class="st">"log10"</span>) <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()
+</pre></div>
 <p><img src="PLNnetwork_files/figure-html/path_coeff-1.png" width="672"></p>
 </div>
 <div id="model-selection-issue-choosing-a-network" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model-selection-issue-choosing-a-network" class="anchor"></a>Model selection issue: choosing a network</h3>
-<p>To select a network with a specific level of penalty, one uses the <code><a href="../reference/getModel.html">getModel(lambda)</a></code> S3 method. We can also extract the best model according to the BIC or EBIC with the method <code><a href="../reference/getBestModel.html">getBestModel()</a></code>.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">model_pen</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getModel.html">getModel</a></span>(<span class="no">network_models</span>, <span class="no">network_models</span>$<span class="no">penalties</span>[<span class="fl">20</span>]) <span class="co"># give some sparsity</span>
-<span class="no">model_BIC</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span>(<span class="no">network_models</span>, <span class="st">"BIC"</span>)   <span class="co"># if no criteria is specified, the best BIC is used</span></pre></body></html></div>
+<p>To select a network with a specific level of penalty, one uses the <code><a href="../reference/getModel.PLNPCAfamily.html">getModel(lambda)</a></code> S3 method. We can also extract the best model according to the BIC or EBIC with the method <code><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel()</a></code>.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit">
+<span class="kw">model_pen</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModel.PLNPCAfamily.html">getModel</a></span>(<span class="kw">network_models</span>, <span class="kw">network_models</span><span class="op">$</span><span class="kw">penalties</span>[<span class="fl">20</span>]) <span class="co"># give some sparsity</span>
+<span class="kw">model_BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel</a></span>(<span class="kw">network_models</span>, <span class="st">"BIC"</span>)   <span class="co"># if no criteria is specified, the best BIC is used</span>
+</pre></div>
 <p>An alternative strategy is to use StARS <span class="citation">(Liu, Roeder, and Wasserman <a href="#ref-stars" role="doc-biblioref">2010</a>)</span>, which performs resampling to evaluate the robustness of the network along the path of solutions in a similar fashion as the stability selection approach of <span class="citation">Meinshausen and Bühlmann (<a href="#ref-stabilitySelection" role="doc-biblioref">2010</a>)</span>, but in a network inference context.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">model_StARS</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span>(<span class="no">network_models</span>, <span class="st">"StARS"</span>) <span class="co"># if StARS is requested, stability selection is performed if needed </span></pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="kw">model_StARS</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel</a></span>(<span class="kw">network_models</span>, <span class="st">"StARS"</span>) <span class="co"># if StARS is requested, stability selection is performed if needed </span>
+</pre></div>
 <pre><code>## 
 ## Stability Selection for PLNnetwork: 
 ## subsampling: ++++++++++++++++++++</code></pre>
 <p>When “StARS” is requested for the first time, <code>getBestModel</code> automatically calls the method <code>stability_selection</code> with the default parameters. After the first call, the stability path is available from the <code>plot</code> function:</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">network_models</span>, <span class="st">"stability"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">network_models</span>, <span class="st">"stability"</span>)
+</pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot%20stability-1.png" width="672"></p>
 </div>
 <div id="structure-of-a-plnnetworkfit" class="section level3">
@@ -439,7 +463,9 @@
 <a href="#structure-of-a-plnnetworkfit" class="anchor"></a>Structure of a <code>PLNnetworkfit</code>
 </h3>
 <p>The variables <code>model_BIC</code>, <code>model_StARS</code> and <code>model_pen</code> are other <code>R6Class</code> objects with class <code>PLNnetworkfit</code>. They all inherits from the class <code>PLNfit</code> and thus own all its methods, with a couple of specific one, mostly for network visualization purposes. Most fields and methods are recalled when such an object is printed:</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">model_StARS</span></pre></body></html></div>
+<div class="sourceCode" id="cb16"><pre class="downlit">
+<span class="kw">model_StARS</span>
+</pre></div>
 <pre><code>## Poisson Lognormal with sparse inverse covariance (penalty = 1.52)
 ## ==================================================================
 ##  nb_param    loglik       BIC       ICL R_squared n_edges      EBIC pen_loglik
@@ -457,28 +483,36 @@
 ## * Additional S3 methods for network
 ##     plot.PLNnetworkfit()</code></pre>
 <p>The <code>plot</code> method provides a quick representation of the inferred network, with various options (either as a matrix, a graph, and always send back the plotted object invisibly if users needs to perform additional analyses).</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">my_graph</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">model_StARS</span>, <span class="kw">plot</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="no">my_graph</span></pre></body></html></div>
-<pre><code>## IGRAPH 6abccb9 UNW- 17 3 -- 
+<div class="sourceCode" id="cb18"><pre class="downlit">
+<span class="kw">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">model_StARS</span>, plot = <span class="fl">FALSE</span>)
+<span class="kw">my_graph</span>
+</pre></div>
+<pre><code>## IGRAPH b15bd8d UNW- 17 3 -- 
 ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
 ## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),
 ## | width (e/n)
-## + edges from 6abccb9 (vertex names):
+## + edges from b15bd8d (vertex names):
 ## [1] Che--Hve Glo--Hfo Hfo--Hsp</code></pre>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">model_StARS</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb20"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">model_StARS</span>)
+</pre></div>
 <p><img src="PLNnetwork_files/figure-html/stars_network-1.png" width="672"></p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">model_StARS</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"support"</span>, <span class="kw">output</span> <span class="kw">=</span> <span class="st">"corrplot"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb21"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">model_StARS</span>, type = <span class="st">"support"</span>, output = <span class="st">"corrplot"</span>)
+</pre></div>
 <p><img src="PLNnetwork_files/figure-html/stars_network-2.png" width="672"></p>
 <p>We can finally check that the fitted value of the counts – even with sparse regularization of the covariance matrix – are close to the observed ones:</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
-  <span class="kw">fitted</span>   <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span>(<span class="no">model_StARS</span>)),
-  <span class="kw">observed</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>)
-) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">observed</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">fitted</span>)) +
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="kw">size</span> <span class="kw">=</span> <span class="fl">.5</span>, <span class="kw">alpha</span> <span class="kw">=</span><span class="fl">.25</span> ) +
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">1000</span>)) +
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_log10</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">1000</span>)) +
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>() + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotation_logticks.html">annotation_logticks</a></span>()</pre></body></html></div>
+<div class="sourceCode" id="cb22"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
+  fitted   = <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span>(<span class="kw">model_StARS</span>)),
+  observed = <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>)
+) <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">observed</span>, y = <span class="kw">fitted</span>)) <span class="op">+</span> 
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(size = <span class="fl">.5</span>, alpha =<span class="fl">.25</span> ) <span class="op">+</span> 
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span>(limits = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">1000</span>)) <span class="op">+</span> 
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_log10</a></span>(limits = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">1000</span>)) <span class="op">+</span> 
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>() <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotation_logticks.html">annotation_logticks</a></span>()
+</pre></div>
 <div class="figure">
 <img src="PLNnetwork_files/figure-html/fitted-1.png" alt="fitted value vs. observation" width="672"><p class="caption">
 fitted value vs. observation

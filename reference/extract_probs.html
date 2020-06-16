@@ -82,7 +82,7 @@ case, edge names follow igraph naming convention." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -162,13 +162,13 @@ during the stars stability selection procedure, as either a matrix or a named ve
 case, edge names follow igraph naming convention.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>extract_probs</span>(
-  <span class='no'>Robject</span>,
-  <span class='kw'>penalty</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>index</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"StARS"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>),
-  <span class='kw'>format</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"matrix"</span>, <span class='st'>"vector"</span>),
-  <span class='kw'>tol</span> <span class='kw'>=</span> <span class='fl'>1e-05</span>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/extract_probs.html'>extract_probs</a></span>(
+  <span class='kw'>Robject</span>,
+  penalty = <span class='kw'>NULL</span>,
+  index = <span class='kw'>NULL</span>,
+  crit = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"StARS"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>),
+  format = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"matrix"</span>, <span class='st'>"vector"</span>),
+  tol = <span class='fl'>1e-05</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -176,7 +176,7 @@ case, edge names follow igraph naming convention.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Robject</th>
-      <td><p>an object with class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code>, i.e. an output from <code><a href='PLNnetwork.html'>PLNnetwork()</a></code></p></td>
+      <td><p>an object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code>, i.e. an output from <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code></p></td>
     </tr>
     <tr>
       <th>penalty</th>
@@ -191,7 +191,7 @@ case, edge names follow igraph naming convention.</p>
       <td><p>a character for the criterion used to performed the selection. Either
 "BIC", "ICL", "EBIC", "StARS", "R_squared". Default is <code>ICL</code> for <code>PLNPCA</code>, and <code>BIC</code> for <code>PLNnetwork</code>.
 If StARS (Stability Approach to Regularization Selection) is chosen and stability selection
-was not yet performed, the function will call the method <code><a href='stability_selection.html'>stability_selection()</a></code> with default argument.</p></td>
+was not yet performed, the function will call the method <code><a href='https://rdrr.io/pkg/PLNmodels/man/stability_selection.html'>stability_selection()</a></code> with default argument.</p></td>
     </tr>
     <tr>
       <th>format</th>
@@ -208,28 +208,29 @@ was not yet performed, the function will call the method <code><a href='stabilit
     <p>Either a matrix or named vector of edge-wise probabilities. In the latter case, edge names follow igraph convention.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
-<span class='no'>nets</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span> + <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='no'>Offset</span>)), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
+<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
+<span class='kw'>nets</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>Offset</span>)), data = <span class='kw'>trichoptera</span>)</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
 #&gt; 	Joint optimization alternating gradient descent and graphical-lasso
 #&gt; 	sparsifying penalty = 3.632478 	sparsifying penalty = 3.355214 	sparsifying penalty = 3.099114 	sparsifying penalty = 2.862561 	sparsifying penalty = 2.644064 	sparsifying penalty = 2.442245 	sparsifying penalty = 2.25583 	sparsifying penalty = 2.083645 	sparsifying penalty = 1.924602 	sparsifying penalty = 1.777699 	sparsifying penalty = 1.642009 	sparsifying penalty = 1.516675 	sparsifying penalty = 1.400909 	sparsifying penalty = 1.293979 	sparsifying penalty = 1.19521 	sparsifying penalty = 1.103981 	sparsifying penalty = 1.019715 	sparsifying penalty = 0.9418812 	sparsifying penalty = 0.8699882 	sparsifying penalty = 0.8035827 	sparsifying penalty = 0.742246 	sparsifying penalty = 0.685591 	sparsifying penalty = 0.6332604 	sparsifying penalty = 0.5849242 	sparsifying penalty = 0.5402774 	sparsifying penalty = 0.4990385 	sparsifying penalty = 0.4609473 	sparsifying penalty = 0.4257636 	sparsifying penalty = 0.3932654 	sparsifying penalty = 0.3632478 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='stability_selection.html'>stability_selection</a></span>(<span class='no'>nets</span>)
-<span class='no'>probs</span> <span class='kw'>&lt;-</span> <span class='fu'>extract_probs</span>(<span class='no'>nets</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='st'>"StARS"</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"vector"</span>)
-<span class='no'>probs</span>
+#&gt;  DONE!</div><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/stability_selection.html'>stability_selection</a></span>(<span class='kw'>nets</span>)
+<span class='kw'>probs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/extract_probs.html'>extract_probs</a></span>(<span class='kw'>nets</span>, crit = <span class='st'>"StARS"</span>, format = <span class='st'>"vector"</span>)
+<span class='kw'>probs</span>
 }
 
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='co'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='co'>## Add edge attributes to graph using igraph</span>
-<span class='no'>net_stars</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='getBestModel.html'>getBestModel</a></span>(<span class='no'>nets</span>, <span class='st'>"StARS"</span>)
-<span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>net_stars</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"partial_cor"</span>, <span class='kw'>plot</span><span class='kw'>=</span><span class='no'>F</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>igraph</span>)
-<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/E.html'>E</a></span>(<span class='no'>g</span>)$<span class='no'>prob</span> <span class='kw'>&lt;-</span> <span class='no'>probs</span>[<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/as_ids.html'>as_ids</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/E.html'>E</a></span>(<span class='no'>g</span>))]
-<span class='no'>g</span>
-}</div></pre>
+<span class='kw'>net_stars</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel</a></span>(<span class='kw'>nets</span>, <span class='st'>"StARS"</span>)
+<span class='kw'>g</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>net_stars</span>, type = <span class='st'>"partial_cor"</span>, plot=<span class='kw'>F</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='http://igraph.org'>igraph</a></span>)
+<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/E.html'>E</a></span>(<span class='kw'>g</span>)<span class='op'>$</span><span class='kw'>prob</span> <span class='op'>&lt;-</span> <span class='kw'>probs</span>[<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/as_ids.html'>as_ids</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/igraph/man/E.html'>E</a></span>(<span class='kw'>g</span>))]
+<span class='kw'>g</span>
+}
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

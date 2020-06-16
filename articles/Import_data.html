@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
       <h1 data-toc-skip>Data importation in PLNmodels</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2020-06-12</h4>
+            <h4 class="date">2020-06-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/Import_data.Rmd"><code>vignettes/Import_data.Rmd</code></a></small>
       <div class="hidden name"><code>Import_data.Rmd</code></div>
@@ -128,24 +128,34 @@
 <h2 class="hasAnchor">
 <a href="#format-description" class="anchor"></a>Format description</h2>
 <p>We illustrate the format using trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">PLNmodels</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">trichoptera</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://jchiquet.github.io/PLNmodels">PLNmodels</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="kw">trichoptera</span>)
+</pre></div>
 <p>The trichoptera data set is a list made of two data frames: <code>Abundance</code> (hereafter referred to as the <em>counts</em>) and <code>Covariate</code> (hereafter the <em>covariates</em>).</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">trichoptera</span>, <span class="kw">max.level</span> <span class="kw">=</span> <span class="fl">1</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="kw">trichoptera</span>, max.level = <span class="fl">1</span>)
+</pre></div>
 <pre><code>## List of 2
 ##  $ Abundance:'data.frame':   49 obs. of  17 variables:
 ##  $ Covariate:'data.frame':   49 obs. of  7 variables:</code></pre>
 <p>The covariates include, among others, the wind, pressure and humidity.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">trichoptera</span>$<span class="no">Covariate</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Covariate</span>)
+</pre></div>
 <pre><code>## [1] "Temperature"   "Wind"          "Pressure"      "Humidity"     
 ## [5] "Cloudiness"    "Precipitation" "Group"</code></pre>
 <p>In the PLN framework, we model the counts from the covariates, let’s say wind and pressure, using a Poisson Log-Normal model. Most models in R use the so-called <em>formula interface</em> and it would thus be natural to write something like</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="../reference/PLN.html">PLN</a></span>(<span class="no">Abundance</span> ~ <span class="no">Wind</span> + <span class="no">Pressure</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="fu"><a href="../reference/PLN.html">PLN</a></span>(<span class="kw">Abundance</span> <span class="op">~</span> <span class="kw">Wind</span> <span class="op">+</span> <span class="kw">Pressure</span>, data = <span class="kw">trichoptera</span>)
+</pre></div>
 <p>Unfortunately and unlike many generalized linear models, the response in PLN is intrinsically <strong>multivariate</strong>: it has 17 dimensions in our example. The left hand side (LHS) must encode a multivariate response across multiple samples, using a 2D-array (e.g. a matrix or a data frame).</p>
 <p>We must therefore prepare a data structure where <code>Abundance</code> refers to a count <em>matrix</em> whereas <code>Wind</code> and <code>Pressure</code> refer to <em>vectors</em> before feeding it to <code>PLN</code>. That’s the purpose of <code>prepare_data</code>.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">trichoptera2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="kw">counts</span>     <span class="kw">=</span> <span class="no">trichoptera</span>$<span class="no">Abundance</span>,
-                             <span class="kw">covariates</span> <span class="kw">=</span> <span class="no">trichoptera</span>$<span class="no">Covariate</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">trichoptera2</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit">
+<span class="kw">trichoptera2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(counts     = <span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>, 
+                             covariates = <span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Covariate</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="kw">trichoptera2</span>)
+</pre></div>
 <pre><code>## 'data.frame':    49 obs. of  9 variables:
 ##  $ Abundance    : num [1:49, 1:17] 0 0 0 0 0 0 0 0 0 0 ...
 ##   ..- attr(*, "dimnames")=List of 2
@@ -179,8 +189,10 @@
 <li>Geometric Mean of Pairwise Ratio (GMPR), introduced in <span class="citation">(Chen et al. <a href="#ref-GMPR" role="doc-biblioref">2018</a>)</span> where each sample is compared to each other to compute a median log-ratio and the offset of a sample is the geometric means of those pairwise ratios.</li>
 </ul>
 <p>Each of these offset be computed from a counts matrix using the <code>compute_offset</code> function and changing its <code>offset</code> argument:</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co">## same as compute_offset(trichoptera$Abundance, offset = "TSS")</span>
-<span class="fu"><a href="../reference/compute_offset.html">compute_offset</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="co">## same as compute_offset(trichoptera$Abundance, offset = "TSS")</span>
+<span class="fu"><a href="../reference/compute_offset.html">compute_offset</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>) 
+</pre></div>
 <pre><code>##    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16 
 ##   29   13   38  192   79   18    8   34   12    4    4    3   49   33  600  172 
 ##   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32 
@@ -190,15 +202,23 @@
 ##   49 
 ##   86</code></pre>
 <p>In this particular example, the counts are too sparse and sophisticated offset methods all fail (numeric output hidden)</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="../reference/compute_offset.html">compute_offset</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>, <span class="st">"CSS"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="fu"><a href="../reference/compute_offset.html">compute_offset</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>, <span class="st">"CSS"</span>)
+</pre></div>
 <pre><code>## Warning in offset_function(counts, ...): Some samples only have 1 positive
 ## values. Can't compute quantiles and fall back to TSS normalization</code></pre>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="../reference/compute_offset.html">compute_offset</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>, <span class="st">"RLE"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="fu"><a href="../reference/compute_offset.html">compute_offset</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>, <span class="st">"RLE"</span>)
+</pre></div>
 <pre><code>## Warning in offset_function(counts, ...): Because of high sparsity, some samples
 ## have null or infinite offset.</code></pre>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="../reference/compute_offset.html">compute_offset</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>, <span class="st">"GMPR"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit">
+<span class="fu"><a href="../reference/compute_offset.html">compute_offset</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>, <span class="st">"GMPR"</span>)
+</pre></div>
 <p>We can mitigate this problem for the RLE offset by adding pseudocounts to the counts although doing so has its own drawbacks.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="../reference/compute_offset.html">compute_offset</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>, <span class="st">"RLE"</span>, <span class="kw">pseudocounts</span> <span class="kw">=</span> <span class="fl">1</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb16"><pre class="downlit">
+<span class="fu"><a href="../reference/compute_offset.html">compute_offset</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>, <span class="st">"RLE"</span>, pseudocounts = <span class="fl">1</span>)
+</pre></div>
 <pre><code>##         1         2         3         4         5         6         7         8 
 ## 0.9186270 0.8349121 0.8570257 0.9186270 0.9186270 0.8349121 0.8192245 0.8570257 
 ##         9        10        11        12        13        14        15        16 
@@ -219,9 +239,11 @@
 <a href="#building-data-frame-using-prepare_data" class="anchor"></a>Building data frame using <code>prepare_data</code>
 </h2>
 <p>We’ll already learned that <code>prepare_data</code> can join counts and covariates into a single data.frame. It can also compute offset through <code>compute_offset</code> and does so by default with <code>offset = "TSS"</code>, hence the <code>Offset</code> column in <code>trichoptera2</code>. You can change the offset method and provide additional arguments that will passed on to <code>compute_offset</code>.</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>,
-             <span class="no">trichoptera</span>$<span class="no">Covariate</span>,
-             <span class="kw">offset</span> <span class="kw">=</span> <span class="st">"RLE"</span>, <span class="kw">pseudocounts</span> <span class="kw">=</span> <span class="fl">1</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb18"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>, 
+             <span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Covariate</span>, 
+             offset = <span class="st">"RLE"</span>, pseudocounts = <span class="fl">1</span>))
+</pre></div>
 <pre><code>## 'data.frame':    49 obs. of  9 variables:
 ##  $ Abundance    : num [1:49, 1:17] 0 0 0 0 0 0 0 0 0 0 ...
 ##   ..- attr(*, "dimnames")=List of 2
@@ -238,9 +260,11 @@
 <p>Different communities use different standard for the count data where samples are either or columns of the counts matrix. <code>prepare_data</code> uses heuristics to guess the direction of the counts matrix (or fail informatively doing so) and automatically transpose it if needed.</p>
 <p>Finally, <code>prepare_data</code> enforces sample-consistency between the counts and the covariates and automatically trims away: - samples for which only covariates or only counts are available; - samples with no positive counts</p>
 <p>For example, if we remove the first sample from the counts and the last one from the covariates, we end up with 49 - 2 = 47 samples left, as expected.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>[-<span class="fl">1</span>, ], <span class="co">## remove first sample</span>
-                  <span class="no">trichoptera</span>$<span class="no">Covariate</span>[-<span class="fl">49</span>,]  <span class="co">## remove last sample</span>
-                  ))</pre></body></html></div>
+<div class="sourceCode" id="cb20"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>[<span class="op">-</span><span class="fl">1</span>, ], <span class="co">## remove first sample</span>
+                  <span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Covariate</span>[<span class="op">-</span><span class="fl">49</span>,]  <span class="co">## remove last sample</span>
+                  ))
+</pre></div>
 <pre><code>## [1] 47</code></pre>
 </div>
 <div id="importing-data-from-biom-and-phyloseq-objects-using-prepare_data_from_phyloseqbiom" class="section level2">
@@ -265,21 +289,23 @@
 </li>
 </ul>
 <p>as illustrated below: <!-- Note that the covariates **must** be stored in the biom object as they are automatically extracted, reading a biom without covariates results in an error.  --></p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="co">## If biomformat is not installed, uncomment the following lines</span>
+<div class="sourceCode" id="cb22"><pre class="downlit">
+<span class="co">## If biomformat is not installed, uncomment the following lines</span>
 <span class="co"># if (!requireNamespace("BiocManager", quietly = TRUE)) {</span>
 <span class="co">#   install.packages("BiocManager")</span>
 <span class="co"># }</span>
 <span class="co"># BiocManager::install("biomformat")</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">biomformat</span>)
-<span class="no">biomfile</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"biomformat"</span>)
-<span class="no">biom</span> <span class="kw">&lt;-</span> <span class="kw pkg">biomformat</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/read_biom.html">read_biom</a></span>(<span class="no">biomfile</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/joey711/biomformat">biomformat</a></span>)
+<span class="kw">biomfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>, package = <span class="st">"biomformat"</span>)
+<span class="kw">biom</span> <span class="op">&lt;-</span> <span class="kw">biomformat</span>::<span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/read_biom.html">read_biom</a></span>(<span class="kw">biomfile</span>)
 <span class="co">## extract counts</span>
-<span class="no">counts</span> <span class="kw">&lt;-</span> <span class="fu">as</span>(<span class="kw pkg">biomformat</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/biom_data-methods.html">biom_data</a></span>(<span class="no">biom</span>), <span class="st">"matrix"</span>)
+<span class="kw">counts</span> <span class="op">&lt;-</span> <span class="fu">as</span>(<span class="kw">biomformat</span>::<span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/biom_data-methods.html">biom_data</a></span>(<span class="kw">biom</span>), <span class="st">"matrix"</span>)
 <span class="co">## extract covariates (or prepare your own)</span>
-<span class="no">covariates</span> <span class="kw">&lt;-</span> <span class="kw pkg">biomformat</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/sample_metadata-methods.html">sample_metadata</a></span>(<span class="no">biom</span>)
+<span class="kw">covariates</span> <span class="op">&lt;-</span> <span class="kw">biomformat</span>::<span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/sample_metadata-methods.html">sample_metadata</a></span>(<span class="kw">biom</span>)
 <span class="co">## prepare data</span>
-<span class="no">my_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="kw">counts</span> <span class="kw">=</span> <span class="no">counts</span>, <span class="kw">covariates</span> <span class="kw">=</span> <span class="no">covariates</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">my_data</span>)</pre></body></html></div>
+<span class="kw">my_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(counts = <span class="kw">counts</span>, covariates = <span class="kw">covariates</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="kw">my_data</span>)
+</pre></div>
 </div>
 <div id="reading-from-a-phyloseq-class-object" class="section level3">
 <h3 class="hasAnchor">
@@ -295,20 +321,22 @@
 </ul>
 <p>as illustrated below:</p>
 <!-- Note that the covariates **must** be stored in the phyloseq-class object as they are automatically extracted, importing a phyloseq object with no `sample_data` component results in an error.  -->
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="co">## If biomformat is not installed, uncomment the following lines</span>
+<div class="sourceCode" id="cb23"><pre class="downlit">
+<span class="co">## If biomformat is not installed, uncomment the following lines</span>
 <span class="co"># if (!requireNamespace("BiocManager", quietly = TRUE)) {</span>
 <span class="co">#   install.packages("BiocManager")</span>
 <span class="co"># }</span>
 <span class="co"># BiocManager::install("phyloseq")</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">phyloseq</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="http://dx.plos.org/10.1371/journal.pone.0061217">phyloseq</a></span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"enterotype"</span>)
 <span class="co">## extract counts</span>
-<span class="no">counts</span> <span class="kw">&lt;-</span> <span class="fu">as</span>(<span class="kw pkg">phyloseq</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html">otu_table</a></span>(<span class="no">enterotype</span>), <span class="st">"matrix"</span>)
+<span class="kw">counts</span> <span class="op">&lt;-</span> <span class="fu">as</span>(<span class="kw">phyloseq</span>::<span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html">otu_table</a></span>(<span class="kw">enterotype</span>), <span class="st">"matrix"</span>)
 <span class="co">## extract covariates (or prepare your own)</span>
-<span class="no">covariates</span> <span class="kw">&lt;-</span> <span class="kw pkg">phyloseq</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html">sample_data</a></span>(<span class="no">enterotype</span>)
+<span class="kw">covariates</span> <span class="op">&lt;-</span> <span class="kw">phyloseq</span>::<span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html">sample_data</a></span>(<span class="kw">enterotype</span>)
 <span class="co">## prepare data</span>
-<span class="no">my_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(<span class="kw">counts</span> <span class="kw">=</span> <span class="no">counts</span>, <span class="kw">covariates</span> <span class="kw">=</span> <span class="no">covariates</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">my_data</span>)</pre></body></html></div>
+<span class="kw">my_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span>(counts = <span class="kw">counts</span>, covariates = <span class="kw">covariates</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="kw">my_data</span>)
+</pre></div>
 </div>
 </div>
 <div id="mathematical-details-about-the-offsets" class="section level2">

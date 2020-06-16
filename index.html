@@ -44,7 +44,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -132,19 +132,23 @@
 <h4 class="hasAnchor">
 <a href="#cran-dependencies" class="anchor"></a>CRAN dependencies</h4>
 <p><strong>PLNmodels</strong> needs the following CRAN R packages, so check that they are are installed on your computer.</p>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="no">required_CRAN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"R6"</span>, <span class="st">"glassoFast"</span>, <span class="st">"Matrix"</span>, <span class="st">"Rcpp"</span>, <span class="st">"RcppArmadillo"</span>,
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="kw">required_CRAN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"R6"</span>, <span class="st">"glassoFast"</span>, <span class="st">"Matrix"</span>, <span class="st">"Rcpp"</span>, <span class="st">"RcppArmadillo"</span>,
                    <span class="st">"nloptr"</span>, <span class="st">"igraph"</span>, <span class="st">"grid"</span>, <span class="st">"gridExtra"</span>, <span class="st">"dplyr"</span>,
                    <span class="st">"tidyr"</span>, <span class="st">"ggplot2"</span>, <span class="st">"corrplot"</span>, <span class="st">"magrittr"</span>, <span class="st">"devtools"</span>)
-<span class="no">not_installed_CRAN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html">setdiff</a></span>(<span class="no">required_CRAN</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span>()))
-<span class="kw">if</span> (<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">not_installed_CRAN</span>) <span class="kw">&gt;</span> <span class="fl">0</span>) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="no">not_installed_CRAN</span>)</pre></div>
+<span class="kw">not_installed_CRAN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html">setdiff</a></span>(<span class="kw">required_CRAN</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span>()))
+<span class="co">if</span> (<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="kw">not_installed_CRAN</span>) <span class="op">&gt;</span> <span class="fl">0</span>) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="kw">not_installed_CRAN</span>)
+</pre></div>
 </div>
 <div id="bioconductor-dependencies" class="section level4">
 <h4 class="hasAnchor">
 <a href="#bioconductor-dependencies" class="anchor"></a>Bioconductor dependencies</h4>
 <p><strong>PLNmodels</strong> also needs two BioConductor packages</p>
-<div class="sourceCode" id="cb2"><pre class="r"><span class="no">required_BioC</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"phyloseq"</span>, <span class="st">"biomformat"</span>)
-<span class="no">not_installed_BioC</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html">setdiff</a></span>(<span class="no">required_BioC</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span>()))
-<span class="kw">if</span> (<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">not_installed_BioC</span>) <span class="kw">&gt;</span> <span class="fl">0</span>) <span class="kw pkg">BiocManager</span><span class="kw ns">::</span><span class="fu">install</span>(<span class="no">not_installed_BioC</span>)</pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="kw">required_BioC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"phyloseq"</span>, <span class="st">"biomformat"</span>)
+<span class="kw">not_installed_BioC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html">setdiff</a></span>(<span class="kw">required_BioC</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span>()))
+<span class="co">if</span> (<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="kw">not_installed_BioC</span>) <span class="op">&gt;</span> <span class="fl">0</span>) <span class="kw">BiocManager</span>::<span class="fu">install</span>(<span class="kw">not_installed_BioC</span>)
+</pre></div>
 </div>
 <div id="installing-plnmodels" class="section level4">
 <h4 class="hasAnchor">
@@ -152,15 +156,21 @@
 <ul>
 <li>For the last stable version, use the CRAN version</li>
 </ul>
-<!-- end list --><div class="sourceCode" id="cb3"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"PLNmodels"</span>)</pre></div>
+<!-- end list --><div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"PLNmodels"</span>)
+</pre></div>
 <ul>
 <li>For the development version, use the github install</li>
 </ul>
-<!-- end list --><div class="sourceCode" id="cb4"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>)</pre></div>
+<!-- end list --><div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"jchiquet/PLNmodels"</span>)
+</pre></div>
 <ul>
 <li>For a specific tagged release, use</li>
 </ul>
-<!-- end list --><div class="sourceCode" id="cb5"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"jchiquet/PLNmodels@tag_number"</span>)</pre></div>
+<!-- end list --><div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"jchiquet/PLNmodels@tag_number"</span>)
+</pre></div>
 </div>
 </div>
 </div>
@@ -168,29 +178,39 @@
 <h2 class="hasAnchor">
 <a href="#usage-and-main-fitting-functions" class="anchor"></a>Usage and main fitting functions</h2>
 <p>The package comes with an ecological data set to present the functionality</p>
-<div class="sourceCode" id="cb6"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">PLNmodels</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">trichoptera</span>)
-<span class="no">trichoptera</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/prepare_data.html">prepare_data</a></span>(<span class="no">trichoptera</span>$<span class="no">Abundance</span>, <span class="no">trichoptera</span>$<span class="no">Covariate</span>)</pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://jchiquet.github.io/PLNmodels">PLNmodels</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="kw">trichoptera</span>)
+<span class="kw">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prepare_data.html">prepare_data</a></span>(<span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Abundance</span>, <span class="kw">trichoptera</span><span class="op">$</span><span class="kw">Covariate</span>)
+</pre></div>
 <p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <a href="http://jchiquet.github.io/PLNmodels/articles/" class="uri">http://jchiquet.github.io/PLNmodels/articles/</a>).</p>
 <div id="unpenalized-poisson-lognormal-model-aka-pln" class="section level3">
 <h3 class="hasAnchor">
 <a href="#unpenalized-poisson-lognormal-model-aka-pln" class="anchor"></a>Unpenalized Poisson lognormal model (aka PLN)</h3>
-<div class="sourceCode" id="cb7"><pre class="r"><span class="no">myPLN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/PLN.html">PLN</a></span>(<span class="no">Abundance</span> ~ <span class="fl">1</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>)</pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit">
+<span class="kw">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLN.html">PLN</a></span>(<span class="kw">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data = <span class="kw">trichoptera</span>)
+</pre></div>
 </div>
 <div id="rank-constrained-poisson-lognormal-for-poisson-principal-component-analysis-aka-plnpca" class="section level3">
 <h3 class="hasAnchor">
 <a href="#rank-constrained-poisson-lognormal-for-poisson-principal-component-analysis-aka-plnpca" class="anchor"></a>Rank Constrained Poisson lognormal for Poisson Principal Component Analysis (aka PLNPCA)</h3>
-<div class="sourceCode" id="cb8"><pre class="r"><span class="no">myPCA</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/PLNPCA.html">PLNPCA</a></span>(<span class="no">Abundance</span> ~ <span class="fl">1</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>, <span class="kw">ranks</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">8</span>)</pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="kw">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNPCA.html">PLNPCA</a></span>(<span class="kw">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data = <span class="kw">trichoptera</span>, ranks = <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>)
+</pre></div>
 </div>
 <div id="poisson-lognormal-discriminant-analysis-aka-plnlda" class="section level3">
 <h3 class="hasAnchor">
 <a href="#poisson-lognormal-discriminant-analysis-aka-plnlda" class="anchor"></a>Poisson lognormal discriminant analysis (aka PLNLDA)</h3>
-<div class="sourceCode" id="cb9"><pre class="r"><span class="no">myLDA</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/PLNLDA.html">PLNLDA</a></span>(<span class="no">Abundance</span> ~ <span class="fl">1</span>, <span class="kw">grouping</span> <span class="kw">=</span> <span class="no">Group</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>)</pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="kw">myLDA</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNLDA.html">PLNLDA</a></span>(<span class="kw">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, grouping = <span class="kw">Group</span>, data = <span class="kw">trichoptera</span>)
+</pre></div>
 </div>
 <div id="sparse-poisson-lognormal-model-for-sparse-covariance-inference-for-counts-aka-plnnetwork" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sparse-poisson-lognormal-model-for-sparse-covariance-inference-for-counts-aka-plnnetwork" class="anchor"></a>Sparse Poisson lognormal model for sparse covariance inference for counts (aka PLNnetwork)</h3>
-<div class="sourceCode" id="cb10"><pre class="r"><span class="no">myPLNnetwork</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/PLNnetwork.html">PLNnetwork</a></span>(<span class="no">Abundance</span> ~ <span class="fl">1</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">trichoptera</span>)</pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit">
+<span class="kw">myPLNnetwork</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNnetwork.html">PLNnetwork</a></span>(<span class="kw">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data = <span class="kw">trichoptera</span>)
+</pre></div>
 </div>
 </div>
 <div id="references" class="section level2">

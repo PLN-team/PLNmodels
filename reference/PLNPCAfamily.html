@@ -83,7 +83,7 @@ getModel() and plot()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -158,20 +158,20 @@ getModel() and plot()." />
     </div>
 
     <div class="ref-description">
-    <p>The function <code><a href='PLNPCA.html'>PLNPCA()</a></code> produces an instance of this class.</p>
+    <p>The function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA()</a></code> produces an instance of this class.</p>
 <p>This class comes with a set of methods, some of them being useful for the user:
-See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></code>,
-<code><a href='getModel.html'>getModel()</a></code> and <code><a href='plot.PLNPCAfamily.html'>plot()</a></code>.</p>
+See the documentation for <code><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel()</a></code>,
+<code><a href='https://rdrr.io/pkg/PLNmodels/man/getModel.html'>getModel()</a></code> and <code><a href='https://rdrr.io/pkg/PLNmodels/man/plot.PLNPCAfamily.html'>plot()</a></code>.</p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The function <code><a href='PLNPCA.html'>PLNPCA()</a></code>, the class <code><a href='PLNPCAfit.html'>PLNPCAfit()</a></code></p></div>
+    <div class='dont-index'><p>The function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA()</a></code>, the class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit()</a></code></p></div>
     <h2 class="hasAnchor" id="super-class"><a class="anchor" href="#super-class"></a>Super class</h2>
 
-    <p><code><a href='PLNfamily.html'>PLNmodels::PLNfamily</a></code> -&gt; <code>PLNPCAfamily</code></p>
+    <p><code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNmodels::PLNfamily</a></code> -&gt; <code>PLNPCAfamily</code></p>
     <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
 
     <p><div class="r6-active-bindings"></p><dl>
@@ -202,15 +202,15 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 <hr>
 <a id="method-new"></a></p><h3>Method <code>new()</code></h3>
 <p>Initialize all models in the collection.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'>new</span>(
-  <span class='no'>ranks</span>,
-  <span class='no'>responses</span>,
-  <span class='no'>covariates</span>,
-  <span class='no'>offsets</span>,
-  <span class='no'>weights</span>,
-  <span class='no'>model</span>,
-  <span class='no'>xlevels</span>,
-  <span class='no'>control</span>
+<p><div class="r"></p><pre><span class='kw'>PLNPCAfamily</span><span class='op'>$</span><span class='fu'>new</span>(
+  <span class='kw'>ranks</span>,
+  <span class='kw'>responses</span>,
+  <span class='kw'>covariates</span>,
+  <span class='kw'>offsets</span>,
+  <span class='kw'>weights</span>,
+  <span class='kw'>model</span>,
+  <span class='kw'>xlevels</span>,
+  <span class='kw'>control</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -235,7 +235,7 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 <p><hr>
 <a id="method-optimize"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
 <p>Call to the C++ optimizer on all models of the collection</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='no'>control</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNPCAfamily</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='kw'>control</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -243,9 +243,9 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-getBestModel"></a></p><h3>Method <code><a href='getBestModel.html'>getBestModel()</a></code></h3>
+<a id="method-getBestModel"></a></p><h3>Method <code><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel()</a></code></h3>
 <p>Extract best model in the collection</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'><a href='getBestModel.html'>getBestModel</a></span>(<span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"ICL"</span>, <span class='st'>"R_squared"</span>))</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNPCAfamily</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel</a></span>(crit = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"ICL"</span>, <span class='st'>"R_squared"</span>))</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -254,11 +254,11 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 
 </dl><p></div></p>
 <h3>Returns</h3>
-<p>a <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> object</p>
+<p>a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> object</p>
 <p><hr>
-<a id="method-plot"></a></p><h3>Method <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code></h3>
+<a id="method-plot"></a></p><h3>Method <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code></h3>
 <p>Lineplot of selected criteria for all models in the collection</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='kw'>criteria</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"ICL"</span>), <span class='kw'>annotate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNPCAfamily</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(criteria = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"ICL"</span>), annotate = <span class='fl'>TRUE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -272,12 +272,12 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 <p><hr>
 <a id="method-show"></a></p><h3>Method <code>show()</code></h3>
 <p>User friendly print method</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'>show</span>()</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNPCAfamily</span><span class='op'>$</span><span class='fu'>show</span>()</pre><p></div></p>
 
 <p><hr>
 <a id="method-clone"></a></p><h3>Method <code>clone()</code></h3>
 <p>The objects of this class are cloneable with this method.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNPCAfamily</span>$<span class='fu'>clone</span>(<span class='kw'>deep</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNPCAfamily</span><span class='op'>$</span><span class='fu'>clone</span>(deep = <span class='fl'>FALSE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -288,15 +288,15 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
-<span class='no'>myPCAs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNPCA.html'>PLNPCA</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span> + <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='no'>Offset</span>)), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>, <span class='kw'>ranks</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>5</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
+<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
+<span class='kw'>myPCAs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>Offset</span>)), data = <span class='kw'>trichoptera</span>, ranks = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>)</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt; 
 #&gt;  Adjusting 5 PLN models for PCA analysis.
 #&gt; 	 Rank approximation = 1 	 Rank approximation = 2 	 Rank approximation = 3 	 Rank approximation = 4 	 Rank approximation = 5 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='no'>myPCAs</span>)</div><div class='output co'>#&gt; [1] "PLNPCAfamily" "PLNfamily"    "R6"          </div></pre>
+#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='kw'>myPCAs</span>)</div><div class='output co'>#&gt; [1] "PLNPCAfamily" "PLNfamily"    "R6"          </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

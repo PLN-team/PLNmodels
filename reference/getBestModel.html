@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -159,15 +159,15 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNPCAfamily</span>
-<span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ICL"</span>, <span class='st'>"BIC"</span>, <span class='st'>"R_squared"</span>), <span class='no'>...</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel</a></span>(<span class='kw'>Robject</span>, crit = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ICL"</span>, <span class='st'>"BIC"</span>, <span class='st'>"R_squared"</span>), <span class='kw'>...</span>)
 
-<span class='fu'>getBestModel</span>(<span class='no'>Robject</span>, <span class='no'>crit</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel</a></span>(<span class='kw'>Robject</span>, <span class='kw'>crit</span>, <span class='kw'>...</span>)
 
 <span class='co'># S3 method for PLNnetworkfamily</span>
-<span class='fu'>getBestModel</span>(
-  <span class='no'>Robject</span>,
-  <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"loglik"</span>, <span class='st'>"R_squared"</span>, <span class='st'>"EBIC"</span>, <span class='st'>"StARS"</span>),
-  <span class='no'>...</span>
+<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel</a></span>(
+  <span class='kw'>Robject</span>,
+  crit = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"loglik"</span>, <span class='st'>"R_squared"</span>, <span class='st'>"EBIC"</span>, <span class='st'>"StARS"</span>),
+  <span class='kw'>...</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -182,7 +182,7 @@
       <td><p>a character for the criterion used to performed the selection. Either
 "BIC", "ICL", "EBIC", "StARS", "R_squared". Default is <code>ICL</code> for <code>PLNPCA</code>, and <code>BIC</code> for <code>PLNnetwork</code>.
 If StARS (Stability Approach to Regularization Selection) is chosen and stability selection
-was not yet performed, the function will call the method <code><a href='stability_selection.html'>stability_selection()</a></code> with default argument.</p></td>
+was not yet performed, the function will call the method <code><a href='https://rdrr.io/pkg/PLNmodels/man/stability_selection.html'>stability_selection()</a></code> with default argument.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -192,21 +192,21 @@ was not yet performed, the function will call the method <code><a href='stabilit
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Send back an object with class <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> or <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code></p>
+    <p>Send back an object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> or <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfit.html'>PLNnetworkfit</a></code></p>
     <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
 
     
 <ul>
-<li><p><code>PLNPCAfamily</code>: Model extraction for <code><a href='PLNPCAfamily.html'>PLNPCAfamily</a></code></p></li>
-<li><p><code>PLNnetworkfamily</code>: Model extraction for <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></li>
+<li><p><code>PLNPCAfamily</code>: Model extraction for <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfamily.html'>PLNPCAfamily</a></code></p></li>
+<li><p><code>PLNnetworkfamily</code>: Model extraction for <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></li>
 </ul>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
-<span class='no'>myPCA</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNPCA.html'>PLNPCA</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span> + <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='no'>Offset</span>)), <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>, <span class='kw'>ranks</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>4</span>)
-<span class='no'>myModel</span> <span class='kw'>&lt;-</span> <span class='fu'>getBestModel</span>(<span class='no'>myPCA</span>)
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
+<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
+<span class='kw'>myPCA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>Offset</span>)), data = <span class='kw'>trichoptera</span>, ranks = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>)
+<span class='kw'>myModel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel</a></span>(<span class='kw'>myPCA</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

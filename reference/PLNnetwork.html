@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -158,14 +158,14 @@
     <p>Fit the sparse inverse covariance variant of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>PLNnetwork</span>(
-  <span class='no'>formula</span>,
-  <span class='no'>data</span>,
-  <span class='no'>subset</span>,
-  <span class='no'>weights</span>,
-  <span class='kw'>penalties</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>control_init</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  <span class='kw'>control_main</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork</a></span>(
+  <span class='kw'>formula</span>,
+  <span class='kw'>data</span>,
+  <span class='kw'>subset</span>,
+  <span class='kw'>weights</span>,
+  penalties = <span class='kw'>NULL</span>,
+  control_init = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
+  control_main = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -203,8 +203,8 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>an R6 object with class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code>, which contains
-a collection of models with class <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code></p>
+    <p>an R6 object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code>, which contains
+a collection of models with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfit.html'>PLNnetworkfit</a></code></p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The list of parameters <code>control_main</code> controls the optimization of the main process, with the following entries:</p><ul>
@@ -223,19 +223,19 @@ a collection of models with class <code><a href='PLNnetworkfit.html'>PLNnetworkf
 <li><p>"penalty_weights" p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.</p></li>
 </ul>
 
-<p>The list of parameters <code>control_init</code> controls the optimization process in the initialization and in the function <code><a href='PLN.html'>PLN()</a></code>, plus two additional parameters:</p><ul>
+<p>The list of parameters <code>control_init</code> controls the optimization process in the initialization and in the function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLN.html'>PLN()</a></code>, plus two additional parameters:</p><ul>
 <li><p>"nPenalties" an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non <code>NULL</code></p></li>
 <li><p>"min.ratio" the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by <code>min.ratio</code>. Default is 0.1.</p></li>
 </ul>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The classes <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code> and <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code></p></div>
+    <div class='dont-index'><p>The classes <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code> and <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfit.html'>PLNnetworkfit</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
-<span class='no'>fits</span> <span class='kw'>&lt;-</span> <span class='fu'>PLNnetwork</span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
+<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
+<span class='kw'>fits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, data = <span class='kw'>trichoptera</span>)</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
 #&gt; 	Joint optimization alternating gradient descent and graphical-lasso

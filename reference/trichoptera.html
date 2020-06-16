@@ -85,7 +85,7 @@ contiguous nights between summer 1959 and summer 1960." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -168,7 +168,7 @@ the trapping nights), have been classified into 12 groups corresponding to
 contiguous nights between summer 1959 and summer 1960.</p>
     </div>
 
-    <pre class="usage"><span class='no'>trichoptera</span></pre>
+    <pre class="usage"><span class='kw'>trichoptera</span></pre>
 
 
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
@@ -187,7 +187,7 @@ Abundancea 49 x 17 matrix of abundancies/counts (49 trapping nights and 17 trich
 
 </dl>
 
-<p>In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use <code><a href='prepare_data.html'>prepare_data()</a></code>.
+<p>In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use <code><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data()</a></code>.
 We only kept a subset of the original meteorological covariates for illustration purposes.</p>
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
 
@@ -198,11 +198,11 @@ We only kept a subset of the original meteorological covariates for illustration
 See a data description at <a href='http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf'>http://pbil.univ-lyon1.fr/R/pdf/pps034.pdf</a> (in French)</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='prepare_data.html'>prepare_data()</a></code></p></div>
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data()</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
+<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

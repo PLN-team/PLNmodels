@@ -82,7 +82,7 @@ See the documentation for plot() and methods inherited from PLNfit." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -157,19 +157,19 @@ See the documentation for plot() and methods inherited from PLNfit." />
     </div>
 
     <div class="ref-description">
-    <p>The function <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> produces a collection of models which are instances of object with class <code>PLNnetworkfit</code>.</p>
+    <p>The function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code> produces a collection of models which are instances of object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfit.html'>PLNnetworkfit</a></code>.</p>
 <p>This class comes with a set of methods, some of them being useful for the user:
-See the documentation for <code><a href='plot.PLNnetworkfit.html'>plot()</a></code> and methods inherited from <code><a href='PLNfit.html'>PLNfit</a></code>.</p>
+See the documentation for <code><a href='https://rdrr.io/pkg/PLNmodels/man/plot.PLNnetworkfit.html'>plot()</a></code> and methods inherited from <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfit.html'>PLNfit</a></code>.</p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The function <code><a href='PLNnetwork.html'>PLNnetwork()</a></code>, the class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></div>
+    <div class='dont-index'><p>The function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code>, the class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></div>
     <h2 class="hasAnchor" id="super-class"><a class="anchor" href="#super-class"></a>Super class</h2>
 
-    <p><code><a href='PLNfit.html'>PLNmodels::PLNfit</a></code> -&gt; <code>PLNnetworkfit</code></p>
+    <p><code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfit.html'>PLNmodels::PLNfit</a></code> -&gt; <code>PLNnetworkfit</code></p>
     <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
 
     <p><div class="r6-active-bindings"></p><dl>
@@ -220,16 +220,16 @@ and graph density</p></dd>
 
 <hr>
 <a id="method-new"></a></p><h3>Method <code>new()</code></h3>
-<p>Initialize a <code>PLNnetworkfit</code> object</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>new</span>(
-  <span class='no'>penalty</span>,
-  <span class='no'>responses</span>,
-  <span class='no'>covariates</span>,
-  <span class='no'>offsets</span>,
-  <span class='no'>weights</span>,
-  <span class='no'>model</span>,
-  <span class='no'>xlevels</span>,
-  <span class='no'>control</span>
+<p>Initialize a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfit.html'>PLNnetworkfit</a></code> object</p><h3>Usage</h3>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfit</span><span class='op'>$</span><span class='fu'>new</span>(
+  <span class='kw'>penalty</span>,
+  <span class='kw'>responses</span>,
+  <span class='kw'>covariates</span>,
+  <span class='kw'>offsets</span>,
+  <span class='kw'>weights</span>,
+  <span class='kw'>model</span>,
+  <span class='kw'>xlevels</span>,
+  <span class='kw'>control</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -246,26 +246,26 @@ and graph density</p></dd>
 
 <dt><code>model</code></dt><dd><p>model used for fitting, extracted from the formula in the upper-level call</p></dd>
 
-<dt><code>xlevels</code></dt><dd><p>named listed of factor levels included in the models, extracted from the formula in <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> call</p></dd>
+<dt><code>xlevels</code></dt><dd><p>named listed of factor levels included in the models, extracted from the formula in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code> call</p></dd>
 
-<dt><code>control</code></dt><dd><p>a list for controlling the optimization of the PLN model used at initialization. See <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></dd>
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization of the PLN model used at initialization. See <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></dd>
 
 </dl><p></div></p>
 <p><hr>
 <a id="method-update"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/update.html'>update()</a></code></h3>
-<p>Update fields of a <code>PLNnetworkfit</code> object</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'><a href='https://rdrr.io/r/stats/update.html'>update</a></span>(
-  <span class='kw'>penalty</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>Theta</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>Sigma</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>Omega</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>M</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>S2</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>Z</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>A</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>Ji</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>monitoring</span> <span class='kw'>=</span> <span class='fl'>NA</span>
+<p>Update fields of a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfit.html'>PLNnetworkfit</a></code> object</p><h3>Usage</h3>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfit</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/stats/update.html'>update</a></span>(
+  penalty = <span class='fl'>NA</span>,
+  Theta = <span class='fl'>NA</span>,
+  Sigma = <span class='fl'>NA</span>,
+  Omega = <span class='fl'>NA</span>,
+  M = <span class='fl'>NA</span>,
+  S2 = <span class='fl'>NA</span>,
+  Z = <span class='fl'>NA</span>,
+  A = <span class='fl'>NA</span>,
+  Ji = <span class='fl'>NA</span>,
+  R2 = <span class='fl'>NA</span>,
+  monitoring = <span class='fl'>NA</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -296,7 +296,7 @@ and graph density</p></dd>
 <p><hr>
 <a id="method-optimize"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
 <p>Call to the C++ optimizer and update of the relevant fields</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='no'>responses</span>, <span class='no'>covariates</span>, <span class='no'>offsets</span>, <span class='no'>weights</span>, <span class='no'>control</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfit</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='kw'>responses</span>, <span class='kw'>covariates</span>, <span class='kw'>offsets</span>, <span class='kw'>weights</span>, <span class='kw'>control</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -308,13 +308,13 @@ and graph density</p></dd>
 
 <dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
-<dt><code>control</code></dt><dd><p>a list for controlling the optimization of the PLN model used at initialization. See <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></dd>
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization of the PLN model used at initialization. See <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></dd>
 
 </dl><p></div></p>
 <p><hr>
 <a id="method-postTreatment"></a></p><h3>Method <code>postTreatment()</code></h3>
 <p>Compute PCA scores in the latent space and update corresponding fields.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>postTreatment</span>(<span class='no'>responses</span>, <span class='no'>covariates</span>, <span class='no'>offsets</span>, <span class='no'>weights</span>, <span class='no'>nullModel</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfit</span><span class='op'>$</span><span class='fu'>postTreatment</span>(<span class='kw'>responses</span>, <span class='kw'>covariates</span>, <span class='kw'>offsets</span>, <span class='kw'>weights</span>, <span class='kw'>nullModel</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -332,7 +332,7 @@ and graph density</p></dd>
 <p><hr>
 <a id="method-latent_network"></a></p><h3>Method <code>latent_network()</code></h3>
 <p>Extract interaction network in the latent space</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>latent_network</span>(<span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"partial_cor"</span>, <span class='st'>"support"</span>, <span class='st'>"precision"</span>))</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfit</span><span class='op'>$</span><span class='fu'>latent_network</span>(type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"partial_cor"</span>, <span class='st'>"support"</span>, <span class='st'>"precision"</span>))</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -344,14 +344,14 @@ and graph density</p></dd>
 <p><hr>
 <a id="method-plot_network"></a></p><h3>Method <code>plot_network()</code></h3>
 <p>plot the latent network.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>plot_network</span>(
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"partial_cor"</span>, <span class='st'>"support"</span>),
-  <span class='kw'>output</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"igraph"</span>, <span class='st'>"corrplot"</span>),
-  <span class='kw'>edge.color</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"#F8766D"</span>, <span class='st'>"#00BFC4"</span>),
-  <span class='kw'>remove.isolated</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>node.labels</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>layout</span> <span class='kw'>=</span> <span class='no'>layout_in_circle</span>,
-  <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfit</span><span class='op'>$</span><span class='fu'>plot_network</span>(
+  type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"partial_cor"</span>, <span class='st'>"support"</span>),
+  output = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"igraph"</span>, <span class='st'>"corrplot"</span>),
+  edge.color = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"#F8766D"</span>, <span class='st'>"#00BFC4"</span>),
+  remove.isolated = <span class='fl'>FALSE</span>,
+  node.labels = <span class='kw'>NULL</span>,
+  layout = <span class='kw'>layout_in_circle</span>,
+  plot = <span class='fl'>TRUE</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -374,12 +374,12 @@ and graph density</p></dd>
 <p><hr>
 <a id="method-show"></a></p><h3>Method <code>show()</code></h3>
 <p>User friendly print method</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>show</span>()</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfit</span><span class='op'>$</span><span class='fu'>show</span>()</pre><p></div></p>
 
 <p><hr>
 <a id="method-clone"></a></p><h3>Method <code>clone()</code></h3>
 <p>The objects of this class are cloneable with this method.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfit</span>$<span class='fu'>clone</span>(<span class='kw'>deep</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfit</span><span class='op'>$</span><span class='fu'>clone</span>(deep = <span class='fl'>FALSE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -390,13 +390,13 @@ and graph density</p></dd>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
-<span class='no'>nets</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)
-<span class='no'>myPLNnet</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='getBestModel.html'>getBestModel</a></span>(<span class='no'>nets</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='no'>myPLNnet</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>myPLNnet</span>)
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
+<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
+<span class='kw'>nets</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, data = <span class='kw'>trichoptera</span>)
+<span class='kw'>myPLNnet</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel</a></span>(<span class='kw'>nets</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='kw'>myPLNnet</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>myPLNnet</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

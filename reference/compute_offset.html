@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -158,7 +158,7 @@
     <p>Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>compute_offset</span>(<span class='no'>counts</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"TSS"</span>, <span class='st'>"GMPR"</span>, <span class='st'>"RLE"</span>, <span class='st'>"CSS"</span>, <span class='st'>"none"</span>), <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/compute_offset.html'>compute_offset</a></span>(<span class='kw'>counts</span>, offset = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"TSS"</span>, <span class='st'>"GMPR"</span>, <span class='st'>"RLE"</span>, <span class='st'>"CSS"</span>, <span class='st'>"none"</span>), <span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -190,9 +190,9 @@
 <p>Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 <a href='https://doi.org/10.1186/gb-2010-11-10-r106'>https://doi.org/10.1186/gb-2010-11-10-r106</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>counts</span> <span class='kw'>&lt;-</span> <span class='no'>trichoptera</span>$<span class='no'>Abundance</span>
-<span class='fu'>compute_offset</span>(<span class='no'>counts</span>)</div><div class='output co'>#&gt;    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
+<span class='kw'>counts</span> <span class='op'>&lt;-</span> <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>
+<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/compute_offset.html'>compute_offset</a></span>(<span class='kw'>counts</span>)</div><div class='output co'>#&gt;    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16 
 #&gt;   29   13   38  192   79   18    8   34   12    4    4    3   49   33  600  172 
 #&gt;   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32 
 #&gt;   58   51   56  127   35   13   17    3   27   40   44    8    9 1599 2980   88 
@@ -200,7 +200,7 @@
 #&gt;  135  327   66   90   63   15   14   20   70   53   95   43   62  149   16   31 
 #&gt;   49 
 #&gt;   86 </div><div class='input'><span class='co'>## Other normalization schemes</span>
-<span class='fu'>compute_offset</span>(<span class='no'>counts</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='st'>"GMPR"</span>)</div><div class='output co'>#&gt;  [1]  0.5808301  0.5527895  0.3237539  1.3108117  0.8377992  0.3519896
+<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/compute_offset.html'>compute_offset</a></span>(<span class='kw'>counts</span>, offset = <span class='st'>"GMPR"</span>)</div><div class='output co'>#&gt;  [1]  0.5808301  0.5527895  0.3237539  1.3108117  0.8377992  0.3519896
 #&gt;  [7]  0.3480463  0.4473427  0.8240140  0.2102193  0.2417350  0.4792073
 #&gt; [13]  0.5617223  0.5626398  6.7233230  1.9539350  0.6789666  0.9708882
 #&gt; [19]  1.3048896  2.7954398  0.7849527  0.2390629  0.3191927  0.1765953
@@ -208,7 +208,7 @@
 #&gt; [31] 17.1399945  1.5216545  2.4971909  4.3163554  1.4396566  1.2444733
 #&gt; [37]  1.3477580  0.3869058  0.3514524  0.5822573  1.3701441  1.1127722
 #&gt; [43]  0.8582550  0.7646813  1.6970049  2.6515814  0.3343895  0.7587955
-#&gt; [49]  0.9715722</div><div class='input'><span class='fu'>compute_offset</span>(<span class='no'>counts</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='st'>"RLE"</span>, <span class='kw'>pseudocounts</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;         1         2         3         4         5         6         7         8 
+#&gt; [49]  0.9715722</div><div class='input'><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/compute_offset.html'>compute_offset</a></span>(<span class='kw'>counts</span>, offset = <span class='st'>"RLE"</span>, pseudocounts = <span class='fl'>1</span>)</div><div class='output co'>#&gt;         1         2         3         4         5         6         7         8 
 #&gt; 0.9186270 0.8349121 0.8570257 0.9186270 0.9186270 0.8349121 0.8192245 0.8570257 
 #&gt;         9        10        11        12        13        14        15        16 
 #&gt; 0.7322797 0.7322797 0.6321923 0.6321923 0.9240361 0.9186270 1.3788037 0.9240361 
@@ -222,8 +222,8 @@
 #&gt; 0.9240361 0.9240361 0.9584503 0.9584503 1.2643846 1.7140514 0.8233555 0.8908577 
 #&gt;        49 
 #&gt; 0.9186270 </div><div class='input'><span class='co'>## User supplied offsets</span>
-<span class='no'>my_offset</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/setNames.html'>setNames</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>counts</span>)), <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='no'>counts</span>))
-<span class='fu'>compute_offset</span>(<span class='no'>counts</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='no'>my_offset</span>)</div><div class='output co'>#&gt;    Che Hyc Hym Hys Psy Aga Glo Ath Cea Ced Set All Han Hfo Hsp Hve Sta
+<span class='kw'>my_offset</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/setNames.html'>setNames</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>counts</span>)), <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='kw'>counts</span>))
+<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/compute_offset.html'>compute_offset</a></span>(<span class='kw'>counts</span>, offset = <span class='kw'>my_offset</span>)</div><div class='output co'>#&gt;    Che Hyc Hym Hys Psy Aga Glo Ath Cea Ced Set All Han Hfo Hsp Hve Sta
 #&gt; 1    1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
 #&gt; 2    1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
 #&gt; 3    1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1

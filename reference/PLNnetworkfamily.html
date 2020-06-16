@@ -83,7 +83,7 @@ getModel() and plot()" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.5</span>
       </span>
     </div>
 
@@ -158,20 +158,20 @@ getModel() and plot()" />
     </div>
 
     <div class="ref-description">
-    <p>The function <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> produces an instance of this class.</p>
+    <p>The function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code> produces an instance of this class.</p>
 <p>This class comes with a set of methods, some of them being useful for the user:
-See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></code>,
-<code><a href='getModel.html'>getModel()</a></code> and <a href='plot.PLNnetworkfamily.html'>plot()</a></p>
+See the documentation for <code><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel()</a></code>,
+<code><a href='https://rdrr.io/pkg/PLNmodels/man/getModel.html'>getModel()</a></code> and <a href='https://rdrr.io/pkg/PLNmodels/man/plot.PLNnetworkfamily.html'>plot()</a></p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The function <code><a href='PLNnetwork.html'>PLNnetwork()</a></code>, the class <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code></p></div>
+    <div class='dont-index'><p>The function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code>, the class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfit.html'>PLNnetworkfit</a></code></p></div>
     <h2 class="hasAnchor" id="super-class"><a class="anchor" href="#super-class"></a>Super class</h2>
 
-    <p><code><a href='PLNfamily.html'>PLNmodels::PLNfamily</a></code> -&gt; <code>PLNnetworkfamily</code></p>
+    <p><code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNmodels::PLNfamily</a></code> -&gt; <code>PLNnetworkfamily</code></p>
     <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
 
     <p><div class="r6-active-bindings"></p><dl>
@@ -212,15 +212,15 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 <hr>
 <a id="method-new"></a></p><h3>Method <code>new()</code></h3>
 <p>Initialize all models in the collection</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'>new</span>(
-  <span class='no'>penalties</span>,
-  <span class='no'>responses</span>,
-  <span class='no'>covariates</span>,
-  <span class='no'>offsets</span>,
-  <span class='no'>weights</span>,
-  <span class='no'>model</span>,
-  <span class='no'>xlevels</span>,
-  <span class='no'>control</span>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'>new</span>(
+  <span class='kw'>penalties</span>,
+  <span class='kw'>responses</span>,
+  <span class='kw'>covariates</span>,
+  <span class='kw'>offsets</span>,
+  <span class='kw'>weights</span>,
+  <span class='kw'>model</span>,
+  <span class='kw'>xlevels</span>,
+  <span class='kw'>control</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -243,11 +243,11 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 
 </dl><p></div></p>
 <h3>Returns</h3>
-<p>Update current <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code> with smart starting values</p>
+<p>Update current <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfit.html'>PLNnetworkfit</a></code> with smart starting values</p>
 <p><hr>
 <a id="method-optimize"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
 <p>Call to the C++ optimizer on all models of the collection</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='no'>control</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='kw'>control</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -255,27 +255,27 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-stability_selection"></a></p><h3>Method <code><a href='stability_selection.html'>stability_selection()</a></code></h3>
+<a id="method-stability_selection"></a></p><h3>Method <code><a href='https://rdrr.io/pkg/PLNmodels/man/stability_selection.html'>stability_selection()</a></code></h3>
 <p>Compute the stability path by stability selection</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'><a href='stability_selection.html'>stability_selection</a></span>(
-  <span class='kw'>subsamples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>control</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/stability_selection.html'>stability_selection</a></span>(
+  subsamples = <span class='kw'>NULL</span>,
+  control = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
+  mc.cores = <span class='fl'>1</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
 <dt><code>subsamples</code></dt><dd><p>a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size <code>10*sqrt(n)</code> if <code>n &gt;= 144</code> and <code>0.8*n</code> otherwise following Liu et al. (2010) recommendations.</p></dd>
 
-<dt><code>control</code></dt><dd><p>a list controlling the main optimization process in each call to PLNnetwork. See <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></dd>
+<dt><code>control</code></dt><dd><p>a list controlling the main optimization process in each call to PLNnetwork. See <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></dd>
 
 <dt><code>mc.cores</code></dt><dd><p>the number of cores to used. Default is 1.</p></dd>
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-coefficient_path"></a></p><h3>Method <code><a href='coefficient_path.html'>coefficient_path()</a></code></h3>
-<p>Extract the regularization path of a <code>PLNnetworkfamily</code></p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'><a href='coefficient_path.html'>coefficient_path</a></span>(<span class='kw'>precision</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>corr</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre><p></div></p>
+<a id="method-coefficient_path"></a></p><h3>Method <code><a href='https://rdrr.io/pkg/PLNmodels/man/coefficient_path.html'>coefficient_path()</a></code></h3>
+<p>Extract the regularization path of a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p><h3>Usage</h3>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/coefficient_path.html'>coefficient_path</a></span>(precision = <span class='fl'>TRUE</span>, corr = <span class='fl'>TRUE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -285,11 +285,11 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-getBestModel"></a></p><h3>Method <code><a href='getBestModel.html'>getBestModel()</a></code></h3>
+<a id="method-getBestModel"></a></p><h3>Method <code><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel()</a></code></h3>
 <p>Extract the best network in the family according to some criteria</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'><a href='getBestModel.html'>getBestModel</a></span>(
-  <span class='kw'>crit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"loglik"</span>, <span class='st'>"R_squared"</span>, <span class='st'>"EBIC"</span>, <span class='st'>"StARS"</span>),
-  <span class='kw'>stability</span> <span class='kw'>=</span> <span class='fl'>0.9</span>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel</a></span>(
+  crit = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"loglik"</span>, <span class='st'>"R_squared"</span>, <span class='st'>"EBIC"</span>, <span class='st'>"StARS"</span>),
+  stability = <span class='fl'>0.9</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -300,12 +300,12 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-plot"></a></p><h3>Method <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code></h3>
-<p>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code>PLNnetworkfamily</code>)</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
-  <span class='kw'>criteria</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"pen_loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>),
-  <span class='kw'>log.x</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='no'>annotate</span>
+<a id="method-plot"></a></p><h3>Method <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code></h3>
+<p>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code>)</p><h3>Usage</h3>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(
+  criteria = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"pen_loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>),
+  log.x = <span class='fl'>TRUE</span>,
+  <span class='kw'>annotate</span>
 )</pre><p></div></p>
 
 <h3>Arguments</h3>
@@ -322,7 +322,7 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 <p><hr>
 <a id="method-plot_stars"></a></p><h3>Method <code>plot_stars()</code></h3>
 <p>Plot stability path</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'>plot_stars</span>(<span class='kw'>stability</span> <span class='kw'>=</span> <span class='fl'>0.9</span>, <span class='kw'>log.x</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'>plot_stars</span>(stability = <span class='fl'>0.9</span>, log.x = <span class='fl'>TRUE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -336,19 +336,19 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 <p><hr>
 <a id="method-plot_objective"></a></p><h3>Method <code>plot_objective()</code></h3>
 <p>Plot objective value of the optimization problem along the penalty path</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'>plot_objective</span>()</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'>plot_objective</span>()</pre><p></div></p>
 
 <h3>Returns</h3>
 <p>a <code>ggplot</code> graph</p>
 <p><hr>
 <a id="method-show"></a></p><h3>Method <code>show()</code></h3>
 <p>User friendly print method</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'>show</span>()</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'>show</span>()</pre><p></div></p>
 
 <p><hr>
 <a id="method-clone"></a></p><h3>Method <code>clone()</code></h3>
 <p>The objects of this class are cloneable with this method.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>PLNnetworkfamily</span>$<span class='fu'>clone</span>(<span class='kw'>deep</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='kw'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'>clone</span>(deep = <span class='fl'>FALSE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl>
@@ -359,15 +359,15 @@ See the documentation for <code><a href='getBestModel.html'>getBestModel()</a></
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>trichoptera</span>)
-<span class='no'>trichoptera</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span>(<span class='no'>trichoptera</span>$<span class='no'>Abundance</span>, <span class='no'>trichoptera</span>$<span class='no'>Covariate</span>)
-<span class='no'>fits</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span>(<span class='no'>Abundance</span> ~ <span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>trichoptera</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
+<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
+<span class='kw'>fits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, data = <span class='kw'>trichoptera</span>)</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
 #&gt; 	Joint optimization alternating gradient descent and graphical-lasso
 #&gt; 	sparsifying penalty = 7.499547 	sparsifying penalty = 6.927113 	sparsifying penalty = 6.398373 	sparsifying penalty = 5.90999 	sparsifying penalty = 5.458886 	sparsifying penalty = 5.042214 	sparsifying penalty = 4.657346 	sparsifying penalty = 4.301855 	sparsifying penalty = 3.973498 	sparsifying penalty = 3.670204 	sparsifying penalty = 3.390061 	sparsifying penalty = 3.1313 	sparsifying penalty = 2.892291 	sparsifying penalty = 2.671525 	sparsifying penalty = 2.46761 	sparsifying penalty = 2.279259 	sparsifying penalty = 2.105285 	sparsifying penalty = 1.944591 	sparsifying penalty = 1.796162 	sparsifying penalty = 1.659062 	sparsifying penalty = 1.532427 	sparsifying penalty = 1.415458 	sparsifying penalty = 1.307418 	sparsifying penalty = 1.207624 	sparsifying penalty = 1.115447 	sparsifying penalty = 1.030306 	sparsifying penalty = 0.9516633 	sparsifying penalty = 0.8790237 	sparsifying penalty = 0.8119286 	sparsifying penalty = 0.7499547 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='no'>fits</span>)</div><div class='output co'>#&gt; [1] "PLNnetworkfamily" "PLNfamily"        "R6"              </div></pre>
+#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='kw'>fits</span>)</div><div class='output co'>#&gt; [1] "PLNnetworkfamily" "PLNfamily"        "R6"              </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
