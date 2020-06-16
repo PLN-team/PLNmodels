@@ -14,9 +14,10 @@
 - macOS Catalina 10.15, R-devel (github action)
 - Linux ubuntu 16.04, R-release (github-action)
 - Linux ubuntu 18.04 R-release, (local)
-- Debian Linux, R-release, GCC (on R hub),
 - Windows Server 2019, R-release (github action)
 - Windows Server 2008 R2 SP1, R-release  (on R hub)
+- Windows, R-release (winbuilder)
+- Windows, R-release  (winbuilder)
 
 all status OK except for one note:
 
