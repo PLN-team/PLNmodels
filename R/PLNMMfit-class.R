@@ -61,24 +61,24 @@ PLNMMfit <-
             ## E - STEP
             ## UPDATE THE POSTERIOR PROBABILITIES
             if (self$k > 1) { # only needed when at least 2 components!
-              J_ic <- sapply(private$comp, function(comp) comp$loglik_vec)
-              private$tau <- sweep(J_ic, 2, log(colMeans(private$tau)), "+") %>%
-                apply(1, .softmax) %>% t() %>% .check_boundaries()
+              private$tau <-
+                sapply(private$comp, function(comp) comp$loglik_vec) %>% # Jik
+                sweep(2, log(self$mixtureParam), "+") %>% # computation in log space
+                apply(1, .softmax) %>%        # exponentiation + normalization with soft-max
+                t() %>% .check_boundaries()   # bound away probabilities from 0/1
             }
 
             ## ---------------------------------------------------
             ## M - STEP
             ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNMM
-            for (k_ in seq.int(self$k)) {
-              self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
-            }
+            parallel::mclapply(seq.int(self$k), function(k_){
+                self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
+            }, mc.cores = control$cores)
 
+            ## Assess convergence
             objective[iter]   <- -self$loglik
-            convergence[iter] <- (objective[iter-1] - objective[iter])/abs(objective[iter])
-
-            ## Check convergence
+            convergence[iter] <- abs(objective[iter-1] - objective[iter])/abs(objective[iter])
             if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
-            objective_old <- objective[iter]
 
           }
 
@@ -114,7 +114,7 @@ PLNMMfit <-
       #' @field n number of samples
       n = function() {nrow(private$tau)},
       #' @field k number of components
-      k = function() {ncol(private$tau)},
+      k = function() {length(private$comp)},
       #' @field components components of the mixture (PLNfits)
       components    = function() {private$comp},
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
@@ -134,7 +134,7 @@ PLNMMfit <-
       #' @field loglik_vec element-wise variational lower bound of the loglikelihood
       loglik_vec = function() {
         J_ik <- sapply(private$comp, function(comp_) comp_$loglik_vec)
-        rowSums(private$tau * J_ik) - rowSums(.xlogx(private$tau)) + rowSums(sweep(private$tau, 2, self$mixtureParam, "*"))
+        rowSums(private$tau * J_ik) - rowSums(.xlogx(private$tau)) + private$tau %*% log(self$mixtureParam)
         },
       #' @field BIC variational lower bound of the BIC
       BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
