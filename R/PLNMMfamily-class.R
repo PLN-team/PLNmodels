@@ -57,8 +57,7 @@ PLNMMfamily <-
           ## each PLNMMfit will itself instantiate as many PLNmodels
           ## as the current choice of number of components
           ## random guess tau <- .check_boundaries(t(rmultinom(nrow(responses), 1, rep(1:k)/k)))
-          tau <- mclust_out$z
-          PLNMMfit$new(inception = myPLN, tau = tau)
+          PLNMMfit$new(responses, covariates, offsets, mclust_out$z, model, xlevels, control)
         })
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
