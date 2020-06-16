@@ -34,9 +34,7 @@ double fn_optim_PLN_spherical(unsigned N, const double *x, double *grad, void *d
   optim_data *dat = (optim_data *) data;
   dat->iterations++;
 
-
   int n = dat->n, p = dat->p, d = dat->d ;
-  double w_bar = accu(dat->w) ;
 
   arma::mat Theta(&x[0]  , p,d);
   arma::mat M(&x[p*d]    , n,p);
@@ -45,9 +43,9 @@ double fn_optim_PLN_spherical(unsigned N, const double *x, double *grad, void *d
   arma::mat Z = dat->O + dat->X * Theta.t() + M;
   arma::mat A = exp (Z.each_col() + .5 * S2) ;
 
-  double sigma2 = arma::as_scalar(accu(M % (M.each_col() % dat->w)) / (w_bar * p) + accu(dat->w % S2)/w_bar);
+  double sigma2 = arma::as_scalar(accu(M % (M.each_col() % dat->w)) / (dat->w_bar * p) + accu(dat->w % S2)/dat->w_bar);
 
-  double objective = accu(diagmat(dat->w) * (A - dat->Y % Z))  - p*accu(.5 * dat->w % log(S2)) + .5 * w_bar*p*log(sigma2) ;
+  double objective = accu(diagmat(dat->w) * (A - dat->Y % Z))  - p*accu(.5 * dat->w % log(S2)) + .5 * dat->w_bar*p*log(sigma2) ;
 
   arma::vec grd_Theta = vectorise(trans(A - dat->Y) * (dat->X.each_col() % dat->w));
   arma::vec grd_M     = vectorise(diagmat(dat->w) * (M/sigma2 + A - dat->Y)) ;
