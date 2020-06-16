@@ -30,8 +30,8 @@ all status OK except for one note:
 
 On my computer I get (Ubuntu 18.04, Intel Xeon 3.5 GHz; 32 Go mem)
 
-── R CMD check results ─────────────────────────────────── PLNmodels 0.10.4 ────
-Duration: 2m 53.1s
+── R CMD check results ─────────────────────────────────── PLNmodels 0.10.5 ────
+Duration: 2m 30.3s
 
 > checking installed package size ... NOTE
     installed size is 10.7Mb
