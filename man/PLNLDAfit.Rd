@@ -101,7 +101,7 @@ Initialize a \code{\link{PLNLDAfit}} object
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
 

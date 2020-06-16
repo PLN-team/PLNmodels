@@ -164,7 +164,7 @@ Initialize a \code{\link{PLNfit}} model
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
 
@@ -193,7 +193,7 @@ Call to the C++ optimizer and update of the relevant fields
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
@@ -218,7 +218,7 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 
 \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
@@ -251,7 +251,7 @@ Update R2 field after optimization
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }
@@ -318,7 +318,7 @@ Update R2, fisher and std_err fields after optimization
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{type}}{approximation scheme to compute the fisher information matrix. Either \code{wald} (default) or \code{louis}. \code{type = "louis"} results in smaller confidence intervals.}
 

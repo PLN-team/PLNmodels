@@ -102,7 +102,7 @@ Initialize a \code{\link{PLNnetworkfit}} object
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
 
@@ -180,7 +180,7 @@ Call to the C++ optimizer and update of the relevant fields
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{control}}{a list for controlling the optimization of the PLN model used at initialization. See \code{\link[=PLNnetwork]{PLNnetwork()}} for details.}
 }
@@ -205,7 +205,7 @@ Compute PCA scores in the latent space and update corresponding fields.
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }

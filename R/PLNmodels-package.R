@@ -4,15 +4,15 @@
 ##' PCA or LDA for count data, network inference). This package implements efficient
 ##' variational algorithms to fit such models accompanied with a set of functions for visualization and diagnostic.
 ##'
-##' @section Unpenalized Poisson lognormal model (aka PLN):
+##' @section Multivariate Poisson lognormal model (aka PLN):
 ##'
-##' See the main function \code{\link{PLN}} and the associated methods for manipulation.
+##' See the main function [PLN()] and the associated methods for manipulation.
 ##'
 ##' Also try vignette("PLN_trichoptera", package="PLNmodels") for an overview.
 ##'
-##' @section Rank Constrained Poisson lognormal for Poisson Principal Component Analysis (ala PLNPCA):
+##' @section Rank Constrained Poisson lognormal for Poisson Principal Component Analysis (aka PLNPCA):
 ##'
-##' See the main function \code{\link{PLNPCA}} and the associated methods for manipulation.
+##' See the main function [PLNPCA()] and the associated methods for manipulation.
 ##'
 ##' The Poisson PCA and the associated variational inference is fully explained in Chiquet el al (2018), see reference below.
 ##'
@@ -20,19 +20,19 @@
 ##'
 ##' @section Sparse Poisson lognormal model for sparse covariance inference for counts (aka PLNnetwork):
 ##'
-##' See the main function \code{\link{PLNnetwork}} and the associated methods for manipulation.
+##' See the main function [PLNnetwork()] and the associated methods for manipulation.
 ##'
 ##' Also try vignette("PLNnetwork_trichoptera", package="PLNmodels") for an overview.
 ##'
 ##' @section Poisson lognormal discriminant analysis (aka PLNLDA):
 ##'
-##' See the main function \code{\link{PLNLDA}} and the associated methods for manipulation.
+##' See the main function [PLNLDA()] and the associated methods for manipulation.
 ##'
 ##' Also try vignette("PLNLDA_trichoptera", package="PLNmodels") for an overview.
 ##'
-##' @author Julien Chiquet \email{julien.chiquet@@inra.fr}
-##' @author Mahendra Mariadassou \email{mahendra.mariadassou@@inra.fr}
-##' @author Stéphane Robin \email{stephane.robin@@inra.fr}
+##' @author Julien Chiquet \email{julien.chiquet@@inrae.fr}
+##' @author Mahendra Mariadassou \email{mahendra.mariadassou@@inrae.fr}
+##' @author Stéphane Robin \email{stephane.robin@@inrae.fr}
 ##'
 ##' @import methods R6 parallel Matrix nloptr
 ##' @importFrom Rcpp sourceCpp

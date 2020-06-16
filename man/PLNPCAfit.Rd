@@ -100,7 +100,7 @@ Initialize a \code{\link{PLNPCAfit}} object
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
 
@@ -178,7 +178,7 @@ Call to the C++ optimizer and update of the relevant fields
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
@@ -221,7 +221,7 @@ after optimization
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
 
-\item{\code{weights}}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }

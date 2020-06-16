@@ -14,9 +14,10 @@
 - macOS Catalina 10.15, R-devel (github action)
 - Linux ubuntu 16.04, R-release (github-action)
 - Linux ubuntu 18.04 R-release, (local)
-- Debian Linux, R-devel, GCC (on R hub),
 - Windows Server 2019, R-release (github action)
 - Windows Server 2008 R2 SP1, R-release  (on R hub)
+- Windows, R-release (winbuilder)
+- Windows, R-release  (winbuilder)
 
 all status OK except for one note:
 
@@ -30,8 +31,8 @@ all status OK except for one note:
 
 On my computer I get (Ubuntu 18.04, Intel Xeon 3.5 GHz; 32 Go mem)
 
-── R CMD check results ─────────────────────────────────── PLNmodels 0.10.4 ────
-Duration: 2m 53.1s
+── R CMD check results ─────────────────────────────────── PLNmodels 0.10.5 ────
+Duration: 2m 30.3s
 
 > checking installed package size ... NOTE
     installed size is 10.7Mb

@@ -8,7 +8,7 @@
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
-#' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
+#' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param model model used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param rank rank of the PCA (or equivalently, dimension of the latent space)
