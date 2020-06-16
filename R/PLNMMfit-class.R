@@ -17,6 +17,7 @@
 #' @param R_squared approximated goodness-of-fit criterion
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
+#' @importFrom parallel mclapply
 #' @seealso The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfamily]{PLNMMfamily}}
 PLNMMfit <-
   R6Class(classname = "PLNMMfit",
@@ -28,22 +29,14 @@ PLNMMfit <-
     ),
     public  = list(
       initialize = function(responses, covariates, offsets, tau, model, xlevels, control) {
-        components <- list()
-        for (k_ in 1:ncol(tau)) {
-          components[[k_]] <- PLNfit$new(responses, covariates, offsets, tau[, k_], model, xlevels, control)
-          components[[k_]]$optimize(responses, covariates, offsets, tau[, k_], control)
-        }
-        private$comp <- components
-        private$tau  <- tau
+        private$tau <- tau
+        private$comp <- mclapply(seq.int(ncol(tau)), function(k_) {
+          component <- PLNfit$new(responses, covariates, offsets, tau[, k_], model, xlevels, control)
+          component$optimize(responses, covariates, offsets, tau[, k_], control)
+          component$set_R2(responses, covariates, offsets, tau[, k_], NULL)
+          component
+        }, mc.cores = control$cores)
       },
-      update = function(tau=NA, R2=NA, monitoring=NA) {
-        ## Theta=NA, Sigma=NA, M=NA, S=NA,
-        ## later ... super$update(Theta, Sigma, M, S, J, R2, monitoring)
-        if (!anyNA(tau))        private$tau    <- tau
-        if (!anyNA(R2))         private$R2     <- R2
-        if (!anyNA(monitoring)) private$monitoring <- monitoring
-      },
-      ## multi core ???
       optimize = function(responses, covariates, offsets, control) {
           ## ===========================================
           ## INITIALISATION

@@ -6,7 +6,7 @@ data("iris")
 lambda <- exp(as.matrix(iris[, 1:4]))
 count <- matrix(rpois (nrow(iris) * 4, lambda), nrow(iris), 4)
 
-myPLN <- PLNMM(count ~ 1, clusters = 1:4)
+myPLN <- PLNMM(count ~ 1, clusters = 1:4, control_main = list(covariance = "diagonal"))
 myPLN$plot()
 myPLN$plot_objective()
 # bestModel <- myPLN$getBestModel("ICL")
@@ -24,7 +24,7 @@ aricode::ARI(bestModel$memberships, kmeans_cl)
 
 data("mollusk")
 mollusc <- prepare_data(mollusk$Abundance, mollusk$Covariate)
-mollusk_mixture <- PLNMM(Abundance ~ 1, clusters = 1:10, data = mollusc)
+mollusk_mixture <- PLNMM(Abundance ~ 1 + offset(log(Offset)), clusters = 1:6, data = mollusc, control_main = list(covariance = "diagonal", cores = 3))
 plot(mollusk_mixture$models[[6]]$optim_par$objective, type = "l")
 
 mollusk_mixture$plot()

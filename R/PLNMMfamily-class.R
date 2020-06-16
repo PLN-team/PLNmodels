@@ -45,7 +45,7 @@ PLNMMfamily <-
                               "spherical" = "VII",
                               "diagonal"  = "VVI",
                               "full"      = "VVV")
-        initMclust <- mclust::hc(myPLN$latent, modelName)
+        initMclust <- mclust::hc(myPLN$latent, "VII")
         ## instantiate as many PLNMMfit as choices for the number of components
         self$models <- lapply(clusters, function(k) {
           mclust_out <- mclust::Mclust(

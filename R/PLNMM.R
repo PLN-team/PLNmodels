@@ -46,6 +46,7 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
   ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
   ctrl_main <- PLNMM_param(control_main, nrow(args$Y), ncol(args$Y), ncol(args$X))
   ctrl_init$covariance <- ctrl_main$covariance
+  ctrl_init$cores      <- ctrl_main$cores
 
   ## Instantiate the collection of PLN models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
