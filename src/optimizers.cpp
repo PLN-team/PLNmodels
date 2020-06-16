@@ -103,15 +103,15 @@ void optimizer_PLN_spherical::export_output() {
   Theta = arma::mat(&parameter[0]  , p,d);
 
   // variance parameters
-  double n_sigma2  = arma::as_scalar(dot(data.w, sum(pow(M, 2), 1) + p * S2)) ;
-  double sigma2 = n_sigma2 / (p * accu (data.w)) ;
+  double sigma2 = arma::as_scalar(dot(data.w, sum(pow(M, 2), 1) + p * S2)) / (p * data.w_bar) ;
   Sigma = arma::eye(p,p) * sigma2 ;
   Omega = arma::eye(p,p) * pow(sigma2, -1) ;
 
   // element-wise log-likelihood
   Z = data.O + data.X * Theta.t() + M;
   A = exp(Z.each_col() + .5 * S2) ;
-  loglik = sum(data.Y % Z - A - .5* pow(M, 2) / sigma2, 1) - p*S/sigma2 + .5 *p*log(S2/sigma2) + data.Ki ;
+  loglik = sum(data.Y % Z - A - .5* pow(M, 2) / sigma2, 1) - .5 * p*S2/sigma2 + .5 *p*log(S2/sigma2) + data.Ki ;
+
 }
 
 void optimizer_PLN_spherical::export_var_par() {
