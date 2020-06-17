@@ -69,7 +69,7 @@ nlopt_algorithm algorithm_from_name(const std::string & name) {
 struct OptimizerConfiguration {
     nlopt_algorithm algorithm; // Must be from the supported algorithm list.
 
-    arma::vec xtol_abs; // of size nb_parameters
+    arma::vec xtol_abs; // of size packer.size
     double xtol_rel;
 
     double ftol_abs;
@@ -79,13 +79,34 @@ struct OptimizerConfiguration {
     double maxtime;
 
     // Build from R list (with named elements).
-    // xtol_abs and lower_bounds field should contain a sublist with values for each parameter.
-    // arma::vec packed_from_r_list(Rcpp::List) : extract list values and pack them like parameters.
-    template <typename F> static OptimizerConfiguration from_r_list(const Rcpp::List & list, F packed_from_r_list) {
+    //
+    // xtol_abs has special handling, due to having values for each parameter element.
+    // 2 modes are supported, depending on the input type:
+    // - single float value: use single value for all parameter elements
+    // - named list with values for each parameter: use parameter-specific values
+    // The parameter-specific mode delegates extraction of the xtol_abs list and packing to xtol_abs array to
+    // a user sub function of prototype: void pack_xtol_abs(arma::vec & packed, Rcpp::List xtol_abs_list).
+    // These subfunctions are generally specific to the algorithm variant (parameter list types).
+    // They use PackedInfo::pack_double_or_arma() to accept as input, for each parameter:
+    // - a single double value: use this value for all elements of the parameter
+    // - an arma mat/vec with the parameter dimensions: use element-specific values
+    template <typename F>
+    static OptimizerConfiguration from_r_list(const Rcpp::List & list, arma::uword packer_size, F pack_xtol_abs) {
+        // Special handling for xtol_abs
+        auto xtol_abs = arma::vec(packer_size);
+        SEXP xtol_abs_r_value = list["xtol_abs"];
+        if(Rcpp::is<double>(xtol_abs_r_value)) {
+            xtol_abs.fill(Rcpp::as<double>(xtol_abs_r_value));
+        } else if(Rcpp::is<Rcpp::List>(xtol_abs_r_value)) {
+            pack_xtol_abs(xtol_abs, Rcpp::as<Rcpp::List>(xtol_abs_r_value));
+        } else {
+            throw Rcpp::exception("unsupported config[xtol_abs] type: must be double or list of by-parameter values");
+        }
+        // All others
         return {
             algorithm_from_name(Rcpp::as<std::string>(list["algorithm"])),
 
-            packed_from_r_list(Rcpp::as<Rcpp::List>(list["xtol_abs"])),
+            std::move(xtol_abs),
             Rcpp::as<double>(list["xtol_rel"]),
 
             Rcpp::as<double>(list["ftol_abs"]),
@@ -177,8 +198,9 @@ OptimizerResult minimize_objective_on_parameters(
 //
 // Required API when specialised:
 // Constructor(const T & reference_object, arma::uword & current_offset);
-// "T-like type" unpack(const arma::vec & packed_storage);
-// void pack(arma::vec & packed_storage, "T-like type" object);
+// T unpack(const arma::vec & packed_storage);
+// void pack(arma::vec & packed_storage, "T-like arma expression type" expr);
+// void pack_double_or_arma(arma::vec & packed_storage, SEXP r_value); (see OptimizerConfiguration)
 template <typename T> struct PackedInfo;
 
 template <> struct PackedInfo<arma::vec> {
@@ -197,6 +219,14 @@ template <> struct PackedInfo<arma::vec> {
 
     template <typename Expr> void pack(arma::vec & packed, Expr && expr) const {
         packed.subvec(span()) = std::forward<Expr>(expr);
+    }
+
+    void pack_double_or_arma(arma::vec & packed, SEXP r_value) const {
+        if(Rcpp::is<double>(r_value)) {
+            packed.subvec(span()).fill(Rcpp::as<double>(r_value));
+        } else {
+            pack(packed, Rcpp::as<arma::vec>(r_value));
+        }
     }
 };
 
@@ -219,7 +249,16 @@ template <> struct PackedInfo<arma::mat> {
     }
 
     template <typename Expr> void pack(arma::vec & packed, Expr && expr) const {
+        // Handles: mat expressions, vec expressions
         packed.subvec(span()) = arma::vectorise(std::forward<Expr>(expr));
+    }
+
+    void pack_double_or_arma(arma::vec & packed, SEXP r_value) const {
+        if(Rcpp::is<double>(r_value)) {
+            packed.subvec(span()).fill(Rcpp::as<double>(r_value));
+        } else {
+            pack(packed, Rcpp::as<arma::mat>(r_value));
+        }
     }
 };
 
@@ -229,12 +268,16 @@ template <typename... Types> struct Packer {
     std::tuple<PackedInfo<Types>...> elements; // Packing info for each element (offset, type, dimensions)
     arma::uword size;                          // Total number of packed elements
 
+    // Allows nicer syntax for unpack/pack/pack_double_or_arma
     template <std::size_t Index> auto unpack(const arma::vec & packed) const
         -> decltype(std::get<Index>(elements).unpack(packed)) {
         return std::get<Index>(elements).unpack(packed);
     }
     template <std::size_t Index, typename Expr> void pack(arma::vec & packed, Expr && expr) const {
         std::get<Index>(elements).pack(packed, std::forward<Expr>(expr));
+    }
+    template <std::size_t Index> void pack_double_or_arma(arma::vec & packed, SEXP r_value) const {
+        std::get<Index>(elements).pack_double_or_arma(packed, r_value);
     }
 };
 
@@ -252,20 +295,9 @@ template <typename... Types> Packer<Types...> make_packer(const Types &... value
 // ---------------------------------------------------------------------------------------
 // Fully parametrized covariance
 
-struct OptimizeFullParameters {
-    arma::mat theta; // (p,d)
-    arma::mat m;     // (n,p)
-    arma::mat s;     // (n,p)
-
-    explicit OptimizeFullParameters(const Rcpp::List & list)
-        : theta(Rcpp::as<arma::mat>(list["Theta"])),
-          m(Rcpp::as<arma::mat>(list["M"])),
-          s(Rcpp::as<arma::mat>(list["S"])) {}
-};
-
 // [[Rcpp::export]]
 Rcpp::List cpp_optimize_full(
-    const Rcpp::List & init_parameters, // OptimizeFullParameters
+    const Rcpp::List & init_parameters, // List(Theta, M, S)
     const arma::mat & y,                // responses (n,p)
     const arma::mat & x,                // covariates (n,d)
     const arma::mat & o,                // offsets (n,p)
@@ -273,22 +305,24 @@ Rcpp::List cpp_optimize_full(
     const Rcpp::List & configuration    // OptimizerConfiguration
 ) {
     // Conversion from R, prepare optimization
-    const auto init = OptimizeFullParameters(init_parameters);
-    const auto packer = make_packer(init.theta, init.m, init.s);
-    enum { THETA, M, S }; // Nice names for packer indexes
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA>(parameters, init.theta);
-    packer.pack<M>(parameters, init.m);
-    packer.pack<S>(parameters, init.s);
+    const auto init_theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
+    const auto init_m = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
+    const auto init_s = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,p)
 
-    const auto config = OptimizerConfiguration::from_r_list(configuration, [&packer](Rcpp::List list) {
-        auto values = OptimizeFullParameters(list);
-        auto packed = arma::vec(packer.size);
-        packer.pack<THETA>(packed, values.theta);
-        packer.pack<M>(packed, values.m);
-        packer.pack<S>(packed, values.s);
-        return packed;
-    });
+    const auto packer = make_packer(init_theta, init_m, init_s);
+    enum { THETA, M, S }; // Nice names for packer indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<THETA>(parameters, init_theta);
+    packer.pack<M>(parameters, init_m);
+    packer.pack<S>(parameters, init_s);
+
+    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
+        packer.pack_double_or_arma<THETA>(packed, list["Theta"]);
+        packer.pack_double_or_arma<M>(packed, list["M"]);
+        packer.pack_double_or_arma<S>(packed, list["S"]);
+    };
+    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
 
     const double w_bar = accu(w);
 
@@ -343,20 +377,9 @@ Rcpp::List cpp_optimize_full(
 // ---------------------------------------------------------------------------------------
 // Spherical covariance
 
-struct OptimizeSphericalParameters {
-    arma::mat theta; // (p,d)
-    arma::mat m;     // (n,p)
-    arma::vec s;     // (n)
-
-    explicit OptimizeSphericalParameters(const Rcpp::List & list)
-        : theta(Rcpp::as<arma::mat>(list["Theta"])),
-          m(Rcpp::as<arma::mat>(list["M"])),
-          s(Rcpp::as<arma::vec>(list["S"])) {}
-};
-
 // [[Rcpp::export]]
 Rcpp::List cpp_optimize_spherical(
-    const Rcpp::List & init_parameters, // OptimizeSphericalParameters
+    const Rcpp::List & init_parameters, // List(Theta, M, S)
     const arma::mat & y,                // responses (n,p)
     const arma::mat & x,                // covariates (n,d)
     const arma::mat & o,                // offsets (n,p)
@@ -364,22 +387,24 @@ Rcpp::List cpp_optimize_spherical(
     const Rcpp::List & configuration    // OptimizerConfiguration
 ) {
     // Conversion from R, prepare optimization
-    const auto init = OptimizeSphericalParameters(init_parameters);
-    const auto packer = make_packer(init.theta, init.m, init.s);
-    enum { THETA, M, S }; // Nice names for packer indexes
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA>(parameters, init.theta);
-    packer.pack<M>(parameters, init.m);
-    packer.pack<S>(parameters, init.s);
+    const auto init_theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
+    const auto init_m = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
+    const auto init_s = Rcpp::as<arma::vec>(init_parameters["S"]);         // (n)
 
-    const auto config = OptimizerConfiguration::from_r_list(configuration, [&packer](Rcpp::List list) {
-        auto values = OptimizeSphericalParameters(list);
-        auto packed = arma::vec(packer.size);
-        packer.pack<THETA>(packed, values.theta);
-        packer.pack<M>(packed, values.m);
-        packer.pack<S>(packed, values.s);
-        return packed;
-    });
+    const auto packer = make_packer(init_theta, init_m, init_s);
+    enum { THETA, M, S }; // Nice names for packer indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<THETA>(parameters, init_theta);
+    packer.pack<M>(parameters, init_m);
+    packer.pack<S>(parameters, init_s);
+
+    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
+        packer.pack_double_or_arma<THETA>(packed, list["Theta"]);
+        packer.pack_double_or_arma<M>(packed, list["M"]);
+        packer.pack_double_or_arma<S>(packed, list["S"]);
+    };
+    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
 
     const double w_bar = accu(w);
 
@@ -439,20 +464,9 @@ Rcpp::List cpp_optimize_spherical(
 // ---------------------------------------------------------------------------------------
 // Diagonal covariance
 
-struct OptimizeDiagonalParameters {
-    arma::mat theta; // (p,d)
-    arma::mat m;     // (n,p)
-    arma::mat s;     // (n,p)
-
-    explicit OptimizeDiagonalParameters(const Rcpp::List & list)
-        : theta(Rcpp::as<arma::mat>(list["Theta"])),
-          m(Rcpp::as<arma::mat>(list["M"])),
-          s(Rcpp::as<arma::mat>(list["S"])) {}
-};
-
 // [[Rcpp::export]]
 Rcpp::List cpp_optimize_diagonal(
-    const Rcpp::List & init_parameters, // OptimizeDiagonalParameters
+    const Rcpp::List & init_parameters, // List(Theta, M, S)
     const arma::mat & y,                // responses (n,p)
     const arma::mat & x,                // covariates (n,d)
     const arma::mat & o,                // offsets (n,p)
@@ -460,22 +474,24 @@ Rcpp::List cpp_optimize_diagonal(
     const Rcpp::List & configuration    // OptimizerConfiguration
 ) {
     // Conversion from R, prepare optimization
-    const auto init = OptimizeDiagonalParameters(init_parameters);
-    const auto packer = make_packer(init.theta, init.m, init.s);
-    enum { THETA, M, S }; // Nice names for packer indexes
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA>(parameters, init.theta);
-    packer.pack<M>(parameters, init.m);
-    packer.pack<S>(parameters, init.s);
+    const auto init_theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
+    const auto init_m = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
+    const auto init_s = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,p)
 
-    const auto config = OptimizerConfiguration::from_r_list(configuration, [&packer](Rcpp::List list) {
-        auto values = OptimizeDiagonalParameters(list);
-        auto packed = arma::vec(packer.size);
-        packer.pack<THETA>(packed, values.theta);
-        packer.pack<M>(packed, values.m);
-        packer.pack<S>(packed, values.s);
-        return packed;
-    });
+    const auto packer = make_packer(init_theta, init_m, init_s);
+    enum { THETA, M, S }; // Nice names for packer indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<THETA>(parameters, init_theta);
+    packer.pack<M>(parameters, init_m);
+    packer.pack<S>(parameters, init_s);
+
+    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
+        packer.pack_double_or_arma<THETA>(packed, list["Theta"]);
+        packer.pack_double_or_arma<M>(packed, list["M"]);
+        packer.pack_double_or_arma<S>(packed, list["S"]);
+    };
+    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
 
     const double w_bar = accu(w);
 
@@ -534,22 +550,9 @@ Rcpp::List cpp_optimize_diagonal(
 
 // Rank (q) is already determined by param dimensions ; not passed anywhere
 
-struct OptimizeRankParameters {
-    arma::mat theta; // (p,d)
-    arma::mat b;     // (p,q)
-    arma::mat m;     // (n,q)
-    arma::mat s;     // (n,q)
-
-    explicit OptimizeRankParameters(const Rcpp::List & list)
-        : theta(Rcpp::as<arma::mat>(list["Theta"])),
-          b(Rcpp::as<arma::mat>(list["B"])),
-          m(Rcpp::as<arma::mat>(list["M"])),
-          s(Rcpp::as<arma::mat>(list["S"])) {}
-};
-
 // [[Rcpp::export]]
 Rcpp::List cpp_optimize_rank(
-    const Rcpp::List & init_parameters, // OptimizeRankParameters
+    const Rcpp::List & init_parameters, // List(Theta, B, M, S)
     const arma::mat & y,                // responses (n,p)
     const arma::mat & x,                // covariates (n,d)
     const arma::mat & o,                // offsets (n,p)
@@ -557,24 +560,27 @@ Rcpp::List cpp_optimize_rank(
     const Rcpp::List & configuration    // OptimizerConfiguration
 ) {
     // Conversion from R, prepare optimization
-    const auto init = OptimizeRankParameters(init_parameters);
-    const auto packer = make_packer(init.theta, init.b, init.m, init.s);
-    enum { THETA, B, M, S }; // Nice names for packer indexes
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA>(parameters, init.theta);
-    packer.pack<B>(parameters, init.b);
-    packer.pack<M>(parameters, init.m);
-    packer.pack<S>(parameters, init.s);
+    const auto init_theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
+    const auto init_b = Rcpp::as<arma::mat>(init_parameters["B"]);         // (p,q)
+    const auto init_m = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,q)
+    const auto init_s = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,q)
 
-    const auto config = OptimizerConfiguration::from_r_list(configuration, [&packer](Rcpp::List list) {
-        auto values = OptimizeRankParameters(list);
-        auto packed = arma::vec(packer.size);
-        packer.pack<THETA>(packed, values.theta);
-        packer.pack<B>(packed, values.b);
-        packer.pack<M>(packed, values.m);
-        packer.pack<S>(packed, values.s);
-        return packed;
-    });
+    const auto packer = make_packer(init_theta, init_b, init_m, init_s);
+    enum { THETA, B, M, S }; // Nice names for packer indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<THETA>(parameters, init_theta);
+    packer.pack<B>(parameters, init_m);
+    packer.pack<M>(parameters, init_m);
+    packer.pack<S>(parameters, init_s);
+
+    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
+        packer.pack_double_or_arma<THETA>(packed, list["Theta"]);
+        packer.pack_double_or_arma<B>(packed, list["B"]);
+        packer.pack_double_or_arma<M>(packed, list["M"]);
+        packer.pack_double_or_arma<S>(packed, list["S"]);
+    };
+    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
 
     // Optimize
     auto objective_and_grad =
@@ -625,20 +631,9 @@ Rcpp::List cpp_optimize_rank(
 // ---------------------------------------------------------------------------------------
 // Sparse inverse covariance
 
-struct OptimizeSparseParameters {
-    arma::mat theta; // (p,d)
-    arma::mat m;     // (n,p)
-    arma::mat s;     // (n,p)
-
-    explicit OptimizeSparseParameters(const Rcpp::List & list)
-        : theta(Rcpp::as<arma::mat>(list["Theta"])),
-          m(Rcpp::as<arma::mat>(list["M"])),
-          s(Rcpp::as<arma::mat>(list["S"])) {}
-};
-
 // [[Rcpp::export]]
 Rcpp::List cpp_optimize_sparse(
-    const Rcpp::List & init_parameters, // OptimizeSparseParameters
+    const Rcpp::List & init_parameters, // List(Theta, M, S)
     const arma::mat & y,                // responses (n,p)
     const arma::mat & x,                // covariates (n,d)
     const arma::mat & o,                // offsets (n,p)
@@ -647,22 +642,24 @@ Rcpp::List cpp_optimize_sparse(
     const Rcpp::List & configuration    // OptimizerConfiguration
 ) {
     // Conversion from R, prepare optimization
-    const auto init = OptimizeSparseParameters(init_parameters);
-    const auto packer = make_packer(init.theta, init.m, init.s);
-    enum { THETA, M, S }; // Nice names for packer indexes
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA>(parameters, init.theta);
-    packer.pack<M>(parameters, init.m);
-    packer.pack<S>(parameters, init.s);
+    const auto init_theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
+    const auto init_m = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
+    const auto init_s = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,p)
 
-    const auto config = OptimizerConfiguration::from_r_list(configuration, [&packer](Rcpp::List list) {
-        auto values = OptimizeSparseParameters(list);
-        auto packed = arma::vec(packer.size);
-        packer.pack<THETA>(packed, values.theta);
-        packer.pack<M>(packed, values.m);
-        packer.pack<S>(packed, values.s);
-        return packed;
-    });
+    const auto packer = make_packer(init_theta, init_m, init_s);
+    enum { THETA, M, S }; // Nice names for packer indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<THETA>(parameters, init_theta);
+    packer.pack<M>(parameters, init_m);
+    packer.pack<S>(parameters, init_s);
+
+    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
+        packer.pack_double_or_arma<THETA>(packed, list["Theta"]);
+        packer.pack_double_or_arma<M>(packed, list["M"]);
+        packer.pack_double_or_arma<S>(packed, list["S"]);
+    };
+    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
 
     // Optimize
     auto objective_and_grad =
@@ -712,17 +709,9 @@ Rcpp::List cpp_optimize_sparse(
 // Single VE step
 // TODO adapt all variants
 
-struct OptimizeVEParameters {
-    arma::mat m; // (n,p)
-    arma::mat s; // (n,p)
-
-    explicit OptimizeVEParameters(const Rcpp::List & list)
-        : m(Rcpp::as<arma::mat>(list["M"])), s(Rcpp::as<arma::mat>(list["S"])) {}
-};
-
 // [[Rcpp::export]]
 Rcpp::List cpp_optimize_ve(
-    const Rcpp::List & init_parameters, // OptimizeVEParameters
+    const Rcpp::List & init_parameters, // List(M, S)
     const arma::mat & y,                // responses (n,p)
     const arma::mat & x,                // covariates (n,d)
     const arma::mat & o,                // offsets (n,p)
@@ -731,20 +720,21 @@ Rcpp::List cpp_optimize_ve(
     const Rcpp::List & configuration    // OptimizerConfiguration
 ) {
     // Conversion from R, prepare optimization
-    const auto init = OptimizeVEParameters(init_parameters);
-    const auto packer = make_packer(init.m, init.s);
-    enum { M, S }; // Nice names for packer indexes
-    auto parameters = arma::vec(packer.size);
-    packer.pack<M>(parameters, init.m);
-    packer.pack<S>(parameters, init.s);
+    const auto init_m = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
+    const auto init_s = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
 
-    const auto config = OptimizerConfiguration::from_r_list(configuration, [&packer](Rcpp::List list) {
-        auto values = OptimizeVEParameters(list);
-        auto packed = arma::vec(packer.size);
-        packer.pack<M>(packed, values.m);
-        packer.pack<S>(packed, values.s);
-        return packed;
-    });
+    const auto packer = make_packer(init_m, init_s);
+    enum { M, S }; // Nice names for packer indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<M>(parameters, init_m);
+    packer.pack<S>(parameters, init_s);
+
+    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
+        packer.pack_double_or_arma<M>(packed, list["M"]);
+        packer.pack_double_or_arma<S>(packed, list["S"]);
+    };
+    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
 
     const arma::mat omega = inv_sympd(sigma); // (p,p)
     const double log_det_omega = real(log_det(omega));
@@ -808,16 +798,29 @@ bool cpp_internal_tests() {
     auto a = arma::mat(4, 10, arma::fill::randu);
     auto b = arma::vec(7, arma::fill::randu);
 
-    const auto packer = make_packer(a, b);
-    check(packer.size == 4 * 10 + 7, "packer size computation");
+    const auto packer = make_packer(a, b, b);
+    check(packer.size == 4 * 10 + 7 + 7, "packer size computation");
     check(std::get<0>(packer.elements).offset == 0, "packer offset 0");
     check(std::get<1>(packer.elements).offset == 4 * 10, "packer offset 1");
+    check(std::get<2>(packer.elements).offset == 4 * 10 + 7, "packer offset 2");
 
     auto packed = arma::vec(packer.size);
     packer.pack<0>(packed, a);
     packer.pack<1>(packed, b);
+    packer.pack<2>(packed, b);
     check(arma::approx_equal(a, packer.unpack<0>(packed), "absdiff", epsilon), "unpack 0");
     check(arma::approx_equal(b, packer.unpack<1>(packed), "absdiff", epsilon), "unpack 1");
+    check(arma::approx_equal(b, packer.unpack<2>(packed), "absdiff", epsilon), "unpack 2");
+
+    packer.pack_double_or_arma<0>(packed, Rcpp::wrap(0.));
+    check(packer.unpack<0>(packed).is_zero(), "pack_double_or_arma double(0.) in mat");
+    packer.pack_double_or_arma<0>(packed, Rcpp::wrap(a));
+    check(arma::approx_equal(a, packer.unpack<0>(packed), "absdiff", epsilon), "pack_double_or_arma mat");
+
+    packer.pack_double_or_arma<1>(packed, Rcpp::wrap(0.));
+    check(packer.unpack<1>(packed).is_zero(), "pack_double_or_arma double(0.) in vec");
+    packer.pack_double_or_arma<1>(packed, Rcpp::wrap(b));
+    check(arma::approx_equal(b, packer.unpack<1>(packed), "absdiff", epsilon), "pack_double_or_arma vec");
 
     // Test nlopt wrapper
     // min_x x^2 -> should be 0. Does not uses packer due to only 1 variable.
