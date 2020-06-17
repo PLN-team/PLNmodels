@@ -193,7 +193,7 @@ template <> struct PackedInfo<arma::vec> {
 
     arma::span span() const { return arma::span(offset, offset + size - 1); }
 
-    auto unpack(const arma::vec & packed) const -> decltype(packed.subvec(span())) { return packed.subvec(span()); }
+    arma::vec unpack(const arma::vec & packed) const { return packed.subvec(span()); }
 
     template <typename Expr> void pack(arma::vec & packed, Expr && expr) const {
         packed.subvec(span()) = std::forward<Expr>(expr);
@@ -214,8 +214,7 @@ template <> struct PackedInfo<arma::mat> {
 
     arma::span span() const { return arma::span(offset, offset + rows * cols - 1); }
 
-    auto unpack(const arma::vec & packed) const
-        -> decltype(arma::reshape(packed.subvec(span()), arma::size(rows, cols))) {
+    arma::mat unpack(const arma::vec & packed) const {
         return arma::reshape(packed.subvec(span()), arma::size(rows, cols));
     }
 
@@ -296,7 +295,7 @@ Rcpp::List cpp_optimize_full(
     // Optimize
     auto objective_and_grad =
         [&packer, &y, &x, &o, &w, &w_bar](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        auto theta = packer.unpack<THETA>(parameters);
+        arma::mat theta = packer.unpack<THETA>(parameters);
         arma::mat m = packer.unpack<M>(parameters);
         arma::mat s = packer.unpack<S>(parameters);
 
@@ -387,9 +386,9 @@ Rcpp::List cpp_optimize_spherical(
     // Optimize
     auto objective_and_grad =
         [&packer, &o, &x, &y, &w, &w_bar](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        auto theta = packer.unpack<THETA>(parameters);
+        arma::mat theta = packer.unpack<THETA>(parameters);
         arma::mat m = packer.unpack<M>(parameters);
-        auto s = packer.unpack<S>(parameters);
+        arma::vec s = packer.unpack<S>(parameters);
 
         arma::vec s2 = s % s;
         const arma::uword p = y.n_cols;
@@ -483,7 +482,7 @@ Rcpp::List cpp_optimize_diagonal(
     // Optimize
     auto objective_and_grad =
         [&packer, &o, &x, &y, &w, &w_bar](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        auto theta = packer.unpack<THETA>(parameters);
+        arma::mat theta = packer.unpack<THETA>(parameters);
         arma::mat m = packer.unpack<M>(parameters);
         arma::mat s = packer.unpack<S>(parameters);
 
@@ -580,9 +579,9 @@ Rcpp::List cpp_optimize_rank(
     // Optimize
     auto objective_and_grad =
         [&packer, &o, &x, &y, &w](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        auto theta = packer.unpack<THETA>(parameters);
-        auto b = packer.unpack<B>(parameters);
-        auto m = packer.unpack<M>(parameters);
+        arma::mat theta = packer.unpack<THETA>(parameters);
+        arma::mat b = packer.unpack<B>(parameters);
+        arma::mat m = packer.unpack<M>(parameters);
         arma::mat s = packer.unpack<S>(parameters);
 
         arma::mat s2 = s % s;
@@ -668,7 +667,7 @@ Rcpp::List cpp_optimize_sparse(
     // Optimize
     auto objective_and_grad =
         [&packer, &o, &x, &y, &w, &omega](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        auto theta = packer.unpack<THETA>(parameters);
+        arma::mat theta = packer.unpack<THETA>(parameters);
         arma::mat m = packer.unpack<M>(parameters);
         arma::mat s = packer.unpack<S>(parameters);
 
@@ -753,8 +752,8 @@ Rcpp::List cpp_optimize_ve(
     // Optimize
     auto objective_and_grad = [&packer, &o, &x, &y, &theta, &omega, &log_det_omega](
                                   const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        auto m = packer.unpack<M>(parameters);
-        auto s = packer.unpack<S>(parameters);
+        arma::mat m = packer.unpack<M>(parameters);
+        arma::mat s = packer.unpack<S>(parameters);
 
         const arma::uword n = y.n_rows;
         arma::mat z = o + x * theta.t() + m;
@@ -790,3 +789,58 @@ Rcpp::List cpp_optimize_ve(
 }
 
 // TODO : New model
+
+// ---------------------------------------------------------------------------------------
+// Internals tests
+
+// [[Rcpp::export]]
+bool cpp_internal_tests() {
+    bool success = true;
+    auto check = [&success](bool check_value, const char * context) {
+        if(!check_value) {
+            REprintf("Cpp internals failed: %s", context);
+            success = false;
+        }
+    };
+    const double epsilon = 1e-6;
+
+    // Test packing / unpacking
+    auto a = arma::mat(4, 10, arma::fill::randu);
+    auto b = arma::vec(7, arma::fill::randu);
+
+    const auto packer = make_packer(a, b);
+    check(packer.size == 4 * 10 + 7, "packer size computation");
+    check(std::get<0>(packer.elements).offset == 0, "packer offset 0");
+    check(std::get<1>(packer.elements).offset == 4 * 10, "packer offset 1");
+
+    auto packed = arma::vec(packer.size);
+    packer.pack<0>(packed, a);
+    packer.pack<1>(packed, b);
+    check(arma::approx_equal(a, packer.unpack<0>(packed), "absdiff", epsilon), "unpack 0");
+    check(arma::approx_equal(b, packer.unpack<1>(packed), "absdiff", epsilon), "unpack 1");
+
+    // Test nlopt wrapper
+    // min_x x^2 -> should be 0. Does not uses packer due to only 1 variable.
+    auto config = OptimizerConfiguration{
+        algorithm_from_name("LBFGS"),
+        arma::vec{epsilon}, // xtol_abs
+        epsilon,            // xtol_rel
+        epsilon,            // ftol_abs
+        epsilon,            // ftol_rel
+        100,                // maxeval
+        100.,               // maxtime
+    };
+    auto x = arma::vec{42.};
+    auto f_and_grad = [check](const arma::vec & x, arma::vec & grad) -> double {
+        check(x.n_elem == 1, "opt x size");
+        check(grad.n_elem == 1, "opt grad size");
+        double v = x[0];
+        grad[0] = 2. * v;
+        return v * v;
+    };
+    OptimizerResult r = minimize_objective_on_parameters(x, config, f_and_grad);
+    check(arma::approx_equal(x, arma::vec{0.}, "absdiff", 10. * epsilon), "optim convergence");
+    check(r.status != NLOPT_FAILURE, "optim status");
+
+    return success;
+}
