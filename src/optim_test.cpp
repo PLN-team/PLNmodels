@@ -203,6 +203,11 @@ OptimizerResult minimize_objective_on_parameters(
 // void pack_double_or_arma(arma::vec & packed_storage, SEXP r_value); (see OptimizerConfiguration)
 template <typename T> struct PackedInfo;
 
+// All following implementation use vec.subvec() to access slices of the packed vector.
+// The "prefered" way to give indexces is using span(start, end).
+// However end is inclusive and unsigned, which causes underflow for 0-sized span of offset 0.
+// Thus I use the less intuitive (but correct) form: subvec(offset, arma::size(size, 1))
+
 template <> struct PackedInfo<arma::vec> {
     arma::uword offset;
     arma::uword size;
@@ -213,17 +218,15 @@ template <> struct PackedInfo<arma::vec> {
         current_offset += size;
     }
 
-    arma::span span() const { return arma::span(offset, offset + size - 1); }
-
-    arma::vec unpack(const arma::vec & packed) const { return packed.subvec(span()); }
+    arma::vec unpack(const arma::vec & packed) const { return packed.subvec(offset, arma::size(size, 1)); }
 
     template <typename Expr> void pack(arma::vec & packed, Expr && expr) const {
-        packed.subvec(span()) = std::forward<Expr>(expr);
+        packed.subvec(offset, arma::size(size, 1)) = std::forward<Expr>(expr);
     }
 
     void pack_double_or_arma(arma::vec & packed, SEXP r_value) const {
         if(Rcpp::is<double>(r_value)) {
-            packed.subvec(span()).fill(Rcpp::as<double>(r_value));
+            packed.subvec(offset, arma::size(size, 1)).fill(Rcpp::as<double>(r_value));
         } else {
             pack(packed, Rcpp::as<arma::vec>(r_value));
         }
@@ -242,20 +245,18 @@ template <> struct PackedInfo<arma::mat> {
         current_offset += rows * cols;
     }
 
-    arma::span span() const { return arma::span(offset, offset + rows * cols - 1); }
-
     arma::mat unpack(const arma::vec & packed) const {
-        return arma::reshape(packed.subvec(span()), arma::size(rows, cols));
+        return arma::reshape(packed.subvec(offset, arma::size(rows * cols, 1)), arma::size(rows, cols));
     }
 
     template <typename Expr> void pack(arma::vec & packed, Expr && expr) const {
         // Handles: mat expressions, vec expressions
-        packed.subvec(span()) = arma::vectorise(std::forward<Expr>(expr));
+        packed.subvec(offset, arma::size(rows * cols, 1)) = arma::vectorise(std::forward<Expr>(expr));
     }
 
     void pack_double_or_arma(arma::vec & packed, SEXP r_value) const {
         if(Rcpp::is<double>(r_value)) {
-            packed.subvec(span()).fill(Rcpp::as<double>(r_value));
+            packed.subvec(offset, arma::size(rows * cols, 1)).fill(Rcpp::as<double>(r_value));
         } else {
             pack(packed, Rcpp::as<arma::mat>(r_value));
         }
@@ -795,32 +796,36 @@ bool cpp_internal_tests() {
     const double epsilon = 1e-6;
 
     // Test packing / unpacking
+    auto z = arma::vec{}; // 0-sized
     auto a = arma::mat(4, 10, arma::fill::randu);
     auto b = arma::vec(7, arma::fill::randu);
 
-    const auto packer = make_packer(a, b, b);
+    const auto packer = make_packer(z, a, b, b);
     check(packer.size == 4 * 10 + 7 + 7, "packer size computation");
     check(std::get<0>(packer.elements).offset == 0, "packer offset 0");
-    check(std::get<1>(packer.elements).offset == 4 * 10, "packer offset 1");
-    check(std::get<2>(packer.elements).offset == 4 * 10 + 7, "packer offset 2");
+    check(std::get<1>(packer.elements).offset == 0, "packer offset 1");
+    check(std::get<2>(packer.elements).offset == 4 * 10, "packer offset 2");
+    check(std::get<3>(packer.elements).offset == 4 * 10 + 7, "packer offset 3");
 
     auto packed = arma::vec(packer.size);
-    packer.pack<0>(packed, a);
-    packer.pack<1>(packed, b);
+    packer.pack<0>(packed, z);
+    packer.pack<1>(packed, a);
     packer.pack<2>(packed, b);
-    check(arma::approx_equal(a, packer.unpack<0>(packed), "absdiff", epsilon), "unpack 0");
-    check(arma::approx_equal(b, packer.unpack<1>(packed), "absdiff", epsilon), "unpack 1");
+    packer.pack<3>(packed, b);
+    check(packer.unpack<0>(packed).n_elem == 0, "unpack 0");
+    check(arma::approx_equal(a, packer.unpack<1>(packed), "absdiff", epsilon), "unpack 1");
     check(arma::approx_equal(b, packer.unpack<2>(packed), "absdiff", epsilon), "unpack 2");
-
-    packer.pack_double_or_arma<0>(packed, Rcpp::wrap(0.));
-    check(packer.unpack<0>(packed).is_zero(), "pack_double_or_arma double(0.) in mat");
-    packer.pack_double_or_arma<0>(packed, Rcpp::wrap(a));
-    check(arma::approx_equal(a, packer.unpack<0>(packed), "absdiff", epsilon), "pack_double_or_arma mat");
+    check(arma::approx_equal(b, packer.unpack<3>(packed), "absdiff", epsilon), "unpack 3");
 
     packer.pack_double_or_arma<1>(packed, Rcpp::wrap(0.));
-    check(packer.unpack<1>(packed).is_zero(), "pack_double_or_arma double(0.) in vec");
-    packer.pack_double_or_arma<1>(packed, Rcpp::wrap(b));
-    check(arma::approx_equal(b, packer.unpack<1>(packed), "absdiff", epsilon), "pack_double_or_arma vec");
+    check(packer.unpack<1>(packed).is_zero(), "pack_double_or_arma double(0.) in mat");
+    packer.pack_double_or_arma<1>(packed, Rcpp::wrap(a));
+    check(arma::approx_equal(a, packer.unpack<1>(packed), "absdiff", epsilon), "pack_double_or_arma mat");
+
+    packer.pack_double_or_arma<2>(packed, Rcpp::wrap(0.));
+    check(packer.unpack<2>(packed).is_zero(), "pack_double_or_arma double(0.) in vec");
+    packer.pack_double_or_arma<2>(packed, Rcpp::wrap(b));
+    check(arma::approx_equal(b, packer.unpack<2>(packed), "absdiff", epsilon), "pack_double_or_arma vec");
 
     // Test nlopt wrapper
     // min_x x^2 -> should be 0. Does not uses packer due to only 1 variable.
