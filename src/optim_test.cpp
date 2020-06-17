@@ -426,7 +426,7 @@ Rcpp::List cpp_optimize_spherical(
 
         packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
         packer.pack<M>(grad_storage, diagmat(w) * (m / sigma2 + a - y));
-        packer.pack<S>(grad_storage, w % (s * sum(a, 1) - double(p) * pow(s, -1) - double(p) * s / sigma2));
+        packer.pack<S>(grad_storage, w % (s % sum(a, 1) - double(p) * pow(s, -1) - double(p) * s / sigma2));
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
