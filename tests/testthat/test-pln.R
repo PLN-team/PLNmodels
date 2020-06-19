@@ -16,7 +16,7 @@ test_that("PLN: Check that PLN is running and robust",  {
 })
 
 test_that("PLN: Check consistency of initialization - fully parametrized covariance",  {
-  tol <- 1e-5
+  tol <- 1e-2
 
   ## use default initialization (LM)
   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0))
@@ -33,7 +33,7 @@ test_that("PLN: Check consistency of initialization - fully parametrized covaria
 })
 
 test_that("PLN: Check consistency of initialization - diagonal covariance",  {
-  tol <- 1e-4
+  tol <- 1e-2
 
   ## use default initialization (GLM)
   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(trace = 0, covariance = "diagonal"))
