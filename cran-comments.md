@@ -2,7 +2,7 @@
 ## Minor release to answer CRAN request
 
 * amending test-pln to fullfil a CRAN maintainer request 
-  (error on an ATLAS variant of BLAS in some anecdotical tests...)
+  (error on an ATLAS variant of BLAS in some anecdotal tests...)
 * Correction in likelihood of diagonal PLN
 
 ## Tested environments
