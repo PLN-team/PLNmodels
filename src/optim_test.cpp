@@ -571,7 +571,7 @@ Rcpp::List cpp_optimize_rank(
 
     auto parameters = arma::vec(packer.size);
     packer.pack<THETA>(parameters, init_theta);
-    packer.pack<B>(parameters, init_m);
+    packer.pack<B>(parameters, init_b);
     packer.pack<M>(parameters, init_m);
     packer.pack<S>(parameters, init_s);
 
