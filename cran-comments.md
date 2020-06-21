@@ -1,4 +1,8 @@
 
+## Resubmission
+
+* commenting tests that fail on some plaforms (ATLAS) due to numerical precision
+
 ## Minor release to answer CRAN request
 
 * amending test-pln to fullfil a CRAN maintainer request 
