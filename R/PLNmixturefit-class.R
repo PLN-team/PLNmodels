@@ -86,12 +86,12 @@ PLNmixturefit <-
       ## Post treatment --------------------
       #' @description Update fields after optimization
       postTreatment = function(responses, covariates, offsets, weights, nullModel) {
-        for (comp in self$components)
-          comp$postTreatment(
+        for (k_ in seq.int(ncol(private$tau)))
+          self$components[[k_]]$postTreatment(
             responses,
             covariates,
             offsets,
-            weights,
+            private$tau[,k_],
             nullModel = nullModel
           )
       },

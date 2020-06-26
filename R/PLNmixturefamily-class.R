@@ -15,7 +15,6 @@
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call #'
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
-#' @import mclust
 #' @import ggplot2
 #' @seealso The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefit]{PLNmixturefit}}
 PLNmixturefamily <-
@@ -38,26 +37,19 @@ PLNmixturefamily <-
         super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
         private$params <- clusters
 
-        if (control$trace > 0) cat("\n Perform GMM on the latent layer of the inceptive model...")
+        if (control$trace > 0) cat("\n Perform kmeans on the latent layer of the inceptive model...")
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), model, xlevels, control)
         myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
-        modelName <- switch(control$covariance,
-                              "spherical" = "VII",
-                              "diagonal"  = "VVI",
-                              "full"      = "VVV")
-        initMclust <- mclust::hc(myPLN$var_par$M, "VII")
         ## instantiate as many PLNmixturefit as choices for the number of components
+        if(control$covariance == 'spherical')
+          Sbar <- c(myPLN$var_par$S2) * myPLN$p
+        else
+          Sbar <- rowSums(myPLN$var_par$S2)
+        D <- sqrt(as.matrix(dist(myPLN$var_par$M)^2) + outer(Sbar,rep(1,myPLN$n)) + outer(rep(1, myPLN$n), Sbar))
+        hc_out <- hclust(as.dist(D), method = "ward.D2")
         self$models <- lapply(clusters, function(k) {
-          mclust_out <- mclust::Mclust(
-            data           = myPLN$latent,
-            G              = k,
-            modelNames     = modelName,
-            initialization = list(hcPairs = initMclust),
-            verbose        = FALSE)
-          ## each PLNmixturefit will itself instantiate as many PLNmodels
-          ## as the current choice of number of components
-          ## random guess tau <- .check_boundaries(t(rmultinom(nrow(responses), 1, rep(1:k)/k)))
-          PLNmixturefit$new(responses, covariates, offsets, mclust_out$z, model, xlevels, control)
+          Z <- cutree(hc_out, k) %>% as_indicator() %>% .check_boundaries()
+          PLNmixturefit$new(responses, covariates, offsets, Z, model, xlevels, control)
         })
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

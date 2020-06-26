@@ -17,6 +17,14 @@
   return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)
 }
 
+as_indicator <- function(clustering) {
+  K <- length(unique(clustering))
+  N  <- length(clustering)
+  Z <- matrix(0, N, K)
+  Z[cbind(seq.int(N), clustering)] <- 1
+  Z
+}
+
 logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) {
   loglik <- rowSums(responses * lambda, na.rm = TRUE) - rowSums(exp(lambda)) - rowSums(.logfactorial(responses))
   loglik <- sum(loglik * weights)
