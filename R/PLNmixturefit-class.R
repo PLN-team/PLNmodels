@@ -70,7 +70,7 @@ PLNmixturefit <-
 
             ## Assess convergence
             objective[iter]   <- -self$loglik
-            convergence[iter] <- abs(objective[iter-1] - objective[iter])/abs(objective[iter])
+            convergence[iter] <- abs(objective[iter-1] - objective[iter])# /abs(objective[iter])
             if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
 
           }
@@ -127,6 +127,7 @@ PLNmixturefit <-
       #' @field loglik_vec element-wise variational lower bound of the loglikelihood
       loglik_vec = function() {
         J_ik <- sapply(private$comp, function(comp_) comp_$loglik_vec)
+        J_ik[private$tau <= .Machine$double.eps] <- 0
         rowSums(private$tau * J_ik) - rowSums(.xlogx(private$tau)) + private$tau %*% log(self$mixtureParam)
         },
       #' @field BIC variational lower bound of the BIC

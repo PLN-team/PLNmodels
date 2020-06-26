@@ -380,8 +380,10 @@ PLNfit <- R6Class(
     vcov_model = function() {private$covariance},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par  = function() {private$monitoring},
+    #' @field weights observational weights
+    weights     = function() {attr(private$Ji, "weights")},
     #' @field loglik (weighted) variational lower bound of the loglikelihood
-    loglik     = function() {sum(attr(private$Ji, "weights") * private$Ji) },
+    loglik     = function() {sum(self$weights[self$weights > .Machine$double.eps] * private$Ji[self$weights > .Machine$double.eps]) },
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
     loglik_vec = function() {private$Ji},
     #' @field BIC variational lower bound of the BIC

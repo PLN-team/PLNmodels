@@ -66,6 +66,8 @@ print(myPLN)
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
+\item{\code{weights}}{observational weights}
+
 \item{\code{loglik}}{(weighted) variational lower bound of the loglikelihood}
 
 \item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}
