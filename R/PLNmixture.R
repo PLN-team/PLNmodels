@@ -9,8 +9,8 @@
 ##' @param control_init a list for controling the optimization at initialization. See details.
 ##' @param control_main a list for controling the main optimization process. See details.
 ##'
-##' @return an R6 object with class \code{\link[=PLNMMfamily]{PLNMMfamily}}, which contains
-##' a collection of models with class \code{\link[=PLNMMfit]{PLNMMfit}}
+##' @return an R6 object with class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}, which contains
+##' a collection of models with class \code{\link[=PLNmixturefit]{PLNmixturefit}}
 ##'
 ##' @details The list of parameters \code{control_init} and \code{control_main} control the optimization of the intialization and the main process, with the following entries
 ##' \itemize{
@@ -28,13 +28,13 @@
 ##'  \item{"cores"}{The number of core used to paralellize jobs over the \code{ranks} vector. Default is 1.}
 ##' }
 ##'
-##' @rdname PLNMM
+##' @rdname PLNmixture
 ##' @examples
 ##' ## See the vignette: vignette("trichoptera", package="PLNmodels")
-##' @seealso The classes \code{\link[=PLNMM]{PLNMMfamily}} and \code{\link[=PLNMMfit]{PLNMMfit}}
+##' @seealso The classes \code{\link[=PLNmixture]{PLNmixturefamily}} and \code{\link[=PLNmixturefit]{PLNmixturefit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list(), control_main = list()) {
+PLNmixture <- function(formula, data, subset, clusters = 1:10,  control_init = list(), control_main = list()) {
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
@@ -44,13 +44,13 @@ PLNMM <- function(formula, data, subset, clusters = 1:10,  control_init = list()
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
-  ctrl_main <- PLNMM_param(control_main, nrow(args$Y), ncol(args$Y), ncol(args$X))
+  ctrl_main <- PLNmixture_param(control_main, nrow(args$Y), ncol(args$Y), ncol(args$X))
   ctrl_init$covariance <- ctrl_main$covariance
   ctrl_init$cores      <- ctrl_main$cores
 
   ## Instantiate the collection of PLN models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNMMfamily$new(clusters, args$Y, args$X, args$O, args$model, args$xlevels, ctrl_init)
+  myPLN <- PLNmixturefamily$new(clusters, args$Y, args$X, args$O, args$model, args$xlevels, ctrl_init)
 
   ## Now adjust the PLN models
   if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")

@@ -1,7 +1,7 @@
 #' An R6 Class to represent a PLNfit in a mixture framework
 #'
-#' @description The function \code{\link{PLNMM}} produces a collection of models which are instances of object with class \code{PLNMMfit}.
-#' A \code{PLNMMfit} (say, with k components) is itself a collection of k \code{PLNfit}.
+#' @description The function \code{\link{PLNmixture}} produces a collection of models which are instances of object with class \code{PLNmixturefit}.
+#' A \code{PLNmixturefit} (say, with k components) is itself a collection of k \code{PLNfit}.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for ...
@@ -18,9 +18,9 @@
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #' @importFrom parallel mclapply
-#' @seealso The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfamily]{PLNMMfamily}}
-PLNMMfit <-
-  R6Class(classname = "PLNMMfit",
+#' @seealso The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}
+PLNmixturefit <-
+  R6Class(classname = "PLNmixturefit",
     private = list(
       comp       = NA, # list of mixture components (PLNfit)
       tau        = NA, # posterior probabilities of cluster belonging
@@ -63,7 +63,7 @@ PLNMMfit <-
 
             ## ---------------------------------------------------
             ## M - STEP
-            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNMM
+            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
             parallel::mclapply(seq.int(self$k), function(k_){
                 self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
             }, mc.cores = control$cores)
@@ -152,7 +152,7 @@ PLNMMfit <-
 #
 # @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
 # @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
-# PLNMMfit$set("public", "latent_pos",
+# PLNmixturefit$set("public", "latent_pos",
 # function(covariates, offsets) {
 #   latentPos <- private$Mu + private$M + tcrossprod(covariates, private$Theta) + offsets
 #   latentPos

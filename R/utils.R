@@ -158,7 +158,7 @@ PLN_param <- function(control, n, p, d) {
 }
 
 ## should be ready to pass to nlopt optimizer
-PLNMM_param <- function(control, n, p, d) {
+PLNmixture_param <- function(control, n, p, d) {
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "spherical", control$covariance)
   covariance  <- ifelse(is.null(control$inception), covariance  , control$inception$model)

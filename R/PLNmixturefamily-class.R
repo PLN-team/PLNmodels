@@ -1,6 +1,6 @@
-#' An R6 Class to represent a collection of PLNMMfit
+#' An R6 Class to represent a collection of PLNmixturefit
 #'
-#' @description The function [PLNMM()] produces an instance of this class.
+#' @description The function [PLNmixture()] produces an instance of this class.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for [getBestModel()], [getModel()] and [`plot()`][plot.PLNPCAfamily()].
@@ -17,9 +17,9 @@
 #' @importFrom R6 R6Class
 #' @import mclust
 #' @import ggplot2
-#' @seealso The function \code{\link{PLNMM}}, the class \code{\link[=PLNMMfit]{PLNMMfit}}
-PLNMMfamily <-
-  R6Class(classname = "PLNMMfamily",
+#' @seealso The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefit]{PLNmixturefit}}
+PLNmixturefamily <-
+  R6Class(classname = "PLNmixturefamily",
     inherit = PLNfamily,
     active = list(
       clusters = function() private$params
@@ -45,8 +45,8 @@ PLNMMfamily <-
                               "spherical" = "VII",
                               "diagonal"  = "VVI",
                               "full"      = "VVV")
-        initMclust <- mclust::hc(myPLN$latent, "VII")
-        ## instantiate as many PLNMMfit as choices for the number of components
+        initMclust <- mclust::hc(myPLN$var_par$M, "VII")
+        ## instantiate as many PLNmixturefit as choices for the number of components
         self$models <- lapply(clusters, function(k) {
           mclust_out <- mclust::Mclust(
             data           = myPLN$latent,
@@ -54,10 +54,10 @@ PLNMMfamily <-
             modelNames     = modelName,
             initialization = list(hcPairs = initMclust),
             verbose        = FALSE)
-          ## each PLNMMfit will itself instantiate as many PLNmodels
+          ## each PLNmixturefit will itself instantiate as many PLNmodels
           ## as the current choice of number of components
           ## random guess tau <- .check_boundaries(t(rmultinom(nrow(responses), 1, rep(1:k)/k)))
-          PLNMMfit$new(responses, covariates, offsets, mclust_out$z, model, xlevels, control)
+          PLNmixturefit$new(responses, covariates, offsets, mclust_out$z, model, xlevels, control)
         })
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -112,7 +112,7 @@ PLNMMfamily <-
       #' @description Extract best model in the collection
       #' @param crit a character for the criterion used to performed the selection. Either
       #' "BIC", "ICL", or "R_squared". Default is `BIC`
-      #' @return a [`PLNMMfit`] object
+      #' @return a [`PLNmixturefit`] object
       getBestModel = function(crit = c("BIC", "ICL", "R_squared")){
         crit <- match.arg(crit)
         stopifnot(!anyNA(self$criteria[[crit]]))
