@@ -28,10 +28,10 @@ mollusk_mixture <- PLNmixture(Abundance ~ 1 +  offset(log(Offset)), clusters = 1
 plot(mollusk_mixture$models[[5]]$optim_par$objective, type = "l")
 
 mollusk_mixture$plot()
-bestModel <- mollusk_mixture$getModel(3)
+bestModel <- mollusk_mixture$getModel(4)
 plot(bestModel$optim_par$convergence, type = "l")
 
 mollusk_PCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), ranks = 1:5, data = mollusc, control_main = list(cores = 5))
 plot(getBestModel(mollusk_PCA), map = "individual", ind_cols = mollusc$site)
-plot(getBestModel(mollusk_PCA), map = "individual", axes = c(1,2), ind_cols = as.factor(mollusk_mixture$models[[3]]$memberships))
+plot(getBestModel(mollusk_PCA), map = "individual", axes = c(1,2), ind_cols = as.factor(mollusk_mixture$models[[4]]$memberships))
 

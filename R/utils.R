@@ -183,7 +183,8 @@ PLNmixture_param <- function(control, n, p, d) {
     "trace"       = 1,
     "covariance"  = covariance,
     "cores"       = 1       ,
-    "inception"   = NULL
+    "inception"   = NULL,
+    "init_cl    " = 'kmeans'
   )
   ctrl[names(control)] <- control
   ctrl

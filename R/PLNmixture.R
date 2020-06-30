@@ -47,6 +47,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:10,  control_init = l
   ctrl_main <- PLNmixture_param(control_main, nrow(args$Y), ncol(args$Y), ncol(args$X))
   ctrl_init$covariance <- ctrl_main$covariance
   ctrl_init$cores      <- ctrl_main$cores
+  ctrl_init$init_cl    <- ctrl_main$init_cl
 
   ## Instantiate the collection of PLN models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
