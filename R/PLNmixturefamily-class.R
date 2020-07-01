@@ -118,10 +118,10 @@ PLNmixturefamily <-
             }
             model
           }, mc.cores = control$cores)
-          best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$loglik))]]
-          if (is.na(self$models[[i + 1]]$loglik)) {
+          best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$ICL))]]
+          if (is.na(self$models[[i + 1]]$ICL)) {
             self$models[[i + 1]] <- best_one
-          } else if (best_one$loglik > self$models[[i + 1]]$loglik) {
+          } else if (best_one$ICL > self$models[[i + 1]]$ICL) {
             self$models[[i + 1]] <- best_one
           }
         }
@@ -143,10 +143,10 @@ PLNmixturefamily <-
               model$optimize(self$responses, self$covariates, self$offsets, control)
               model
             }, mc.cores = control$cores)
-            best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$loglik))]]
-            if (is.na(self$models[[i - 1]]$loglik)) {
+            best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$ICL))]]
+            if (is.na(self$models[[i - 1]]$ICL)) {
               private$models[[i - 1]] <- best_one
-            } else if (best_one$loglik > self$models[[i - 1]]$loglik) {
+            } else if (best_one$ICL > self$models[[i - 1]]$ICL) {
               self$models[[i - 1]] <- best_one
             }
           }
