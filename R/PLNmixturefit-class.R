@@ -70,7 +70,7 @@ PLNmixturefit <-
 
             ## Assess convergence
             objective[iter]   <- -self$loglik
-            convergence[iter] <- abs(objective[iter-1] - objective[iter])# /abs(objective[iter])
+            convergence[iter] <- abs(objective[iter-1] - objective[iter]) /abs(objective[iter])
             if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
 
           }

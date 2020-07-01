@@ -182,9 +182,11 @@ PLNmixture_param <- function(control, n, p, d) {
     "xtol_abs"    = rep(xtol_abs, p*d + n*p + ifelse(covariance == "spherical", n, n*p)),
     "trace"       = 1,
     "covariance"  = covariance,
-    "cores"       = 1       ,
+    "cores"       = 1,
+    "iterates"    = 2,
+    "smoothing"   = 'both',
     "inception"   = NULL,
-    "init_cl    " = 'kmeans'
+    "init_cl"     = 'kmeans'
   )
   ctrl[names(control)] <- control
   ctrl

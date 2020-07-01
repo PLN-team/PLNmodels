@@ -23,7 +23,10 @@ PLNmixturefamily <-
     active = list(
       clusters = function() private$params
     ),
-
+    private = list(
+      model = NULL,
+      xlevels = NULL
+    ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36,6 +39,8 @@ PLNmixturefamily <-
         ## initialize the required fields
         super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
         private$params <- clusters
+        private$model <- model
+        private$xlevels <- xlevels
 
         if (control$trace > 0) cat("\n Perform kmeans on the latent layer of the inceptive model...")
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), model, xlevels, control)
@@ -85,7 +90,71 @@ PLNmixturefamily <-
 
         }
       },
-      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    smooth = function(control) {
+        if (control$trace > 0) control$trace <- TRUE else control$trace <- FALSE
+        if (control$trace) cat("\n Smoothing ICL\n")
+          for (i in 1:control$iterates) {
+          if (control$smoothing %in% c('forward' , 'both')) self$smooth_forward(control)
+          if (control$smoothing %in% c('backward', 'both')) self$smooth_backward(control)
+        }
+      },
+    smooth_forward = function(control) {
+      trace <- control$trace > 0; control$trace <- FALSE
+      if (trace) cat("   Going forward ")
+      for (i in self$clusters[-length(self$clusters)]) {
+        if (trace) cat("+")
+        cl0 <- self$models[[i]]$memberships
+        if (length(unique(cl0)) == i) { # when would this not happens ?
+          candidates <- mclapply(1:i, function(j) {
+            cl <- cl0
+            J  <- which(cl == j)
+            if (length(J) > 1) {
+              J1 <- base::sample(J, floor(length(J)/2))
+              J2 <- setdiff(J, J1)
+              cl[J1] <- j; cl[J2] <- i + 1
+              model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl), private$model, private$xlevels, control)
+              model$optimize(self$responses, self$covariates, self$offsets, control)
+            } else {
+              model <- self$models[[i + 1]]$clone()
+            }
+            model
+          }, mc.cores = control$cores)
+          best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$ICL))]]
+          if (is.na(self$models[[i + 1]]$ICL)) {
+            self$models[[i + 1]] <- best_one
+          } else if (best_one$ICL > self$models[[i + 1]]$ICL) {
+            self$models[[i + 1]] <- best_one
+          }
+        }
+      }
+  if (trace) cat("\r                                                                                                    \r")
+      },
+      smooth_backward = function(control) {
+        trace <- control$trace > 0; control$trace <- FALSE
+        if (trace) cat("   Going backward ")
+        for (i in rev(self$clusters[-1])) {
+          if (trace) cat('+')
+          cl0 <- factor(self$models[[i]]$memberships)
+          if (nlevels(cl0) == i) {
+            candidates <- mclapply(combn(i, 2, simplify = FALSE), function(couple) {
+              cl_fusion <- cl0
+              levels(cl_fusion)[which(levels(cl_fusion) == paste(couple[1]))] <- paste(couple[2])
+              levels(cl_fusion) <- as.character(1:(i - 1))
+              model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl_fusion), private$model, private$xlevels, control)
+              model$optimize(self$responses, self$covariates, self$offsets, control)
+              model
+            }, mc.cores = control$cores)
+            best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$ICL))]]
+            if (is.na(self$models[[i - 1]]$ICL)) {
+              private$models[[i - 1]] <- best_one
+            } else if (best_one$ICL > self$models[[i - 1]]$ICL) {
+              self$models[[i - 1]] <- best_one
+            }
+          }
+        }
+        if (trace) cat("\r                                                                                                    \r")
+      },
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -------------
       #' @description
       #' Lineplot of selected criteria for all models in the collection

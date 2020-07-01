@@ -57,6 +57,10 @@ PLNmixture <- function(formula, data, subset, clusters = 1:10,  control_init = l
   if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")
   myPLN$optimize(ctrl_main)
 
+  ## Smoothing to avoid local minima
+  if (ctrl_main$trace > 0) cat("\n\n Smoothing PLN mixture models.\n")
+  myPLN$smooth(ctrl_main)
+
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
   if (ctrl_main$trace > 0) cat("\n Post-treatments")
   myPLN$postTreatment()
