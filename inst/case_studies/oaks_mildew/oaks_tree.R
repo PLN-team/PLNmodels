@@ -43,7 +43,7 @@ stability_selection(myPLNnets, mc.cores = 10)
 plot(getBestModel(myPLNnets, "StARS", stability = .985))
 
 ## Clustering with mixture model
-myPLNmixtures <- PLNmixture(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, clusters = 1:5)
+myPLNmixtures <- PLNmixture(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, clusters = 1:5, control_main = list(cores = 5))
 myPLNmixtures$plot()
 plot(purrr::map_dbl(myPLNmixtures$models, ~aricode::NID(.$memberships, oaks$treeStatus)),
      xlab = "number of components", ylab = "NID",  type = "l")

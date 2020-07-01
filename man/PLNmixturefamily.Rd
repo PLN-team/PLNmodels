@@ -20,6 +20,9 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefit]{PLN
 \itemize{
 \item \href{#method-new}{\code{PLNmixturefamily$new()}}
 \item \href{#method-optimize}{\code{PLNmixturefamily$optimize()}}
+\item \href{#method-smooth}{\code{PLNmixturefamily$smooth()}}
+\item \href{#method-smooth_forward}{\code{PLNmixturefamily$smooth_forward()}}
+\item \href{#method-smooth_backward}{\code{PLNmixturefamily$smooth_backward()}}
 \item \href{#method-plot}{\code{PLNmixturefamily$plot()}}
 \item \href{#method-plot_objective}{\code{PLNmixturefamily$plot_objective()}}
 \item \href{#method-getBestModel}{\code{PLNmixturefamily$getBestModel()}}
@@ -82,6 +85,60 @@ Initialize all models in the collection.
 Call to the optimizer on all models of the collection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$optimize(control)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{control}}{a list for controlling the optimization. See details.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-smooth"></a>}}
+\if{latex}{\out{\hypertarget{method-smooth}{}}}
+\subsection{Method \code{smooth()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$smooth(control)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{control}}{a list for controlling the optimization. See details.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-smooth_forward"></a>}}
+\if{latex}{\out{\hypertarget{method-smooth_forward}{}}}
+\subsection{Method \code{smooth_forward()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$smooth_forward(control)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{control}}{a list for controlling the optimization. See details.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-smooth_backward"></a>}}
+\if{latex}{\out{\hypertarget{method-smooth_backward}{}}}
+\subsection{Method \code{smooth_backward()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$smooth_backward(control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

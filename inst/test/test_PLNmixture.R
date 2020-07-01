@@ -30,6 +30,6 @@ plot(mollusk_mixture$models[[5]]$optim_par$objective, type = "l")
 mollusk_mixture$plot()
 bestModel <- mollusk_mixture$getBestModel()
 
-
-corrplot::corrplot(sigma(bestModel)[order(bestModel$memberships), order(bestModel$memberships)], is.corr = FALSE)
+mollusk_PCA <- PLNPCA(Abundance ~ 1 +  offset(log(Offset)), data = mollusc, control_main = list(cores = 5))
+plot(mollusk_PCA$getBestModel(), map = 'ind', ind_cols =bestModel$memberships %>% as.factor())
 

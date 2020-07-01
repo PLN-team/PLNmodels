@@ -92,8 +92,7 @@ PLNmixturefamily <-
       },
     smooth = function(control) {
         if (control$trace > 0) control$trace <- TRUE else control$trace <- FALSE
-        if (control$trace) cat("\n Smoothing ICL\n")
-          for (i in 1:control$iterates) {
+        for (i in 1:control$iterates) {
           if (control$smoothing %in% c('forward' , 'both')) self$smooth_forward(control)
           if (control$smoothing %in% c('backward', 'both')) self$smooth_backward(control)
         }
@@ -119,10 +118,10 @@ PLNmixturefamily <-
             }
             model
           }, mc.cores = control$cores)
-          best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$ICL))]]
-          if (is.na(self$models[[i + 1]]$ICL)) {
+          best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$loglik))]]
+          if (is.na(self$models[[i + 1]]$loglik)) {
             self$models[[i + 1]] <- best_one
-          } else if (best_one$ICL > self$models[[i + 1]]$ICL) {
+          } else if (best_one$loglik > self$models[[i + 1]]$loglik) {
             self$models[[i + 1]] <- best_one
           }
         }
@@ -144,10 +143,10 @@ PLNmixturefamily <-
               model$optimize(self$responses, self$covariates, self$offsets, control)
               model
             }, mc.cores = control$cores)
-            best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$ICL))]]
-            if (is.na(self$models[[i - 1]]$ICL)) {
+            best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$loglik))]]
+            if (is.na(self$models[[i - 1]]$loglik)) {
               private$models[[i - 1]] <- best_one
-            } else if (best_one$ICL > self$models[[i - 1]]$ICL) {
+            } else if (best_one$loglik > self$models[[i - 1]]$loglik) {
               self$models[[i - 1]] <- best_one
             }
           }
