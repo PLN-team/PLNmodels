@@ -50,7 +50,7 @@ The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`)
 
 ### Mathematical background
 
-In the vein of @TiB99, we introduce in @PLNPCA a probabilistic PCA model for multivariate count data which is a variant of the Poisson Lognormal model of @AiH89 (see [the PLN vignette](PLN.html) as a reminder). Indeed, it can viewed as a PLN model with an additional rank constraint on the covariance matrix $\boldsymbol\Sigma$ such that $\mathrm{rank}(\boldsymbol\Sigma)= q$.
+In the vein of @TiB99, we introduce in @PLNPCA a probabilistic PCA model for multivariate count data which is a variant of the Poisson Lognormal model of @AiH89 (see [the PLN vignette](PLN.html) as a reminder). Indeed, it can be viewed as a PLN model with an additional rank constraint on the covariance matrix $\boldsymbol\Sigma$ such that $\mathrm{rank}(\boldsymbol\Sigma)= q$.
 
 This PLN-PCA model can be written in a hierarchical framework where a sample of $p$-dimensional observation vectors $\mathbf{Y}_i$ is related to some  $q$-dimensional vectors of latent variables $\mathbf{W}_i$ as follows:
 \begin{equation} 
