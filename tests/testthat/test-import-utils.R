@@ -128,6 +128,17 @@ test_that("compute_offset provides correct answers for identical samples", {
   expect_null(compute_offset(counts, "none"))
 })
 
+test_that("compute_offset fails with an informative error when given a data.frame", {
+  sizes <- rep(1, 5)
+  counts <- sizes %o% 1:10
+
+  expect_error(compute_offset(counts, data.frame(counts)),
+               regexp = "You supplied a data.frame to compute_offset(). Did you mean to supply a numeric matrix?
+  Try converting your data.frame to a matrix with as.matrix().",
+               fixed = TRUE)
+
+})
+
 test_that("offset_rle provides correct answers when adding pseudocounts", {
   sizes <- c(1, 2)
   counts <- sizes %o% rep(1, 10)
@@ -191,6 +202,7 @@ test_that("offset_gmpr fails when a sample shares no species with any other samp
                "Some sample(s) do not share any species with other samples, GMPR normalization failed.",
                fixed = TRUE)
 })
+
 
 ## Numeric offset
 test_that("offset_numeric fails when the offsets are incompatible with the counts table", {

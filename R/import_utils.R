@@ -287,6 +287,13 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
 #' compute_offset(counts, offset = my_offset)
 compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...) {
+  ## special behavior for data.frame
+  if (inherits(offset, "data.frame")) {
+    stop(
+  "You supplied a data.frame to compute_offset(). Did you mean to supply a numeric matrix?
+  Try converting your data.frame to a matrix with as.matrix()."
+  )
+  }
   ## special behavior for numeric offset
   if (is.numeric(offset)) {
     return(offset_numeric(counts, offset, ...))
