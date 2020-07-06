@@ -1,11 +1,13 @@
 
-## Intermediate release with various updates
+## Resubmission
 
-* refactor code to benefit from Roxygen 7.0.0 R6-related new features for documentation
-* used spell_check to check spelling, found many typos
-* updated optimization routines
-* fix bugs, some simplification in C++ code
-* add a couple of features
+* commenting tests that fail on some plaforms (ATLAS) due to numerical precision
+
+## Minor release to answer CRAN request
+
+* amending test-pln to fullfil a CRAN maintainer request 
+  (error on an ATLAS variant of BLAS in some anecdotal tests...)
+* Correction in likelihood of diagonal PLN
 
 ## Tested environments
 
@@ -14,9 +16,11 @@
 - macOS Catalina 10.15, R-devel (github action)
 - Linux ubuntu 16.04, R-release (github-action)
 - Linux ubuntu 18.04 R-release, (local)
-- Debian Linux, R-devel, GCC (on R hub),
+- Linux Debian GCC  R-devel, (R hub)
 - Windows Server 2019, R-release (github action)
-- Windows Server 2008 R2 SP1, R-release  (on R hub)
+- Windows Server 2008 R2 SP1, R-release  (R hub)
+- Windows, R-release (winbuilder)
+- Windows, R-release  (winbuilder)
 
 all status OK except for one note:
 
@@ -28,10 +32,10 @@ all status OK except for one note:
 
 ## R CMD check results
 
-On my computer I get (Ubuntu 18.04, Intel Xeon 3.5 GHz; 32 Go mem)
+On my computer I get (Ubuntu 18.04, Intel Xeon 3.5 GHz; 64 Go mem)
 
-── R CMD check results ─────────────────────────────────── PLNmodels 0.10.4 ────
-Duration: 2m 53.1s
+── R CMD check results ─────────────────────────────────── PLNmodels 0.10.5 ────
+Duration: 1m 46.6s
 
 > checking installed package size ... NOTE
     installed size is 10.7Mb

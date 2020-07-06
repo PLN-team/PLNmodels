@@ -15,7 +15,7 @@
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
+#' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param grouping a factor specifying the class of each observation used for discriminant analysis.
 #' @param model model used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.

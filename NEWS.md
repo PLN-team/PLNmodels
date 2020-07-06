@@ -1,3 +1,8 @@
+# PLNmodels 0.10.6
+
+* Correction in likelihood of diagonal PLN
+* amending test-pln to fullfil CRAN request (error on ATLAS variant of BLAS...)
+
 # PLNmodels 0.10.5
 
 * Refactor code of R6 classes to benefit from Roxygen 7.0.0 R6-related new features for documentation

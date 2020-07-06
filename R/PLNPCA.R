@@ -5,7 +5,7 @@
 ##' @param formula an object of class "formula": a symbolic description of the model to be fitted.
 ##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
-##' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
+##' @param weights an optional vector of observation weights to be used in the fitting process.
 ##' @param ranks a vector of integer containing the successive ranks (or number of axes to be considered)
 ##' @param control_init a list for controlling the optimization at initialization.  See details of function [PLN()].
 ##' @param control_main a list for controlling the main optimization process. See details.

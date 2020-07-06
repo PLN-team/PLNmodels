@@ -13,7 +13,7 @@ PLN(formula, data, subset, weights, control = list())
 
 \item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
 
-\item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{weights}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{control}{a list for controlling the optimization. See details.}
 }

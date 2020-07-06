@@ -9,7 +9,7 @@
 #' @param covariates the matrix of covariates common to every models
 #' @param offsets the matrix of offsets common to every models
 #' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
-#' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.
+#' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param penalty a positive real number controlling the level of sparsity of the underlying network.
 #' @param control a list for controlling the optimization of the PLN model used at initialization. See [PLNnetwork()] for details.
 #' @param model model used for fitting, extracted from the formula in the upper-level call

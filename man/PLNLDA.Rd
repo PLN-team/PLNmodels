@@ -13,7 +13,7 @@ PLNLDA(formula, data, subset, weights, grouping, control = list())
 
 \item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
 
-\item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{weights}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{grouping}{a factor specifying the class of each observation used for discriminant analysis.}
 
