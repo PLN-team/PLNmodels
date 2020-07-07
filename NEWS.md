@@ -1,3 +1,7 @@
+# PLNmodels 0.10.x
+
+* added the oaks data set from Jakuschkin et al (2016)
+
 # PLNmodels 0.10.6
 
 * Correction in likelihood of diagonal PLN
