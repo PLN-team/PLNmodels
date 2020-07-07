@@ -1,6 +1,6 @@
 library(PLNmodels)
 
-nb_cores <- 4
+nb_cores <- 10
 
 ## get oaks data set
 data(oaks)

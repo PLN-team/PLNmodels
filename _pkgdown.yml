@@ -88,9 +88,10 @@ reference:
     - '`prepare_data`'
     - '`compute_offset`'
     - '`rPLN`'
-- title: Data set
+- title: Data sets
   desc: ~
   contents:
     - '`trichoptera`'
     - '`mollusk`'
+    - '`oaks`'
 
