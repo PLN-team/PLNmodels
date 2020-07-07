@@ -3,7 +3,7 @@
 #' @description Extracts Fisher information matrix of \eqn{\Theta} from objects returned by \code{\link[=PLN]{PLN}} and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the full-data version (scaled by the number of observations), usually noted \deqn{I_n(\theta)}.
 #'
 #' @param object an R6 object with class PLNfit
-#' @param type Either `wald` (default) or `louis`. Approxomation scheme used to compute the Fisher information matrix
+#' @param type Either `wald` (default) or `louis`. Approximation scheme used to compute the Fisher information matrix
 #' @return A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
 #' \eqn{\Theta} is a matrix of size d * p.
 #'

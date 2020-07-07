@@ -98,10 +98,11 @@ Rcpp::List optim_rank (
     const arma::mat & X,
     const arma::mat & O,
     const arma::vec & w,
+    const int & q,
     Rcpp::List options) {
 
   // Initialize
-  optimizer_PLN_rank myPLN = optimizer_PLN_rank(par, Y, X, O, w, options) ;
+  optimizer_PLN_rank myPLN = optimizer_PLN_rank(par, Y, X, O, w, q, options) ;
 
   // Perform the optimization
   myPLN.optimize() ;
@@ -124,10 +125,11 @@ Rcpp::List optim_sparse (
     const arma::mat & X,
     const arma::mat & O,
     const arma::vec & w,
+    const arma::mat & Omega,
     Rcpp::List options) {
 
   // Initialize
-  optimizer_PLN_sparse myPLN = optimizer_PLN_sparse(par, Y, X, O, w, options) ;
+  optimizer_PLN_sparse myPLN = optimizer_PLN_sparse(par, Y, X, O, w, Omega, options) ;
 
   // Perform the optimization
   myPLN.optimize() ;
@@ -139,22 +141,77 @@ Rcpp::List optim_sparse (
   return(myPLN.get_output());
 }
 
-// function to perform a single VE Step
 
+// ---------------------------------------------------------------------------------------
+//
+// function to perform a single VE Step
+//
 // [[Rcpp::export]]
-Rcpp::List VEstep_PLN(
+Rcpp::List VEstep_PLN_full(
     arma::vec par,
     const arma::mat & Y,
     const arma::mat & X,
     const arma::mat & O,
     const arma::vec & w,
+    const arma::mat & Theta,
+    const arma::mat & Omega,
     Rcpp::List options) {
 
   // Initialize
   optimizer_PLN_full myPLN = optimizer_PLN_full(par, Y, X, O, w, options) ;
 
   // Perform the optimization
-  myPLN.optimize() ;
+  myPLN.VEstep(Theta, Omega);
+
+  // Format the output
+  myPLN.export_var_par () ;
+
+  // Output returned to R
+  return(myPLN.get_var_par());
+
+}
+
+// [[Rcpp::export]]
+Rcpp::List VEstep_PLN_diagonal(
+    arma::vec par,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
+    const arma::vec & w,
+    const arma::mat & Theta,
+    const arma::mat & Omega,
+    Rcpp::List options) {
+
+  // Initialize
+  optimizer_PLN_diagonal myPLN = optimizer_PLN_diagonal(par, Y, X, O, w, options) ;
+
+  // Perform the optimization
+  myPLN.VEstep(Theta, Omega);
+
+  // Format the output
+  myPLN.export_var_par () ;
+
+  // Output returned to R
+  return(myPLN.get_var_par());
+
+}
+
+// [[Rcpp::export]]
+Rcpp::List VEstep_PLN_spherical(
+    arma::vec par,
+    const arma::mat & Y,
+    const arma::mat & X,
+    const arma::mat & O,
+    const arma::vec & w,
+    const arma::mat & Theta,
+    const arma::mat & Omega,
+    Rcpp::List options) {
+
+  // Initialize
+  optimizer_PLN_spherical myPLN = optimizer_PLN_spherical(par, Y, X, O, w, options) ;
+
+  // Perform the optimization
+  myPLN.VEstep(Theta, Omega);
 
   // Format the output
   myPLN.export_var_par () ;

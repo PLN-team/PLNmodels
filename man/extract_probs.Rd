@@ -14,16 +14,16 @@ extract_probs(
 )
 }
 \arguments{
-\item{Robject}{an object with class PLNnetworkfamily, i.e. an output from \code{\link{PLNnetwork}}}
+\item{Robject}{an object with class \code{\link{PLNnetworkfamily}}, i.e. an output from \code{\link[=PLNnetwork]{PLNnetwork()}}}
 
-\item{penalty}{penalty used for the boostrap subsamples}
+\item{penalty}{penalty used for the bootstrap subsamples}
 
 \item{index}{Integer index of the model to be returned. Only the first value is taken into account.}
 
 \item{crit}{a character for the criterion used to performed the selection. Either
-"BIC", "ICL", "EBIC", "StARS", "R_squared". Default is \code{ICL} for PLNPCA, and \code{BIC} for PLNnetwork.
- If StARS (Stability Approach to Regularization Selection) is chosen and stability selection
- was not yet performed, the function will call the method stability_selection with default argument.}
+"BIC", "ICL", "EBIC", "StARS", "R_squared". Default is \code{ICL} for \code{PLNPCA}, and \code{BIC} for \code{PLNnetwork}.
+If StARS (Stability Approach to Regularization Selection) is chosen and stability selection
+was not yet performed, the function will call the method \code{\link[=stability_selection]{stability_selection()}} with default argument.}
 
 \item{format}{output format. Either a matrix (default) or a named vector.}
 

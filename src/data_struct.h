@@ -20,8 +20,6 @@ typedef struct optim_data {
     double w_bar         ;
     double log_det_Omega ;
     arma::vec Ki         ;
-    double KY            ;
-    arma::vec KYi        ;
     int iterations       ;
     int n                ;
     int p                ;
@@ -37,68 +35,16 @@ typedef struct optim_data {
     optim_data(const arma::mat &responses,
                const arma::mat &covariates,
                const arma::mat &offsets,
-               const arma::mat &weights,
-               const arma::mat &regression_parameters,
-               const arma::mat &covinv
-    ) : Y(responses), X(covariates), O(offsets), w(weights), Omega(covinv), Theta(regression_parameters), log_det_Omega(real(log_det(covinv)))
+               const arma::mat &weights
+    ) : Y(responses), X(covariates), O(offsets), w(weights)
       {
         n = Y.n_rows ;
         p = Y.n_cols ;
         d = X.n_cols ;
         iterations = 0     ;
-        KYi = logfact(Y)   ;
-        KY = accu(w % KYi) ;
         w_bar = accu(w)    ;
         Ki = - logfact(Y) + .5 * (1+(1-p)* std::log(2*M_PI)) ;
       } ;
-    // Rank-Constrained constructor
-    optim_data(const arma::mat &responses,
-               const arma::mat &covariates,
-               const arma::mat &offsets,
-               const arma::mat &weights,
-               const int rank
-    ) : Y(responses), X(covariates), O(offsets), w(weights), q(rank)
-      {
-        n = Y.n_rows ;
-        p = Y.n_cols ;
-        d = X.n_cols ;
-        iterations = 0 ;
-        KYi = logfact(Y) ;
-        KY = accu(KYi) ;
-        w_bar = accu(w)    ;
-      } ;
-    // Sparse covariance constructor
-    optim_data(const arma::mat &responses,
-               const arma::mat &covariates,
-               const arma::mat &offsets,
-               const arma::mat &weights,
-               const arma::mat &covinv
-    ) : Y(responses), X(covariates), O(offsets), w(weights), Omega(covinv), log_det_Omega(real(log_det(covinv)))
-      {
-        n = Y.n_rows ;
-        p = Y.n_cols ;
-        d = X.n_cols ;
-        iterations = 0 ;
-        KYi = logfact(Y) ;
-        KY = accu(KYi) ;
-        w_bar = accu(w)    ;
-      } ;
-    // PLN VE-step constructor
-    optim_data(const arma::mat &responses,
-               const arma::mat &covariates,
-               const arma::mat &offsets,
-               const arma::mat &regression_parameters,
-               const arma::mat &covinv,
-               const double log_det
-    ) : Y(responses), X(covariates), O(offsets), Omega(covinv), Theta(regression_parameters), log_det_Omega(log_det)
-    {
-      n = Y.n_rows ;
-      p = Y.n_cols ;
-      d = X.n_cols ;
-      iterations = 0 ;
-      KYi = logfact(Y) ;
-      KY = accu(KYi) ;
-    } ;
 
 } optim_data ;
 

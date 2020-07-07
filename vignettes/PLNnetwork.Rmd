@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 ## Preliminaries
 
-This vignette illustrates the basical use of the `PLNnetwork` function and the methods accompaning the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`.
+This vignette illustrates the standard use of the `PLNnetwork` function and the methods accompanying the R6 Classes `PLNnetworkfamily` and `PLNnetworkfit`.
 
 ### Requirements
 
@@ -71,7 +71,7 @@ where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters.
 
 #### Alternating optimization
 
-Regularization via sparsification of $\boldsymbol\Omega$ and vizualization of the consecutive network is the main objective in PLN-network. To reach this goal, we need to first estimate the model parameters. Inference in PLN-network focuses on the regression parameters $\boldsymbol\Theta$ and the inverse covariance $\boldsymbol\Omega$. Technically speaking, we adopt a variational strategy to approximate the $\ell_1$-penalized log-likelihood function and optimize the consecutive sparse variational surrogate with an optimization scheme that alternates between two step
+Regularization via sparsification of $\boldsymbol\Omega$ and visualization of the consecutive network is the main objective in PLN-network. To reach this goal, we need to first estimate the model parameters. Inference in PLN-network focuses on the regression parameters $\boldsymbol\Theta$ and the inverse covariance $\boldsymbol\Omega$. Technically speaking, we adopt a variational strategy to approximate the $\ell_1$-penalized log-likelihood function and optimize the consecutive sparse variational surrogate with an optimization scheme that alternates between two step
 
 1. a gradient-ascent-step, performed with the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package.
 2. a penalized log-likelihood step, performed with the graphical-Lasso of @FHT08, implemented in the package **fastglasso** [@glassofast].
@@ -80,7 +80,7 @@ More technical details can be found in @PLNnetwork
 
 ## Analysis of trichoptera data with a PLNnetwork model
 
-In the package, the sparse PLN-network model is adjusted with the function `PLNnetwork`, which we review in this section. This function adjusts the model for a series of value of the penalty parameter controling the number of edges in the network. It then provides a collection of objects with class `PLNnetworkfit`, corresponding to networks with different levels of density, all stored in an object with class `PLNnetworkfamily`. 
+In the package, the sparse PLN-network model is adjusted with the function `PLNnetwork`, which we review in this section. This function adjusts the model for a series of value of the penalty parameter controlling the number of edges in the network. It then provides a collection of objects with class `PLNnetworkfit`, corresponding to networks with different levels of density, all stored in an object with class `PLNnetworkfamily`. 
 
 ### Adjusting a collection of network - a.k.a. a regularization path
 
@@ -127,7 +127,7 @@ plot(network_models)
 
 In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with a lower level of penalty (meaning more edges in the network). The same holds true for the penalized counterpart of the variational surrogate. Generally, smoothness of these criteria is a good sanity check of optimization process. BIC and its extended-version high-dimensional version EBIC are classically used for selecting the correct amount of penalization with sparse estimator like the one used by PLN-network. However, we will consider later a more robust albeit more computationally intensive strategy to chose the appropriate number of edges in the network.
 
-To pursue the analysis, we can represent the coefficient path (i.e., value of the edges in the network according to the penalty level) to see if some edges clearly come off.  An alternative and more intuitive view consists in plotting the values of the partial correlations along the path, which can be obtained with the options \texttt{corr = TRUE}. To this end, we provide the S3 function `coefficient_path`:
+To pursue the analysis, we can represent the coefficient path (i.e., value of the edges in the network according to the penalty level) to see if some edges clearly come off.  An alternative and more intuitive view consists in plotting the values of the partial correlations along the path, which can be obtained with the options `corr = TRUE`. To this end, we provide the S3 function `coefficient_path`:
 
 
 ```{r path_coeff, fig.width=7, fig.height=7}
@@ -148,7 +148,7 @@ model_BIC <- getBestModel(network_models, "BIC")   # if no criteria is specified
 An alternative strategy is to use StARS [@stars], which performs resampling to evaluate the robustness of the network along the path of solutions in a similar fashion as the stability selection approach of @stabilitySelection, but in a network inference context. 
 
 ```{r extract models stars}
-model_StARS <- getBestModel(network_models, "StARS") # if StARS is requested, stabiltiy selection is performed if needed 
+model_StARS <- getBestModel(network_models, "StARS") # if StARS is requested, stability selection is performed if needed 
 ```
 
 When "StARS" is requested for the first time, `getBestModel` automatically calls the method `stability_selection` with the default parameters. After the first call, the stability path is available from the ` plot` function:
@@ -159,13 +159,13 @@ plot(network_models, "stability")
 
 ### Structure of a `PLNnetworkfit`
 
-The variables `model_BIC`, `model_StARS` and `model_pen` are other `R6Class` objects with class `PLNnetworkfit`. They all inherits from the class `PLNfit` and thus own all its methods, with a couple of specific one, mostly for network vizualization purposes. Most fields and methods are recalled when such an object is printed:
+The variables `model_BIC`, `model_StARS` and `model_pen` are other `R6Class` objects with class `PLNnetworkfit`. They all inherits from the class `PLNfit` and thus own all its methods, with a couple of specific one, mostly for network visualization purposes. Most fields and methods are recalled when such an object is printed:
 
 ```{r show/print}
 model_StARS
 ```
 
-The `plot` method provides a quick representation of the inferred network, with various options (either as a matrix, a graph, and always send back de plotted object invisibly if users needs to perform additional analyses).
+The `plot` method provides a quick representation of the inferred network, with various options (either as a matrix, a graph, and always send back the plotted object invisibly if users needs to perform additional analyses).
 
 ```{r extract}
 my_graph <- plot(model_StARS, plot = FALSE)

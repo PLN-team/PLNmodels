@@ -4,11 +4,27 @@
 \alias{PLNfamily}
 \title{An R6 Class to represent a collection of PLNfit}
 \description{
-super class for \code{\link{PLNPCAfamily}} and \code{\link{PLNnetworkfamily}}
+super class for \code{\link{PLNPCAfamily}} and \code{\link{PLNnetworkfamily}}. The R6 class benefits from S3 methods such as \code{\link[=getBestModel]{getBestModel()}}, \code{\link[=getModel]{getModel()}} and \code{\link[=plot.PLNPCAfamily]{plot()}}.
+}
+\details{
+The parameter \code{control} is a list controlling the optimization with the following entries:
+\itemize{
+\item "covariance" character setting the model for the covariance matrix. Either "full", "diagonal" or "spherical". Default is "full".
+\item "trace" integer for verbosity.
+\item "inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit), which sometimes speeds up the inference.
+\item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
+\item "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
+\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4
+\item "xtol_abs" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0
+\item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+\item "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)
+\item "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
+}
+}
+\seealso{
 
-This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestModel}},
-\code{\link[=getModel.PLNnetworkfamily]{getModel}} and  \code{\link[=plot.PLNnetworkfamily]{plot}}.
+
+\code{\link[=getModel]{getModel()}}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -21,16 +37,18 @@ See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestMod
 
 \item{\code{weights}}{the vector of observation weights}
 
-\item{\code{models}}{a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.}
+\item{\code{inception}}{a \link{PLNfit} object, obtained when no sparsifying penalty is applied.}
 
-\item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.}
+\item{\code{models}}{a list of \link{PLNfit} object, one per penalty.}
 }
 \if{html}{\out{</div>}}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
+\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the collection of models / fits}
+
+\item{\code{convergence}}{sends back a data frame with some convergence diagnostics associated with the optimization process (method, optimal value, etc)}
 }
 \if{html}{\out{</div>}}
 }
@@ -48,15 +66,37 @@ See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestMod
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Create a new \code{\link{PLNfamily}} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfamily$new(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{weights}}{the vector of observation weights}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new \code{\link{PLNfamily}} object
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
+Update fields after optimization
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfamily$postTreatment()}\if{html}{\out{</div>}}
 }
@@ -64,23 +104,53 @@ See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestMod
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getModel"></a>}}
+\if{latex}{\out{\hypertarget{method-getModel}{}}}
 \subsection{Method \code{getModel()}}{
+Extract a model from a collection of models
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfamily$getModel(var, index = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{var}}{value of the parameter (\code{rank} for PLNPCA, \code{sparsity} for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
+
+\item{\code{index}}{Integer index of the model to be returned. Only the first value is taken into account.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{\link{PLNfit}} object
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-plot}{}}}
 \subsection{Method \code{plot()}}{
+Lineplot of selected criteria for all models in the collection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfamily$plot(criteria, annotate = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{criteria}}{A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)}
+
+\item{\code{annotate}}{Logical. Should R2 be added to the plot (defaults to \code{TRUE})}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{\link{ggplot2}} object
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
+\if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfamily$show()}\if{html}{\out{</div>}}
 }
@@ -88,7 +158,9 @@ See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestMod
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
+\if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfamily$print()}\if{html}{\out{</div>}}
 }
@@ -96,6 +168,7 @@ See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestMod
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

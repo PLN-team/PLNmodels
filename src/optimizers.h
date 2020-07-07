@@ -3,7 +3,6 @@
 
 #include "nlopt_utils.h"
 #include "gradients.h"
-#include "hessians.h"
 
 // ---------------------------------------------------------------------------
 // ABSTRACT CLASS OPTIMIZER_PLN
@@ -28,9 +27,9 @@ class optimizer_PLN {
     // double (*fn_optim) (const stdvec& , stdvec &, void *) ;
     double (*fn_optim) (unsigned , const double* , double* , void*) ;
 
-    // the function for preconditionning, when algorithm allows it
-    // void pre(unsigned n, const double *x, const double *v, double *vpre, void *f_data);
-    void (*fn_precond) (unsigned , const double* , const double* , double* , void*) ;
+    // the function that computes the objective and thge gradient vector
+    // double (*fn_optim_VE) (const stdvec& , stdvec &, void *) ;
+    double (*fn_VEstep) (unsigned , const double* , double* , void*) ;
 
     // nlopt optimizer
     nlopt_opt optimizer ;
@@ -69,12 +68,17 @@ class optimizer_PLN {
 
     void optimize() ;
 
+    void VEstep(const arma::mat &, const arma::mat &) ;
+
     // prepare/compute output according to problem dimension
     // will be defined in the child classes
     virtual void export_output() =0 ;
 
     // export the output an Rcpp::List understandable by R
     virtual Rcpp::List get_output() ;
+
+    // export the output an Rcpp::List understandable by R
+    virtual Rcpp::List get_var_par() ;
 
 };
 
@@ -128,7 +132,6 @@ class optimizer_PLN_full: public optimizer_PLN {
 
     void export_output()  ;
     void export_var_par() ;
-    Rcpp::List get_var_par()    ;
 };
 
 // RANK-CONSTRAINED COVARIANCE (PCA)
@@ -140,6 +143,7 @@ class optimizer_PLN_rank: public optimizer_PLN {
       const arma::mat & X,
       const arma::mat & O,
       const arma::vec & w,
+      const int rank,
       Rcpp::List options
     ) ;
 
@@ -166,6 +170,7 @@ class optimizer_PLN_sparse: public optimizer_PLN {
       const arma::mat & X,
       const arma::mat & O,
       const arma::vec & w,
+      const arma::mat & Omega,
       Rcpp::List options
     ) ;
 

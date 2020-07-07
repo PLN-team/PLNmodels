@@ -21,43 +21,43 @@ PLNnetwork(
 
 \item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
 
-\item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector.}
+\item{weights}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{penalties}{an optional vector of positive real number controling the level of sparisty of the underlying network. if NULL (the default), will be set internally}
+\item{penalties}{an optional vector of positive real number controlling the level of sparsity of the underlying network. if NULL (the default), will be set internally. See \code{control_init} and \code{control_main} options for additional tuning of the penalty.}
 
-\item{control_init}{a list for controling the optimization of the PLN model used at initialization. See details.}
+\item{control_init}{a list for controlling the optimization of the PLN model used at initialization, and how the vector of \code{penalties} is generated. See details.}
 
-\item{control_main}{a list for controling the main optimization process. See details.}
+\item{control_main}{a list for controlling the main optimization process. Can be used to specify adaptive penalty weights. See details.}
 }
 \value{
-an R6 object with class \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}}, which contains
-a collection of models with class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
+an R6 object with class \code{\link{PLNnetworkfamily}}, which contains
+a collection of models with class \code{\link{PLNnetworkfit}}
 }
 \description{
 Fit the sparse inverse covariance variant of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \details{
-The list of parameters \code{control_main} controls the optimization of the main process, with the following entries
- \itemize{
- \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
- \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
- \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
- \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
- \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
- \item{"algorithm"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
-    "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".}
- \item{"cores"}{integer for number of cores used. Default is 1.}
- \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
- \item{"ftol_out"}{outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6}
- \item{"maxit_out"}{outer solver stops when the number of iteration exceeds out.maxit. Default is 50}
- \item{"penalize_diagonal"}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.}
- \item{"penalty_weights"}{p x p matrix of weights (defaut filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
+The list of parameters \code{control_main} controls the optimization of the main process, with the following entries:
+\itemize{
+\item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
+\item "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
+\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter. Default is 1e-4
+\item "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0
+\item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+\item "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
+"VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
+\item "cores" integer for number of cores used. Default is 1.
+\item "trace" integer for verbosity. Useless when \code{cores > 1}
+\item "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
+\item "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
+\item "penalize_diagonal" boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.
+\item "penalty_weights" p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 }
 
-The list of parameters \code{control_init} controls the optimization process in the initialization and in the function \code{\link[=PLN]{PLN}}, plus two additional parameters:
+The list of parameters \code{control_init} controls the optimization process in the initialization and in the function \code{\link[=PLN]{PLN()}}, plus two additional parameters:
 \itemize{
- \item{"nPenalties"}{an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non NULL}
- \item{"min.ratio"}{the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min.ratio}. Default is 0.1.}
+\item "nPenalties" an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non \code{NULL}
+\item "min.ratio" the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min.ratio}. Default is 0.1.
 }
 }
 \examples{
@@ -66,5 +66,5 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 }
 \seealso{
-The classes \code{\link[=PLNnetworkfamily]{PLNnetworkfamily}} and \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
+The classes \code{\link{PLNnetworkfamily}} and \code{\link{PLNnetworkfit}}
 }

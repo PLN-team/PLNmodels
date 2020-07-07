@@ -21,3 +21,5 @@
 ^inst/sticker$
 ^inst/case_studies$
 ^inst/test/
+^\.github$
+^data-raw$

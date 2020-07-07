@@ -4,11 +4,11 @@
 \alias{PLNnetworkfamily}
 \title{An R6 Class to represent a collection of PLNnetworkfit}
 \description{
-The function \code{\link{PLNnetwork}} produces an instance of this class.
+The function \code{\link[=PLNnetwork]{PLNnetwork()}} produces an instance of this class.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=getBestModel.PLNnetworkfamily]{getBestModel}},
-\code{\link[=getModel.PLNnetworkfamily]{getModel}} and  \code{\link[=plot.PLNnetworkfamily]{plot}}.
+See the documentation for \code{\link[=getBestModel]{getBestModel()}},
+\code{\link[=getModel]{getModel()}} and \link[=plot.PLNnetworkfamily]{plot()}
 }
 \examples{
 data(trichoptera)
@@ -17,46 +17,21 @@ fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 class(fits)
 }
 \seealso{
-The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLNnetworkfit}}
+The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNnetworkfit}}
 }
 \section{Super class}{
 \code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{PLNnetworkfamily}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{weights}}{the vector of observation weights}
-
-\item{\code{models}}{a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.}
-
-\item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{weights}}{the vector of observation weights}
-
 \item{\code{penalties}}{the sparsity level of the network in the successively fitted models}
 
-\item{\code{models}}{a list of \code{\link[=PLNnetworkfit]{PLNnetworkfit}} object, one per penalty.}
+\item{\code{stability_path}}{the stability path of each edge as returned by the stars procedure}
 
-\item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when no sparsifying penalty is applied.}
+\item{\code{stability}}{mean edge stability along the penalty path}
 
-\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
+\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2, stability) for the collection of models / fits}
 }
 \if{html}{\out{</div>}}
 }
@@ -86,7 +61,9 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize all models in the collection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$new(
   penalties,
@@ -95,22 +72,58 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
   offsets,
   weights,
   model,
+  xlevels,
   control
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{penalties}}{a vector of positive real number controlling the level of sparsity of the underlying network.}
+
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{weights}}{the vector of observation weights}
+
+\item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Update current \code{\link{PLNnetworkfit}} with smart starting values
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
+Call to the C++ optimizer on all models of the collection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$optimize(control)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-stability_selection"></a>}}
+\if{latex}{\out{\hypertarget{method-stability_selection}{}}}
 \subsection{Method \code{stability_selection()}}{
+Compute the stability path by stability selection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$stability_selection(
   subsamples = NULL,
@@ -119,18 +132,42 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{subsamples}}{a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.}
+
+\item{\code{control}}{a list controlling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork()}} for details.}
+
+\item{\code{mc.cores}}{the number of cores to used. Default is 1.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-coefficient_path"></a>}}
+\if{latex}{\out{\hypertarget{method-coefficient_path}{}}}
 \subsection{Method \code{coefficient_path()}}{
+Extract the regularization path of a \code{\link{PLNnetworkfamily}}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$coefficient_path(precision = TRUE, corr = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{precision}}{Logical. Should the regularization path be extracted from the precision matrix Omega (\code{TRUE}, default) or from the variance matrix Sigma (\code{FALSE})}
+
+\item{\code{corr}}{Logical. Should the matrix be transformed to (partial) correlation matrix before extraction? Defaults to \code{TRUE}}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getBestModel"></a>}}
+\if{latex}{\out{\hypertarget{method-getBestModel}{}}}
 \subsection{Method \code{getBestModel()}}{
+Extract the best network in the family according to some criteria
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$getBestModel(
   crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"),
@@ -138,10 +175,21 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{crit}}{character. Criterion used to perform the selection. Is "StARS" is chosen but \verb{$stability} field is empty, will compute stability path.}
+
+\item{\code{stability}}{Only used for "StARS" criterion. A scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-plot}{}}}
 \subsection{Method \code{plot()}}{
+Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a \code{\link{PLNnetworkfamily}})
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$plot(
   criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
@@ -150,26 +198,61 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{criteria}}{vector of characters. The criteria to plot in \code{c("loglik", "pen_loglik", "BIC", "EBIC")}. Defaults to all of them.}
+
+\item{\code{log.x}}{logical: should the x-axis be represented in log-scale? Default is \code{TRUE}.}
+
+\item{\code{annotate}}{logical: should the value of approximated R squared be added to the plot of criteria? Default is \code{TRUE}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{ggplot}} graph
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_stars"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_stars}{}}}
 \subsection{Method \code{plot_stars()}}{
+Plot stability path
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$plot_stars(stability = 0.9, log.x = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{stability}}{scalar: the targeted level of stability in stability plot. Default is \code{0.9}.}
+
+\item{\code{log.x}}{logical: should the x-axis be represented in log-scale? Default is \code{TRUE}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{ggplot}} graph
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_objective"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_objective}{}}}
 \subsection{Method \code{plot_objective()}}{
+Plot objective value of the optimization problem along the penalty path
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$plot_objective()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+a \code{\link{ggplot}} graph
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
+\if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$show()}\if{html}{\out{</div>}}
 }
@@ -177,6 +260,7 @@ The function \code{\link{PLNnetwork}}, the class \code{\link[=PLNnetworkfit]{PLN
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

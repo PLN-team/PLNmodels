@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 0.10.0-9000
+Version: 0.10.6-9000
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inrae.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -19,7 +19,8 @@ URL: https://jchiquet.github.io/PLNmodels/
 BugReports: https://github.com/jchiquet/PLNmodels/issues
 License: GPL (>= 3)
 Encoding: UTF-8
-RoxygenNote: 7.0.2
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
 Depends: R (>= 3.4)
 LazyData: true
 biocViews:
@@ -48,7 +49,8 @@ Suggests:
     covr,
     pkgdown,
     biomformat,
-    phyloseq
+    phyloseq,
+    spelling
 LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)
 VignetteBuilder: knitr
 Collate: 
@@ -75,7 +77,9 @@ Collate:
     'deprecated.R'
     'import_utils.R'
     'mollusk.R'
+    'oaks.R'
     'plot_utils.R'
     'trichoptera.R'
     'utils-pipe.R'
     'utils.R'
+Language: en-US

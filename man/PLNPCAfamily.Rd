@@ -4,11 +4,11 @@
 \alias{PLNPCAfamily}
 \title{An R6 Class to represent a collection of PLNPCAfit}
 \description{
-The function \code{\link{PLNPCA}} produces an instance of this class.
+The function \code{\link[=PLNPCA]{PLNPCA()}} produces an instance of this class.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=getBestModel.PLNPCAfamily]{getBestModel}},
-\code{\link[=getModel.PLNPCAfamily]{getModel}} and  \code{\link[=plot.PLNPCAfamily]{plot}}.
+See the documentation for \code{\link[=getBestModel]{getBestModel()}},
+\code{\link[=getModel]{getModel()}} and \code{\link[=plot.PLNPCAfamily]{plot()}}.
 }
 \examples{
 data(trichoptera)
@@ -17,48 +17,15 @@ myPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks 
 class(myPCAs)
 }
 \seealso{
-The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
+The function \code{\link[=PLNPCA]{PLNPCA()}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit()}}
 }
 \section{Super class}{
 \code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{PLNPCAfamily}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{weights}}{the vector of observation weights}
-
-\item{\code{models}}{a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.}
-
-\item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when full rank is considered.}
-
-\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{weights}}{the vector of observation weights}
-
 \item{\code{ranks}}{the dimensions of the successively fitted models}
-
-\item{\code{models}}{a list of \code{\link[=PLNPCAfit]{PLNPCAfit}} object, one per rank.}
-
-\item{\code{inception}}{a \code{\link[=PLNfit]{PLNfit}} object, obtained when full rank is considered.}
-
-\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the different models.}
 }
 \if{html}{\out{</div>}}
 }
@@ -84,7 +51,9 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize all models in the collection.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$new(
   ranks,
@@ -93,38 +62,98 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
   offsets,
   weights,
   model,
+  xlevels,
   control
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{ranks}}{the dimensions of the successively fitted models}
+
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{weights}}{the vector of observation weights}
+
+\item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
+Call to the C++ optimizer on all models of the collection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$optimize(control)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getBestModel"></a>}}
+\if{latex}{\out{\hypertarget{method-getBestModel}{}}}
 \subsection{Method \code{getBestModel()}}{
+Extract best model in the collection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$getBestModel(crit = c("BIC", "ICL", "R_squared"))}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{crit}}{a character for the criterion used to performed the selection. Either
+"BIC", "ICL", or "R_squared". Default is \code{BIC}}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{PLNPCAfit}} object
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-plot}{}}}
 \subsection{Method \code{plot()}}{
+Lineplot of selected criteria for all models in the collection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$plot(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{criteria}}{A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).}
+
+\item{\code{annotate}}{Logical. Should R2 be added to the plot (defaults to \code{TRUE})}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{\link{ggplot2}} object
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
+\if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$show()}\if{html}{\out{</div>}}
 }
@@ -132,6 +161,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit}}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

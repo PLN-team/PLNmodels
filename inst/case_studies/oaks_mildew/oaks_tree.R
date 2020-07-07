@@ -11,6 +11,14 @@ system.time(myPLN <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEff
 system.time(myPLN_diagonal <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "diagonal")))
 system.time(myPLN_spherical <- PLN(Abundancies ~ 0 + treeStatus + offset(log(sequencingEffort)), data = oaks, control = list(covariance = "spherical")))
 
+rbind(
+  myPLN$criteria,
+  myPLN_diagonal$criteria,
+  myPLN_spherical$criteria
+) %>%
+  as.data.frame(row.names = c("full", "diagonal", "spherical")) %>%
+  knitr::kable()
+
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundancies ~ 1 + offset(log(sequencingEffort)), grouping = oaks$treeStatus, data = oaks)
 plot(myLDA_tree)
@@ -27,6 +35,7 @@ plot(myLDA_orientation)
 
 ## Dimension reduction with PCA
 system.time(myPLNPCAs <- PLNPCA(Abundancies ~ 1 + offset(log(sequencingEffort)), data = oaks, ranks = 1:30, control_main = list(cores = nb_cores))) # about 40 sec.
+plot(myPLNPCAs)
 myPLNPCA <- getBestModel(myPLNPCAs)
 plot(myPLNPCA, ind_cols = oaks$treeStatus)
 
