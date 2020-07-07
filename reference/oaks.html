@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Mollusk data set — mollusk • PLNmodels</title>
+<title>Oaks amplicon data set — oaks • PLNmodels</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,9 @@
 
 
 
-<meta property="og:title" content="Mollusk data set — mollusk" />
-<meta property="og:description" content="This data set gives the abundance of 32 mollusk species in 163 samples.
-For each sample, 4 additional covariates are known." />
+<meta property="og:title" content="Oaks amplicon data set — oaks" />
+<meta property="og:description" content="This data set gives the abundance of 114 taxa (66 bacterial OTU, 48 fungal OTUs) in 116 samples.
+For each sample, 11 additional covariates are known." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -150,47 +150,52 @@ For each sample, 4 additional covariates are known." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Mollusk data set</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/mollusk.R'><code>R/mollusk.R</code></a></small>
-    <div class="hidden name"><code>mollusk.Rd</code></div>
+    <h1>Oaks amplicon data set</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/oaks.R'><code>R/oaks.R</code></a></small>
+    <div class="hidden name"><code>oaks.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This data set gives the abundance of 32 mollusk species in 163 samples.
-For each sample, 4 additional covariates are known.</p>
+    <p>This data set gives the abundance of 114 taxa (66 bacterial OTU, 48 fungal OTUs) in 116 samples.
+For each sample, 11 additional covariates are known.</p>
     </div>
 
-    <pre class="usage"><span class='kw'>mollusk</span></pre>
+    <pre class="usage"><span class='kw'>oaks</span></pre>
 
 
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>A list with 2 two data frames:</p><dl>
-<dt>Abundance</dt><dd><p>a 163 x 32 data frame of abundancies/counts (163 samples and 32 mollusk species)</p></dd>
-<dt>Covariate</dt><dd><p>a 163 x 4 data frame of covariates:
-<dl>
-<dt>site</dt><dd><p>a factor with 8 levels indicating the sampling site</p></dd>
-<dt>season</dt><dd><p>a factor with 4 levels indicating the season</p></dd>
-<dt>method</dt><dd><p>a factor with 2 levels for the method of sampling - wood or string</p></dd>
-<dt>duration</dt><dd><p>a numeric with 3 levels for the time of exposure in week</p></dd></dl></p></dd>
+    <p>A data frame with 13 variables:</p><ul>
+<li><p>Abundance: A 114 taxa by 116 samples count matrix</p></li>
+<li><p>Offset: A 114 taxa by 116 samples offset matrix</p></li>
+<li><p>Sample: Unique sample id</p></li>
+<li><p>tree: Tree status with respect to the pathogen (susceptible, intermediate or resistant)</p></li>
+<li><p>branch: Unique branch id in each tree (4 branches were sampled in each tree, with 10 leaves per branch)</p></li>
+<li><p>leafNO: Unique leaf id in each tree (40 leaves were sampled in each tree)</p></li>
+<li><p>distTObase: Distance of the sampled leaf to the base of the branch</p></li>
+<li><p>distTOtrunk: Distance of the sampled leaf to the base of the tree trunk</p></li>
+<li><p>distTOground: Distance of the sampled leaf to the base of the ground</p></li>
+<li><p>pmInfection: Powdery mildew infection, proportion of the upper leaf area displaying mildew symptoms</p></li>
+<li><p>orientation: Orientation of the branch (South-West SW or North-East NE)</p></li>
+<li><p>readsTOTfun: Total number of ITS1 reads for that leaf</p></li>
+<li><p>readsTOTbac: Total number of 16S reads for that leaf</p></li>
+</ul>
 
-</dl>
-
-<p>In order to prepare the data for using formula in multivariate analysis (multiple outputs and inputs), use <code><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data()</a></code>.
-Original data set has been extracted from ade4.</p>
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
 
-    <p>Data from Richardot-Coulet, Chessel and Bournaud.</p>
+    <p>Data from B. Jakuschkin and coauthors.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Richardot-Coulet, M., Chessel D. and Bournaud M. (1986) Typological value of the benthos of old beds of a large river. Methodological approach. Archiv fùr Hydrobiologie, 107, 363–383.</p>
+    <p>Jakuschkin, B., Fievet, V., Schwaller, L. et al. Deciphering the Pathobiome: Intra- and Interkingdom Interactions Involving the Pathogen Erysiphe alphitoides . Microb Ecol 72, 870–880 (2016). <a href='https://doi.org/10.1007/s00248-016-0777-x'>https://doi.org/10.1007/s00248-016-0777-x</a></p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data()</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>mollusk</span>)
-<span class='kw'>mollusc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>mollusk</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>mollusk</span><span class='op'>$</span><span class='kw'>Covariate</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Sample(s) 134 and 137 and 145 and 146 dropped for lack of positive counts.</span></div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>oaks</span>)
+<span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='kw'>oaks_networks</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork</a></span>(formula = <span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>Offset</span>)), data = <span class='kw'>oaks</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

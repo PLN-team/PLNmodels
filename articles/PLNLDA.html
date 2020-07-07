@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
       <h1 data-toc-skip>Supervized classification of multivariate count table with the Poisson discriminant Analysis</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2020-06-21</h4>
+            <h4 class="date">2020-07-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNLDA.Rmd"><code>vignettes/PLNLDA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNLDA.Rmd</code></div>
@@ -333,6 +333,20 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <span class="kw">myLDA_nocov</span><span class="op">$</span><span class="kw">group_means</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>() <span class="op">%&gt;%</span> <span class="kw">knitr</span>::<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(digits = <span class="fl">2</span>)
 </pre></div>
 <table class="table">
+<colgroup>
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+</colgroup>
 <thead><tr class="header">
 <th align="right">grouping1</th>
 <th align="right">grouping2</th>
@@ -449,7 +463,21 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="kw">myLDA_nocov</span><span class="op">$</span><span class="kw">scores</span> <span class="op">%&gt;%</span> <span class="kw">head</span> <span class="op">%&gt;%</span> <span class="kw">knitr</span>::<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(digits = <span class="fl">2</span>)
 </pre></div>
-<table class="table"><tbody>
+<table class="table">
+<colgroup>
+<col width="8%">
+<col width="10%">
+<col width="9%">
+<col width="9%">
+<col width="10%">
+<col width="9%">
+<col width="8%">
+<col width="8%">
+<col width="7%">
+<col width="6%">
+<col width="8%">
+</colgroup>
+<tbody>
 <tr class="odd">
 <td align="right">7102272</td>
 <td align="right">-173880.0</td>
@@ -528,7 +556,8 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <td align="right">82.87</td>
 <td align="right">-169.44</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>…or the <span class="math inline">\(p \times (K-1)\)</span> matrix of correlations between scores and (latent) variables</p>
 <div class="sourceCode" id="cb13"><pre class="downlit">
 <span class="kw">myLDA_nocov</span><span class="op">$</span><span class="kw">corr_map</span> <span class="op">%&gt;%</span> <span class="kw">head</span> <span class="op">%&gt;%</span> <span class="kw">knitr</span>::<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(digits = <span class="fl">2</span>)
@@ -632,6 +661,20 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <span class="kw">predicted.class</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>() <span class="op">%&gt;%</span> <span class="kw">knitr</span>::<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(digits = <span class="fl">2</span>)
 </pre></div>
 <table class="table">
+<colgroup>
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+</colgroup>
 <thead><tr class="header">
 <th align="right">1</th>
 <th align="right">2</th>
@@ -903,32 +946,32 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 </pre></div>
 <table class="table">
 <thead><tr class="header">
-<th></th>
+<th align="left"></th>
 <th align="right">Wind</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>Che</td>
+<td align="left">Che</td>
 <td align="right">-0.3300889</td>
 </tr>
 <tr class="even">
-<td>Hyc</td>
+<td align="left">Hyc</td>
 <td align="right">1.4072490</td>
 </tr>
 <tr class="odd">
-<td>Hym</td>
+<td align="left">Hym</td>
 <td align="right">-0.1927550</td>
 </tr>
 <tr class="even">
-<td>Hys</td>
+<td align="left">Hys</td>
 <td align="right">-0.4545481</td>
 </tr>
 <tr class="odd">
-<td>Psy</td>
+<td align="left">Psy</td>
 <td align="right">0.0366371</td>
 </tr>
 <tr class="even">
-<td>Aga</td>
+<td align="left">Aga</td>
 <td align="right">-0.0611432</td>
 </tr>
 </tbody>
@@ -938,6 +981,20 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <span class="kw">myLDA_cov</span><span class="op">$</span><span class="kw">group_means</span> <span class="op">%&gt;%</span> <span class="kw">head</span> <span class="op">%&gt;%</span> <span class="kw">knitr</span>::<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(digits = <span class="fl">2</span>)
 </pre></div>
 <table class="table">
+<colgroup>
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+</colgroup>
 <thead><tr class="header">
 <th align="right">grouping1</th>
 <th align="right">grouping2</th>
