@@ -81,6 +81,7 @@ Collate:
     'deprecated.R'
     'import_utils.R'
     'mollusk.R'
+    'oaks.R'
     'plot_utils.R'
     'trichoptera.R'
     'utils-pipe.R'
