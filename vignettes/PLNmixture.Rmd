@@ -34,7 +34,6 @@ The packages required for the analysis are **PLNmodels** plus some others for da
 ```{r requirement}
 library(PLNmodels)
 library(ggplot2)
-library(corrplot)
 ```
 
 ### Data set
