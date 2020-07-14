@@ -168,7 +168,7 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
   colnames(melted_Mat) <- c('index_row', 'index_col', 'link')
 
   g <- ggplot(data = melted_Mat, aes(y = index_row, x = index_col, fill = link))
-  g <- g + geom_tile(s)
+  g <- g + geom_tile()
   if (!binary) {g <-  g +  scale_fill_gradient(low = "white", high = "black", limits = u,na.value = "transparent")}
   if (binary) {g <- g + scale_fill_manual(breaks = c("0", "1"),values = c("white", "black"),na.value = "transparent")}
   g <- g  +  scale_x_discrete(drop = FALSE) + scale_y_discrete(drop = FALSE)
