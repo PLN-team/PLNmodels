@@ -34,7 +34,7 @@
 ##' @seealso The classes \code{\link[=PLNmixture]{PLNmixturefamily}} and \code{\link[=PLNmixturefit]{PLNmixturefit}}
 ##' @importFrom stats model.frame model.matrix model.response model.offset
 ##' @export
-PLNmixture <- function(formula, data, subset, clusters = 1:10,  control_init = list(), control_main = list()) {
+PLNmixture <- function(formula, data, subset, clusters = 1:5,  control_init = list(), control_main = list()) {
 
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
@@ -51,10 +51,10 @@ PLNmixture <- function(formula, data, subset, clusters = 1:10,  control_init = l
 
   ## Instantiate the collection of PLN models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
+  if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")
   myPLN <- PLNmixturefamily$new(clusters, args$Y, args$X, args$O, args$model, args$xlevels, ctrl_init)
 
   ## Now adjust the PLN models
-  if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")
   myPLN$optimize(ctrl_main)
 
   ## Smoothing to avoid local minima

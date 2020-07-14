@@ -42,7 +42,6 @@ PLNmixturefamily <-
         private$model <- model
         private$xlevels <- xlevels
 
-        if (control$trace > 0) cat("\n Perform kmeans on the latent layer of the inceptive model...")
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), model, xlevels, control)
         myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
 
@@ -161,8 +160,8 @@ PLNmixturefamily <-
       #' @param annotate Logical. Should R2 be added to the plot (defaults to `TRUE`)
       #' @return A [`ggplot2`] object
       plot = function(criteria = c("loglik", "BIC", "ICL"), annotate = FALSE) {
-        # vlines <- sapply(intersect(criteria, c("BIC", "ICL")), function(crit) self$getBestModel(crit)$k)
-        p <- super$plot(criteria, annotate) + xlab("# of clusters") # + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
+        vlines <- sapply(intersect(criteria, c("BIC", "ICL")), function(crit) self$getBestModel(crit)$k)
+        p <- super$plot(criteria, annotate) + xlab("# of clusters") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
         p
        },
       #' @description Plot objective value of the optimization problem along the penalty path
@@ -198,8 +197,8 @@ PLNmixturefamily <-
         cat(" Task: Mixture Model \n")
         cat("========================================================\n")
         cat(" - Number of clusters considered: from", min(self$clusters), "to", max(self$clusters),"\n")
-        cat(" - Best model (regarding BIC): cluster =", self$getBestModel("BIC")$k, "- R2 =", round(self$getBestModel("BIC")$R_squared, 2), "\n")
-        cat(" - Best model (regarding ICL): cluster =", self$getBestModel("ICL")$k, "- R2 =", round(self$getBestModel("ICL")$R_squared, 2), "\n")
+        cat(" - Best model (regarding BIC): cluster =", self$getBestModel("BIC")$k, "\n")
+        cat(" - Best model (regarding ICL): cluster =", self$getBestModel("ICL")$k, "\n")
       },
       print = function() self$show()
     )
