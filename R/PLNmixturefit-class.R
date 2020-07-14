@@ -83,6 +83,27 @@ PLNmixturefit <-
                                     outer_iterations = iter)
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      ## Graphical methods -----------------
+      #' @description Plot the individual map of a PCA performed on the latent coordinate, where individuals are colored according to the memberships
+      #' @param plot logical. Should the plot be displayed or sent back as [`ggplot`] object
+      #' @param main character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.
+      #' @return a [`ggplot`] graphic
+      plot_clustering_pca = function(main = "Clustering labels in Individual Factor Map", plot = TRUE) {
+        M  <- Reduce("+", Map(function(pi, comp) {pi * comp$var_par$M }, self$mixtureParam, self$components))
+        svdM <- svd(M, nv = 2)
+        .scores <- data.frame(t(t(svdM$u[, 1:2]) * svdM$d[1:2]))
+        colnames(.scores) <- paste("a",1:2,sep = "")
+        .scores$labels <- as.factor(self$memberships)
+        .scores$names <- rownames(myPLN$components[[1]]$var_par$M)
+        eigen.val <- svdM$d^2
+        .percent_var <- round(eigen.val[1:2]/sum(eigen.val),4)
+        axes_label <- paste(paste("axis",1:2), paste0("(", round(100* .percent_var,3)[1:2], "%)"))
+        p <- get_ggplot_ind_map(.scores, axes_label, main)
+        if (plot) print(p)
+        invisible(p)
+      },
+
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Update fields after optimization
       postTreatment = function(responses, covariates, offsets, weights, nullModel) {
@@ -99,7 +120,6 @@ PLNmixturefit <-
         cat("Poisson Lognormal mixture model with",self$k,"components.\n")
         cat("* check fields $posteriorProb, $memberships, $mixtureParam and $components\n")
         cat("* each $component[[i]] is a PLNfit \n")
-        cat("* average R2 is,",self$R_squared,"\n")
       },
       print = function() self$show()
     ),
@@ -109,7 +129,7 @@ PLNmixturefit <-
       #' @field k number of components
       k = function() {length(private$comp)},
       #' @field components components of the mixture (PLNfits)
-      components    = function() {private$comp},
+      components    = function(value) {if (missing(value)) {return(private$comp)} else {private$comp <- value}},
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
       posteriorProb = function() {private$tau},
       #' @field meberships vector for cluster index
