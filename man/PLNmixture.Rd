@@ -8,7 +8,7 @@ PLNmixture(
   formula,
   data,
   subset,
-  clusters = 1:10,
+  clusters = 1:5,
   control_init = list(),
   control_main = list()
 )
