@@ -43,3 +43,8 @@ system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), 
 stability_selection(myPLNnets, mc.cores = nb_cores)
 plot(getBestModel(myPLNnets, "StARS", stability = .985))
 
+## Mixture model to recover tree structure
+system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5, control_main = list(cores = nb_cores)))
+
+
+
