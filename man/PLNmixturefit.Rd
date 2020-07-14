@@ -60,6 +60,7 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 \itemize{
 \item \href{#method-new}{\code{PLNmixturefit$new()}}
 \item \href{#method-optimize}{\code{PLNmixturefit$optimize()}}
+\item \href{#method-plot_clustering_data}{\code{PLNmixturefit$plot_clustering_data()}}
 \item \href{#method-plot_clustering_pca}{\code{PLNmixturefit$plot_clustering_pca()}}
 \item \href{#method-postTreatment}{\code{PLNmixturefit$postTreatment()}}
 \item \href{#method-show}{\code{PLNmixturefit$show()}}
@@ -86,13 +87,38 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-plot_clustering_data"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_clustering_data}{}}}
+\subsection{Method \code{plot_clustering_data()}}{
+Plot the matrix of mean counts (without offsets, without covariate effects) reordered according the inferred clustering
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$plot_clustering_data(
+  main = "Expected counts reorder by clustering",
+  plot = TRUE
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+
+\item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{ggplot}} graphic
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_clustering_pca"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_clustering_pca}{}}}
 \subsection{Method \code{plot_clustering_pca()}}{
-Plot the individual map of a PCA performed on the latent coordinate, colored according to the memberships
+Plot the individual map of a PCA performed on the latent coordinate, where individuals are colored according to the memberships
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$plot_clustering_pca(
-  main = "Factor Map + clustering",
+  main = "Clustering labels in Individual Factor Map",
   plot = TRUE
 )}\if{html}{\out{</div>}}
 }

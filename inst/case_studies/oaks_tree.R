@@ -46,5 +46,13 @@ plot(getBestModel(myPLNnets, "StARS", stability = .985))
 ## Mixture model to recover tree structure
 system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5, control_main = list(cores = nb_cores)))
 
+plot(my_mixtures)
+
+myPLN <- my_mixtures %>% getBestModel()
+
+myPLN$plot_clustering_pca()
+myPLN$plot_clustering_data()
+
+aricode::ARI(myPLN$memberships, oaks$tree)
 
 

@@ -1,7 +1,4 @@
-# 3/ l'inévitable scatterplot des positions dans l'espace latent
-# (éventuellement après avoir fait une ACP sur M) avec coloration en
-# fonction du groupe du MAP
-# 4/ une vue synthétique (genre heatmap) de la matrice de comptage prédite
+# une vue synthétique (genre heatmap) de la matrice de comptage prédite
 # (A, mais sans l'offset et sans les covariables) avec les échantillons
 # triés par groupe, pour faire ressortir les blocs d'échantillons et
 # espérer qu'il y ait des blocs de taxa associés (mais c'est mon biais LBM
@@ -21,17 +18,13 @@ nb_cores <- 4
 count <- iris %>% select(-Species) %>% exp() %>% round() %>% as.matrix()
 covariate <- data.frame(iris$Species)
 iris_data <- prepare_data(count, covariate)
-my_mixtures <-  PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:5, data = iris_data, control_main = list(covariance = 'spherical', core = nb_cores))
+my_mixtures <-  PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:5, data = iris_data, control_main = list(core = nb_cores))
 
 plot(my_mixtures)
 
-myPLN <- my_mixtures %>% getBestModel()
+myPLN <- getBestModel(my_mixtures)
 myPLN$plot_clustering_pca()
+myPLN$plot_clustering_data()
 
 aricode::ARI(myPLN$memberships, iris$Species)
 
-p <- Reduce("+", Map(function(pi, comp) {pi * comp$var_par$M}, myPLN$mixtureParam, myPLN$components)) %>%
-  as_tibble() %>% setNames(c("sepal_length", "sepal_width", "petal_length", "petal_width")) %>%
-  add_column(memberships = factor(myPLN$memberships)) %>%
-  GGally::ggpairs(aes(colour = memberships), upper = list(continuous = "density")) + theme_bw()
-p

@@ -82,6 +82,21 @@ PLNmixturefit <-
                                     convergence      = convergence[1:iter],
                                     outer_iterations = iter)
       },
+
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      ## Graphical methods -----------------
+      #' @description Plot the matrix of mean counts (without offsets, without covariate effects) reordered according the inferred clustering
+      #' @param plot logical. Should the plot be displayed or sent back as [`ggplot`] object
+      #' @param main character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.
+      #' @return a [`ggplot`] graphic
+      plot_clustering_data = function(main = "Expected counts reorder by clustering", plot = TRUE) {
+        M  <- Reduce("+", Map(function(pi, comp) {pi * comp$var_par$M }, self$mixtureParam, self$components))
+        S2 <- Reduce("+", Map(function(pi, comp) {pi * comp$var_par$S2}, self$mixtureParam, self$components))
+        A  <- exp(M + .5 * S2 %*% rbind(rep(1,ncol(M))))
+        p <- plot_matrix(A, 'samples', 'variables', self$memberships)
+        if (plot) print(p)
+        invisible(p)
+      },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -----------------
       #' @description Plot the individual map of a PCA performed on the latent coordinate, where individuals are colored according to the memberships

@@ -41,3 +41,17 @@ plot(myPLNPCAs_site)
 myPLNPCA_site <- getBestModel(myPLNPCAs_site, "ICL")
 plot(myPLNPCA_site, ind_cols = mollusc$season)
 
+
+
+
+## clustering
+my_mixtures <-  PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:5, data = mollusc, control_main = list(covariance = "diagonal", core = nb_cores))
+
+plot(my_mixtures)
+my_mixtures$plot_objective()
+
+myPLN <- getBestModel(my_mixtures)
+myPLN$plot_clustering_pca()
+myPLN$plot_clustering_data()
+
+aricode::ARI(myPLN$memberships, mollusc$site)

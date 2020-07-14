@@ -136,3 +136,47 @@ g_legend <- function(a.gplot){
   legend
 }
 
+# courtesy of S. Donnet
+plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = NULL){
+
+  n1 <- dim(Mat)[1]
+  n2 <- dim(Mat)[2]
+  u <- range(c(Mat))
+
+  binary = FALSE
+  val <- sort(unique(c(Mat)))
+  if (setequal(val ,c(0,1))) {binary = TRUE}
+
+  if (!is.null(clustering)) {
+    oRow <- oCol <- order(clustering)
+    uRow <- cumsum(table(clustering)) + 0.5
+    uRow <- uRow[-length(uRow)]
+    sepRow <- as.data.frame(uRow)
+    Mat <- Mat[oRow, , drop = FALSE]
+    names(sepRow) <- 'sep'
+    sepRow = n1 - sepRow
+  }
+
+  index_row = rep(1:dim(Mat)[1],each = dim(Mat)[2])
+  index_col = rep(1:dim(Mat)[2],dim(Mat)[1])
+
+  melted_Mat =  data.frame(n1 - index_row , index_col)
+  link = rep(-10,dim(Mat)[2]*dim(Mat)[1])
+  for (k in 1:(dim(Mat)[2] * dim(Mat)[1])) {link[k] = Mat[index_row[k],index_col[k]]}
+  melted_Mat$count = link
+  if (binary){melted_Mat$link <- as.factor(melted_Mat$link)}
+  colnames(melted_Mat) <- c('index_row', 'index_col', 'link')
+
+  g <- ggplot(data = melted_Mat, aes(y = index_row, x = index_col, fill = link))
+  g <- g + geom_tile(s)
+  if (!binary) {g <-  g +  scale_fill_gradient(low = "white", high = "black", limits = u,na.value = "transparent")}
+  if (binary) {g <- g + scale_fill_manual(breaks = c("0", "1"),values = c("white", "black"),na.value = "transparent")}
+  g <- g  +  scale_x_discrete(drop = FALSE) + scale_y_discrete(drop = FALSE)
+  g <- g + theme(axis.text.x = element_text(angle = 270, hjust = 0))
+  g <- g +  labs(x = colFG, y = rowFG) +  theme(aspect.ratio = n1/n2)
+
+  if (!is.null(clustering)){
+    g <- g + geom_hline(data = sepRow, mapping = aes_string(yintercept = 'sep'),col = 'grey')
+  }
+  g
+}
