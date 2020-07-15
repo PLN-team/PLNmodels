@@ -125,6 +125,12 @@ A quick diagnostic of the optimization process is available via the `convergence
 mixture_models$convergence  %>% knitr::kable()
 ```
 
+A visual representation of the optimization can be obtained be representing the objective function
+```{r objective}
+mixture_models$plot_objective()
+```
+
+
 Comprehensive information about `PLNmixturefamily` is available via `?PLNmixturefamily`.
 
 #### Model selection
@@ -135,11 +141,11 @@ The `plot` method of `PLNmixturefamily` displays evolution of the criteria menti
 plot(mixture_models)
 ```
 
-From this plot, we can see that the best model in terms of BIC or ICL is obtained for a number of cluster $k=4$. We may extract the corresponding model with the method `getBestModel("ICL")`. A model with a specific number of clusters can be extracted with the `getModel()` method:
+From this plot, we can see that the best model in terms of BIC or ICL is obtained for a number of cluster `r which.max(mixture_models$BIC)`. We may extract the corresponding model with the method `getBestModel("BIC")`. A model with a specific number of clusters can be extracted with the `getModel()` method:
 
 ```{r model extraction}
-myMix_ICL <- getBestModel(mixture_models, "ICL")
-myMix_3   <- getModel(mixture_models, 3)
+myMix_BIC <- getBestModel(mixture_models, "BIC")
+myMix_3   <- getModel(mixture_models, 4)
 ```
 
 #### Structure of `PLNmixturefit`
@@ -147,23 +153,23 @@ myMix_3   <- getModel(mixture_models, 3)
 Objects `myMix_ICL` and `myMix_3` are `R6Class` objects of class `PLNmixturefit` which in turns own a couple of methods. A good place to start is the `show/print` method:
 
 ```{r map, fig.width=8, fig.height=8}
-myMix_ICL
+myMix_BIC
 ```
 ```{r}
-myMix_ICL$memberships
+myMix_BIC$memberships
 ```
 
 Mixture model can be used to find
 
-```{r PCA + mixture}
-PLNPCA(
-  Abundance ~ 1 + offset(log(Offset)),
-  data  = trichoptera,
-  ranks = 1:5
-) %>% getBestModel('ICL') %>% 
-  plot(map = "ind", ind_cols = myMix_ICL$memberships %>% as.factor())
+
+
+```{r plot clustering}
+myMix_BIC$plot_clustering_pca()
 ```
 
+```{r plot reordered data}
+myMix_BIC$plot_clustering_data()
+```
 
 ## References
 

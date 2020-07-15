@@ -164,10 +164,10 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
   link = rep(-10,dim(Mat)[2]*dim(Mat)[1])
   for (k in 1:(dim(Mat)[2] * dim(Mat)[1])) {link[k] = Mat[index_row[k],index_col[k]]}
   melted_Mat$count = link
-  if (binary){melted_Mat$link <- as.factor(melted_Mat$link)}
-  colnames(melted_Mat) <- c('index_row', 'index_col', 'link')
+  if (binary){melted_Mat$count <- as.factor(melted_Mat$count)}
+  colnames(melted_Mat) <- c('index_row', 'index_col', 'count')
 
-  g <- ggplot(data = melted_Mat, aes(y = index_row, x = index_col, fill = link))
+  g <- ggplot(data = melted_Mat, aes(y = index_row, x = index_col, fill = count))
   g <- g + geom_tile()
   if (!binary) {g <-  g +  scale_fill_gradient(low = "white", high = "black", limits = u,na.value = "transparent")}
   if (binary) {g <- g + scale_fill_manual(breaks = c("0", "1"),values = c("white", "black"),na.value = "transparent")}

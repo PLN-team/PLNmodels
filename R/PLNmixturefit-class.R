@@ -109,7 +109,7 @@ PLNmixturefit <-
         .scores <- data.frame(t(t(svdM$u[, 1:2]) * svdM$d[1:2]))
         colnames(.scores) <- paste("a",1:2,sep = "")
         .scores$labels <- as.factor(self$memberships)
-        .scores$names <- rownames(myPLN$components[[1]]$var_par$M)
+        .scores$names <- rownames(self$components[[1]]$var_par$M)
         eigen.val <- svdM$d^2
         .percent_var <- round(eigen.val[1:2]/sum(eigen.val),4)
         axes_label <- paste(paste("axis",1:2), paste0("(", round(100* .percent_var,3)[1:2], "%)"))
