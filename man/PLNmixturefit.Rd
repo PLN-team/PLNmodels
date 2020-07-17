@@ -94,7 +94,8 @@ Plot the matrix of mean counts (without offsets, without covariate effects) reor
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$plot_clustering_data(
   main = "Expected counts reorder by clustering",
-  plot = TRUE
+  plot = TRUE,
+  log_scale = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -104,6 +105,8 @@ Plot the matrix of mean counts (without offsets, without covariate effects) reor
 \item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
 
 \item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
+
+\item{\code{log_scale}}{logical. Should the color scale values be log-transform before plotting? Default is \code{TRUE}.}
 }
 \if{html}{\out{</div>}}
 }
