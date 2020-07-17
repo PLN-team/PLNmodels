@@ -599,7 +599,7 @@ Rcpp::List cpp_optimize_rank(
         packer.pack<THETA>(grad_storage, (a - y).t() * (x.each_col() % w));
         packer.pack<B>(grad_storage, (diagmat(w) * (a - y)).t() * m + (a.t() * (s2.each_col() % w)) % b);
         packer.pack<M>(grad_storage, diagmat(w) * ((a - y) * b + m));
-        packer.pack<S>(grad_storage, diagmat(w) * (s - pow(s, -1) + a * (b % b) % s));
+        packer.pack<S>(grad_storage, diagmat(w) * (s - 1. / s + a * (b % b) % s));
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
@@ -707,79 +707,7 @@ Rcpp::List cpp_optimize_sparse(
 }
 
 // ---------------------------------------------------------------------------------------
-// Single VE step
-// TODO adapt all variants
-
-// [[Rcpp::export]]
-Rcpp::List cpp_optimize_ve(
-    const Rcpp::List & init_parameters, // List(M, S)
-    const arma::mat & y,                // responses (n,p)
-    const arma::mat & x,                // covariates (n,d)
-    const arma::mat & o,                // offsets (n,p)
-    const arma::mat & theta,            // regression_parameters (p,d)
-    const arma::mat & sigma,            // (p,p)
-    const Rcpp::List & configuration    // OptimizerConfiguration
-) {
-    // Conversion from R, prepare optimization
-    const auto init_m = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
-    const auto init_s = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
-
-    const auto packer = make_packer(init_m, init_s);
-    enum { M, S }; // Nice names for packer indexes
-
-    auto parameters = arma::vec(packer.size);
-    packer.pack<M>(parameters, init_m);
-    packer.pack<S>(parameters, init_s);
-
-    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
-        packer.pack_double_or_arma<M>(packed, list["M"]);
-        packer.pack_double_or_arma<S>(packed, list["S"]);
-    };
-    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
-
-    const arma::mat omega = inv_sympd(sigma); // (p,p)
-    const double log_det_omega = real(log_det(omega));
-
-    // Optimize
-    auto objective_and_grad = [&packer, &o, &x, &y, &theta, &omega, &log_det_omega](
-                                  const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        arma::mat m = packer.unpack<M>(parameters);
-        arma::mat s = packer.unpack<S>(parameters);
-
-        const arma::uword n = y.n_rows;
-        arma::mat z = o + x * theta.t() + m;
-        arma::mat a = exp(z + 0.5 * s);
-        // 0.5 tr(\Omega M'M) + 0.5 tr(\bar{S} \Omega)
-        double prior = 0.5 * accu(omega % (m.t() * m)) + 0.5 * dot(arma::ones(n).t() * s, diagvec(omega));
-        // J(M, S, \Theta, \Omega, Y, X, O)
-        double objective = accu(a - y % z - 0.5 * log(s)) + prior - 0.5 * double(n) * log_det_omega;
-
-        packer.pack<M>(grad_storage, m * omega + a - y);
-        packer.pack<S>(grad_storage, 0.5 * (arma::ones(n) * diagvec(omega).t() + a - 1. / s));
-        return objective;
-    };
-    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
-
-    // Post process
-    arma::mat m = packer.unpack<M>(parameters);
-    arma::mat s = packer.unpack<S>(parameters);
-
-    const arma::uword p = y.n_cols;
-    arma::mat z = o + x * theta.t() + m;
-    arma::mat a = exp(z + 0.5 * s);
-    arma::vec loglik = arma::sum(y % z - a + 0.5 * log(s) - 0.5 * ((m * omega) % m + s * diagmat(omega)), 1) +
-                       0.5 * log_det_omega - logfact(y) + 0.5 * double(p);
-
-    return Rcpp::List::create(
-        Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", result.nb_iterations),
-        Rcpp::Named("objective", result.objective + accu(logfact(y))),
-        Rcpp::Named("M", m),
-        Rcpp::Named("S", s),
-        Rcpp::Named("loglik", loglik));
-}
-
-// TODO : New model
+// TODO VE steps
 
 // ---------------------------------------------------------------------------------------
 // Internals tests
