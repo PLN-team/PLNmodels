@@ -80,11 +80,11 @@ PLNfit <- R6Class(
       private$covariance <- control$covariance
       private$optimizer  <-
         switch(control$covariance,
-               "spherical" = optim_spherical,
-               "diagonal"  = optim_diagonal ,
-               "full"      = optim_full     ,
-               "rank"      = optim_rank     ,
-               "sparse"    = optim_sparse
+               "spherical" = cpp_optimize_spherical,
+               "diagonal"  = cpp_optimize_diagonal ,
+               "full"      = cpp_optimize_full     ,
+               "rank"      = cpp_optimize_rank     , # FIXME will fail in optimize (missing B param)
+               "sparse"    = cpp_optimize_sparse     # FIXME will fail in optimize (missing omega value)
         )
 
       if (isPLNfit(control$inception)) {
@@ -121,7 +121,11 @@ PLNfit <- R6Class(
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
       optim_out <- private$optimizer(
-        c(private$Theta, private$M, sqrt(private$S2)),
+        list(
+          Theta = private$Theta,
+          M = private$M,
+          S = sqrt(private$S2)
+        ),
         responses,
         covariates,
         offsets,

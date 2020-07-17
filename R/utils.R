@@ -140,7 +140,7 @@ PLN_param <- function(control, n, p, d) {
     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-4,
-    "xtol_abs"    = rep(xtol_abs, p*d + n*p + ifelse(covariance == "spherical", n, n*p)),
+    "xtol_abs"    = xtol_abs,
     "trace"       = 1,
     "covariance"  = covariance,
     "inception"   = NULL
@@ -201,7 +201,7 @@ PLNnetwork_param <- function(control, n, p, d) {
     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0       ,
     "xtol_rel"    = 1e-4    ,
-    "xtol_abs"    = rep(xtol_abs, p*d + 2*n*p),
+    "xtol_abs"    = xtol_abs,
     "maxeval"     = 10000   ,
     "maxtime"     = -1      ,
     "trace"       = 1       ,

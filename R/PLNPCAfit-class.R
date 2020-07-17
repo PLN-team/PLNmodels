@@ -80,12 +80,15 @@ PLNPCAfit <- R6Class(
       optimize = function(responses, covariates, offsets, weights, control) {
         ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
         opts <- control
-        opts$xtol_abs <- c(rep(0, self$p*(self$d + self$q) + self$n * self$q),
-                           rep(control$xtol_abs, self$n*self$q))
-        opts$rank <- self$q
-        optim_out <- optim_rank(
-          c(private$Theta, private$B, private$M, sqrt(private$S2)),
-          responses, covariates, offsets, weights, self$q, opts
+        opts$xtol_abs <- list(Theta = 0, B = 0, M = 0, S = control$xtol_abs)
+        optim_out <- cpp_optimize_rank(
+          list(
+            Theta = private$Theta,
+            B = private$B,
+            M = private$M,
+            S = sqrt(private$S2)
+          ),
+          responses, covariates, offsets, weights, opts
         )
 
         Ji <- optim_out$loglik
