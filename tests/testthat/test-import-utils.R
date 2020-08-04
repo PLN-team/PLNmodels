@@ -188,7 +188,17 @@ test_that("offset_rle fails when no species is shared across samples", {
   counts <- matrix(c(1, 1, 0,
                      0, 0, 1),
                    nrow = 2, byrow = TRUE)
-  expect_error(compute_offset(counts, "RLE"), "Sample do not share any common species, RLE normalization failed.")
+  expect_error(compute_offset(counts, "RLE"), "Samples do not share any common species, RLE normalization failed.")
+})
+
+test_that("offset_rle succeeds when no species is shared across samples but poscounts is activated", {
+  #      [,1] [,2] [,3]
+  # [1,]    1    1    0
+  # [2,]    0    0    1
+  counts <- matrix(c(1, 1, 0,
+                     0, 0, 1),
+                   nrow = 2, byrow = TRUE)
+  expect_equal(compute_offset(counts, "RLE", type = "poscounts"), rep(1, 2))
 })
 
 test_that("offset_gmpr fails when a sample shares no species with any other sample", {

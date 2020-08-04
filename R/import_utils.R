@@ -130,14 +130,16 @@ offset_gmpr <- function(counts) {
 }
 
 ## Relative Log Expression (RLE) normalization (as used in DESeq2)
-offset_rle <- function(counts, pseudocounts = 0) {
-  ## Add pseudo.counts
+offset_rle <- function(counts, pseudocounts = 0L, type = c("ratio", "poscounts")) {
+  type <- match.arg(type)
+  ## Count manipulation: pseudo and replace 0s with NA (ignored in geometric mean computations)
   counts <- counts + pseudocounts
-  ## compute geometric mean for all otus
+  if (type == "poscounts") counts[counts == 0] <- NA
+  ## compute simple geometric mean for all otus
   geom_means <- counts %>% log() %>% colMeans(na.rm = TRUE) %>% exp
-  if (all(geom_means == 0)) stop("Sample do not share any common species, RLE normalization failed.")
+  if (all(geom_means == 0 | is.nan(geom_means))) stop("Samples do not share any common species, RLE normalization failed.")
   ## compute size factor as the median of all otus log-ratios in that sample
-  robust_med <- function(cnts) { median((cnts/geom_means)[is.finite(geom_means) & cnts > 0]) }
+  robust_med <- function(cnts) { median((cnts/geom_means)[is.finite(geom_means) & cnts > 0], na.rm = TRUE) }
   size_factor <- apply(counts, 1, robust_med)
   if (any(is.infinite(size_factor) | size_factor == 0)) warning("Because of high sparsity, some samples have null or infinite offset.")
   return(size_factor)
@@ -269,7 +271,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' @param ... Additional parameters passed on to specific methods (for now CSS and RLE)
 #' @inherit prepare_data references
 #'
-#' @details RLE has an additional `pseudocounts` arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional `reference` argument to choose the location function used to compute the reference quantiles (defaults to `median` as in the Nature publication but can be set to `mean` to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
+#' @details RLE has additional `pseudocounts` and `type` arguments to add pseudocounts to the observed counts (defaults to 0L) and to compute offsets using only positive counts (if `type == "poscounts"`). This mimicks the behavior of [DESeq2::DESeq()] when using `sfType == "poscounts"`. CSS has an additional `reference` argument to choose the location function used to compute the reference quantiles (defaults to `median` as in the Nature publication but can be set to `mean` to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
 #'
 #' @return If `offset = "none"`, `NULL` else a vector of length `nrow(counts)` with one offset per sample.
 #'
