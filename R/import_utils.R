@@ -90,6 +90,8 @@ sanitize_offset <- function(counts, offset, ...) {
   offset
 }
 
+
+
 ## Numeric offset
 offset_numeric <- function(counts, offset, ...) {
   sanitize_offset(counts, offset, ...)
@@ -110,11 +112,6 @@ offset_gmpr <- function(counts) {
   if (nrow(counts) == 1) stop("GMPR is not defined when there is only one sample.")
   ## median of (non-null, non-infinite) pairwise ratios between counts of samples i and j
   pairwise_ratio <- function(i, j) { median(counts[i, ] / counts[j, ], na.rm = TRUE) }
-  ## Geometric mean of finite values
-  geom_mean <- function(x) {
-    x_log <- log(x)
-    exp(mean(x_log[is.finite(x_log)], na.rm = TRUE))
-  }
   ## Matrix of pairwise ratios
   n <- nrow(counts)
   mat_pr <- matrix(NaN, nrow = n, ncol = n)
@@ -180,9 +177,100 @@ offset_css <- function(counts, reference = median) {
   return(size_factors %>% unname())
 }
 
-## Wrench normalization (from doi:10.1186/s12864-018-5160-5)
-offset_wrench <- function(counts) {
-  offset_rle(counts)
+## Wrench normalization (from doi:10.1186/s12864-018-5160-5) in its simplest form
+## @importFrom matrixStats rowWeightedMeans rowVars
+offset_wrench <- function(counts, groups = rep(1, nrow(counts))) {
+  ## Proportions
+  depths <- rowSums(counts)
+  props  <- counts / depths
+  ## Proportions in reference
+  props_ref <- colMeans(props)
+  ## Samplewise ratios of proportions
+  sample_ratios <- props / props_ref[col(props)]
+
+  ## Sample specific variance
+  species_var <- species_variance(counts, groups)
+
+  ## Correction by group effect (if needed)
+  if (length(unique(groups)) > 1) {
+    groups <- as.character(groups)
+    ## Groupwise proportions and ratios
+    group_counts <- rowsum(counts, groups, reorder = TRUE)
+    ## group_depths <- rowSums(group_counts)
+    group_props <- group_counts / rowSums(group_counts)
+    ## log groupwise ratios of proportions (with 0s replaced with NA)
+    group_ratio <- group_props / props_ref[col(group_props)]
+
+    ## groupwise scale and dispersion factors
+    group_scales <- rowMeans(group_ratio)
+    # log_group_ratio <- log(group_ratio)
+    # log_group_ratio[!is.finite(x)] <- NA
+    # group_log_var <- matrixStats::rowVars(log_group_ratio, na.rm = TRUE)
+    log_var <- function(x) { var(log(x[is.finite(x) & x > 0])) }
+    group_log_var <- apply(group_ratio, 1, log_var)
+
+    ## regularized estimation of positive means.
+    sample_ratios[] <- sample_ratios / group_scales[groups][col(sample_ratios)]
+
+    ## theta_gi: average ratio in sample i (from group g). Computed as the (geometric) mean ratio in the sample. The contributions of each ratio is shrinked inversely to (i) the species variance and (ii) the group variance
+    ## weights[sample, species] = 1 / (sigma2[species] + sigma2[sample_group])
+    weights <- 1 / outer(group_log_var[groups], species_var, "+")
+    weights[] <- weights / rowSums(weights)
+    ## correction for sample i in group g
+    theta_gi <- exp(rowSums(sample_ratios * weights, na.rm = TRUE))
+
+    ## theta_gj: average deviation from the average ratio for species j (in group j), shrinked by the ratio between (i) group variance and (i) species variance plus group variance
+    # shrinkage[sample, species] = sigma2[sample_group] / (sigma2[species] + sigma2[sample_group])
+    shrinkage <- group_log_var[groups] / outer(group_log_var[groups], species_var, "+") # shrinkage[sample, species] = sigma2[sample_group] / (sigma2[species] + sigma2[sample_group])
+    theta_gj <- exp(shrinkage * (log(sample_ratios) - log(theta_gi[col(samples_ratio)])))
+
+    ## Compute sample ratios from the previous shrinked quantities: group effect + sample effect within group + species effect within sample within group
+    sample_ratios[] <- theta_gj * (theta_gi * group_scales[groups])[cols(theta_gj)]
+  }
+
+  ## Compositional factors: robust means of ratio
+  # comp_factors <- matrixStats::rowWeightedMeans(sample_ratios, 1 / species_var)
+  weights <- 1 / species_var[cols(sample_ratio)]
+  weights[] <- weights / rowSums(weights)
+  comp_factors <- rowSums(sample_ratios * weights)
+  comp_factors[] <- comp_factors / geom_mean(comp_factors) ## Centered in geometric scale
+
+  ## Normalization factors
+  norm_factors <- comp_factors * depths / geom_mean(depths)
+
+  return(norm_factors)
+}
+
+# Helpers scaling functions ----
+
+## Geometric mean of finite values
+geom_mean <- function(x, finite = TRUE, na.rm = TRUE) {
+  x_log <- log(x)
+  if (finite) x_log <- x_log[is.finite(x_log)]
+  exp(mean(x_log, na.rm = na.rm))
+}
+
+species_variance <- function(counts, groups = rep(1, nrow(counts))) {
+  ## Centered log depths
+  log_depths <- log(rowSums(counts))
+  log_depths[] <- log_depths - mean(log_depths)
+  log_counts <- log(counts)
+  log_counts[!is.finite(log_counts)] <- NA
+
+  ## Design matrix
+  groups <- as.character(groups)
+  if (length(unique(groups)) > 1) {
+    design <- model.matrix(counts[, 1] ~ 0 + groups + log_depths)
+  } else {
+    design <- model.matrix(counts[, 1] ~ 1 + log_depths)
+  }
+  ## Manually regress log_counts against log_depths (for each species) to compute species-specific sigma. Remember that sigma^2 = (cov(Y, Y)cov(X, X) - cov(X, Y)^2)/cov(X, X)
+  compute_sigma <- function(y) {
+    valid_obs <- !is.na(y)
+    model <- lm.fit(design[valid_obs, ], y[valid_obs])
+    sum(model$residuals^2) / model$df.residual
+  }
+  apply(log_counts, 2, compute_sigma)
 }
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
