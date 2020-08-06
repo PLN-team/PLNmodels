@@ -223,8 +223,9 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts))) {
     ## weights[sample, species] = 1 / (sigma2[species] + sigma2[sample_group])
     weights <- 1 / outer(group_log_var[groups], species_var, "+")
     weights[] <- weights / rowSums(weights)
+    weights[sample_ratios == 0] <- 0
     ## Two way effect of sample i in group g
-    theta_gi <- exp(rowSums(sample_ratios * weights, na.rm = TRUE))
+    theta_gi <- exp(rowSums(log(sample_ratios) * weights, na.rm = TRUE))
 
     ## theta_gj: average deviation from the average ratio for species j (in group j), shrinked by the ratio between (i) group variance and (i) species variance plus group variance
     # shrinkage[sample, species] = sigma2[sample_group] / (sigma2[species] + sigma2[sample_group])
