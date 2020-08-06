@@ -78,6 +78,7 @@ It is common practice when modeling count data to introduce an offset term to co
 - Cumulative Sum Scaling (CSS), introduced in [@CSS], where the offset of a sample if the cumulative sum of counts in that sample, up to a quantile determined in a data driven way. 
 - Relative Log-Expression (RLE), implemented in [@DESeq2], where all samples are used to compute a reference sample, each sample is compared to the reference sample using log-ratios and the offset is the median log-ratio. 
 - Geometric Mean of Pairwise Ratio (GMPR), introduced in [@GMPR] where each sample is compared to each other to compute a median log-ratio and the offset of a sample is the geometric means of those pairwise ratios. 
+- Wrench, introduced in [@Kumar2018] and fully implemented in the [Wrench package](http://bioconductor.org/packages/release/bioc/html/Wrench.html), where all samples are used to compute reference proportions and each sample is compared to the reference using ratios (and **not log-ratios**) of proportions to compute compositional correction factors. In that case, the offset is the product of (geometrically centered) compositional factors and (geometrically centered) depths. 
 
 Each of these offset be computed from a counts matrix using the `compute_offset` function and changing its `offset` argument:
 ```{r compute_offset}
@@ -194,13 +195,13 @@ str(my_data)
 
 ## Mathematical details about the offsets
 
-We detail here the mathematical background behind the various offsets and the way they are computed. Note $\mathbf{C} = (c_{ij})$ the counts matrix where $c_{ij}$ is the count of species $j$ in sample $i$. Assume that there are $J$ species in total. The offset of sample $i$ is noted $O_i$ and computed in the following way. 
+We detail here the mathematical background behind the various offsets and the way they are computed. Note $\mathbf{C} = (c_{ij})$ the counts matrix where $c_{ij}$ is the count of species $j$ in sample $i$. Assume that there are $p$ species and $n$ samples in total. The offset of sample $i$ is noted $O_i$ and computed in the following way. 
 
 ### Total Sum Scaling
 
 Offsets are simply the total counts of a sample:
 $$
-O_i = \sum_{j=1}^J c_{ij}
+O_i = \sum_{j=1}^p c_{ij}
 $$
 
 ### Cumulative Sum Scaling 
@@ -225,7 +226,7 @@ Each sample is then compared to the reference sample to compute one ratio per sp
 $$
 O_i = \text{median}_j \frac{c_{ij}}{q_j}
 $$
-The method fails when no species is shared across all sample (as all $q_j$ are then $0$) or when a sample shares less than 50% of species with the reference (in which case the median of the ratios may be null or infinite). The problem can be alleviated by adding pseudocounts to the $c_{ij}$ with `pseudocounts = 1`. 
+The method fails when no species is shared across all sample (as all $q_j$ are then $0$) or when a sample shares less than 50% of species with the reference (in which case the median of the ratios may be null or infinite). The problem can be alleviated by adding pseudocounts to the $c_{ij}$ with `pseudocounts = 1` or using positive counts in the computations (`type = "poscounts"`)
 
 ### Geometric Mean of Pairwise Ratio 
 
@@ -238,6 +239,67 @@ $$
 O_i = \text{median}_{i' != i} r_{ii'}
 $$
 The method fails when there is only one sample in the data set or when a sample shares no species with any other. 
+
+### Wrench normalisation
+
+This method is fully detailed in @Kumar2018 and we only provide a barebone implementation corresponding to the defaults parameters of `Wrench::wrench()`. Assume that samples belong to $K$ discrete groups and note $g_i$ the group of sample $i$. Wrench is based on the following (simplified) log-normal model for counts:
+$$
+c_{ij} \sim \log\mathcal{N}(\mu_{ij}, \sigma^2_j)
+$$
+where the $c_{ij}$ are independent and the mean $\mu_{ij}$ is decomposed as:
+$$
+\mu_{ij} = \underbrace{\log{p_{0j}}}_{\text{log-ref. prop.}} +  \underbrace{\log{d_i}}_{\text{log-depth}} + \underbrace{\log{\zeta_{0g_i}}}_{\text{log effect of group } g_i} + \underbrace{a_{i}}_{\text{(f|m)ixed effect}} + \underbrace{b_{ij}}_{\text{mixed effects}}
+$$
+where the random effects are independents centered gaussian:
+$$
+\begin{align*}
+d_i & = \sum_{j=1}^p c_{ij} \\
+b_{ij} & \sim \mathcal{N}(0, \eta^2_{g_i}) \\
+\end{align*}
+$$
+
+The **net** log fold change $\theta_{ij}$ of the **proportion ratio** $r_{ij} = c_{ij} / d_i p_{0j}$ of species $j$ relative to the reference is $\log(\theta_{ij}) \overset{\Delta}{=} \mathbb{E}[\log(r_{ij}) | a_i, b_{ij}] = \log{\zeta_{0g_i}} + a_i + b_{ij}$. We can decompose it as $\theta_{ij} = \Lambda_i^{-1} v_{ij}$ where $\Lambda_i^{-1}$ is the *compositional correction factor* and $v_{ij}$ is the fold change of **true abundances**.   
+
+With the above notations, the net fold change compounds both the fold change of true abundances and the compositional correction factors. With the assumption that the $b_{ij}$ are centered, $\log(\hat{\Lambda}_i)$ can be estimated through a robust average of the $\hat{\theta}_{ij}$. 
+
+We detail here how the different parameters and/or effects are estimated. 
+
+- The reference proportions $p_{0j}$ are constructed as averages of the sample proportions $p_{ij}$ and the ratio are derived from both quantities
+$$
+p_{ij} = \frac{c_{ij}}{\sum_{j=1}^p c_{ij}} \qquad p_{0j} = \frac{1}{n} \sum_{i=1}^n p_{ij} \qquad r_{ij} = \frac{p_{ij}}{p_{0j}}
+$$
+- The species variances $\sigma^2_j$ are estimated by fitting the following linear model (where $\mu_{g_1} = \dots = \mu_{g_n} = \mu$ if each sample is its own group):
+$$
+\log c_{ij} \sim \log(d_i) + \mu_{g_i} + \mathcal{N}(0, \sigma^2_j)
+$$
+In the original `Wrench::wrench()`, the log depth $\log(d_i)$ is used as predictor but I believe it makes more sense to use it an offset. 
+- If there are no groups, we set $\hat{\theta}_{ij} = r_{ij}$. 
+- Otherwise, 
+  - set the group proportions $p_{gj}$ and group ratios $r_{gj}$ to:
+$$
+p_{gj} = \frac{\sum_{i : g_i = g} c_{ij}}{\sum_{j, i : g_i = g} c_{ij}} \qquad r_{gj} = \frac{p_{gj}}{p_{0j}}
+$$
+  - Estimate the location and dispersion parameters as:
+$$
+\hat{\zeta}_{0g} = \frac{\sum{j=1}^p r_{gj}}{p} 
+\qquad
+\log{r_{g.}} = \frac{\sum_{j: r_{gj} \neq 1} \log{r_{gj}}}{\sum_{j: r_{gj} \neq 0} 1}   
+\qquad
+\hat{\eta}_{g}^2 = \frac{\sum_{j: r_{gj} \neq 1} (\log{r_{gj}} - \log{r_{g.}})^2}{\sum_{j: r_{gj} \neq 0} 1}
+$$
+  - Estimate the mixed effects as shrinked (and scaled) averages of the ratios
+  $$
+  \hat{a}_i = \frac{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j} (\log{r_{ij}} - \log{\hat{\zeta}_{0g_i}})}{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j}}
+  \qquad 
+  \hat{b}_{ij} = \frac{\hat{\eta}^2_{g_i}}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j} \left( \log{r_{ij}} - \log\hat{\zeta}_{0g_i} - \hat{a}_i\right)
+  $$
+  - Estimate $\hat{\theta}_{ij} = \exp\left( \log\hat{\zeta}_{0g_i} + \hat{a}_i + \hat{b}_{ij} \right)$
+- Finally, estimate $\hat{\Lambda}_i = \frac{\sum_{j=1}^p \hat{\theta}_{ij} / \hat{\sigma}^2_j}{\sum_{j=1}^p 1 / \hat{\sigma}^2_j}$
+
+The offsets are then the product of compositional correction factors and depths:
+$$
+O_i = \frac{\hat{\Lambda}_i}{(\prod_{i = 1}^n \hat{\Lambda}_i)^{1/n}} \times \frac{d_i}{(\prod_{i = 1}^n d_i)^{1/n}}
+$$
 
 [^1]: although a `data.frame` is technically a `list`
 
