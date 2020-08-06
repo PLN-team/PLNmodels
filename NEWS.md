@@ -1,3 +1,8 @@
+# PLNmodels 0.10.7
+
+* add type = "poscounts" option to RLE normalization
+* added wrench normalization to the list of available offsets
+
 # PLNmodels 0.10.x
 
 * added the oaks data set from Jakuschkin et al (2016)
