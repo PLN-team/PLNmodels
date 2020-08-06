@@ -180,26 +180,32 @@ offset_css <- function(counts, reference = median) {
 ## Wrench normalization (from doi:10.1186/s12864-018-5160-5) in its simplest form
 ## @importFrom matrixStats rowWeightedMeans rowVars
 offset_wrench <- function(counts, groups = rep(1, nrow(counts))) {
+
+  ## n = number of samples, p = number of species
+  n <- nrow(counts); p <- ncol(counts)
+  if (n == 1) stop("Wrench is not defined when there is only one sample.")
+
   ## Proportions
   depths <- rowSums(counts)
   props  <- counts / depths
   ## Proportions in reference
   props_ref <- colMeans(props)
   ## Samplewise ratios of proportions
-  sample_ratios <- props / props_ref[col(props)]
+  sample_ratios <- props / matrix(props_ref, n, p, byrow = TRUE)
 
   ## Sample specific variance
   species_var <- species_variance(counts, groups)
 
   ## Correction by group effect (if needed)
-  if (length(unique(groups)) > 1) {
+  g = length(unique(groups)) ## number of groups
+  if (g > 1) {
     groups <- as.character(groups)
     ## Groupwise proportions and ratios
     group_counts <- rowsum(counts, groups, reorder = TRUE)
     ## group_depths <- rowSums(group_counts)
     group_props <- group_counts / rowSums(group_counts)
     ## log groupwise ratios of proportions (with 0s replaced with NA)
-    group_ratio <- group_props / props_ref[col(group_props)]
+    group_ratio <- group_props / matrix(props_ref, g, p, byrow = TRUE)
 
     ## groupwise scale and dispersion factors
     group_scales <- rowMeans(group_ratio)
@@ -210,27 +216,28 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts))) {
     group_log_var <- apply(group_ratio, 1, log_var)
 
     ## regularized estimation of positive means.
-    sample_ratios[] <- sample_ratios / group_scales[groups][col(sample_ratios)]
+    ## Correct by group effect
+    sample_ratios[] <- sample_ratios / group_scales[groups]
 
     ## theta_gi: average ratio in sample i (from group g). Computed as the (geometric) mean ratio in the sample. The contributions of each ratio is shrinked inversely to (i) the species variance and (ii) the group variance
     ## weights[sample, species] = 1 / (sigma2[species] + sigma2[sample_group])
     weights <- 1 / outer(group_log_var[groups], species_var, "+")
     weights[] <- weights / rowSums(weights)
-    ## correction for sample i in group g
+    ## Two way effect of sample i in group g
     theta_gi <- exp(rowSums(sample_ratios * weights, na.rm = TRUE))
 
     ## theta_gj: average deviation from the average ratio for species j (in group j), shrinked by the ratio between (i) group variance and (i) species variance plus group variance
     # shrinkage[sample, species] = sigma2[sample_group] / (sigma2[species] + sigma2[sample_group])
-    shrinkage <- group_log_var[groups] / outer(group_log_var[groups], species_var, "+") # shrinkage[sample, species] = sigma2[sample_group] / (sigma2[species] + sigma2[sample_group])
-    theta_gj <- exp(shrinkage * (log(sample_ratios) - log(theta_gi[col(samples_ratio)])))
+    shrinkage <- group_log_var[groups] / outer(group_log_var[groups], species_var, "+")
+    theta_gj <- exp(shrinkage * (log(sample_ratios) - log(matrix(theta_gi, n, p))))
 
     ## Compute sample ratios from the previous shrinked quantities: group effect + sample effect within group + species effect within sample within group
-    sample_ratios[] <- theta_gj * (theta_gi * group_scales[groups])[cols(theta_gj)]
+    sample_ratios[] <- theta_gj * (theta_gi * group_scales[groups])
   }
 
   ## Compositional factors: robust means of ratio
   # comp_factors <- matrixStats::rowWeightedMeans(sample_ratios, 1 / species_var)
-  weights <- 1 / species_var[cols(sample_ratio)]
+  weights <- 1 / matrix(species_var, nrow = n, ncol = p, byrow = TRUE)
   weights[] <- weights / rowSums(weights)
   comp_factors <- rowSums(sample_ratios * weights)
   comp_factors[] <- comp_factors / geom_mean(comp_factors) ## Centered in geometric scale
@@ -243,34 +250,39 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts))) {
 
 # Helpers scaling functions ----
 
-## Geometric mean of finite values
-geom_mean <- function(x, finite = TRUE, na.rm = TRUE) {
+## Geometric mean (computed only on positive values)
+geom_mean <- function(x, poscounts = TRUE, na.rm = TRUE) {
   x_log <- log(x)
-  if (finite) x_log <- x_log[is.finite(x_log)]
+  if (poscounts) x_log <- x_log[x > 0]
   exp(mean(x_log, na.rm = na.rm))
 }
 
 species_variance <- function(counts, groups = rep(1, nrow(counts))) {
-  ## Centered log depths
+  ## n = number of samples, p = number of species
+  n <- nrow(counts); p <- ncol(counts)
+
+  ## Centered log depths and counts corrected by offset
   log_depths <- log(rowSums(counts))
-  log_depths[] <- log_depths - mean(log_depths)
-  log_counts <- log(counts)
+  log_depths[] <- log_depths
+  log_counts <- log(counts) - log_depths
   log_counts[!is.finite(log_counts)] <- NA
 
   ## Design matrix
   groups <- as.character(groups)
   if (length(unique(groups)) > 1) {
-    design <- model.matrix(counts[, 1] ~ 0 + groups + log_depths)
+    design <- model.matrix(counts[, 1] ~ 0 + groups)
   } else {
-    design <- model.matrix(counts[, 1] ~ 1 + log_depths)
+    design <- model.matrix(counts[, 1] ~ 1)
   }
-  ## Manually regress log_counts against log_depths (for each species) to compute species-specific sigma. Remember that sigma^2 = (cov(Y, Y)cov(X, X) - cov(X, Y)^2)/cov(X, X)
-  compute_sigma <- function(y) {
-    valid_obs <- !is.na(y)
-    model <- lm.fit(design[valid_obs, ], y[valid_obs])
-    sum(model$residuals^2) / model$df.residual
+  ## Manually regress log_counts against log_depths (for each species) to compute species-specific sigma.
+  compute_sigma <- function(j) {
+    valid_obs <- !is.na(log_counts[, j])
+    model <- .lm.fit(design[valid_obs, , drop = FALSE], log_counts[valid_obs, j])
+    sum(model$residuals^2) / (sum(valid_obs) - model$rank)
   }
-  apply(log_counts, 2, compute_sigma)
+  ## For numerical stability, set minimum variance to .Machine$double.eps
+  pmax(vapply(seq(p), compute_sigma, numeric(1)),
+       .Machine$double.eps)
 }
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
