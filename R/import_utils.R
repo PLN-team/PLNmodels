@@ -207,8 +207,9 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrenc
   ## Sample variance and scales (shared within groups)
   K = length(unique(groups)) ## number of groups
   if (K == 1) {
-    sample_scales <- rowMeans(sample_ratios)
-    sample_vars   <- apply(sample_ratios, 1, log_var)
+    global_ratio <- (colSums(counts) / sum(counts)) / props_ref
+    sample_scales <- rep(mean(global_ratio), n)
+    sample_vars   <- rep(log_var(global_ratio), n)
   } else {
     groups <- as.character(groups)
     ## Groupwise counts, proportions and ratios
