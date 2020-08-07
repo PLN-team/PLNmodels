@@ -258,14 +258,14 @@ geom_mean <- function(x, poscounts = TRUE, na.rm = TRUE) {
   exp(mean(x_log, na.rm = na.rm))
 }
 
-species_variance <- function(counts, groups = rep(1, nrow(counts))) {
+species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_offset = TRUE) {
   ## n = number of samples, p = number of species
   n <- nrow(counts); p <- ncol(counts)
 
   ## Centered log depths and counts corrected by offset
   log_depths <- log(rowSums(counts))
   log_depths[] <- log_depths
-  log_counts <- log(counts) - log_depths
+  log_counts <- log(counts)
   log_counts[!is.finite(log_counts)] <- NA
 
   ## Design matrix
@@ -275,6 +275,14 @@ species_variance <- function(counts, groups = rep(1, nrow(counts))) {
   } else {
     design <- model.matrix(counts[, 1] ~ 1)
   }
+
+  ## Depth status: offset or covariate
+  if (depths_as_offset) {
+    log_counts <- log_counts - log_depths ## log depths as an offset
+  } else {
+    design <- cbind(design, log_depths)   ## log depths as a covariate
+  }
+
   ## Manually regress log_counts against log_depths (for each species) to compute species-specific sigma.
   compute_sigma <- function(j) {
     valid_obs <- !is.na(log_counts[, j])
