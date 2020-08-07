@@ -87,7 +87,7 @@ test_that("compute_offset provides correct answers for proportional samples", {
   expect_equal(compute_offset(counts, "CSS"),  sizes / median_scale_size)
   expect_equal(compute_offset(counts, "RLE"),  sizes / geom_mean_size)
   expect_equal(compute_offset(counts, "GMPR"), gmpr)
-  expect_equal(compute_offset(counts, "Wrench"), sizes / geom_mean_size)
+  expect_equal(compute_offset(counts, "Wrench", type = "simple"), sizes / geom_mean_size)
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -101,7 +101,7 @@ test_that("compute_offset provides correct answers for single row matrices", {
   expect_equal(compute_offset(counts, "CSS"),  sizes / median_scale_size)
   expect_equal(compute_offset(counts, "RLE"),  sizes / geom_mean_size)
   expect_error(compute_offset(counts, "GMPR"), "GMPR is not defined when there is only one sample.")
-  expect_error(compute_offset(counts, "Wrench"), "Wrench is not defined when there is only one sample.")
+  expect_error(compute_offset(counts, "Wrench", type = "simple"), "Wrench is not defined when there is only one sample.")
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -116,7 +116,7 @@ test_that("compute_offset provides correct answers for single column matrices", 
   expect_equal(compute_offset(counts, "CSS"),  sizes / median_scale_size)
   expect_equal(compute_offset(counts, "RLE"),  sizes / geom_mean_size)
   expect_equal(compute_offset(counts, "GMPR"), gmpr)
-  expect_equal(compute_offset(counts, "Wrench"), sizes / geom_mean_size)
+  expect_equal(compute_offset(counts, "Wrench", type = "simple"), sizes / geom_mean_size)
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -128,7 +128,7 @@ test_that("compute_offset provides correct answers for identical samples", {
   expect_equal(compute_offset(counts, "CSS"),  sizes)
   expect_equal(compute_offset(counts, "RLE"),  sizes)
   expect_equal(compute_offset(counts, "GMPR"), sizes)
-  expect_equal(compute_offset(counts, "Wrench"), sizes)
+  expect_equal(compute_offset(counts, "Wrench", type = "simple"), sizes)
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -227,7 +227,7 @@ test_that("offset_wrench works correctly with groups", {
     sizes[3:5] %o% counts_B  ## group B
   )
   comp_factors <- colMeans(5 * cbind(A = counts_A, B = counts_B) / (2 * counts_A + 3 * counts_B))[conditions] %>% unname()
-  expect_equal(offset_wrench(counts, groups = conditions),
+  expect_equal(offset_wrench(counts, groups = conditions, type = "simple"),
                comp_factors / geom_mean(comp_factors) * sizes / geom_mean(sizes))
 })
 
