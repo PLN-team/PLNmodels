@@ -185,6 +185,10 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrenc
   ## n = number of samples, p = number of species
   n <- nrow(counts); p <- ncol(counts)
   if (n == 1) stop("Wrench is not defined when there is only one sample.")
+  if (p == 1) {
+    depths <- rowSums(counts)
+    return(depths / geom_mean(depths))
+  }
   type <- match.arg(type)
 
   ## Proportions
@@ -195,71 +199,77 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrenc
   ## Samplewise ratios of proportions
   sample_ratios <- props / matrix(props_ref, n, p, byrow = TRUE)
 
-  ## Species and sample specific variance
-  species_var <- species_variance(counts, groups, depths_as_offset = (type == 'simple'))
-  samples_var <- NULL
+  ## Species variance
+  species_vars <- species_variance(counts, groups, depths_as_offset = (type == 'simple'))
 
-  ## Correction by group effect (if needed)
+  ## Sample specific variances and scales, computed at the group level.
+
+  ## Sample variance and scales (shared within groups)
   K = length(unique(groups)) ## number of groups
-  if (K > 1) {
+  if (K == 1) {
+    sample_scales <- rowMeans(sample_ratios)
+    sample_vars   <- apply(sample_ratios, 1, log_var)
+  } else {
     groups <- as.character(groups)
     ## Groupwise counts, proportions and ratios
     group_counts <- rowsum(counts, groups, reorder = TRUE)
-    group_props <- group_counts / rowSums(group_counts)
-    group_ratio <- group_props / matrix(props_ref, K, p, byrow = TRUE)
+    group_props  <- group_counts / rowSums(group_counts)
+    group_ratios <- group_props / matrix(props_ref, K, p, byrow = TRUE)
 
     ## groupwise scale and (log)dispersion factors
-    group_scales <- rowMeans(group_ratio)
-    group_var <- apply(group_ratio, 1, log_var)
-    samples_var <- group_var[groups]
+    group_scales <- rowMeans(group_ratios)
+    group_vars   <- apply(group_ratios, 1, log_var)
 
-    ## Regularized estimation of positive means
-    ## Group centered log-ratios
-    log_sample_ratios <- log(sample_ratios / group_scales[groups])
-    log_sample_ratios[!is.finite(log_sample_ratios)] <- NA
-
-    ## a_i is the mixed effect of sample i = weighted mean of group-corrected log-ratio in the sample.
-    ## Weights inversely proportional to sample var and species variance
-    ## weights[sample, species] = 1 / (samples_var[sample] + species_var[species])
-    weights <- 1 / outer(samples_var, species_var, "+")
-    weights[] <- weights / rowSums(weights)
-    a_i <- rowSums(log_sample_ratios * weights, na.rm = TRUE)
-
-    ## b_ij is the mixed effet of species j in sample i = shrinked group and sample corrected log-ratio
-    # shrinkage[sample, species] = sample_var[sample] / (sample_var[sample] + species_var[species])
-    shrinkage <- samples_var / outer(samples_var, species_var, "+")
-    b_ij <- shrinkage * (log_sample_ratios - a_i)
-
-    ## Sample ratios theta_{ij} = group mean * exp(a_i + b_ij)
-    sample_ratios[] <- exp(b_ij + a_i) * group_scales[groups]
+    ## sample scales and (log)dispersion factors
+    sample_scales <- group_scales[groups]
+    sample_vars   <- group_vars[groups]
   }
 
-  ## sample specific variance
-  if (is.null(samples_var)) samples_var <- apply(sample_ratios, 1, log_var)
+  ## Regularized estimation of positive means
+  ## Group centered log-ratios
+  log_sample_ratios <- log(sample_ratios / sample_scales)
 
+  ## a_i is the mixed effect of sample i = weighted mean of group-corrected log-ratio in the sample.
+  ## Weights inversely proportional to sample var and species variance
+  ## weights[sample, species] = 1 / (sample_vars[sample] + species_vars[species]) (or NA is corresponding counts is NULL)
+  weights <- 1 / outer(sample_vars, species_vars, "+")
+  weights[] <- weights / rowSums(weights)
+  weights[!is.finite(log_sample_ratios)] <- NA
+  a_i <- rowSums(log_sample_ratios * weights, na.rm = TRUE)
+
+  ## b_ij is the mixed effet of species j in sample i = shrinked group and sample corrected log-ratio
+  # shrinkage[sample, species] = sample_vars[sample] / (sample_vars[sample] + species_vars[species])
+  shrinkage <- sample_vars / outer(sample_vars, species_vars, "+")
+  b_ij <- shrinkage * (log_sample_ratios - a_i)
+
+  ## Sample ratios theta_{ij} = group mean * exp(a_i + b_ij)
+  sample_ratios[] <- exp(b_ij + a_i) * sample_scales
+
+  ## Averaging weights
   if (type == "wrench") {
     ## Use wrench defaults:
     ## - adjustment of ratio by variance terms
-    sample_ratios[] <- sample_ratios / matrix(exp(species_var / 2), n, p, byrow = TRUE)
+    sample_ratios[] <- sample_ratios / matrix(exp(species_vars / 2), n, p, byrow = TRUE)
     ## - computation of probability of absence by fitting a simple binomial model absence ~ log(depths) to each species
-    pi0 <- apply(counts, 2, function(y) { glm.fit(cbind(log_depths), 0L + (y == 0), family = binomial())$fitted.values } )
+    pi0 <- apply(counts, 2, function(y) { suppressWarnings(glm.fit(cbind(log(depths)), 0L + (y == 0), family = binomial())$fitted.values) } )
     ## - weights proportional to hurdle and variance
-    weights <- exp(outer(samples_var, species_var, "+")) - 1
+    weights <- exp(outer(sample_vars, species_vars, "+")) - 1
     weights[] <- 1 / ( (1 - pi0) * (pi0 + weights) )
+    weights[!is.finite(weights)] <- NA
   } else {
-    ## Simple implementation: weights inversely proportional to variance
-    weights <- 1 / matrix(species_var, nrow = n, ncol = p, byrow = TRUE)
+    ## Simple implementation: uniform weights
+    weights <- matrix(1, nrow = n, ncol = p, byrow = TRUE)
   }
 
-  ## Compositional factors: robust means of ratio
-  weights[] <- weights / rowSums(weights)
-  comp_factors <- rowSums(sample_ratios * weights)
+  ## Compositional factors: robust weighted means of ratio
+  weights[] <- weights / rowSums(weights, na.rm = TRUE)
+  comp_factors <- rowSums(sample_ratios * weights, na.rm = TRUE)
   comp_factors[] <- comp_factors / geom_mean(comp_factors) ## Centered in geometric scale
 
   ## Normalization factors
   norm_factors <- comp_factors * depths / geom_mean(depths)
 
-  return(norm_factors)
+  return(unname(norm_factors))
 }
 
 # Helpers scaling functions ----
@@ -277,7 +287,6 @@ species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_of
 
   ## Centered log depths and counts corrected by offset
   log_depths <- log(rowSums(counts))
-  log_depths[] <- log_depths
   log_counts <- log(counts)
   log_counts[!is.finite(log_counts)] <- NA
 
@@ -296,10 +305,12 @@ species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_of
     design <- cbind(design, log_depths)   ## log depths as a covariate
   }
 
+
   ## Manually regress log_counts against log_depths (for each species) to compute species-specific sigma.
   compute_sigma <- function(j) {
     valid_obs <- !is.na(log_counts[, j])
     model <- .lm.fit(design[valid_obs, , drop = FALSE], log_counts[valid_obs, j])
+    if (model$rank == sum(valid_obs)) return(0)
     sum(model$residuals^2) / (sum(valid_obs) - model$rank)
   }
   ## For numerical stability, set minimum variance to .Machine$double.eps
@@ -399,7 +410,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' @param ... Additional parameters passed on to specific methods (for now CSS and RLE)
 #' @inherit prepare_data references
 #'
-#' @details RLE has additional `pseudocounts` and `type` arguments to add pseudocounts to the observed counts (defaults to 0L) and to compute offsets using only positive counts (if `type == "poscounts"`). This mimicks the behavior of [DESeq2::DESeq()] when using `sfType == "poscounts"`. CSS has an additional `reference` argument to choose the location function used to compute the reference quantiles (defaults to `median` as in the Nature publication but can be set to `mean` to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples (unless `type == "poscounts"` has been specified) and (iii) GMPR fails if a sample does not share any species with all other samples.
+#' @details RLE has additional `pseudocounts` and `type` arguments to add pseudocounts to the observed counts (defaults to 0L) and to compute offsets using only positive counts (if `type == "poscounts"`). This mimicks the behavior of [DESeq2::DESeq()] when using `sfType == "poscounts"`. CSS has an additional `reference` argument to choose the location function used to compute the reference quantiles (defaults to `median` as in the Nature publication but can be set to `mean` to reproduce behavior of functions cumNormStat* from metagenomeSeq). Wrench has two additional parameters: `groups` to specify sample groups and `type` to either reproduce exactly the default [Wrench::wrench()] behavior (`type = "wrench"`, default) or to use simpler heuristics (`type = "simple"`). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples (unless `type == "poscounts"` has been specified) and (iii) GMPR fails if a sample does not share any species with all other samples.
 #'
 #' @return If `offset = "none"`, `NULL` else a vector of length `nrow(counts)` with one offset per sample.
 #'
@@ -413,6 +424,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' ## Other normalization schemes
 #' compute_offset(counts, offset = "GMPR")
 #' compute_offset(counts, offset = "RLE", pseudocounts = 1)
+#' compute_offset(counts, offset = "Wrench", groups = trichoptera$Covariate$Group)
 #' ## User supplied offsets
 #' my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
 #' compute_offset(counts, offset = my_offset)
