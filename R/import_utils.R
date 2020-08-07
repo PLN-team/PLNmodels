@@ -179,11 +179,13 @@ offset_css <- function(counts, reference = median) {
 
 ## Wrench normalization (from doi:10.1186/s12864-018-5160-5) in its simplest form
 ## @importFrom matrixStats rowWeightedMeans rowVars
-offset_wrench <- function(counts, groups = rep(1, nrow(counts))) {
-
+offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrench", "simple")) {
+  ## Helpers and preprocessing
+  log_var <- function(x) { var(log(x[is.finite(x) & x > 0])) }
   ## n = number of samples, p = number of species
   n <- nrow(counts); p <- ncol(counts)
   if (n == 1) stop("Wrench is not defined when there is only one sample.")
+  type <- match.arg(type)
 
   ## Proportions
   depths <- rowSums(counts)
@@ -193,52 +195,63 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts))) {
   ## Samplewise ratios of proportions
   sample_ratios <- props / matrix(props_ref, n, p, byrow = TRUE)
 
-  ## Sample specific variance
-  species_var <- species_variance(counts, groups)
+  ## Species and sample specific variance
+  species_var <- species_variance(counts, groups, depths_as_offset = (type == 'simple'))
+  samples_var <- NULL
 
   ## Correction by group effect (if needed)
-  g = length(unique(groups)) ## number of groups
-  if (g > 1) {
+  K = length(unique(groups)) ## number of groups
+  if (K > 1) {
     groups <- as.character(groups)
-    ## Groupwise proportions and ratios
+    ## Groupwise counts, proportions and ratios
     group_counts <- rowsum(counts, groups, reorder = TRUE)
-    ## group_depths <- rowSums(group_counts)
     group_props <- group_counts / rowSums(group_counts)
-    ## log groupwise ratios of proportions (with 0s replaced with NA)
-    group_ratio <- group_props / matrix(props_ref, g, p, byrow = TRUE)
+    group_ratio <- group_props / matrix(props_ref, K, p, byrow = TRUE)
 
-    ## groupwise scale and dispersion factors
+    ## groupwise scale and (log)dispersion factors
     group_scales <- rowMeans(group_ratio)
-    # log_group_ratio <- log(group_ratio)
-    # log_group_ratio[!is.finite(x)] <- NA
-    # group_log_var <- matrixStats::rowVars(log_group_ratio, na.rm = TRUE)
-    log_var <- function(x) { var(log(x[is.finite(x) & x > 0])) }
-    group_log_var <- apply(group_ratio, 1, log_var)
+    group_var <- apply(group_ratio, 1, log_var)
+    samples_var <- group_var[groups]
 
-    ## regularized estimation of positive means.
-    ## Correct by group effect
-    sample_ratios[] <- sample_ratios / group_scales[groups]
+    ## Regularized estimation of positive means
+    ## Group centered log-ratios
+    log_sample_ratios <- log(sample_ratios / group_scales[groups])
+    log_sample_ratios[!is.finite(log_sample_ratios)] <- NA
 
-    ## theta_gi: average ratio in sample i (from group g). Computed as the (geometric) mean ratio in the sample. The contributions of each ratio is shrinked inversely to (i) the species variance and (ii) the group variance
-    ## weights[sample, species] = 1 / (sigma2[species] + sigma2[sample_group])
-    weights <- 1 / outer(group_log_var[groups], species_var, "+")
+    ## a_i is the mixed effect of sample i = weighted mean of group-corrected log-ratio in the sample.
+    ## Weights inversely proportional to sample var and species variance
+    ## weights[sample, species] = 1 / (samples_var[sample] + species_var[species])
+    weights <- 1 / outer(samples_var, species_var, "+")
     weights[] <- weights / rowSums(weights)
-    weights[sample_ratios == 0] <- 0
-    ## Two way effect of sample i in group g
-    theta_gi <- exp(rowSums(log(sample_ratios) * weights, na.rm = TRUE))
+    a_i <- rowSums(log_sample_ratios * weights, na.rm = TRUE)
 
-    ## theta_gj: average deviation from the average ratio for species j (in group j), shrinked by the ratio between (i) group variance and (i) species variance plus group variance
-    # shrinkage[sample, species] = sigma2[sample_group] / (sigma2[species] + sigma2[sample_group])
-    shrinkage <- group_log_var[groups] / outer(group_log_var[groups], species_var, "+")
-    theta_gj <- exp(shrinkage * (log(sample_ratios) - log(matrix(theta_gi, n, p))))
+    ## b_ij is the mixed effet of species j in sample i = shrinked group and sample corrected log-ratio
+    # shrinkage[sample, species] = sample_var[sample] / (sample_var[sample] + species_var[species])
+    shrinkage <- samples_var / outer(samples_var, species_var, "+")
+    b_ij <- shrinkage * (log_sample_ratios - a_i)
 
-    ## Compute sample ratios from the previous shrinked quantities: group effect + sample effect within group + species effect within sample within group
-    sample_ratios[] <- theta_gj * (theta_gi * group_scales[groups])
+    ## Sample ratios theta_{ij} = group mean * exp(a_i + b_ij)
+    sample_ratios[] <- exp(b_ij + a_i) * group_scales[groups]
+  }
+
+  ## sample specific variance
+  if (is.null(samples_var)) samples_var <- apply(sample_ratios, 1, log_var)
+
+  if (type == "wrench") {
+    ## Use wrench defaults:
+    ## - adjustment of ratio by variance terms
+    sample_ratios[] <- sample_ratios / matrix(exp(species_var / 2), n, p, byrow = TRUE)
+    ## - computation of probability of absence by fitting a simple binomial model absence ~ log(depths) to each species
+    pi0 <- apply(counts, 2, function(y) { glm.fit(cbind(log_depths), 0L + (y == 0), family = binomial())$fitted.values } )
+    ## - weights proportional to hurdle and variance
+    weights <- exp(outer(samples_var, species_var, "+")) - 1
+    weights[] <- 1 / ( (1 - pi0) * (pi0 + weights) )
+  } else {
+    ## Simple implementation: weights inversely proportional to variance
+    weights <- 1 / matrix(species_var, nrow = n, ncol = p, byrow = TRUE)
   }
 
   ## Compositional factors: robust means of ratio
-  # comp_factors <- matrixStats::rowWeightedMeans(sample_ratios, 1 / species_var)
-  weights <- 1 / matrix(species_var, nrow = n, ncol = p, byrow = TRUE)
   weights[] <- weights / rowSums(weights)
   comp_factors <- rowSums(sample_ratios * weights)
   comp_factors[] <- comp_factors / geom_mean(comp_factors) ## Centered in geometric scale
