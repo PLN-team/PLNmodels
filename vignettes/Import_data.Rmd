@@ -254,7 +254,7 @@ The method fails when there is only one sample in the data set or when a sample 
 
 This method is fully detailed in @Kumar2018 and we only provide a barebone implementation corresponding to the defaults parameters of `Wrench::wrench()`. Assume that samples belong to $K$ discrete groups and note $g_i$ the group of sample $i$. Wrench is based on the following (simplified) log-normal model for counts:
 $$
-c_{ij} \sim \log\mathcal{N}(\mu_{ij}, \sigma^2_j)
+Y_{ij} \sim \pi_{ij} \delta_0 + (1 - \pi_{ij})\log\mathcal{N}(\mu_{ij}, \sigma^2_j)
 $$
 where the $Y_{ij}$ are independent and the mean $\mu_{ij}$ is decomposed as:
 $$
@@ -270,7 +270,7 @@ $$
 
 The **net** log fold change $\theta_{ij}$ of the **proportion ratio** $r_{ij} = c_{ij} / d_i p_{0j}$ of species $j$ relative to the reference is $\log(\theta_{ij}) \overset{\Delta}{=} \mathbb{E}[\log(r_{ij}) | a_i, b_{ij}] = \log{\zeta_{0g_i}} + a_i + b_{ij}$. We can decompose it as $\theta_{ij} = \Lambda_i^{-1} v_{ij}$ where $\Lambda_i^{-1}$ is the *compositional correction factor* and $v_{ij}$ is the fold change of **true abundances**.   
 
-With the above notations, the net fold change compounds both the fold change of true abundances and the compositional correction factors. With the assumption that the $b_{ij}$ are centered, $\log(\hat{\Lambda}_i)$ can be estimated through a robust average of the $\hat{\theta}_{ij}$. 
+With the above notations, the net fold change compounds both the fold change of true abundances and the compositional correction factors. With the assumption that the $b_{ij}$ are centered, $\log(\hat{\Lambda}_i)$ can be estimated through a robust average of the $\hat{\theta}_{ij}$, which can themselves be computed from the log-ratio of proportions. 
 
 We detail here how the different parameters and/or effects are estimated. 
 
@@ -278,38 +278,53 @@ We detail here how the different parameters and/or effects are estimated.
 $$
 p_{ij} = \frac{Y_{ij}}{\sum_{j=1}^p Y_{ij}} \qquad p_{0j} = \frac{1}{n} \sum_{i=1}^n p_{ij} \qquad r_{ij} = \frac{p_{ij}}{p_{0j}}
 $$
-- The species variances $\sigma^2_j$ are estimated by fitting the following linear model (where $\mu_{g_1} = \dots = \mu_{g_n} = \mu$ if each sample is its own group):
+- The probabilities of absence $\pi_{ij}$ are estimated by fitting the following Bernoulli models:
+$$
+Y_{ij} \sim \mathcal{B}(1 - \pi_{ij}^{d_i})
+$$
+- The species variances $\sigma^2_j$ are estimated by fitting the following linear model (with no zero-inflation component)
 $$
 \log Y_{ij} \sim \log(d_i) + \mu_{g_i} + \mathcal{N}(0, \sigma^2_j)
 $$
-In the original `Wrench::wrench()`, the log depth $\log(d_i)$ is used as predictor but I believe it makes more sense to use it an offset. 
-- If there are no groups, we set $\hat{\theta}_{ij} = r_{ij}$. 
-- Otherwise, 
-  - set the group proportions $p_{gj}$ and group ratios $r_{gj}$ to:
+Note that in the original `Wrench::wrench()`, the log depth $\log(d_i)$ is used as predictor but I believe it makes more sense to use it an offset. 
+- set the group proportions $p_{gj}$ and group ratios $r_{gj}$ to:
 $$
 p_{gj} = \frac{\sum_{i : g_i = g} Y_{ij}}{\sum_{j, i : g_i = g} Y_{ij}} \qquad r_{gj} = \frac{p_{gj}}{p_{0j}}
 $$
-  - Estimate the location and dispersion parameters as:
+- Estimate the location and dispersion parameters as:
 $$
-\hat{\zeta}_{0g} = \frac{\sum{j=1}^p r_{gj}}{p} 
+\hat{\zeta}_{0g} = \frac{\sum_{j=1}^p r_{gj}}{p} 
 \qquad
 \log{r_{g.}} = \frac{\sum_{j: r_{gj} \neq 1} \log{r_{gj}}}{\sum_{j: r_{gj} \neq 0} 1}   
 \qquad
 \hat{\eta}_{g}^2 = \frac{\sum_{j: r_{gj} \neq 1} (\log{r_{gj}} - \log{r_{g.}})^2}{\sum_{j: r_{gj} \neq 0} 1}
 $$
-  - Estimate the mixed effects as shrinked (and scaled) averages of the ratios
+- Estimate the mixed effects as shrinked (and scaled) averages of the ratios
 $$
   \hat{a}_i = \frac{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j} (\log{r_{ij}} - \log{\hat{\zeta}_{0g_i}})}{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j}}
   \qquad 
   \hat{b}_{ij} = \frac{\hat{\eta}^2_{g_i}}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j} \left( \log{r_{ij}} - \log\hat{\zeta}_{0g_i} - \hat{a}_i\right)
 $$
-  - Estimate $\hat{\theta}_{ij} = \exp\left( \log\hat{\zeta}_{0g_i} + \hat{a}_i + \hat{b}_{ij} \right)$
-- Finally, estimate $\hat{\Lambda}_i = \frac{\sum_{j=1}^p \hat{\theta}_{ij} / \hat{\sigma}^2_j}{\sum_{j=1}^p 1 / \hat{\sigma}^2_j}$
+- Estimate the regularized ratios as:
+$$
+\hat{\theta}_{ij} = \exp\left( \log\hat{\zeta}_{0g_i} + \hat{a}_i + \hat{b}_{ij} \right)
+$$
+- Estimate the compositional correction factors as (weighted) means of the regularized (and possibly corrected) ratios:
+$$
+\hat{\Lambda}_i = 
+\begin{cases}
+\sum_{j = 1}^p \hat{\theta}_{ij} \bigg/ p& \text{ if type = "simple"} \\
+\sum_{j = 1}^p \hat{\theta}_{ij} e^{-\hat{\sigma}_j^2 / 2} /  w_{ij} \bigg/ \sum_{j=1}^p 1/w_{ij}  & \text{ if type = "wrench"} \\
+\end{cases}
+$$
+where $w_{ij} = (1 - \hat{\pi}_{ij})(\hat{\pi}_{ij} + e^{\hat{\sigma}_j^2 + \hat{\eta}_i^2} - 1)$. The correction term $e^{\hat{\sigma}_j^2 / 2}$ arises from the relation $\mathbb{E}[r_{ij} | r_{ij} > 0] = \theta_{ij} e^{\sigma_j^2/2}$ and the weight $w_{ij}$ are marginal variances: $\mathbb{V}[r_{ij}] = w_{ij}$. 
 
 The offsets are then the product of compositional correction factors and depths:
 $$
 O_i = \frac{\hat{\Lambda}_i}{(\prod_{i = 1}^n \hat{\Lambda}_i)^{1/n}} \times \frac{d_i}{(\prod_{i = 1}^n d_i)^{1/n}}
 $$
+
+
 
 [^1]: although a `data.frame` is technically a `list`
 
