@@ -280,8 +280,9 @@ p_{ij} = \frac{Y_{ij}}{\sum_{j=1}^p Y_{ij}} \qquad p_{0j} = \frac{1}{n} \sum_{i=
 $$
 - The probabilities of absence $\pi_{ij}$ are estimated by fitting the following Bernoulli models:
 $$
-Y_{ij} \sim \mathcal{B}(1 - \pi_{ij}^{d_i})
+1_{\{Y_{ij} = 0\}} \sim \mathcal{B}(\pi_{j}^{d_i})
 $$
+and setting $\hat{\pi}_{ij} = \hat{\pi}^{d_i}$
 - The species variances $\sigma^2_j$ are estimated by fitting the following linear model (with no zero-inflation component)
 $$
 \log Y_{ij} \sim \log(d_i) + \mu_{g_i} + \mathcal{N}(0, \sigma^2_j)
