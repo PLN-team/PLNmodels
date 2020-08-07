@@ -317,9 +317,9 @@ test_that("species_variance works as intented", {
     sizes[3:4] %o% counts_B  ## group B
   )
   ## Null variances when correcting for condition
-  expect_equal(species_variance(counts, conditions), rep(.Machine$double.eps, 10))
+  expect_equal(species_variance(counts, conditions, depths_as_offset = TRUE), rep(.Machine$double.eps, 10))
   ## variances equal to [(log(i) - log(i * (10-i) / 2)]^2 * 4 / (n - 1)
-  expect_equal(species_variance(counts), (log(1:10) - log(10:1))^2 / 3)
+  expect_equal(species_variance(counts, depths_as_offset = TRUE), (log(1:10) - log(10:1))^2 / 3)
 })
 
 
