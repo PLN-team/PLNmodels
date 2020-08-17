@@ -123,7 +123,7 @@ offset_gmpr <- function(counts) {
   ## Geometric mean of pairwise ratio
   size_factor <- apply(mat_pr, 1, geom_mean)
   if (any(size_factor == 0 | !is.finite(size_factor))) stop("Some sample(s) do not share any species with other samples, GMPR normalization failed.")
-  return(size_factor)
+  size_factor
 }
 
 ## Relative Log Expression (RLE) normalization (as used in DESeq2)
@@ -139,7 +139,7 @@ offset_rle <- function(counts, pseudocounts = 0L, type = c("ratio", "poscounts")
   robust_med <- function(cnts) { median((cnts/geom_means)[is.finite(geom_means) & cnts > 0], na.rm = TRUE) }
   size_factor <- apply(counts, 1, robust_med)
   if (any(is.infinite(size_factor) | size_factor == 0)) warning("Because of high sparsity, some samples have null or infinite offset.")
-  return(size_factor)
+  size_factor
 }
 
 ## Cumulative Sum Scaling (CSS) normalization (as used in metagenomeSeq and presented in doi.org/10.1038/nmeth.2658)
@@ -174,11 +174,12 @@ offset_css <- function(counts, reference = median) {
   }
   ## scaling factors are cumulative sums up to quantile lhat, divided by their median
   size_factors <- mat_sample_cumsum[ , lhat] / median(mat_sample_cumsum[ , lhat])
-  return(size_factors %>% unname())
+  unname(size_factors)
 }
 
 ## Wrench normalization (from doi:10.1186/s12864-018-5160-5) in its simplest form
 ## @importFrom matrixStats rowWeightedMeans rowVars
+#' @importFrom stats binomial var
 offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrench", "simple")) {
   ## Helpers and preprocessing
   log_var <- function(x) { var(log(x[is.finite(x) & x > 0])) }
@@ -270,7 +271,7 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrenc
   ## Normalization factors
   norm_factors <- comp_factors * depths / geom_mean(depths)
 
-  return(unname(norm_factors))
+  unname(norm_factors)
 }
 
 # Helpers scaling functions ----
@@ -308,6 +309,7 @@ species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_of
 
 
   ## Manually regress log_counts against log_depths (for each species) to compute species-specific sigma.
+  #' @importFrom stats .lm.fit
   compute_sigma <- function(j) {
     valid_obs <- !is.na(log_counts[, j])
     model <- .lm.fit(design[valid_obs, , drop = FALSE], log_counts[valid_obs, j])
@@ -398,7 +400,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
                        )
   result$Abundance <- counts
   result$Offset <- offset
-  return(result)
+  result
 }
 
 
@@ -423,9 +425,9 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' counts <- trichoptera$Abundance
 #' compute_offset(counts)
 #' ## Other normalization schemes
-#' compute_offset(counts, offset = "GMPR")
 #' compute_offset(counts, offset = "RLE", pseudocounts = 1)
 #' compute_offset(counts, offset = "Wrench", groups = trichoptera$Covariate$Group)
+#' ## compute_offset(counts, offset = "GMPR") # would not work
 #' ## User supplied offsets
 #' my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
 #' compute_offset(counts, offset = my_offset)
