@@ -86,7 +86,7 @@ data.frame(
   NID = sapply(lapply(my_mixtures$models, function(model) model$memberships), aricode::NID, oaks$tree)
 ) %>%
   pivot_longer(-nb_components,names_to = "score") %>%
-  group_by(score) %>%
+  dplyr::group_by(score) %>%
   ggplot(aes(x = nb_components, y = value, colour = score)) + geom_line() + theme_bw() + labs(y = "clustering similarity", x = "number of components")
 
 
