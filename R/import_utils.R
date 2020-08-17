@@ -90,6 +90,8 @@ sanitize_offset <- function(counts, offset, ...) {
   offset
 }
 
+
+
 ## Numeric offset
 offset_numeric <- function(counts, offset, ...) {
   sanitize_offset(counts, offset, ...)
@@ -110,11 +112,6 @@ offset_gmpr <- function(counts) {
   if (nrow(counts) == 1) stop("GMPR is not defined when there is only one sample.")
   ## median of (non-null, non-infinite) pairwise ratios between counts of samples i and j
   pairwise_ratio <- function(i, j) { median(counts[i, ] / counts[j, ], na.rm = TRUE) }
-  ## Geometric mean of finite values
-  geom_mean <- function(x) {
-    x_log <- log(x)
-    exp(mean(x_log[is.finite(x_log)], na.rm = TRUE))
-  }
   ## Matrix of pairwise ratios
   n <- nrow(counts)
   mat_pr <- matrix(NaN, nrow = n, ncol = n)
@@ -130,14 +127,16 @@ offset_gmpr <- function(counts) {
 }
 
 ## Relative Log Expression (RLE) normalization (as used in DESeq2)
-offset_rle <- function(counts, pseudocounts = 0) {
-  ## Add pseudo.counts
+offset_rle <- function(counts, pseudocounts = 0L, type = c("ratio", "poscounts")) {
+  type <- match.arg(type)
+  ## Count manipulation: pseudo and replace 0s with NA (ignored in geometric mean computations)
   counts <- counts + pseudocounts
-  ## compute geometric mean for all otus
+  if (type == "poscounts") counts[counts == 0] <- NA
+  ## compute simple geometric mean for all otus
   geom_means <- counts %>% log() %>% colMeans(na.rm = TRUE) %>% exp
-  if (all(geom_means == 0)) stop("Sample do not share any common species, RLE normalization failed.")
+  if (all(geom_means == 0 | is.nan(geom_means))) stop("Samples do not share any common species, RLE normalization failed.")
   ## compute size factor as the median of all otus log-ratios in that sample
-  robust_med <- function(cnts) { median((cnts/geom_means)[is.finite(geom_means) & cnts > 0]) }
+  robust_med <- function(cnts) { median((cnts/geom_means)[is.finite(geom_means) & cnts > 0], na.rm = TRUE) }
   size_factor <- apply(counts, 1, robust_med)
   if (any(is.infinite(size_factor) | size_factor == 0)) warning("Because of high sparsity, some samples have null or infinite offset.")
   return(size_factor)
@@ -178,6 +177,148 @@ offset_css <- function(counts, reference = median) {
   return(size_factors %>% unname())
 }
 
+## Wrench normalization (from doi:10.1186/s12864-018-5160-5) in its simplest form
+## @importFrom matrixStats rowWeightedMeans rowVars
+offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrench", "simple")) {
+  ## Helpers and preprocessing
+  log_var <- function(x) { var(log(x[is.finite(x) & x > 0])) }
+  ## n = number of samples, p = number of species
+  n <- nrow(counts); p <- ncol(counts)
+  if (n == 1) stop("Wrench is not defined when there is only one sample.")
+  if (p == 1) {
+    depths <- rowSums(counts)
+    return(depths / geom_mean(depths))
+  }
+  type <- match.arg(type)
+
+  ## Proportions
+  depths <- rowSums(counts)
+  props  <- counts / depths
+  ## Proportions in reference
+  props_ref <- colMeans(props)
+  ## Samplewise ratios of proportions
+  sample_ratios <- props / matrix(props_ref, n, p, byrow = TRUE)
+
+  ## Species variance
+  species_vars <- species_variance(counts, groups, depths_as_offset = (type == 'simple'))
+
+  ## Sample specific variances and scales, computed at the group level.
+
+  ## Sample variance and scales (shared within groups)
+  K = length(unique(groups)) ## number of groups
+  if (K == 1) {
+    global_ratio <- (colSums(counts) / sum(counts)) / props_ref
+    sample_scales <- rep(mean(global_ratio), n)
+    sample_vars   <- rep(log_var(global_ratio), n)
+  } else {
+    groups <- as.character(groups)
+    ## Groupwise counts, proportions and ratios
+    group_counts <- rowsum(counts, groups, reorder = TRUE)
+    group_props  <- group_counts / rowSums(group_counts)
+    group_ratios <- group_props / matrix(props_ref, K, p, byrow = TRUE)
+
+    ## groupwise scale and (log)dispersion factors
+    group_scales <- rowMeans(group_ratios)
+    group_vars   <- apply(group_ratios, 1, log_var)
+
+    ## sample scales and (log)dispersion factors
+    sample_scales <- group_scales[groups]
+    sample_vars   <- group_vars[groups]
+  }
+
+  ## Regularized estimation of positive means
+  ## Group centered log-ratios
+  log_sample_ratios <- log(sample_ratios / sample_scales)
+
+  ## a_i is the mixed effect of sample i = weighted mean of group-corrected log-ratio in the sample.
+  ## Weights inversely proportional to sample var and species variance
+  ## weights[sample, species] = 1 / (sample_vars[sample] + species_vars[species]) (or NA is corresponding counts is NULL)
+  weights <- 1 / outer(sample_vars, species_vars, "+")
+  weights[] <- weights / rowSums(weights)
+  weights[!is.finite(log_sample_ratios)] <- NA
+  a_i <- rowSums(log_sample_ratios * weights, na.rm = TRUE)
+
+  ## b_ij is the mixed effet of species j in sample i = shrinked group and sample corrected log-ratio
+  # shrinkage[sample, species] = sample_vars[sample] / (sample_vars[sample] + species_vars[species])
+  shrinkage <- sample_vars / outer(sample_vars, species_vars, "+")
+  b_ij <- shrinkage * (log_sample_ratios - a_i)
+
+  ## Sample ratios theta_{ij} = group mean * exp(a_i + b_ij)
+  sample_ratios[] <- exp(b_ij + a_i) * sample_scales
+
+  ## Averaging weights
+  if (type == "wrench") {
+    ## Use wrench defaults:
+    ## - adjustment of ratio by variance terms
+    sample_ratios[] <- sample_ratios / matrix(exp(species_vars / 2), n, p, byrow = TRUE)
+    ## - computation of probability of absence by fitting a simple binomial model absence ~ log(depths) to each species
+    pi0 <- apply(counts, 2, function(y) { suppressWarnings(glm.fit(cbind(log(depths)), 0L + (y == 0), family = binomial())$fitted.values) } )
+    ## - weights proportional to hurdle and variance
+    weights <- exp(outer(sample_vars, species_vars, "+")) - 1
+    weights[] <- 1 / ( (1 - pi0) * (pi0 + weights) )
+    weights[!is.finite(weights)] <- NA
+  } else {
+    ## Simple implementation: uniform weights
+    weights <- matrix(1, nrow = n, ncol = p, byrow = TRUE)
+  }
+
+  ## Compositional factors: robust weighted means of ratio
+  weights[] <- weights / rowSums(weights, na.rm = TRUE)
+  comp_factors <- rowSums(sample_ratios * weights, na.rm = TRUE)
+  comp_factors[] <- comp_factors / geom_mean(comp_factors) ## Centered in geometric scale
+
+  ## Normalization factors
+  norm_factors <- comp_factors * depths / geom_mean(depths)
+
+  return(unname(norm_factors))
+}
+
+# Helpers scaling functions ----
+
+## Geometric mean (computed only on positive values)
+geom_mean <- function(x, poscounts = TRUE, na.rm = TRUE) {
+  x_log <- log(x)
+  if (poscounts) x_log <- x_log[x > 0]
+  exp(mean(x_log, na.rm = na.rm))
+}
+
+species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_offset = TRUE) {
+  ## n = number of samples, p = number of species
+  n <- nrow(counts); p <- ncol(counts)
+
+  ## Centered log depths and counts corrected by offset
+  log_depths <- log(rowSums(counts))
+  log_counts <- log(counts)
+  log_counts[!is.finite(log_counts)] <- NA
+
+  ## Design matrix
+  groups <- as.character(groups)
+  if (length(unique(groups)) > 1) {
+    design <- model.matrix(counts[, 1] ~ 0 + groups)
+  } else {
+    design <- model.matrix(counts[, 1] ~ 1)
+  }
+
+  ## Depth status: offset or covariate
+  if (depths_as_offset) {
+    log_counts <- log_counts - log_depths ## log depths as an offset
+  } else {
+    design <- cbind(design, log_depths)   ## log depths as a covariate
+  }
+
+
+  ## Manually regress log_counts against log_depths (for each species) to compute species-specific sigma.
+  compute_sigma <- function(j) {
+    valid_obs <- !is.na(log_counts[, j])
+    model <- .lm.fit(design[valid_obs, , drop = FALSE], log_counts[valid_obs, j])
+    if (model$rank == sum(valid_obs)) return(0)
+    sum(model$residuals^2) / (sum(valid_obs) - model$rank)
+  }
+  ## For numerical stability, set minimum variance to .Machine$double.eps
+  pmax(vapply(seq(p), compute_sigma, numeric(1)),
+       .Machine$double.eps)
+}
+
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ## EXPORTED FUNCTIONS ---------------------
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -186,16 +327,17 @@ offset_css <- function(counts, reference = median) {
 #' @name prepare_data
 #'
 #' @description Prepare data in proper format for use in PLN model and its variants. The function (i) merges a count table and
-#' a covariate data frame in the most comprehensive way and (ii) computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc). The function fails with informative messages when the heuristics used for sample matching fail.
+#' a covariate data frame in the most comprehensive way and (ii) computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, Wrench, etc). The function fails with informative messages when the heuristics used for sample matching fail.
 #'
 #' @param counts Required. An abundance count table, preferably with dimensions names and species as columns.
 #' @param covariates Required. A covariates data frame, preferably with row names.
-#' @param offset Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
+#' @param offset Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018), Wrench (introduced in Kumar et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
 #' @param ... Additional parameters passed on to [compute_offset()]
 #'
 #' @references Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \url{https://doi.org/10.7717/peerj.4600}
 #' @references Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \url{http://dx.doi.org/10.1038/nmeth.2658}
 #' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
+#' @references Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 \url{https://doi.org/10.1186/s12864-018-5160-5}
 #'
 #' @return A data.frame suited for use in [PLN()] and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
 #' @note User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
@@ -269,7 +411,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' @param ... Additional parameters passed on to specific methods (for now CSS and RLE)
 #' @inherit prepare_data references
 #'
-#' @details RLE has an additional `pseudocounts` arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional `reference` argument to choose the location function used to compute the reference quantiles (defaults to `median` as in the Nature publication but can be set to `mean` to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
+#' @details RLE has additional `pseudocounts` and `type` arguments to add pseudocounts to the observed counts (defaults to 0L) and to compute offsets using only positive counts (if `type == "poscounts"`). This mimicks the behavior of [DESeq2::DESeq()] when using `sfType == "poscounts"`. CSS has an additional `reference` argument to choose the location function used to compute the reference quantiles (defaults to `median` as in the Nature publication but can be set to `mean` to reproduce behavior of functions cumNormStat* from metagenomeSeq). Wrench has two additional parameters: `groups` to specify sample groups and `type` to either reproduce exactly the default [Wrench::wrench()] behavior (`type = "wrench"`, default) or to use simpler heuristics (`type = "simple"`). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples (unless `type == "poscounts"` has been specified) and (iii) GMPR fails if a sample does not share any species with all other samples.
 #'
 #' @return If `offset = "none"`, `NULL` else a vector of length `nrow(counts)` with one offset per sample.
 #'
@@ -283,10 +425,11 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' ## Other normalization schemes
 #' compute_offset(counts, offset = "GMPR")
 #' compute_offset(counts, offset = "RLE", pseudocounts = 1)
+#' compute_offset(counts, offset = "Wrench", groups = trichoptera$Covariate$Group)
 #' ## User supplied offsets
 #' my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
 #' compute_offset(counts, offset = my_offset)
-compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...) {
+compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wrench", "none"), ...) {
   ## special behavior for data.frame
   if (inherits(offset, "data.frame")) {
     stop(
@@ -301,11 +444,12 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none
   ## Choose offset function
   offset <- match.arg(offset)
   offset_function <- switch(offset,
-                            "TSS"  = offset_tss,
-                            "GMPR" = offset_gmpr,
-                            "RLE"  = offset_rle,
-                            "CSS"  = offset_css,
-                            "none" = offset_none
+                            "TSS"    = offset_tss,
+                            "GMPR"   = offset_gmpr,
+                            "RLE"    = offset_rle,
+                            "CSS"    = offset_css,
+                            "Wrench" = offset_wrench,
+                            "none"   = offset_none
   )
   ## Ensure that counts is a matrix
   counts <- counts %>% data.matrix()

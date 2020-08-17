@@ -4,12 +4,16 @@
 \alias{compute_offset}
 \title{Compute offsets from a count data using one of several normalization schemes}
 \usage{
-compute_offset(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "none"), ...)
+compute_offset(
+  counts,
+  offset = c("TSS", "GMPR", "RLE", "CSS", "Wrench", "none"),
+  ...
+)
 }
 \arguments{
 \item{counts}{Required. An abundance count table, preferably with dimensions names and species as columns.}
 
-\item{offset}{Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).}
+\item{offset}{Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018), Wrench (introduced in Kumar et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).}
 
 \item{...}{Additional parameters passed on to specific methods (for now CSS and RLE)}
 }
@@ -20,7 +24,7 @@ If \code{offset = "none"}, \code{NULL} else a vector of length \code{nrow(counts
 Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature.
 }
 \details{
-RLE has an additional \code{pseudocounts} arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional \code{reference} argument to choose the location function used to compute the reference quantiles (defaults to \code{median} as in the Nature publication but can be set to \code{mean} to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.
+RLE has additional \code{pseudocounts} and \code{type} arguments to add pseudocounts to the observed counts (defaults to 0L) and to compute offsets using only positive counts (if \code{type == "poscounts"}). This mimicks the behavior of \code{\link[DESeq2:DESeq]{DESeq2::DESeq()}} when using \code{sfType == "poscounts"}. CSS has an additional \code{reference} argument to choose the location function used to compute the reference quantiles (defaults to \code{median} as in the Nature publication but can be set to \code{mean} to reproduce behavior of functions cumNormStat* from metagenomeSeq). Wrench has two additional parameters: \code{groups} to specify sample groups and \code{type} to either reproduce exactly the default \code{\link[Wrench:wrench]{Wrench::wrench()}} behavior (\code{type = "wrench"}, default) or to use simpler heuristics (\code{type = "simple"}). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples (unless \code{type == "poscounts"} has been specified) and (iii) GMPR fails if a sample does not share any species with all other samples.
 }
 \examples{
 data(trichoptera)
@@ -29,6 +33,7 @@ compute_offset(counts)
 ## Other normalization schemes
 compute_offset(counts, offset = "GMPR")
 compute_offset(counts, offset = "RLE", pseudocounts = 1)
+compute_offset(counts, offset = "Wrench", groups = trichoptera$Covariate$Group)
 ## User supplied offsets
 my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
 compute_offset(counts, offset = my_offset)
@@ -39,4 +44,6 @@ Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A 
 Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \url{http://dx.doi.org/10.1038/nmeth.2658}
 
 Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
+
+Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 \url{https://doi.org/10.1186/s12864-018-5160-5}
 }

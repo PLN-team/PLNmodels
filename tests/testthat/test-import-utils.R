@@ -80,13 +80,15 @@ test_that("compute_offset provides correct answers for proportional samples", {
   sizes <- c(1, 2, 3, 5, 6)
   counts <- sizes %o% 1:10
   median_scale_size <- median(sizes)
-  geom_mean_size <- exp(mean(log(sizes)))
-  gmpr <- sapply(seq_along(sizes), function(i) { exp(mean(log(sizes[i]/sizes[-i]))) } )
+  geom_mean_size <- geom_mean(sizes)
+  gmpr <- sapply(seq_along(sizes), function(i) { geom_mean(sizes[i]/sizes[-i]) } )
 
   expect_equal(compute_offset(counts, "TSS"),  sizes * sum(1:10))
   expect_equal(compute_offset(counts, "CSS"),  sizes / median_scale_size)
   expect_equal(compute_offset(counts, "RLE"),  sizes / geom_mean_size)
   expect_equal(compute_offset(counts, "GMPR"), gmpr)
+  expect_equal(compute_offset(counts, "Wrench", type = "simple"), sizes / geom_mean_size)
+  expect_equal(compute_offset(counts, "Wrench", type = "wrench"), sizes / geom_mean_size)
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -100,6 +102,7 @@ test_that("compute_offset provides correct answers for single row matrices", {
   expect_equal(compute_offset(counts, "CSS"),  sizes / median_scale_size)
   expect_equal(compute_offset(counts, "RLE"),  sizes / geom_mean_size)
   expect_error(compute_offset(counts, "GMPR"), "GMPR is not defined when there is only one sample.")
+  expect_error(compute_offset(counts, "Wrench"), "Wrench is not defined when there is only one sample.")
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -114,6 +117,7 @@ test_that("compute_offset provides correct answers for single column matrices", 
   expect_equal(compute_offset(counts, "CSS"),  sizes / median_scale_size)
   expect_equal(compute_offset(counts, "RLE"),  sizes / geom_mean_size)
   expect_equal(compute_offset(counts, "GMPR"), gmpr)
+  expect_equal(compute_offset(counts, "Wrench"), sizes / geom_mean_size)
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -125,6 +129,7 @@ test_that("compute_offset provides correct answers for identical samples", {
   expect_equal(compute_offset(counts, "CSS"),  sizes)
   expect_equal(compute_offset(counts, "RLE"),  sizes)
   expect_equal(compute_offset(counts, "GMPR"), sizes)
+  expect_equal(compute_offset(counts, "Wrench"), sizes)
   expect_null(compute_offset(counts, "none"))
 })
 
@@ -188,7 +193,17 @@ test_that("offset_rle fails when no species is shared across samples", {
   counts <- matrix(c(1, 1, 0,
                      0, 0, 1),
                    nrow = 2, byrow = TRUE)
-  expect_error(compute_offset(counts, "RLE"), "Sample do not share any common species, RLE normalization failed.")
+  expect_error(compute_offset(counts, "RLE"), "Samples do not share any common species, RLE normalization failed.")
+})
+
+test_that("offset_rle succeeds when no species is shared across samples but poscounts is activated", {
+  #      [,1] [,2] [,3]
+  # [1,]    1    1    0
+  # [2,]    0    0    1
+  counts <- matrix(c(1, 1, 0,
+                     0, 0, 1),
+                   nrow = 2, byrow = TRUE)
+  expect_equal(compute_offset(counts, "RLE", type = "poscounts"), rep(1, 2))
 })
 
 test_that("offset_gmpr fails when a sample shares no species with any other sample", {
@@ -202,6 +217,34 @@ test_that("offset_gmpr fails when a sample shares no species with any other samp
                "Some sample(s) do not share any species with other samples, GMPR normalization failed.",
                fixed = TRUE)
 })
+
+test_that("offset_wrench works correctly with different groups and identical samples in each group", {
+  sizes <- c(1, 2, 5, 6, 7)
+  counts_A <- c(9L, 4L, 7L, 1L, 2L, 5L, 3L, 11L, 10L, 8L, 6L)
+  counts_B <- c(1L, 5L, 10L, 2L, 6L, 7L, 8L, 3L, 11L, 4L, 9L)
+  conditions <- rep(c('A', 'B'), times = c(2, 3))
+  counts <- rbind(
+    sizes[1:2] %o% counts_A, ## group A
+    sizes[3:5] %o% counts_B  ## group B
+  )
+  comp_factors <- colMeans(5 * cbind(A = counts_A, B = counts_B) / (2 * counts_A + 3 * counts_B))[conditions] %>% unname()
+  expect_equal(offset_wrench(counts, groups = conditions, type = "simple"),
+               comp_factors / geom_mean(comp_factors) * sizes / geom_mean(sizes))
+  expect_equal(offset_wrench(counts, groups = conditions, type = "wrench"),
+               comp_factors / geom_mean(comp_factors) * sizes / geom_mean(sizes))
+
+  ## equal variances for all species
+  sizes <- c(1, 2, 3, 5, 6, 7)
+  counts_A <- rep(c(1L, 2L, each = 5))
+  counts_B <- rep(c(2L, 1L, each = 5))
+  counts <- rbind(
+    sizes[1:3] %o% counts_A, ## group A
+    sizes[4:6] %o% counts_B  ## group B
+  )
+  expect_equal(offset_wrench(counts, type = "simple"), sizes / geom_mean(sizes))
+  expect_equal(offset_wrench(counts, type = "wrench"), sizes / geom_mean(sizes))
+})
+
 
 
 ## Numeric offset
@@ -266,6 +309,35 @@ test_that("offset_numeric works for matrices.", {
   expect_equal(offset_numeric(counts, offset),
                offset[c("A", "B", "C"), ])
 })
+
+## Test helper functions --------------------------------------------------------------------------
+test_that("geom_mean works as intented", {
+  x <- c(1, 2, 4)
+  expect_equal(geom_mean(rep(1, 4)), 1)
+  expect_equal(geom_mean(x), 2)
+  ## na.rm works as intended
+  expect_equal(geom_mean(c(x, NA), na.rm = TRUE), 2) ## removes NA
+  expect_equal(geom_mean(c(x, NA), na.rm = FALSE), NA_real_)
+  ## poscounts works as intended
+  expect_equal(geom_mean(c(x, 0), poscounts = FALSE), 0)
+  expect_equal(geom_mean(c(x, 0), poscounts = TRUE), 2)
+})
+
+test_that("species_variance works as intented", {
+  sizes <- c(1, 2, 6, 8)
+  counts_A <- 1:10
+  counts_B <- 10:1
+  conditions <- rep(c('A', 'B'), times = c(2, 2))
+  counts <- rbind(
+    sizes[1:2] %o% counts_A, ## group A
+    sizes[3:4] %o% counts_B  ## group B
+  )
+  ## Null variances when correcting for condition
+  expect_equal(species_variance(counts, conditions, depths_as_offset = TRUE), rep(.Machine$double.eps, 10))
+  ## variances equal to [(log(i) - log(i * (10-i) / 2)]^2 * 4 / (n - 1)
+  expect_equal(species_variance(counts, depths_as_offset = TRUE), (log(1:10) - log(10:1))^2 / 3)
+})
+
 
 ## Test prepare_data functions --------------------------------------------------------------------------
 
