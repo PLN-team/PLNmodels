@@ -6,27 +6,27 @@
 ##' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.
 ##' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 ##' @param clusters a vector of integer containing the successive number of clusters (or components) to be considered
-##' @param control_init a list for controling the optimization at initialization. See details.
-##' @param control_main a list for controling the main optimization process. See details.
+##' @param control_init a list for controlling the optimization at initialization. See details.
+##' @param control_main a list for controlling the main optimization process. See details.
 ##'
 ##' @return an R6 object with class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}, which contains
 ##' a collection of models with class \code{\link[=PLNmixturefit]{PLNmixturefit}}
 ##'
 ##' @details The list of parameters \code{control_init} and \code{control_main} control the optimization of the intialization and the main process, with the following entries
-##' \itemize{
-##'   \item{"ftol_rel"}{stop when an optimization step changes the objective function by less than ftol_rel multiplied by the absolute value of the parameter.}
-##'  \item{"ftol_abs"}{stop when an optimization step changes the objective function by less than ftol_abs .}
-##'  \item{"xtol_rel"}{stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter.}
-##'  \item{"xtol_abs"}{stop when an optimization step changes every parameters by less than xtol_abs.}
-##'  \item{"maxeval"}{stop when the number of iteration exceeds maxeval. Default is 10000}
-##'  \item{"method"}{the optimization method used by NLOPT among LD type, i.e. "CCSAQ"  "MMA", "LBFGS",
-##'     "TNEWTON", "TNEWTON_RESTART", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART",
-##'     "TNEWTON_VAR1", "TNEWTON_VAR2". See NLOPTR documentation for further details. Default is "CCSAQ".}
-##'  \item{"lbvar"}{the lower bound (box constraint) for the variational variance parameters. Default is 1e-5.}
-##'  \item{"trace"}{integer for verbosity. Useless when \code{cores} > 1}
-##'  \item{"inception"}{a PLNfit to start with. If NULL, a PLN is fitted on the . If an R6 object with class 'PLNfit' is given, it is used to initialize the model.}
-##'  \item{"cores"}{The number of core used to paralellize jobs over the \code{ranks} vector. Default is 1.}
-##' }
+#' * "covariance" character setting the model for the covariance matrices of the mxiture components. Either "full", "diagonal" or "spherical". Default is "spherical".
+#' * "trace" integer for verbosity.
+#' * "inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit), which sometimes speeds up the inference.
+#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
+#' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
+#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4
+#' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0
+#' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+#' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)
+#' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
+#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
+#' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
+#' * "smoothing" The smoothing to apply. Either, 'forward', 'backward' or 'both'. Default is 'both'.
+#' * "iterates" number of forward/backward iteration of smoothing. Default is 2.
 ##'
 ##' @rdname PLNmixture
 ##' @examples

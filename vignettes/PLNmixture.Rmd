@@ -95,7 +95,7 @@ The class `PLNmixturefit` contains a collection of components constituting the m
 
 We fit a collection of $K$ models as follows:
 
-```{r simple PLNPCA}
+```{r nocov mixture}
 mixture_models <- PLNmixture(
   Abundance ~ 1 + offset(log(Offset)),
   data  = trichoptera,
@@ -175,7 +175,8 @@ myMix_BIC$plot_clustering_data()
 
 It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  :
 ```{r, warning=FALSE}
-myMix_cov <- PLNmixture(Abundance ~ 1 + Wind + offset(log(Offset)), clusters = 1:3, data = trichoptera)
+myMix_cov <- PLNmixture(Abundance ~ 1 + Wind + offset(log(Offset)), clusters = 1:3,
+                        data = trichoptera, control_main = list(iterates = 1))
 ```
 
 
