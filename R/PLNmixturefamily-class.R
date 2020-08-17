@@ -59,7 +59,6 @@ PLNmixturefamily <-
             "ward.D2" = D %>% as.dist() %>% hclust(method = "ward.D2") %>% cutree(clusters) %>% as.data.frame() %>% as.list()
           )
         }
-
         self$models <-
             clusterings %>%
             lapply(as_indicator) %>%

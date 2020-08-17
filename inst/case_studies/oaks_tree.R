@@ -89,4 +89,5 @@ data.frame(
   dplyr::group_by(score) %>%
   ggplot(aes(x = nb_components, y = value, colour = score)) + geom_line() + theme_bw() + labs(y = "clustering similarity", x = "number of components")
 
-
+## Mixture model to recover tree structure - with covariates
+system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + distTObase + offset(log(Offset)), data = oaks, clusters = 1:5, control_main = list(cores = nb_cores)))

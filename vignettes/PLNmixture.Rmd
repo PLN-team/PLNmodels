@@ -145,7 +145,7 @@ From this plot, we can see that the best model in terms of BIC or ICL is obtaine
 
 ```{r model extraction}
 myMix_BIC <- getBestModel(mixture_models, "BIC")
-myMix_3   <- getModel(mixture_models, 4)
+myMix_3   <- getModel(mixture_models, 3)
 ```
 
 #### Structure of `PLNmixturefit`
@@ -170,6 +170,14 @@ myMix_BIC$plot_clustering_pca()
 ```{r plot reordered data}
 myMix_BIC$plot_clustering_data()
 ```
+
+### A model with latent main effects and meteorological covariates
+
+It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  :
+```{r, warning=FALSE}
+myMix_cov <- PLNmixture(Abundance ~ 1 + Wind + offset(log(Offset)), clusters = 1:3, data = trichoptera)
+```
+
 
 ## References
 

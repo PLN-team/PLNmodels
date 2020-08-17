@@ -40,7 +40,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control_init = li
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
   # be sure that the intercept is in, to describe the cluster means
   xint <- match("(Intercept)", colnames(args$X), nomatch = 0L)
-  if (xint == 0L) args$X <- cbind(1, args$X)
+  if (xint == 0L) stop("the model must include an intercept term.")
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
