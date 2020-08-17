@@ -31,9 +31,9 @@ data(trichoptera)
 counts <- trichoptera$Abundance
 compute_offset(counts)
 ## Other normalization schemes
-compute_offset(counts, offset = "GMPR")
 compute_offset(counts, offset = "RLE", pseudocounts = 1)
 compute_offset(counts, offset = "Wrench", groups = trichoptera$Covariate$Group)
+## compute_offset(counts, offset = "GMPR") # would not work
 ## User supplied offsets
 my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
 compute_offset(counts, offset = my_offset)
