@@ -52,6 +52,14 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
 \item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
+
+\item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
+
+\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
+
+\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+
+\item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 }
 \if{html}{\out{</div>}}
 }
@@ -72,8 +80,17 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize a \code{\link{PLNmixturefit}} model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$new(responses, covariates, offsets, tau, model, xlevels, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$new(
+  responses,
+  covariates,
+  offsets,
+  posteriorProb,
+  model,
+  xlevels,
+  control
+)}\if{html}{\out{</div>}}
 }
 
 }
@@ -81,6 +98,7 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 \if{html}{\out{<a id="method-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-optimize}{}}}
 \subsection{Method \code{optimize()}}{
+Optimize a \code{\link{PLNmixturefit}} model
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$optimize(responses, covariates, offsets, control)}\if{html}{\out{</div>}}
 }

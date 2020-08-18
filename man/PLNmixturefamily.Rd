@@ -7,7 +7,7 @@
 The function \code{\link[=PLNmixture]{PLNmixture()}} produces an instance of this class.
 
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for \code{\link[=getBestModel]{getBestModel()}}, \code{\link[=getModel]{getModel()}} and \code{\link[=plot.PLNPCAfamily]{plot()}}.
+See the documentation for \code{\link[=getBestModel]{getBestModel()}}, \code{\link[=getModel]{getModel()}} and \code{\link[=plot.PLNmixturefamily]{plot()}}.
 }
 \seealso{
 The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefit]{PLNmixturefit}}

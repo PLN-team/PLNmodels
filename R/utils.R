@@ -31,7 +31,7 @@ logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) 
   loglik
 }
 
-##' @importFrom stats glm.fit
+#' @importFrom stats glm.fit
 nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
   Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
     coefficients(glm.fit(covariates, responses[, j], weights = weights, offset = offsets[, j], family = stats::poisson()))))
@@ -92,34 +92,34 @@ node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
   x + j.grid[y] + 1
 }
 
-##' @title PLN RNG
-##'
-##' @description Random generation for the PLN model with latent mean equal to mu, latent covariance matrix
-##'              equal to Sigma and average depths (sum of counts in a sample) equal to depths
-##'
-##' @param n the sample size
-##' @param mu vectors of means of the latent variable
-##' @param Sigma covariance matrix of the latent variable
-##' @param depths Numeric vector of target depths. The first is recycled if there are not `n` values
-##'
-##' @return a n * p count matrix, with row-sums close to depths
-##'
-##' @details The default value for mu and Sigma assume equal abundances and no correlation between
-##'          the different species.
-##'
-##' @rdname rPLN
-##' @examples
-##' ## 10 samples of 5 species with equal abundances, no covariance and target depths of 10,000
-##' rPLN()
-##' ## 2 samples of 10 highly correlated species with target depths 1,000 and 100,000
-##' ## very different abundances
-##' mu <- rep(c(1, -1), each = 5)
-##' Sigma <- matrix(0.8, 10, 10); diag(Sigma) <- 1
-##' rPLN(n=2, mu = mu, Sigma = Sigma, depths = c(1e3, 1e5))
-##'
-##' @importFrom MASS mvrnorm
-##' @importFrom stats rpois
-##' @export
+#' @title PLN RNG
+#'
+#' @description Random generation for the PLN model with latent mean equal to mu, latent covariance matrix
+#'              equal to Sigma and average depths (sum of counts in a sample) equal to depths
+#'
+#' @param n the sample size
+#' @param mu vectors of means of the latent variable
+#' @param Sigma covariance matrix of the latent variable
+#' @param depths Numeric vector of target depths. The first is recycled if there are not `n` values
+#'
+#' @return a n * p count matrix, with row-sums close to depths
+#'
+#' @details The default value for mu and Sigma assume equal abundances and no correlation between
+#'          the different species.
+#'
+#' @rdname rPLN
+#' @examples
+#' ## 10 samples of 5 species with equal abundances, no covariance and target depths of 10,000
+#' rPLN()
+#' ## 2 samples of 10 highly correlated species with target depths 1,000 and 100,000
+#' ## very different abundances
+#' mu <- rep(c(1, -1), each = 5)
+#' Sigma <- matrix(0.8, 10, 10); diag(Sigma) <- 1
+#' rPLN(n=2, mu = mu, Sigma = Sigma, depths = c(1e3, 1e5))
+#'
+#' @importFrom MASS mvrnorm
+#' @importFrom stats rpois
+#' @export
 rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
                  depths = rep(1e4, n))  {
   p <- ncol(Sigma)

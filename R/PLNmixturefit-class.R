@@ -15,33 +15,46 @@
 #' @param BIC variational lower bound of the BIC
 #' @param ICL variational lower bound of the ICL
 #' @param R_squared approximated goodness-of-fit criterion
+#'
 #' @include PLNfit-class.R
+#'
 #' @importFrom R6 R6Class
 #' @importFrom parallel mclapply
 #' @seealso The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}
 PLNmixturefit <-
   R6Class(classname = "PLNmixturefit",
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE MEMBERS
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     private = list(
       comp       = NA, # list of mixture components (PLNfit)
       tau        = NA, # posterior probabilities of cluster belonging
-      R2         = NA, # approximated goodness of fit criterion
-      monitoring = NA  # a list with optimization monitoring quantities
+      monitoring = NA,  # a list with optimization monitoring quantities
+      mix_up     = function(var_name) {
+        Reduce("+",
+           Map(function(pi, comp) {
+             pi * eval(str2expression(paste0('comp$', var_name)))
+          }, self$mixtureParam, self$components)
+        )
+      }
     ),
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PUBLIC MEMBERS
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     public  = list(
-      initialize = function(responses, covariates, offsets, tau, model, xlevels, control) {
-        private$tau <- tau
-        private$comp <- mclapply(seq.int(ncol(tau)), function(k_) {
-          component <- PLNfit$new(responses, covariates, offsets, tau[, k_], model, xlevels, control)
-          component$optimize(responses, covariates, offsets, tau[, k_], control)
-          component$set_R2(responses, covariates, offsets, tau[, k_], NULL)
-          component
-        }, mc.cores = control$cores)
+      #' @description Initialize a [`PLNmixturefit`] model
+      initialize = function(responses, covariates, offsets, posteriorProb, model, xlevels, control) {
+        private$tau  <- posteriorProb
+        private$comp <- vector('list', ncol(posteriorProb))
+        for (k_ in seq.int(ncol(posteriorProb)))
+          private$comp[[k_]] <- PLNfit$new(responses, covariates, offsets, posteriorProb[, k_], model, xlevels, control)
       },
+      #' @description Optimize a [`PLNmixturefit`] model
       optimize = function(responses, covariates, offsets, control) {
           ## ===========================================
           ## INITIALISATION
           cond <- FALSE; iter <- 1
-          objective   <- numeric(control$maxit_out); objective[iter]   <- -self$loglik
+          objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
           convergence <- numeric(control$maxit_out); convergence[iter] <- NA
 
           ## ===========================================
@@ -49,6 +62,16 @@ PLNmixturefit <-
           while (!cond) {
             iter <- iter + 1
             if (control$trace > 1) cat("", iter)
+
+            ## ---------------------------------------------------
+            ## M - STEP
+            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
+            # parallel::mclapply(seq.int(self$k), function(k_){
+            #     self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
+            # }, mc.cores = control$cores)
+
+            for (k_ in seq.int(self$k))
+              self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
 
             ## ---------------------------------------------------
             ## E - STEP
@@ -60,13 +83,6 @@ PLNmixturefit <-
                 apply(1, .softmax) %>%        # exponentiation + normalization with soft-max
                 t() %>% .check_boundaries()   # bound away probabilities from 0/1
             }
-
-            ## ---------------------------------------------------
-            ## M - STEP
-            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
-            parallel::mclapply(seq.int(self$k), function(k_){
-                self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
-            }, mc.cores = control$cores)
 
             ## Assess convergence
             objective[iter]   <- -self$loglik
@@ -91,8 +107,8 @@ PLNmixturefit <-
       #' @param log_scale logical. Should the color scale values be log-transform before plotting? Default is \code{TRUE}.
       #' @return a [`ggplot`] graphic
       plot_clustering_data = function(main = "Expected counts reorder by clustering", plot = TRUE, log_scale = TRUE) {
-        M  <- Reduce("+", Map(function(pi, comp) {pi * comp$var_par$M }, self$mixtureParam, self$components))
-        S2 <- Reduce("+", Map(function(pi, comp) {pi * comp$var_par$S2}, self$mixtureParam, self$components))
+        M  <- self$var_par$M
+        S2 <- self$var_par$S2
         A  <- exp(M + .5 * S2 %*% rbind(rep(1,ncol(M))))
         p <- plot_matrix(A, 'samples', 'variables', self$memberships, log_scale)
         if (plot) print(p)
@@ -105,8 +121,7 @@ PLNmixturefit <-
       #' @param main character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.
       #' @return a [`ggplot`] graphic
       plot_clustering_pca = function(main = "Clustering labels in Individual Factor Map", plot = TRUE) {
-        M  <- Reduce("+", Map(function(pi, comp) {pi * comp$var_par$M }, self$mixtureParam, self$components))
-        svdM <- svd(M, nv = 2)
+        svdM <- svd(self$var_par$M, nv = 2)
         .scores <- data.frame(t(t(svdM$u[, 1:2]) * svdM$d[1:2]))
         colnames(.scores) <- paste("a",1:2,sep = "")
         .scores$labels <- as.factor(self$memberships)
@@ -135,7 +150,8 @@ PLNmixturefit <-
       show = function() {
         cat("Poisson Lognormal mixture model with",self$k,"components.\n")
         cat("* check fields $posteriorProb, $memberships, $mixtureParam and $components\n")
-        cat("* each $component[[i]] is a PLNfit \n")
+        cat("* check methods $plot_clustering_data, $plot_clustering_pca\n")
+        cat("* each $component[[i]] is a PLNfit with expacted methods and fields\n")
       },
       print = function() self$show()
     ),
@@ -173,8 +189,15 @@ PLNmixturefit <-
       #' @field R_squared approximated goodness-of-fit criterion
       R_squared     = function() {sum(self$mixtureParam * sapply(self$components, function(model) model$R_squared))},
       #' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
-      criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
-
+      criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)},
+      #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
+      model_par  = function() {list(Theta = private$mix_up('model_par$Theta'), Sigma = private$mix_up('model_par$Sigma'))},
+      #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
+      var_par    = function() {list(M  = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))},
+      #' @field latent a matrix: values of the latent vector (Z in the model)
+      latent = function() {private$mix_up('latent')},
+      #' @field fitted a matrix: fitted values of the observations (A in the model)
+      fitted = function() {private$mix_up('fitted')}
     )
 )
 

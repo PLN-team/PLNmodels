@@ -3,7 +3,7 @@
 #' @description The function [PLNmixture()] produces an instance of this class.
 #'
 #' This class comes with a set of methods, some of them being useful for the user:
-#' See the documentation for [getBestModel()], [getModel()] and [`plot()`][plot.PLNPCAfamily()].
+#' See the documentation for [getBestModel()], [getModel()] and [`plot()`][plot.PLNmixturefamily()].
 #'
 #' @param responses the matrix of responses common to every models
 #' @param covariates the matrix of covariates common to every models

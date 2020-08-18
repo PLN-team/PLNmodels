@@ -1,7 +1,7 @@
 #' An R6 Class to represent a PLNfit in a standard, general framework
 #'
 #' @description The function [PLN()] fit a model which is an instance of a object with class [`PLNfit`].
-#' Objects produced by the functions [PLNnetwork()], [PLNPCA()] and [PLNLDA()] also enjoy the methods of [PLNfit()] by inheritance.
+#' Objects produced by the functions [PLNnetwork()], [PLNPCA()], [PLNmixture()] and [PLNLDA()] also enjoy the methods of [PLNfit()] by inheritance.
 #'
 #' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
 #' See the documentation for [coef()], [sigma()],
@@ -69,6 +69,7 @@ PLNfit <- R6Class(
     #' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
     ## TODO: Once "set" is supported by Roxygen go back to external definition using
     ## PLNfit$set("public", "initialize", { ... })
+    ## See https://github.com/r-lib/roxygen2/issues/931
     initialize = function(responses, covariates, offsets, weights, model, xlevels, control) {
       ## problem dimensions
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
@@ -163,7 +164,7 @@ PLNfit <- R6Class(
       VEstep_optimizer  <-
         switch(control$covariance,
                "spherical" = VEstep_PLN_spherical,
-               "diagonal"  = VEstep_PLN__diagonal,
+               "diagonal"  = VEstep_PLN_diagonal,
                "full"      = VEstep_PLN_full
         )
 
