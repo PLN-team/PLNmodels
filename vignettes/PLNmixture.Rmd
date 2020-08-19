@@ -138,7 +138,7 @@ Comprehensive information about `PLNmixturefamily` is available via `?PLNmixture
 The `plot` method of `PLNmixturefamily` displays evolution of the criteria mentioned above, and is a good starting point for model selection:
 
 ```{r plot nocov, fig.width=7, fig.height=5}
-plot(mixture_models)
+plot(mixture_models, c("BIC", "loglik"))
 ```
 
 From this plot, we can see that the best model in terms of BIC or ICL is obtained for a number of cluster `r which.max(mixture_models$BIC)`. We may extract the corresponding model with the method `getBestModel("BIC")`. A model with a specific number of clusters can be extracted with the `getModel()` method:

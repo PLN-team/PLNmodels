@@ -55,7 +55,7 @@ t(tcrossprod(myPLNPCA_tree$model_par$B, myPLNPCA_tree$var_par$M)) %>%
   prcomp(center = FALSE, scale. = FALSE) %>%
   factoextra::fviz_pca_biplot(select.var = list(contrib = 10), col.ind  = oaks$distTOground,
                               title = "Biplot after correction (10 most contributing species, samples colored by distance to ground)") +
-  labs(col = "distance (cm)")
+  labs(col = "distance (cm)") + scale_color_viridis_c()
 
 plot(myPLNPCA_tree, map = 'individual', axes = c(1,2), ind_cols = oaks$distTOground)
 plot(myPLNPCA_tree, map = 'variable', axes = c(1,2))
@@ -69,7 +69,7 @@ plot(getBestModel(myPLNnets, "StARS", stability = .985))
 ## Mixture model to recover tree structure
 system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5, control_main = list(cores = nb_cores)))
 
-plot(my_mixtures, criteria = c("loglik", "ICL"))
+plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"))
 
 myPLN <- my_mixtures %>% getBestModel()
 

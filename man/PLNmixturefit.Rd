@@ -16,6 +16,8 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
+\item{\code{q}}{number of dimensions of the latent space}
+
 \item{\code{meberships}}{vector for cluster index}
 }
 \if{html}{\out{</div>}}
@@ -24,6 +26,8 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{n}}{number of samples}
+
+\item{\code{q}}{number of dimensions of the latent space}
 
 \item{\code{k}}{number of components}
 
@@ -39,7 +43,11 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{entropy}}{Entropy of the variational distribution of the cluster (multinomial)}
+\item{\code{entropy_clustering}}{Entropy of the variational distribution of the cluster (multinomial)}
+
+\item{\code{entropy_latent}}{Entropy of the variational distribution of the latent vector (Gaussian)}
+
+\item{\code{entropy}}{Full entropy of the variational distribution (latent vector + clustering)}
 
 \item{\code{loglik}}{variational lower bound of the loglikelihood}
 
