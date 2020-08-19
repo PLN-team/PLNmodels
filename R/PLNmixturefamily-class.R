@@ -111,6 +111,8 @@ PLNmixturefamily <-
               J1 <- base::sample(J, floor(length(J)/2))
               J2 <- setdiff(J, J1)
               cl[J1] <- j; cl[J2] <- i + 1
+              # model <- self$models[[i + 1]]$clone()
+              # model$posteriorProb <- as_indicator(cl)
               model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl), private$model, private$xlevels, control)
               model$optimize(self$responses, self$covariates, self$offsets, control)
             } else {
@@ -119,11 +121,8 @@ PLNmixturefamily <-
             model
           }, mc.cores = control$cores)
           best_one <- candidates[[which.max(map_dbl(candidates, 'loglik'))]]
-          if (is.na(self$models[[i + 1]]$loglik)) {
+          if (best_one$loglik > self$models[[i + 1]]$loglik)
             self$models[[i + 1]] <- best_one
-          } else if (best_one$loglik > self$models[[i + 1]]$loglik) {
-            self$models[[i + 1]] <- best_one
-          }
         }
       }
   if (trace) cat("\r                                                                                                    \r")
@@ -140,15 +139,14 @@ PLNmixturefamily <-
               levels(cl_fusion)[which(levels(cl_fusion) == paste(couple[1]))] <- paste(couple[2])
               levels(cl_fusion) <- as.character(1:(i - 1))
               model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl_fusion), private$model, private$xlevels, control)
+              # model <- self$models[[i - 1]]$clone()
+              # model$posteriorProb <- as_indicator(cl_fusion)
               model$optimize(self$responses, self$covariates, self$offsets, control)
               model
             }, mc.cores = control$cores)
             best_one <- candidates[[which.max(map_dbl(candidates, 'loglik'))]]
-            if (is.na(self$models[[i - 1]]$loglik)) {
-              private$models[[i - 1]] <- best_one
-            } else if (best_one$loglik > self$models[[i - 1]]$loglik) {
+            if (best_one$loglik > self$models[[i - 1]]$loglik)
               self$models[[i - 1]] <- best_one
-            }
           }
         }
         if (trace) cat("\r                                                                                                    \r")

@@ -67,10 +67,6 @@ PLNmixturefit <-
             ## ---------------------------------------------------
             ## M - STEP
             ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
-            # parallel::mclapply(seq.int(self$k), function(k_){
-            #     self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
-            # }, mc.cores = control$cores)
-
             for (k_ in seq.int(self$k))
               self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
 
@@ -159,12 +155,14 @@ PLNmixturefit <-
     active = list(
       #' @field n number of samples
       n = function() {nrow(private$tau)},
+      #' @field q number of dimensions of the latent space
+      p = function() {ncol(self$var_par$M)},
       #' @field k number of components
       k = function() {length(private$comp)},
       #' @field components components of the mixture (PLNfits)
-      components    = function(value) {if (missing(value)) {return(private$comp)} else {private$comp <- value}},
+      components    = function(value) {if (missing(value)) return(private$comp) else private$comp <- value},
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
-      posteriorProb = function() {private$tau},
+      posteriorProb = function(value) {if (missing(value)) return(private$tau) else private$tau <- value},
       #' @field meberships vector for cluster index
       memberships   = function(value) {apply(private$tau, 1, which.max)},
       #' @field mixtureParam vector of cluster proporitions
@@ -175,10 +173,15 @@ PLNmixturefit <-
       nb_param      = function() {(self$k-1) + sum(map_int(self$components, 'nb_param'))},
       #' @field entropy_clustering Entropy of the variational distribution of the cluster (multinomial)
       entropy_clustering = function() {-sum(.xlogx(private$tau))},
-      #' #' @field entropy_latent Entropy of the variational distribution of the latent vector (Gaussian)
-      #' entropy_latent       = function() {sum(self$mixtureParam * map_dbl(self$components, 'entropy'))},
+      #' @field entropy_latent Entropy of the variational distribution of the latent vector (Gaussian)
+      entropy_latent = function() {
+        .5 * (sum(map_dbl(private$comp, function(component) {
+          S2 <- component$var_par$S2  * ifelse(component$vcov_model == "spherical", self$p, 1)
+          sum( diag(component$weights) %*% log(S2) )
+          })) + self$n * self$p * log(2*pi*exp(1)))
+      },
       #' @field entropy Full entropy of the variational distribution (latent vector + clustering)
-      entropy       = function() {self$entropy_clustering},
+      entropy       = function() {self$entropy_latent + self$entropy_clustering},
       #' @field loglik variational lower bound of the loglikelihood
       loglik = function() {sum(self$loglik_vec)},
       #' @field loglik_vec element-wise variational lower bound of the loglikelihood
