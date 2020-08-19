@@ -20,6 +20,7 @@
 #'
 #' @importFrom R6 R6Class
 #' @importFrom parallel mclapply
+#' @importFrom purrr map_int map_dbl
 #' @seealso The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}
 PLNmixturefit <-
   R6Class(classname = "PLNmixturefit",
@@ -93,10 +94,10 @@ PLNmixturefit <-
 
           ## ===========================================
           ## OUTPUT
-          ## formating parameters for output
-          private$monitoring = list(objective        = objective[1:iter],
-                                    convergence      = convergence[1:iter],
-                                    outer_iterations = iter)
+          ## formatting parameters for output
+          private$monitoring = list(objective        = objective[2:iter],
+                                    convergence      = convergence[2:iter],
+                                    outer_iterations = iter-1)
       },
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -171,9 +172,13 @@ PLNmixturefit <-
       #' @field optim_par a list with parameters useful for monitoring the optimization
       optim_par  = function() {private$monitoring},
       #' @field nb_param number of parameters in the current PLN model
-      nb_param      = function() {(self$k-1) + sum(sapply(self$components, function(model) model$nb_param))},
-      #' @field entropy Entropy of the variational distribution of the cluster (multinomial)
-      entropy       = function() {-sum(.xlogx(private$tau))},
+      nb_param      = function() {(self$k-1) + sum(map_int(self$components, 'nb_param'))},
+      #' @field entropy_clustering Entropy of the variational distribution of the cluster (multinomial)
+      entropy_clustering = function() {-sum(.xlogx(private$tau))},
+      #' #' @field entropy_latent Entropy of the variational distribution of the latent vector (Gaussian)
+      #' entropy_latent       = function() {sum(self$mixtureParam * map_dbl(self$components, 'entropy'))},
+      #' @field entropy Full entropy of the variational distribution (latent vector + clustering)
+      entropy       = function() {self$entropy_clustering},
       #' @field loglik variational lower bound of the loglikelihood
       loglik = function() {sum(self$loglik_vec)},
       #' @field loglik_vec element-wise variational lower bound of the loglikelihood
@@ -187,7 +192,7 @@ PLNmixturefit <-
       #' @field ICL variational lower bound of the ICL
       ICL        = function() {self$BIC - self$entropy},
       #' @field R_squared approximated goodness-of-fit criterion
-      R_squared     = function() {sum(self$mixtureParam * sapply(self$components, function(model) model$R_squared))},
+      R_squared     = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},
       #' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
       criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)},
       #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)

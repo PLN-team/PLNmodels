@@ -109,9 +109,9 @@ PLNfamily <-
       #' @description
       #' Lineplot of selected criteria for all models in the collection
       #' @param criteria A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)
-      #' @param annotate Logical. Should R2 be added to the plot (defaults to `TRUE`)
+      #' @param annotate Logical. Should R2 be added to the plot (defaults to `FALSE`)
       #' @return A [`ggplot2`] object
-      plot = function(criteria, annotate = TRUE) {
+      plot = function(criteria, annotate = FALSE) {
         stopifnot(!anyNA(self$criteria[criteria]))
         dplot <- self$criteria %>%
           dplyr::select(c("param", criteria)) %>%

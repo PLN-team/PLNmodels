@@ -39,6 +39,7 @@ Imports:
   gridExtra,
   dplyr,
   tidyr,
+  purrr,
   ggplot2,
   corrplot,
   magrittr

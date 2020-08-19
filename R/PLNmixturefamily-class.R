@@ -15,6 +15,7 @@
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call #'
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
+#' @importFrom purrr map map_dbl map_int
 #' @import ggplot2
 #' @seealso The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefit]{PLNmixturefit}}
 PLNmixturefamily <-
@@ -38,8 +39,8 @@ PLNmixturefamily <-
 
         ## initialize the required fields
         super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
-        private$params <- clusters
-        private$model <- model
+        private$params  <- clusters
+        private$model   <- model
         private$xlevels <- xlevels
 
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), model, xlevels, control)
@@ -49,6 +50,7 @@ PLNmixturefamily <-
           Sbar <- c(myPLN$var_par$S2) * myPLN$p
         else
           Sbar <- rowSums(myPLN$var_par$S2)
+
         D <- sqrt(as.matrix(dist(myPLN$var_par$M)^2) + outer(Sbar,rep(1,myPLN$n)) + outer(rep(1, myPLN$n), Sbar))
 
         if (is.numeric(control$init_cl)) {
@@ -60,10 +62,10 @@ PLNmixturefamily <-
           )
         }
         self$models <-
-            clusterings %>%
-            lapply(as_indicator) %>%
-            lapply(.check_boundaries) %>%
-            lapply(function(Z) PLNmixturefit$new(responses, covariates, offsets, Z, model, xlevels, control))
+          clusterings %>%
+            map(as_indicator) %>%
+            map(.check_boundaries) %>%
+            map(function(Z) PLNmixturefit$new(responses, covariates, offsets, Z, model, xlevels, control))
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Optimization ----------------------
@@ -116,10 +118,10 @@ PLNmixturefamily <-
             }
             model
           }, mc.cores = control$cores)
-          best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$ICL))]]
-          if (is.na(self$models[[i + 1]]$ICL)) {
+          best_one <- candidates[[which.max(map_dbl(candidates, 'loglik'))]]
+          if (is.na(self$models[[i + 1]]$loglik)) {
             self$models[[i + 1]] <- best_one
-          } else if (best_one$ICL > self$models[[i + 1]]$ICL) {
+          } else if (best_one$loglik > self$models[[i + 1]]$loglik) {
             self$models[[i + 1]] <- best_one
           }
         }
@@ -141,10 +143,10 @@ PLNmixturefamily <-
               model$optimize(self$responses, self$covariates, self$offsets, control)
               model
             }, mc.cores = control$cores)
-            best_one <- candidates[[which.max(sapply(candidates, function(candidate) candidate$ICL))]]
-            if (is.na(self$models[[i - 1]]$ICL)) {
+            best_one <- candidates[[which.max(map_dbl(candidates, 'loglik'))]]
+            if (is.na(self$models[[i - 1]]$loglik)) {
               private$models[[i - 1]] <- best_one
-            } else if (best_one$ICL > self$models[[i - 1]]$ICL) {
+            } else if (best_one$loglik > self$models[[i - 1]]$loglik) {
               self$models[[i - 1]] <- best_one
             }
           }
@@ -156,18 +158,18 @@ PLNmixturefamily <-
       #' @description
       #' Lineplot of selected criteria for all models in the collection
       #' @param criteria A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).
-      #' @param annotate Logical. Should R2 be added to the plot (defaults to `TRUE`)
+      #' @param annotate Logical. Should R2 be added to the plot (defaults to `FALSE`)
       #' @return A [`ggplot2`] object
       plot = function(criteria = c("loglik", "BIC", "ICL"), annotate = FALSE) {
-        vlines <- sapply(intersect(criteria, c("BIC", "ICL")), function(crit) self$getBestModel(crit)$k)
+        vlines <- map_int(intersect(criteria, c("BIC", "ICL")), function(crit) self$getBestModel(crit)$k)
         p <- super$plot(criteria, annotate) + xlab("# of clusters") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
         p
        },
       #' @description Plot objective value of the optimization problem along the penalty path
       #' @return a [`ggplot`] graph
       plot_objective = function() {
-        objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
-        changes <- cumsum(unlist(lapply(self$models, function(model) model$optim_par$outer_iterations)))
+        objective <- self$models %>% map('optim_par') %>% map('objective') %>% unlist
+        changes   <- self$models %>% map('optim_par') %>% map('outer_iterations') %>% unlist %>% cumsum
         dplot <- data.frame(iteration = 1:length(objective), objective = objective)
         p <- ggplot(dplot, aes(x = iteration, y = objective)) + geom_line() +
           geom_vline(xintercept = changes, linetype="dashed", alpha = 0.25) +
@@ -179,9 +181,9 @@ PLNmixturefamily <-
       ## Extractors   -------------------
       #' @description Extract best model in the collection
       #' @param crit a character for the criterion used to performed the selection. Either
-      #' "BIC", "ICL", or "R_squared". Default is `BIC`
+      #' "BIC", "ICL", or "loglik". Default is `BIC`
       #' @return a [`PLNmixturefit`] object
-      getBestModel = function(crit = c("BIC", "ICL", "R_squared")){
+      getBestModel = function(crit = c("BIC", "ICL")){
         crit <- match.arg(crit)
         stopifnot(!anyNA(self$criteria[[crit]]))
         id <- 1
