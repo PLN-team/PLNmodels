@@ -258,7 +258,7 @@ PLNPCAfit <- R6Class(
       show = function() {
         super$show(paste0("Poisson Lognormal with rank constrained for PCA (rank = ",self$rank,")\n"))
         cat("* Additional fields for PCA\n")
-        cat("    $percent_var, $corr_circle, $scores, $rotation\n")
+        cat("    $percent_var, $corr_circle, $scores, $rotation, $eig, $var, $ind\n")
         cat("* Additional S3 methods for PCA\n")
         cat("    plot.PLNPCAfit()\n")
       }
