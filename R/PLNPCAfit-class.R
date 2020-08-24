@@ -315,6 +315,46 @@ PLNPCAfit <- R6Class(
         rownames(rotation) <- rownames(private$Sigma)
         rotation
       }
+      #' @field eig description of the eigenvalues, similar to percent_var but for use with external methods
+      eig = function() {
+        eigen.val <- private$svdBM$d[1:self$rank]^2
+        matrix(
+          c(eigen.val,                        ## eigenvalues
+            100 * eigen.val / sum(eigen.val), ## percentage of variance
+            100 * cumsum(eigen.val) / sum(eigen.val)  ## cumulative percentage of variance
+          ),
+          dimnames = list(paste("comp", 1:self$rank), c("eigenvalue", "percentage of variance", "cumulative percentage of variance"))
+        )
+      }
+      #' @field var a list of data frames with PCA results for the variables: `coord` (coordinates of the variables), `cor` (correlation between variables and dimensions), `cos2` (Cosine of the variables) and `contrib` (contributions of the variable to the axes)
+      var = function() {
+        coord  <- private$svdBM$v[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], ncol = self$rank, nrow = self$p, byrow = TRUE)
+        ## coord[j, k] = d[k] * v[j, k]
+        var_sd <- apply(tcrossprod(private$M, private$B), 1, sd)
+        cor    <- coord / var_sd
+        cos2 <- cor^2
+        contrib <- 100 * private$svdBM$v[, 1:self$rank]^2
+        dimnames(coord) <- dimnames(cor) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$Sigma), paste0("Dim.", 1:self$rank))
+        list(coord   = coord,
+             cor     = cor,
+             cos2    = cos2,
+             contrib = contrib)
+      }
+      #' @field ind a list of data frames with PCA results for the individuals: `coord` (coordinates of the individuas), `cos2` (Cosine of the individuals), `contrib` (contributions of individuals to an axis inertia) and `dist` (distance of individuals to the origin).
+      ind = function() {
+        coord  <- private$svdBM$u[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], ncol = self$rank, nrow = self$n, byrow = TRUE)
+        ## coord[i, k] = d[k] * v[i, k]
+        BM <- scale(tcrossprod(private$M, private$B), center = TRUE, scale = FALSE)
+        dist_origin <- sqrt(rowSums(BM^2))
+        cos2 <- coord^2 / dist_origin^2
+        contrib <- 100 * private$svdBM$u[, 1:self$rank]^2
+        dimnames(coord) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$M), paste0("Dim.", 1:self$rank))
+        names(dist_origin) <- rownames(private$M)
+        list(coord   = coord,
+             cos2    = cos2,
+             contrib = contrib,
+             dist    = dist_origin)
+      }
     )
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ##  END OF CLASS ----
