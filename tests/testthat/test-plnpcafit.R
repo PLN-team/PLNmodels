@@ -30,6 +30,18 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_equal(dim(myPLNfit$scores), c(n, myPLNfit$rank))
   expect_true(all(myPLNfit$percent_var >= 0))
   expect_equal(dim(myPLNfit$corr_circle), c(p, myPLNfit$rank))
+  ## Eigenvalues, informations about individuals and variables
+  expect_equal(dim(myPLNfit$eig), c(myPLNfit$rank, 3))
+  ## $var
+  expect_equal(dim(myPLNfit$var$coord), c(p, myPLNfit$rank))
+  expect_equal(dim(myPLNfit$var$cor), c(p, myPLNfit$rank))
+  expect_equal(dim(myPLNfit$var$cos2), c(p, myPLNfit$rank))
+  expect_equal(dim(myPLNfit$var$contrib), c(p, myPLNfit$rank))
+  ## $ind
+  expect_equal(dim(myPLNfit$ind$coord), c(n, myPLNfit$rank))
+  expect_equal(dim(myPLNfit$ind$cos2), c(n, myPLNfit$rank))
+  expect_equal(dim(myPLNfit$ind$contrib), c(n, myPLNfit$rank))
+  expect_equal(length(myPLNfit$ind$dist), n)
 
   ## S3 methods
   expect_equal(coefficients(myPLNfit), myPLNfit$model_par$Theta)
@@ -50,6 +62,33 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_true(inherits(myPLNfit$plot_PCA(plot = FALSE), "grob"))
 
 })
+
+test_that("Bindings for factoextra return sensible values", {
+  ## $eig
+  expect_gte(min(myPLNfit$eig[, "eigenvalue"]), 0)
+  expect_gte(min(myPLNfit$eig[, "percentage of variance"]), 0)
+  expect_lte(max(myPLNfit$eig[, "percentage of variance"]), 100)
+  expect_equivalent(tail(myPLNfit$eig[, "cumulative percentage of variance"], n = 1), 100)
+  ## $var
+  .var <- myPLNfit$var
+  cor_range <- range(.var$cor)
+  expect_gte(cor_range[1], -1)
+  expect_lte(cor_range[2], 1)
+  cos2_range <- range(.var$cos2)
+  expect_gte(cos2_range[1], 0)
+  expect_lte(cos2_range[2], 1)
+  expect_equivalent(rowSums(.var$cos2), rep(1, myPLNfit$p))
+  expect_equivalent(colSums(.var$contrib), rep(100, myPLNfit$rank))
+  ## $ind
+  .ind <- myPLNfit$ind
+  cos2_range <- range(.ind$cos2)
+  expect_gte(cos2_range[1], 0)
+  expect_lte(cos2_range[2], 1)
+  expect_equivalent(rowSums(.ind$cos2), rep(1, myPLNfit$n))
+  expect_equivalent(colSums(.ind$contrib), rep(100, myPLNfit$rank))
+  expect_equivalent(colSums(.ind$coord), rep(0, myPLNfit$rank))
+})
+
 
 test_that("Louis-type Fisher matrices are not available for PLNPCA", {
   expect_error(myPLNfit$compute_fisher(type = "louis", X = X),
