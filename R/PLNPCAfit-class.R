@@ -298,14 +298,16 @@ PLNPCAfit <- R6Class(
       },
       #' @field corr_circle a matrix of correlations to plot the correlation circles
       corr_circle = function() {
-        corr <- t(t(private$svdBM$v[, 1:self$rank, drop = FALSE]) * private$svdBM$d[1:self$rank]^2)
+        ## corr <- t(t(private$svdBM$v[, 1:self$rank, drop = FALSE]) * private$svdBM$d[1:self$rank])
+        corr <- private$svdBM$v[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], byrow = TRUE, nrow = self$p, ncol = self$rank)
         corr <- corr/sqrt(rowSums(corr^2))
         rownames(corr) <- rownames(private$Sigma)
         corr
       },
       #' @field scores a matrix of scores to plot the individual factor maps (a.k.a. principal components)
       scores     = function() {
-        scores <- t(t(private$svdBM$u[, 1:self$rank]) * private$svdBM$d[1:self$rank])
+        ## scores <- t(t(private$svdBM$u[, 1:self$rank]) * private$svdBM$d[1:self$rank]) ## slightly faster version below
+        scores <- private$svdBM$u[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], byrow = TRUE, nrow = self$n, ncol = self$rank)
         rownames(scores) <- rownames(private$M)
         scores
       },
