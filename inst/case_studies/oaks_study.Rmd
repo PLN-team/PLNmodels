@@ -1,0 +1,149 @@
+---
+title: "Revisiting PLNmodels output with htmlwidgets"
+subtitle: "The Oaks Powdery Mildew Data Set"
+author: "Julien Chiquet"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  screenshot.force = FALSE, 
+  echo = TRUE,
+  rows.print = 5,
+  fig.width = 10, 
+  fig.height = 10,
+  message = FALSE, 
+  warning = FALSE)
+```
+
+## Preliminaries
+
+The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:
+
+```{r dependencies}
+library(PLNmodels)
+library(tidyverse)
+library(ggplot2)
+nb_cores <- 4
+```
+
+Here are a collection of packages implementing various JS widgets:
+
+```{r widgets}
+library(DT)
+library(scatterD3)
+library(plotly)
+library(edgebundleR)
+library(threejs)
+library(networkD3)
+```
+
+The _oaks amplicon data set_ at play gives the abundance of 114 taxa (66 bacterial OTU, 48 fungal OTUs) in 116 samples. For each sample, 11 additional covariates are known
+
+```{r loading}
+data(oaks)
+datatable(oaks$Abundance[, 1:5] )
+```
+
+## PLNmodels Analyses 
+
+### PCA analysis
+
+```{r principal component analysis, cache = TRUE, warning = FALSE, results='hide'}
+my_PCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = oaks, ranks = 25:30, control_main = list(cores = nb_cores))
+```
+
+### Sparse precision matrix (Network)
+
+```{r network analysis, cache = TRUE, results='hide'}
+my_networks <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control_main = list(trace = 2))
+```
+
+## Outputs and Vizualisation
+
+### Principal Components Map 
+
+We explore various scatterplot solutions to represent the individual factor map of the PLN PCA.
+
+```{r data for scatterplot}
+coord <- my_PCAs$getBestModel()$scores[, 1:3] %>% 
+  as.data.frame() %>%   
+  setNames(c("PC1", "PC2", "PC3")) %>% 
+  add_column(tree = oaks$tree, names = rownames(oaks$Abundance))
+```
+
+#### Direct "plotlyfication"
+
+```{r biplot factoextra1}
+my_PCA <- my_PCAs$getBestModel()
+t(tcrossprod(my_PCA$model_par$B, my_PCA$var_par$M)) %>%
+  prcomp(center = FALSE, scale. = FALSE) %>%
+  factoextra::fviz_pca_biplot(select.var = list(contrib = 10), col.ind  = oaks$tree,
+                              title = "Biplot after correction (10 most contributing species, samples colored by distance to ground)") +
+  labs(col = "distance (cm)") + scale_color_viridis_d()
+```
+
+```{r factoextra}
+ggplotly()
+```
+
+#### ScatterD3 (Another fancy scatterplot)
+
+```{r scatterD3}
+scatterD3(data = coord, x = PC1, y = PC2, lab = names,
+          col_var = tree, symbol_var = tree,
+          xlab = "PC1", ylab = "PC2", col_lab = "tree",
+          symbol_lab = "tree", lasso = TRUE)
+```
+
+#### Native plotly (3D scatterplot)
+
+```{r plotly}
+fig <- plot_ly(
+  coord, x = ~PC1, y = ~PC2, z = ~PC3, color = ~tree, size = .35,
+  text = ~paste('status:', tree), type = "scatter3d") %>% 
+  layout(title = "Individual Factor Map of the Oaks powdery Mildew data set",
+         scene = list(xaxis = list(title = 'PC1'),
+                      yaxis = list(title = 'PC2'),
+                      zaxis = list(title = 'PC3'))
+  )
+fig
+```
+
+#### threejs (3D scatterplot)
+
+```{r threejs}
+group <- rainbow(3)[as.numeric(oaks$tree)]
+coord %>% select(1:3) %>% as.matrix() %>% 
+scatterplot3js(col = group, size = 0.25, pch = ".", grid = FALSE, bg = "black")
+```
+
+### Networks
+
+```{r net selection}
+my_net <- my_networks$getBestModel('EBIC')
+```
+
+#### EdgebundleR
+
+
+```{r edgbundle, results='asis', fig.show='asis'}
+g <- my_net$plot_network(output = "igraph", plot = FALSE)
+edgebundle(g)
+```
+
+#### networkD3
+
+```{r networkD3, results='asis', fig.show='asis'}
+# Convert to object suitable for networkD3
+d3 <- igraph_to_networkD3(g, group = sapply(strsplit(colnames(oaks$Abundance), "_"), function(x) x[[1]]))
+
+# Create force directed network plot
+forceNetwork(Links = d3$links, Nodes = d3$nodes, 
+             Source = 'source', Target = 'target', 
+             NodeID = 'name', Group = 'group', opacity = 0.4)
+```
+
