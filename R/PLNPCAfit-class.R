@@ -356,6 +356,10 @@ PLNPCAfit <- R6Class(
              cos2    = cos2,
              contrib = contrib,
              dist    = dist_origin)
+      },
+      #' @field call Hacky binding for compatibility with factoextra functions
+      call = function() {
+        list(scale.unit = FALSE)
       }
     )
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
