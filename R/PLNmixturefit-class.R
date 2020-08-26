@@ -136,7 +136,8 @@ PLNmixturefit <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Update fields after optimization
-      postTreatment = function(responses, covariates, offsets, nullModel) {
+      #' @param weights an optional vector of observation weights to be used in the fitting process.
+      postTreatment = function(responses, covariates, offsets, weights, nullModel) {
         for (k_ in seq.int(ncol(private$tau)))
           self$components[[k_]]$postTreatment(
             responses,

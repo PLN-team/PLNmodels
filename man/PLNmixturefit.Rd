@@ -198,7 +198,7 @@ a \code{\link{ggplot}} graphic
 \subsection{Method \code{postTreatment()}}{
 Update fields after optimization
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$postTreatment(responses, covariates, offsets, nullModel)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$postTreatment(responses, covariates, offsets, weights, nullModel)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -209,6 +209,8 @@ Update fields after optimization
 \item{\code{covariates}}{the matrix of covariates common to every models}
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }
