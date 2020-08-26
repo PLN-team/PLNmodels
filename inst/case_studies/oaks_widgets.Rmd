@@ -124,7 +124,7 @@ scatterplot3js(col = group, size = 0.25, pch = ".", grid = FALSE, bg = "black")
 ### Networks
 
 ```{r net selection}
-my_net <- my_networks$getBestModel('EBIC')
+my_net <- my_networks$getBestModel('BIC')
 ```
 
 #### EdgebundleR
@@ -144,6 +144,6 @@ d3 <- igraph_to_networkD3(g, group = sapply(strsplit(colnames(oaks$Abundance), "
 # Create force directed network plot
 forceNetwork(Links = d3$links, Nodes = d3$nodes, 
              Source = 'source', Target = 'target', 
-             NodeID = 'name', Group = 'group', opacity = 0.4)
+             NodeID = 'name', Group = 'group', opacity = 1)
 ```
 
