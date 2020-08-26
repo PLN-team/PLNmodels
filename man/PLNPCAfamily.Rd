@@ -34,6 +34,7 @@ The function \code{\link[=PLNPCA]{PLNPCA()}}, the class \code{\link[=PLNPCAfit]{
 \itemize{
 \item \href{#method-new}{\code{PLNPCAfamily$new()}}
 \item \href{#method-optimize}{\code{PLNPCAfamily$optimize()}}
+\item \href{#method-getModel}{\code{PLNPCAfamily$getModel()}}
 \item \href{#method-getBestModel}{\code{PLNPCAfamily$getBestModel()}}
 \item \href{#method-plot}{\code{PLNPCAfamily$plot()}}
 \item \href{#method-show}{\code{PLNPCAfamily$show()}}
@@ -43,7 +44,6 @@ The function \code{\link[=PLNPCA]{PLNPCA()}}, the class \code{\link[=PLNPCAfit]{
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel">}\href{../../PLNmodels/html/PLNfamily.html#method-getModel}{\code{PLNmodels::PLNfamily$getModel()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment">}\href{../../PLNmodels/html/PLNfamily.html#method-postTreatment}{\code{PLNmodels::PLNfamily$postTreatment()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print">}\href{../../PLNmodels/html/PLNfamily.html#method-print}{\code{PLNmodels::PLNfamily$print()}}\out{</span>}
 }
@@ -104,6 +104,28 @@ Call to the C++ optimizer on all models of the collection
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getModel"></a>}}
+\if{latex}{\out{\hypertarget{method-getModel}{}}}
+\subsection{Method \code{getModel()}}{
+Extract model from collection and add "PCA" class for compatibility with \code{\link{factoextra}}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$getModel(var, index = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{var}}{value of the parameter (rank for PLNPCA, sparsity for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
+
+\item{\code{index}}{Integer index of the model to be returned. Only the first value is taken into account.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{\link{PLNPCAfit}} object
 }
 }
 \if{html}{\out{<hr>}}

@@ -40,6 +40,14 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \item{\code{scores}}{a matrix of scores to plot the individual factor maps (a.k.a. principal components)}
 
 \item{\code{rotation}}{a matrix of rotation of the latent space}
+
+\item{\code{eig}}{description of the eigenvalues, similar to percent_var but for use with external methods}
+
+\item{\code{var}}{a list of data frames with PCA results for the variables: \code{coord} (coordinates of the variables), \code{cor} (correlation between variables and dimensions), \code{cos2} (Cosine of the variables) and \code{contrib} (contributions of the variable to the axes)}
+
+\item{\code{ind}}{a list of data frames with PCA results for the individuals: \code{coord} (coordinates of the individuas), \code{cos2} (Cosine of the individuals), \code{contrib} (contributions of individuals to an axis inertia) and \code{dist} (distance of individuals to the origin).}
+
+\item{\code{call}}{Hacky binding for compatibility with factoextra functions}
 }
 \if{html}{\out{</div>}}
 }
