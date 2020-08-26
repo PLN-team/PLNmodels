@@ -334,7 +334,8 @@ PLNPCAfit <- R6Class(
         coord  <- private$svdBM$v[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], ncol = self$rank, nrow = self$p, byrow = TRUE)
         ## coord[j, k] = d[k] * v[j, k]
         var_sd <- sqrt(rowSums(coord^2))
-        cor    <- coord / var_sd
+        coord  <- coord / var_sd
+        cor    <- coord
         cos2 <- cor^2
         contrib <- 100 * private$svdBM$v[, 1:self$rank]^2
         dimnames(coord) <- dimnames(cor) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$Sigma), paste0("Dim.", 1:self$rank))

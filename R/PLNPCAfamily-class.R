@@ -76,6 +76,16 @@ PLNPCAfamily <- R6Class(
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Extractors   -------------------
+    #' @description Extract model from collection and add "PCA" class for compatibility with [`factoextra`]
+    # @inheritParams getModel
+    #' @param var	value of the parameter (rank for PLNPCA, sparsity for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
+    #' @param index Integer index of the model to be returned. Only the first value is taken into account.
+    #' @return a [`PLNPCAfit`] object
+    getModel = function(var, index = NULL) {
+      model <- super$getModel(var, index)
+      class(model) <- c(class(model)[class(model) != "R6"], "PCA", "R6")
+      model
+    },
     #' @description Extract best model in the collection
     #' @param crit a character for the criterion used to performed the selection. Either
     #' "BIC", "ICL", or "R_squared". Default is `BIC`
@@ -87,8 +97,7 @@ PLNPCAfamily <- R6Class(
       if (length(self$criteria[[crit]]) > 1) {
         id <- which.max(self$criteria[[crit]])
       }
-      model <- self$models[[id]]$clone()
-      model
+      self$getModel(index = id)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
