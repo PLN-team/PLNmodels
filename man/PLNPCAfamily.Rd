@@ -110,7 +110,7 @@ Call to the C++ optimizer on all models of the collection
 \if{html}{\out{<a id="method-getModel"></a>}}
 \if{latex}{\out{\hypertarget{method-getModel}{}}}
 \subsection{Method \code{getModel()}}{
-Extract model from collection and add "PCA" class for compatibility with \code{\link{factoextra}}
+Extract model from collection and add "PCA" class for compatibility with \code{\link[factoextra:fviz]{factoextra::fviz()}}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$getModel(var, index = NULL)}\if{html}{\out{</div>}}
 }
