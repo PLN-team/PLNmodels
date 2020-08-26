@@ -42,7 +42,8 @@ Imports:
   purrr,
   ggplot2,
   corrplot,
-  magrittr
+  magrittr,
+  rlang
 Suggests: 
     knitr,
     rmarkdown,
