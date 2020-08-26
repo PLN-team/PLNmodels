@@ -15,14 +15,19 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefit]{PLN
 \section{Super class}{
 \code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{PLNmixturefamily}
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{clusters}}{vector indicating the number of clusters considered is the successively fitted models}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{PLNmixturefamily$new()}}
 \item \href{#method-optimize}{\code{PLNmixturefamily$optimize()}}
 \item \href{#method-smooth}{\code{PLNmixturefamily$smooth()}}
-\item \href{#method-smooth_forward}{\code{PLNmixturefamily$smooth_forward()}}
-\item \href{#method-smooth_backward}{\code{PLNmixturefamily$smooth_backward()}}
 \item \href{#method-plot}{\code{PLNmixturefamily$plot()}}
 \item \href{#method-plot_objective}{\code{PLNmixturefamily$plot_objective()}}
 \item \href{#method-getBestModel}{\code{PLNmixturefamily$getBestModel()}}
@@ -101,6 +106,7 @@ Call to the optimizer on all models of the collection
 \if{html}{\out{<a id="method-smooth"></a>}}
 \if{latex}{\out{\hypertarget{method-smooth}{}}}
 \subsection{Method \code{smooth()}}{
+function to restart clustering to avoid local minima by smoothing the logliklihood values as a function of the number of clusters
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$smooth(control)}\if{html}{\out{</div>}}
 }
@@ -108,45 +114,7 @@ Call to the optimizer on all models of the collection
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{control}}{a list for controlling the optimization. See details.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-smooth_forward"></a>}}
-\if{latex}{\out{\hypertarget{method-smooth_forward}{}}}
-\subsection{Method \code{smooth_forward()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$smooth_forward(control)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{control}}{a list for controlling the optimization. See details.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-smooth_backward"></a>}}
-\if{latex}{\out{\hypertarget{method-smooth_backward}{}}}
-\subsection{Method \code{smooth_backward()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$smooth_backward(control)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{control}}{a list for controlling the optimization. See details.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{control}}{a list to control the smoothing process}
 }
 \if{html}{\out{</div>}}
 }
@@ -211,6 +179,7 @@ a \code{\link{PLNmixturefit}} object
 \if{html}{\out{<a id="method-show"></a>}}
 \if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$show()}\if{html}{\out{</div>}}
 }
@@ -220,6 +189,7 @@ a \code{\link{PLNmixturefit}} object
 \if{html}{\out{<a id="method-print"></a>}}
 \if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$print()}\if{html}{\out{</div>}}
 }

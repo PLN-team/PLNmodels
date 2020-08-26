@@ -6,15 +6,16 @@
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for ...
 #'
+#' @param responses the matrix of responses common to every models
+#' @param covariates the matrix of covariates common to every models
+#' @param offsets the matrix of offsets common to every models
+#' @param control a list for controlling the optimization. See details.
+#' @param clusters the dimensions of the successively fitted models
+#' @param model model used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call #'
 #' @param cluster the number of clusters of the current model
-#' @param components a list with cluster component element, each of whom is a \code{PLNfit}.
-#' @param model_par a list with the matrices associated with the final estimated parameters of the mixture model: Theta (covariates), Sigma (latent covariance), mu (vector of means/centers) and pi (vector of cluster proportions)
-#' @param posteriorProbabilities matrix of posterior probabilities of class belonging
-#' @param mixtureParam vector of cluster proportions
-#' @param loglik variational lower bound of the loglikelihood
-#' @param BIC variational lower bound of the BIC
-#' @param ICL variational lower bound of the ICL
-#' @param R_squared approximated goodness-of-fit criterion
+#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #'
 #' @include PLNfit-class.R
 #'
@@ -44,6 +45,7 @@ PLNmixturefit <-
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     public  = list(
       #' @description Initialize a [`PLNmixturefit`] model
+      #'@param posteriorProb matrix ofposterior probability for cluster belonging
       initialize = function(responses, covariates, offsets, posteriorProb, model, xlevels, control) {
         private$tau  <- posteriorProb
         private$comp <- vector('list', ncol(posteriorProb))
@@ -134,7 +136,7 @@ PLNmixturefit <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Update fields after optimization
-      postTreatment = function(responses, covariates, offsets, weights, nullModel) {
+      postTreatment = function(responses, covariates, offsets, nullModel) {
         for (k_ in seq.int(ncol(private$tau)))
           self$components[[k_]]$postTreatment(
             responses,
@@ -144,18 +146,22 @@ PLNmixturefit <-
             nullModel = nullModel
           )
       },
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      ## Print methods ---------------------
+      #' @description User friendly print method
       show = function() {
         cat("Poisson Lognormal mixture model with",self$k,"components.\n")
         cat("* check fields $posteriorProb, $memberships, $mixtureParam and $components\n")
         cat("* check methods $plot_clustering_data, $plot_clustering_pca\n")
         cat("* each $component[[i]] is a PLNfit with expacted methods and fields\n")
       },
+      #' @description User friendly print method
       print = function() self$show()
     ),
     active = list(
       #' @field n number of samples
       n = function() {nrow(private$tau)},
-      #' @field q number of dimensions of the latent space
+      #' @field p number of dimensions of the latent space
       p = function() {ncol(self$var_par$M)},
       #' @field k number of components
       k = function() {length(private$comp)},
@@ -163,7 +169,7 @@ PLNmixturefit <-
       components    = function(value) {if (missing(value)) return(private$comp) else private$comp <- value},
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
       posteriorProb = function(value) {if (missing(value)) return(private$tau) else private$tau <- value},
-      #' @field meberships vector for cluster index
+      #' @field memberships vector for cluster index
       memberships   = function(value) {apply(private$tau, 1, which.max)},
       #' @field mixtureParam vector of cluster proporitions
       mixtureParam  = function() {colMeans(private$tau)},

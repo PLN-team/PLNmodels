@@ -13,21 +13,12 @@ See the documentation for ...
 \seealso{
 The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{q}}{number of dimensions of the latent space}
-
-\item{\code{meberships}}{vector for cluster index}
-}
-\if{html}{\out{</div>}}
-}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{n}}{number of samples}
 
-\item{\code{q}}{number of dimensions of the latent space}
+\item{\code{p}}{number of dimensions of the latent space}
 
 \item{\code{k}}{number of components}
 
@@ -35,7 +26,7 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
 
-\item{\code{meberships}}{vector for cluster index}
+\item{\code{memberships}}{vector for cluster index}
 
 \item{\code{mixtureParam}}{vector of cluster proporitions}
 
@@ -101,6 +92,27 @@ Initialize a \code{\link{PLNmixturefit}} model
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
+
+\item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call #'}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-optimize"></a>}}
@@ -111,6 +123,21 @@ Optimize a \code{\link{PLNmixturefit}} model
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$optimize(responses, covariates, offsets, control)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_clustering_data"></a>}}
@@ -171,14 +198,28 @@ a \code{\link{ggplot}} graphic
 \subsection{Method \code{postTreatment()}}{
 Update fields after optimization
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$postTreatment(responses, covariates, offsets, weights, nullModel)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$postTreatment(responses, covariates, offsets, nullModel)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses common to every models}
+
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+
+\item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-show"></a>}}
 \if{latex}{\out{\hypertarget{method-show}{}}}
 \subsection{Method \code{show()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$show()}\if{html}{\out{</div>}}
 }
@@ -188,6 +229,7 @@ Update fields after optimization
 \if{html}{\out{<a id="method-print"></a>}}
 \if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
+User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$print()}\if{html}{\out{</div>}}
 }
