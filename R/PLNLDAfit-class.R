@@ -340,18 +340,20 @@ PLNLDAfit <- R6Class(
     #' @field percent_var the percent of variance explained by each axis
     percent_var = function() {
       eigen.val <- private$svdLDA$d[1:self$rank]^2
-      round(eigen.val/sum(eigen.val),4)
+      setNames(round(eigen.val/sum(eigen.val),4), paste0("LD", 1:self$rank))
     },
     #' @field corr_map a matrix of correlations to plot the correlation circles
     corr_map = function() {
       corr <- cor(private$P, self$scores)
       rownames(corr) <- rownames(private$B)
+      colnames(corr) <- paste0("LD", 1:self$rank)
       corr
     },
     #' @field scores a matrix of scores to plot the individual factor maps
     scores     = function() {
       scores <- private$P %*% t(t(private$svdLDA$u[, 1:self$rank]) * private$svdLDA$d[1:self$rank])
       rownames(scores) <- rownames(private$M)
+      colnames(scores) <- paste0("LD", 1:self$rank)
       scores
     },
     #' @field group_means a matrix of group mean vectors in the latent space.

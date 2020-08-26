@@ -294,25 +294,28 @@ PLNPCAfit <- R6Class(
       #' @field percent_var the percent of variance explained by each axis
       percent_var = function() {
         eigen.val <- private$svdBM$d[1:self$rank]^2
-        round(eigen.val/sum(eigen.val),4)
+        setNames(round(eigen.val/sum(eigen.val),4), paste0("PC", 1:self$rank))
       },
       #' @field corr_circle a matrix of correlations to plot the correlation circles
       corr_circle = function() {
         corr <- t(t(private$svdBM$v[, 1:self$rank, drop = FALSE]) * private$svdBM$d[1:self$rank]^2)
         corr <- corr/sqrt(rowSums(corr^2))
         rownames(corr) <- rownames(private$Sigma)
+        colnames(corr) <- paste0("PC", 1:self$rank)
         corr
       },
       #' @field scores a matrix of scores to plot the individual factor maps (a.k.a. principal components)
       scores     = function() {
         scores <- t(t(private$svdBM$u[, 1:self$rank]) * private$svdBM$d[1:self$rank])
         rownames(scores) <- rownames(private$M)
+        colnames(scores) <- paste0("PC", 1:self$rank)
         scores
       },
       #' @field rotation a matrix of rotation of the latent space
       rotation   = function() {
         rotation <- private$svdBM$v[, 1:self$rank, drop = FALSE]
         rownames(rotation) <- rownames(private$Sigma)
+        colnames(rotation) <- paste0("PC", 1:self$rank)
         rotation
       }
     )
