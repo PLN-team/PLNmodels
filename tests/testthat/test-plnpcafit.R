@@ -61,6 +61,8 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_true(inherits(myPLNfit$plot_individual_map(plot = FALSE), "ggplot"))
   expect_true(inherits(myPLNfit$plot_PCA(plot = FALSE), "grob"))
 
+  ## Class
+  expect_true(inherits(myPLNfit, "PCA"))
 })
 
 test_that("Bindings for factoextra return sensible values", {
