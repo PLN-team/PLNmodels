@@ -1,3 +1,7 @@
+# PLNmodels 0.11.1
+
+* Add compatibility with factoextra
+
 # PLNmodels 0.10.7
 
 * add type = "poscounts" option to RLE normalization
