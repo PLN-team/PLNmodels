@@ -170,7 +170,7 @@ Extract the regularization path of a \code{\link{PLNnetworkfamily}}
 Extract the best network in the family according to some criteria
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$getBestModel(
-  crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"),
+  crit = c("BIC", "loglik", "EBIC", "StARS"),
   stability = 0.9
 )}\if{html}{\out{</div>}}
 }
@@ -193,8 +193,7 @@ Display various outputs (goodness-of-fit criteria, robustness, diagnostic) assoc
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$plot(
   criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
-  log.x = TRUE,
-  annotate
+  log.x = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -204,8 +203,6 @@ Display various outputs (goodness-of-fit criteria, robustness, diagnostic) assoc
 \item{\code{criteria}}{vector of characters. The criteria to plot in \code{c("loglik", "pen_loglik", "BIC", "EBIC")}. Defaults to all of them.}
 
 \item{\code{log.x}}{logical: should the x-axis be represented in log-scale? Default is \code{TRUE}.}
-
-\item{\code{annotate}}{logical: should the value of approximated R squared be added to the plot of criteria? Default is \code{TRUE}.}
 }
 \if{html}{\out{</div>}}
 }

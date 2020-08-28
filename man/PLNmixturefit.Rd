@@ -46,9 +46,9 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{BIC}}{variational lower bound of the BIC}
 
-\item{\code{ICL}}{variational lower bound of the ICL}
-
-\item{\code{R_squared}}{approximated goodness-of-fit criterion}
+\item{\code{ICL}}{variational lower bound of the ICL
+#' @field R_squared approximated goodness-of-fit criterion
+R_squared     = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},}
 
 \item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
 

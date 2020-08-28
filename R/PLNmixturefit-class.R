@@ -201,8 +201,8 @@ PLNmixturefit <-
       BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
       #' @field ICL variational lower bound of the ICL
       ICL        = function() {self$BIC - self$entropy},
-      #' @field R_squared approximated goodness-of-fit criterion
-      R_squared     = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},
+      #' #' @field R_squared approximated goodness-of-fit criterion
+      #' R_squared     = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},
       #' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
       criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)},
       #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)

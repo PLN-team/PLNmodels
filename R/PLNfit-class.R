@@ -395,8 +395,8 @@ PLNfit <- R6Class(
     ICL        = function() {self$BIC - self$entropy},
     #' @field R_squared approximated goodness-of-fit criterion
     R_squared  = function() {private$R2},
-    #' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
-    criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
+    #' @field criteria a vector with loglik, BIC, ICL and number of parameters
+    criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL)}
   )
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

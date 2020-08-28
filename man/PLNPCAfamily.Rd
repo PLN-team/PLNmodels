@@ -134,14 +134,14 @@ a \code{\link{PLNPCAfit}} object
 \subsection{Method \code{getBestModel()}}{
 Extract best model in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$getBestModel(crit = c("BIC", "ICL", "R_squared"))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$getBestModel(crit = c("BIC", "ICL"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{crit}}{a character for the criterion used to performed the selection. Either
-"BIC", "ICL", or "R_squared". Default is \code{BIC}}
+"BIC", "ICL". Default is \code{BIC}}
 }
 \if{html}{\out{</div>}}
 }
@@ -155,15 +155,13 @@ a \code{\link{PLNPCAfit}} object
 \subsection{Method \code{plot()}}{
 Lineplot of selected criteria for all models in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$plot(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$plot(criteria = c("loglik", "BIC", "ICL"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{criteria}}{A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).}
-
-\item{\code{annotate}}{Logical. Should R2 be added to the plot (defaults to \code{TRUE})}
 }
 \if{html}{\out{</div>}}
 }

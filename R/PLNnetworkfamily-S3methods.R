@@ -18,7 +18,6 @@ isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
 #' Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when `type = "criteria"`.
 #' @param log.x logical: should the x-axis be represented in log-scale? Default is `TRUE`.
 #' @param stability scalar: the targeted level of stability in stability plot. Default is .9.
-#' @param annotate logical: should the value of approximated R squared be added to the plot of criteria? Default is `TRUE`.
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @examples
 #' data(trichoptera)
@@ -37,12 +36,11 @@ plot.PLNnetworkfamily <-
            type     = c("criteria", "stability", "diagnostic"),
            criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
            log.x    = TRUE,
-           stability = 0.9,
-           annotate = TRUE, ...) {
+           stability = 0.9, ...) {
   stopifnot(isPLNnetworkfamily(x))
   type <- match.arg(type)
   if (type == "criteria")
-    p <- x$plot(criteria, annotate)
+    p <- x$plot(criteria)
   if (type == "stability")
     p <- x$plot_stars(stability, log.x)
   if (type == "diagnostic")

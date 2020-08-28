@@ -80,7 +80,7 @@ print(myPLN)
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
+\item{\code{criteria}}{a vector with loglik, BIC, ICL and number of parameters}
 }
 \if{html}{\out{</div>}}
 }

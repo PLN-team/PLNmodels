@@ -10,7 +10,6 @@
   criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
   log.x = TRUE,
   stability = 0.9,
-  annotate = TRUE,
   ...
 )
 }
@@ -25,8 +24,6 @@ Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when \code{t
 \item{log.x}{logical: should the x-axis be represented in log-scale? Default is \code{TRUE}.}
 
 \item{stability}{scalar: the targeted level of stability in stability plot. Default is .9.}
-
-\item{annotate}{logical: should the value of approximated R squared be added to the plot of criteria? Default is \code{TRUE}.}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }

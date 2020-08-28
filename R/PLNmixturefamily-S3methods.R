@@ -14,7 +14,6 @@ isPLNmixturefamily     <- function(Robject) {inherits(Robject, "PLNmixturefamily
 #' @param x an R6 object with class [`PLNfamily`]
 #' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared").
 #' Default is  c("loglik", "BIC", "ICL").
-#' @param annotate logical: should the value of approximated R squared be added to the plot?
 #' @param ... additional parameters for S3 compatibility. Not used
 #'
 #' @return Produces a plot  representing the evolution of the criteria of the different models considered,
@@ -28,9 +27,9 @@ isPLNmixturefamily     <- function(Robject) {inherits(Robject, "PLNmixturefamily
 #' plot(myMixtures)
 #' }
 #' @export
-plot.PLNmixturefamily <- function(x, criteria = c("loglik", "BIC", "ICL"), annotate = TRUE, ...) {
+plot.PLNmixturefamily <- function(x, criteria = c("loglik", "BIC", "ICL"), ...) {
   stopifnot(isPLNfamily(x))
-  x$plot(criteria, annotate)
+  x$plot(criteria)
 }
 
 #' @describeIn getModel Model extraction for [`PLNmixturefamily`]

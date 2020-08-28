@@ -4,15 +4,13 @@
 \alias{plot.PLNmixturefamily}
 \title{Display the criteria associated with a collection of PLNmixture fits (a PLNmixturefamily)}
 \usage{
-\method{plot}{PLNmixturefamily}(x, criteria = c("loglik", "BIC", "ICL"), annotate = TRUE, ...)
+\method{plot}{PLNmixturefamily}(x, criteria = c("loglik", "BIC", "ICL"), ...)
 }
 \arguments{
 \item{x}{an R6 object with class \code{\link{PLNfamily}}}
 
 \item{criteria}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared").
 Default is  c("loglik", "BIC", "ICL").}
-
-\item{annotate}{logical: should the value of approximated R squared be added to the plot?}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
