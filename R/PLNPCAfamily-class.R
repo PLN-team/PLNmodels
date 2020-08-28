@@ -88,9 +88,9 @@ PLNPCAfamily <- R6Class(
     },
     #' @description Extract best model in the collection
     #' @param crit a character for the criterion used to performed the selection. Either
-    #' "BIC", "ICL". Default is `BIC`
+    #' "ICL", "BIC". Default is `ICL`
     #' @return a [`PLNPCAfit`] object
-    getBestModel = function(crit = c("BIC", "ICL")){
+    getBestModel = function(crit = c("ICL", "BIC")){
       crit <- match.arg(crit)
       stopifnot(!anyNA(self$criteria[[crit]]))
       id <- 1

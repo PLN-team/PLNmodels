@@ -294,7 +294,7 @@ PLNPCAfit <- R6Class(
       #' @field percent_var the percent of variance explained by each axis
       percent_var = function() {
         eigen.val <- private$svdBM$d[1:self$rank]^2
-        setNames(round(eigen.val/sum(eigen.val),4), paste0("PC", 1:self$rank))
+        setNames(round(eigen.val/sum(eigen.val)*self$R_squared,4), paste0("PC", 1:self$rank))
       },
       #' @field corr_circle a matrix of correlations to plot the correlation circles
       corr_circle = function() {
@@ -324,9 +324,9 @@ PLNPCAfit <- R6Class(
       eig = function() {
         eigen.val <- private$svdBM$d[1:self$rank]^2
         matrix(
-          c(eigen.val,                        ## eigenvalues
-            100 * eigen.val / sum(eigen.val), ## percentage of variance
-            100 * cumsum(eigen.val) / sum(eigen.val)  ## cumulative percentage of variance
+          c(eigen.val,                                                # eigenvalues
+            100 * self$R_squared * eigen.val / sum(eigen.val),        # percentage of variance
+            100 * self$R_squared * cumsum(eigen.val) / sum(eigen.val) # cumulative percentage of variance
           ),
           ncol = 3,
           dimnames = list(paste("comp", 1:self$rank), c("eigenvalue", "percentage of variance", "cumulative percentage of variance"))
