@@ -41,7 +41,7 @@ getModel.PLNPCAfamily <- function(Robject, var, index = NULL) {
 
 #' @describeIn getBestModel Model extraction for [`PLNPCAfamily`]
 #' @export
-getBestModel.PLNPCAfamily <- function(Robject, crit = c("ICL", "BIC", "R_squared"), ...) {
+getBestModel.PLNPCAfamily <- function(Robject, crit = c("BIC", "ICL"), ...) {
   stopifnot(isPLNPCAfamily(Robject))
   Robject$getBestModel(match.arg(crit))
 }

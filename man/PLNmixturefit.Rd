@@ -48,7 +48,7 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{ICL}}{variational lower bound of the ICL (include only entropy of the clustering distribution)}
 
-\item{\code{ICL}}{variational lower bound of the ICL (include entropy of both the clustering and latent distributions)}
+\item{\code{ICL_variant}}{variational lower bound of the ICL (include entropy of both the clustering and latent distributions)}
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 

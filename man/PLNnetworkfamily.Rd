@@ -170,7 +170,7 @@ Extract the regularization path of a \code{\link{PLNnetworkfamily}}
 Extract the best network in the family according to some criteria
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$getBestModel(
-  crit = c("BIC", "loglik", "EBIC", "StARS"),
+  crit = c("BIC", "EBIC", "StARS"),
   stability = 0.9
 )}\if{html}{\out{</div>}}
 }

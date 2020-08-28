@@ -201,7 +201,7 @@ PLNmixturefit <-
       BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
       #' @field ICL variational lower bound of the ICL (include only entropy of the clustering distribution)
       ICL        = function() {self$BIC - self$entropy_clustering},
-      #' @field ICL variational lower bound of the ICL (include entropy of both the clustering and latent distributions)
+      #' @field ICL_variant variational lower bound of the ICL (include entropy of both the clustering and latent distributions)
       ICL_variant= function() {self$BIC - self$entropy},
       #' @field R_squared approximated goodness-of-fit criterion
       R_squared     = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},

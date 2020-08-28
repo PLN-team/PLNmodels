@@ -58,7 +58,7 @@ getModel.PLNnetworkfamily <- function(Robject, var, index = NULL) {
 
 #' @describeIn getBestModel Model extraction for [`PLNnetworkfamily`]
 #' @export
-getBestModel.PLNnetworkfamily <- function(Robject, crit = c("BIC", "loglik", "R_squared", "EBIC", "StARS"), ...) {
+getBestModel.PLNnetworkfamily <- function(Robject, crit = c("BIC", "EBIC", "StARS"), ...) {
   stopifnot(isPLNnetworkfamily(Robject))
   stability <- list(...)[["stability"]]
   if (is.null(stability)) stability <- 0.9

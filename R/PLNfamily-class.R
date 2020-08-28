@@ -17,6 +17,7 @@
 #' @rdname PLNfamily
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
+#' @importFrom purrr map reduce map_chr
 PLNfamily <-
   R6Class(
     classname = "PLNfamily",
@@ -96,8 +97,9 @@ PLNfamily <-
         } else { ## No exact match
           id <- which.min(abs(var - private$params)) ## closest model (in terms of parameter value)
           warning(paste("No such a model in the collection. Acceptable parameter values can be found via",
-                        "$ranks() (for PCA)",
-                        "$penalties() (for network)",
+                        "$ranks (for PCA)",
+                        "$clusters (for mixture models)",
+                        "$penalties (for network)",
                         paste("Returning model with closest value. Requested:", var, ", returned:", private$params[id]),
                         sep = "\n"))
           return(self$models[[id]]$clone())
@@ -136,7 +138,6 @@ PLNfamily <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Other public members --------------
 
-
     ),
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -155,14 +156,15 @@ PLNfamily <-
     active = list(
       #' @field criteria a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the collection of models / fits
       criteria = function() {
-        res <- do.call(rbind, lapply(self$models, function(model) {model$criteria}))
+        res <- purrr::map(self$models, 'criteria') %>%
+          purrr::reduce(rbind)
         data.frame(param = private$params, res)
       },
       #' @field convergence sends back a data frame with some convergence diagnostics associated with the optimization process (method, optimal value, etc)
       convergence = function() {
-        res <- do.call(rbind, lapply(self$models, function(model) {
-          c(nb_param = model$nb_param, sapply(model$optim_par, function(x) x[length(x)]))
-        }))
+        res <- purrr::map(self$models, function(model) {
+          c(nb_param = model$nb_param, purrr::map_chr(model$optim_par, tail, 1))
+        }) %>% purrr::reduce(rbind)
         data.frame(param = private$params, res, stringsAsFactors = FALSE)
       }
     )

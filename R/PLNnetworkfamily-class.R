@@ -192,7 +192,7 @@ PLNnetworkfamily <- R6Class(
     #' @description Extract the best network in the family according to some criteria
     #' @param crit character. Criterion used to perform the selection. Is "StARS" is chosen but `$stability` field is empty, will compute stability path.
     #' @param stability Only used for "StARS" criterion. A scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is `0.9`.
-    getBestModel = function(crit = c("BIC", "loglik", "EBIC", "StARS"), stability = 0.9){
+    getBestModel = function(crit = c("BIC", "EBIC", "StARS"), stability = 0.9){
       crit <- match.arg(crit)
       if (crit == "StARS") {
         if (is.null(private$stab_path)) self$stability_selection()
