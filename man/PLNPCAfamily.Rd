@@ -134,14 +134,14 @@ a \code{\link{PLNPCAfit}} object
 \subsection{Method \code{getBestModel()}}{
 Extract best model in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$getBestModel(crit = c("BIC", "ICL"))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$getBestModel(crit = c("ICL", "BIC"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{crit}}{a character for the criterion used to performed the selection. Either
-"BIC", "ICL". Default is \code{BIC}}
+"ICL", "BIC". Default is \code{ICL}}
 }
 \if{html}{\out{</div>}}
 }
