@@ -12,7 +12,7 @@ isPLNmixturefamily     <- function(Robject) {inherits(Robject, "PLNmixturefamily
 #' @name plot.PLNmixturefamily
 #'
 #' @param x an R6 object with class [`PLNfamily`]
-#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared").
+#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "ICL_variant").
 #' Default is  c("loglik", "BIC", "ICL").
 #' @param ... additional parameters for S3 compatibility. Not used
 #'

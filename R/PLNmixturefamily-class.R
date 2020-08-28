@@ -28,7 +28,7 @@ PLNmixturefamily <-
     private = list(
       model = NULL,
       xlevels = NULL,
-    smooth_forward = function(control) {
+      smooth_forward = function(control) {
       trace <- control$trace > 0; control$trace <- FALSE
       if (trace) cat("   Going forward ")
       for (i in self$clusters[-length(self$clusters)]) {
@@ -161,8 +161,8 @@ PLNmixturefamily <-
       #' Lineplot of selected criteria for all models in the collection
       #' @param criteria A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).
       #' @return A [`ggplot2`] object
-      plot = function(criteria = c("loglik", "BIC", "ICL")) {
-        vlines <- map_int(intersect(criteria, c("BIC", "ICL")), function(crit) self$getBestModel(crit)$k)
+      plot = function(criteria = c("loglik", "BIC", "ICL", "ICL_variant")) {
+        vlines <- map_int(intersect(criteria, c("BIC", "ICL", "ICL_variant")), function(crit) self$getBestModel(crit)$k)
         p <- super$plot(criteria) + xlab("# of clusters") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
         p
        },
@@ -182,9 +182,9 @@ PLNmixturefamily <-
       ## Extractors   -------------------
       #' @description Extract best model in the collection
       #' @param crit a character for the criterion used to performed the selection. Either
-      #' "BIC", "ICL", or "loglik". Default is `BIC`
+      #' "BIC", "ICL", "ICL_variant", or "loglik". Default is `BIC`
       #' @return a [`PLNmixturefit`] object
-      getBestModel = function(crit = c("BIC", "ICL")){
+      getBestModel = function(crit = c("BIC", "ICL", "ICL_variant")){
         crit <- match.arg(crit)
         stopifnot(!anyNA(self$criteria[[crit]]))
         id <- 1

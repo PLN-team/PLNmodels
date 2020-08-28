@@ -199,12 +199,14 @@ PLNmixturefit <-
         },
       #' @field BIC variational lower bound of the BIC
       BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
-      #' @field ICL variational lower bound of the ICL
-      ICL        = function() {self$BIC - self$entropy},
-      #' #' @field R_squared approximated goodness-of-fit criterion
-      #' R_squared     = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},
-      #' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
-      criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)},
+      #' @field ICL variational lower bound of the ICL (include only entropy of the clustering distribution)
+      ICL        = function() {self$BIC - self$entropy_clustering},
+      #' @field ICL variational lower bound of the ICL (include entropy of both the clustering and latent distributions)
+      ICL_variant= function() {self$BIC - self$entropy},
+      #' @field R_squared approximated goodness-of-fit criterion
+      R_squared     = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},
+      #' @field criteria a vector with loglik, BIC, ICL, ICL_variant and number of parameters
+      criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, ICL_variant = self$ICL_variant)},
       #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
       model_par  = function() {list(Theta = private$mix_up('model_par$Theta'), Sigma = private$mix_up('model_par$Sigma'))},
       #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
