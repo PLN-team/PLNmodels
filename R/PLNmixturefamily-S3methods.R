@@ -41,7 +41,7 @@ getModel.PLNmixturefamily <- function(Robject, var, index = NULL) {
 
 #' @describeIn getBestModel Model extraction for [`PLNmixturefamily`]
 #' @export
-getBestModel.PLNmixturefamily <- function(Robject, crit = c("ICL", "BIC"), ...) {
+getBestModel.PLNmixturefamily <- function(Robject, crit = c("ICL", "BIC", "ICL_variant"), ...) {
   stopifnot(isPLNmixturefamily(Robject))
   Robject$getBestModel(match.arg(crit))
 }

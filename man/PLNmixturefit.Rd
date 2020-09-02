@@ -157,7 +157,7 @@ Plot the matrix of mean counts (without offsets, without covariate effects) reor
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+\item{\code{main}}{character. A title for the plot.  An hopefully appropriate title will be used by default.}
 
 \item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
 
@@ -184,7 +184,7 @@ Plot the individual map of a PCA performed on the latent coordinate, where indiv
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+\item{\code{main}}{character. A title for the plot. An hopefully appropriate title will be used by default.}
 
 \item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
 }
