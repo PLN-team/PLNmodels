@@ -707,7 +707,205 @@ Rcpp::List cpp_optimize_sparse(
 }
 
 // ---------------------------------------------------------------------------------------
-// TODO VE steps
+// VE steps
+
+// [[Rcpp::export]]
+Rcpp::List cpp_optimize_vestep_full(
+    const Rcpp::List & init_parameters, // List(M, S)
+    const arma::mat & y,                // responses (n,p)
+    const arma::mat & x,                // covariates (n,d)
+    const arma::mat & o,                // offsets (n,p)
+    const arma::vec & w,                // weights (n)
+    const arma::mat & theta,            // (p,d)
+    const arma::mat & omega,            // (p,p)
+    const Rcpp::List & configuration    // OptimizerConfiguration
+) {
+    // Conversion from R, prepare optimization
+    const auto init_m = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
+    const auto init_s = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
+
+    const auto packer = make_packer(init_m, init_s);
+    enum { M, S }; // Nice names for packer indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<M>(parameters, init_m);
+    packer.pack<S>(parameters, init_s);
+
+    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
+        packer.pack_double_or_arma<M>(packed, list["M"]);
+        packer.pack_double_or_arma<S>(packed, list["S"]);
+    };
+    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+
+    // Optimize
+    auto objective_and_grad =
+        [&packer, &o, &x, &y, &w, &theta, &omega](const arma::vec & parameters, arma::vec & grad_storage) -> double {
+        arma::mat m = packer.unpack<M>(parameters);
+        arma::mat s = packer.unpack<S>(parameters);
+
+        arma::mat s2 = s % s;
+        arma::mat z = o + x * theta.t() + m;
+        arma::mat a = exp(z + 0.5 * s2);
+        arma::mat nSigma = m.t() * diagmat(w) * m + diagmat(sum(s2.each_col() % w, 0));
+        double objective = accu(w.t() * (a - y % z - 0.5 * log(s2))) + 0.5 * trace(omega * nSigma);
+
+        packer.pack<M>(grad_storage, diagmat(w) * (m * omega + a - y));
+        packer.pack<S>(grad_storage, diagmat(w) * (s.each_row() % diagvec(omega).t() + s % a - pow(s, -1)));
+        return objective;
+    };
+    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+
+    // Model and variational parameters
+    arma::mat m = packer.unpack<M>(parameters);
+    arma::mat s = packer.unpack<S>(parameters);
+    arma::mat s2 = s % s;
+    // Element-wise log-likelihood
+    arma::mat z = o + x * theta.t() + m;
+    arma::mat a = exp(z + 0.5 * s2);
+    arma::mat loglik = sum(y % z - a + 0.5 * log(s2) - 0.5 * ((m * omega) % m + S * diagmat(omega)), 1) +
+                       0.5 * real(log_det(omega)) + ki(y);
+
+    return Rcpp::List::create(
+        Rcpp::Named("status") = (int)result.status,
+        Rcpp::Named("iterations") = result.nb_iterations,
+        Rcpp::Named("M") = m,
+        Rcpp::Named("S") = s,
+        Rcpp::Named("loglik") = loglik);
+}
+
+// [[Rcpp::export]]
+Rcpp::List cpp_optimize_vestep_diagonal(
+    const Rcpp::List & init_parameters, // List(M, S)
+    const arma::mat & y,                // responses (n,p)
+    const arma::mat & x,                // covariates (n,d)
+    const arma::mat & o,                // offsets (n,p)
+    const arma::vec & w,                // weights (n)
+    const arma::mat & theta,            // (p,d)
+    const arma::mat & omega,            // (p,p)
+    const Rcpp::List & configuration    // OptimizerConfiguration
+) {
+    // Conversion from R, prepare optimization
+    const auto init_m = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
+    const auto init_s = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
+
+    const auto packer = make_packer(init_m, init_s);
+    enum { M, S }; // Nice names for packer indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<M>(parameters, init_m);
+    packer.pack<S>(parameters, init_s);
+
+    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
+        packer.pack_double_or_arma<M>(packed, list["M"]);
+        packer.pack_double_or_arma<S>(packed, list["S"]);
+    };
+    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+
+    // Optimize
+    auto objective_and_grad =
+        [&packer, &o, &x, &y, &w, &theta, &omega](const arma::vec & parameters, arma::vec & grad_storage) -> double {
+        arma::mat m = packer.unpack<M>(parameters);
+        arma::mat s = packer.unpack<S>(parameters);
+
+        arma::mat s2 = s % s;
+        arma::mat z = o + x * theta.t() + m;
+        arma::mat a = exp(z + 0.5 * s);
+        arma::vec omega2 = arma::diagvec(omega);
+        double objective =
+            accu(w.t() * (a - y % z - 0.5 * log(s2))) + 0.5 * as_scalar(w.t() * (pow(m, 2) + s2) * omega2);
+
+        packer.pack<M>(grad_storage, diagmat(w) * (m * omega + a - y));
+        packer.pack<S>(grad_storage, diagmat(w) * (s.each_row() % omega2 + s % a - pow(s, -1)));
+        return objective;
+    };
+    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+
+    // Model and variational parameters
+    arma::mat m = packer.unpack<M>(parameters);
+    arma::mat s = packer.unpack<S>(parameters);
+    arma::mat s2 = s % s;
+    arma::vec omega2 = omega.diag();
+    // Element-wise log-likelihood
+    arma::mat z = o + x * theta.t() + m;
+    arma::mat a = exp(z + 0.5 * s2);
+    arma::mat loglik =
+        sum(y % z - a + 0.5 * log(s2), 1) - 0.5 * (pow(m, 2) + s2) * omega2 + 0.5 * sum(log(omega2)) + ki(y);
+
+    return Rcpp::List::create(
+        Rcpp::Named("status") = (int)result.status,
+        Rcpp::Named("iterations") = result.nb_iterations,
+        Rcpp::Named("M") = m,
+        Rcpp::Named("S") = s,
+        Rcpp::Named("loglik") = loglik);
+}
+
+// [[Rcpp::export]]
+Rcpp::List cpp_optimize_vestep_spherical(
+    const Rcpp::List & init_parameters, // List(M, S)
+    const arma::mat & y,                // responses (n,p)
+    const arma::mat & x,                // covariates (n,d)
+    const arma::mat & o,                // offsets (n,p)
+    const arma::vec & w,                // weights (n)
+    const arma::mat & theta,            // (p,d)
+    const arma::mat & omega,            // (p,p)
+    const Rcpp::List & configuration    // OptimizerConfiguration
+) {
+    // Conversion from R, prepare optimization
+    const auto init_m = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
+    const auto init_s = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
+
+    const auto packer = make_packer(init_m, init_s);
+    enum { M, S }; // Nice names for packer indexes
+
+    auto parameters = arma::vec(packer.size);
+    packer.pack<M>(parameters, init_m);
+    packer.pack<S>(parameters, init_s);
+
+    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
+        packer.pack_double_or_arma<M>(packed, list["M"]);
+        packer.pack_double_or_arma<S>(packed, list["S"]);
+    };
+    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+
+    // Optimize
+    auto objective_and_grad =
+        [&packer, &o, &x, &y, &w, &theta, &omega](const arma::vec & parameters, arma::vec & grad_storage) -> double {
+        arma::mat m = packer.unpack<M>(parameters);
+        arma::mat s = packer.unpack<S>(parameters);
+
+        arma::mat s2 = s % s;
+        arma::mat z = o + x * theta.t() + m;
+        arma::mat a = exp(z.each_col() + 0.5 * s2);
+        const arma::uword p = y.n_cols;
+        double n_sigma2 = arma::as_scalar(dot(w, sum(pow(m, 2), 1) + double(p) * s));
+        double omega2 = arma::as_scalar(omega(0, 0));
+        double objective = accu(w.t() * (a - y % z)) - 0.5 * double(p) * dot(w, log(s2)) + 0.5 * n_sigma2 * omega2;
+
+        packer.pack<M>(grad_storage, diagmat(w) * (m * omega2 + a - y));
+        packer.pack<S>(grad_storage, w % (s % sum(a, 1) - double(p) * pow(s, -1) - double(p) * s * omega2));
+        return objective;
+    };
+    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+
+    // Model and variational parameters
+    arma::mat m = packer.unpack<M>(parameters);
+    arma::mat s = packer.unpack<S>(parameters);
+    arma::mat s2 = s % s;
+    double omega2 = arma::as_scalar(omega(0, 0));
+    // Element-wise log-likelihood
+    arma::mat z = o + x * theta.t() + m;
+    arma::mat a = exp(z.each_col() + 0.5 * s2);
+    const arma::uword p = y.n_cols;
+    arma::mat loglik = sum(y % z - a - 0.5 * pow(m, 2) * omega2, 1) - 0.5 * double(p) * omega2 * s2 +
+                       0.5 * double(p) * log(s2 * omega2) + ki(y);
+
+    return Rcpp::List::create(
+        Rcpp::Named("status") = (int)result.status,
+        Rcpp::Named("iterations") = result.nb_iterations,
+        Rcpp::Named("M") = m,
+        Rcpp::Named("S") = s,
+        Rcpp::Named("loglik") = loglik);
+}
 
 // ---------------------------------------------------------------------------------------
 // Internals tests

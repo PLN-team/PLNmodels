@@ -53,6 +53,18 @@ cpp_optimize_sparse <- function(init_parameters, y, x, o, w, omega, configuratio
     .Call('_PLNmodels_cpp_optimize_sparse', PACKAGE = 'PLNmodels', init_parameters, y, x, o, w, omega, configuration)
 }
 
+cpp_optimize_vestep_full <- function(init_parameters, y, x, o, w, theta, omega, configuration) {
+    .Call('_PLNmodels_cpp_optimize_vestep_full', PACKAGE = 'PLNmodels', init_parameters, y, x, o, w, theta, omega, configuration)
+}
+
+cpp_optimize_vestep_diagonal <- function(init_parameters, y, x, o, w, theta, omega, configuration) {
+    .Call('_PLNmodels_cpp_optimize_vestep_diagonal', PACKAGE = 'PLNmodels', init_parameters, y, x, o, w, theta, omega, configuration)
+}
+
+cpp_optimize_vestep_spherical <- function(init_parameters, y, x, o, w, theta, omega, configuration) {
+    .Call('_PLNmodels_cpp_optimize_vestep_spherical', PACKAGE = 'PLNmodels', init_parameters, y, x, o, w, theta, omega, configuration)
+}
+
 cpp_internal_tests <- function() {
     .Call('_PLNmodels_cpp_internal_tests', PACKAGE = 'PLNmodels')
 }
