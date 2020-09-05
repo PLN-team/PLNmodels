@@ -143,137 +143,137 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_optimize_full
-Rcpp::List cpp_optimize_full(const Rcpp::List& init_parameters, const arma::mat& y, const arma::mat& x, const arma::mat& o, const arma::vec& w, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_cpp_optimize_full(SEXP init_parametersSEXP, SEXP ySEXP, SEXP xSEXP, SEXP oSEXP, SEXP wSEXP, SEXP configurationSEXP) {
+Rcpp::List cpp_optimize_full(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_cpp_optimize_full(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type init_parameters(init_parametersSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type o(oSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_full(init_parameters, y, x, o, w, configuration));
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_full(init_parameters, Y, X, O, w, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_optimize_spherical
-Rcpp::List cpp_optimize_spherical(const Rcpp::List& init_parameters, const arma::mat& y, const arma::mat& x, const arma::mat& o, const arma::vec& w, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_cpp_optimize_spherical(SEXP init_parametersSEXP, SEXP ySEXP, SEXP xSEXP, SEXP oSEXP, SEXP wSEXP, SEXP configurationSEXP) {
+Rcpp::List cpp_optimize_spherical(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_cpp_optimize_spherical(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type init_parameters(init_parametersSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type o(oSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_spherical(init_parameters, y, x, o, w, configuration));
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_spherical(init_parameters, Y, X, O, w, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_optimize_diagonal
-Rcpp::List cpp_optimize_diagonal(const Rcpp::List& init_parameters, const arma::mat& y, const arma::mat& x, const arma::mat& o, const arma::vec& w, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_cpp_optimize_diagonal(SEXP init_parametersSEXP, SEXP ySEXP, SEXP xSEXP, SEXP oSEXP, SEXP wSEXP, SEXP configurationSEXP) {
+Rcpp::List cpp_optimize_diagonal(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_cpp_optimize_diagonal(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type init_parameters(init_parametersSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type o(oSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_diagonal(init_parameters, y, x, o, w, configuration));
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_diagonal(init_parameters, Y, X, O, w, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_optimize_rank
-Rcpp::List cpp_optimize_rank(const Rcpp::List& init_parameters, const arma::mat& y, const arma::mat& x, const arma::mat& o, const arma::vec& w, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_cpp_optimize_rank(SEXP init_parametersSEXP, SEXP ySEXP, SEXP xSEXP, SEXP oSEXP, SEXP wSEXP, SEXP configurationSEXP) {
+Rcpp::List cpp_optimize_rank(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_cpp_optimize_rank(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type init_parameters(init_parametersSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type o(oSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_rank(init_parameters, y, x, o, w, configuration));
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_rank(init_parameters, Y, X, O, w, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_optimize_sparse
-Rcpp::List cpp_optimize_sparse(const Rcpp::List& init_parameters, const arma::mat& y, const arma::mat& x, const arma::mat& o, const arma::vec& w, const arma::mat& omega, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_cpp_optimize_sparse(SEXP init_parametersSEXP, SEXP ySEXP, SEXP xSEXP, SEXP oSEXP, SEXP wSEXP, SEXP omegaSEXP, SEXP configurationSEXP) {
+Rcpp::List cpp_optimize_sparse(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Omega, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_cpp_optimize_sparse(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type init_parameters(init_parametersSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type o(oSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type omega(omegaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_sparse(init_parameters, y, x, o, w, omega, configuration));
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_sparse(init_parameters, Y, X, O, w, Omega, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_optimize_vestep_full
-Rcpp::List cpp_optimize_vestep_full(const Rcpp::List& init_parameters, const arma::mat& y, const arma::mat& x, const arma::mat& o, const arma::vec& w, const arma::mat& theta, const arma::mat& omega, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_cpp_optimize_vestep_full(SEXP init_parametersSEXP, SEXP ySEXP, SEXP xSEXP, SEXP oSEXP, SEXP wSEXP, SEXP thetaSEXP, SEXP omegaSEXP, SEXP configurationSEXP) {
+Rcpp::List cpp_optimize_vestep_full(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Theta, const arma::mat& Omega, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_cpp_optimize_vestep_full(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP ThetaSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type init_parameters(init_parametersSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type o(oSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type omega(omegaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_vestep_full(init_parameters, y, x, o, w, theta, omega, configuration));
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_vestep_full(init_parameters, Y, X, O, w, Theta, Omega, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_optimize_vestep_diagonal
-Rcpp::List cpp_optimize_vestep_diagonal(const Rcpp::List& init_parameters, const arma::mat& y, const arma::mat& x, const arma::mat& o, const arma::vec& w, const arma::mat& theta, const arma::mat& omega, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_cpp_optimize_vestep_diagonal(SEXP init_parametersSEXP, SEXP ySEXP, SEXP xSEXP, SEXP oSEXP, SEXP wSEXP, SEXP thetaSEXP, SEXP omegaSEXP, SEXP configurationSEXP) {
+Rcpp::List cpp_optimize_vestep_diagonal(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Theta, const arma::mat& Omega, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_cpp_optimize_vestep_diagonal(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP ThetaSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type init_parameters(init_parametersSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type o(oSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type omega(omegaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_vestep_diagonal(init_parameters, y, x, o, w, theta, omega, configuration));
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_vestep_diagonal(init_parameters, Y, X, O, w, Theta, Omega, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_optimize_vestep_spherical
-Rcpp::List cpp_optimize_vestep_spherical(const Rcpp::List& init_parameters, const arma::mat& y, const arma::mat& x, const arma::mat& o, const arma::vec& w, const arma::mat& theta, const arma::mat& omega, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_cpp_optimize_vestep_spherical(SEXP init_parametersSEXP, SEXP ySEXP, SEXP xSEXP, SEXP oSEXP, SEXP wSEXP, SEXP thetaSEXP, SEXP omegaSEXP, SEXP configurationSEXP) {
+Rcpp::List cpp_optimize_vestep_spherical(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Theta, const arma::mat& Omega, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_cpp_optimize_vestep_spherical(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP ThetaSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type init_parameters(init_parametersSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type o(oSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type omega(omegaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_vestep_spherical(init_parameters, y, x, o, w, theta, omega, configuration));
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_vestep_spherical(init_parameters, Y, X, O, w, Theta, Omega, configuration));
     return rcpp_result_gen;
 END_RCPP
 }

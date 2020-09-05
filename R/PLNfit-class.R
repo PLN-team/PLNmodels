@@ -162,17 +162,17 @@ PLNfit <- R6Class(
 
       ## define default control parameters for optim and overwrite by user defined parameters
       control$covariance <- self$vcov_model
-      control <- PLN_param(control, n, p, d)
+      control <- PLN_param(control, n, p, d) # FIXME should use PLN_param_VE ?
 
       VEstep_optimizer  <-
         switch(control$covariance,
-               "spherical" = VEstep_PLN_spherical,
-               "diagonal"  = VEstep_PLN__diagonal,
-               "full"      = VEstep_PLN_full
+               "spherical" = cpp_optimize_vestep_spherical,
+               "diagonal"  = cpp_optimize_vestep_diagonal,
+               "full"      = cpp_optimize_vestep_full
         )
 
       optim_out <- VEstep_optimizer(
-        c(private$M, sqrt(private$S2)),
+        list(M = private$M, S = sqrt(private$S2)),
         responses,
         covariates,
         offsets,
