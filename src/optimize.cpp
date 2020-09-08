@@ -170,7 +170,7 @@ Rcpp::List cpp_optimize_spherical(
     // Element-wise log-likelihood
     arma::mat Z = O + X * Theta.t() + M;
     arma::mat A = exp(Z.each_col() + 0.5 * S2);
-    arma::mat loglik = sum(Y % Z - A - 0.5 * pow(M, 2) / sigma2, 1) - double(p) * S / sigma2 +
+    arma::mat loglik = sum(Y % Z - A - 0.5 * pow(M, 2) / sigma2, 1) - 0.5 * double(p) * S2 / sigma2 +
                        0.5 * double(p) * log(S2 / sigma2) + ki(Y);
 
     return Rcpp::List::create(
