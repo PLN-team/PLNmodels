@@ -1,18 +1,18 @@
 ## =========================================================================================
 ##
-## PUBLIC S3 METHODS FOR PLNPCAfamily
+## PUBLIC S3 METHODS FOR PLNmixturefamily
 ##
 ## =========================================================================================
 
 ## Auxiliary functions to check the given class of an objet
-isPLNPCAfamily     <- function(Robject) {inherits(Robject, "PLNPCAfamily"    )}
+isPLNmixturefamily     <- function(Robject) {inherits(Robject, "PLNmixturefamily"    )}
 
-#' Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)
+#' Display the criteria associated with a collection of PLNmixture fits (a PLNmixturefamily)
 #'
-#' @name plot.PLNPCAfamily
+#' @name plot.PLNmixturefamily
 #'
 #' @param x an R6 object with class [`PLNfamily`]
-#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared").
+#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "ICL_variant").
 #' Default is  c("loglik", "BIC", "ICL").
 #' @param ... additional parameters for S3 compatibility. Not used
 #'
@@ -22,26 +22,26 @@ isPLNPCAfamily     <- function(Robject) {inherits(Robject, "PLNPCAfamily"    )}
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+#' myMixtures  <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, clusters = 1:5)
 #' \dontrun{
-#' plot(myPCAs)
+#' plot(myMixtures)
 #' }
 #' @export
-plot.PLNPCAfamily <- function(x, criteria = c("loglik", "BIC", "ICL"), ...) {
+plot.PLNmixturefamily <- function(x, criteria = c("loglik", "BIC", "ICL"), ...) {
   stopifnot(isPLNfamily(x))
   x$plot(criteria)
 }
 
-#' @describeIn getModel Model extraction for [`PLNPCAfamily`]
+#' @describeIn getModel Model extraction for [`PLNmixturefamily`]
 #' @export
-getModel.PLNPCAfamily <- function(Robject, var, index = NULL) {
-  stopifnot(isPLNPCAfamily(Robject))
+getModel.PLNmixturefamily <- function(Robject, var, index = NULL) {
+  stopifnot(isPLNmixturefamily(Robject))
   Robject$getModel(var, index)
 }
 
-#' @describeIn getBestModel Model extraction for [`PLNPCAfamily`]
+#' @describeIn getBestModel Model extraction for [`PLNmixturefamily`]
 #' @export
-getBestModel.PLNPCAfamily <- function(Robject, crit = c("ICL", "BIC"), ...) {
-  stopifnot(isPLNPCAfamily(Robject))
+getBestModel.PLNmixturefamily <- function(Robject, crit = c("ICL", "BIC", "ICL_variant"), ...) {
+  stopifnot(isPLNmixturefamily(Robject))
   Robject$getBestModel(match.arg(crit))
 }

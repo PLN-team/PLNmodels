@@ -5,9 +5,24 @@
   exp(x - b) / sum(exp(x - b))
 }
 
+.check_boundaries <- function(x, zero = .Machine$double.eps) {
+  x[is.nan(x)] <- zero
+  x[x > 1 - zero] <- 1 - zero
+  x[x <     zero] <-     zero
+  x
+}
+
 .logfactorial <- function(n) { # Ramanujan's formula
   n[n == 0] <- 1 ## 0! = 1!
   return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)
+}
+
+as_indicator <- function(clustering) {
+  K <- length(unique(clustering))
+  N  <- length(clustering)
+  Z <- matrix(0, N, K)
+  Z[cbind(seq.int(N), clustering)] <- 1
+  Z
 }
 
 logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) {
@@ -16,7 +31,7 @@ logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) 
   loglik
 }
 
-##' @importFrom stats glm.fit
+#' @importFrom stats glm.fit
 nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
   Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
     coefficients(glm.fit(covariates, responses[, j], weights = weights, offset = offsets[, j], family = stats::poisson()))))
@@ -77,34 +92,34 @@ node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
   x + j.grid[y] + 1
 }
 
-##' @title PLN RNG
-##'
-##' @description Random generation for the PLN model with latent mean equal to mu, latent covariance matrix
-##'              equal to Sigma and average depths (sum of counts in a sample) equal to depths
-##'
-##' @param n the sample size
-##' @param mu vectors of means of the latent variable
-##' @param Sigma covariance matrix of the latent variable
-##' @param depths Numeric vector of target depths. The first is recycled if there are not `n` values
-##'
-##' @return a n * p count matrix, with row-sums close to depths
-##'
-##' @details The default value for mu and Sigma assume equal abundances and no correlation between
-##'          the different species.
-##'
-##' @rdname rPLN
-##' @examples
-##' ## 10 samples of 5 species with equal abundances, no covariance and target depths of 10,000
-##' rPLN()
-##' ## 2 samples of 10 highly correlated species with target depths 1,000 and 100,000
-##' ## very different abundances
-##' mu <- rep(c(1, -1), each = 5)
-##' Sigma <- matrix(0.8, 10, 10); diag(Sigma) <- 1
-##' rPLN(n=2, mu = mu, Sigma = Sigma, depths = c(1e3, 1e5))
-##'
-##' @importFrom MASS mvrnorm
-##' @importFrom stats rpois
-##' @export
+#' @title PLN RNG
+#'
+#' @description Random generation for the PLN model with latent mean equal to mu, latent covariance matrix
+#'              equal to Sigma and average depths (sum of counts in a sample) equal to depths
+#'
+#' @param n the sample size
+#' @param mu vectors of means of the latent variable
+#' @param Sigma covariance matrix of the latent variable
+#' @param depths Numeric vector of target depths. The first is recycled if there are not `n` values
+#'
+#' @return a n * p count matrix, with row-sums close to depths
+#'
+#' @details The default value for mu and Sigma assume equal abundances and no correlation between
+#'          the different species.
+#'
+#' @rdname rPLN
+#' @examples
+#' ## 10 samples of 5 species with equal abundances, no covariance and target depths of 10,000
+#' rPLN()
+#' ## 2 samples of 10 highly correlated species with target depths 1,000 and 100,000
+#' ## very different abundances
+#' mu <- rep(c(1, -1), each = 5)
+#' Sigma <- matrix(0.8, 10, 10); diag(Sigma) <- 1
+#' rPLN(n=2, mu = mu, Sigma = Sigma, depths = c(1e3, 1e5))
+#'
+#' @importFrom MASS mvrnorm
+#' @importFrom stats rpois
+#' @export
 rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
                  depths = rep(1e4, n))  {
   p <- ncol(Sigma)
@@ -147,6 +162,33 @@ PLN_param <- function(control, n, p, d) {
   )
   ctrl[names(control)] <- control
   stopifnot(ctrl$algorithm %in% available_algorithms)
+  ctrl
+}
+
+## should be ready to pass to nlopt optimizer
+PLNmixture_param <- function(control, n, p, d) {
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
+  covariance  <- ifelse(is.null(control$covariance) , "spherical", control$covariance)
+  covariance  <- ifelse(is.null(control$inception), covariance  , control$inception$model)
+  ctrl <- list(
+    "ftol_out"    = 1e-5,
+    "maxit_out"   = 50,
+    "algorithm"   = "CCSAQ",
+    "maxeval"     = 10000  ,
+    "maxtime"     = -1     ,
+    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
+    "ftol_abs"    = 0,
+    "xtol_rel"    = 1e-4,
+    "xtol_abs"    = rep(xtol_abs, p*d + n*p + ifelse(covariance == "spherical", n, n*p)),
+    "trace"       = 1,
+    "covariance"  = covariance,
+    "cores"       = 1,
+    "iterates"    = 2,
+    "smoothing"   = 'both',
+    "inception"   = NULL,
+    "init_cl"     = 'kmeans'
+  )
+  ctrl[names(control)] <- control
   ctrl
 }
 

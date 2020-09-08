@@ -152,14 +152,14 @@ PLNLDAfit <- R6Class(
 
         ## get back all individual maps
         ind.plot <- lapply(pairs.axes, function(pair) {
-          ggobj <- self$plot_individual_map(axes = pair, plot = FALSE, main="") + theme(legend.position="none")
-          return(ggplotGrob(ggobj))
+          ggobj <- self$plot_individual_map(axes = pair, plot = FALSE, main="") + ggplot2::theme(legend.position="none")
+          ggplot2::ggplotGrob(ggobj)
         })
 
         ## get back all correlation circle
         cor.plot <- lapply(pairs.axes, function(pair) {
           ggobj <- self$plot_correlation_map(axes = pair, plot = FALSE, main = "", cols = var_cols)
-          return(ggplotGrob(ggobj))
+          ggplot2::ggplotGrob(ggobj)
         })
 
         ## plot that appear on the diagonal
@@ -168,7 +168,7 @@ PLNLDAfit <- R6Class(
         percentV.text <- paste("Axes contribution\n\n", paste(paste("axis",axes), paste0(": ", round(100*self$percent_var[axes],3), "%"), collapse="\n"))
 
         diag.grobs <- list(textGrob(percentV.text),
-                           g_legend(self$plot_individual_map(plot=FALSE) + guides(colour = guide_legend(nrow = 4, title="classification"))),
+                           g_legend(self$plot_individual_map(plot=FALSE) + ggplot2::guides(colour = ggplot2::guide_legend(nrow = 4, title="classification"))),
                            textGrob(criteria.text))
         if (nb_axes > 3)
           diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb_axes - 3))
@@ -340,18 +340,20 @@ PLNLDAfit <- R6Class(
     #' @field percent_var the percent of variance explained by each axis
     percent_var = function() {
       eigen.val <- private$svdLDA$d[1:self$rank]^2
-      round(eigen.val/sum(eigen.val),4)
+      setNames(round(eigen.val/sum(eigen.val)*self$R_squared,4), paste0("LD", 1:self$rank))
     },
     #' @field corr_map a matrix of correlations to plot the correlation circles
     corr_map = function() {
       corr <- cor(private$P, self$scores)
       rownames(corr) <- rownames(private$B)
+      colnames(corr) <- paste0("LD", 1:self$rank)
       corr
     },
     #' @field scores a matrix of scores to plot the individual factor maps
     scores     = function() {
       scores <- private$P %*% t(t(private$svdLDA$u[, 1:self$rank]) * private$svdLDA$d[1:self$rank])
       rownames(scores) <- rownames(private$M)
+      colnames(scores) <- paste0("LD", 1:self$rank)
       scores
     },
     #' @field group_means a matrix of group mean vectors in the latent space.

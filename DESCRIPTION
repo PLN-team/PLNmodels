@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 0.10.6-9100
+Version: 0.11.1-9000
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inrae.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -20,7 +20,7 @@ BugReports: https://github.com/jchiquet/PLNmodels/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Depends: R (>= 3.4)
 LazyData: true
 biocViews:
@@ -39,9 +39,11 @@ Imports:
   gridExtra,
   dplyr,
   tidyr,
+  purrr,
   ggplot2,
   corrplot,
-  magrittr
+  magrittr,
+  rlang
 Suggests: 
     knitr,
     rmarkdown,
@@ -50,7 +52,8 @@ Suggests:
     pkgdown,
     biomformat,
     phyloseq,
-    spelling
+    spelling,
+    factoextra
 LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)
 VignetteBuilder: knitr
 Collate: 
@@ -67,6 +70,11 @@ Collate:
     'PLNPCAfit-class.R'
     'PLNfamily-S3methods.R'
     'PLNfit-S3methods.R'
+    'PLNmixture.R'
+    'PLNmixturefamily-S3methods.R'
+    'PLNmixturefamily-class.R'
+    'PLNmixturefit-S3methods.R'
+    'PLNmixturefit-class.R'
     'PLNmodels-package.R'
     'PLNnetwork.R'
     'PLNnetworkfamily-S3methods.R'

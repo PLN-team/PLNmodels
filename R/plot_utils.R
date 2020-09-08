@@ -1,10 +1,11 @@
+#' @importFrom rlang .data
 get_ggplot_ind_map <- function(scores, axes_label, main) {
 
   if (length(axes_label) > 1 ) {
     if (length(axes_label) >= 3) {
       message("Three axes or more provided. Using only the first two")
     }
-    p <- ggplot(scores, aes_(x = ~a1, y = ~a2, label = ~names, colour = ~labels)) +
+    p <- ggplot(scores, aes(x = .data$a1, y = .data$a2, label = .data$names, colour = .data$labels)) +
       geom_hline(yintercept = 0, colour = "gray65") +
       geom_vline(xintercept = 0, colour = "gray65") +
       geom_text(alpha = 0.8, size = 4) +
@@ -12,7 +13,7 @@ get_ggplot_ind_map <- function(scores, axes_label, main) {
       theme_bw() +
       labs(x = axes_label[1], y = axes_label[2])
   } else {
-    p <- ggplot(scores, aes_(x = ~a1, group = ~labels, fill = ~labels, colour = ~labels)) +
+    p <- ggplot(scores, aes(x = .data$a1, group = .data$labels, fill = .data$labels, colour = .data$labels)) +
       geom_density(alpha = .4) +
       geom_rug() +
       ggtitle(main) +
@@ -35,8 +36,8 @@ get_ggplot_corr <- function(correlations, axes_label, main) {
     p <- ggplot() + xlim(-1.1, 1.1) + ylim(-1.1, 1.1)  +
       geom_hline(yintercept = 0, colour = "gray65") +
       geom_vline(xintercept = 0, colour = "gray65") +
-      geom_segment(data = arrows, aes_(x = ~x1, y = ~y1, xend = ~x2, yend = ~y2, colour = ~labels)) +
-      geom_text(data = correlations, aes_(x = ~axe1, y = ~axe2, label = ~names, colour = ~labels), size=3) +
+      geom_segment(data = arrows, aes(x = .data$x1, y = .data$y1, xend = .data$x2, yend = .data$y2, colour = .data$labels)) +
+      geom_text(data = correlations, aes(x = .data$axe1, y = .data$axe2, label = .data$names, colour = .data$labels), size=3) +
       theme_bw() +  theme(legend.position = "none") + ggtitle(main) + labs(x = axes_label[1], y = axes_label[2])
   } else {
     sign  <- rep(c(-1,1), each = ceiling(nrow(correlations)/2))[1:nrow(correlations)]
@@ -46,9 +47,9 @@ get_ggplot_corr <- function(correlations, axes_label, main) {
                          names = correlations$names, labels = correlations$labels)
     p <- ggplot(arrows) + xlim(-1.1, 1.1) + ylim(-1.1, 1.1) +
       geom_hline(yintercept = 0, colour = "gray65") +
-      geom_segment(aes_(x = ~x1, y = ~y1, xend = ~x2, yend = ~y2, colour = ~labels)) +
-      geom_text(aes_(x = ~x2, y = ~y2, label = rownames(correlations), colour = ~labels), vjust = -.5, angle = 90, size=5) +
-      geom_point(aes_(x = ~x2, y = 0)) +
+      geom_segment(aes(x = .data$x1, y = .data$y1, xend = .data$x2, yend = .data$y2, colour = .data$labels)) +
+      geom_text(aes(x = .data$x2, y = .data$y2, label = rownames(correlations), colour = .data$labels), vjust = -.5, angle = 90, size=5) +
+      geom_point(aes(x = .data$x2, y = 0)) +
       theme_bw() +  theme(axis.title.y = element_blank(),
                           axis.text.y  = element_blank(),
                           axis.ticks.y = element_blank(), legend.position = "none") + ggtitle(main) +
@@ -62,7 +63,7 @@ get_ggplot_corr_circle <- function(correlations, axes_label, main) {
   if (length(axes_label) > 1 ) {
     ## add correlation circle
     corcir <- circle(c(0, 0), npoints = 100)
-    p <- p + geom_path(data = corcir, aes_(x = ~x,y = ~y), colour = "gray65")
+    p <- p + geom_path(data = corcir, aes(x = .data$x,y = .data$y), colour = "gray65")
   }
   p
 }
@@ -72,7 +73,7 @@ get_ggplot_corr_square <- function(correlations, axes_label, main) {
   if (length(axes_label) > 1 ) {
     ## add square of size 2 centered at the origin
     square <- data.frame(x = c(-1, -1, 1, 1, -1), y = c(-1, 1, 1, -1, -1))
-    p <- p + geom_path(data = square, aes_(x = ~x,y = ~y), colour = "gray65")
+    p <- p + geom_path(data = square, aes(x = .data$x,y = .data$y), colour = "gray65")
   }
   p
 }
@@ -136,3 +137,51 @@ g_legend <- function(a.gplot){
   legend
 }
 
+# courtesy of S. Donnet
+plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = NULL, log_scale = TRUE){
+
+  n1 <- dim(Mat)[1]
+  n2 <- dim(Mat)[2]
+  u <- range(c(Mat))
+
+  binary = FALSE
+  val <- sort(unique(c(Mat)))
+  if (setequal(val ,c(0,1))) {binary = TRUE}
+
+  if (!is.null(clustering)) {
+    oRow <- oCol <- order(clustering)
+    uRow <- cumsum(table(clustering)) + 0.5
+    uRow <- uRow[-length(uRow)]
+    sepRow <- as.data.frame(uRow)
+    Mat <- Mat[oRow, , drop = FALSE]
+    names(sepRow) <- 'sep'
+    sepRow = n1 - sepRow
+  }
+
+  index_row = rep(1:dim(Mat)[1],each = dim(Mat)[2])
+  index_col = rep(1:dim(Mat)[2],dim(Mat)[1])
+
+  melted_Mat =  data.frame(n1 - index_row , index_col)
+  link = rep(-10,dim(Mat)[2]*dim(Mat)[1])
+  for (k in 1:(dim(Mat)[2] * dim(Mat)[1])) {link[k] = Mat[index_row[k],index_col[k]]}
+  melted_Mat$count = link
+  if (binary){
+    melted_Mat$count <- as.factor(melted_Mat$count)
+  }
+  colnames(melted_Mat) <- c('index_row', 'index_col', 'count')
+
+  g <- ggplot(data = melted_Mat, aes(y = index_row, x = index_col, fill = count))
+  g <- g + geom_tile()
+  if (!binary & log_scale) {g <-  g +  scale_fill_viridis_b(limits = u, na.value = "transparent", trans = "log10")}
+  if (!binary & !log_scale) {g <-  g +  scale_fill_viridis_b(limits = u, na.value = "transparent")}
+  if (binary) {g <- g + scale_fill_manual(breaks = c("0", "1"),values = c("white", "black"),na.value = "transparent")}
+
+  g <- g  +  scale_x_discrete(drop = FALSE) + scale_y_discrete(drop = FALSE)
+  g <- g + theme(axis.text.x = element_text(angle = 270, hjust = 0))
+  g <- g +  labs(x = colFG, y = rowFG) +  theme(aspect.ratio = n1/n2)
+
+  if (!is.null(clustering)){
+    g <- g + geom_hline(data = sepRow, mapping = aes(yintercept = .data$sep),col = 'grey')
+  }
+  g
+}

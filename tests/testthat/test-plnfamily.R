@@ -47,8 +47,9 @@ COLLECTION OF 2 POISSON LOGNORMAL MODELS
   expect_equal(models$getModel(3), model2)
   expect_warning(res <- models$getModel(1),
                  paste("No such a model in the collection. Acceptable parameter values can be found via",
-                       "$ranks() (for PCA)",
-                       "$penalties() (for network)",
+                       "$ranks (for PCA)",
+                       "$clusters (for mixture models)",
+                       "$penalties (for network)",
                        "Returning model with closest value. Requested: 1 , returned: 0.1",
                        sep = "\n"), fixed = TRUE)
   expect_equal(res, model1)

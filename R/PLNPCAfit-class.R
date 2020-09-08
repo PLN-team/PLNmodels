@@ -261,7 +261,7 @@ PLNPCAfit <- R6Class(
       show = function() {
         super$show(paste0("Poisson Lognormal with rank constrained for PCA (rank = ",self$rank,")\n"))
         cat("* Additional fields for PCA\n")
-        cat("    $percent_var, $corr_circle, $scores, $rotation\n")
+        cat("    $percent_var, $corr_circle, $scores, $rotation, $eig, $var, $ind\n")
         cat("* Additional S3 methods for PCA\n")
         cat("    plot.PLNPCAfit()\n")
       }
@@ -297,26 +297,76 @@ PLNPCAfit <- R6Class(
       #' @field percent_var the percent of variance explained by each axis
       percent_var = function() {
         eigen.val <- private$svdBM$d[1:self$rank]^2
-        round(eigen.val/sum(eigen.val),4)
+        setNames(round(eigen.val/sum(eigen.val)*self$R_squared,4), paste0("PC", 1:self$rank))
       },
       #' @field corr_circle a matrix of correlations to plot the correlation circles
       corr_circle = function() {
-        corr <- t(t(private$svdBM$v[, 1:self$rank, drop = FALSE]) * private$svdBM$d[1:self$rank]^2)
+        ## corr <- t(t(private$svdBM$v[, 1:self$rank, drop = FALSE]) * private$svdBM$d[1:self$rank])
+        corr <- private$svdBM$v[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], byrow = TRUE, nrow = self$p, ncol = self$rank)
         corr <- corr/sqrt(rowSums(corr^2))
         rownames(corr) <- rownames(private$Sigma)
+        colnames(corr) <- paste0("PC", 1:self$rank)
         corr
       },
       #' @field scores a matrix of scores to plot the individual factor maps (a.k.a. principal components)
       scores     = function() {
-        scores <- t(t(private$svdBM$u[, 1:self$rank]) * private$svdBM$d[1:self$rank])
+        ## scores <- t(t(private$svdBM$u[, 1:self$rank]) * private$svdBM$d[1:self$rank]) ## slightly faster version below
+        scores <- private$svdBM$u[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], byrow = TRUE, nrow = self$n, ncol = self$rank)
         rownames(scores) <- rownames(private$M)
+        colnames(scores) <- paste0("PC", 1:self$rank)
         scores
       },
       #' @field rotation a matrix of rotation of the latent space
       rotation   = function() {
         rotation <- private$svdBM$v[, 1:self$rank, drop = FALSE]
         rownames(rotation) <- rownames(private$Sigma)
+        colnames(rotation) <- paste0("PC", 1:self$rank)
         rotation
+      },
+      #' @field eig description of the eigenvalues, similar to percent_var but for use with external methods
+      eig = function() {
+        eigen.val <- private$svdBM$d[1:self$rank]^2
+        matrix(
+          c(eigen.val,                                                # eigenvalues
+            100 * self$R_squared * eigen.val / sum(eigen.val),        # percentage of variance
+            100 * self$R_squared * cumsum(eigen.val) / sum(eigen.val) # cumulative percentage of variance
+          ),
+          ncol = 3,
+          dimnames = list(paste("comp", 1:self$rank), c("eigenvalue", "percentage of variance", "cumulative percentage of variance"))
+        )
+      },
+      #' @field var a list of data frames with PCA results for the variables: `coord` (coordinates of the variables), `cor` (correlation between variables and dimensions), `cos2` (Cosine of the variables) and `contrib` (contributions of the variable to the axes)
+      var = function() {
+        coord  <- private$svdBM$v[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], ncol = self$rank, nrow = self$p, byrow = TRUE)
+        ## coord[j, k] = d[k] * v[j, k]
+        var_sd <- sqrt(rowSums(coord^2))
+        coord  <- coord / var_sd
+        cor    <- coord
+        cos2 <- cor^2
+        contrib <- 100 * private$svdBM$v[, 1:self$rank]^2
+        dimnames(coord) <- dimnames(cor) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$Sigma), paste0("Dim.", 1:self$rank))
+        list(coord   = coord,
+             cor     = cor,
+             cos2    = cos2,
+             contrib = contrib)
+      },
+      #' @field ind a list of data frames with PCA results for the individuals: `coord` (coordinates of the individuas), `cos2` (Cosine of the individuals), `contrib` (contributions of individuals to an axis inertia) and `dist` (distance of individuals to the origin).
+      ind = function() {
+        coord  <- private$svdBM$u[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], ncol = self$rank, nrow = self$n, byrow = TRUE)
+        ## coord[i, k] = d[k] * v[i, k]
+        dist_origin <- sqrt(rowSums(coord^2))
+        cos2 <- coord^2 / dist_origin^2
+        contrib <- 100 * private$svdBM$u[, 1:self$rank]^2
+        dimnames(coord) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$M), paste0("Dim.", 1:self$rank))
+        names(dist_origin) <- rownames(private$M)
+        list(coord   = coord,
+             cos2    = cos2,
+             contrib = contrib,
+             dist    = dist_origin)
+      },
+      #' @field call Hacky binding for compatibility with factoextra functions
+      call = function() {
+        list(scale.unit = FALSE)
       }
     )
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -76,31 +76,39 @@ PLNPCAfamily <- R6Class(
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Extractors   -------------------
+    #' @description Extract model from collection and add "PCA" class for compatibility with [`factoextra::fviz()`]
+    # @inheritParams getModel
+    #' @param var	value of the parameter (rank for PLNPCA, sparsity for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
+    #' @param index Integer index of the model to be returned. Only the first value is taken into account.
+    #' @return a [`PLNPCAfit`] object
+    getModel = function(var, index = NULL) {
+      model <- super$getModel(var, index)
+      class(model) <- c(class(model)[class(model) != "R6"], "PCA", "R6")
+      model
+    },
     #' @description Extract best model in the collection
     #' @param crit a character for the criterion used to performed the selection. Either
-    #' "BIC", "ICL", or "R_squared". Default is `BIC`
+    #' "ICL", "BIC". Default is `ICL`
     #' @return a [`PLNPCAfit`] object
-    getBestModel = function(crit = c("BIC", "ICL", "R_squared")){
+    getBestModel = function(crit = c("ICL", "BIC")){
       crit <- match.arg(crit)
       stopifnot(!anyNA(self$criteria[[crit]]))
       id <- 1
       if (length(self$criteria[[crit]]) > 1) {
         id <- which.max(self$criteria[[crit]])
       }
-      model <- self$models[[id]]$clone()
-      model
+      self$getModel(index = id)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## Graphical methdods -------------
+    ## Graphical methods -------------
     #' @description
     #' Lineplot of selected criteria for all models in the collection
     #' @param criteria A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).
-    #' @param annotate Logical. Should R2 be added to the plot (defaults to `TRUE`)
     #' @return A [`ggplot2`] object
-    plot = function(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE) {
+    plot = function(criteria = c("loglik", "BIC", "ICL")) {
       vlines <- sapply(intersect(criteria, c("BIC", "ICL")) , function(crit) self$getBestModel(crit)$rank)
-      p <- super$plot(criteria, annotate) + xlab("rank") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
+      p <- super$plot(criteria) + xlab("rank") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
       p
     },
 
@@ -112,8 +120,8 @@ PLNPCAfamily <- R6Class(
       cat(" Task: Principal Component Analysis\n")
       cat("========================================================\n")
       cat(" - Ranks considered: from ", min(self$ranks), " to ", max(self$ranks),"\n", sep = "")
-      cat(" - Best model (greater BIC): rank = ", self$getBestModel("BIC")$rank, " - R2 = ", round(self$getBestModel("BIC")$R_squared, 2), "\n", sep = "")
-      cat(" - Best model (greater ICL): rank = ", self$getBestModel("ICL")$rank, " - R2 = ", round(self$getBestModel("ICL")$R_squared, 2), "\n", sep = "")
+      cat(" - Best model (greater BIC): rank = ", self$getBestModel("BIC")$rank, "\n", sep = "")
+      cat(" - Best model (greater ICL): rank = ", self$getBestModel("ICL")$rank, "\n", sep = "")
     }
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

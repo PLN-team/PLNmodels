@@ -5,7 +5,7 @@
 \title{An R6 Class to represent a PLNfit in a standard, general framework}
 \description{
 The function \code{\link[=PLN]{PLN()}} fit a model which is an instance of a object with class \code{\link{PLNfit}}.
-Objects produced by the functions \code{\link[=PLNnetwork]{PLNnetwork()}}, \code{\link[=PLNPCA]{PLNPCA()}} and \code{\link[=PLNLDA]{PLNLDA()}} also enjoy the methods of \code{\link[=PLNfit]{PLNfit()}} by inheritance.
+Objects produced by the functions \code{\link[=PLNnetwork]{PLNnetwork()}}, \code{\link[=PLNPCA]{PLNPCA()}}, \code{\link[=PLNmixture]{PLNmixture()}} and \code{\link[=PLNLDA]{PLNLDA()}} also enjoy the methods of \code{\link[=PLNfit]{PLNfit()}} by inheritance.
 
 This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
 See the documentation for \code{\link[=coef]{coef()}}, \code{\link[=sigma]{sigma()}},
@@ -66,6 +66,8 @@ print(myPLN)
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
+\item{\code{weights}}{observational weights}
+
 \item{\code{loglik}}{(weighted) variational lower bound of the loglikelihood}
 
 \item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}
@@ -78,7 +80,7 @@ print(myPLN)
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
+\item{\code{criteria}}{a vector with loglik, BIC, ICL and number of parameters}
 }
 \if{html}{\out{</div>}}
 }

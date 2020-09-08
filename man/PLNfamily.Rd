@@ -130,15 +130,13 @@ A \code{\link{PLNfit}} object
 \subsection{Method \code{plot()}}{
 Lineplot of selected criteria for all models in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$plot(criteria, annotate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$plot(criteria)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{criteria}}{A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)}
-
-\item{\code{annotate}}{Logical. Should R2 be added to the plot (defaults to \code{TRUE})}
 }
 \if{html}{\out{</div>}}
 }
