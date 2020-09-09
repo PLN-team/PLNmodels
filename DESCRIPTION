@@ -73,6 +73,7 @@ Collate:
     'PLNmixture.R'
     'PLNmixturefamily-S3methods.R'
     'PLNmixturefamily-class.R'
+    'PLNmixturefit-S3methods.R'
     'PLNmixturefit-class.R'
     'PLNmodels-package.R'
     'PLNnetwork.R'

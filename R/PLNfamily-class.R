@@ -17,6 +17,7 @@
 #' @rdname PLNfamily
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
+#' @importFrom purrr map reduce map_chr
 PLNfamily <-
   R6Class(
     classname = "PLNfamily",
@@ -96,8 +97,9 @@ PLNfamily <-
         } else { ## No exact match
           id <- which.min(abs(var - private$params)) ## closest model (in terms of parameter value)
           warning(paste("No such a model in the collection. Acceptable parameter values can be found via",
-                        "$ranks() (for PCA)",
-                        "$penalties() (for network)",
+                        "$ranks (for PCA)",
+                        "$clusters (for mixture models)",
+                        "$penalties (for network)",
                         paste("Returning model with closest value. Requested:", var, ", returned:", private$params[id]),
                         sep = "\n"))
           return(self$models[[id]]$clone())
@@ -109,9 +111,8 @@ PLNfamily <-
       #' @description
       #' Lineplot of selected criteria for all models in the collection
       #' @param criteria A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)
-      #' @param annotate Logical. Should R2 be added to the plot (defaults to `FALSE`)
       #' @return A [`ggplot2`] object
-      plot = function(criteria, annotate = FALSE) {
+      plot = function(criteria) {
         stopifnot(!anyNA(self$criteria[criteria]))
         dplot <- self$criteria %>%
           dplyr::select(c("param", criteria)) %>%
@@ -119,10 +120,6 @@ PLNfamily <-
           dplyr::group_by(criterion)
         p <- ggplot(dplot, aes(x = param, y = value, group = criterion, colour = criterion)) +
           geom_line() + geom_point() + ggtitle("Model selection criteria") + theme_bw()
-
-        if (annotate)
-          p <- p + annotate("text", x = self$criteria$param, y = min(dplot$value), hjust=-.1, angle = 90,
-                            label = paste("R2 =", round(self$criteria$R_squared, 2)), size = 3, alpha = 0.7)
         p
       },
 
@@ -140,7 +137,6 @@ PLNfamily <-
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Other public members --------------
-
 
     ),
 
@@ -160,14 +156,15 @@ PLNfamily <-
     active = list(
       #' @field criteria a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the collection of models / fits
       criteria = function() {
-        res <- do.call(rbind, lapply(self$models, function(model) {model$criteria}))
+        res <- purrr::map(self$models, 'criteria') %>%
+          purrr::reduce(rbind)
         data.frame(param = private$params, res)
       },
       #' @field convergence sends back a data frame with some convergence diagnostics associated with the optimization process (method, optimal value, etc)
       convergence = function() {
-        res <- do.call(rbind, lapply(self$models, function(model) {
-          c(nb_param = model$nb_param, sapply(model$optim_par, function(x) x[length(x)]))
-        }))
+        res <- purrr::map(self$models, function(model) {
+          c(nb_param = model$nb_param, purrr::map_chr(model$optim_par, tail, 1))
+        }) %>% purrr::reduce(rbind)
         data.frame(param = private$params, res, stringsAsFactors = FALSE)
       }
     )
@@ -176,5 +173,4 @@ PLNfamily <-
     ##  END OF CLASS ----
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   )
-
 

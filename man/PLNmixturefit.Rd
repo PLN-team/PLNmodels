@@ -46,11 +46,13 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{BIC}}{variational lower bound of the BIC}
 
-\item{\code{ICL}}{variational lower bound of the ICL}
+\item{\code{ICL}}{variational lower bound of the ICL (include only entropy of the clustering distribution)}
+
+\item{\code{ICL_variant}}{variational lower bound of the ICL (include entropy of both the clustering and latent distributions)}
 
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, R_squared and number of parameters}
+\item{\code{criteria}}{a vector with loglik, BIC, ICL, ICL_variant and number of parameters}
 
 \item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
 
@@ -155,7 +157,7 @@ Plot the matrix of mean counts (without offsets, without covariate effects) reor
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+\item{\code{main}}{character. A title for the plot.  An hopefully appropriate title will be used by default.}
 
 \item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
 
@@ -182,7 +184,7 @@ Plot the individual map of a PCA performed on the latent coordinate, where indiv
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+\item{\code{main}}{character. A title for the plot. An hopefully appropriate title will be used by default.}
 
 \item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
 }

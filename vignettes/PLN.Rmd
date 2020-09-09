@@ -163,7 +163,7 @@ See also `?PLNfit` for more comprehensive information.
 Accessing public fields of a `PLNfit` object can be done just like with a traditional list, _e.g._,
 
 ```{r fields-access}
-c(myPLN$loglik, myPLN$BIC, myPLN$ICL, myPLN$R_squared)
+c(myPLN$loglik, myPLN$BIC, myPLN$ICL)
 myPLN$criteria
 ```
 

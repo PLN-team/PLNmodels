@@ -81,11 +81,11 @@ PLNfit <- R6Class(
       private$covariance <- control$covariance
       private$optimizer  <-
         switch(control$covariance,
-               "spherical" = optim_spherical,
-               "diagonal"  = optim_diagonal ,
-               "full"      = optim_full     ,
-               "rank"      = optim_rank     ,
-               "sparse"    = optim_sparse
+               "spherical" = cpp_optimize_spherical,
+               "diagonal"  = cpp_optimize_diagonal ,
+               "full"      = cpp_optimize_full     ,
+               "rank"      = cpp_optimize_rank     , # FIXME will fail in optimize (missing B param)
+               "sparse"    = cpp_optimize_sparse     # FIXME will fail in optimize (missing omega value)
         )
 
       if (isPLNfit(control$inception)) {
@@ -122,7 +122,11 @@ PLNfit <- R6Class(
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
       optim_out <- private$optimizer(
-        c(private$Theta, private$M, sqrt(private$S2)),
+        list(
+          Theta = private$Theta,
+          M = private$M,
+          S = sqrt(private$S2)
+        ),
         responses,
         covariates,
         offsets,
@@ -163,13 +167,13 @@ PLNfit <- R6Class(
 
       VEstep_optimizer  <-
         switch(control$covariance,
-               "spherical" = VEstep_PLN_spherical,
-               "diagonal"  = VEstep_PLN_diagonal,
-               "full"      = VEstep_PLN_full
+               "spherical" = cpp_optimize_vestep_spherical,
+               "diagonal"  = cpp_optimize_vestep_diagonal,
+               "full"      = cpp_optimize_vestep_full
         )
 
       optim_out <- VEstep_optimizer(
-        c(private$M, sqrt(private$S2)),
+        list(M = private$M, S = sqrt(private$S2)),
         responses,
         covariates,
         offsets,
@@ -395,8 +399,8 @@ PLNfit <- R6Class(
     ICL        = function() {self$BIC - self$entropy},
     #' @field R_squared approximated goodness-of-fit criterion
     R_squared  = function() {private$R2},
-    #' @field criteria a vector with loglik, BIC, ICL, R_squared and number of parameters
-    criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, R_squared = self$R_squared)}
+    #' @field criteria a vector with loglik, BIC, ICL and number of parameters
+    criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL)}
   )
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

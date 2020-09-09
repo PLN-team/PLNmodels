@@ -69,8 +69,8 @@ test_that("Bindings for factoextra return sensible values", {
   ## $eig
   expect_gte(min(myPLNfit$eig[, "eigenvalue"]), 0)
   expect_gte(min(myPLNfit$eig[, "percentage of variance"]), 0)
-  expect_lte(max(myPLNfit$eig[, "percentage of variance"]), 100)
-  expect_equivalent(tail(myPLNfit$eig[, "cumulative percentage of variance"], n = 1), 100)
+  expect_lte(max(myPLNfit$eig[, "percentage of variance"]), 100 * myPLNfit$R_squared)
+  expect_equivalent(tail(myPLNfit$eig[, "cumulative percentage of variance"], n = 1), 100 * myPLNfit$R_squared)
   ## $var
   .var <- myPLNfit$var
   cor_range <- range(.var$cor)

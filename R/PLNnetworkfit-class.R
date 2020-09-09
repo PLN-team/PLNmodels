@@ -73,7 +73,7 @@ PLNnetworkfit <- R6Class(
       objective   <- numeric(control$maxit_out)
       convergence <- numeric(control$maxit_out)
       ## start from the standard PLN at initialization
-      par0  <- c(private$Theta, private$M, sqrt(private$S2))
+      par0  <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
       Sigma <- private$Sigma
       objective.old <- -self$loglik
       while (!cond) {
@@ -86,7 +86,7 @@ PLNnetworkfit <- R6Class(
         Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
         ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-        optim_out <- optim_sparse(par0, responses, covariates, offsets, weights, Omega, control)
+        optim_out <- cpp_optimize_sparse(par0, responses, covariates, offsets, weights, Omega, control)
 
         ## Check convergence
         objective[iter]   <- -sum(weights * optim_out$loglik) + self$penalty * sum(abs(Omega))
@@ -95,7 +95,7 @@ PLNnetworkfit <- R6Class(
 
         ## Prepare next iterate
         Sigma <- optim_out$Sigma
-        par0  <- c(optim_out$Theta, optim_out$M, optim_out$S)
+        par0  <- list(Theta = optim_out$Theta, M = optim_out$M, S = optim_out$S)
         objective.old <- objective[iter]
       }
 

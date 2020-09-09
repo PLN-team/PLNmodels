@@ -80,12 +80,15 @@ PLNPCAfit <- R6Class(
       optimize = function(responses, covariates, offsets, weights, control) {
         ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
         opts <- control
-        opts$xtol_abs <- c(rep(0, self$p*(self$d + self$q) + self$n * self$q),
-                           rep(control$xtol_abs, self$n*self$q))
-        opts$rank <- self$q
-        optim_out <- optim_rank(
-          c(private$Theta, private$B, private$M, sqrt(private$S2)),
-          responses, covariates, offsets, weights, self$q, opts
+        opts$xtol_abs <- list(Theta = 0, B = 0, M = 0, S = control$xtol_abs)
+        optim_out <- cpp_optimize_rank(
+          list(
+            Theta = private$Theta,
+            B = private$B,
+            M = private$M,
+            S = sqrt(private$S2)
+          ),
+          responses, covariates, offsets, weights, opts
         )
 
         Ji <- optim_out$loglik
@@ -294,7 +297,7 @@ PLNPCAfit <- R6Class(
       #' @field percent_var the percent of variance explained by each axis
       percent_var = function() {
         eigen.val <- private$svdBM$d[1:self$rank]^2
-        setNames(round(eigen.val/sum(eigen.val),4), paste0("PC", 1:self$rank))
+        setNames(round(eigen.val/sum(eigen.val)*self$R_squared,4), paste0("PC", 1:self$rank))
       },
       #' @field corr_circle a matrix of correlations to plot the correlation circles
       corr_circle = function() {
@@ -324,9 +327,9 @@ PLNPCAfit <- R6Class(
       eig = function() {
         eigen.val <- private$svdBM$d[1:self$rank]^2
         matrix(
-          c(eigen.val,                        ## eigenvalues
-            100 * eigen.val / sum(eigen.val), ## percentage of variance
-            100 * cumsum(eigen.val) / sum(eigen.val)  ## cumulative percentage of variance
+          c(eigen.val,                                                # eigenvalues
+            100 * self$R_squared * eigen.val / sum(eigen.val),        # percentage of variance
+            100 * self$R_squared * cumsum(eigen.val) / sum(eigen.val) # cumulative percentage of variance
           ),
           ncol = 3,
           dimnames = list(paste("comp", 1:self$rank), c("eigenvalue", "percentage of variance", "cumulative percentage of variance"))

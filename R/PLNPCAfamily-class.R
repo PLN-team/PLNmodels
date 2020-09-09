@@ -88,9 +88,9 @@ PLNPCAfamily <- R6Class(
     },
     #' @description Extract best model in the collection
     #' @param crit a character for the criterion used to performed the selection. Either
-    #' "BIC", "ICL", or "R_squared". Default is `BIC`
+    #' "ICL", "BIC". Default is `ICL`
     #' @return a [`PLNPCAfit`] object
-    getBestModel = function(crit = c("BIC", "ICL", "R_squared")){
+    getBestModel = function(crit = c("ICL", "BIC")){
       crit <- match.arg(crit)
       stopifnot(!anyNA(self$criteria[[crit]]))
       id <- 1
@@ -105,11 +105,10 @@ PLNPCAfamily <- R6Class(
     #' @description
     #' Lineplot of selected criteria for all models in the collection
     #' @param criteria A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).
-    #' @param annotate Logical. Should R2 be added to the plot (defaults to `TRUE`)
     #' @return A [`ggplot2`] object
-    plot = function(criteria = c("loglik", "BIC", "ICL"), annotate = TRUE) {
+    plot = function(criteria = c("loglik", "BIC", "ICL")) {
       vlines <- sapply(intersect(criteria, c("BIC", "ICL")) , function(crit) self$getBestModel(crit)$rank)
-      p <- super$plot(criteria, annotate) + xlab("rank") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
+      p <- super$plot(criteria) + xlab("rank") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
       p
     },
 
@@ -121,8 +120,8 @@ PLNPCAfamily <- R6Class(
       cat(" Task: Principal Component Analysis\n")
       cat("========================================================\n")
       cat(" - Ranks considered: from ", min(self$ranks), " to ", max(self$ranks),"\n", sep = "")
-      cat(" - Best model (greater BIC): rank = ", self$getBestModel("BIC")$rank, " - R2 = ", round(self$getBestModel("BIC")$R_squared, 2), "\n", sep = "")
-      cat(" - Best model (greater ICL): rank = ", self$getBestModel("ICL")$rank, " - R2 = ", round(self$getBestModel("ICL")$R_squared, 2), "\n", sep = "")
+      cat(" - Best model (greater BIC): rank = ", self$getBestModel("BIC")$rank, "\n", sep = "")
+      cat(" - Best model (greater ICL): rank = ", self$getBestModel("ICL")$rank, "\n", sep = "")
     }
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
