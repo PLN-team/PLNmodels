@@ -179,7 +179,7 @@ PLNmixture_param <- function(control, n, p, d) {
     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-4,
-    "xtol_abs"    = rep(xtol_abs, p*d + n*p + ifelse(covariance == "spherical", n, n*p)),
+    "xtol_abs"    = xtol_abs,
     "trace"       = 1,
     "covariance"  = covariance,
     "cores"       = 1,
@@ -191,27 +191,6 @@ PLNmixture_param <- function(control, n, p, d) {
   ctrl[names(control)] <- control
   ctrl
 }
-
-PLN_param_VE <- function(control, n, p, weighted = FALSE) {
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
-  covariance  <- ifelse(is.null(control$covariance) , "full", control$covariance)
-  ctrl <- list(
-    "algorithm"   = "CCSAQ",
-    "maxeval"     = 10000  ,
-    "maxtime"     = -1     ,
-    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
-    "ftol_abs"    = 0,
-    "xtol_rel"    = 1e-4,
-    "xtol_abs"    = rep(xtol_abs, p*n +  ifelse(covariance == "spherical", n, n*p)),
-    "trace"       = 1,
-    "covariance"  = covariance,
-    "inception"   = NULL
-  )
-  ctrl[names(control)] <- control
-  stopifnot(ctrl$algorithm %in% available_algorithms)
-  ctrl
-}
-
 
 PLNPCA_param <- function(control) {
   ctrl <- list(
