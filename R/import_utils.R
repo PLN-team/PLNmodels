@@ -111,7 +111,10 @@ offset_tss <- function(counts) {
 offset_gmpr <- function(counts) {
   if (nrow(counts) == 1) stop("GMPR is not defined when there is only one sample.")
   ## median of (non-null, non-infinite) pairwise ratios between counts of samples i and j
-  pairwise_ratio <- function(i, j) { median(counts[i, ] / counts[j, ], na.rm = TRUE) }
+  pairwise_ratio <- function(i, j) {
+    ratio <- counts[i, ] / counts[j, ]
+    median(ratio[is.finite(ratio)], na.rm = TRUE)
+  }
   ## Matrix of pairwise ratios
   n <- nrow(counts)
   mat_pr <- matrix(NaN, nrow = n, ncol = n)
@@ -427,7 +430,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' ## Other normalization schemes
 #' compute_offset(counts, offset = "RLE", pseudocounts = 1)
 #' compute_offset(counts, offset = "Wrench", groups = trichoptera$Covariate$Group)
-#' ## compute_offset(counts, offset = "GMPR") # would not work
+#' compute_offset(counts, offset = "GMPR")
 #' ## User supplied offsets
 #' my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
 #' compute_offset(counts, offset = my_offset)
