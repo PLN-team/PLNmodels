@@ -1,6 +1,16 @@
+# PLNmodels 0.11.2
+
+* Rewriting C++ by merging modern_cpp to dev, thanks to François Gindraud
+* various bug fixes in offset
+* less verbose about R squared when questionable
+
 # PLNmodels 0.11.1
 
 * Add compatibility with factoextra
+
+# PLNmodels 0.11.0
+
+* Add PLNmixture
 
 # PLNmodels 0.10.7
 
