@@ -110,10 +110,11 @@ offset_tss <- function(counts) {
 ## Geometric Mean Pairwise Ratio (GMPR) normalization (as presented in doi.org/10.7717/peerj.4600)
 offset_gmpr <- function(counts) {
   if (nrow(counts) == 1) stop("GMPR is not defined when there is only one sample.")
-  ## median of (non-null, non-infinite) pairwise ratios between counts of samples i and j
+  ## median of pairwise ratios between counts of samples i and j, limited to positive counts
   pairwise_ratio <- function(i, j) {
-    ratio <- counts[i, ] / counts[j, ]
-    median(ratio[is.finite(ratio)], na.rm = TRUE)
+    c_i <- counts[i, ]; c_j <- counts[j, ]
+    ratio <- c_i / c_j
+    median(ratio[c_i > 0 & c_j > 0])
   }
   ## Matrix of pairwise ratios
   n <- nrow(counts)

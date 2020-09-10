@@ -216,6 +216,9 @@ test_that("offset_gmpr fails when a sample shares no species with any other samp
   expect_error(compute_offset(counts, "GMPR"),
                "Some sample(s) do not share any species with other samples, GMPR normalization failed.",
                fixed = TRUE)
+  ## repaired when some species are shared
+  counts[2, 1] <- 1
+  expect_equal(compute_offset(counts, "GMPR"), c(1, 1))
 })
 
 test_that("offset_wrench works correctly with different groups and identical samples in each group", {
