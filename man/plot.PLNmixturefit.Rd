@@ -27,7 +27,7 @@ or by representing the expected matrix  of count reorder according to the cluste
 \examples{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-fits <- PLNmixture(Abundance ~ 1, data = trichoptera)
+fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
 myMixture <- getBestModel(fits)
 \dontrun{
 plot(myMixture, "pca")

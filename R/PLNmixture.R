@@ -32,7 +32,7 @@
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myMixtures <- PLNmixture(Abundance ~ 1, clusters = 1:5, data = trichoptera)
+#' myMixtures <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
 #' @seealso The classes \code{\link[=PLNmixture]{PLNmixturefamily}} and \code{\link[=PLNmixturefit]{PLNmixturefit}}
 #' @importFrom stats model.frame model.matrix model.response model.offset
 #' @export

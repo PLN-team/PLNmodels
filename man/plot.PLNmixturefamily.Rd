@@ -25,7 +25,7 @@ Display the criteria associated with a collection of PLNmixture fits (a PLNmixtu
 \examples{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myMixtures  <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, clusters = 1:5)
+myMixtures <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
 \dontrun{
 plot(myMixtures)
 }

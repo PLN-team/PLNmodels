@@ -24,7 +24,7 @@ isPLNmixturefit <- function(Robject) {inherits(Robject, "PLNmixturefit")}
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' fits <- PLNmixture(Abundance ~ 1, data = trichoptera)
+#' fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
 #' myMixture <- getBestModel(fits)
 #' \dontrun{
 #' plot(myMixture, "pca")
