@@ -12,6 +12,11 @@ test_that("PLNPCAfamily: main function, field access and methods", {
               output, fixed = TRUE)
 
   expect_is(models, "PLNPCAfamily")
+  expect_is(plot(models), "ggplot")
+  expect_is(plot(models, map="individual"), "ggplot")
+  expect_is(plot(models, map="variable"), "ggplot")
+  expect_is(getBestModel(models), "PLNPCAfit")
+  expect_is(getModel(models, models$ranks[1]), "PLNPCAfit")
 
   X <- model.matrix(Abundance ~ 1, data = trichoptera)
   Y <- as.matrix(trichoptera$Abundance)
@@ -31,8 +36,6 @@ test_that("PLNPCAfamily: main function, field access and methods", {
 
   ## post-treatment
   myPLN$postTreatment()
-
-  expect_equivalent(myPLN, models)
 
   ## S3 methods
   expect_true(PLNmodels:::isPLNPCAfamily(myPLN))
