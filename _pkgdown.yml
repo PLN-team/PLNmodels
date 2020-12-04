@@ -38,10 +38,12 @@ reference:
   desc: >
     Set of functions to fit variants of the Poisson lognormal model
   contents:
+    - '`PLNmodels`'
     - '`PLN`'
     - '`PLNLDA`'
     - '`PLNPCA`'
     - '`PLNnetwork`'
+    - '`PLNmixture`'
 - title: 'Poisson lognormal fit'
   desc: >
     Description of the PLNfit object and methods for its manipulation. Any PLN variant in the
@@ -50,7 +52,9 @@ reference:
     - '`PLNfit`'
     - '`coef.PLNfit`'
     - '`vcov.PLNfit`'
+    - '`sigma.PLNfit`'
     - '`predict.PLNfit`'
+    - '`fitted.PLNfit`'
     - '`standard_error.PLNfit`'
     - '`fisher.PLNfit`'
 - title: 'Linear discriminant analysis via a Poisson lognormal fit'
@@ -60,6 +64,7 @@ reference:
   - starts_with('PLNLDAfit')
   - '`plot.PLNLDAfit`'
   - '`predict.PLNLDAfit`'
+  - '`coef.PLNLDAfit`'
 - title: 'Poisson Lognormal PCA fit'
   desc: >
     Description of the PLNPCAfit and PLNPCAfamily objects and methods for their manipulation.
@@ -70,6 +75,16 @@ reference:
   - '`plot.PLNPCAfamily`'
   - '`getBestModel.PLNPCAfamily`'
   - '`getModel.PLNPCAfamily`'
+- title: 'Mixture of Poisson Lognormal fits'
+  desc: >
+    Description of the PLNmixturefit and PLNmixturefamily objects and methods for their manipulation.
+  contents:
+  - starts_with('PLNmixturefit')
+  - '`plot.PLNmixturefit`'
+  - '`PLNmixturefamily`'
+  - '`plot.PLNmixturefamily`'
+  - '`getBestModel.PLNmixturefamily`'
+  - '`getModel.PLNmixturefamily`'
 - title: 'Sparse Poisson lognormal fit and network'
   desc: >
     Description of the PLNnetworkfit and PLNnetworkfamily objects and methods for their manipulation.
@@ -82,11 +97,13 @@ reference:
   - '`getModel.PLNnetworkfamily`'
   - '`coefficient_path`'
   - '`stability_selection`'
-- title: 'Other functions'
+  - '`extract_probs`'
+- title: 'Other functions and objects'
   desc: ~
   contents:
     - '`prepare_data`'
     - '`compute_offset`'
+    - '`PLNfamily`'
     - '`rPLN`'
 - title: Data sets
   desc: ~
