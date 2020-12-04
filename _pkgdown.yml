@@ -27,6 +27,8 @@ navbar:
         href: articles/PLNnetwork.html
       - text: "PLNLDA: Discriminant Analysis"
         href: articles/PLNLDA.html
+      - text: "PLNmixture: Model-based clustering for counts"
+        href: articles/PLNmixture.html
     - text: "Changelog"
       href: news/index.html
   right:
