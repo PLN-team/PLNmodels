@@ -30,6 +30,12 @@
 #'
 #' Also try vignette("PLNLDA_trichoptera", package="PLNmodels") for an overview.
 #'
+#' @section Mixtures of Poisson lognormal models for model-based clustering  (aka PLNmixture):
+#'
+#' See the main function [PLNmixture()] and the associated methods for manipulation.
+#'
+#' Also try vignette("PLNmixture_trichoptera", package="PLNmodels") for an overview.
+#'
 #' @author Julien Chiquet \email{julien.chiquet@@inrae.fr}
 #' @author Mahendra Mariadassou \email{mahendra.mariadassou@@inrae.fr}
 #' @author Stéphane Robin \email{stephane.robin@@inrae.fr}

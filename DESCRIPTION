@@ -8,7 +8,8 @@ Authors@R: c(
       comment = c(ORCID = "0000-0003-2986-354X")),
   person("Stéphane", "Robin", role ="ctb", email = "stephane.robin@inrae.fr")
   )
-Description: The Poisson-lognormal model and variants can be used for 
+Description: The Poisson-lognormal model and variants ((Chiquet, Mariadassou and Robin, 
+    2020 <doi:10.1101/2020.10.07.329383) can be used for 
     a variety of multivariate problems when count data are at play, including 
     principal component analysis for count data (Chiquet, Mariadassou and Robin, 
     2018 <doi:10.1214/18-AOAS1177>), discriminant analysis and 

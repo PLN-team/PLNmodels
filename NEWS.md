@@ -3,6 +3,7 @@
 * Rewriting C++ by merging modern_cpp to dev, thanks to François Gindraud
 * various bug fixes in offset
 * less verbose about R squared when questionable
+* Enhanced vignettes for PLNPCA and PLNmixture
 
 # PLNmodels 0.11.1
 

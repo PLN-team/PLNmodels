@@ -57,3 +57,5 @@ tests/testthat/Rplots.pdf
 
 # Mac bullsh.
 .DS_Store
+
+README.html

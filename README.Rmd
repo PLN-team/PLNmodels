@@ -27,27 +27,27 @@ knitr::opts_chunk$set(
 
 ### R Package installation
 
-#### CRAN dependencies
+<!-- #### CRAN dependencies -->
 
-**PLNmodels** needs the following CRAN R packages, so check that they are are installed on your computer.
+<!-- **PLNmodels** needs the following CRAN R packages, so check that they are are installed on your computer. -->
 
-```{r CRAN dependencies, eval = FALSE}
-required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo",
-                   "nloptr", "igraph", "grid", "gridExtra", "dplyr",
-                   "tidyr", "ggplot2", "corrplot", "magrittr", "devtools")
-not_installed_CRAN <- setdiff(required_CRAN, rownames(installed.packages()))
-if (length(not_installed_CRAN) > 0) install.packages(not_installed_CRAN)
-```
+<!-- ```{r CRAN dependencies, eval = FALSE} -->
+<!-- required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo", -->
+<!--                    "nloptr", "igraph", "grid", "gridExtra", "dplyr", -->
+<!--                    "tidyr", "ggplot2", "corrplot", "magrittr", "devtools") -->
+<!-- not_installed_CRAN <- setdiff(required_CRAN, rownames(installed.packages())) -->
+<!-- if (length(not_installed_CRAN) > 0) install.packages(not_installed_CRAN) -->
+<!-- ``` -->
 
-#### Bioconductor dependencies
+<!-- #### Bioconductor dependencies -->
 
-**PLNmodels** also needs two BioConductor packages
+<!-- **PLNmodels** also needs two BioConductor packages -->
 
-```{r Bioconductor dependencies, eval = FALSE}
-required_BioC <- c("phyloseq", "biomformat")
-not_installed_BioC <- setdiff(required_BioC, rownames(installed.packages()))
-if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC)
-```
+<!-- ```{r Bioconductor dependencies, eval = FALSE} -->
+<!-- required_BioC <- c("phyloseq", "biomformat") -->
+<!-- not_installed_BioC <- setdiff(required_BioC, rownames(installed.packages())) -->
+<!-- if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC) -->
+<!-- ``` -->
 
 #### Installing PLNmodels
 
@@ -105,17 +105,22 @@ myLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera)
 myPLNnetwork <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 ```
 
+### Mixture of Poisson lognormal models for model-based clustering of counts  (aka PLNmixture)
+
+```{r PLNmixture, eval = FALSE}
+myPLNmixture <- PLNmixture(Abundance ~ 1, data = trichoptera)
+```
+
 ## References
 
 Please cite our work using the following references:
 
-- J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 12: 2674–2698, 2018. [link](http://dx.doi.org/10.1214/18-AOAS1177)
+- J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, bioRxiv preprint, 2020.. [link](https://doi.org/10.1101/2020.10.07.329383)
 
 - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019. 
 [link](http://proceedings.mlr.press/v97/chiquet19a.html)
 
-
-
+- J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 12: 2674–2698, 2018. [link](http://dx.doi.org/10.1214/18-AOAS1177)
 
 
 
