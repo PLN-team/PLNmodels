@@ -25,7 +25,9 @@ knitr::opts_chunk$set(
 
 ## Preliminaries
 
-This vignette illustrates the standard use of the `PLNixture` function and the methods accompanying the R6 Classes `PLNmixturefamily` and `PLNmixturefit`.
+This vignette illustrates the standard use of the `PLNmixture` function and the methods accompanying the R6 Classes `PLNmixturefamily` and `PLNmixturefit`.
+
+**warnings!!!** _PLNmixture is still under development. In aprticular, we are still working on inclusion of covariates in the model, and more efficient ways for finding an optimal number of component._
 
 ### Requirements
 
@@ -61,27 +63,34 @@ component of observation $i$. Introducing this additional layer, our PLN mixture
   \end{array}
 \end{equation}
 
-#### Covariates and offsets
+<!-- #### Covariates and offsets -->
 
-Just like PLN, PLN-mixture generalizes to a formulation where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$ in each mixture component. The latent layer then reads
-\begin{equation}
-  \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top{\boldsymbol\Theta}^{(k)}},{\boldsymbol\Sigma}^{(k)}),
-\end{equation}
-where each ${\boldsymbol\Theta}^{(k)}$ is a $d\times p$ matrix of regression parameters.
+<!-- Just like PLN, PLN-mixture generalizes to a formulation where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$ in each mixture component. The latent layer then reads -->
+<!-- \begin{equation} -->
+<!--   \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top{\boldsymbol\Theta}^{(k)}},{\boldsymbol\Sigma}^{(k)}), -->
+<!-- \end{equation} -->
+<!-- where each ${\boldsymbol\Theta}^{(k)}$ is a $d\times p$ matrix of regression parameters. -->
 
 #### Parametrization of the covariance of the mixture models
 
-When using parametric mixture models like Gaussian mixture models, it is generally not recommended to have covariances matrices ${\boldsymbol\Sigma}^{(k)}$ fully parametrized. Here, we implemented either 
+When using parametric mixture models like Gaussian mixture models, it is generally not recommended to have covariances matrices ${\boldsymbol\Sigma}^{(k)}$ with no special restriction, especially when dealing with a large number of variables. Indeed, the total number of parameters to estimate in the model can become prohibitive. 
 
-  - spherical covariances: ${\boldsymbol\Sigma}^{(k)} =  \left(\sigma^2\right)^{(k)} \mathbf{I}$ 
-  - diagonal covariances: ${\boldsymbol\Sigma}^{(k)} =  \mathrm{diag}(\mathbf{d})$ 
-  - and fully parametrized covariances.
+To reduce the computational burden and avoid over-fitting two different, more constrained parametrizations of the covariance matrices of each component are currently implemented in the \texttt{PLNmodels} package (on top of the general form of $\Sigma_k$):
 
-By default, we use spherical covariances to promote sparsity and for numerical performance. This corresponds to a mixture of Gaussian components with spherical covariance in the latent layer, which is close to a k-means algorithm in the latent Gaussian layer.
+\begin{equation*}
+\begin{array}{rrcll}
+    \text{diagonal covariances:} & \Sigma_k & = &\mathrm{diag}({d}_k) & \text{($2 K p$ parameters),} \\ [1.5ex]
+    \text{spherical covariances:} & \Sigma_k & = &  \sigma_k^2 {I} & \text{($K (p + 1)$ parameters).} 
+\end{array}
+\end{equation*}}
+
+The diagonal structure assumes that, given the group membership of a site, all variable abundances are independent. The spherical structure further assumes that all species have the same biological variability. In particular, in both parametrisations, all observed covariations are caused only by the group structure.
+
+For readers familiar with the \texttt{mclust} {\tt R} package \citep{fraley1999mclust}, which implements Gaussian mixture models with many variants of covariance matrices of each component, the spherical model corresponds to \texttt{VII} (spherical, unequal volume) and the diagonal model to \texttt{VVI} (diagonal, varying volume and shape). {Using constrained forms of the covariance matrices enables} PLN-mixture to {provide a clustering} even when the number of sites $n$ remains of the same order, or smaller, than the number of species $p$.
 
 #### Optimization by Variational inference
 
-Just like with all models fitted in PLNmodels, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. In this case, it is not too difficult to show that PLN-mixture can be obtained by optimizing a collection of weighted standard PLN model. 
+Just like with all models fitted in PLNmodels, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. In this case, it is not too difficult to show that PLN-mixture can be obtained by optimizing a collection of weighted standard PLN models.
 
 ## Analysis of trichoptera data with a PLN-mixture model
 
@@ -161,8 +170,6 @@ myMix_BIC$memberships
 
 Mixture model can be used to find
 
-
-
 ```{r plot clustering}
 myMix_BIC$plot_clustering_pca()
 ```
@@ -170,15 +177,6 @@ myMix_BIC$plot_clustering_pca()
 ```{r plot reordered data}
 myMix_BIC$plot_clustering_data()
 ```
-
-### A model with latent main effects and meteorological covariates
-
-It is possible to correct for other covariates before finding the LDA axes that best separate well the groups. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  :
-```{r, warning=FALSE}
-myMix_cov <- PLNmixture(Abundance ~ 1 + Wind + offset(log(Offset)), clusters = 1:3,
-                        data = trichoptera, control_main = list(iterates = 1))
-```
-
 
 ## References
 

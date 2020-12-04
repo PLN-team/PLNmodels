@@ -21,6 +21,7 @@ knitr::opts_chunk$set(
   rows.print = 5,
   message = FALSE, 
   warning = FALSE)
+set.seed(178643)
 ```
 
 ## Preliminaries

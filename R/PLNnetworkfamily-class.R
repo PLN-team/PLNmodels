@@ -101,7 +101,7 @@ PLNnetworkfamily <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Stability -------------------------
     #' @description Compute the stability path by stability selection
-    #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
+    #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
     #' @param control a list controlling the main optimization process in each call to PLNnetwork. See [PLNnetwork()] for details.
     #' @param mc.cores the number of cores to used. Default is 1.
     stability_selection = function(subsamples = NULL, control = list(), mc.cores = 1) {

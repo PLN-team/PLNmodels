@@ -40,26 +40,24 @@ myPLNPCA <- getBestModel(myPLNPCAs)
 plot(myPLNPCA, ind_cols = oaks$tree)
 
 # fancy graph with factoextra
-  t(tcrossprod(myPLNPCA$model_par$B, myPLNPCA$var_par$M)) %>%
-  prcomp(center = FALSE, scale. = FALSE) %>%
-  factoextra::fviz_pca_biplot(select.var = list(contrib = 10), addEllipses = TRUE, habillage = oaks$tree,
-                              title = "Biplot (10 most contributing species, samples colored by susceptibility)")
-
+factoextra::fviz_pca_biplot(
+  myPLNPCA, select.var = list(contrib = 10), addEllipses = TRUE, habillage = oaks$tree,
+  title = "Biplot (10 most contributing species, samples colored by susceptibility)"
+  ) + labs(col = "distance (cm)") + scale_color_viridis_c()
 
 ## Dimension reduction with PCA
 system.time(myPLNPCAs_tree <- PLNPCA(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, ranks = 1:30, control_main = list(cores = nb_cores))) # about 40 sec.
 plot(myPLNPCAs_tree)
 myPLNPCA_tree <- getBestModel(myPLNPCAs_tree)
 
-t(tcrossprod(myPLNPCA_tree$model_par$B, myPLNPCA_tree$var_par$M)) %>%
-  prcomp(center = FALSE, scale. = FALSE) %>%
-  factoextra::fviz_pca_biplot(select.var = list(contrib = 10), col.ind  = oaks$distTOground,
-                              title = "Biplot after correction (10 most contributing species, samples colored by distance to ground)") +
+# fancy graph with factoextra
+factoextra::fviz_pca_biplot(
+  myPLNPCA_tree, select.var = list(contrib = 10), col.ind  = oaks$distTOground,
+  title = "Biplot after correction (10 most contributing species, samples colored by distance to ground)") +
   labs(col = "distance (cm)") + scale_color_viridis_c()
 
-plot(myPLNPCA_tree, map = 'individual', axes = c(1,2), ind_cols = oaks$distTOground)
-plot(myPLNPCA_tree, map = 'variable', axes = c(1,2))
-
+factoextra::fviz_pca_ind(myPLNPCA_tree, axes = c(1,2), col.ind = oaks$distTOground)
+factoextra::fviz_pca_var(myPLNPCA_tree, axes = c(1,2), select.var = list(contrib = 10))
 
 ## Network inference with sparce covariance estimation
 system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control_main = list(trace = 2)))
@@ -85,12 +83,12 @@ data.frame(
   AMI = sapply(lapply(my_mixtures$models, function(model) model$memberships), aricode::AMI, oaks$tree),
   NID = sapply(lapply(my_mixtures$models, function(model) model$memberships), aricode::NID, oaks$tree)
 ) %>%
-  pivot_longer(-nb_components,names_to = "score") %>%
+  tidyr::pivot_longer(-nb_components,names_to = "score") %>%
   dplyr::group_by(score) %>%
   ggplot(aes(x = nb_components, y = value, colour = score)) + geom_line() + theme_bw() + labs(y = "clustering similarity", x = "number of components")
 
 ## Mixture model to recover tree structure - with covariates
-system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + distTObase + offset(log(Offset)), data = oaks, clusters = 1:5, control_main = list(cores = nb_cores)))
+system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + tree + offset(log(Offset)), data = oaks, clusters = 1:5, control_main = list(cores = nb_cores)))
 
 plot(my_mixtures, criteria = c("loglik", "ICL"))
 

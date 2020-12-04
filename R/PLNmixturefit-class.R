@@ -154,7 +154,7 @@ PLNmixturefit <-
         cat("Poisson Lognormal mixture model with",self$k,"components.\n")
         cat("* check fields $posteriorProb, $memberships, $mixtureParam and $components\n")
         cat("* check methods $plot_clustering_data, $plot_clustering_pca\n")
-        cat("* each $component[[i]] is a PLNfit with expacted methods and fields\n")
+        cat("* each $component[[i]] is a PLNfit with associated methods and fields\n")
       },
       #' @description User friendly print method
       print = function() self$show()
