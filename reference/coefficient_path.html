@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -158,14 +158,14 @@
     <p>Extract the regularization path of a PLNnetwork fit</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/coefficient_path.html'>coefficient_path</a></span>(<span class='kw'>Robject</span>, precision = <span class='fl'>TRUE</span>, corr = <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>coefficient_path</span><span class='op'>(</span><span class='va'>Robject</span>, precision <span class='op'>=</span> <span class='cn'>TRUE</span>, corr <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Robject</th>
-      <td><p>an object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code>, i.e. an output from <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code></p></td>
+      <td><p>an object with class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code>, i.e. an output from <code><a href='PLNnetwork.html'>PLNnetwork()</a></code></p></td>
     </tr>
     <tr>
       <th>precision</th>
@@ -182,15 +182,17 @@
     <p>Sends back a tibble/data.frame.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
-<span class='kw'>fits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, data = <span class='kw'>trichoptera</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
+<span class='va'>fits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
 #&gt; 	Joint optimization alternating gradient descent and graphical-lasso
 #&gt; 	sparsifying penalty = 7.499547 	sparsifying penalty = 6.927113 	sparsifying penalty = 6.398373 	sparsifying penalty = 5.90999 	sparsifying penalty = 5.458886 	sparsifying penalty = 5.042214 	sparsifying penalty = 4.657346 	sparsifying penalty = 4.301855 	sparsifying penalty = 3.973498 	sparsifying penalty = 3.670204 	sparsifying penalty = 3.390061 	sparsifying penalty = 3.1313 	sparsifying penalty = 2.892291 	sparsifying penalty = 2.671525 	sparsifying penalty = 2.46761 	sparsifying penalty = 2.279259 	sparsifying penalty = 2.105285 	sparsifying penalty = 1.944591 	sparsifying penalty = 1.796162 	sparsifying penalty = 1.659062 	sparsifying penalty = 1.532427 	sparsifying penalty = 1.415458 	sparsifying penalty = 1.307418 	sparsifying penalty = 1.207624 	sparsifying penalty = 1.115447 	sparsifying penalty = 1.030306 	sparsifying penalty = 0.9516633 	sparsifying penalty = 0.8790237 	sparsifying penalty = 0.8119286 	sparsifying penalty = 0.7499547 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/coefficient_path.html'>coefficient_path</a></span>(<span class='kw'>fits</span>))</div><div class='output co'>#&gt;   Node1 Node2 Coeff  Penalty    Edge
+#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='fu'>coefficient_path</span><span class='op'>(</span><span class='va'>fits</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   Node1 Node2 Coeff  Penalty    Edge
 #&gt; 1   Aga   Che     0 7.499547 Aga|Che
 #&gt; 2   Ath   Che     0 7.499547 Ath|Che
 #&gt; 3   Cea   Che     0 7.499547 Cea|Che
@@ -212,7 +214,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

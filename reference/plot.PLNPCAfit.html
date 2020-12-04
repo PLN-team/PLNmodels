@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PCA visualization (individual and/or variable factor map(s)) for a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> object — plot.PLNPCAfit • PLNmodels</title>
+<title>PCA visualization (individual and/or variable factor map(s)) for a PLNPCAfit object — plot.PLNPCAfit • PLNmodels</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="PCA visualization (individual and/or variable factor map(s)) for a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> object — plot.PLNPCAfit" />
+<meta property="og:title" content="PCA visualization (individual and/or variable factor map(s)) for a PLNPCAfit object — plot.PLNPCAfit" />
 <meta property="og:description" content="PCA visualization (individual and/or variable factor map(s)) for a PLNPCAfit object" />
 <meta property="og:image" content="/logo.png" />
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -149,27 +149,27 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>PCA visualization (individual and/or variable factor map(s)) for a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> object</h1>
+    <h1>PCA visualization (individual and/or variable factor map(s)) for a <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> object</h1>
     <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNPCAfit-S3methods.R'><code>R/PLNPCAfit-S3methods.R</code></a></small>
     <div class="hidden name"><code>plot.PLNPCAfit.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>PCA visualization (individual and/or variable factor map(s)) for a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> object</p>
+    <p>PCA visualization (individual and/or variable factor map(s)) for a <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> object</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNPCAfit</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(
-  <span class='kw'>x</span>,
-  map = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"both"</span>, <span class='st'>"individual"</span>, <span class='st'>"variable"</span>),
-  nb_axes = <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>3</span>, <span class='kw'>x</span><span class='op'>$</span><span class='kw'>rank</span>),
-  axes = <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq.int</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>2</span>, <span class='kw'>x</span><span class='op'>$</span><span class='kw'>rank</span>)),
-  ind_cols = <span class='st'>"ind_colors"</span>,
-  var_cols = <span class='st'>"var_colors"</span>,
-  plot = <span class='fl'>TRUE</span>,
-  main = <span class='kw'>NULL</span>,
-  <span class='kw'>...</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  map <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"both"</span>, <span class='st'>"individual"</span>, <span class='st'>"variable"</span><span class='op'>)</span>,
+  nb_axes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='va'>x</span><span class='op'>$</span><span class='va'>rank</span><span class='op'>)</span>,
+  axes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq.int</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='va'>x</span><span class='op'>$</span><span class='va'>rank</span><span class='op'>)</span><span class='op'>)</span>,
+  ind_cols <span class='op'>=</span> <span class='st'>"ind_colors"</span>,
+  var_cols <span class='op'>=</span> <span class='st'>"var_colors"</span>,
+  plot <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  main <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -217,20 +217,22 @@
     <p>displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a <code>ggplot</code> or gtable object</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
-<span class='kw'>myPCAs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>Offset</span>)), data = <span class='kw'>trichoptera</span>, ranks = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
+<span class='va'>myPCAs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNPCA.html'>PLNPCA</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span>, ranks <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt; 
 #&gt;  Adjusting 5 PLN models for PCA analysis.
 #&gt; 	 Rank approximation = 1 	 Rank approximation = 2 	 Rank approximation = 3 	 Rank approximation = 4 	 Rank approximation = 5 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='kw'>myPCA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel</a></span>(<span class='kw'>myPCAs</span>)
-<span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>myPCA</span>, map = <span class='st'>"individual"</span>, nb_axes=<span class='fl'>2</span>, ind_cols = <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Group</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>myPCA</span>, map = <span class='st'>"variable"</span>, nb_axes=<span class='fl'>2</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>myPCA</span>, map = <span class='st'>"both"</span>, nb_axes=<span class='fl'>2</span>, ind_cols = <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Group</span>)
-}</div></pre>
+#&gt;  DONE!</div><div class='input'><span class='va'>myPCA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='getBestModel.PLNPCAfamily.html'>getBestModel</a></span><span class='op'>(</span><span class='va'>myPCAs</span><span class='op'>)</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>myPCA</span>, map <span class='op'>=</span> <span class='st'>"individual"</span>, nb_axes<span class='op'>=</span><span class='fl'>2</span>, ind_cols <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Group</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>myPCA</span>, map <span class='op'>=</span> <span class='st'>"variable"</span>, nb_axes<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>myPCA</span>, map <span class='op'>=</span> <span class='st'>"both"</span>, nb_axes<span class='op'>=</span><span class='fl'>2</span>, ind_cols <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Group</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -246,7 +248,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

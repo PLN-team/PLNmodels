@@ -82,7 +82,7 @@ See the documentation for the methods inherited by  PLNfit and the plot() method
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -157,19 +157,19 @@ See the documentation for the methods inherited by  PLNfit and the plot() method
     </div>
 
     <div class="ref-description">
-    <p>The function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA()</a></code> produces a collection of models which are instances of object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code>.
+    <p>The function <code><a href='PLNPCA.html'>PLNPCA()</a></code> produces a collection of models which are instances of object with class <code>PLNPCAfit</code>.
 This class comes with a set of methods, some of them being useful for the user:
-See the documentation for the methods inherited by  <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfit.html'>PLNfit</a></code> and the <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code> methods for PCA visualization</p>
+See the documentation for the methods inherited by  <code><a href='PLNfit.html'>PLNfit</a></code> and the <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code> methods for PCA visualization</p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA</a></code>, the class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfamily.html'>PLNPCAfamily</a></code></p></div>
+    <div class='dont-index'><p>The function <code><a href='PLNPCA.html'>PLNPCA</a></code>, the class <code><a href='PLNPCAfamily.html'>PLNPCAfamily</a></code></p></div>
     <h2 class="hasAnchor" id="super-class"><a class="anchor" href="#super-class"></a>Super class</h2>
 
-    <p><code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfit.html'>PLNmodels::PLNfit</a></code> -&gt; <code>PLNPCAfit</code></p>
+    <p><code><a href='PLNfit.html'>PLNmodels::PLNfit</a></code> -&gt; <code>PLNPCAfit</code></p>
     <h2 class="hasAnchor" id="active-bindings"><a class="anchor" href="#active-bindings"></a>Active bindings</h2>
 
     <p><div class="r6-active-bindings"></p><dl>
@@ -189,11 +189,19 @@ See the documentation for the methods inherited by  <code><a href='https://rdrr.
 
 <dt><code>rotation</code></dt><dd><p>a matrix of rotation of the latent space</p></dd>
 
+<dt><code>eig</code></dt><dd><p>description of the eigenvalues, similar to percent_var but for use with external methods</p></dd>
+
+<dt><code>var</code></dt><dd><p>a list of data frames with PCA results for the variables: <code>coord</code> (coordinates of the variables), <code>cor</code> (correlation between variables and dimensions), <code>cos2</code> (Cosine of the variables) and <code>contrib</code> (contributions of the variable to the axes)</p></dd>
+
+<dt><code>ind</code></dt><dd><p>a list of data frames with PCA results for the individuals: <code>coord</code> (coordinates of the individuas), <code>cos2</code> (Cosine of the individuals), <code>contrib</code> (contributions of individuals to an axis inertia) and <code>dist</code> (distance of individuals to the origin).</p></dd>
+
+<dt><code>call</code></dt><dd><p>Hacky binding for compatibility with factoextra functions</p></dd>
+
 </dl><p></div></p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
-<h3>Public methods</h3>
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Public methods</h3>
 
 <ul>
 <li><p><a href='#method-new'><code>PLNPCAfit$new()</code></a></p></li>
@@ -211,37 +219,37 @@ See the documentation for the methods inherited by  <code><a href='https://rdrr.
 </ul>
 <p><details open ><summary>Inherited methods</summary>
 <ul>
+<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href='../../PLNmodels/html/PLNfit.html#method-VEstep'><code>PLNmodels::PLNfit$VEstep()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href='../../PLNmodels/html/PLNfit.html#method-compute_standard_error'><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-print'><code>PLNmodels::PLNfit$print()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href='../../PLNmodels/html/PLNfit.html#method-VEstep'><code>PLNmodels::PLNfit$VEstep()</code></a></span></p></li>
 </ul>
 </details>
 
 <hr>
-<a id="method-new"></a></p><h3>Method <code>new()</code></h3>
-<p>Initialize a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> object</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>new</span>(
-  <span class='kw'>rank</span>,
-  <span class='kw'>responses</span>,
-  <span class='kw'>covariates</span>,
-  <span class='kw'>offsets</span>,
-  <span class='kw'>weights</span>,
-  <span class='kw'>model</span>,
-  <span class='kw'>xlevels</span>,
-  <span class='kw'>control</span>
-)</pre><p></div></p>
+<a id="method-new"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>new()</code></h3>
+<p>Initialize a <code>PLNPCAfit</code> object</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
+  <span class='va'>rank</span>,
+  <span class='va'>responses</span>,
+  <span class='va'>covariates</span>,
+  <span class='va'>offsets</span>,
+  <span class='va'>weights</span>,
+  <span class='va'>model</span>,
+  <span class='va'>xlevels</span>,
+  <span class='va'>control</span>
+<span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>rank</code></dt><dd><p>rank of the PCA (or equivalently, dimension of the latent space)</p></dd>
 
-<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
 <dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
@@ -253,22 +261,22 @@ See the documentation for the methods inherited by  <code><a href='https://rdrr.
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-update"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/update.html'>update()</a></code></h3>
-<p>Update a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> object</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/stats/update.html'>update</a></span>(
-  Theta = <span class='fl'>NA</span>,
-  Sigma = <span class='fl'>NA</span>,
-  B = <span class='fl'>NA</span>,
-  M = <span class='fl'>NA</span>,
-  S2 = <span class='fl'>NA</span>,
-  Z = <span class='fl'>NA</span>,
-  A = <span class='fl'>NA</span>,
-  Ji = <span class='fl'>NA</span>,
-  R2 = <span class='fl'>NA</span>,
-  monitoring = <span class='fl'>NA</span>
-)</pre><p></div></p>
+<a id="method-update"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/update.html'>update()</a></code></h3>
+<p>Update a <code>PLNPCAfit</code> object</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>update</span><span class='op'>(</span>
+  Theta <span class='op'>=</span> <span class='cn'>NA</span>,
+  Sigma <span class='op'>=</span> <span class='cn'>NA</span>,
+  B <span class='op'>=</span> <span class='cn'>NA</span>,
+  M <span class='op'>=</span> <span class='cn'>NA</span>,
+  S2 <span class='op'>=</span> <span class='cn'>NA</span>,
+  Z <span class='op'>=</span> <span class='cn'>NA</span>,
+  A <span class='op'>=</span> <span class='cn'>NA</span>,
+  Ji <span class='op'>=</span> <span class='cn'>NA</span>,
+  R2 <span class='op'>=</span> <span class='cn'>NA</span>,
+  monitoring <span class='op'>=</span> <span class='cn'>NA</span>
+<span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>Theta</code></dt><dd><p>matrix of regression matrix</p></dd>
 
@@ -291,20 +299,20 @@ See the documentation for the methods inherited by  <code><a href='https://rdrr.
 <dt><code>monitoring</code></dt><dd><p>a list with optimization monitoring quantities</p></dd>
 
 </dl><p></div></p>
-<h3>Returns</h3>
-<p>Update the current <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> object</p>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
+<p>Update the current <code>PLNPCAfit</code> object</p>
 <p><hr>
-<a id="method-optimize"></a></p><h3>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
-<p>Call to the C++ optimizer and update of the relevant fields</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/stats/optimize.html'>optimize</a></span>(<span class='kw'>responses</span>, <span class='kw'>covariates</span>, <span class='kw'>offsets</span>, <span class='kw'>weights</span>, <span class='kw'>control</span>)</pre><p></div></p>
+<a id="method-optimize"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
+<p>Call to the C++ optimizer and update of the relevant fields</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>optimize</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>weights</span>, <span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
-<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
 <dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
@@ -312,28 +320,28 @@ See the documentation for the methods inherited by  <code><a href='https://rdrr.
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-setVisualization"></a></p><h3>Method <code>setVisualization()</code></h3>
-<p>Compute PCA scores in the latent space and update corresponding fields.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>setVisualization</span>(scale.unit = <span class='fl'>FALSE</span>)</pre><p></div></p>
+<a id="method-setVisualization"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>setVisualization()</code></h3>
+<p>Compute PCA scores in the latent space and update corresponding fields.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>setVisualization</span><span class='op'>(</span>scale.unit <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>scale.unit</code></dt><dd><p>Logical. Should PCA scores be rescaled to have unit variance</p></dd>
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-postTreatment"></a></p><h3>Method <code>postTreatment()</code></h3>
+<a id="method-postTreatment"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>postTreatment()</code></h3>
 <p>Update R2, fisher, std_err fields and set up visualization
-after optimization</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>postTreatment</span>(<span class='kw'>responses</span>, <span class='kw'>covariates</span>, <span class='kw'>offsets</span>, <span class='kw'>weights</span>, <span class='kw'>nullModel</span>)</pre><p></div></p>
+after optimization</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>postTreatment</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>weights</span>, <span class='va'>nullModel</span><span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
-<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
 <dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
@@ -341,45 +349,45 @@ after optimization</p><h3>Usage</h3>
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-compute_fisher"></a></p><h3>Method <code>compute_fisher()</code></h3>
-<p>Safely compute the fisher information matrix (FIM)</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>compute_fisher</span>(type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"wald"</span>, <span class='st'>"louis"</span>), X = <span class='kw'>NULL</span>)</pre><p></div></p>
+<a id="method-compute_fisher"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>compute_fisher()</code></h3>
+<p>Safely compute the fisher information matrix (FIM)</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>compute_fisher</span><span class='op'>(</span>type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"wald"</span>, <span class='st'>"louis"</span><span class='op'>)</span>, X <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>type</code></dt><dd><p>approximation scheme to compute the fisher information matrix. Either <code>wald</code> (default) or <code>louis</code>. <code>type = "louis"</code> results in smaller confidence intervals.</p></dd>
 
 <dt><code>X</code></dt><dd><p>design matrix used to compute the FIM</p></dd>
 
 </dl><p></div></p>
-<h3>Returns</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a sparse matrix with sensible dimension names</p>
 <p><hr>
-<a id="method-latent_pos"></a></p><h3>Method <code>latent_pos()</code></h3>
+<a id="method-latent_pos"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>latent_pos()</code></h3>
 <p>Compute matrix of latent positions, noted as Z in the model.
-Useful to compute the likelihood or for data visualization</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>latent_pos</span>(<span class='kw'>covariates</span>, <span class='kw'>offsets</span>)</pre><p></div></p>
+Useful to compute the likelihood or for data visualization</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>latent_pos</span><span class='op'>(</span><span class='va'>covariates</span>, <span class='va'>offsets</span><span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfamily.html'>PLNfamily</a></code></p></dd>
+<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
 
 </dl><p></div></p>
-<h3>Returns</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a n x q matrix of latent positions.</p>
 <p><hr>
-<a id="method-plot_individual_map"></a></p><h3>Method <code>plot_individual_map()</code></h3>
-<p>Plot the factorial map of the PCA</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>plot_individual_map</span>(
-  axes = <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>2</span>, <span class='kw'>self</span><span class='op'>$</span><span class='kw'>rank</span>),
-  main = <span class='st'>"Individual Factor Map"</span>,
-  plot = <span class='fl'>TRUE</span>,
-  cols = <span class='st'>"default"</span>
-)</pre><p></div></p>
+<a id="method-plot_individual_map"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>plot_individual_map()</code></h3>
+<p>Plot the factorial map of the PCA</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>plot_individual_map</span><span class='op'>(</span>
+  axes <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='va'>self</span><span class='op'>$</span><span class='va'>rank</span><span class='op'>)</span>,
+  main <span class='op'>=</span> <span class='st'>"Individual Factor Map"</span>,
+  plot <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  cols <span class='op'>=</span> <span class='st'>"default"</span>
+<span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>axes</code></dt><dd><p>numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))</p></dd>
 
@@ -390,19 +398,19 @@ Useful to compute the likelihood or for data visualization</p><h3>Usage</h3>
 <dt><code>cols</code></dt><dd><p>a character, factor or numeric to define the color associated with the individuals. By default, all individuals receive the default color of the current palette.</p></dd>
 
 </dl><p></div></p>
-<h3>Returns</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a <code>ggplot</code> graphic</p>
 <p><hr>
-<a id="method-plot_correlation_circle"></a></p><h3>Method <code>plot_correlation_circle()</code></h3>
-<p>Plot the correlation circle of a specified axis for a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNLDAfit.html'>PLNLDAfit</a></code> object</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>plot_correlation_circle</span>(
-  axes = <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>2</span>, <span class='kw'>self</span><span class='op'>$</span><span class='kw'>rank</span>),
-  main = <span class='st'>"Variable Factor Map"</span>,
-  cols = <span class='st'>"default"</span>,
-  plot = <span class='fl'>TRUE</span>
-)</pre><p></div></p>
+<a id="method-plot_correlation_circle"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>plot_correlation_circle()</code></h3>
+<p>Plot the correlation circle of a specified axis for a <code><a href='PLNLDAfit.html'>PLNLDAfit</a></code> object</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>plot_correlation_circle</span><span class='op'>(</span>
+  axes <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='va'>self</span><span class='op'>$</span><span class='va'>rank</span><span class='op'>)</span>,
+  main <span class='op'>=</span> <span class='st'>"Variable Factor Map"</span>,
+  cols <span class='op'>=</span> <span class='st'>"default"</span>,
+  plot <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>axes</code></dt><dd><p>numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))</p></dd>
 
@@ -413,19 +421,19 @@ Useful to compute the likelihood or for data visualization</p><h3>Usage</h3>
 <dt><code>plot</code></dt><dd><p>logical. Should the plot be displayed or sent back as ggplot object</p></dd>
 
 </dl><p></div></p>
-<h3>Returns</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a <code>ggplot</code> graphic</p>
 <p><hr>
-<a id="method-plot_PCA"></a></p><h3>Method <code>plot_PCA()</code></h3>
-<p>Plot a summary of the <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> object</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>plot_PCA</span>(
-  nb_axes = <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>3</span>, <span class='kw'>self</span><span class='op'>$</span><span class='kw'>rank</span>),
-  ind_cols = <span class='st'>"ind_cols"</span>,
-  var_cols = <span class='st'>"var_cols"</span>,
-  plot = <span class='fl'>TRUE</span>
-)</pre><p></div></p>
+<a id="method-plot_PCA"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>plot_PCA()</code></h3>
+<p>Plot a summary of the <code>PLNPCAfit</code> object</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>plot_PCA</span><span class='op'>(</span>
+  nb_axes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='va'>self</span><span class='op'>$</span><span class='va'>rank</span><span class='op'>)</span>,
+  ind_cols <span class='op'>=</span> <span class='st'>"ind_cols"</span>,
+  var_cols <span class='op'>=</span> <span class='st'>"var_cols"</span>,
+  plot <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>nb_axes</code></dt><dd><p>scalar: the number of axes to be considered when map = "both". The default is min(3,rank).</p></dd>
 
@@ -436,19 +444,19 @@ Useful to compute the likelihood or for data visualization</p><h3>Usage</h3>
 <dt><code>plot</code></dt><dd><p>logical. Should the plot be displayed or sent back as ggplot object</p></dd>
 
 </dl><p></div></p>
-<h3>Returns</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a <code>grob</code> object</p>
 <p><hr>
-<a id="method-show"></a></p><h3>Method <code>show()</code></h3>
-<p>User friendly print method</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>show</span>()</pre><p></div></p>
+<a id="method-show"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>show()</code></h3>
+<p>User friendly print method</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>show</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
 
 <p><hr>
-<a id="method-clone"></a></p><h3>Method <code>clone()</code></h3>
-<p>The objects of this class are cloneable with this method.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='kw'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>clone</span>(deep = <span class='fl'>FALSE</span>)</pre><p></div></p>
+<a id="method-clone"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>clone()</code></h3>
+<p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span>deep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
 
-<h3>Arguments</h3>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>deep</code></dt><dd><p>Whether to make a deep clone.</p></dd>
 
@@ -457,19 +465,22 @@ Useful to compute the likelihood or for data visualization</p><h3>Usage</h3>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
-<span class='kw'>myPCAs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>Offset</span>)), data = <span class='kw'>trichoptera</span>, ranks = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
+<span class='va'>myPCAs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNPCA.html'>PLNPCA</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span>, ranks <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt; 
 #&gt;  Adjusting 5 PLN models for PCA analysis.
 #&gt; 	 Rank approximation = 1 	 Rank approximation = 2 	 Rank approximation = 3 	 Rank approximation = 4 	 Rank approximation = 5 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='kw'>myPCA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getBestModel.html'>getBestModel</a></span>(<span class='kw'>myPCAs</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='kw'>myPCA</span>)</div><div class='output co'>#&gt; [1] "PLNPCAfit" "PLNfit"    "R6"       </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>myPCA</span>)</div><div class='output co'>#&gt; Poisson Lognormal with rank constrained for PCA (rank = 3)
+#&gt;  DONE!</div><div class='input'><span class='va'>myPCA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='getBestModel.PLNPCAfamily.html'>getBestModel</a></span><span class='op'>(</span><span class='va'>myPCAs</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='va'>myPCA</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "PLNPCAfit" "PLNfit"    "PCA"       "R6"       </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>myPCA</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Poisson Lognormal with rank constrained for PCA (rank = 3)
 #&gt; ==================================================================
-#&gt;  nb_param    loglik       BIC       ICL R_squared
-#&gt;        68 -1749.954 -1882.276 -1942.365     0.803
+#&gt;  nb_param    loglik      BIC       ICL
+#&gt;        68 -1750.218 -1882.54 -1942.629
 #&gt; ==================================================================
 #&gt; * Useful fields
 #&gt;     $model_par, $latent, $var_par, $optim_par
@@ -477,7 +488,7 @@ Useful to compute the likelihood or for data visualization</p><h3>Usage</h3>
 #&gt; * Useful S3 methods
 #&gt;     print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()
 #&gt; * Additional fields for PCA
-#&gt;     $percent_var, $corr_circle, $scores, $rotation
+#&gt;     $percent_var, $corr_circle, $scores, $rotation, $eig, $var, $ind
 #&gt; * Additional S3 methods for PCA
 #&gt;     plot.PLNPCAfit()</div></pre>
   </div>
@@ -495,7 +506,7 @@ Useful to compute the likelihood or for data visualization</p><h3>Usage</h3>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

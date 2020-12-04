@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -158,15 +158,15 @@
     <p>Fit the PCA variants of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA</a></span>(
-  <span class='kw'>formula</span>,
-  <span class='kw'>data</span>,
-  <span class='kw'>subset</span>,
-  <span class='kw'>weights</span>,
-  ranks = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,
-  control_init = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  control_main = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
-)</pre>
+    <pre class="usage"><span class='fu'>PLNPCA</span><span class='op'>(</span>
+  <span class='va'>formula</span>,
+  <span class='va'>data</span>,
+  <span class='va'>subset</span>,
+  <span class='va'>weights</span>,
+  ranks <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,
+  control_init <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  control_main <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -193,7 +193,7 @@
     </tr>
     <tr>
       <th>control_init</th>
-      <td><p>a list for controlling the optimization at initialization.  See details of function <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLN.html'>PLN()</a></code>.</p></td>
+      <td><p>a list for controlling the optimization at initialization.  See details of function <code><a href='PLN.html'>PLN()</a></code>.</p></td>
     </tr>
     <tr>
       <th>control_main</th>
@@ -203,8 +203,8 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>an R6 object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfamily.html'>PLNPCAfamily</a></code>, which contains
-a collection of models with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code></p>
+    <p>an R6 object with class <code><a href='PLNPCAfamily.html'>PLNPCAfamily</a></code>, which contains
+a collection of models with class <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code></p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The list of parameters <code>control_main</code> controls the optimization of the main process, with the following entries:</p><ul>
@@ -222,12 +222,13 @@ a collection of models with class <code><a href='https://rdrr.io/pkg/PLNmodels/m
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The classes <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfamily.html'>PLNPCAfamily</a></code> and <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code></p></div>
+    <div class='dont-index'><p>The classes <code><a href='PLNPCAfamily.html'>PLNPCAfamily</a></code> and <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
-<span class='kw'>myPCA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>Offset</span>)), data = <span class='kw'>trichoptera</span>, ranks = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
+<span class='va'>myPCA</span> <span class='op'>&lt;-</span> <span class='fu'>PLNPCA</span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span>, ranks <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt; 
 #&gt;  Adjusting 5 PLN models for PCA analysis.
@@ -249,7 +250,7 @@ a collection of models with class <code><a href='https://rdrr.io/pkg/PLNmodels/m
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

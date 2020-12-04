@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -158,7 +158,11 @@
     <p>Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/compute_offset.html'>compute_offset</a></span>(<span class='kw'>counts</span>, offset = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"TSS"</span>, <span class='st'>"GMPR"</span>, <span class='st'>"RLE"</span>, <span class='st'>"CSS"</span>, <span class='st'>"none"</span>), <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>compute_offset</span><span class='op'>(</span>
+  <span class='va'>counts</span>,
+  offset <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"TSS"</span>, <span class='st'>"GMPR"</span>, <span class='st'>"RLE"</span>, <span class='st'>"CSS"</span>, <span class='st'>"Wrench"</span>, <span class='st'>"none"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,7 +173,7 @@
     </tr>
     <tr>
       <th>offset</th>
-      <td><p>Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).</p></td>
+      <td><p>Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018), Wrench (introduced in Kumar et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -182,17 +186,19 @@
     <p>If <code>offset = "none"</code>, <code>NULL</code> else a vector of length <code><a href='https://rdrr.io/r/base/nrow.html'>nrow(counts)</a></code> with one offset per sample.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>RLE has an additional <code>pseudocounts</code> arguments to add pseudocounts to the observed counts (defaults to 0). CSS has an additional <code>reference</code> argument to choose the location function used to compute the reference quantiles (defaults to <code>median</code> as in the Nature publication but can be set to <code>mean</code> to reproduce behavior of functions cumNormStat* from metagenomeSeq). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples and (iii) GMPR fails if a sample does not share any species with all other samples.</p>
+    <p>RLE has additional <code>pseudocounts</code> and <code>type</code> arguments to add pseudocounts to the observed counts (defaults to 0L) and to compute offsets using only positive counts (if <code>type == "poscounts"</code>). This mimicks the behavior of <code>DESeq2::DESeq()</code> when using <code>sfType == "poscounts"</code>. CSS has an additional <code>reference</code> argument to choose the location function used to compute the reference quantiles (defaults to <code>median</code> as in the Nature publication but can be set to <code>mean</code> to reproduce behavior of functions cumNormStat* from metagenomeSeq). Wrench has two additional parameters: <code>groups</code> to specify sample groups and <code>type</code> to either reproduce exactly the default <code>Wrench::wrench()</code> behavior (<code>type = "wrench"</code>, default) or to use simpler heuristics (<code>type = "simple"</code>). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples (unless <code>type == "poscounts"</code> has been specified) and (iii) GMPR fails if a sample does not share any species with all other samples.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 <a href='https://doi.org/10.7717/peerj.4600'>https://doi.org/10.7717/peerj.4600</a></p>
 <p>Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 <a href='http://dx.doi.org/10.1038/nmeth.2658'>http://dx.doi.org/10.1038/nmeth.2658</a></p>
 <p>Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 <a href='https://doi.org/10.1186/gb-2010-11-10-r106'>https://doi.org/10.1186/gb-2010-11-10-r106</a></p>
+<p>Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 <a href='https://doi.org/10.1186/s12864-018-5160-5'>https://doi.org/10.1186/s12864-018-5160-5</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>counts</span> <span class='op'>&lt;-</span> <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>
-<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/compute_offset.html'>compute_offset</a></span>(<span class='kw'>counts</span>)</div><div class='output co'>#&gt;    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>counts</span> <span class='op'>&lt;-</span> <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>
+<span class='fu'>compute_offset</span><span class='op'>(</span><span class='va'>counts</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16 
 #&gt;   29   13   38  192   79   18    8   34   12    4    4    3   49   33  600  172 
 #&gt;   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32 
 #&gt;   58   51   56  127   35   13   17    3   27   40   44    8    9 1599 2980   88 
@@ -200,15 +206,8 @@
 #&gt;  135  327   66   90   63   15   14   20   70   53   95   43   62  149   16   31 
 #&gt;   49 
 #&gt;   86 </div><div class='input'><span class='co'>## Other normalization schemes</span>
-<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/compute_offset.html'>compute_offset</a></span>(<span class='kw'>counts</span>, offset = <span class='st'>"GMPR"</span>)</div><div class='output co'>#&gt;  [1]  0.5808301  0.5527895  0.3237539  1.3108117  0.8377992  0.3519896
-#&gt;  [7]  0.3480463  0.4473427  0.8240140  0.2102193  0.2417350  0.4792073
-#&gt; [13]  0.5617223  0.5626398  6.7233230  1.9539350  0.6789666  0.9708882
-#&gt; [19]  1.3048896  2.7954398  0.7849527  0.2390629  0.3191927  0.1765953
-#&gt; [25]  0.4280917  0.7323014  0.6268829  0.1074211  0.1432622 13.4141528
-#&gt; [31] 17.1399945  1.5216545  2.4971909  4.3163554  1.4396566  1.2444733
-#&gt; [37]  1.3477580  0.3869058  0.3514524  0.5822573  1.3701441  1.1127722
-#&gt; [43]  0.8582550  0.7646813  1.6970049  2.6515814  0.3343895  0.7587955
-#&gt; [49]  0.9715722</div><div class='input'><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/compute_offset.html'>compute_offset</a></span>(<span class='kw'>counts</span>, offset = <span class='st'>"RLE"</span>, pseudocounts = <span class='fl'>1</span>)</div><div class='output co'>#&gt;         1         2         3         4         5         6         7         8 
+<span class='fu'>compute_offset</span><span class='op'>(</span><span class='va'>counts</span>, offset <span class='op'>=</span> <span class='st'>"RLE"</span>, pseudocounts <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;         1         2         3         4         5         6         7         8 
 #&gt; 0.9186270 0.8349121 0.8570257 0.9186270 0.9186270 0.8349121 0.8192245 0.8570257 
 #&gt;         9        10        11        12        13        14        15        16 
 #&gt; 0.7322797 0.7322797 0.6321923 0.6321923 0.9240361 0.9186270 1.3788037 0.9240361 
@@ -221,9 +220,28 @@
 #&gt;        41        42        43        44        45        46        47        48 
 #&gt; 0.9240361 0.9240361 0.9584503 0.9584503 1.2643846 1.7140514 0.8233555 0.8908577 
 #&gt;        49 
-#&gt; 0.9186270 </div><div class='input'><span class='co'>## User supplied offsets</span>
-<span class='kw'>my_offset</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/setNames.html'>setNames</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>counts</span>)), <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='kw'>counts</span>))
-<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/compute_offset.html'>compute_offset</a></span>(<span class='kw'>counts</span>, offset = <span class='kw'>my_offset</span>)</div><div class='output co'>#&gt;    Che Hyc Hym Hys Psy Aga Glo Ath Cea Ced Set All Han Hfo Hsp Hve Sta
+#&gt; 0.9186270 </div><div class='input'><span class='fu'>compute_offset</span><span class='op'>(</span><span class='va'>counts</span>, offset <span class='op'>=</span> <span class='st'>"Wrench"</span>, groups <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>$</span><span class='va'>Group</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;  [1]  0.69617112  0.17772439  0.31918810  0.58503048  0.37114188  0.19846015
+#&gt;  [7]  0.05871729  0.17732815  0.06477092  0.03038695  0.02636997  0.01335544
+#&gt; [13] 15.97878650  1.25308073  2.59166652  0.73153479  8.31955593  3.29726449
+#&gt; [19]  0.68605117 35.74486487  0.29922507  0.20183174  3.21536182  0.02964492
+#&gt; [25]  2.42898846  2.11066579  0.95438702  1.17336576  0.22739391 70.13928757
+#&gt; [31] 31.14789183  2.24096704  2.14256759  1.74908073  0.84165887  0.55533980
+#&gt; [37]  3.59125649  0.22105352  0.20919575  0.16386981  2.70312687  3.73203456
+#&gt; [43]  0.53690902  5.31410880  6.53316557 23.33458085  0.56217888 21.34169565
+#&gt; [49] 34.52859945</div><div class='input'><span class='fu'>compute_offset</span><span class='op'>(</span><span class='va'>counts</span>, offset <span class='op'>=</span> <span class='st'>"GMPR"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;  [1]  0.7981233  0.7816485  0.9947327  1.5255738  1.3235046  0.7829728
+#&gt;  [7]  0.5292430  0.8453323  0.8509305  0.3378176  0.2415451  0.1207293
+#&gt; [13]  1.1119746  0.9712159  6.6202307  2.6650516  1.2309960  1.2732613
+#&gt; [19]  1.8363327  2.8330860  1.2872244  0.5193856  0.5013525  0.2066765
+#&gt; [25]  0.6193332  0.6695823  0.9206485  0.2389263  0.2683901 14.3884296
+#&gt; [31]  6.4649457  2.1886711  2.8838087  6.4053103  2.0500185  2.5463727
+#&gt; [37]  1.6452733  0.7728725  0.5871931  0.6882350  2.0094930  1.3741607
+#&gt; [43]  1.7944326  1.3953269  1.5150224  2.2205494  0.6018143  1.1423371
+#&gt; [49]  1.0978833</div><div class='input'><span class='co'>## User supplied offsets</span>
+<span class='va'>my_offset</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/setNames.html'>setNames</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>counts</span><span class='op'>)</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span><span class='op'>(</span><span class='va'>counts</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>compute_offset</span><span class='op'>(</span><span class='va'>counts</span>, offset <span class='op'>=</span> <span class='va'>my_offset</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;    Che Hyc Hym Hys Psy Aga Glo Ath Cea Ced Set All Han Hfo Hsp Hve Sta
 #&gt; 1    1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
 #&gt; 2    1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
 #&gt; 3    1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
@@ -288,7 +306,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

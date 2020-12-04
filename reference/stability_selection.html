@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -158,20 +158,20 @@
     <p>This function computes the StARS stability criteria over a path of penalties. If a path has already been computed, the functions stops with a message unless <code>force = TRUE</code> has been specified.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/stability_selection.html'>stability_selection</a></span>(
-  <span class='kw'>Robject</span>,
-  subsamples = <span class='kw'>NULL</span>,
-  control = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  mc.cores = <span class='fl'>1</span>,
-  force = <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>stability_selection</span><span class='op'>(</span>
+  <span class='va'>Robject</span>,
+  subsamples <span class='op'>=</span> <span class='cn'>NULL</span>,
+  control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  mc.cores <span class='op'>=</span> <span class='fl'>1</span>,
+  force <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Robject</th>
-      <td><p>an object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code>, i.e. an output from <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code></p></td>
+      <td><p>an object with class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code>, i.e. an output from <code><a href='PLNnetwork.html'>PLNnetwork()</a></code></p></td>
     </tr>
     <tr>
       <th>subsamples</th>
@@ -179,7 +179,7 @@
     </tr>
     <tr>
       <th>control</th>
-      <td><p>a list controlling the main optimization process in each call to PLNnetwork. See <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></td>
+      <td><p>a list controlling the main optimization process in each call to PLNnetwork. See <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></td>
     </tr>
     <tr>
       <th>mc.cores</th>
@@ -193,22 +193,24 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields <code>stability_path</code> of the initial Robject with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p>
+    <p>the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields <code>stability_path</code> of the initial Robject with class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
-<span class='kw'>fits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, data = <span class='kw'>trichoptera</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
+<span class='va'>fits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
 #&gt; 	Joint optimization alternating gradient descent and graphical-lasso
 #&gt; 	sparsifying penalty = 7.499547 	sparsifying penalty = 6.927113 	sparsifying penalty = 6.398373 	sparsifying penalty = 5.90999 	sparsifying penalty = 5.458886 	sparsifying penalty = 5.042214 	sparsifying penalty = 4.657346 	sparsifying penalty = 4.301855 	sparsifying penalty = 3.973498 	sparsifying penalty = 3.670204 	sparsifying penalty = 3.390061 	sparsifying penalty = 3.1313 	sparsifying penalty = 2.892291 	sparsifying penalty = 2.671525 	sparsifying penalty = 2.46761 	sparsifying penalty = 2.279259 	sparsifying penalty = 2.105285 	sparsifying penalty = 1.944591 	sparsifying penalty = 1.796162 	sparsifying penalty = 1.659062 	sparsifying penalty = 1.532427 	sparsifying penalty = 1.415458 	sparsifying penalty = 1.307418 	sparsifying penalty = 1.207624 	sparsifying penalty = 1.115447 	sparsifying penalty = 1.030306 	sparsifying penalty = 0.9516633 	sparsifying penalty = 0.8790237 	sparsifying penalty = 0.8119286 	sparsifying penalty = 0.7499547 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='kw'>n</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>subs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>10</span>, <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample.int</a></span>(<span class='kw'>n</span>, size = <span class='kw'>n</span><span class='op'>/</span><span class='fl'>2</span>), simplify = <span class='fl'>FALSE</span>)
-<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/stability_selection.html'>stability_selection</a></span>(<span class='kw'>nets</span>, subsamples = <span class='kw'>subs</span>)
-}</div></pre>
+#&gt;  DONE!</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>subs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span><span class='op'>(</span><span class='fl'>10</span>, <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample.int</a></span><span class='op'>(</span><span class='va'>n</span>, size <span class='op'>=</span> <span class='va'>n</span><span class='op'>/</span><span class='fl'>2</span><span class='op'>)</span>, simplify <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='fu'>stability_selection</span><span class='op'>(</span><span class='va'>nets</span>, subsamples <span class='op'>=</span> <span class='va'>subs</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -224,7 +226,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

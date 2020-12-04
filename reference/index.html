@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -174,6 +174,12 @@
       <tr>
         
         <td>
+          <p><code><a href="PLNmodels.html">PLNmodels</a></code> </p>
+        </td>
+        <td><p>PLNmodels</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="PLN.html">PLN()</a></code> </p>
         </td>
         <td><p>Poisson lognormal model</p></td>
@@ -195,6 +201,12 @@
           <p><code><a href="PLNnetwork.html">PLNnetwork()</a></code> </p>
         </td>
         <td><p>Poisson lognormal model towards sparse network inference</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="PLNmixture.html">PLNmixture()</a></code> </p>
+        </td>
+        <td><p>Poisson lognormal mixture model</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -229,9 +241,21 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="sigma.PLNfit.html">sigma(<i>&lt;PLNfit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Extract variance-covariance of residuals 'Sigma'</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="predict.PLNfit.html">predict(<i>&lt;PLNfit&gt;</i>)</a></code> </p>
         </td>
         <td><p>Predict counts of a new sample</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="fitted.PLNfit.html">fitted(<i>&lt;PLNfit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Extracts model fitted values from objects returned by <code>PLN()</code> and its variants</p></td>
       </tr><tr>
         
         <td>
@@ -275,6 +299,12 @@
           <p><code><a href="predict.PLNLDAfit.html">predict(<i>&lt;PLNLDAfit&gt;</i>)</a></code> </p>
         </td>
         <td><p>Predict group of new samples</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="coef.PLNLDAfit.html">coef(<i>&lt;PLNLDAfit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Extracts model coefficients from objects returned by <code>PLNLDA()</code></p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -312,6 +342,55 @@
           <p><code><a href="plot.PLNPCAfamily.html">plot(<i>&lt;PLNPCAfamily&gt;</i>)</a></code> </p>
         </td>
         <td><p>Display the criteria associated with a collection of PLNPCA fits (a PLNPCAfamily)</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="getBestModel.html">getBestModel()</a></code> </p>
+        </td>
+        <td><p>Best model extraction from a collection of models</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="getModel.html">getModel()</a></code> </p>
+        </td>
+        <td><p>Model extraction from a collection of models</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-mixture-of-poisson-lognormal-fits" class="hasAnchor"><a href="#section-mixture-of-poisson-lognormal-fits" class="anchor"></a>Mixture of Poisson Lognormal fits</h2>
+          <p class="section-desc"><p>Description of the PLNmixturefit and PLNmixturefamily objects and methods for their manipulation.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="PLNmixturefit.html">PLNmixturefit</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a PLNfit in a mixture framework</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.PLNmixturefit.html">plot(<i>&lt;PLNmixturefit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Mixture vizualisation of a <code>PLNmixturefit</code> object</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="PLNmixturefamily.html">PLNmixturefamily</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a collection of PLNmixturefit</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.PLNmixturefamily.html">plot(<i>&lt;PLNmixturefamily&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Display the criteria associated with a collection of PLNmixture fits (a PLNmixturefamily)</p></td>
       </tr><tr>
         
         <td>
@@ -385,11 +464,17 @@
           <p><code><a href="stability_selection.html">stability_selection()</a></code> </p>
         </td>
         <td><p>Compute the stability path by stability selection</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="extract_probs.html">extract_probs()</a></code> </p>
+        </td>
+        <td><p>Extract edge selection frequency in bootstrap subsamples</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-other-functions" class="hasAnchor"><a href="#section-other-functions" class="anchor"></a>Other functions</h2>
+          <h2 id="section-other-functions-and-objects" class="hasAnchor"><a href="#section-other-functions-and-objects" class="anchor"></a>Other functions and objects</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -410,6 +495,12 @@
           <p><code><a href="compute_offset.html">compute_offset()</a></code> </p>
         </td>
         <td><p>Compute offsets from a count data using one of several normalization schemes</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="PLNfamily.html">PLNfamily</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a collection of PLNfit</p></td>
       </tr><tr>
         
         <td>
@@ -466,7 +557,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

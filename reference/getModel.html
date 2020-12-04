@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -150,7 +150,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Model extraction from a collection of models</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNPCAfamily-S3methods.R'><code>R/PLNPCAfamily-S3methods.R</code></a>, <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNfamily-S3methods.R'><code>R/PLNfamily-S3methods.R</code></a>, <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfamily-S3methods.R'><code>R/PLNnetworkfamily-S3methods.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNPCAfamily-S3methods.R'><code>R/PLNPCAfamily-S3methods.R</code></a>, <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNfamily-S3methods.R'><code>R/PLNfamily-S3methods.R</code></a>, <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNmixturefamily-S3methods.R'><code>R/PLNmixturefamily-S3methods.R</code></a>, and 1 more</small>
     <div class="hidden name"><code>getModel.Rd</code></div>
     </div>
 
@@ -159,19 +159,22 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNPCAfamily</span>
-<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getModel.html'>getModel</a></span>(<span class='kw'>Robject</span>, <span class='kw'>var</span>, index = <span class='kw'>NULL</span>)
+<span class='fu'>getModel</span><span class='op'>(</span><span class='va'>Robject</span>, <span class='va'>var</span>, index <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getModel.html'>getModel</a></span>(<span class='kw'>Robject</span>, <span class='kw'>var</span>, <span class='kw'>index</span>)
+<span class='fu'>getModel</span><span class='op'>(</span><span class='va'>Robject</span>, <span class='va'>var</span>, <span class='va'>index</span><span class='op'>)</span>
+
+<span class='co'># S3 method for PLNmixturefamily</span>
+<span class='fu'>getModel</span><span class='op'>(</span><span class='va'>Robject</span>, <span class='va'>var</span>, index <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
 <span class='co'># S3 method for PLNnetworkfamily</span>
-<span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getModel.html'>getModel</a></span>(<span class='kw'>Robject</span>, <span class='kw'>var</span>, index = <span class='kw'>NULL</span>)</pre>
+<span class='fu'>getModel</span><span class='op'>(</span><span class='va'>Robject</span>, <span class='va'>var</span>, index <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Robject</th>
-      <td><p>an R6 object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfamily.html'>PLNPCAfamily</a></code> or <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></td>
+      <td><p>an R6 object with class <code><a href='PLNPCAfamily.html'>PLNPCAfamily</a></code> or <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></td>
     </tr>
     <tr>
       <th>var</th>
@@ -185,22 +188,24 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Sends back an object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfit.html'>PLNPCAfit</a></code> or <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfit.html'>PLNnetworkfit</a></code>.</p>
+    <p>Sends back an object with class <code><a href='PLNPCAfit.html'>PLNPCAfit</a></code> or <code><a href='PLNnetworkfit.html'>PLNnetworkfit</a></code>.</p>
     <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
 
     
 <ul>
-<li><p><code>PLNPCAfamily</code>: Model extraction for <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCAfamily.html'>PLNPCAfamily</a></code></p></li>
-<li><p><code>PLNnetworkfamily</code>: Model extraction for <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></li>
+<li><p><code>PLNPCAfamily</code>: Model extraction for <code><a href='PLNPCAfamily.html'>PLNPCAfamily</a></code></p></li>
+<li><p><code>PLNmixturefamily</code>: Model extraction for <code><a href='PLNmixturefamily.html'>PLNmixturefamily</a></code></p></li>
+<li><p><code>PLNnetworkfamily</code>: Model extraction for <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></li>
 </ul>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
-<span class='kw'>myPCA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNPCA.html'>PLNPCA</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>Offset</span>)), data = <span class='kw'>trichoptera</span>, ranks = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>)
-<span class='kw'>myModel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/getModel.html'>getModel</a></span>(<span class='kw'>myPCA</span>, <span class='fl'>2</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
+<span class='va'>myPCA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNPCA.html'>PLNPCA</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span>, ranks <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>)</span>
+<span class='va'>myModel</span> <span class='op'>&lt;-</span> <span class='fu'>getModel</span><span class='op'>(</span><span class='va'>myPCA</span>, <span class='fl'>2</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -216,7 +221,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

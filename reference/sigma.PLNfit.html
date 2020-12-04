@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -159,14 +159,14 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNfit</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/sigma.html'>sigma</a></span>(<span class='kw'>object</span>, <span class='kw'>...</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/stats/sigma.html'>sigma</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>an R6 object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfit.html'>PLNfit</a></code></p></td>
+      <td><p>an R6 object with class <code><a href='PLNfit.html'>PLNfit</a></code></p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -179,16 +179,18 @@
     <p>A semi definite positive matrix of size p, assuming there are p species in the model.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/PLNmodels/man/coef.PLNfit.html'>coef.PLNfit()</a></code>, <code><a href='https://rdrr.io/pkg/PLNmodels/man/standard_error.html'>standard_error.PLNfit()</a></code> and <code><a href='https://rdrr.io/pkg/PLNmodels/man/vcov.PLNfit.html'>vcov.PLNfit()</a></code> for other ways to access $$\Sigma$$.</p></div>
+    <div class='dont-index'><p><code><a href='coef.PLNfit.html'>coef.PLNfit()</a></code>, <code><a href='standard_error.html'>standard_error.PLNfit()</a></code> and <code><a href='vcov.PLNfit.html'>vcov.PLNfit()</a></code> for other ways to access $$\Sigma$$.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
-<span class='kw'>myPLN</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLN.html'>PLN</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>Offset</span>)), data = <span class='kw'>trichoptera</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
+<span class='va'>myPLN</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLN.html'>PLN</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt;  Adjusting a PLN model with full covariance model
 #&gt;  Post-treatments...
-#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/sigma.html'>sigma</a></span>(<span class='kw'>myPLN</span>) <span class='co'>## Sigma</span></div><div class='output co'>#&gt;              Che          Hyc         Hym         Hys           Psy
+#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/sigma.html'>sigma</a></span><span class='op'>(</span><span class='va'>myPLN</span><span class='op'>)</span> <span class='co'>## Sigma</span>
+</div><div class='output co'>#&gt;              Che          Hyc         Hym         Hys           Psy
 #&gt; Che  2.528721747 -0.008614963  0.35918900  0.44447578 -0.0177838001
 #&gt; Hyc -0.008614963  1.904478793  0.11312212  0.27172444 -0.1465650739
 #&gt; Hym  0.359188999  0.113122119  1.24438461  0.86672480 -0.1188757294
@@ -275,7 +277,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

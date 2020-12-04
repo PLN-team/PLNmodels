@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code>) — plot.PLNnetworkfamily • PLNmodels</title>
+<title>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily) — plot.PLNnetworkfamily • PLNmodels</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code>) — plot.PLNnetworkfamily" />
+<meta property="og:title" content="Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily) — plot.PLNnetworkfamily" />
 <meta property="og:description" content="Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a PLNnetworkfamily)" />
 <meta property="og:image" content="/logo.png" />
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -149,32 +149,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code>)</h1>
+    <h1>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code>)</h1>
     <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNnetworkfamily-S3methods.R'><code>R/PLNnetworkfamily-S3methods.R</code></a></small>
     <div class="hidden name"><code>plot.PLNnetworkfamily.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code>)</p>
+    <p>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code>)</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNnetworkfamily</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(
-  <span class='kw'>x</span>,
-  type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"criteria"</span>, <span class='st'>"stability"</span>, <span class='st'>"diagnostic"</span>),
-  criteria = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"loglik"</span>, <span class='st'>"pen_loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span>),
-  log.x = <span class='fl'>TRUE</span>,
-  stability = <span class='fl'>0.9</span>,
-  annotate = <span class='fl'>TRUE</span>,
-  <span class='kw'>...</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"criteria"</span>, <span class='st'>"stability"</span>, <span class='st'>"diagnostic"</span><span class='op'>)</span>,
+  criteria <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"loglik"</span>, <span class='st'>"pen_loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"EBIC"</span><span class='op'>)</span>,
+  log.x <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  stability <span class='op'>=</span> <span class='fl'>0.9</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>an R6 object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></td>
+      <td><p>an R6 object with class <code><a href='PLNnetworkfamily.html'>PLNnetworkfamily</a></code></p></td>
     </tr>
     <tr>
       <th>type</th>
@@ -194,10 +193,6 @@ Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when <code>t
       <td><p>scalar: the targeted level of stability in stability plot. Default is .9.</p></td>
     </tr>
     <tr>
-      <th>annotate</th>
-      <td><p>logical: should the value of approximated R squared be added to the plot of criteria? Default is <code>TRUE</code>.</p></td>
-    </tr>
-    <tr>
       <th>...</th>
       <td><p>additional parameters for S3 compatibility. Not used</p></td>
     </tr>
@@ -210,17 +205,19 @@ highlighting the best model in terms of BIC and EBIC (the greater, the better).
 These criteria have the form 'loglik - 1/2 * penalty' so that they are on the same scale as the model loglikelihood.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
-<span class='kw'>fits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLNnetwork.html'>PLNnetwork</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, data = <span class='kw'>trichoptera</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
+<span class='va'>fits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNnetwork.html'>PLNnetwork</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt;  Adjusting 30 PLN with sparse inverse covariance estimation
 #&gt; 	Joint optimization alternating gradient descent and graphical-lasso
 #&gt; 	sparsifying penalty = 7.499547 	sparsifying penalty = 6.927113 	sparsifying penalty = 6.398373 	sparsifying penalty = 5.90999 	sparsifying penalty = 5.458886 	sparsifying penalty = 5.042214 	sparsifying penalty = 4.657346 	sparsifying penalty = 4.301855 	sparsifying penalty = 3.973498 	sparsifying penalty = 3.670204 	sparsifying penalty = 3.390061 	sparsifying penalty = 3.1313 	sparsifying penalty = 2.892291 	sparsifying penalty = 2.671525 	sparsifying penalty = 2.46761 	sparsifying penalty = 2.279259 	sparsifying penalty = 2.105285 	sparsifying penalty = 1.944591 	sparsifying penalty = 1.796162 	sparsifying penalty = 1.659062 	sparsifying penalty = 1.532427 	sparsifying penalty = 1.415458 	sparsifying penalty = 1.307418 	sparsifying penalty = 1.207624 	sparsifying penalty = 1.115447 	sparsifying penalty = 1.030306 	sparsifying penalty = 0.9516633 	sparsifying penalty = 0.8790237 	sparsifying penalty = 0.8119286 	sparsifying penalty = 0.7499547 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>fits</span>)
-}</div></pre>
+#&gt;  DONE!</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fits</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -236,7 +233,7 @@ These criteria have the form 'loglik - 1/2 * penalty' so that they are on the sa
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

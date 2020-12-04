@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate Variance-Covariance Matrix for a fitted <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLN.html'>PLN()</a></code> model object — vcov.PLNfit • PLNmodels</title>
+<title>Calculate Variance-Covariance Matrix for a fitted PLN() model object — vcov.PLNfit • PLNmodels</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Calculate Variance-Covariance Matrix for a fitted <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLN.html'>PLN()</a></code> model object — vcov.PLNfit" />
+<meta property="og:title" content="Calculate Variance-Covariance Matrix for a fitted PLN() model object — vcov.PLNfit" />
 <meta property="og:description" content="Returns the variance-covariance matrix of the main parameters of a fitted PLN() model object. The main parameters of the model correspond to $$\Theta$$, as returned by coef.PLNfit(). The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via sigma.PLNfit()" />
 <meta property="og:image" content="/logo.png" />
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.6-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9005</span>
       </span>
     </div>
 
@@ -149,24 +149,24 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate Variance-Covariance Matrix for a fitted <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLN.html'>PLN()</a></code> model object</h1>
+    <h1>Calculate Variance-Covariance Matrix for a fitted <code><a href='PLN.html'>PLN()</a></code> model object</h1>
     <small class="dont-index">Source: <a href='https://github.com/jchiquet/PLNmodels/blob/master/R/PLNfit-S3methods.R'><code>R/PLNfit-S3methods.R</code></a></small>
     <div class="hidden name"><code>vcov.PLNfit.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Returns the variance-covariance matrix of the main parameters of a fitted <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLN.html'>PLN()</a></code> model object. The main parameters of the model correspond to $$\Theta$$, as returned by <code><a href='https://rdrr.io/pkg/PLNmodels/man/coef.PLNfit.html'>coef.PLNfit()</a></code>. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via <code><a href='https://rdrr.io/pkg/PLNmodels/man/sigma.PLNfit.html'>sigma.PLNfit()</a></code></p>
+    <p>Returns the variance-covariance matrix of the main parameters of a fitted <code><a href='PLN.html'>PLN()</a></code> model object. The main parameters of the model correspond to $$\Theta$$, as returned by <code><a href='coef.PLNfit.html'>coef.PLNfit()</a></code>. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via <code><a href='sigma.PLNfit.html'>sigma.PLNfit()</a></code></p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PLNfit</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/vcov.html'>vcov</a></span>(<span class='kw'>object</span>, type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"main"</span>, <span class='st'>"covariance"</span>), <span class='kw'>...</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/stats/vcov.html'>vcov</a></span><span class='op'>(</span><span class='va'>object</span>, type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"main"</span>, <span class='st'>"covariance"</span><span class='op'>)</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>an R6 object with class <code><a href='https://rdrr.io/pkg/PLNmodels/man/PLNfit.html'>PLNfit</a></code></p></td>
+      <td><p>an R6 object with class <code><a href='PLNfit.html'>PLNfit</a></code></p></td>
     </tr>
     <tr>
       <th>type</th>
@@ -184,16 +184,18 @@
 .</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/PLNmodels/man/sigma.PLNfit.html'>sigma.PLNfit()</a></code>, <code><a href='https://rdrr.io/pkg/PLNmodels/man/coef.PLNfit.html'>coef.PLNfit()</a></code>, <code><a href='https://rdrr.io/pkg/PLNmodels/man/standard_error.html'>standard_error.PLNfit()</a></code></p></div>
+    <div class='dont-index'><p><code><a href='sigma.PLNfit.html'>sigma.PLNfit()</a></code>, <code><a href='coef.PLNfit.html'>coef.PLNfit()</a></code>, <code><a href='standard_error.html'>standard_error.PLNfit()</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>trichoptera</span>)
-<span class='kw'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/prepare_data.html'>prepare_data</a></span>(<span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Abundance</span>, <span class='kw'>trichoptera</span><span class='op'>$</span><span class='kw'>Covariate</span>)
-<span class='kw'>myPLN</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/PLNmodels/man/PLN.html'>PLN</a></span>(<span class='kw'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>Offset</span>)), data = <span class='kw'>trichoptera</span>)</div><div class='output co'>#&gt; 
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
+<span class='va'>myPLN</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLN.html'>PLN</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt;  Adjusting a PLN model with full covariance model
 #&gt;  Post-treatments...
-#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/vcov.html'>vcov</a></span>(<span class='kw'>myPLN</span>) <span class='co'>## variance-covariance of Theta</span></div><div class='output co'>#&gt; 17 x 17 sparse Matrix of class "dgCMatrix"
+#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/vcov.html'>vcov</a></span><span class='op'>(</span><span class='va'>myPLN</span><span class='op'>)</span> <span class='co'>## variance-covariance of Theta</span>
+</div><div class='output co'>#&gt; 17 x 17 sparse Matrix of class "dgCMatrix"
 #&gt;                                                                              
 #&gt; Che_(Intercept) 2.999367 .          .     .           .       .       .      
 #&gt; Hyc_(Intercept) .        3.001089   .     .           .       .       .      
@@ -247,7 +249,8 @@
 #&gt; Hfo_(Intercept)   .      .          .     
 #&gt; Hsp_(Intercept) 470.1098 .          .     
 #&gt; Hve_(Intercept)   .      8.994996   .     
-#&gt; Sta_(Intercept)   .      .        291.0572</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/vcov.html'>vcov</a></span>(<span class='kw'>myPLN</span>, type = <span class='st'>"covariance"</span>) <span class='co'>## Sigma</span></div><div class='output co'>#&gt;              Che          Hyc         Hym         Hys           Psy
+#&gt; Sta_(Intercept)   .      .        291.0572</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/vcov.html'>vcov</a></span><span class='op'>(</span><span class='va'>myPLN</span>, type <span class='op'>=</span> <span class='st'>"covariance"</span><span class='op'>)</span> <span class='co'>## Sigma</span>
+</div><div class='output co'>#&gt;              Che          Hyc         Hym         Hys           Psy
 #&gt; Che  2.528721747 -0.008614963  0.35918900  0.44447578 -0.0177838001
 #&gt; Hyc -0.008614963  1.904478793  0.11312212  0.27172444 -0.1465650739
 #&gt; Hym  0.359188999  0.113122119  1.24438461  0.86672480 -0.1188757294
@@ -334,7 +337,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
