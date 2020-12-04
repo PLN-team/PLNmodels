@@ -12,6 +12,7 @@
 ^\.gitignore$
 ^\.Rhistory$
 ^README.md$
+^README.html$
 ^LICENSE$
 ^.editorconfig$
 ^README.Rmd

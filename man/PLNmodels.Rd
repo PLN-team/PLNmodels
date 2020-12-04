@@ -43,6 +43,14 @@ See the main function \code{\link[=PLNLDA]{PLNLDA()}} and the associated methods
 Also try vignette("PLNLDA_trichoptera", package="PLNmodels") for an overview.
 }
 
+\section{Mixtures of Poisson lognormal models for model-based clustering  (aka PLNmixture)}{
+
+
+See the main function \code{\link[=PLNmixture]{PLNmixture()}} and the associated methods for manipulation.
+
+Also try vignette("PLNmixture_trichoptera", package="PLNmodels") for an overview.
+}
+
 \author{
 Julien Chiquet \email{julien.chiquet@inrae.fr}
 
