@@ -81,6 +81,9 @@
     <li>
       <a href="../articles/PLNLDA.html">PLNLDA: Discriminant Analysis</a>
     </li>
+    <li>
+      <a href="../articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -594,7 +597,7 @@ fitted value vs. observation
 ## 4  6.189135 1.3772081 -2.4178181
 ## 5  4.297486 0.4923342 -0.9335276
 ## 6  6.094833 1.2443428 -0.6174901</code></pre>
-<p>You can also use high level functions from the <a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> package to extract relevant informations</p>
+<p>You can also use high level functions from the <a href="https://cran.r-project.org/package=factoextra">factoextra</a> package to extract relevant informations</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Eigenvalues</span>
 <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/eigenvalue.html">get_eig</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span></code></pre></div>
@@ -621,7 +624,7 @@ fitted value vs. observation
 ## 1 "$coord"   "Coordinates for the individuals" 
 ## 2 "$cos2"    "Cos2 for the individuals"        
 ## 3 "$contrib" "contributions of the individuals"</code></pre>
-<p>And some of the very nice plottings methods such as biplots, correlation circies and scatter plots of the scores.</p>
+<p>And some of the very nice plotting methods such as biplots, correlation circles and scatter plots of the scores.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_biplot</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/fviz_biplot-1.png" width="700"></p>
