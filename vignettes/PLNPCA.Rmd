@@ -247,7 +247,7 @@ str(myPCA_cov$ind)
 head(myPCA_cov$ind$coord)
 ```
 
-You can also use high level functions from the [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) package to extract relevant informations 
+You can also use high level functions from the [factoextra](https://cran.r-project.org/package=factoextra) package to extract relevant informations 
 
 ```{r pca_bindings}
 ## Eigenvalues
@@ -258,14 +258,16 @@ factoextra::get_pca_var(myPCA_cov)
 factoextra::get_pca_ind(myPCA_cov)
 ```
 
-And some of the very nice plottings methods such as biplots, correlation circies and scatter plots of the scores. 
+And some of the very nice plotting methods such as biplots, correlation circles and scatter plots of the scores. 
 
 ```{r fviz_biplot}
 factoextra::fviz_pca_biplot(myPCA_cov)
 ```
+
 ```{r fviz_cor_circle}
 factoextra::fviz_pca_var(myPCA_cov)
 ```
+
 ```{r fviz_principal_plane}
 factoextra::fviz_pca_ind(myPCA_cov)
 ```
