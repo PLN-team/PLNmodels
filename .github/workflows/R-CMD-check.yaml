@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - dev # FIXME temporary test
   pull_request:
     branches:
       - main

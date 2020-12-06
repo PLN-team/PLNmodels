@@ -111,11 +111,11 @@ template <typename... Types> struct Packer {
 
 template <typename... Types> Packer<Types...> make_packer(const Types &... values) {
     // Initialize Packer<Types...> using brace init, which guarantees evaluation order (required here !).
-    // Will call each PackedInfo<T> constructor in order, increasing offset.
+    // Will call each PackedInfo<T> constructor in order, increasing offset every time.
     // Then the final offset value will be copied into the size field.
     arma::uword current_offset = 0;
     return {
-        {PackedInfo<Types>(values, current_offset)...}, // Increases offset sequentially for each value
-        current_offset,                                 // Final value
+        std::tuple<PackedInfo<Types>...>{PackedInfo<Types>(values, current_offset)...},
+        current_offset,
     };
 }
