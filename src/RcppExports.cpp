@@ -151,13 +151,13 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cpp_test_packer
-bool cpp_test_packer();
-RcppExport SEXP _PLNmodels_cpp_test_packer() {
+// cpp_test_packing
+bool cpp_test_packing();
+RcppExport SEXP _PLNmodels_cpp_test_packing() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(cpp_test_packer());
+    rcpp_result_gen = Rcpp::wrap(cpp_test_packing());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -172,7 +172,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_cpp_optimize_vestep_full", (DL_FUNC) &_PLNmodels_cpp_optimize_vestep_full, 8},
     {"_PLNmodels_cpp_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_cpp_optimize_vestep_diagonal, 8},
     {"_PLNmodels_cpp_optimize_vestep_spherical", (DL_FUNC) &_PLNmodels_cpp_optimize_vestep_spherical, 8},
-    {"_PLNmodels_cpp_test_packer", (DL_FUNC) &_PLNmodels_cpp_test_packer, 0},
+    {"_PLNmodels_cpp_test_packing", (DL_FUNC) &_PLNmodels_cpp_test_packing, 0},
     {NULL, NULL, 0}
 };
 

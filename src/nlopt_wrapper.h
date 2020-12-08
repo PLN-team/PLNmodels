@@ -1,9 +1,15 @@
-#include <RcppArmadillo.h>
+// Provide a nice wrapper for nloptr optimizer.
+// It accepts a C++11 lambda anonymous closure for the computation of objective & gradients.
+// This is easier than generating by hand the void* data and C style callback.
+#pragma once
+
+#include <Rcpp.h>
 #include <nlopt.h>
 
 #include <functional> // lambda wrapping
 #include <string>
 #include <utility> // move
+#include <vector>
 
 // Retrieve the algorithm enum value associated to 'name', or throw an error
 nlopt_algorithm algorithm_from_name(const std::string & name);
@@ -12,7 +18,7 @@ nlopt_algorithm algorithm_from_name(const std::string & name);
 struct OptimizerConfiguration {
     nlopt_algorithm algorithm; // Must be from the supported algorithm list.
 
-    arma::vec xtol_abs; // of size packer.size
+    std::vector<double> xtol_abs; // of size packer.size
     double xtol_rel;
 
     double ftol_abs;
@@ -30,18 +36,21 @@ struct OptimizerConfiguration {
     // The parameter-specific mode delegates extraction of the xtol_abs list and packing to xtol_abs array to
     // a user sub function of prototype: void pack_xtol_abs(arma::vec & packed, Rcpp::List xtol_abs_list).
     // These subfunctions are generally specific to the algorithm variant (parameter list types).
-    // They use PackedInfo::pack_double_or_arma() to accept as input, for each parameter:
+    // They use PackingMetadata::pack_double_or_arma() to accept as input, for each parameter:
     // - a single double value: use this value for all elements of the parameter
     // - an arma mat/vec with the parameter dimensions: use element-specific values
     template <typename F>
-    static OptimizerConfiguration from_r_list(const Rcpp::List & list, arma::uword packer_size, F pack_xtol_abs) {
+    static OptimizerConfiguration from_r_list(const Rcpp::List & list, std::size_t packer_size, F pack_xtol_abs) {
         // Special handling for xtol_abs
-        auto xtol_abs = arma::vec(packer_size);
+        auto xtol_abs = std::vector<double>(packer_size);
         SEXP xtol_abs_r_value = list["xtol_abs"];
         if(Rcpp::is<double>(xtol_abs_r_value)) {
-            xtol_abs.fill(Rcpp::as<double>(xtol_abs_r_value));
+            double d = Rcpp::as<double>(xtol_abs_r_value);
+            for(auto & v : xtol_abs) {
+                v = d;
+            }
         } else if(Rcpp::is<Rcpp::List>(xtol_abs_r_value)) {
-            pack_xtol_abs(xtol_abs, Rcpp::as<Rcpp::List>(xtol_abs_r_value));
+            pack_xtol_abs(xtol_abs.data(), Rcpp::as<Rcpp::List>(xtol_abs_r_value));
         } else {
             throw Rcpp::exception("unsupported config[xtol_abs] type: must be double or list of by-parameter values");
         }
@@ -71,9 +80,9 @@ struct OptimizerResult {
 // Find parameters minimizing the given objective function, under the given configuration.
 OptimizerResult minimize_objective_on_parameters(
     // Parameters are modified in place
-    arma::vec & parameters,
+    std::vector<double> & parameters,
     const OptimizerConfiguration & config,
     // Computation step function (usually initialised with a stateful lambda / closure).
     // It should compute and return the objective value for the given parameters, and store computed gradients.
     // Both vectors are of size nb_parameters.
-    std::function<double(const arma::vec & parameters, arma::vec & gradients)> objective_and_grad_fn);
+    std::function<double(const double * parameters, double * gradients)> objective_and_grad_fn);

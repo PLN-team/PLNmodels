@@ -50,11 +50,11 @@ nlopt_algorithm algorithm_from_name(const std::string & name) {
 // nlopt wrapper
 
 OptimizerResult minimize_objective_on_parameters(
-    arma::vec & parameters,
+    std::vector<double> & parameters,
     const OptimizerConfiguration & config,
-    std::function<double(const arma::vec & parameters, arma::vec & gradients)> objective_and_grad_fn //
+    std::function<double(const double * parameters, double * gradients)> objective_and_grad_fn //
 ) {
-    if(!(config.xtol_abs.n_elem == parameters.n_elem)) {
+    if(config.xtol_abs.size() != parameters.size()) {
         throw Rcpp::exception("config.xtol_abs size");
     }
 
@@ -63,7 +63,7 @@ OptimizerResult minimize_objective_on_parameters(
     struct Deleter {
         void operator()(Optimizer * optimizer) const { nlopt_destroy(optimizer); }
     };
-    auto optimizer = std::unique_ptr<Optimizer, Deleter>(nlopt_create(config.algorithm, parameters.n_elem));
+    auto optimizer = std::unique_ptr<Optimizer, Deleter>(nlopt_create(config.algorithm, parameters.size()));
     if(!optimizer) {
         throw Rcpp::exception("nlopt_create");
     }
@@ -74,7 +74,7 @@ OptimizerResult minimize_objective_on_parameters(
             throw Rcpp::exception(reason);
         }
     };
-    check(nlopt_set_xtol_abs(optimizer.get(), config.xtol_abs.memptr()), "nlopt_set_xtol_abs");
+    check(nlopt_set_xtol_abs(optimizer.get(), config.xtol_abs.data()), "nlopt_set_xtol_abs");
     check(nlopt_set_xtol_rel(optimizer.get(), config.xtol_rel), "nlopt_set_xtol_rel");
     check(nlopt_set_ftol_abs(optimizer.get(), config.ftol_abs), "nlopt_set_ftol_abs");
     check(nlopt_set_ftol_rel(optimizer.get(), config.ftol_rel), "nlopt_set_ftol_rel");
@@ -88,25 +88,21 @@ OptimizerResult minimize_objective_on_parameters(
     // It is an adapter: convert nlopt raw arrays to arma values, and call the closure.
     struct OptimData {
         int nb_iterations;
-        std::function<double(const arma::vec &, arma::vec &)> objective_and_grad_fn;
+        std::function<double(const double *, double *)> objective_and_grad_fn;
     };
     OptimData optim_data = {0, std::move(objective_and_grad_fn)};
 
     auto optim_fn = [](unsigned n, const double * x, double * grad, void * data) -> double {
-        // Wrap raw C arrays from nlopt into arma::vec (no copy)
-        const auto parameters = arma::vec(const_cast<double *>(x), n, false, true);
-        auto grad_storage = arma::vec(grad, n, false, true);
-        // Restore optim_data and use it to perform computation step
         OptimData & optim_data = *static_cast<OptimData *>(data);
         optim_data.nb_iterations += 1;
-        return optim_data.objective_and_grad_fn(parameters, grad_storage);
+        return optim_data.objective_and_grad_fn(x, grad);
     };
     if(nlopt_set_min_objective(optimizer.get(), optim_fn, &optim_data) != NLOPT_SUCCESS) {
         throw Rcpp::exception("nlopt_set_min_objective");
     }
 
     double objective = 0.;
-    nlopt_result status = nlopt_optimize(optimizer.get(), parameters.memptr(), &objective);
+    nlopt_result status = nlopt_optimize(optimizer.get(), parameters.data(), &objective);
     return OptimizerResult{status, objective, optim_data.nb_iterations};
 }
 
@@ -127,23 +123,21 @@ bool cpp_test_nlopt() {
     // min_x x^2 -> should be 0. Does not uses packer due to only 1 variable.
     auto config = OptimizerConfiguration{
         algorithm_from_name("LBFGS"),
-        arma::vec{epsilon}, // xtol_abs
-        epsilon,            // xtol_rel
-        epsilon,            // ftol_abs
-        epsilon,            // ftol_rel
-        100,                // maxeval
-        100.,               // maxtime
+        std::vector<double>{epsilon}, // xtol_abs
+        epsilon,                      // xtol_rel
+        epsilon,                      // ftol_abs
+        epsilon,                      // ftol_rel
+        100,                          // maxeval
+        100.,                         // maxtime
     };
-    auto x = arma::vec{42.};
-    auto f_and_grad = [check](const arma::vec & x, arma::vec & grad) -> double {
-        check(x.n_elem == 1, "opt x size");
-        check(grad.n_elem == 1, "opt grad size");
+    auto x = std::vector<double>{42.};
+    auto f_and_grad = [check](const double * x, double * grad) -> double {
         double v = x[0];
         grad[0] = 2. * v;
         return v * v;
     };
     OptimizerResult r = minimize_objective_on_parameters(x, config, f_and_grad);
-    check(arma::approx_equal(x, arma::vec{0.}, "absdiff", 10. * epsilon), "optim convergence");
+    check(std::abs(x[0]) < epsilon, "optim convergence");
     check(r.status != NLOPT_FAILURE, "optim status");
 
     return success;
