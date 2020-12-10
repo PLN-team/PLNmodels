@@ -5,7 +5,7 @@ bool cpp_test_packing() {
     bool success = true;
     auto check = [&success](bool check_value, const char * context) {
         if(!check_value) {
-            REprintf("Cpp internals failed: %s", context);
+            REprintf("Cpp internals failed: %s\n", context);
             success = false;
         }
     };
