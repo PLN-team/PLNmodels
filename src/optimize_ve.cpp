@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 
 #include "nlopt_wrapper.h"
-#include "packer.h"
+#include "packing.h"
 
 inline arma::vec logfact(arma::mat y) {
     y.replace(0., 1.);
@@ -25,30 +25,38 @@ Rcpp::List cpp_optimize_vestep_full(
     const arma::vec & w,                // weights (n)
     const arma::mat & Theta,            // (p,d)
     const arma::mat & Omega,            // (p,p)
-    const Rcpp::List & configuration    // OptimizerConfiguration
+    const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
 
-    const auto packer = make_packer(init_M, init_S);
-    enum { M_ID, S_ID }; // Names for packer indexes
+    const auto metadata = tuple_metadata(init_M, init_S);
+    enum { M_ID, S_ID }; // Names for metadata indexes
 
-    auto parameters = arma::vec(packer.size);
-    packer.pack<M_ID>(parameters, init_M);
-    packer.pack<S_ID>(parameters, init_S);
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<M_ID>(parameters.data()) = init_M;
+    metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
-        packer.pack_double_or_arma<M_ID>(packed, list["M"]);
-        packer.pack_double_or_arma<S_ID>(packed, list["S"]);
-    };
-    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+    if(configuration.containsElementNamed("xtol_abs")) {
+        SEXP value = configuration["xtol_abs"];
+        if(Rcpp::is<double>(value)) {
+            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
+        } else {
+            auto per_param_list = Rcpp::as<Rcpp::List>(value);
+            auto packed = std::vector<double>(metadata.packed_size);
+            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
+            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
+            set_per_value_xtol_abs(optimizer.get(), packed);
+        }
+    }
 
     // Optimize
     auto objective_and_grad =
-        [&packer, &O, &X, &Y, &w, &Theta, &Omega](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        arma::mat M = packer.unpack<M_ID>(parameters);
-        arma::mat S = packer.unpack<S_ID>(parameters);
+        [&metadata, &O, &X, &Y, &w, &Theta, &Omega](const double * params, double * grad) -> double {
+        const arma::mat M = metadata.map<M_ID>(params);
+        const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
@@ -56,15 +64,15 @@ Rcpp::List cpp_optimize_vestep_full(
         arma::mat nSigma = M.t() * diagmat(w) * M + diagmat(sum(S2.each_col() % w, 0));
         double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * trace(Omega * nSigma);
 
-        packer.pack<M_ID>(grad_storage, diagmat(w) * (M * Omega + A - Y));
-        packer.pack<S_ID>(grad_storage, diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1)));
+        metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
         return objective;
     };
-    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Model and variational parameters
-    arma::mat M = packer.unpack<M_ID>(parameters);
-    arma::mat S = packer.unpack<S_ID>(parameters);
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
     arma::mat S2 = S % S;
     // Element-wise log-likelihood
     arma::mat Z = O + X * Theta.t() + M;
@@ -92,30 +100,38 @@ Rcpp::List cpp_optimize_vestep_diagonal(
     const arma::vec & w,                // weights (n)
     const arma::mat & Theta,            // (p,d)
     const arma::mat & Omega,            // (p,p)
-    const Rcpp::List & configuration    // OptimizerConfiguration
+    const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
 
-    const auto packer = make_packer(init_M, init_S);
-    enum { M_ID, S_ID }; // Names for packer indexes
+    const auto metadata = tuple_metadata(init_M, init_S);
+    enum { M_ID, S_ID }; // Names for metadata indexes
 
-    auto parameters = arma::vec(packer.size);
-    packer.pack<M_ID>(parameters, init_M);
-    packer.pack<S_ID>(parameters, init_S);
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<M_ID>(parameters.data()) = init_M;
+    metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
-        packer.pack_double_or_arma<M_ID>(packed, list["M"]);
-        packer.pack_double_or_arma<S_ID>(packed, list["S"]);
-    };
-    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+    if(configuration.containsElementNamed("xtol_abs")) {
+        SEXP value = configuration["xtol_abs"];
+        if(Rcpp::is<double>(value)) {
+            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
+        } else {
+            auto per_param_list = Rcpp::as<Rcpp::List>(value);
+            auto packed = std::vector<double>(metadata.packed_size);
+            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
+            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
+            set_per_value_xtol_abs(optimizer.get(), packed);
+        }
+    }
 
     // Optimize
     auto objective_and_grad =
-        [&packer, &O, &X, &Y, &w, &Theta, &Omega](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        arma::mat M = packer.unpack<M_ID>(parameters);
-        arma::mat S = packer.unpack<S_ID>(parameters);
+        [&metadata, &O, &X, &Y, &w, &Theta, &Omega](const double * params, double * grad) -> double {
+        const arma::mat M = metadata.map<M_ID>(params);
+        const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
@@ -124,15 +140,15 @@ Rcpp::List cpp_optimize_vestep_diagonal(
         double objective =
             accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * as_scalar(w.t() * (pow(M, 2) + S2) * omega2);
 
-        packer.pack<M_ID>(grad_storage, diagmat(w) * (M * Omega + A - Y));
-        packer.pack<S_ID>(grad_storage, diagmat(w) * (S.each_row() % omega2 + S % A - pow(S, -1)));
+        metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % omega2 + S % A - pow(S, -1));
         return objective;
     };
-    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Model and variational parameters
-    arma::mat M = packer.unpack<M_ID>(parameters);
-    arma::mat S = packer.unpack<S_ID>(parameters);
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
     arma::mat S2 = S % S;
     arma::vec omega2 = Omega.diag();
     // Element-wise log-likelihood
@@ -161,30 +177,38 @@ Rcpp::List cpp_optimize_vestep_spherical(
     const arma::vec & w,                // weights (n)
     const arma::mat & Theta,            // (p,d)
     const arma::mat & Omega,            // (p,p)
-    const Rcpp::List & configuration    // OptimizerConfiguration
+    const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
     const auto init_S = Rcpp::as<arma::vec>(init_parameters["S"]); // (n)
 
-    const auto packer = make_packer(init_M, init_S);
-    enum { M_ID, S_ID }; // Names for packer indexes
+    const auto metadata = tuple_metadata(init_M, init_S);
+    enum { M_ID, S_ID }; // Names for metadata indexes
 
-    auto parameters = arma::vec(packer.size);
-    packer.pack<M_ID>(parameters, init_M);
-    packer.pack<S_ID>(parameters, init_S);
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<M_ID>(parameters.data()) = init_M;
+    metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
-        packer.pack_double_or_arma<M_ID>(packed, list["M"]);
-        packer.pack_double_or_arma<S_ID>(packed, list["S"]);
-    };
-    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+    if(configuration.containsElementNamed("xtol_abs")) {
+        SEXP value = configuration["xtol_abs"];
+        if(Rcpp::is<double>(value)) {
+            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
+        } else {
+            auto per_param_list = Rcpp::as<Rcpp::List>(value);
+            auto packed = std::vector<double>(metadata.packed_size);
+            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
+            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
+            set_per_value_xtol_abs(optimizer.get(), packed);
+        }
+    }
 
     // Optimize
     auto objective_and_grad =
-        [&packer, &O, &X, &Y, &w, &Theta, &Omega](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        arma::mat M = packer.unpack<M_ID>(parameters);
-        arma::vec S = packer.unpack<S_ID>(parameters);
+        [&metadata, &O, &X, &Y, &w, &Theta, &Omega](const double * params, double * grad) -> double {
+        const arma::mat M = metadata.map<M_ID>(params);
+        const arma::mat S = metadata.map<S_ID>(params);
 
         arma::vec S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
@@ -194,15 +218,15 @@ Rcpp::List cpp_optimize_vestep_spherical(
         double omega2 = Omega(0, 0);
         double objective = accu(w.t() * (A - Y % Z)) - 0.5 * double(p) * dot(w, log(S2)) + 0.5 * n_sigma2 * omega2;
 
-        packer.pack<M_ID>(grad_storage, diagmat(w) * (M * omega2 + A - Y));
-        packer.pack<S_ID>(grad_storage, w % (S % sum(A, 1) - double(p) * pow(S, -1) - double(p) * S * omega2));
+        metadata.map<M_ID>(grad) = diagmat(w) * (M * omega2 + A - Y);
+        metadata.map<S_ID>(grad) = w % (S % sum(A, 1) - double(p) * pow(S, -1) - double(p) * S * omega2);
         return objective;
     };
-    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Model and variational parameters
-    arma::mat M = packer.unpack<M_ID>(parameters);
-    arma::mat S = packer.unpack<S_ID>(parameters); // vec(n) -> mat(n, 1)
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data()); // vec(n) -> mat(n, 1)
     arma::vec S2 = S % S;
     double omega2 = Omega(0, 0);
     // Element-wise log-likelihood

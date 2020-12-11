@@ -37,7 +37,7 @@ cpp_optimize_vestep_spherical <- function(init_parameters, Y, X, O, w, Theta, Om
     .Call('_PLNmodels_cpp_optimize_vestep_spherical', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
 }
 
-cpp_test_packer <- function() {
-    .Call('_PLNmodels_cpp_test_packer', PACKAGE = 'PLNmodels')
+cpp_test_packing <- function() {
+    .Call('_PLNmodels_cpp_test_packing', PACKAGE = 'PLNmodels')
 }
 

@@ -5,7 +5,7 @@
 #include <RcppArmadillo.h>
 
 #include "nlopt_wrapper.h"
-#include "packer.h"
+#include "packing.h"
 
 inline arma::vec logfact(arma::mat y) {
     y.replace(0., 1.);
@@ -27,36 +27,43 @@ Rcpp::List cpp_optimize_full(
     const arma::mat & X,                // covariates (n,d)
     const arma::mat & O,                // offsets (n,p)
     const arma::vec & w,                // weights (n)
-    const Rcpp::List & configuration    // OptimizerConfiguration
+    const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
     const auto init_Theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,p)
 
-    const auto packer = make_packer(init_Theta, init_M, init_S);
-    enum { THETA_ID, M_ID, S_ID }; // Names for packer indexes
+    const auto metadata = tuple_metadata(init_Theta, init_M, init_S);
+    enum { THETA_ID, M_ID, S_ID }; // Names for metadata indexes
 
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA_ID>(parameters, init_Theta);
-    packer.pack<M_ID>(parameters, init_M);
-    packer.pack<S_ID>(parameters, init_S);
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<THETA_ID>(parameters.data()) = init_Theta;
+    metadata.map<M_ID>(parameters.data()) = init_M;
+    metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
-        packer.pack_double_or_arma<THETA_ID>(packed, list["Theta"]);
-        packer.pack_double_or_arma<M_ID>(packed, list["M"]);
-        packer.pack_double_or_arma<S_ID>(packed, list["S"]);
-    };
-    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+    if(configuration.containsElementNamed("xtol_abs")) {
+        SEXP value = configuration["xtol_abs"];
+        if(Rcpp::is<double>(value)) {
+            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
+        } else {
+            auto per_param_list = Rcpp::as<Rcpp::List>(value);
+            auto packed = std::vector<double>(metadata.packed_size);
+            set_from_r_sexp(metadata.map<THETA_ID>(packed.data()), per_param_list["Theta"]);
+            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
+            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
+            set_per_value_xtol_abs(optimizer.get(), packed);
+        }
+    }
 
     const double w_bar = accu(w);
 
     // Optimize
-    auto objective_and_grad =
-        [&packer, &Y, &X, &O, &w, &w_bar](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        arma::mat Theta = packer.unpack<THETA_ID>(parameters);
-        arma::mat M = packer.unpack<M_ID>(parameters);
-        arma::mat S = packer.unpack<S_ID>(parameters);
+    auto objective_and_grad = [&metadata, &Y, &X, &O, &w, &w_bar](const double * params, double * grad) -> double {
+        const arma::mat Theta = metadata.map<THETA_ID>(params);
+        const arma::mat M = metadata.map<M_ID>(params);
+        const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
@@ -64,19 +71,19 @@ Rcpp::List cpp_optimize_full(
         arma::mat Omega = w_bar * inv_sympd(M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
         double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) - 0.5 * w_bar * real(log_det(Omega));
 
-        packer.pack<THETA_ID>(grad_storage, (A - Y).t() * (X.each_col() % w));
-        packer.pack<M_ID>(grad_storage, diagmat(w) * (M * Omega + A - Y));
-        packer.pack<S_ID>(grad_storage, diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1)));
+        metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
+        metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
         return objective;
     };
-    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Variational parameters
-    arma::mat M = packer.unpack<M_ID>(parameters);
-    arma::mat S = packer.unpack<S_ID>(parameters);
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
     arma::mat S2 = S % S;
     // Regression parameters
-    arma::mat Theta = packer.unpack<THETA_ID>(parameters);
+    arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
     // Variance parameters
     arma::mat Sigma = (1. / w_bar) * (M.t() * (M.each_col() % w) + diagmat(sum(S2.each_col() % w, 0)));
     arma::mat Omega = inv_sympd(Sigma);
@@ -109,36 +116,43 @@ Rcpp::List cpp_optimize_spherical(
     const arma::mat & X,                // covariates (n,d)
     const arma::mat & O,                // offsets (n,p)
     const arma::vec & w,                // weights (n)
-    const Rcpp::List & configuration    // OptimizerConfiguration
+    const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
     const auto init_Theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
     const auto init_S = Rcpp::as<arma::vec>(init_parameters["S"]);         // (n)
 
-    const auto packer = make_packer(init_Theta, init_M, init_S);
-    enum { THETA_ID, M_ID, S_ID }; // Names for packer indexes
+    const auto metadata = tuple_metadata(init_Theta, init_M, init_S);
+    enum { THETA_ID, M_ID, S_ID }; // Names for metadata indexes
 
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA_ID>(parameters, init_Theta);
-    packer.pack<M_ID>(parameters, init_M);
-    packer.pack<S_ID>(parameters, init_S);
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<THETA_ID>(parameters.data()) = init_Theta;
+    metadata.map<M_ID>(parameters.data()) = init_M;
+    metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
-        packer.pack_double_or_arma<THETA_ID>(packed, list["Theta"]);
-        packer.pack_double_or_arma<M_ID>(packed, list["M"]);
-        packer.pack_double_or_arma<S_ID>(packed, list["S"]);
-    };
-    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+    if(configuration.containsElementNamed("xtol_abs")) {
+        SEXP value = configuration["xtol_abs"];
+        if(Rcpp::is<double>(value)) {
+            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
+        } else {
+            auto per_param_list = Rcpp::as<Rcpp::List>(value);
+            auto packed = std::vector<double>(metadata.packed_size);
+            set_from_r_sexp(metadata.map<THETA_ID>(packed.data()), per_param_list["Theta"]);
+            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
+            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
+            set_per_value_xtol_abs(optimizer.get(), packed);
+        }
+    }
 
     const double w_bar = accu(w);
 
     // Optimize
-    auto objective_and_grad =
-        [&packer, &O, &X, &Y, &w, &w_bar](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        arma::mat Theta = packer.unpack<THETA_ID>(parameters);
-        arma::mat M = packer.unpack<M_ID>(parameters);
-        arma::vec S = packer.unpack<S_ID>(parameters);
+    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &w_bar](const double * params, double * grad) -> double {
+        const arma::mat Theta = metadata.map<THETA_ID>(params);
+        const arma::mat M = metadata.map<M_ID>(params);
+        const arma::vec S = metadata.map<S_ID>(params);
 
         arma::vec S2 = S % S;
         const arma::uword p = Y.n_cols;
@@ -148,19 +162,19 @@ Rcpp::List cpp_optimize_spherical(
         double objective = accu(diagmat(w) * (A - Y % Z)) - 0.5 * double(p) * accu(w % log(S2)) +
                            0.5 * w_bar * double(p) * log(sigma2);
 
-        packer.pack<THETA_ID>(grad_storage, (A - Y).t() * (X.each_col() % w));
-        packer.pack<M_ID>(grad_storage, diagmat(w) * (M / sigma2 + A - Y));
-        packer.pack<S_ID>(grad_storage, w % (S % sum(A, 1) - double(p) * pow(S, -1) - double(p) * S / sigma2));
+        metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
+        metadata.map<M_ID>(grad) = diagmat(w) * (M / sigma2 + A - Y);
+        metadata.map<S_ID>(grad) = w % (S % sum(A, 1) - double(p) * pow(S, -1) - double(p) * S / sigma2);
         return objective;
     };
-    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Variational parameters
-    arma::mat M = packer.unpack<M_ID>(parameters);
-    arma::mat S = packer.unpack<S_ID>(parameters); // vec(n) -> mat(n, 1)
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data()); // vec(n) -> mat(n, 1)
     arma::vec S2 = S % S;
     // Regression parameters
-    arma::mat Theta = packer.unpack<THETA_ID>(parameters);
+    arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
     // Variance parameters
     const arma::uword p = Y.n_cols;
     const double n_sigma2 = arma::as_scalar(dot(w, sum(pow(M, 2), 1) + double(p) * S2));
@@ -196,36 +210,43 @@ Rcpp::List cpp_optimize_diagonal(
     const arma::mat & X,                // covariates (n,d)
     const arma::mat & O,                // offsets (n,p)
     const arma::vec & w,                // weights (n)
-    const Rcpp::List & configuration    // OptimizerConfiguration
+    const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
     const auto init_Theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,p)
 
-    const auto packer = make_packer(init_Theta, init_M, init_S);
-    enum { THETA_ID, M_ID, S_ID }; // Names for packer indexes
+    const auto metadata = tuple_metadata(init_Theta, init_M, init_S);
+    enum { THETA_ID, M_ID, S_ID }; // Names for metadata indexes
 
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA_ID>(parameters, init_Theta);
-    packer.pack<M_ID>(parameters, init_M);
-    packer.pack<S_ID>(parameters, init_S);
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<THETA_ID>(parameters.data()) = init_Theta;
+    metadata.map<M_ID>(parameters.data()) = init_M;
+    metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
-        packer.pack_double_or_arma<THETA_ID>(packed, list["Theta"]);
-        packer.pack_double_or_arma<M_ID>(packed, list["M"]);
-        packer.pack_double_or_arma<S_ID>(packed, list["S"]);
-    };
-    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+    if(configuration.containsElementNamed("xtol_abs")) {
+        SEXP value = configuration["xtol_abs"];
+        if(Rcpp::is<double>(value)) {
+            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
+        } else {
+            auto per_param_list = Rcpp::as<Rcpp::List>(value);
+            auto packed = std::vector<double>(metadata.packed_size);
+            set_from_r_sexp(metadata.map<THETA_ID>(packed.data()), per_param_list["Theta"]);
+            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
+            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
+            set_per_value_xtol_abs(optimizer.get(), packed);
+        }
+    }
 
     const double w_bar = accu(w);
 
     // Optimize
-    auto objective_and_grad =
-        [&packer, &O, &X, &Y, &w, &w_bar](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        arma::mat Theta = packer.unpack<THETA_ID>(parameters);
-        arma::mat M = packer.unpack<M_ID>(parameters);
-        arma::mat S = packer.unpack<S_ID>(parameters);
+    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &w_bar](const double * params, double * grad) -> double {
+        const arma::mat Theta = metadata.map<THETA_ID>(params);
+        const arma::mat M = metadata.map<M_ID>(params);
+        const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
@@ -233,19 +254,19 @@ Rcpp::List cpp_optimize_diagonal(
         arma::rowvec diag_sigma = sum(M % (M.each_col() % w) + (S2.each_col() % w), 0) / w_bar;
         double objective = accu(diagmat(w) * (A - Y % Z - 0.5 * log(S2))) + 0.5 * w_bar * accu(log(diag_sigma));
 
-        packer.pack<THETA_ID>(grad_storage, (A - Y).t() * (X.each_col() % w));
-        packer.pack<M_ID>(grad_storage, diagmat(w) * ((M.each_row() / diag_sigma) + A - Y));
-        packer.pack<S_ID>(grad_storage, diagmat(w) * (S.each_row() % pow(diag_sigma, -1) + S % A - pow(S, -1)));
+        metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
+        metadata.map<M_ID>(grad) = diagmat(w) * ((M.each_row() / diag_sigma) + A - Y);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % pow(diag_sigma, -1) + S % A - pow(S, -1));
         return objective;
     };
-    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Variational parameters
-    arma::mat M = packer.unpack<M_ID>(parameters);
-    arma::mat S = packer.unpack<S_ID>(parameters);
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
     arma::mat S2 = S % S;
     // Regression parameters
-    arma::mat Theta = packer.unpack<THETA_ID>(parameters);
+    arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
     // Variance parameters
     arma::rowvec sigma2 = w.t() * (pow(M, 2) + S2) / w_bar;
     arma::vec omega2 = pow(sigma2.t(), -1);
@@ -282,7 +303,7 @@ Rcpp::List cpp_optimize_rank(
     const arma::mat & X,                // covariates (n,d)
     const arma::mat & O,                // offsets (n,p)
     const arma::vec & w,                // weights (n)
-    const Rcpp::List & configuration    // OptimizerConfiguration
+    const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
     const auto init_Theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
@@ -290,49 +311,56 @@ Rcpp::List cpp_optimize_rank(
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,q)
     const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,q)
 
-    const auto packer = make_packer(init_Theta, init_B, init_M, init_S);
-    enum { THETA_ID, B_ID, M_ID, S_ID }; // Names for packer indexes
+    const auto metadata = tuple_metadata(init_Theta, init_B, init_M, init_S);
+    enum { THETA_ID, B_ID, M_ID, S_ID }; // Names for metadata indexes
 
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA_ID>(parameters, init_Theta);
-    packer.pack<B_ID>(parameters, init_B);
-    packer.pack<M_ID>(parameters, init_M);
-    packer.pack<S_ID>(parameters, init_S);
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<THETA_ID>(parameters.data()) = init_Theta;
+    metadata.map<B_ID>(parameters.data()) = init_B;
+    metadata.map<M_ID>(parameters.data()) = init_M;
+    metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
-        packer.pack_double_or_arma<THETA_ID>(packed, list["Theta"]);
-        packer.pack_double_or_arma<B_ID>(packed, list["B"]);
-        packer.pack_double_or_arma<M_ID>(packed, list["M"]);
-        packer.pack_double_or_arma<S_ID>(packed, list["S"]);
-    };
-    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+    if(configuration.containsElementNamed("xtol_abs")) {
+        SEXP value = configuration["xtol_abs"];
+        if(Rcpp::is<double>(value)) {
+            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
+        } else {
+            auto per_param_list = Rcpp::as<Rcpp::List>(value);
+            auto packed = std::vector<double>(metadata.packed_size);
+            set_from_r_sexp(metadata.map<THETA_ID>(packed.data()), per_param_list["Theta"]);
+            set_from_r_sexp(metadata.map<B_ID>(packed.data()), per_param_list["B"]);
+            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
+            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
+            set_per_value_xtol_abs(optimizer.get(), packed);
+        }
+    }
 
     // Optimize
-    auto objective_and_grad =
-        [&packer, &O, &X, &Y, &w](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        arma::mat Theta = packer.unpack<THETA_ID>(parameters);
-        arma::mat B = packer.unpack<B_ID>(parameters);
-        arma::mat M = packer.unpack<M_ID>(parameters);
-        arma::mat S = packer.unpack<S_ID>(parameters);
+    auto objective_and_grad = [&metadata, &O, &X, &Y, &w](const double * params, double * grad) -> double {
+        const arma::mat Theta = metadata.map<THETA_ID>(params);
+        const arma::mat B = metadata.map<B_ID>(params);
+        const arma::mat M = metadata.map<M_ID>(params);
+        const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M * B.t();
         arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
         double objective = accu(diagmat(w) * (A - Y % Z)) + 0.5 * accu(diagmat(w) * (M % M + S2 - log(S2) - 1.));
 
-        packer.pack<THETA_ID>(grad_storage, (A - Y).t() * (X.each_col() % w));
-        packer.pack<B_ID>(grad_storage, (diagmat(w) * (A - Y)).t() * M + (A.t() * (S2.each_col() % w)) % B);
-        packer.pack<M_ID>(grad_storage, diagmat(w) * ((A - Y) * B + M));
-        packer.pack<S_ID>(grad_storage, diagmat(w) * (S - 1. / S + A * (B % B) % S));
+        metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
+        metadata.map<B_ID>(grad) = (diagmat(w) * (A - Y)).t() * M + (A.t() * (S2.each_col() % w)) % B;
+        metadata.map<M_ID>(grad) = diagmat(w) * ((A - Y) * B + M);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S - 1. / S + A * (B % B) % S);
         return objective;
     };
-    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Model and variational parameters
-    arma::mat Theta = packer.unpack<THETA_ID>(parameters);
-    arma::mat B = packer.unpack<B_ID>(parameters);
-    arma::mat M = packer.unpack<M_ID>(parameters);
-    arma::mat S = packer.unpack<S_ID>(parameters);
+    arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
+    arma::mat B = metadata.copy<B_ID>(parameters.data());
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
     arma::mat S2 = S % S;
     arma::mat Sigma = B * (M.t() * (M.each_col() % w) + diagmat(sum(S2.each_col() % w, 0))) * B.t() / accu(w);
     // Element-wise log-likelihood
@@ -364,34 +392,41 @@ Rcpp::List cpp_optimize_sparse(
     const arma::mat & O,                // offsets (n,p)
     const arma::vec & w,                // weights (n)
     const arma::mat & Omega,            // covinv (p,p)
-    const Rcpp::List & configuration    // OptimizerConfiguration
+    const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
     const auto init_Theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,p)
 
-    const auto packer = make_packer(init_Theta, init_M, init_S);
-    enum { THETA_ID, M_ID, S_ID }; // Names for packer indexes
+    const auto metadata = tuple_metadata(init_Theta, init_M, init_S);
+    enum { THETA_ID, M_ID, S_ID }; // Names for metadata indexes
 
-    auto parameters = arma::vec(packer.size);
-    packer.pack<THETA_ID>(parameters, init_Theta);
-    packer.pack<M_ID>(parameters, init_M);
-    packer.pack<S_ID>(parameters, init_S);
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<THETA_ID>(parameters.data()) = init_Theta;
+    metadata.map<M_ID>(parameters.data()) = init_M;
+    metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto pack_xtol_abs = [&packer](arma::vec & packed, Rcpp::List list) {
-        packer.pack_double_or_arma<THETA_ID>(packed, list["Theta"]);
-        packer.pack_double_or_arma<M_ID>(packed, list["M"]);
-        packer.pack_double_or_arma<S_ID>(packed, list["S"]);
-    };
-    const auto config = OptimizerConfiguration::from_r_list(configuration, packer.size, pack_xtol_abs);
+    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+    if(configuration.containsElementNamed("xtol_abs")) {
+        SEXP value = configuration["xtol_abs"];
+        if(Rcpp::is<double>(value)) {
+            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
+        } else {
+            auto per_param_list = Rcpp::as<Rcpp::List>(value);
+            auto packed = std::vector<double>(metadata.packed_size);
+            set_from_r_sexp(metadata.map<THETA_ID>(packed.data()), per_param_list["Theta"]);
+            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
+            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
+            set_per_value_xtol_abs(optimizer.get(), packed);
+        }
+    }
 
     // Optimize
-    auto objective_and_grad =
-        [&packer, &O, &X, &Y, &w, &Omega](const arma::vec & parameters, arma::vec & grad_storage) -> double {
-        arma::mat Theta = packer.unpack<THETA_ID>(parameters);
-        arma::mat M = packer.unpack<M_ID>(parameters);
-        arma::mat S = packer.unpack<S_ID>(parameters);
+    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &Omega](const double * params, double * grad) -> double {
+        const arma::mat Theta = metadata.map<THETA_ID>(params);
+        const arma::mat M = metadata.map<M_ID>(params);
+        const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
@@ -399,17 +434,17 @@ Rcpp::List cpp_optimize_sparse(
         arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2);
         double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) - trace(Omega * nSigma);
 
-        packer.pack<THETA_ID>(grad_storage, (A - Y).t() * (X.each_col() % w));
-        packer.pack<M_ID>(grad_storage, diagmat(w) * (M * Omega + A - Y));
-        packer.pack<S_ID>(grad_storage, diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1)));
+        metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
+        metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
         return objective;
     };
-    OptimizerResult result = minimize_objective_on_parameters(parameters, config, objective_and_grad);
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Model and variational parameters
-    arma::mat Theta = packer.unpack<THETA_ID>(parameters);
-    arma::mat M = packer.unpack<M_ID>(parameters);
-    arma::mat S = packer.unpack<S_ID>(parameters);
+    arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
     arma::mat S2 = S % S;
     arma::mat Sigma = (M.t() * (M.each_col() % w) + diagmat(w.t() * S2)) / accu(w);
     // Element-wise log-likelihood
