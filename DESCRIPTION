@@ -9,7 +9,7 @@ Authors@R: c(
   person("Stéphane", "Robin", role ="ctb", email = "stephane.robin@inrae.fr"),
   person("François", "Gindraud", role = "aut", email = "francois.gindraud@gmail.com")
   )
-Description: The Poisson-lognormal model and variants ((Chiquet, Mariadassou and Robin, 
+Description: The Poisson-lognormal model and variants (Chiquet, Mariadassou and Robin, 
     2020 <doi:10.1101/2020.10.07.329383) can be used for 
     a variety of multivariate problems when count data are at play, including 
     principal component analysis for count data (Chiquet, Mariadassou and Robin, 
