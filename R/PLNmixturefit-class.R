@@ -31,7 +31,8 @@ PLNmixturefit <-
     private = list(
       comp       = NA, # list of mixture components (PLNfit)
       tau        = NA, # posterior probabilities of cluster belonging
-      monitoring = NA,  # a list with optimization monitoring quantities
+      monitoring = NA, # a list with optimization monitoring quantities
+      Theta      = NA, # the model parameters for the covariable
       mix_up     = function(var_name) {
         Reduce("+",
            Map(function(pi, comp) {
@@ -49,11 +50,26 @@ PLNmixturefit <-
       initialize = function(responses, covariates, offsets, posteriorProb, model, xlevels, control) {
         private$tau  <- posteriorProb
         private$comp <- vector('list', ncol(posteriorProb))
+
+        ## Temporary handling of covariates
+        ## TODO -  do better than just ignoring them
+        xint <- match("(Intercept)", colnames(covariates), nomatch = 0L)
+        covar      <- covariates[, -xint, drop = FALSE]
+        covariates <- covariates[, xint, drop = FALSE]
+        private$Theta <- matrix(0, ncol(covar), ncol(responses))
+
         for (k_ in seq.int(ncol(posteriorProb)))
           private$comp[[k_]] <- PLNfit$new(responses, covariates, offsets, posteriorProb[, k_], model, xlevels, control)
       },
       #' @description Optimize a [`PLNmixturefit`] model
       optimize = function(responses, covariates, offsets, control) {
+
+        ## Temporary handling of covariates
+        ## TODO -  do better than just ignoring them
+        xint <- match("(Intercept)", colnames(covariates), nomatch = 0L)
+        covar      <- covariates[, -xint, drop = FALSE]
+        covariates <- covariates[, xint, drop = FALSE]
+
           ## ===========================================
           ## INITIALISATION
           cond <- FALSE; iter <- 1
@@ -138,6 +154,14 @@ PLNmixturefit <-
       #' @description Update fields after optimization
       #' @param weights an optional vector of observation weights to be used in the fitting process.
       postTreatment = function(responses, covariates, offsets, weights, nullModel) {
+
+        ## Temporary handling of covariates
+        ## TODO -  do better than just ignoring them
+        xint <- match("(Intercept)", colnames(covariates), nomatch = 0L)
+        covar      <- covariates[, -xint, drop = FALSE]
+        covariates <- covariates[, xint, drop = FALSE]
+        private$Theta <- matrix(0, ncol(covar), ncol(responses))
+
         for (k_ in seq.int(ncol(private$tau)))
           self$components[[k_]]$postTreatment(
             responses,
@@ -166,6 +190,8 @@ PLNmixturefit <-
       p = function() {ncol(self$var_par$M)},
       #' @field k number of components
       k = function() {length(private$comp)},
+      #' @field d number of covariates
+      d = function() {ncol(private$Theta)},
       #' @field components components of the mixture (PLNfits)
       components    = function(value) {if (missing(value)) return(private$comp) else private$comp <- value},
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
@@ -208,7 +234,7 @@ PLNmixturefit <-
       #' @field criteria a vector with loglik, BIC, ICL, ICL_variant and number of parameters
       criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, ICL_variant = self$ICL_variant)},
       #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
-      model_par  = function() {list(Theta = private$mix_up('model_par$Theta'), Sigma = private$mix_up('model_par$Sigma'))},
+      model_par  = function() {list(Theta = private$Theta, Sigma = private$mix_up('model_par$Sigma'))},
       #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
       var_par    = function() {list(M  = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))},
       #' @field latent a matrix: values of the latent vector (Z in the model)
