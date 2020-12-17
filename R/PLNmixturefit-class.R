@@ -88,6 +88,10 @@ PLNmixturefit <-
             for (k_ in seq.int(self$k))
               self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
 
+            ## Temporary handling of covariates
+            ## TODO - update covariates effect
+
+
             ## ---------------------------------------------------
             ## E - STEP
             ## UPDATE THE POSTERIOR PROBABILITIES
