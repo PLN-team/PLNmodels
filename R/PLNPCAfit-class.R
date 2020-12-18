@@ -283,9 +283,9 @@ PLNPCAfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     active = list(
       #' @field rank the dimension of the current model
-      rank = function() {ncol(private$B)},
+      rank = function() {self$q},
       #' @field nb_param number of parameters in the current PLN model
-      nb_param = function() {self$p * (self$d + self$rank)},
+      nb_param = function() {self$p * (self$d + self$q) - self$q * (self$q - 1)/2},
       #' @field entropy entropy of the variational distribution
       entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)))},
       #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)

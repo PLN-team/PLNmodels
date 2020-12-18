@@ -25,7 +25,7 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_lt(myPLNfit$ICL, myPLNfit$loglik)
 #  expect_lt(myPLNfit$ICL, myPLNfit$BIC) ## entropy could be positive
   expect_gt(myPLNfit$R_squared, 0)
-  expect_equal(myPLNfit$nb_param, p + p * myPLNfit$rank)
+  expect_equal(myPLNfit$nb_param, p + p * myPLNfit$rank - myPLNfit$rank * (myPLNfit$rank - 1) / 2 )
   expect_equal(dim(myPLNfit$rotation), c(p, myPLNfit$rank))
   expect_equal(dim(myPLNfit$scores), c(n, myPLNfit$rank))
   expect_true(all(myPLNfit$percent_var >= 0))
