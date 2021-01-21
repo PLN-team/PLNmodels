@@ -343,7 +343,7 @@ PLNPCAfit <- R6Class(
         coord  <- coord / var_sd
         cor    <- coord
         cos2 <- cor^2
-        contrib <- 100 * private$svdBM$v[, 1:self$rank]^2
+        contrib <- 100 * private$svdBM$v[, 1:self$rank, drop = FALSE]^2
         dimnames(coord) <- dimnames(cor) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$Sigma), paste0("Dim.", 1:self$rank))
         list(coord   = coord,
              cor     = cor,
@@ -356,7 +356,7 @@ PLNPCAfit <- R6Class(
         ## coord[i, k] = d[k] * v[i, k]
         dist_origin <- sqrt(rowSums(coord^2))
         cos2 <- coord^2 / dist_origin^2
-        contrib <- 100 * private$svdBM$u[, 1:self$rank]^2
+        contrib <- 100 * private$svdBM$u[, 1:self$rank, drop = FALSE]^2
         dimnames(coord) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$M), paste0("Dim.", 1:self$rank))
         names(dist_origin) <- rownames(private$M)
         list(coord   = coord,
