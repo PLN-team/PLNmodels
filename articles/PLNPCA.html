@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9016</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9017</span>
       </span>
     </div>
 
@@ -113,7 +113,7 @@
       <h1 data-toc-skip>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2020-12-18</h4>
+            <h4 class="date">2021-01-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNPCA.Rmd"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -132,7 +132,7 @@
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jchiquet.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/taiyun/corrplot">corrplot</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
@@ -236,37 +236,37 @@
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">34</td>
-<td align="right">-2154.499</td>
-<td align="right">-2220.660</td>
-<td align="right">-2232.671</td>
+<td align="right">-2154.497</td>
+<td align="right">-2220.658</td>
+<td align="right">-2232.710</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">50</td>
-<td align="right">-1842.281</td>
-<td align="right">-1939.577</td>
-<td align="right">-1973.804</td>
+<td align="right">-1842.139</td>
+<td align="right">-1939.434</td>
+<td align="right">-1973.399</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">65</td>
-<td align="right">-1750.218</td>
-<td align="right">-1876.702</td>
-<td align="right">-1936.791</td>
+<td align="right">-1750.190</td>
+<td align="right">-1876.674</td>
+<td align="right">-1936.601</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">79</td>
-<td align="right">-1709.193</td>
-<td align="right">-1862.920</td>
-<td align="right">-1950.108</td>
+<td align="right">-1708.574</td>
+<td align="right">-1862.301</td>
+<td align="right">-1950.263</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">92</td>
-<td align="right">-1691.914</td>
-<td align="right">-1870.938</td>
-<td align="right">-2001.189</td>
+<td align="right">-1691.153</td>
+<td align="right">-1870.177</td>
+<td align="right">-2001.396</td>
 </tr>
 </tbody>
 </table>
@@ -287,7 +287,7 @@
 <td align="left">out</td>
 <td align="right">1</td>
 <td align="left">34</td>
-<td align="left">723</td>
+<td align="left">575</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
@@ -295,7 +295,7 @@
 <td align="left">elt</td>
 <td align="right">2</td>
 <td align="left">50</td>
-<td align="left">755</td>
+<td align="left">635</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
@@ -303,7 +303,7 @@
 <td align="left">elt.1</td>
 <td align="right">3</td>
 <td align="left">65</td>
-<td align="left">657</td>
+<td align="left">626</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
@@ -311,7 +311,7 @@
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">79</td>
-<td align="left">2061</td>
+<td align="left">2601</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
@@ -319,7 +319,7 @@
 <td align="left">elt.3</td>
 <td align="right">5</td>
 <td align="left">92</td>
-<td align="left">3279</td>
+<td align="left">3346</td>
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
@@ -368,27 +368,27 @@
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-7.5051520</td>
+<td align="right">-7.5001934</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-8.1793543</td>
+<td align="right">-8.1851526</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-3.0378524</td>
+<td align="right">-3.0413520</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-6.9643553</td>
+<td align="right">-6.9625049</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">-0.5262915</td>
+<td align="right">-0.5249485</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">-3.8081004</td>
+<td align="right">-3.8102276</td>
 </tr>
 </tbody>
 </table>
@@ -413,39 +413,39 @@
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-0.2113579</td>
-<td align="right">0.3274141</td>
-<td align="right">-0.0367899</td>
+<td align="right">-0.2098340</td>
+<td align="right">0.3280969</td>
+<td align="right">-0.0322464</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-0.4342508</td>
-<td align="right">-0.2460515</td>
-<td align="right">0.2150265</td>
+<td align="right">-0.4346332</td>
+<td align="right">-0.2488820</td>
+<td align="right">0.2115507</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-0.1280384</td>
-<td align="right">0.1603097</td>
-<td align="right">0.2962755</td>
+<td align="right">-0.1284943</td>
+<td align="right">0.1577914</td>
+<td align="right">0.2973014</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-0.4254423</td>
-<td align="right">0.3830486</td>
-<td align="right">0.2918300</td>
+<td align="right">-0.4261529</td>
+<td align="right">0.3796084</td>
+<td align="right">0.2965003</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">0.0488267</td>
-<td align="right">0.0179096</td>
-<td align="right">-0.0694407</td>
+<td align="right">0.0488866</td>
+<td align="right">0.0187237</td>
+<td align="right">-0.0692717</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">0.0577892</td>
-<td align="right">0.2704467</td>
-<td align="right">0.2053539</td>
+<td align="right">0.0576168</td>
+<td align="right">0.2683950</td>
+<td align="right">0.2081702</td>
 </tr>
 </tbody>
 </table>
@@ -462,34 +462,34 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-1.784539</td>
-<td align="right">-0.5420192</td>
-<td align="right">0.7286718</td>
+<td align="right">-1.786121</td>
+<td align="right">-0.5451126</td>
+<td align="right">0.7217146</td>
 </tr>
 <tr class="even">
-<td align="right">3.552078</td>
-<td align="right">0.9364448</td>
-<td align="right">2.0894982</td>
+<td align="right">3.559240</td>
+<td align="right">0.9127011</td>
+<td align="right">2.1018535</td>
 </tr>
 <tr class="odd">
-<td align="right">7.483642</td>
-<td align="right">-1.3726486</td>
-<td align="right">0.5414918</td>
+<td align="right">7.466732</td>
+<td align="right">-1.3686051</td>
+<td align="right">0.5159175</td>
 </tr>
 <tr class="even">
-<td align="right">6.390614</td>
-<td align="right">-1.4444733</td>
-<td align="right">-1.7317168</td>
+<td align="right">6.367155</td>
+<td align="right">-1.4132232</td>
+<td align="right">-1.7538134</td>
 </tr>
 <tr class="odd">
-<td align="right">4.638267</td>
-<td align="right">-0.0202923</td>
-<td align="right">-1.0296252</td>
+<td align="right">4.613973</td>
+<td align="right">0.0006481</td>
+<td align="right">-1.0402287</td>
 </tr>
 <tr class="even">
-<td align="right">3.994086</td>
-<td align="right">0.8073539</td>
-<td align="right">0.4706903</td>
+<td align="right">3.983468</td>
+<td align="right">0.8103992</td>
+<td align="right">0.4699022</td>
 </tr>
 </tbody>
 </table>
@@ -498,8 +498,8 @@
 <code class="sourceCode R"><span class="va">myPCA_ICL</span></code></pre></div>
 <pre><code>## Poisson Lognormal with rank constrained for PCA (rank = 3)
 ## ==================================================================
-##  nb_param    loglik       BIC       ICL
-##        65 -1750.218 -1876.702 -1936.791
+##  nb_param   loglik       BIC       ICL
+##        65 -1750.19 -1876.674 -1936.601
 ## ==================================================================
 ## * Useful fields
 ##     $model_par, $latent, $var_par, $optim_par
@@ -573,38 +573,38 @@ fitted value vs. observation
 <code class="sourceCode R"><span class="co">## All summaries associated to the individuals</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">$</span><span class="va">ind</span><span class="op">)</span></code></pre></div>
 <pre><code>## List of 4
-##  $ coord  : num [1:49, 1:3] -1.66 4.2 4.79 6.19 4.3 ...
+##  $ coord  : num [1:49, 1:3] -1.66 4.16 4.75 6.17 4.31 ...
 ##   ..- attr(*, "dimnames")=List of 2
 ##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
 ##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
-##  $ cos2   : num [1:49, 1:3] 0.927 0.835 0.65 0.832 0.943 ...
+##  $ cos2   : num [1:49, 1:3] 0.927 0.832 0.644 0.83 0.943 ...
 ##   ..- attr(*, "dimnames")=List of 2
 ##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
 ##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
-##  $ contrib: num [1:49, 1:3] 0.374 2.394 3.123 5.208 2.511 ...
+##  $ contrib: num [1:49, 1:3] 0.373 2.352 3.058 5.169 2.525 ...
 ##   ..- attr(*, "dimnames")=List of 2
 ##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
 ##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
-##  $ dist   : Named num [1:49] 1.72 4.59 5.95 6.79 4.43 ...
+##  $ dist   : Named num [1:49] 1.72 4.56 5.92 6.77 4.44 ...
 ##   ..- attr(*, "names")= chr [1:49] "1" "2" "3" "4" ...</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Coordinates of the individuals in the principal plane</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">$</span><span class="va">ind</span><span class="op">$</span><span class="va">coord</span><span class="op">)</span></code></pre></div>
 <pre><code>##       Dim.1     Dim.2      Dim.3
-## 1 -1.658428 0.1426293 -0.4445295
-## 2  4.196220 1.8245955 -0.3831746
-## 3  4.792615 3.0614442 -1.7336272
-## 4  6.189135 1.3772081 -2.4178181
-## 5  4.297486 0.4923342 -0.9335276
-## 6  6.094833 1.2443428 -0.6174901</code></pre>
+## 1 -1.658569 0.1136749 -0.4520577
+## 2  4.163180 1.8235318 -0.4083203
+## 3  4.746531 3.0602986 -1.7616207
+## 4  6.170994 1.3973339 -2.4125006
+## 5  4.313352 0.4903115 -0.9355503
+## 6  6.070315 1.2815044 -0.6222676</code></pre>
 <p>You can also use high level functions from the <a href="https://cran.r-project.org/package=factoextra">factoextra</a> package to extract relevant informations</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Eigenvalues</span>
 <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/eigenvalue.html">get_eig</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span></code></pre></div>
 <pre><code>##       eigenvalue variance.percent cumulative.variance.percent
-## Dim.1   735.5188        49.845721                    49.84572
-## Dim.2   228.5408        15.488093                    65.33381
-## Dim.3   100.1806         6.789189                    72.12300</code></pre>
+## Dim.1  736.75272        49.897446                    49.89745
+## Dim.2  228.25219        15.458648                    65.35609
+## Dim.3   99.83682         6.761566                    72.11766</code></pre>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Variables</span>
 <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html">get_pca_var</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span></code></pre></div>
