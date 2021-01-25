@@ -92,7 +92,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/jchiquet/PLNmodels">
+  <a href="https://github.com/pln-team/PLNmodels">
     <span class="fas fa-github"></span>
      
   </a>
@@ -113,9 +113,9 @@
       <h1 data-toc-skip>Clustering of multivariate count data with PLN-mixture</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2021-01-21</h4>
+            <h4 class="date">2021-01-25</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/jchiquet/PLNmodels/blob/master/vignettes/PLNmixture.Rmd"><code>vignettes/PLNmixture.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNmixture.Rmd"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
 
     </div>
@@ -132,7 +132,7 @@
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jchiquet.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
@@ -261,34 +261,34 @@
 <tr class="even">
 <td align="right">2</td>
 <td align="right">37</td>
-<td align="right">-2848.205</td>
-<td align="right">-2920.204</td>
-<td align="right">-2920.204</td>
-<td align="right">-4150.485</td>
+<td align="right">-2826.189</td>
+<td align="right">-2898.188</td>
+<td align="right">-2898.463</td>
+<td align="right">-4130.943</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">56</td>
-<td align="right">-2796.956</td>
-<td align="right">-2905.927</td>
-<td align="right">-2905.927</td>
-<td align="right">-4141.505</td>
+<td align="right">-2785.022</td>
+<td align="right">-2893.993</td>
+<td align="right">-2894.293</td>
+<td align="right">-4126.979</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-2758.141</td>
-<td align="right">-2904.084</td>
-<td align="right">-2904.117</td>
-<td align="right">-4138.474</td>
+<td align="right">-2740.655</td>
+<td align="right">-2886.598</td>
+<td align="right">-2893.400</td>
+<td align="right">-4124.090</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">94</td>
-<td align="right">-2739.858</td>
-<td align="right">-2922.773</td>
-<td align="right">-2925.234</td>
-<td align="right">-4156.779</td>
+<td align="right">-2749.156</td>
+<td align="right">-2932.072</td>
+<td align="right">-2935.308</td>
+<td align="right">-4168.850</td>
 </tr>
 </tbody>
 </table>
@@ -317,33 +317,33 @@
 <td align="left">elt</td>
 <td align="right">2</td>
 <td align="left">37</td>
-<td align="left">2848.205359</td>
+<td align="left">2826.188974</td>
 <td align="left">0.000000</td>
-<td align="left">2.000000</td>
+<td align="left">6.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
 <td align="right">3</td>
 <td align="left">56</td>
-<td align="left">2796.956443</td>
+<td align="left">2785.022383</td>
 <td align="left">0.000000</td>
-<td align="left">9.000000</td>
+<td align="left">8.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">2758.140565</td>
-<td align="left">0.000000</td>
-<td align="left">6.000000</td>
+<td align="left">2740.654717</td>
+<td align="left">0.000009</td>
+<td align="left">5.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.3</td>
 <td align="right">5</td>
 <td align="left">94</td>
-<td align="left">2739.857868</td>
-<td align="left">0.000000</td>
-<td align="left">12.000000</td>
+<td align="left">2749.156275</td>
+<td align="left">0.000004</td>
+<td align="left">9.000000</td>
 </tr>
 </tbody>
 </table>
@@ -378,8 +378,8 @@
 ## * each $component[[i]] is a PLNfit with associated methods and fields</code></pre>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">memberships</span></code></pre></div>
-<pre><code>##  [1] 1 1 1 4 1 1 3 1 1 3 3 3 1 1 4 4 1 1 1 1 1 1 1 3 1 1 1 3 1 2 2 1 1 4 1 1 1 1
-## [39] 1 1 1 1 1 1 1 1 1 1 1</code></pre>
+<pre><code>##  [1] 3 1 3 4 4 1 1 3 1 1 1 1 3 3 4 4 3 3 4 3 4 1 1 1 1 3 3 1 1 2 2 4 4 4 4 4 3 1
+## [39] 1 1 4 3 4 3 3 4 1 3 3</code></pre>
 <p>Mixture model can be used to find</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="fu">plot_clustering_pca</span><span class="op">(</span><span class="op">)</span></code></pre></div>

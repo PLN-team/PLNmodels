@@ -99,7 +99,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/jchiquet/PLNmodels">
+  <a href="https://github.com/pln-team/PLNmodels">
     <span class="fas fa-github"></span>
      
   </a>
@@ -128,7 +128,7 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p><strong>PLNmodels</strong> is available on <a href="https://cran.r-project.org/package=PLNmodels">CRAN</a>. The development version is available on <a href="https://github.com/jchiquet/PLNmodels">Github</a>.</p>
+<p><strong>PLNmodels</strong> is available on <a href="https://cran.r-project.org/package=PLNmodels">CRAN</a>. The development version is available on <a href="https://github.com/pln-team/PLNmodels">Github</a>.</p>
 <div id="r-package-installation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#r-package-installation" class="anchor"></a>R Package installation</h3>
@@ -160,12 +160,12 @@
 <li>For the development version, use the github install</li>
 </ul>
 <!-- end list --><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"jchiquet/PLNmodels"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"pln-team/PLNmodels"</span><span class="op">)</span></code></pre></div>
 <ul>
 <li>For a specific tagged release, use</li>
 </ul>
 <!-- end list --><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"jchiquet/PLNmodels@tag_number"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"pln-team/PLNmodels@tag_number"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 </div>
@@ -174,10 +174,10 @@
 <a href="#usage-and-main-fitting-functions" class="anchor"></a>Usage and main fitting functions</h2>
 <p>The package comes with an ecological data set to present the functionality</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jchiquet.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span>
 <span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></code></pre></div>
-<p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <a href="http://jchiquet.github.io/PLNmodels/articles/" class="uri">http://jchiquet.github.io/PLNmodels/articles/</a>).</p>
+<p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <a href="http://pln-team.github.io/PLNmodels/articles/" class="uri">http://pln-team.github.io/PLNmodels/articles/</a>).</p>
 <div id="unpenalized-poisson-lognormal-model-aka-pln" class="section level3">
 <h3 class="hasAnchor">
 <a href="#unpenalized-poisson-lognormal-model-aka-pln" class="anchor"></a>Unpenalized Poisson lognormal model (aka PLN)</h3>
@@ -228,9 +228,9 @@
 <ul class="list-unstyled">
 <li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=PLNmodels">https://​cloud.r-project.org/​package=PLNmodels</a>
 </li>
-<li>Browse source code at <br><a href="https://github.com/jchiquet/PLNmodels/">https://​github.com/​jchiquet/​PLNmodels/​</a>
+<li>Browse source code at <br><a href="https://github.com/pln-team/PLNmodels/">https://​github.com/​pln-team/​PLNmodels/​</a>
 </li>
-<li>Report a bug at <br><a href="https://github.com/jchiquet/PLNmodels/issues">https://​github.com/​jchiquet/​PLNmodels/​issues</a>
+<li>Report a bug at <br><a href="https://github.com/pln-team/PLNmodels/issues">https://​github.com/​pln-team/​PLNmodels/​issues</a>
 </li>
 </ul>
 </div>
@@ -259,11 +259,11 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/jchiquet/PLNmodels/actions"><img src="https://github.com/jchiquet/PLNmodels/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://codecov.io/github/jchiquet/PLNmodels?branch=master"><img src="https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg" alt="Coverage status"></a></li>
+<li><a href="https://github.com/pln-team/PLNmodels/actions"><img src="https://github.com/pln-team/PLNmodels/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://codecov.io/github/pln-team/PLNmodels?branch=master"><img src="https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg" alt="Coverage status"></a></li>
 <li><a href="https://cran.r-project.org/package=PLNmodels"><img src="http://www.r-pkg.org/badges/version/PLNmodels" alt="CRAN_Status_Badge"></a></li>
 <li><a href="https://www.tidyverse.org/lifecycle/#stable"><img src="https://img.shields.io/badge/lifecycle-stable-blue.svg" alt="Lifecycle: stable"></a></li>
-<li><a href="https://github.com/jchiquet/PLNmodels/commits/master"><img src="https://img.shields.io/github/last-commit/jchiquet/PLNmodels.svg"></a></li>
+<li><a href="https://github.com/pln-team/PLNmodels/commits/master"><img src="https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg"></a></li>
 </ul>
 </div>
 </div>
