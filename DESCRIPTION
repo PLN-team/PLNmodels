@@ -17,8 +17,8 @@ Description: The Poisson-lognormal model and variants (Chiquet, Mariadassou and 
     network inference (Chiquet, Mariadassou and Robin, 2018 <http://proceedings.mlr.press/v97/chiquet19a.html>). 
     Implements variational algorithms to fit such models accompanied with a set of 
     functions for visualization and diagnostic. 
-URL: https://jchiquet.github.io/PLNmodels/
-BugReports: https://github.com/jchiquet/PLNmodels/issues
+URL: https://pln-team.github.io/PLNmodels/
+BugReports: https://github.com/pln-team/PLNmodels/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
