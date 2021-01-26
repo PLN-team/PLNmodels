@@ -13,11 +13,13 @@ stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://www.tid
 [![](https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg)](https://github.com/pln-team/PLNmodels/commits/master)
 <!-- badges: end -->
 
-> The Poisson lognormal model and variants can be used for a variety of
-> multivariate problems when count data are at play (including PCA, LDA
-> and network inference for count data). This package implements
+> The Poisson lognormal model and variants can be used for a variety
+> of multivariate problems when count data are at play (including PCA,
+> LDA and network inference for count data). This package implements
 > efficient algorithms to fit such models accompanied with a set of
-> functions for visualization and diagnostic.
+> functions for visualization and diagnostic. See 
+> [this deck of slides](https://pln-team.github.io/slideshow/slides) 
+> for a comprehensive introduction.
 
 ## Installation
 
