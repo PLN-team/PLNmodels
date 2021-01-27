@@ -20,6 +20,7 @@
 #' @include PLNfit-class.R
 #'
 #' @importFrom R6 R6Class
+#' @importFrom purrr map2_dbl
 #' @importFrom parallel mclapply
 #' @importFrom purrr map_int map_dbl
 #' @seealso The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}
@@ -51,15 +52,41 @@ PLNmixturefit <-
         private$tau  <- posteriorProb
         private$comp <- vector('list', ncol(posteriorProb))
 
-        ## Temporary handling of covariates
-        ## TODO -  do better than just ignoring them
-        xint <- match("(Intercept)", colnames(covariates), nomatch = 0L)
-        covar      <- covariates[, -xint, drop = FALSE]
-        covariates <- covariates[, xint, drop = FALSE]
-        private$Theta <- matrix(0, ncol(covar), ncol(responses))
+        ## handling of covariates
+        xint  <- match("(Intercept)", colnames(covariates), nomatch = 0L)
+        mu_k  <- covariates[, xint, drop = FALSE]
+        private$Theta <- matrix(0, ncol(covariates), ncol(responses))
 
         for (k_ in seq.int(ncol(posteriorProb)))
-          private$comp[[k_]] <- PLNfit$new(responses, covariates, offsets, posteriorProb[, k_], model, xlevels, control)
+          private$comp[[k_]] <- PLNfit$new(responses, mu_k, offsets, posteriorProb[, k_], model, xlevels, control)
+
+      },
+      #' @description Optimize a the
+      optimize_covariates = function(Y, X, O){
+
+        M  <- private$comp %>%  map("var_par") %>% map("M")
+        S2 <- private$comp %>%  map("var_par") %>% map("S2") %>% map(~outer(as.numeric(.x), rep(1, self$p) ))
+        mu <- private$comp %>%  map(coef) %>% map(~outer(rep(1, self$n), as.numeric(.x)))
+
+        Ak_tilde <- list(M, S2, mu) %>%
+          purrr::pmap(function(M_k, S2_k, mu_k) exp(O + mu_k + M_k + .5 * S2_k))
+
+        Tk <- asplit(private$tau, 2)
+
+        objective_and_gradient <- function(theta) {
+
+          Theta <- matrix(theta, ncol(X), self$p)
+
+          XB <- X %*% Theta
+          Ak <- map(Ak_tilde, ~.x * exp(XB))
+
+          list("objective" = sum(purrr::map2_dbl(Tk, Ak, ~sum (t(.x) %*% (.y - Y * XB) ))),
+               "gradient"  = purrr::reduce(purrr::map2(Tk, Ak, ~ t(diag(.x) %*% X) %*% (.y - Y)),"+"))
+        }
+
+        out_optim <- nloptr::nloptr(rep(0, ncol(X) * self$p ), objective_and_gradient,  opts =list("algorithm"="NLOPT_LD_CCSAQ", "xtol_rel"=1.0e-8))
+        private$Theta <- matrix(out_optim$solution, ncol(X), self$p)
+        invisible(out_optim)
       },
       #' @description Optimize a [`PLNmixturefit`] model
       optimize = function(responses, covariates, offsets, control) {
@@ -67,8 +94,10 @@ PLNmixturefit <-
         ## Temporary handling of covariates
         ## TODO -  do better than just ignoring them
         xint <- match("(Intercept)", colnames(covariates), nomatch = 0L)
-        covar      <- covariates[, -xint, drop = FALSE]
-        covariates <- covariates[, xint, drop = FALSE]
+        mu_k <- covariates[, xint, drop = FALSE]
+
+        ## covariates      <- covariates[, -xint, drop = FALSE]covariates[, -xint, drop = FALSE]
+        offsets_ <- offsets
 
           ## ===========================================
           ## INITIALISATION
@@ -85,8 +114,13 @@ PLNmixturefit <-
             ## ---------------------------------------------------
             ## M - STEP
             ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
+            if (ncol(covariates) > 1) {
+              self$optimize_covariates(responses, covariates, offsets_)
+              offsets <- offsets_ + covariates %*% private$Theta
+            }
             for (k_ in seq.int(self$k))
-              self$components[[k_]]$optimize(responses, covariates, offsets, private$tau[, k_], control)
+              self$components[[k_]]$optimize(responses, mu_k, offsets, private$tau[, k_], control)
+
 
             ## ---------------------------------------------------
             ## E - STEP

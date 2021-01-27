@@ -98,7 +98,7 @@ PLNmixturefamily <-
         ## TODO -  do better than just ignoring them
         if (ncol(covariates)>1) message(" Remark: Covariates are ignored for PLNmixture at the moment...")
         xint <- match("(Intercept)", colnames(covariates), nomatch = 0L)
-        covariates <- covariates[, xint, drop = FALSE]
+        # covariates <- covariates[, xint, drop = FALSE]
 
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), model, xlevels, control)
         myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
