@@ -4,26 +4,28 @@
 <!-- badges: start -->
 
 [![R build
-status](https://github.com/jchiquet/PLNmodels/workflows/R-CMD-check/badge.svg)](https://github.com/jchiquet/PLNmodels/actions)
+status](https://github.com/pln-team/PLNmodels/workflows/R-CMD-check/badge.svg)](https://github.com/pln-team/PLNmodels/actions)
 [![Coverage
-status](https://codecov.io/gh/jchiquet/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/jchiquet/PLNmodels?branch=master)
+status](https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/pln-team/PLNmodels?branch=master)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://www.tidyverse.org/lifecycle/#stable)
-[![](https://img.shields.io/github/last-commit/jchiquet/PLNmodels.svg)](https://github.com/jchiquet/PLNmodels/commits/master)
+[![](https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg)](https://github.com/pln-team/PLNmodels/commits/master)
 <!-- badges: end -->
 
-> The Poisson lognormal model and variants can be used for a variety of
-> multivariate problems when count data are at play (including PCA, LDA
-> and network inference for count data). This package implements
+> The Poisson lognormal model and variants can be used for a variety
+> of multivariate problems when count data are at play (including PCA,
+> LDA and network inference for count data). This package implements
 > efficient algorithms to fit such models accompanied with a set of
-> functions for visualization and diagnostic.
+> functions for visualization and diagnostic. See 
+> [this deck of slides](https://pln-team.github.io/slideshow/slides) 
+> for a comprehensive introduction.
 
 ## Installation
 
 **PLNmodels** is available on
 [CRAN](https://cran.r-project.org/package=PLNmodels). The development
-version is available on [Github](https://github.com/jchiquet/PLNmodels).
+version is available on [Github](https://github.com/pln-team/PLNmodels).
 
 ### R Package installation
 
@@ -74,7 +76,7 @@ install.packages("PLNmodels")
 <!-- end list -->
 
 ``` r
-remotes::install_github("jchiquet/PLNmodels")
+remotes::install_github("pln-team/PLNmodels")
 ```
 
   - For a specific tagged release, use
@@ -82,7 +84,7 @@ remotes::install_github("jchiquet/PLNmodels")
 <!-- end list -->
 
 ``` r
-remotes::install_github("jchiquet/PLNmodels@tag_number")
+remotes::install_github("pln-team/PLNmodels@tag_number")
 ```
 
 ## Usage and main fitting functions
@@ -100,7 +102,7 @@ The main fitting functions work with the usual `R formula` notations,
 with mutivariate responses on the left hand side. You probably want to
 start by one of them. Check the corresponding vignette and documentation
 page. There is a dedicated vignettes for each model in the package (See
-<http://jchiquet.github.io/PLNmodels/articles/>).
+<http://pln-team.github.io/PLNmodels/articles/>).
 
 ### Unpenalized Poisson lognormal model (aka PLN)
 
