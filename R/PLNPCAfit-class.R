@@ -283,9 +283,9 @@ PLNPCAfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     active = list(
       #' @field rank the dimension of the current model
-      rank = function() {ncol(private$B)},
+      rank = function() {self$q},
       #' @field nb_param number of parameters in the current PLN model
-      nb_param = function() {self$p * (self$d + self$rank)},
+      nb_param = function() {self$p * (self$d + self$q) - self$q * (self$q - 1)/2},
       #' @field entropy entropy of the variational distribution
       entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)))},
       #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
@@ -343,7 +343,7 @@ PLNPCAfit <- R6Class(
         coord  <- coord / var_sd
         cor    <- coord
         cos2 <- cor^2
-        contrib <- 100 * private$svdBM$v[, 1:self$rank]^2
+        contrib <- 100 * private$svdBM$v[, 1:self$rank, drop = FALSE]^2
         dimnames(coord) <- dimnames(cor) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$Sigma), paste0("Dim.", 1:self$rank))
         list(coord   = coord,
              cor     = cor,
@@ -356,7 +356,7 @@ PLNPCAfit <- R6Class(
         ## coord[i, k] = d[k] * v[i, k]
         dist_origin <- sqrt(rowSums(coord^2))
         cos2 <- coord^2 / dist_origin^2
-        contrib <- 100 * private$svdBM$u[, 1:self$rank]^2
+        contrib <- 100 * private$svdBM$u[, 1:self$rank, drop = FALSE]^2
         dimnames(coord) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$M), paste0("Dim.", 1:self$rank))
         names(dist_origin) <- rownames(private$M)
         list(coord   = coord,
