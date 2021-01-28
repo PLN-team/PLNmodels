@@ -22,6 +22,8 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{k}}{number of components}
 
+\item{\code{d}}{number of covariates}
+
 \item{\code{components}}{components of the mixture (PLNfits)}
 
 \item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
@@ -61,6 +63,8 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
 \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
+
+\item{\code{group_means}}{a matrix of group mean vectors in the latent space.}
 }
 \if{html}{\out{</div>}}
 }
@@ -81,6 +85,9 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Optimize a the
+
+
 Initialize a \code{\link{PLNmixturefit}} model
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$new(

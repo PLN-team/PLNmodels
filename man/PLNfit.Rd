@@ -306,7 +306,7 @@ Update R2, fisher and std_err fields after optimization
   covariates,
   offsets,
   weights = rep(1, nrow(responses)),
-  type = c("wald", "louis"),
+  type = c("wald", "louis", "none"),
   nullModel = NULL
 )}\if{html}{\out{</div>}}
 }

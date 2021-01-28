@@ -40,24 +40,6 @@ PLNmixturefit <-
              pi * eval(str2expression(paste0('comp$', var_name)))
           }, self$mixtureParam, self$components)
         )
-      }
-    ),
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## PUBLIC MEMBERS
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    public  = list(
-      #' @description Initialize a [`PLNmixturefit`] model
-      #'@param posteriorProb matrix ofposterior probability for cluster belonging
-      initialize = function(responses, covariates, offsets, posteriorProb, model, xlevels, control) {
-        private$tau   <- posteriorProb
-        private$comp  <- vector('list', ncol(posteriorProb))
-        private$Theta <- matrix(0, ncol(covariates), ncol(responses))
-
-        ## Initializing the mixture components (only intercept of group mean)
-        mu_k  <- setNames(matrix(1, self$n, ncol = 1), 'Intercept')
-        for (k_ in seq.int(ncol(posteriorProb)))
-          private$comp[[k_]] <- PLNfit$new(responses, mu_k, offsets, posteriorProb[, k_], model, xlevels, control)
-
       },
       #' @description Optimize a the
       optimize_covariates = function(Y, X, O){
@@ -87,6 +69,24 @@ PLNmixturefit <-
                                     opts = opts)
         private$Theta <- matrix(out_optim$solution, ncol(X), self$p)
         invisible(out_optim)
+      }
+    ),
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PUBLIC MEMBERS
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    public  = list(
+      #' @description Initialize a [`PLNmixturefit`] model
+      #'@param posteriorProb matrix ofposterior probability for cluster belonging
+      initialize = function(responses, covariates, offsets, posteriorProb, model, xlevels, control) {
+        private$tau   <- posteriorProb
+        private$comp  <- vector('list', ncol(posteriorProb))
+        private$Theta <- matrix(0, ncol(covariates), ncol(responses))
+
+        ## Initializing the mixture components (only intercept of group mean)
+        mu_k  <- setNames(matrix(1, self$n, ncol = 1), 'Intercept')
+        for (k_ in seq.int(ncol(posteriorProb)))
+          private$comp[[k_]] <- PLNfit$new(responses, mu_k, offsets, posteriorProb[, k_], model, xlevels, control)
+
       },
       #' @description Optimize a [`PLNmixturefit`] model
       optimize = function(responses, covariates, offsets, control) {
@@ -112,7 +112,7 @@ PLNmixturefit <-
             ## M - STEP
             ## UPDATE Theta, THE MATRIX OF REGRESSION COEFFICIENTS
             if (ncol(covariates) > 1) {
-              self$optimize_covariates(responses, covariates, offsets_)
+              private$optimize_covariates(responses, covariates, offsets_)
               offsets <- offsets_ + covariates %*% private$Theta
             }
             ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
@@ -196,7 +196,8 @@ PLNmixturefit <-
             mu_k,
             offsets,
             private$tau[,k_],
-            nullModel = nullModel
+            nullModel = nullModel,
+            type = "none"
           )
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
