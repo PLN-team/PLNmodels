@@ -27,8 +27,6 @@ knitr::opts_chunk$set(
 
 This vignette illustrates the standard use of the `PLNmixture` function and the methods accompanying the R6 Classes `PLNmixturefamily` and `PLNmixturefit`.
 
-**warnings!!!** _PLNmixture is still under development. In aprticular, we are still working on inclusion of covariates in the model, and more efficient ways for finding an optimal number of component._
-
 ### Requirements
 
 The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:
@@ -63,13 +61,13 @@ component of observation $i$. Introducing this additional layer, our PLN mixture
   \end{array}
 \end{equation}
 
-<!-- #### Covariates and offsets -->
+#### Covariates and offsets
 
-<!-- Just like PLN, PLN-mixture generalizes to a formulation where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$ in each mixture component. The latent layer then reads -->
-<!-- \begin{equation} -->
-<!--   \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top{\boldsymbol\Theta}^{(k)}},{\boldsymbol\Sigma}^{(k)}), -->
-<!-- \end{equation} -->
-<!-- where each ${\boldsymbol\Theta}^{(k)}$ is a $d\times p$ matrix of regression parameters. -->
+Just like PLN, PLN-mixture generalizes to a formulation where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$ in each mixture component. The latent layer then reads
+\begin{equation}
+  \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \boldsymbol\mu}^{(k) + \mathbf{x}_i^\top{\boldsymbol\Theta}},{\boldsymbol\Sigma}^{(k)}),
+\end{equation}
+where each ${\boldsymbol\Theta}$ is a $d\times p$ matrix of regression parameters common to all the mixture components.
 
 #### Parametrization of the covariance of the mixture models
 
@@ -177,6 +175,23 @@ myMix_BIC$plot_clustering_pca()
 ```{r plot reordered data}
 myMix_BIC$plot_clustering_data()
 ```
+
+### A model with latent main effects and meteorological covariates
+
+It is possible to correct for other covariates before performing the clustering. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  :
+```{r cov, warning=FALSE}
+mixtures_cov <- PLNmixture(Abundance ~ Wind + offset(log(Offset)), clusters = 1:4, data = trichoptera)
+```
+
+```{r plot cov, fig.width=7, fig.height=5}
+plot(mixtures_cov, c("BIC", "loglik"))
+```
+
+```{r cov plot clustering}
+myMix_BIC <- getBestModel(mixtures_cov, "BIC")
+myMix_BIC$plot_clustering_pca()
+```
+
 
 ## References
 
