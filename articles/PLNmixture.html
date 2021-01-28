@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9017</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9000</span>
       </span>
     </div>
 
@@ -116,7 +116,7 @@
       <h1 data-toc-skip>Clustering of multivariate count data with PLN-mixture</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2021-01-26</h4>
+            <h4 class="date">2021-01-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNmixture.Rmd"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
@@ -129,7 +129,6 @@
 <h2 class="hasAnchor">
 <a href="#preliminaries" class="anchor"></a>Preliminaries</h2>
 <p>This vignette illustrates the standard use of the <code>PLNmixture</code> function and the methods accompanying the R6 Classes <code>PLNmixturefamily</code> and <code>PLNmixturefit</code>.</p>
-<p><strong>warnings!!!</strong> <em>PLNmixture is still under development. In aprticular, we are still working on inclusion of covariates in the model, and more efficient ways for finding an optimal number of component.</em></p>
 <div id="requirements" class="section level3">
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
@@ -157,12 +156,13 @@
   \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp;   \mathbf{Y}_i | \mathbf{Z}_i\sim\mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right).
   \end{array}
 \end{equation}\]</span></p>
-<!-- #### Covariates and offsets -->
-<!-- Just like PLN, PLN-mixture generalizes to a formulation where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$ in each mixture component. The latent layer then reads -->
-<!-- \begin{equation} -->
-<!--   \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top{\boldsymbol\Theta}^{(k)}},{\boldsymbol\Sigma}^{(k)}), -->
-<!-- \end{equation} -->
-<!-- where each ${\boldsymbol\Theta}^{(k)}$ is a $d\times p$ matrix of regression parameters. -->
+<div id="covariates-and-offsets" class="section level4">
+<h4 class="hasAnchor">
+<a href="#covariates-and-offsets" class="anchor"></a>Covariates and offsets</h4>
+<p>Just like PLN, PLN-mixture generalizes to a formulation where the main effect is due to a linear combination of <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span> in each mixture component. The latent layer then reads <span class="math display">\[\begin{equation}
+  \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \boldsymbol\mu}^{(k) + \mathbf{x}_i^\top{\boldsymbol\Theta}},{\boldsymbol\Sigma}^{(k)}),
+\end{equation}\]</span> where each <span class="math inline">\({\boldsymbol\Theta}\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression parameters common to all the mixture components.</p>
+</div>
 <div id="parametrization-of-the-covariance-of-the-mixture-models" class="section level4">
 <h4 class="hasAnchor">
 <a href="#parametrization-of-the-covariance-of-the-mixture-models" class="anchor"></a>Parametrization of the covariance of the mixture models</h4>
@@ -238,8 +238,8 @@
 ##  Task: Mixture Model 
 ## ========================================================
 ##  - Number of clusters considered: from 1 to 5 
-##  - Best model (regarding BIC): cluster = 4 
-##  - Best model (regarding ICL): cluster = 4</code></pre>
+##  - Best model (regarding BIC): cluster = 3 
+##  - Best model (regarding ICL): cluster = 3</code></pre>
 <p>One can also easily access the successive values of the criteria in the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mixture_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
@@ -256,42 +256,42 @@
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">18</td>
-<td align="right">-2883.678</td>
-<td align="right">-2918.704</td>
-<td align="right">-2918.704</td>
-<td align="right">-4154.436</td>
+<td align="right">-2917.236</td>
+<td align="right">-2952.263</td>
+<td align="right">-2952.263</td>
+<td align="right">-4184.465</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">37</td>
-<td align="right">-2822.737</td>
-<td align="right">-2894.736</td>
-<td align="right">-2895.271</td>
-<td align="right">-4127.948</td>
+<td align="right">-2848.205</td>
+<td align="right">-2920.204</td>
+<td align="right">-2920.204</td>
+<td align="right">-4150.485</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">56</td>
-<td align="right">-2770.752</td>
-<td align="right">-2879.723</td>
-<td align="right">-2880.574</td>
-<td align="right">-4114.226</td>
+<td align="right">-2770.759</td>
+<td align="right">-2879.730</td>
+<td align="right">-2880.119</td>
+<td align="right">-4114.023</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-2732.227</td>
-<td align="right">-2878.170</td>
-<td align="right">-2878.573</td>
-<td align="right">-4109.262</td>
+<td align="right">-2735.597</td>
+<td align="right">-2881.541</td>
+<td align="right">-2884.801</td>
+<td align="right">-4115.331</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">94</td>
-<td align="right">-2737.865</td>
-<td align="right">-2920.780</td>
-<td align="right">-2921.281</td>
-<td align="right">-4155.226</td>
+<td align="right">-2756.557</td>
+<td align="right">-2939.472</td>
+<td align="right">-2943.431</td>
+<td align="right">-4177.719</td>
 </tr>
 </tbody>
 </table>
@@ -312,41 +312,41 @@
 <td align="left">out</td>
 <td align="right">1</td>
 <td align="left">18</td>
-<td align="left">2883.677695</td>
-<td align="left">0.000001</td>
-<td align="left">23.000000</td>
+<td align="left">2917.236228</td>
+<td align="left">0.000343</td>
+<td align="left">2.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
 <td align="right">2</td>
 <td align="left">37</td>
-<td align="left">2822.736932</td>
-<td align="left">0.000003</td>
-<td align="left">7.000000</td>
+<td align="left">2848.205359</td>
+<td align="left">0.000000</td>
+<td align="left">2.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
 <td align="right">3</td>
 <td align="left">56</td>
-<td align="left">2770.752476</td>
-<td align="left">0.000000</td>
+<td align="left">2770.759345</td>
+<td align="left">0.000049</td>
 <td align="left">4.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">2732.227114</td>
-<td align="left">0.000001</td>
+<td align="left">2735.597439</td>
+<td align="left">0.000007</td>
 <td align="left">7.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.3</td>
 <td align="right">5</td>
 <td align="left">94</td>
-<td align="left">2737.864740</td>
-<td align="left">0.000000</td>
-<td align="left">4.000000</td>
+<td align="left">2756.556811</td>
+<td align="left">0.000164</td>
+<td align="left">6.000000</td>
 </tr>
 </tbody>
 </table>
@@ -375,14 +375,14 @@
 <p>Objects <code>myMix_ICL</code> and <code>myMix_3</code> are <code>R6Class</code> objects of class <code>PLNmixturefit</code> which in turns own a couple of methods. A good place to start is the <code>show/print</code> method:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span></code></pre></div>
-<pre><code>## Poisson Lognormal mixture model with 4 components.
+<pre><code>## Poisson Lognormal mixture model with 3 components.
 ## * check fields $posteriorProb, $memberships, $mixtureParam and $components
 ## * check methods $plot_clustering_data, $plot_clustering_pca
 ## * each $component[[i]] is a PLNfit with associated methods and fields</code></pre>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">memberships</span></code></pre></div>
-<pre><code>##  [1] 4 2 4 4 4 2 2 4 2 2 2 2 4 4 1 4 4 4 4 4 4 2 2 2 2 4 4 2 2 3 3 4 4 4 4 4 4 2
-## [39] 2 2 4 4 4 4 4 4 2 4 4</code></pre>
+<pre><code>##  [1] 2 3 2 2 2 3 3 2 3 3 3 3 2 2 2 2 2 2 2 2 2 3 3 3 3 2 2 3 3 1 1 2 2 2 2 2 2 3
+## [39] 3 3 2 2 2 2 2 2 3 2 2</code></pre>
 <p>Mixture model can be used to find</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="fu">plot_clustering_pca</span><span class="op">(</span><span class="op">)</span></code></pre></div>
@@ -391,6 +391,40 @@
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="fu">plot_clustering_data</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNmixture_files/figure-html/plot%20reordered%20data-1.png" width="700"></p>
 </div>
+</div>
+<div id="a-model-with-latent-main-effects-and-meteorological-covariates" class="section level3">
+<h3 class="hasAnchor">
+<a href="#a-model-with-latent-main-effects-and-meteorological-covariates" class="anchor"></a>A model with latent main effects and meteorological covariates</h3>
+<p>It is possible to correct for other covariates before performing the clustering. In our case ,we’re going to use <code>Wind</code> as a covariate and illustrate the main differences with before :</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">mixtures_cov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNmixture.html">PLNmixture</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="va">Wind</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, clusters <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></code></pre></div>
+<pre><code>## 
+##  Initialization...
+## 
+##  Adjusting 4 PLN mixture models.
+##  number of cluster = 1 
+    number of cluster = 2 
+    number of cluster = 3 
+    number of cluster = 4 
+## 
+##  Smoothing PLN mixture models.
+##    Going forward +++
+                                                                                                    
+   Going backward +++
+                                                                                                    
+   Going forward +++
+                                                                                                    
+   Going backward +++
+                                                                                                    
+##  Post-treatments
+##  DONE!</code></pre>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mixtures_cov</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"BIC"</span>, <span class="st">"loglik"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="PLNmixture_files/figure-html/plot%20cov-1.png" width="672"></p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">myMix_BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel</a></span><span class="op">(</span><span class="va">mixtures_cov</span>, <span class="st">"BIC"</span><span class="op">)</span>
+<span class="va">myMix_BIC</span><span class="op">$</span><span class="fu">plot_clustering_pca</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p><img src="PLNmixture_files/figure-html/cov%20plot%20clustering-1.png" width="700"></p>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">

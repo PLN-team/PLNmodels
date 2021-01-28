@@ -85,7 +85,7 @@ See the documentation for ..." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.2-9017</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9000</span>
       </span>
     </div>
 
@@ -186,6 +186,8 @@ See the documentation for ...</p>
 
 <dt><code>k</code></dt><dd><p>number of components</p></dd>
 
+<dt><code>d</code></dt><dd><p>number of covariates</p></dd>
+
 <dt><code>components</code></dt><dd><p>components of the mixture (PLNfits)</p></dd>
 
 <dt><code>posteriorProb</code></dt><dd><p>matrix ofposterior probability for cluster belonging</p></dd>
@@ -226,6 +228,8 @@ See the documentation for ...</p>
 
 <dt><code>fitted</code></dt><dd><p>a matrix: fitted values of the observations (A in the model)</p></dd>
 
+<dt><code>group_means</code></dt><dd><p>a matrix of group mean vectors in the latent space.</p></dd>
+
 </dl><p></div></p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
@@ -244,6 +248,8 @@ See the documentation for ...</p>
 </ul>
 <p><hr>
 <a id="method-new"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>new()</code></h3>
+<p>Optimize a the</p>
+
 <p>Initialize a <code>PLNmixturefit</code> model</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
   <span class='va'>responses</span>,
