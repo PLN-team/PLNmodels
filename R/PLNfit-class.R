@@ -256,7 +256,7 @@ PLNfit <- R6Class(
     },
 
     #' @description Update R2, fisher and std_err fields after optimization
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis"), nullModel = NULL) {
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("none", "wald", "louis"), nullModel = NULL) {
       ## compute R2
       self$set_R2(responses, covariates, offsets, weights, nullModel)
       ## Set the name of the matrices according to those of the data matrices,
@@ -268,10 +268,12 @@ PLNfit <- R6Class(
       rownames(private$M) <- rownames(private$S2) <- rownames(responses)
       ## compute and store Fisher Information matrix
       type <- match.arg(type)
-      private$FIM <- self$compute_fisher(type, X = covariates)
-      private$FIM_type <- type
-      ## compute and store matrix of standard errors
-      private$.std_err <- self$compute_standard_error()
+      if (type != "none") {
+        private$FIM <- self$compute_fisher(type, X = covariates)
+        private$FIM_type <- type
+        ## compute and store matrix of standard errors
+        private$.std_err <- self$compute_standard_error()
+      }
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
