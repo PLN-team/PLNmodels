@@ -21,7 +21,7 @@ myPLN$plot_clustering_data()
 
 aricode::ARI(myPLN$memberships, iris$Species)
 
-my_mixtures_covar <-  PLNmixture(Abundance ~ 1 + Species + offset(log(Offset)), clusters = 1:3, data = iris_data, control_main = list(core = nb_cores))
+my_mixtures_covar <-  PLNmixture(Abundance ~ 0 + Species + offset(log(Offset)), clusters = 1:3, data = iris_data, control_main = list(core = nb_cores))
 
 plot(my_mixtures_covar)
 

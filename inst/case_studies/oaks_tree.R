@@ -89,12 +89,10 @@ data.frame(
 
 ## Mixture model to recover tree structure - with covariates
 system.time(my_mixtures <- PLNmixture(Abundance ~ 0 + tree + distTOground + offset(log(Offset)), data = oaks, clusters = 1:5, control_main = list(cores = nb_cores)))
-system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + distTOground + offset(log(Offset)), data = oaks, clusters = 1:5, control_main = list(cores = nb_cores)))
 
-plot(my_mixtures, criteria = c("loglik", "ICL"))
+plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"))
 
 myPLN <- my_mixtures %>% getBestModel()
-myPLN <- my_mixtures %>% getModel(3)
 
 myPLN$plot_clustering_pca(main = 'clustering memberships in individual factor map')
 p <- myPLN$plot_clustering_data()

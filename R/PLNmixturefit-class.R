@@ -219,7 +219,7 @@ PLNmixturefit <-
       #' @field k number of components
       k = function() {length(private$comp)},
       #' @field d number of covariates
-      d = function() {ncol(private$Theta)},
+      d = function() {nrow(private$Theta)},
       #' @field components components of the mixture (PLNfits)
       components    = function(value) {if (missing(value)) return(private$comp) else private$comp <- value},
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
@@ -231,7 +231,7 @@ PLNmixturefit <-
       #' @field optim_par a list with parameters useful for monitoring the optimization
       optim_par  = function() {private$monitoring},
       #' @field nb_param number of parameters in the current PLN model
-      nb_param      = function() {(self$k-1) + sum(map_int(self$components, 'nb_param'))},
+      nb_param      = function() {(self$k-1) + self$p * self$d + sum(map_int(self$components, 'nb_param'))},
       #' @field entropy_clustering Entropy of the variational distribution of the cluster (multinomial)
       entropy_clustering = function() {-sum(.xlogx(private$tau))},
       #' @field entropy_latent Entropy of the variational distribution of the latent vector (Gaussian)
@@ -262,13 +262,19 @@ PLNmixturefit <-
       #' @field criteria a vector with loglik, BIC, ICL, ICL_variant and number of parameters
       criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, ICL_variant = self$ICL_variant)},
       #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
-      model_par  = function() {list(Theta = private$Theta, Sigma = private$mix_up('model_par$Sigma'))},
+      model_par  = function() {list(Theta = private$Theta, Sigma = private$mix_up('model_par$Sigma'), Mu = self$group_means)},
       #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
       var_par    = function() {list(M  = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))},
       #' @field latent a matrix: values of the latent vector (Z in the model)
       latent = function() {private$mix_up('latent')},
       #' @field fitted a matrix: fitted values of the observations (A in the model)
-      fitted = function() {private$mix_up('fitted')}
+      fitted = function() {private$mix_up('fitted')},
+      #' @field group_means a matrix of group mean vectors in the latent space.
+      group_means = function() {
+        self$components %>%
+          map(function(C) C$model_par$Theta)  %>%
+          setNames(paste0("group_", 1:self$k)) %>% as.data.frame()
+      }
     )
 )
 
