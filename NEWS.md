@@ -1,3 +1,7 @@
+# PLNmodels 0.11.3
+
+* support for covariates in PLNmixture
+
 # PLNmodels 0.11.2
 
 * Rewriting C++ by merging modern_cpp to dev, thanks to François Gindraud
