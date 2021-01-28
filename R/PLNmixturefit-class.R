@@ -49,14 +49,12 @@ PLNmixturefit <-
       #' @description Initialize a [`PLNmixturefit`] model
       #'@param posteriorProb matrix ofposterior probability for cluster belonging
       initialize = function(responses, covariates, offsets, posteriorProb, model, xlevels, control) {
-        private$tau  <- posteriorProb
-        private$comp <- vector('list', ncol(posteriorProb))
-
-        ## handling of covariates
-        xint  <- match("(Intercept)", colnames(covariates), nomatch = 0L)
-        mu_k  <- covariates[, xint, drop = FALSE]
+        private$tau   <- posteriorProb
+        private$comp  <- vector('list', ncol(posteriorProb))
         private$Theta <- matrix(0, ncol(covariates), ncol(responses))
 
+        ## Initializing the mixture components (only intercept of group mean)
+        mu_k  <- setNames(matrix(1, self$n, ncol = 1), 'Intercept')
         for (k_ in seq.int(ncol(posteriorProb)))
           private$comp[[k_]] <- PLNfit$new(responses, mu_k, offsets, posteriorProb[, k_], model, xlevels, control)
 
@@ -93,12 +91,10 @@ PLNmixturefit <-
       #' @description Optimize a [`PLNmixturefit`] model
       optimize = function(responses, covariates, offsets, control) {
 
-        ## Temporary handling of covariates
-        ## TODO -  do better than just ignoring them
-        xint <- match("(Intercept)", colnames(covariates), nomatch = 0L)
-        mu_k <- covariates[, xint, drop = FALSE]
-
-        ## covariates      <- covariates[, -xint, drop = FALSE]covariates[, -xint, drop = FALSE]
+        ## The intercept term will serve as the mean in each group/component
+        mu_k  <- setNames(matrix(1, self$n, ncol = 1), 'Intercept')
+        ## We make a copy of the offset, for accounting for fixed
+        ## covariates effects during the alternative algorithm
         offsets_ <- offsets
 
           ## ===========================================
@@ -114,11 +110,12 @@ PLNmixturefit <-
 
             ## ---------------------------------------------------
             ## M - STEP
-            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
+            ## UPDATE Theta, THE MATRIX OF REGRESSION COEFFICIENTS
             if (ncol(covariates) > 1) {
               self$optimize_covariates(responses, covariates, offsets_)
               offsets <- offsets_ + covariates %*% private$Theta
             }
+            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
             for (k_ in seq.int(self$k))
               self$components[[k_]]$optimize(responses, mu_k, offsets, private$tau[, k_], control)
 
@@ -189,17 +186,14 @@ PLNmixturefit <-
       #' @param weights an optional vector of observation weights to be used in the fitting process.
       postTreatment = function(responses, covariates, offsets, weights, nullModel) {
 
-        ## Temporary handling of covariates
-        ## TODO -  do better than just ignoring them
-        xint <- match("(Intercept)", colnames(covariates), nomatch = 0L)
-        covar      <- covariates[, -xint, drop = FALSE]
-        covariates <- covariates[, xint, drop = FALSE]
-        private$Theta <- matrix(0, ncol(covar), ncol(responses))
+        ## restoring the full design matrix (group means + covariates)
+        mu_k <- setNames(matrix(1, self$n, ncol = 1), 'Intercept')
+        offsets <- offsets + covariates %*% private$Theta
 
         for (k_ in seq.int(ncol(private$tau)))
           self$components[[k_]]$postTreatment(
             responses,
-            covariates,
+            mu_k,
             offsets,
             private$tau[,k_],
             nullModel = nullModel
