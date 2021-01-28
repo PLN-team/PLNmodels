@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9010</span>
       </span>
     </div>
 
@@ -239,7 +239,7 @@
 ## ========================================================
 ##  - Number of clusters considered: from 1 to 5 
 ##  - Best model (regarding BIC): cluster = 3 
-##  - Best model (regarding ICL): cluster = 3</code></pre>
+##  - Best model (regarding ICL): cluster = 4</code></pre>
 <p>One can also easily access the successive values of the criteria in the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mixture_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
@@ -250,7 +250,6 @@
 <th align="right">loglik</th>
 <th align="right">BIC</th>
 <th align="right">ICL</th>
-<th align="right">ICL_variant</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -258,40 +257,35 @@
 <td align="right">18</td>
 <td align="right">-2917.236</td>
 <td align="right">-2952.263</td>
-<td align="right">-2952.263</td>
-<td align="right">-4184.465</td>
+<td align="right">-3808.055</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">37</td>
 <td align="right">-2848.205</td>
 <td align="right">-2920.204</td>
-<td align="right">-2920.204</td>
-<td align="right">-4150.485</td>
+<td align="right">-3743.335</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">56</td>
 <td align="right">-2770.759</td>
 <td align="right">-2879.730</td>
-<td align="right">-2880.119</td>
-<td align="right">-4114.023</td>
+<td align="right">-3764.855</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
 <td align="right">-2735.597</td>
 <td align="right">-2881.541</td>
-<td align="right">-2884.801</td>
-<td align="right">-4115.331</td>
+<td align="right">-3712.169</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">94</td>
 <td align="right">-2756.557</td>
 <td align="right">-2939.472</td>
-<td align="right">-2943.431</td>
-<td align="right">-4177.719</td>
+<td align="right">-3834.682</td>
 </tr>
 </tbody>
 </table>
@@ -381,8 +375,8 @@
 ## * each $component[[i]] is a PLNfit with associated methods and fields</code></pre>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">memberships</span></code></pre></div>
-<pre><code>##  [1] 2 3 2 2 2 3 3 2 3 3 3 3 2 2 2 2 2 2 2 2 2 3 3 3 3 2 2 3 3 1 1 2 2 2 2 2 2 3
-## [39] 3 3 2 2 2 2 2 2 3 2 2</code></pre>
+<pre><code>##  [1] 2 1 2 2 2 1 1 2 1 1 1 1 2 2 2 2 2 2 2 2 2 1 1 1 1 2 2 1 1 3 3 2 2 2 2 2 2 1
+## [39] 1 1 2 2 2 2 2 2 1 2 2</code></pre>
 <p>Mixture model can be used to find</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="fu">plot_clustering_pca</span><span class="op">(</span><span class="op">)</span></code></pre></div>
