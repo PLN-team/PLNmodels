@@ -125,7 +125,7 @@ function to restart clustering to avoid local minima by smoothing the loglikliho
 \subsection{Method \code{plot()}}{
 Lineplot of selected criteria for all models in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$plot(criteria = c("loglik", "BIC", "ICL", "ICL_variant"))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$plot(criteria = c("loglik", "BIC", "ICL"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -158,14 +158,14 @@ a \code{\link{ggplot}} graph
 \subsection{Method \code{getBestModel()}}{
 Extract best model in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$getBestModel(crit = c("BIC", "ICL", "ICL_variant"))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$getBestModel(crit = c("BIC", "ICL", "loglik"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{crit}}{a character for the criterion used to performed the selection. Either
-"BIC", "ICL", "ICL_variant", or "loglik". Default is \code{BIC}}
+"BIC", "ICL" or "loglik". Default is \code{ICL}}
 }
 \if{html}{\out{</div>}}
 }

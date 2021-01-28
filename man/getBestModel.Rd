@@ -13,7 +13,7 @@
 
 getBestModel(Robject, crit, ...)
 
-\method{getBestModel}{PLNmixturefamily}(Robject, crit = c("ICL", "BIC", "ICL_variant"), ...)
+\method{getBestModel}{PLNmixturefamily}(Robject, crit = c("ICL", "BIC"), ...)
 
 \method{getBestModel}{PLNnetworkfamily}(Robject, crit = c("BIC", "EBIC", "StARS"), ...)
 }

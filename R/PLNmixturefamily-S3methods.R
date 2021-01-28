@@ -12,7 +12,7 @@ isPLNmixturefamily     <- function(Robject) {inherits(Robject, "PLNmixturefamily
 #' @name plot.PLNmixturefamily
 #'
 #' @param x an R6 object with class [`PLNfamily`]
-#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "ICL_variant").
+#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL").
 #' Default is  c("loglik", "BIC", "ICL").
 #' @param ... additional parameters for S3 compatibility. Not used
 #'
@@ -41,7 +41,7 @@ getModel.PLNmixturefamily <- function(Robject, var, index = NULL) {
 
 #' @describeIn getBestModel Model extraction for [`PLNmixturefamily`]
 #' @export
-getBestModel.PLNmixturefamily <- function(Robject, crit = c("ICL", "BIC", "ICL_variant"), ...) {
+getBestModel.PLNmixturefamily <- function(Robject, crit = c("ICL", "BIC"), ...) {
   stopifnot(isPLNmixturefamily(Robject))
   Robject$getBestModel(match.arg(crit))
 }

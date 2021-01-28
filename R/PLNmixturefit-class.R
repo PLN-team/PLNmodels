@@ -232,14 +232,13 @@ PLNmixturefit <-
       #' @field optim_par a list with parameters useful for monitoring the optimization
       optim_par  = function() {private$monitoring},
       #' @field nb_param number of parameters in the current PLN model
-      nb_param      = function() {(self$k-1) + self$p * self$d + sum(map_int(self$components, 'nb_param'))},
+      nb_param  = function() {(self$k-1) + self$p * self$d + sum(map_int(self$components, 'nb_param'))},
       #' @field entropy_clustering Entropy of the variational distribution of the cluster (multinomial)
       entropy_clustering = function() {-sum(.xlogx(private$tau))},
       #' @field entropy_latent Entropy of the variational distribution of the latent vector (Gaussian)
       entropy_latent = function() {
         .5 * (sum(map_dbl(private$comp, function(component) {
-          S2 <- component$var_par$S2  * ifelse(component$vcov_model == "spherical", self$p, 1)
-          sum( diag(component$weights) %*% log(S2) )
+          sum( diag(component$weights) %*% log(component$var_par$S2) * ifelse(component$vcov_model == "spherical", self$p, 1) )
           })) + self$n * self$p * log(2*pi*exp(1)))
       },
       #' @field entropy Full entropy of the variational distribution (latent vector + clustering)
@@ -253,15 +252,13 @@ PLNmixturefit <-
         rowSums(private$tau * J_ik) - rowSums(.xlogx(private$tau)) + private$tau %*% log(self$mixtureParam)
         },
       #' @field BIC variational lower bound of the BIC
-      BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
-      #' @field ICL variational lower bound of the ICL (include only entropy of the clustering distribution)
-      ICL        = function() {self$BIC - self$entropy_clustering},
-      #' @field ICL_variant variational lower bound of the ICL (include entropy of both the clustering and latent distributions)
-      ICL_variant= function() {self$BIC - self$entropy},
+      BIC       = function() {self$loglik - .5 * log(self$n) * self$nb_param},
+      #' @field ICL variational lower bound of the ICL (include entropy of both the clustering and latent distributions)
+      ICL       = function() {self$BIC - self$entropy},
       #' @field R_squared approximated goodness-of-fit criterion
-      R_squared     = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},
-      #' @field criteria a vector with loglik, BIC, ICL, ICL_variant and number of parameters
-      criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL, ICL_variant = self$ICL_variant)},
+      R_squared = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},
+      #' @field criteria a vector with loglik, BIC, ICL, and number of parameters
+      criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL)},
       #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
       model_par  = function() {list(Theta = private$Theta, Sigma = private$mix_up('model_par$Sigma'), Mu = self$group_means)},
       #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation

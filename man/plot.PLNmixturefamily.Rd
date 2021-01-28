@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{an R6 object with class \code{\link{PLNfamily}}}
 
-\item{criteria}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "ICL_variant").
+\item{criteria}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL").
 Default is  c("loglik", "BIC", "ICL").}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
