@@ -171,7 +171,7 @@ PLNmixture_param <- function(control, n, p, d) {
   covariance  <- ifelse(is.null(control$covariance) , "spherical", control$covariance)
   covariance  <- ifelse(is.null(control$inception), covariance  , control$inception$model)
   ctrl <- list(
-    "ftol_out"    = 1e-5,
+    "ftol_out"    = 1e-3,
     "maxit_out"   = 50,
     "algorithm"   = "CCSAQ",
     "maxeval"     = 10000  ,

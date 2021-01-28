@@ -4,7 +4,7 @@ library(PLNmodels)
 library(tidyverse)
 library(viridisLite)
 
-nb_cores <- 3
+nb_cores <- 10
 
 ## Dimension reduction with PCA
 
@@ -21,7 +21,7 @@ myPLN$plot_clustering_data()
 
 aricode::ARI(myPLN$memberships, iris$Species)
 
-my_mixtures_covar <-  PLNmixture(Abundance ~ 1 + Species + offset(log(Offset)), clusters = 1:5, data = iris_data, control_main = list(core = nb_cores))
+my_mixtures_covar <-  PLNmixture(Abundance ~ 1 + Species + offset(log(Offset)), clusters = 1:3, data = iris_data, control_main = list(core = nb_cores))
 
 plot(my_mixtures_covar)
 

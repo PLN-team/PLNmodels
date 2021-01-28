@@ -81,10 +81,12 @@ PLNmixturefit <-
           Ak <- map(Ak_tilde, ~.x * exp(XB))
 
           list("objective" = sum(purrr::map2_dbl(Tk, Ak, ~sum (t(.x) %*% (.y - Y * XB) ))),
-               "gradient"  = purrr::reduce(purrr::map2(Tk, Ak, ~ t(diag(.x) %*% X) %*% (.y - Y)),"+"))
+               "gradient"  = Reduce('+', purrr::map2(Tk, Ak, ~ as.numeric(t(diag(.x) %*% X) %*% (.y - Y)))))
         }
 
-        out_optim <- nloptr::nloptr(rep(0, ncol(X) * self$p ), objective_and_gradient,  opts =list("algorithm"="NLOPT_LD_CCSAQ", "xtol_rel"=1.0e-8))
+        opts <- list("algorithm"="NLOPT_LD_CCSAQ", "xtol_rel"=1.0e-4)
+        out_optim <- nloptr::nloptr(c(private$Theta), objective_and_gradient,
+                                    opts = opts)
         private$Theta <- matrix(out_optim$solution, ncol(X), self$p)
         invisible(out_optim)
       },
@@ -104,7 +106,6 @@ PLNmixturefit <-
           cond <- FALSE; iter <- 1
           objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
           convergence <- numeric(control$maxit_out); convergence[iter] <- NA
-
           ## ===========================================
           ## OPTIMISATION
           while (!cond) {
@@ -120,11 +121,6 @@ PLNmixturefit <-
             }
             for (k_ in seq.int(self$k))
               self$components[[k_]]$optimize(responses, mu_k, offsets, private$tau[, k_], control)
-
-
-            ## Temporary handling of covariates
-            ## TODO - update covariates effect
-
 
             ## ---------------------------------------------------
             ## E - STEP
