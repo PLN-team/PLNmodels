@@ -146,7 +146,7 @@ PLNmixturefamily <-
       #' @param control a list to control the smoothing process
       smooth = function(control) {
         if (control$trace > 0) control$trace <- TRUE else control$trace <- FALSE
-        for (i in 1:control$iterates) {
+        for (i in seq_len(control$iterates)) {
           if (control$smoothing %in% c('forward' , 'both')) private$smooth_forward(control)
           if (control$smoothing %in% c('backward', 'both')) private$smooth_backward(control)
         }
