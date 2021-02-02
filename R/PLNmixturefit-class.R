@@ -156,7 +156,7 @@ PLNmixturefit <-
       #' @param type The type of prediction required. The default `posterior` are posterior probabilities for each group ,
       #'  `response` is the group with maximal posterior probability and `latent` is the averaged latent in the latent space,
       #'  with weights equal to the posterior probabilities.
-      #' @param prior User-specified prior group probabilities in the new data. If NULL (default), a uniform prior is used.
+      #' @param prior User-specified prior group probabilities in the new data. The default uses a uniform prior.
       #' @param control a list for controlling the optimization. See [PLN()] for details.
       #' @param envir Environment in which the prediction is evaluated
       predict = function(newdata,
@@ -196,12 +196,12 @@ PLNmixturefit <-
           iter <- iter + 1
           if (control$trace > 1) cat("", iter)
 
+          ## ---------------------------------------------------
           ## VE step of each component
           ve_step <- list(self$k)
           for (k in seq.int(self$k))
             ve_step[[k]] <- self$components[[k]]$VEstep(intercept, args$O, args$Y, tau[, k], control = control)
 
-          ## ---------------------------------------------------
           ## E - STEP
           ## UPDATE THE POSTERIOR PROBABILITIES
           if (self$k > 1) { # only needed when at least 2 components!
@@ -367,25 +367,4 @@ PLNmixturefit <-
       }
     )
 )
-
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
-## ----------------------------------------------------------------------
-## Should only be accessed BY PLNfamily but R6 friend class don't exist
-
-# Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
-#
-# @name PLNfit_latent_pos
-#
-# @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
-# @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
-# PLNmixturefit$set("public", "latent_pos",
-# function(covariates, offsets) {
-#   latentPos <- private$Mu + private$M + tcrossprod(covariates, private$Theta) + offsets
-#   latentPos
-# })
-
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR THE USERS
-## ----------------------------------------------------------------------
 

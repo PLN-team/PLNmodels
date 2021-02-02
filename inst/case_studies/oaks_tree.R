@@ -71,8 +71,8 @@ plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"))
 
 myPLN <- my_mixtures %>% getModel(3)
 
-myPLN$plot_clustering_pca(main = 'clustering memberships in individual factor map')
-p <- myPLN$plot_clustering_data()
+plot(myPLN, "pca", main = 'clustering memberships in individual factor map')
+plot(myPLN, "matrix")
 
 aricode::ARI(myPLN$memberships, oaks$tree)
 table(myPLN$memberships, oaks$tree)
