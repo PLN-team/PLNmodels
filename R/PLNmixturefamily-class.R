@@ -31,27 +31,29 @@ PLNmixturefamily <-
       smooth_forward = function(control) {
       trace <- control$trace > 0; control$trace <- FALSE
       if (trace) cat("   Going forward ")
-      for (i in self$clusters[-length(self$clusters)]) {
+      for (k in self$clusters[-length(self$clusters)]) {
         if (trace) cat("+")
-        cl0 <- self$models[[i]]$memberships
-        if (length(unique(cl0)) == i) { # when would this not happens ?
-          candidates <- mclapply(1:i, function(j) {
+        cl0 <- self$models[[k]]$memberships
+        if (length(unique(cl0)) == k) { # when would this not happens ?
+          candidates <- mclapply(1:k, function(l) {
             cl <- cl0
-            J  <- which(cl == j)
-            if (length(J) > 1) {
+            J  <- which(cl == l)
+            if (length(J) > 4) {
               J1 <- base::sample(J, floor(length(J)/2))
               J2 <- setdiff(J, J1)
-              cl[J1] <- j; cl[J2] <- i + 1
+              cl[J1] <- l; cl[J2] <- k + 1
               model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl), private$model, private$xlevels, control)
               model$optimize(self$responses, self$covariates, self$offsets, control)
             } else {
-              model <- self$models[[i + 1]]$clone()
+              model <- self$models[[k + 1]]$clone()
             }
             model
           }, mc.cores = control$cores)
           best_one <- candidates[[which.max(map_dbl(candidates, 'loglik'))]]
-          if (best_one$loglik > self$models[[i + 1]]$loglik)
-            self$models[[i + 1]] <- best_one
+          if (best_one$loglik > self$models[[k + 1]]$loglik) {
+            self$models[[k + 1]] <- best_one
+            # cat("found one")
+          }
         }
       }
       if (trace) cat("\r                                                                                                    \r")
@@ -59,21 +61,23 @@ PLNmixturefamily <-
       smooth_backward = function(control) {
         trace <- control$trace > 0; control$trace <- FALSE
         if (trace) cat("   Going backward ")
-        for (i in rev(self$clusters[-1])) {
+        for (k in rev(self$clusters[-1])) {
           if (trace) cat('+')
-          cl0 <- factor(self$models[[i]]$memberships)
-          if (nlevels(cl0) == i) {
-            candidates <- mclapply(combn(i, 2, simplify = FALSE), function(couple) {
+          cl0 <- factor(self$models[[k]]$memberships)
+          if (nlevels(cl0) == k) {
+            candidates <- mclapply(combn(k, 2, simplify = FALSE), function(couple) {
               cl_fusion <- cl0
               levels(cl_fusion)[which(levels(cl_fusion) == paste(couple[1]))] <- paste(couple[2])
-              levels(cl_fusion) <- as.character(1:(i - 1))
+              levels(cl_fusion) <- as.character(1:(k - 1))
               model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl_fusion), private$model, private$xlevels, control)
               model$optimize(self$responses, self$covariates, self$offsets, control)
               model
             }, mc.cores = control$cores)
             best_one <- candidates[[which.max(map_dbl(candidates, 'loglik'))]]
-            if (best_one$loglik > self$models[[i - 1]]$loglik)
-              self$models[[i - 1]] <- best_one
+            if (best_one$loglik > self$models[[k - 1]]$loglik) {
+              self$models[[k - 1]] <- best_one
+              # cat("found one")
+            }
           }
         }
         if (trace) cat("\r                                                                                                    \r")
@@ -147,8 +151,8 @@ PLNmixturefamily <-
       smooth = function(control) {
         if (control$trace > 0) control$trace <- TRUE else control$trace <- FALSE
         for (i in seq_len(control$iterates)) {
-          if (control$smoothing %in% c('forward' , 'both')) private$smooth_forward(control)
           if (control$smoothing %in% c('backward', 'both')) private$smooth_backward(control)
+          if (control$smoothing %in% c('forward' , 'both')) private$smooth_forward(control)
         }
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

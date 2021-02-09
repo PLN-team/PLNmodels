@@ -33,7 +33,6 @@ The packages required for the analysis are **PLNmodels** plus some others for da
 
 ```{r requirement}
 library(PLNmodels)
-library(ggplot2)
 ```
 
 ### Data set
@@ -43,6 +42,8 @@ We illustrate our point with the trichoptera data set, a full description of whi
 ```{r data_load}
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+data(mollusk)
+trichoptera <- prepare_data(mollusk$Abundance, mollusk$Covariate)
 ```
 
 The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
@@ -65,7 +66,7 @@ component of observation $i$. Introducing this additional layer, our PLN mixture
 
 Just like PLN, PLN-mixture generalizes to a formulation where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$ in each mixture component. The latent layer then reads
 \begin{equation}
-  \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \boldsymbol\mu}^{(k) + \mathbf{x}_i^\top{\boldsymbol\Theta}},{\boldsymbol\Sigma}^{(k)}),
+  \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^{\top{\boldsymbol\Theta}} + \boldsymbol\mu}^{(k)} + ,{\boldsymbol\Sigma}^{(k)}),
 \end{equation}
 where each ${\boldsymbol\Theta}$ is a $d\times p$ matrix of regression parameters common to all the mixture components.
 
@@ -77,10 +78,10 @@ To reduce the computational burden and avoid over-fitting two different, more co
 
 \begin{equation*}
 \begin{array}{rrcll}
-    \text{diagonal covariances:} & \Sigma_k & = &\mathrm{diag}({d}_k) & \text{($2 K p$ parameters),} \\ [1.5ex]
+    \text{diagonal covariances:} & \Sigma_k & = &\mathrm{diag}({d}_k) & \text{($2 K p$ parameters),} \\[1.5ex]
     \text{spherical covariances:} & \Sigma_k & = &  \sigma_k^2 {I} & \text{($K (p + 1)$ parameters).} 
 \end{array}
-\end{equation*}}
+\end{equation*}
 
 The diagonal structure assumes that, given the group membership of a site, all variable abundances are independent. The spherical structure further assumes that all species have the same biological variability. In particular, in both parametrisations, all observed covariations are caused only by the group structure.
 
@@ -104,9 +105,9 @@ We fit a collection of $K$ models as follows:
 
 ```{r nocov mixture}
 mixture_models <- PLNmixture(
-  Abundance ~ 1 + offset(log(Offset)),
+  Abundance ~ 1 + offset(log(duration)),
   data  = trichoptera,
-  clusters = 1:5
+  clusters = 1:4
 )
 ```
 
@@ -145,52 +146,56 @@ Comprehensive information about `PLNmixturefamily` is available via `?PLNmixture
 The `plot` method of `PLNmixturefamily` displays evolution of the criteria mentioned above, and is a good starting point for model selection:
 
 ```{r plot nocov, fig.width=7, fig.height=5}
-plot(mixture_models, c("BIC", "loglik"))
+plot(mixture_models)
 ```
 
-From this plot, we can see that the best model in terms of BIC or ICL is obtained for a number of cluster `r which.max(mixture_models$BIC)`. We may extract the corresponding model with the method `getBestModel("BIC")`. A model with a specific number of clusters can be extracted with the `getModel()` method:
+From this plot, we can see that the best model in terms of BIC is obtained for a number of clusters of `r which.max(mixture_models$criteria$BIC)`. We may extract the corresponding model with the method `getBestModel()`. A model with a specific number of clusters can be extracted with the `getModel()` method:
 
 ```{r model extraction}
 myMix_BIC <- getBestModel(mixture_models, "BIC")
-myMix_3   <- getModel(mixture_models, 3)
+myMix_2   <- getModel(mixture_models, 2)
 ```
 
 #### Structure of `PLNmixturefit`
 
-Objects `myMix_ICL` and `myMix_3` are `R6Class` objects of class `PLNmixturefit` which in turns own a couple of methods. A good place to start is the `show/print` method:
+Object `myMix_BIC` is an `R6Class` object with class `PLNmixturefit` which in turns own a couple of methods. A good place to start is the `show/print` method:
 
 ```{r map, fig.width=8, fig.height=8}
 myMix_BIC
 ```
+
+Let us extract the vector of group memberships:
 ```{r}
 myMix_BIC$memberships
 ```
 
-Mixture model can be used to find
+We can visualize the clustered latent position  by performing a PCA on the latent layer:
 
 ```{r plot clustering}
-myMix_BIC$plot_clustering_pca()
+plot(myMix_BIC, "pca")
 ```
+
+We can also plot the reordered data matrix to check wether it exhibit strong pattern or not:
 
 ```{r plot reordered data}
-myMix_BIC$plot_clustering_data()
+plot(myMix_BIC, "matrix")
 ```
 
-### A model with latent main effects and meteorological covariates
+<!-- ### A model with latent main effects and meteorological covariates -->
 
-It is possible to correct for other covariates before performing the clustering. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  :
-```{r cov, warning=FALSE}
-mixtures_cov <- PLNmixture(Abundance ~ Wind + offset(log(Offset)), clusters = 1:4, data = trichoptera)
-```
+<!-- It is possible to correct for other covariates before performing the clustering. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  : -->
+<!-- ```{r cov, warning=FALSE} -->
+<!-- mixtures_cov <- PLNmixture(Abundance ~ 0 + site + offset(log(duration)), clusters = 1:4, data = trichoptera) -->
+<!-- ``` -->
 
-```{r plot cov, fig.width=7, fig.height=5}
-plot(mixtures_cov, c("BIC", "loglik"))
-```
+<!-- ```{r plot cov, fig.width=7, fig.height=5} -->
+<!-- plot(mixtures_cov) -->
+<!-- ``` -->
 
-```{r cov plot clustering}
-myMix_BIC <- getBestModel(mixtures_cov, "BIC")
-myMix_BIC$plot_clustering_pca()
-```
+<!-- ```{r cov plot clustering} -->
+<!-- myMix_BIC <- getBestModel(mixtures_cov, "BIC") -->
+<!-- myMix_BIC$plot_clustering_pca() -->
+<!-- ``` -->
 
 
 ## References
