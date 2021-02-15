@@ -81,3 +81,73 @@ predict.PLNmixturefit <-
   object$predict(newdata, type, prior, control, parent.frame())
 
 }
+
+#' Extract model coefficients
+#'
+#' @description Extracts model coefficients from objects returned by [PLN()] and its variants
+#'
+#' @name coef.PLNmixturefit
+#'
+#' @param object an R6 object with class [`PLNmixturefit`]
+#' @param type type of parameter that should be extracted. Either "main" (default) for \deqn{\Theta},
+#' "means" for \deqn{\Mu}, "mixture" for \deqn{\pi} or "covariance" for \deqn{\Sigma}
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A matrix of coefficients extracted from the PLNfit model.
+#'
+#' @seealso [sigma.PLNmixturefit()]
+#'
+#' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera) %>% getBestModel()
+#' coef(myPLN) ## Theta
+#' coef(myPLN, type = "mixture") ## pi
+#' coef(myPLN, type = "means") ## mu
+#' coef(myPLN, type = "covariance") ## Sigma
+coef.PLNmixturefit <- function(object, type = c("main", "means", "covariance", "mixture"), ...) {
+  stopifnot(isPLNmixturefit(object))
+  switch(match.arg(type),
+         main       = object$model_par$Theta,
+         means      = object$group_means,
+         mixture    = object$mixtureParam,
+         covariance = object$model_par$Sigma)
+}
+
+#' Extracts model fitted values from objects returned by [PLNmixture()] and its variants
+#'
+#' @name fitted.PLNmixturefit
+#'
+#' @inheritParams coef.PLNmixturefit
+#' @return A matrix of Fitted values extracted from the object object.
+#'
+#' @export
+fitted.PLNmixturefit <- function(object, ...) {
+  stopifnot(isPLNmixturefit(object))
+  object$fitted
+}
+
+#' Extract variance-covariance of residuals 'Sigma'
+#'
+#' @name sigma.PLNmixturefit
+#' @description Extract the variance-covariance matrix of the residuals, usually noted \deqn{\Sigma} in PLN models. This captures the correlation between the species in the latent space.
+#' or PLNmixture, it is a weighted mean of the variance-covariance matrices of each component.
+#'
+#' @inheritParams coef.PLNmixturefit
+#'
+#' @return A semi definite positive matrix of size p, assuming there are p species in the model.
+#'
+#' @export
+#'
+#' @seealso [coef.PLNmixturefit()], [standard_error.PLNmixturefit()] and [vcov.PLNmixturefit()] for other ways to access \deqn{\Sigma}.
+#'
+#' @importFrom stats sigma
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera) %>% getBestModel()
+#' sigma(myPLN) ## Sigma
+sigma.PLNmixturefit <- function(object, ...) {
+  stopifnot(isPLNmixturefit(object))
+  object$model_par$Sigma
+}

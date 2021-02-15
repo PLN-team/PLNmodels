@@ -7,7 +7,7 @@
 \method{coef}{PLNLDAfit}(object, ...)
 }
 \arguments{
-\item{object}{an R6 object with class PLNfit}
+\item{object}{an R6 object with class PLNLDAfit}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
