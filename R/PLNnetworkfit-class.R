@@ -87,10 +87,10 @@ PLNnetworkfit <- R6Class(
 
         ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
         optim_out <- cpp_optimize_sparse(par0, responses, covariates, offsets, weights, Omega, control)
-
         ## Check convergence
         objective[iter]   <- -sum(weights * optim_out$loglik) + self$penalty * sum(abs(Omega))
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
+
         if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate
