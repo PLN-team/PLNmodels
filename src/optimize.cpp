@@ -430,7 +430,7 @@ Rcpp::List cpp_optimize_sparse(
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
-        arma::mat A = exp(Z + 0.5 * S);
+        arma::mat A = exp(Z + 0.5 * S2);
         arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2);
         double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) - trace(Omega * nSigma);
 
