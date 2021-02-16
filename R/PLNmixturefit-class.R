@@ -301,8 +301,8 @@ PLNmixturefit <-
       #' @description User friendly print method
       show = function() {
         cat("Poisson Lognormal mixture model with",self$k,"components.\n")
-        cat("* check fields $posteriorProb, $memberships, $mixtureParam and $components\n")
-        cat("* check methods $plot_clustering_data, $plot_clustering_pca\n")
+        cat("* check fields $posteriorProb, $memberships, $model_par, $mixtureParam\n")
+        cat("* check S3 methods plot, coef, predict, fitted, sigma\n")
         cat("* each $component[[i]] is a PLNfit with associated methods and fields\n")
       },
       #' @description User friendly print method
@@ -355,12 +355,16 @@ PLNmixturefit <-
       R_squared = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},
       #' @field criteria a vector with loglik, BIC, ICL, and number of parameters
       criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL)},
-      #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
-      model_par  = function() {list(Theta = private$Theta, Sigma = private$mix_up('model_par$Sigma'), Mu = self$group_means, Pi = self$mixtureParam)},
-      #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
-      var_par    = function() {list(M  = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))},
-      #' @field latent a matrix: values of the latent vector (Z in the model)
-      latent = function() {private$mix_up('latent')},
+      #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)
+      model_par  = function() {list(Theta = private$Theta,
+                                    Sigma = private$comp %>% map('model_par') %>% map('Sigma'),
+                                    Mu = self$group_means,
+                                    Pi = self$mixtureParam)},
+      #' @field var_par a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
+      var_par    = function() {list(M  = private$mix_up('var_par$M'),
+                                    S2 = private$mix_up('var_par$S2'))},
+      #' #' @field latent a matrix: values of the latent vector (Z in the model)
+      #' latent = function() {private$mix_up('latent')},
       #' @field fitted a matrix: fitted values of the observations (A in the model)
       fitted = function() {private$mix_up('fitted')},
       #' @field group_means a matrix of group mean vectors in the latent space.

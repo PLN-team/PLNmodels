@@ -42,8 +42,6 @@ We illustrate our point with the trichoptera data set, a full description of whi
 ```{r data_load}
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-data(mollusk)
-trichoptera <- prepare_data(mollusk$Abundance, mollusk$Covariate)
 ```
 
 The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
@@ -105,7 +103,7 @@ We fit a collection of $K$ models as follows:
 
 ```{r nocov mixture}
 mixture_models <- PLNmixture(
-  Abundance ~ 1 + offset(log(duration)),
+  Abundance ~ 1 + offset(log(Offset)),
   data  = trichoptera,
   clusters = 1:4
 )
@@ -164,12 +162,60 @@ Object `myMix_BIC` is an `R6Class` object with class `PLNmixturefit` which in tu
 myMix_BIC
 ```
 
-Let us extract the vector of group memberships:
+#### Specific fields
+
+The user can easily access several fields of the `PLNLDAfit` object using active binding or `S3` methods:
+
+-  the vector of group memberships and the group proportions:
+
 ```{r}
 myMix_BIC$memberships
 ```
+- the group proportions:
 
-We can visualize the clustered latent position  by performing a PCA on the latent layer:
+```{r}
+myMix_BIC$mixtureParam
+```
+
+- the posterior probabilities (often close to the boundaries $\{0,1\}$):
+
+```{r}
+myMix_BIC$posteriorProb %>% head() %>% knitr::kable(digits = 2)
+```
+
+
+- a list of $K$  $p \times p$ covariance matrices $\hat{\boldsymbol{\Sigma}}$ (here spherical variances):
+
+```{r vcov}
+sigma(myMix_BIC) %>% purrr::map(diag)
+```
+
+- the regression coefficient matrix  and other model of parameters (results not shown here, redundant with other fields)
+
+```{r coef, results='hide'}
+coef(myMix_BIC, 'main')       # equivalent to myMix_BIC$model_par$Theta
+coef(myMix_BIC, 'mixture')    # equivalent to myMix_BIC$model_par$Pi, myMix_BIC$mixtureParam
+coef(myMix_BIC, 'means')      # equivalent to myMix_BIC$model_par$Mu, myMix_BIC$group_means
+coef(myMix_BIC, 'covariance') # equivalent to myMix_BIC$model_par$Sigma, sigma(myMix_BIC)
+```
+
+- the $p \times K$ matrix of group means $\mathbf{M}$
+
+```{r group-means}
+myMix_BIC$group_means %>% head() %>% knitr::kable(digits = 2)
+```
+
+In turn, eeach component of a `PLNmixturefit` is a `PLNfit` (see the corresponding vignette)
+
+```{r}
+myMix_BIC$components[[1]]
+```
+
+The `PLNmixturefit` class also benefits from two important methods: `plot` and `predict`.
+
+#### `plot` method
+
+We can visualize the clustered latent position by performing a PCA on the latent layer:
 
 ```{r plot clustering}
 plot(myMix_BIC, "pca")
@@ -180,22 +226,36 @@ We can also plot the reordered data matrix to check wether it exhibit strong pat
 ```{r plot reordered data}
 plot(myMix_BIC, "matrix")
 ```
+#### `predict` method
 
-<!-- ### A model with latent main effects and meteorological covariates -->
+For PLNmixture, the goal of `predict` is to predict the membership based on observed newly *species counts*. 
 
-<!-- It is possible to correct for other covariates before performing the clustering. In our case ,we're going to use `Wind` as a covariate and illustrate the main differences with before  : -->
-<!-- ```{r cov, warning=FALSE} -->
-<!-- mixtures_cov <- PLNmixture(Abundance ~ 0 + site + offset(log(duration)), clusters = 1:4, data = trichoptera) -->
-<!-- ``` -->
+By default, the `predict` use the argument `type = "posterior"` to output the matrix of posterior probabilities $\log(\hat{\pi})_k$
 
-<!-- ```{r plot cov, fig.width=7, fig.height=5} -->
-<!-- plot(mixtures_cov) -->
-<!-- ``` -->
+```{r predict_class_posterior}
+predicted.class <- predict(myMix_BIC, newdata = trichoptera)
+## equivalent to 
+## predicted.class <- predict(myMIX_BIC, newdata = trichoptera,  type = "posterior")
+predicted.class %>% head() %>% knitr::kable(digits = 2)
+```
 
-<!-- ```{r cov plot clustering} -->
-<!-- myMix_BIC <- getBestModel(mixtures_cov, "BIC") -->
-<!-- myMix_BIC$plot_clustering_pca() -->
-<!-- ``` -->
+Setting `type = "response"`, we can predict the most likely group $\hat{k}$ instead: 
+
+```{r predict_class}
+predicted.class <- predict(myMix_BIC, newdata = trichoptera,  type = "response")
+predicted.class
+```
+
+We can assess that the predictions are quite similar to the real group (*this is not a proper validation of the method as we used data set for both model fitting and prediction and are thus at risk of overfitting*). 
+
+Finally, we can get the coordinates of the new data on the same graph at the original ones with `type = "position"`. This is done by averaging the latent positions $\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k$ (found when the sample is assumed to come from group $k$) and weighting them with the $\hat{\pi}_k$. Some samples, have compositions that put them very far from their group mean. 
+
+```{r predicted_position, fig.width=7, fig.height=5}
+predicted.position <- predict(myMix_BIC, newdata = trichoptera,  type = "position")
+prcomp(predicted.position) %>% 
+  factoextra::fviz_pca_biplot(col.ind = trichoptera$Group)
+```
+
 
 
 ## References

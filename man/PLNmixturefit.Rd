@@ -54,11 +54,11 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{criteria}}{a vector with loglik, BIC, ICL, and number of parameters}
 
-\item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
+\item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)}
 
-\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
-
-\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+\item{\code{var_par}}{a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
+#' @field latent a matrix: values of the latent vector (Z in the model)
+latent = function() {private$mix_up('latent')},}
 
 \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 

@@ -44,15 +44,16 @@ test_that("PLNmixture fit: check classes, getters and field access",  {
   expect_equal(model$model_par$Pi, model$mixtureParam)
   expect_true(inherits(model$mixtureParam   , "numeric"))
   expect_true(inherits(model$group_means    , "data.frame"))
-  expect_true(inherits(model$model_par$Sigma, "matrix"))
+  expect_true(inherits(model$model_par$Sigma, "list"))
+  expect_true(all(map_lgl(model$model_par$Sigma, inherits, "matrix")))
 
   ## fields and active bindings
    expect_equal(dim(model$model_par$Theta), c(0, p))
    expect_equal(dim(model$model_par$Mu), c(p, k))
-   expect_equal(dim(model$model_par$Sigma), c(p, p))
+   expect_true(all(map_lgl(model$model_par$Sigma, ~all.equal(dim(.x), c(p,p)))))
    expect_equal(length(model$mixtureParam), k)
    expect_equal(dim(model$var_par$M), c(n, p))
-   expect_equal(dim(model$var_par$S), c(n, 1))
+   expect_equal(dim(model$var_par$S2), c(n, 1))
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
    expect_lt(model$ICL, model$loglik)
@@ -79,8 +80,8 @@ test_that("PLNmixture fit: check classes, getters and field access",  {
 test_that("PLNmixture fit: check print message",  {
   output <- paste(
 "Poisson Lognormal mixture model with 3 components.",
-"* check fields $posteriorProb, $memberships, $mixtureParam and $components",
-"* check methods $plot_clustering_data, $plot_clustering_pca",
+"* check fields $posteriorProb, $memberships, $model_par, $mixtureParam",
+"* check S3 methods plot, coef, predict, fitted, sigma",
 "* each $component[[i]] is a PLNfit with associated methods and fields",
 sep="\n"
 )
