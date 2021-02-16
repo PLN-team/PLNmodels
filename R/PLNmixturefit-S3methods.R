@@ -139,7 +139,7 @@ fitted.PLNmixturefit <- function(object, ...) {
 #'
 #' @export
 #'
-#' @seealso [coef.PLNmixturefit()], [standard_error.PLNmixturefit()] and [vcov.PLNmixturefit()] for other ways to access \deqn{\Sigma}.
+#' @seealso [coef.PLNmixturefit()] for other ways to access \deqn{\Sigma}.
 #'
 #' @importFrom stats sigma
 #' @examples
