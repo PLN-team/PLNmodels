@@ -54,11 +54,11 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{criteria}}{a vector with loglik, BIC, ICL, and number of parameters}
 
-\item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
+\item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)}
 
-\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
-
-\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+\item{\code{var_par}}{a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
+#' @field latent a matrix: values of the latent vector (Z in the model)
+latent = function() {private$mix_up('latent')},}
 
 \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 
@@ -71,6 +71,7 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 \itemize{
 \item \href{#method-new}{\code{PLNmixturefit$new()}}
 \item \href{#method-optimize}{\code{PLNmixturefit$optimize()}}
+\item \href{#method-predict}{\code{PLNmixturefit$predict()}}
 \item \href{#method-plot_clustering_data}{\code{PLNmixturefit$plot_clustering_data()}}
 \item \href{#method-plot_clustering_pca}{\code{PLNmixturefit$plot_clustering_pca()}}
 \item \href{#method-postTreatment}{\code{PLNmixturefit$postTreatment()}}
@@ -142,6 +143,39 @@ Optimize a \code{\link{PLNmixturefit}} model
 \item{\code{control}}{a list for controlling the optimization. See details.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-predict}{}}}
+\subsection{Method \code{predict()}}{
+Predict group of new samples
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$predict(
+  newdata,
+  type = c("posterior", "response", "position"),
+  prior = matrix(rep(1/self$k, self$k), nrow(newdata), self$k, byrow = TRUE),
+  control = list(),
+  envir = parent.frame()
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{newdata}}{A data frame in which to look for variables, offsets and counts with which to predict.}
+
+\item{\code{type}}{The type of prediction required. The default \code{posterior} are posterior probabilities for each group ,
+\code{response} is the group with maximal posterior probability and \code{latent} is the averaged latent in the latent space,
+with weights equal to the posterior probabilities.}
+
+\item{\code{prior}}{User-specified prior group probabilities in the new data. The default uses a uniform prior.}
+
+\item{\code{control}}{a list for controlling the optimization. See \code{\link[=PLN]{PLN()}} for details.}
+
+\item{\code{envir}}{Environment in which the prediction is evaluated}
 }
 \if{html}{\out{</div>}}
 }

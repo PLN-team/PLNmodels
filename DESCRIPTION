@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 0.11.3-9100
+Version: 0.11.3-9330
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inrae.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -13,7 +13,7 @@ Description: The Poisson-lognormal model and variants (Chiquet, Mariadassou and 
     2020 <doi:10.1101/2020.10.07.329383) can be used for 
     a variety of multivariate problems when count data are at play, including 
     principal component analysis for count data (Chiquet, Mariadassou and Robin, 
-    2018 <doi:10.1214/18-AOAS1177>), discriminant analysis and 
+    2018 <doi:10.1214/18-AOAS1177>), discriminant analysis, model-based clustering and 
     network inference (Chiquet, Mariadassou and Robin, 2018 <http://proceedings.mlr.press/v97/chiquet19a.html>). 
     Implements variational algorithms to fit such models accompanied with a set of 
     functions for visualization and diagnostic. 

@@ -102,7 +102,7 @@ predict.PLNLDAfit <- function(object, newdata,
 #'
 #' @name coef.PLNLDAfit
 #'
-#' @param object an R6 object with class PLNfit
+#' @param object an R6 object with class PLNLDAfit
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @examples
 #' data(trichoptera)

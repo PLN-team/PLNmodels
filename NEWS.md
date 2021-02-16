@@ -1,6 +1,8 @@
 # PLNmodels 0.11.3
 
 * support for covariates in PLNmixture
+* bug fix in prediction for PLN-LDA
+* more support for PLNmixture (S3/R6 methods, vignette)
 
 # PLNmodels 0.11.2
 

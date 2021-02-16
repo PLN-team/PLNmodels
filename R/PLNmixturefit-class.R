@@ -30,6 +30,8 @@ PLNmixturefit <-
     ## PRIVATE MEMBERS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     private = list(
+      model      = NA, # the formula call for the model as specified by the user
+      xlevels    = NA, # factor levels present in the original data, useful for predict() methods.
       comp       = NA, # list of mixture components (PLNfit)
       tau        = NA, # posterior probabilities of cluster belonging
       monitoring = NA, # a list with optimization monitoring quantities
@@ -81,68 +83,162 @@ PLNmixturefit <-
         private$tau   <- posteriorProb
         private$comp  <- vector('list', ncol(posteriorProb))
         private$Theta <- matrix(0, ncol(covariates), ncol(responses))
+        private$model <- model
+        private$xlevels <- model
 
         ## Initializing the mixture components (only intercept of group mean)
         mu_k  <- setNames(matrix(1, self$n, ncol = 1), 'Intercept')
         for (k_ in seq.int(ncol(posteriorProb)))
-          private$comp[[k_]] <- PLNfit$new(responses, mu_k, offsets, posteriorProb[, k_], model, xlevels, control)
+          private$comp[[k_]] <- PLNfit$new(responses, mu_k, offsets, posteriorProb[, k_], NULL, NULL, control)
 
       },
       #' @description Optimize a [`PLNmixturefit`] model
       optimize = function(responses, covariates, offsets, control) {
 
         ## The intercept term will serve as the mean in each group/component
-        mu_k  <- setNames(matrix(1, self$n, ncol = 1), 'Intercept')
+        intercept <- matrix(1, nrow(responses), ncol = 1)
         ## We make a copy of the offset, for accounting for fixed
         ## covariates effects during the alternative algorithm
         offsets_ <- offsets
 
-          ## ===========================================
-          ## INITIALISATION
-          cond <- FALSE; iter <- 1
-          objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
-          convergence <- numeric(control$maxit_out); convergence[iter] <- NA
-          ## ===========================================
-          ## OPTIMISATION
-          while (!cond) {
-            iter <- iter + 1
-            if (control$trace > 1) cat("", iter)
+        ## ===========================================
+        ## INITIALISATION
+        cond <- FALSE; iter <- 1
+        objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
+        convergence <- numeric(control$maxit_out); convergence[iter] <- NA
+        ## ===========================================
+        ## OPTIMISATION
+        while (!cond) {
+          iter <- iter + 1
+          if (control$trace > 1) cat("", iter)
 
-            ## ---------------------------------------------------
-            ## M - STEP
-            ## UPDATE Theta, THE MATRIX OF REGRESSION COEFFICIENTS
-            if (ncol(covariates) > 1) {
-              private$optimize_covariates(responses, covariates, offsets_)
-              offsets <- offsets_ + covariates %*% private$Theta
-            }
-            ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
-            for (k_ in seq.int(self$k))
-              self$components[[k_]]$optimize(responses, mu_k, offsets, private$tau[, k_], control)
+          ## ---------------------------------------------------
+          ## M - STEP
+          ## UPDATE Theta, THE MATRIX OF REGRESSION COEFFICIENTS
+          if (ncol(covariates) > 1) {
+            private$optimize_covariates(responses, covariates, offsets_)
+            offsets <- offsets_ + covariates %*% private$Theta
+          }
+          ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
+          for (k in seq.int(self$k))
+            self$components[[k]]$optimize(responses, intercept, offsets, private$tau[, k], control)
 
-            ## ---------------------------------------------------
-            ## E - STEP
-            ## UPDATE THE POSTERIOR PROBABILITIES
-            if (self$k > 1) { # only needed when at least 2 components!
-              private$tau <-
-                sapply(private$comp, function(comp) comp$loglik_vec) %>% # Jik
-                sweep(2, log(self$mixtureParam), "+") %>% # computation in log space
-                apply(1, .softmax) %>%        # exponentiation + normalization with soft-max
-                t() %>% .check_boundaries()   # bound away probabilities from 0/1
-            }
-
-            ## Assess convergence
-            objective[iter]   <- -self$loglik
-            convergence[iter] <- abs(objective[iter-1] - objective[iter]) /abs(objective[iter])
-            if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
-
+          ## ---------------------------------------------------
+          ## E - STEP
+          ## UPDATE THE POSTERIOR PROBABILITIES
+          if (self$k > 1) { # only needed when at least 2 components!
+            private$tau <-
+              sapply(private$comp, function(comp) comp$loglik_vec) %>% # Jik
+              sweep(2, log(self$mixtureParam), "+") %>% # computation in log space
+              apply(1, .softmax) %>%        # exponentiation + normalization with soft-max
+              t() %>% .check_boundaries()   # bound away probabilities from 0/1
           }
 
-          ## ===========================================
-          ## OUTPUT
-          ## formatting parameters for output
-          private$monitoring = list(objective        = objective[2:iter],
-                                    convergence      = convergence[2:iter],
-                                    outer_iterations = iter-1)
+          ## Assess convergence
+          objective[iter]   <- -self$loglik
+          convergence[iter] <- abs(objective[iter-1] - objective[iter]) /abs(objective[iter])
+          if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+
+        }
+
+        ## ===========================================
+        ## OUTPUT
+        ## formatting parameters for output
+        private$monitoring = list(objective        = objective[2:iter],
+                                  convergence      = convergence[2:iter],
+                                  outer_iterations = iter-1)
+      },
+
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      ## Prediction methods --------------------
+      #' @description Predict group of new samples
+      #' @param newdata A data frame in which to look for variables, offsets and counts with which to predict.
+      #' @param type The type of prediction required. The default `posterior` are posterior probabilities for each group ,
+      #'  `response` is the group with maximal posterior probability and `latent` is the averaged latent in the latent space,
+      #'  with weights equal to the posterior probabilities.
+      #' @param prior User-specified prior group probabilities in the new data. The default uses a uniform prior.
+      #' @param control a list for controlling the optimization. See [PLN()] for details.
+      #' @param envir Environment in which the prediction is evaluated
+      predict = function(newdata,
+                         type = c("posterior", "response", "position"),
+                         prior = matrix(rep(1/self$k, self$k), nrow(newdata), self$k, byrow = TRUE),
+                         control = list(), envir = parent.frame()) {
+
+        type  <- match.arg(type)
+
+        ## Extract the model matrices from the new data set with initial formula
+        args <- extract_model(call("PLNmixture", formula = private$model, data = newdata, xlev = private$xlevels), envir)
+        n_new <- nrow(args$Y)
+
+        ## Sanity checks
+        stopifnot(ncol(args$X) == self$d)
+        stopifnot(ncol(args$O) == self$p, ncol(args$Y) == self$p)
+        stopifnot(nrow(prior)  == nrow(args$X), ncol(prior) == self$k)
+        stopifnot(nrow(args$X) == n_new)
+
+        ## The intercept term will serve as the mean in each group/component
+        intercept <- matrix(1, n_new, ncol = 1)
+        ## Initialize the posteriorProbabilities
+        tau <- prior
+        ## We make a copy of the offset, for accounting for fixed
+        ## covariates effects during the alternative algorithm
+        if (ncol(args$X) > 1) {
+          args$O <- args$O + args$X %*% private$Theta
+        }
+
+        ## ===========================================
+        ## INITIALISATION
+        cond <- FALSE; iter <- 1
+        control <- PLNmixture_param(control, n_new, self$p, 1)
+        objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
+        convergence <- numeric(control$maxit_out); convergence[iter] <- NA
+
+        ## ===========================================
+        ## OPTIMISATION
+        while(!cond) {
+          iter <- iter + 1
+          if (control$trace > 1) cat("", iter)
+
+          ## ---------------------------------------------------
+          ## VE step of each component
+          ve_step <- list(self$k)
+          for (k in seq.int(self$k)) {
+            ve_step[[k]] <- self$components[[k]]$VEstep(intercept, args$O, args$Y, tau[, k], control = control)
+          }
+
+          ## E - STEP
+          ## UPDATE THE POSTERIOR PROBABILITIES
+          if (self$k > 1) { # only needed when at least 2 components!
+            tau <-
+              sapply(ve_step, function(comp) comp$log.lik) %>% # Jik
+              sweep(2, log(self$mixtureParam), "+") %>% # computation in log space
+              apply(1, .softmax) %>%        # exponentiation + normalization with soft-max
+              t() %>% .check_boundaries()   # bound away probabilities from 0/1
+          }
+
+          ## Assess convergence
+          J_ik <- sapply(ve_step, function(comp) comp$log.lik)
+          J_ik[tau <= .Machine$double.eps] <- 0
+          rowSums(tau * J_ik) - rowSums(.xlogx(tau)) + tau %*% log(colMeans(tau))
+          objective[iter]   <- -sum(J_ik)
+          convergence[iter] <- abs(objective[iter-1] - objective[iter]) /abs(objective[iter])
+          if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+
+        }
+
+        switch(type,
+          "posterior" = {rownames(tau) <- rownames(newdata); tau},
+          "response"  = as.factor(setNames(apply(tau, 1, which.max), rownames(newdata))),
+          "position"  = {
+            latent_pos <- array(0, dim = c(nrow(args$X), self$k, self$p))
+            for (k in seq.int(self$k)) {
+              latent_pos[ , k, ] <- ve_step[[k]]$M + rep(1, nrow(args$X)) %o% self$group_means[, k]
+            }
+            res <- apply(latent_pos * tau %o% rep(1, self$p), c(1, 3), sum)
+            rownames(res) <- rownames(newdata)
+            res
+            }
+          )
       },
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -205,8 +301,8 @@ PLNmixturefit <-
       #' @description User friendly print method
       show = function() {
         cat("Poisson Lognormal mixture model with",self$k,"components.\n")
-        cat("* check fields $posteriorProb, $memberships, $mixtureParam and $components\n")
-        cat("* check methods $plot_clustering_data, $plot_clustering_pca\n")
+        cat("* check fields $posteriorProb, $memberships, $model_par, $mixtureParam\n")
+        cat("* check S3 methods plot, coef, predict, fitted, sigma\n")
         cat("* each $component[[i]] is a PLNfit with associated methods and fields\n")
       },
       #' @description User friendly print method
@@ -216,7 +312,7 @@ PLNmixturefit <-
       #' @field n number of samples
       n = function() {nrow(private$tau)},
       #' @field p number of dimensions of the latent space
-      p = function() {ncol(self$var_par$M)},
+      p = function() {ncol(self$model_par$Theta)},
       #' @field k number of components
       k = function() {length(private$comp)},
       #' @field d number of covariates
@@ -259,12 +355,16 @@ PLNmixturefit <-
       R_squared = function() {sum(self$mixtureParam * map_dbl(self$components, "R_squared"))},
       #' @field criteria a vector with loglik, BIC, ICL, and number of parameters
       criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL)},
-      #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
-      model_par  = function() {list(Theta = private$Theta, Sigma = private$mix_up('model_par$Sigma'), Mu = self$group_means)},
-      #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
-      var_par    = function() {list(M  = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))},
-      #' @field latent a matrix: values of the latent vector (Z in the model)
-      latent = function() {private$mix_up('latent')},
+      #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)
+      model_par  = function() {list(Theta = private$Theta,
+                                    Sigma = private$comp %>% map('model_par') %>% map('Sigma'),
+                                    Mu = self$group_means,
+                                    Pi = self$mixtureParam)},
+      #' @field var_par a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
+      var_par    = function() {list(M  = private$mix_up('var_par$M'),
+                                    S2 = private$mix_up('var_par$S2'))},
+      #' #' @field latent a matrix: values of the latent vector (Z in the model)
+      #' latent = function() {private$mix_up('latent')},
       #' @field fitted a matrix: fitted values of the observations (A in the model)
       fitted = function() {private$mix_up('fitted')},
       #' @field group_means a matrix of group mean vectors in the latent space.
@@ -275,25 +375,4 @@ PLNmixturefit <-
       }
     )
 )
-
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR INTERNAL USE -> PLNfamily
-## ----------------------------------------------------------------------
-## Should only be accessed BY PLNfamily but R6 friend class don't exist
-
-# Positions in the (euclidian) parameter space, noted as Z in the model. Used to compute the likelihood.
-#
-# @name PLNfit_latent_pos
-#
-# @param covariates a matrix of covariates. Will usually be extracted from the corresponding field in PLNfamily-class
-# @param offsets    a matrix of offsets. Will usually be extracted from the corresponding field in PLNfamily-class
-# PLNmixturefit$set("public", "latent_pos",
-# function(covariates, offsets) {
-#   latentPos <- private$Mu + private$M + tcrossprod(covariates, private$Theta) + offsets
-#   latentPos
-# })
-
-## ----------------------------------------------------------------------
-## PUBLIC METHODS FOR THE USERS
-## ----------------------------------------------------------------------
 

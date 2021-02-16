@@ -43,7 +43,7 @@ plot(myPLNPCA, ind_cols = oaks$tree)
 factoextra::fviz_pca_biplot(
   myPLNPCA, select.var = list(contrib = 10), addEllipses = TRUE, habillage = oaks$tree,
   title = "Biplot (10 most contributing species, samples colored by susceptibility)"
-  ) + labs(col = "distance (cm)") + scale_color_viridis_c()
+  ) + labs(col = "distance (cm)") + scale_color_viridis_d()
 
 ## Dimension reduction with PCA
 system.time(myPLNPCAs_tree <- PLNPCA(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, ranks = 1:30, control_main = list(cores = nb_cores))) # about 40 sec.
@@ -65,14 +65,14 @@ stability_selection(myPLNnets, mc.cores = nb_cores)
 plot(getBestModel(myPLNnets, "StARS", stability = .985))
 
 ## Mixture model to recover tree structure
-system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5, control_main = list(cores = nb_cores)))
+system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:6, control_main = list(cores = nb_cores)))
 
 plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"))
 
 myPLN <- my_mixtures %>% getModel(3)
 
-myPLN$plot_clustering_pca(main = 'clustering memberships in individual factor map')
-p <- myPLN$plot_clustering_data()
+plot(myPLN, "pca", main = 'clustering memberships in individual factor map')
+plot(myPLN, "matrix")
 
 aricode::ARI(myPLN$memberships, oaks$tree)
 table(myPLN$memberships, oaks$tree)

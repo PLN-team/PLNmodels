@@ -139,9 +139,9 @@ test_that("Predictions have the right dimensions.", {
   ## Train != Test
 
   ## test failing due to core dump
-  # test <- 1:nrow(trichoptera) < (nrow(trichoptera)/2)
-  # expect_equal(dim(predict(model, newdata = trichoptera[test, ], type = "scores")),
-  #              c(sum(test), model$rank))
+  test <- 1:nrow(trichoptera) < (nrow(trichoptera)/2)
+  expect_equal(dim(predict(model, newdata = trichoptera[test, ], type = "scores")),
+                c(sum(test), model$rank))
 
 
 })

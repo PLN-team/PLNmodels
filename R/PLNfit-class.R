@@ -172,8 +172,10 @@ PLNfit <- R6Class(
                "full"      = cpp_optimize_vestep_full
         )
 
+      ## Initialize the variational parameters with the appropriate new dimension of the data
       optim_out <- VEstep_optimizer(
-        list(M = private$M, S = sqrt(private$S2)),
+        list(M = matrix(0, n, p),
+             S = matrix(sqrt(0.1), n, ifelse(self$vcov_model == "spherical", 1, p))),
         responses,
         covariates,
         offsets,

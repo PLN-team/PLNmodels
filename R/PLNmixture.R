@@ -34,16 +34,16 @@
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myMixtures <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
 #' @seealso The classes \code{\link[=PLNmixture]{PLNmixturefamily}} and \code{\link[=PLNmixturefit]{PLNmixturefit}}
-#' @importFrom stats model.frame model.matrix model.response model.offset
+#' @importFrom stats model.frame model.matrix model.response model.offset update.formula
 #' @export
 PLNmixture <- function(formula, data, subset, clusters = 1:5,  control_init = list(), control_main = list()) {
 
-  ## extract the data matrices and weights
-  args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
+  # remove the intercept term if any (will be used to deal with group means)
+  the_call <- match.call(expand.dots = FALSE)
+  the_call$formula <- update.formula(formula(the_call), ~ . -1)
 
-  # remove the intercept terme if any (will be used to deal with group means)
-  xint <- match("(Intercept)", colnames(args$X), nomatch = 0L)
-  if (xint > 0L) args$X <- args$X[, -xint, drop = FALSE]
+  ## extract the data matrices and weights
+  args <- extract_model(the_call, parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
