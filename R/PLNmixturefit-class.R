@@ -193,7 +193,6 @@ PLNmixturefit <-
         objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
         convergence <- numeric(control$maxit_out); convergence[iter] <- NA
         ## Initialize the variational parameters with the appropriate new dimension of the data
-
         for (k in seq.int(self$k)) {
           self$components[[k]]$update(
             M = matrix(0, n_new, self$p),

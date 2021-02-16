@@ -9,12 +9,12 @@ mix_wt <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
 mix_wo <- PLNmixture(Abundance ~ 0 + offset(log(Offset)), data = trichoptera,
                      control_main = list(iterates = 0))
 models <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
-model  <- getModel(models, k)
-
 n <- nrow(trichoptera$Abundance)
 p <- ncol(trichoptera$Abundance)
 k <- 3
 d <- 0
+
+model  <- getModel(models, k)
 
 test_that("Check that PLNmixture is running and robust",  {
 
