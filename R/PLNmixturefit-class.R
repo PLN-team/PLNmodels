@@ -192,20 +192,12 @@ PLNmixturefit <-
         control <- PLNmixture_param(control, n_new, self$p, 1)
         objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
         convergence <- numeric(control$maxit_out); convergence[iter] <- NA
-        ## Initialize the variational parameters with the appropriate new dimension of the data
-        for (k in seq.int(self$k)) {
-          self$components[[k]]$update(
-            M = matrix(0, n_new, self$p),
-            S2 = matrix(0.1, n_new, ifelse(self$components[[k]]$vcov_model == "spherical", 1, self$p))
-          )
-        }
 
         ## ===========================================
         ## OPTIMISATION
         while(!cond) {
           iter <- iter + 1
           if (control$trace > 1) cat("", iter)
-
 
           ## ---------------------------------------------------
           ## VE step of each component

@@ -244,12 +244,6 @@ PLNLDAfit <- R6Class(
       if (any(prior <= 0) || anyNA(prior)) stop("Prior group proportions should be positive.")
       prior <- prior / sum(prior)
 
-      ## Initialize the variational parameters with the appropriate new dimension of the data
-      self$update(
-        M = matrix(0, n.new, p),
-        S2 = matrix(0.1, n.new, ifelse(self$vcov_model == "spherical", 1, p))
-      )
-
       ## Compute conditional log-likelihoods of new data, using previously estimated parameters
       cond.log.lik <- matrix(0, n.new, K)
       if (type == "scores") latent_pos <- array(0, dim = c(n.new, K, p))
