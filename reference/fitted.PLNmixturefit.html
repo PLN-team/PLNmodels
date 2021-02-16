@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fisher information matrix for Theta — fisher • PLNmodels</title>
+<title>Extracts model fitted values from objects returned by PLNmixture() and its variants — fitted.PLNmixturefit • PLNmodels</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Fisher information matrix for Theta — fisher" />
-<meta property="og:description" content="Extracts Fisher information matrix of \(\Theta\) from objects returned by PLN and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the full-data version (scaled by the number of observations), usually noted $$I_n(\theta)$$." />
+<meta property="og:title" content="Extracts model fitted values from objects returned by PLNmixture() and its variants — fitted.PLNmixturefit" />
+<meta property="og:description" content="Extracts model fitted values from objects returned by PLNmixture() and its variants" />
 <meta property="og:image" content="https://pln-team.github.io/PLNmodels/logo.png" />
 
 
@@ -154,46 +154,34 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fisher information matrix for Theta</h1>
-    <small class="dont-index">Source: <a href='https://github.com/pln-team/PLNmodels/blob/master/R/deprecated.R'><code>R/deprecated.R</code></a></small>
-    <div class="hidden name"><code>fisher.Rd</code></div>
+    <h1>Extracts model fitted values from objects returned by <code><a href='PLNmixture.html'>PLNmixture()</a></code> and its variants</h1>
+    <small class="dont-index">Source: <a href='https://github.com/pln-team/PLNmodels/blob/master/R/PLNmixturefit-S3methods.R'><code>R/PLNmixturefit-S3methods.R</code></a></small>
+    <div class="hidden name"><code>fitted.PLNmixturefit.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Extracts Fisher information matrix of \(\Theta\) from objects returned by <code><a href='PLN.html'>PLN</a></code> and its variants. Fisher matrix is computed using one of two approximation scheme: wald (default, conservative, gives large confidence interval) or louis (anticonservative). Note that the Fisher information matrix is the full-data version (scaled by the number of observations), usually noted $$I_n(\theta)$$.</p>
+    <p>Extracts model fitted values from objects returned by <code><a href='PLNmixture.html'>PLNmixture()</a></code> and its variants</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fisher</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>type</span><span class='op'>)</span>
-
-<span class='co'># S3 method for PLNfit</span>
-<span class='fu'>fisher</span><span class='op'>(</span><span class='va'>object</span>, type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"wald"</span>, <span class='st'>"louis"</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='co'># S3 method for PLNmixturefit</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>an R6 object with class PLNfit</p></td>
+      <td><p>an R6 object with class <code><a href='PLNmixturefit.html'>PLNmixturefit</a></code></p></td>
     </tr>
     <tr>
-      <th>type</th>
-      <td><p>Either <code>wald</code> (default) or <code>louis</code>. Approximation scheme used to compute the Fisher information matrix</p></td>
+      <th>...</th>
+      <td><p>additional parameters for S3 compatibility. Not used</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
-\(\Theta\) is a matrix of size d * p.</p>
-    <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
-
-    
-<ul>
-<li><p><code>PLNfit</code>: Fisher information matrix for PLNfit</p></li>
-</ul>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='standard_error.html'>standard_error</a></code> for standard errors</p></div>
+    <p>A matrix of Fitted values extracted from the object object.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

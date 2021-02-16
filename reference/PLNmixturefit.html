@@ -51,7 +51,7 @@
 A PLNmixturefit (say, with k components) is itself a collection of k PLNfit.
 This class comes with a set of methods, some of them being useful for the user:
 See the documentation for ..." />
-<meta property="og:image" content="/logo.png" />
+<meta property="og:image" content="https://pln-team.github.io/PLNmodels/logo.png" />
 
 
 
@@ -69,12 +69,18 @@ See the documentation for ..." />
 
 
 
+  
+
+  
+
   </head>
 
   <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -85,22 +91,13 @@ See the documentation for ..." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9010</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9330</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a>
-    <span class="fas fa-home"></span>
-     
-  </a>
-</li>
-<li>
-  <a href="../index.html">Home</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -142,8 +139,8 @@ See the documentation for ..." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/pln-team/PLNmodels">
-    <span class="fas fa-github"></span>
+  <a href="https://github.com/pln-team/PLNmodels/">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -218,11 +215,11 @@ See the documentation for ...</p>
 
 <dt><code>criteria</code></dt><dd><p>a vector with loglik, BIC, ICL, and number of parameters</p></dd>
 
-<dt><code>model_par</code></dt><dd><p>a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)</p></dd>
+<dt><code>model_par</code></dt><dd><p>a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)</p></dd>
 
-<dt><code>var_par</code></dt><dd><p>a list with two matrices, M and S2, which are the estimated parameters in the variational approximation</p></dd>
-
-<dt><code>latent</code></dt><dd><p>a matrix: values of the latent vector (Z in the model)</p></dd>
+<dt><code>var_par</code></dt><dd><p>a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
+#' @field latent a matrix: values of the latent vector (Z in the model)
+latent = function() private$mix_up('latent'),</p></dd>
 
 <dt><code>fitted</code></dt><dd><p>a matrix: fitted values of the observations (A in the model)</p></dd>
 
@@ -237,6 +234,7 @@ See the documentation for ...</p>
 <ul>
 <li><p><a href='#method-new'><code>PLNmixturefit$new()</code></a></p></li>
 <li><p><a href='#method-optimize'><code>PLNmixturefit$optimize()</code></a></p></li>
+<li><p><a href='#method-predict'><code>PLNmixturefit$predict()</code></a></p></li>
 <li><p><a href='#method-plot_clustering_data'><code>PLNmixturefit$plot_clustering_data()</code></a></p></li>
 <li><p><a href='#method-plot_clustering_pca'><code>PLNmixturefit$plot_clustering_pca()</code></a></p></li>
 <li><p><a href='#method-postTreatment'><code>PLNmixturefit$postTreatment()</code></a></p></li>
@@ -294,6 +292,32 @@ See the documentation for ...</p>
 <dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
 
 <dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
+
+</dl><p></div></p>
+<p><hr>
+<a id="method-predict"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code></h3>
+<p>Predict group of new samples</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>predict</span><span class='op'>(</span>
+  <span class='va'>newdata</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"posterior"</span>, <span class='st'>"response"</span>, <span class='st'>"position"</span><span class='op'>)</span>,
+  prior <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>/</span><span class='va'>self</span><span class='op'>$</span><span class='va'>k</span>, <span class='va'>self</span><span class='op'>$</span><span class='va'>k</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>newdata</span><span class='op'>)</span>, <span class='va'>self</span><span class='op'>$</span><span class='va'>k</span>, byrow <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>,
+  control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  envir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>newdata</code></dt><dd><p>A data frame in which to look for variables, offsets and counts with which to predict.</p></dd>
+
+<dt><code>type</code></dt><dd><p>The type of prediction required. The default <code>posterior</code> are posterior probabilities for each group ,
+<code>response</code> is the group with maximal posterior probability and <code>latent</code> is the averaged latent in the latent space,
+with weights equal to the posterior probabilities.</p></dd>
+
+<dt><code>prior</code></dt><dd><p>User-specified prior group probabilities in the new data. The default uses a uniform prior.</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See <code><a href='PLN.html'>PLN()</a></code> for details.</p></dd>
+
+<dt><code>envir</code></dt><dd><p>Environment in which the prediction is evaluated</p></dd>
 
 </dl><p></div></p>
 <p><hr>
@@ -397,6 +421,8 @@ See the documentation for ...</p>
 
   
 
+
+  
 
   </body>
 </html>

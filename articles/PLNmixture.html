@@ -19,15 +19,17 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Clustering of multivariate count data with PLN-mixture">
 <meta property="og:description" content="PLNmodels">
-<meta property="og:image" content="/logo.png">
+<meta property="og:image" content="https://pln-team.github.io/PLNmodels/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
-      <header><div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -38,21 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9010</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9330</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a>
-    <span class="fas fa-home"></span>
-     
-  </a>
-</li>
-<li>
-  <a href="../index.html">Home</a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -95,8 +88,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/pln-team/PLNmodels">
-    <span class="fas fa-github"></span>
+  <a href="https://github.com/pln-team/PLNmodels/">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -114,9 +107,9 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Clustering of multivariate count data with PLN-mixture</h1>
-                        <h4 class="author">PLN team</h4>
+                        <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 class="date">2021-01-28</h4>
+            <h4 data-toc-skip class="date">2021-02-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNmixture.Rmd"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
@@ -134,8 +127,7 @@
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
@@ -160,7 +152,7 @@
 <h4 class="hasAnchor">
 <a href="#covariates-and-offsets" class="anchor"></a>Covariates and offsets</h4>
 <p>Just like PLN, PLN-mixture generalizes to a formulation where the main effect is due to a linear combination of <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span> in each mixture component. The latent layer then reads <span class="math display">\[\begin{equation}
-  \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \boldsymbol\mu}^{(k) + \mathbf{x}_i^\top{\boldsymbol\Theta}},{\boldsymbol\Sigma}^{(k)}),
+  \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^{\top{\boldsymbol\Theta}} + \boldsymbol\mu}^{(k)} + ,{\boldsymbol\Sigma}^{(k)}),
 \end{equation}\]</span> where each <span class="math inline">\({\boldsymbol\Theta}\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression parameters common to all the mixture components.</p>
 </div>
 <div id="parametrization-of-the-covariance-of-the-mixture-models" class="section level4">
@@ -170,10 +162,10 @@
 <p>To reduce the computational burden and avoid over-fitting two different, more constrained parametrizations of the covariance matrices of each component are currently implemented in the  package (on top of the general form of <span class="math inline">\(\Sigma_k\)</span>):</p>
 <p><span class="math display">\[\begin{equation*}
 \begin{array}{rrcll}
-    \text{diagonal covariances:} &amp; \Sigma_k &amp; = &amp;\mathrm{diag}({d}_k) &amp; \text{($2 K p$ parameters),} \\ [1.5ex]
+    \text{diagonal covariances:} &amp; \Sigma_k &amp; = &amp;\mathrm{diag}({d}_k) &amp; \text{($2 K p$ parameters),} \\[1.5ex]
     \text{spherical covariances:} &amp; \Sigma_k &amp; = &amp;  \sigma_k^2 {I} &amp; \text{($K (p + 1)$ parameters).} 
 \end{array}
-\end{equation*}\]</span>}</p>
+\end{equation*}\]</span></p>
 <p>The diagonal structure assumes that, given the group membership of a site, all variable abundances are independent. The spherical structure further assumes that all species have the same biological variability. In particular, in both parametrisations, all observed covariations are caused only by the group structure.</p>
 <p>For readers familiar with the  {R} package , which implements Gaussian mixture models with many variants of covariance matrices of each component, the spherical model corresponds to  (spherical, unequal volume) and the diagonal model to  (diagonal, varying volume and shape). {Using constrained forms of the covariance matrices enables} PLN-mixture to {provide a clustering} even when the number of sites <span class="math inline">\(n\)</span> remains of the same order, or smaller, than the number of species <span class="math inline">\(p\)</span>.</p>
 </div>
@@ -200,26 +192,25 @@
 <code class="sourceCode R"><span class="va">mixture_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNmixture.html">PLNmixture</a></span><span class="op">(</span>
   <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,
   data  <span class="op">=</span> <span class="va">trichoptera</span>,
-  clusters <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>
+  clusters <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>
 <span class="op">)</span></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ## 
-##  Adjusting 5 PLN mixture models.
+##  Adjusting 4 PLN mixture models.
 ##  number of cluster = 1 
     number of cluster = 2 
     number of cluster = 3 
     number of cluster = 4 
-    number of cluster = 5 
 ## 
 ##  Smoothing PLN mixture models.
-##    Going forward ++++
+##    Going backward +++
                                                                                                     
-   Going backward ++++
+   Going forward +++
                                                                                                     
-   Going forward ++++
+   Going backward +++
                                                                                                     
-   Going backward ++++
+   Going forward +++
                                                                                                     
 ##  Post-treatments
 ##  DONE!</code></pre>
@@ -233,13 +224,13 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mixture_models</span></code></pre></div>
 <pre><code>## --------------------------------------------------------
-## COLLECTION OF 5 POISSON LOGNORMAL MODELS
+## COLLECTION OF 4 POISSON LOGNORMAL MODELS
 ## --------------------------------------------------------
 ##  Task: Mixture Model 
 ## ========================================================
-##  - Number of clusters considered: from 1 to 5 
+##  - Number of clusters considered: from 1 to 4 
 ##  - Best model (regarding BIC): cluster = 3 
-##  - Best model (regarding ICL): cluster = 4</code></pre>
+##  - Best model (regarding ICL): cluster = 2</code></pre>
 <p>One can also easily access the successive values of the criteria in the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mixture_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
@@ -276,16 +267,9 @@
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-2735.597</td>
-<td align="right">-2881.541</td>
-<td align="right">-3712.169</td>
-</tr>
-<tr class="odd">
-<td align="right">5</td>
-<td align="right">94</td>
-<td align="right">-2756.557</td>
-<td align="right">-2939.472</td>
-<td align="right">-3834.682</td>
+<td align="right">-2744.696</td>
+<td align="right">-2890.639</td>
+<td align="right">-3788.993</td>
 </tr>
 </tbody>
 </table>
@@ -330,17 +314,9 @@
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">2735.597439</td>
-<td align="left">0.000007</td>
-<td align="left">7.000000</td>
-</tr>
-<tr class="odd">
-<td align="left">elt.3</td>
-<td align="right">5</td>
-<td align="left">94</td>
-<td align="left">2756.556811</td>
-<td align="left">0.000164</td>
-<td align="left">6.000000</td>
+<td align="left">2744.695659</td>
+<td align="left">0.000576</td>
+<td align="left">5.000000</td>
 </tr>
 </tbody>
 </table>
@@ -355,70 +331,249 @@
 <a href="#model-selection" class="anchor"></a>Model selection</h4>
 <p>The <code>plot</code> method of <code>PLNmixturefamily</code> displays evolution of the criteria mentioned above, and is a good starting point for model selection:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mixture_models</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"BIC"</span>, <span class="st">"loglik"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mixture_models</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNmixture_files/figure-html/plot%20nocov-1.png" width="672"></p>
-<p>From this plot, we can see that the best model in terms of BIC or ICL is obtained for a number of cluster . We may extract the corresponding model with the method <code><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel("BIC")</a></code>. A model with a specific number of clusters can be extracted with the <code><a href="../reference/getModel.PLNPCAfamily.html">getModel()</a></code> method:</p>
+<p>From this plot, we can see that the best model in terms of BIC is obtained for a number of clusters of 3. We may extract the corresponding model with the method <code><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel()</a></code>. A model with a specific number of clusters can be extracted with the <code><a href="../reference/getModel.PLNPCAfamily.html">getModel()</a></code> method:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel</a></span><span class="op">(</span><span class="va">mixture_models</span>, <span class="st">"BIC"</span><span class="op">)</span>
-<span class="va">myMix_3</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModel.PLNPCAfamily.html">getModel</a></span><span class="op">(</span><span class="va">mixture_models</span>, <span class="fl">3</span><span class="op">)</span></code></pre></div>
+<span class="va">myMix_2</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModel.PLNPCAfamily.html">getModel</a></span><span class="op">(</span><span class="va">mixture_models</span>, <span class="fl">2</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="structure-of-plnmixturefit" class="section level4">
 <h4 class="hasAnchor">
 <a href="#structure-of-plnmixturefit" class="anchor"></a>Structure of <code>PLNmixturefit</code>
 </h4>
-<p>Objects <code>myMix_ICL</code> and <code>myMix_3</code> are <code>R6Class</code> objects of class <code>PLNmixturefit</code> which in turns own a couple of methods. A good place to start is the <code>show/print</code> method:</p>
+<p>Object <code>myMix_BIC</code> is an <code>R6Class</code> object with class <code>PLNmixturefit</code> which in turns own a couple of methods. A good place to start is the <code>show/print</code> method:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span></code></pre></div>
 <pre><code>## Poisson Lognormal mixture model with 3 components.
-## * check fields $posteriorProb, $memberships, $mixtureParam and $components
-## * check methods $plot_clustering_data, $plot_clustering_pca
+## * check fields $posteriorProb, $memberships, $model_par, $mixtureParam
+## * check S3 methods plot, coef, predict, fitted, sigma
 ## * each $component[[i]] is a PLNfit with associated methods and fields</code></pre>
+</div>
+<div id="specific-fields" class="section level4">
+<h4 class="hasAnchor">
+<a href="#specific-fields" class="anchor"></a>Specific fields</h4>
+<p>The user can easily access several fields of the <code>PLNLDAfit</code> object using active binding or <code>S3</code> methods:</p>
+<ul>
+<li>the vector of group memberships and the group proportions:</li>
+</ul>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">memberships</span></code></pre></div>
-<pre><code>##  [1] 2 1 2 2 2 1 1 2 1 1 1 1 2 2 2 2 2 2 2 2 2 1 1 1 1 2 2 1 1 3 3 2 2 2 2 2 2 1
-## [39] 1 1 2 2 2 2 2 2 1 2 2</code></pre>
-<p>Mixture model can be used to find</p>
+<pre><code>##  [1] 1 2 1 1 1 2 2 1 2 2 2 2 1 1 1 1 1 1 1 1 1 2 2 2 2 1 1 2 2 3 3 1 1 1 1 1 1 2
+## [39] 2 2 1 1 1 1 1 1 2 1 1</code></pre>
+<ul>
+<li>the group proportions:</li>
+</ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="fu">plot_clustering_pca</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="PLNmixture_files/figure-html/plot%20clustering-1.png" width="700"></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="fu">plot_clustering_data</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="PLNmixture_files/figure-html/plot%20reordered%20data-1.png" width="700"></p>
-</div>
-</div>
-<div id="a-model-with-latent-main-effects-and-meteorological-covariates" class="section level3">
-<h3 class="hasAnchor">
-<a href="#a-model-with-latent-main-effects-and-meteorological-covariates" class="anchor"></a>A model with latent main effects and meteorological covariates</h3>
-<p>It is possible to correct for other covariates before performing the clustering. In our case ,we’re going to use <code>Wind</code> as a covariate and illustrate the main differences with before :</p>
+<code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">mixtureParam</span></code></pre></div>
+<pre><code>## [1] 0.61067528 0.34850839 0.04081633</code></pre>
+<ul>
+<li>the posterior probabilities (often close to the boundaries <span class="math inline">\(\{0,1\}\)</span>):</li>
+</ul>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mixtures_cov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNmixture.html">PLNmixture</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="va">Wind</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, clusters <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-##  Initialization...
+<code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">posteriorProb</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<table class="table"><tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+</tbody></table>
+<ul>
+<li>a list of <span class="math inline">\(K\)</span> <span class="math inline">\(p \times p\)</span> covariance matrices <span class="math inline">\(\hat{\boldsymbol{\Sigma}}\)</span> (here spherical variances):</li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html">sigma</a></span><span class="op">(</span><span class="va">myMix_BIC</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></code></pre></div>
+<pre><code>## [[1]]
+##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath 
+## 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 
+##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve 
+## 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 
+##       Sta 
+## 0.9364786 
 ## 
-##  Adjusting 4 PLN mixture models.
-##  number of cluster = 1 
-    number of cluster = 2 
-    number of cluster = 3 
-    number of cluster = 4 
+## [[2]]
+##      Che      Hyc      Hym      Hys      Psy      Aga      Glo      Ath 
+## 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 
+##      Cea      Ced      Set      All      Han      Hfo      Hsp      Hve 
+## 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 
+##      Sta 
+## 2.207197 
 ## 
-##  Smoothing PLN mixture models.
-##    Going forward +++
-                                                                                                    
-   Going backward +++
-                                                                                                    
-   Going forward +++
-                                                                                                    
-   Going backward +++
-                                                                                                    
-##  Post-treatments
-##  DONE!</code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mixtures_cov</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"BIC"</span>, <span class="st">"loglik"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="PLNmixture_files/figure-html/plot%20cov-1.png" width="672"></p>
+## [[3]]
+##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
+## 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 
+##        Ath        Cea        Ced        Set        All        Han        Hfo 
+## 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 
+##        Hsp        Hve        Sta 
+## 0.04905692 0.04905692 0.04905692</code></pre>
+<ul>
+<li>the regression coefficient matrix and other model of parameters (results not shown here, redundant with other fields)</li>
+</ul>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myMix_BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel</a></span><span class="op">(</span><span class="va">mixtures_cov</span>, <span class="st">"BIC"</span><span class="op">)</span>
-<span class="va">myMix_BIC</span><span class="op">$</span><span class="fu">plot_clustering_pca</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="PLNmixture_files/figure-html/cov%20plot%20clustering-1.png" width="700"></p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'main'</span><span class="op">)</span>       <span class="co"># equivalent to myMix_BIC$model_par$Theta</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'mixture'</span><span class="op">)</span>    <span class="co"># equivalent to myMix_BIC$model_par$Pi, myMix_BIC$mixtureParam</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'means'</span><span class="op">)</span>      <span class="co"># equivalent to myMix_BIC$model_par$Mu, myMix_BIC$group_means</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'covariance'</span><span class="op">)</span> <span class="co"># equivalent to myMix_BIC$model_par$Sigma, sigma(myMix_BIC)</span></code></pre></div>
+<ul>
+<li>the <span class="math inline">\(p \times K\)</span> matrix of group means <span class="math inline">\(\mathbf{M}\)</span>
+</li>
+</ul>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">group_means</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left"></th>
+<th align="right">group_1</th>
+<th align="right">group_2</th>
+<th align="right">group_3</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Che</td>
+<td align="right">-5.94</td>
+<td align="right">-4.78</td>
+<td align="right">-10.75</td>
+</tr>
+<tr class="even">
+<td align="left">Hyc</td>
+<td align="right">-6.00</td>
+<td align="right">-4.79</td>
+<td align="right">-8.38</td>
+</tr>
+<tr class="odd">
+<td align="left">Hym</td>
+<td align="right">-3.03</td>
+<td align="right">-2.80</td>
+<td align="right">-6.01</td>
+</tr>
+<tr class="even">
+<td align="left">Hys</td>
+<td align="right">-5.72</td>
+<td align="right">-4.76</td>
+<td align="right">-10.75</td>
+</tr>
+<tr class="odd">
+<td align="left">Psy</td>
+<td align="right">-0.58</td>
+<td align="right">-1.36</td>
+<td align="right">-0.21</td>
+</tr>
+<tr class="even">
+<td align="left">Aga</td>
+<td align="right">-3.53</td>
+<td align="right">-4.74</td>
+<td align="right">-7.32</td>
+</tr>
+</tbody>
+</table>
+<p>In turn, eeach component of a <code>PLNmixturefit</code> is a <code>PLNfit</code> (see the corresponding vignette)</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">components</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
+<pre><code>## A multivariate Poisson Lognormal fit with spherical covariance model.
+## ==================================================================
+##  nb_param    loglik       BIC       ICL
+##        18 -1803.351 -1838.378 -2388.326
+## ==================================================================
+## * Useful fields
+##     $model_par, $latent, $var_par, $optim_par
+##     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
+## * Useful S3 methods
+##     print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()</code></pre>
+<p>The <code>PLNmixturefit</code> class also benefits from two important methods: <code>plot</code> and <code>predict</code>.</p>
+</div>
+<div id="plot-method" class="section level4">
+<h4 class="hasAnchor">
+<a href="#plot-method" class="anchor"></a><code>plot</code> method</h4>
+<p>We can visualize the clustered latent position by performing a PCA on the latent layer:</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">"pca"</span><span class="op">)</span></code></pre></div>
+<p><img src="PLNmixture_files/figure-html/plot%20clustering-1.png" width="700"></p>
+<p>We can also plot the reordered data matrix to check wether it exhibit strong pattern or not:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">"matrix"</span><span class="op">)</span></code></pre></div>
+<p><img src="PLNmixture_files/figure-html/plot%20reordered%20data-1.png" width="700"> #### <code>predict</code> method</p>
+<p>For PLNmixture, the goal of <code>predict</code> is to predict the membership based on observed newly <em>species counts</em>.</p>
+<p>By default, the <code>predict</code> use the argument <code>type = "posterior"</code> to output the matrix of posterior probabilities <span class="math inline">\(\log(\hat{\pi})_k\)</span></p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span>
+<span class="co">## equivalent to </span>
+<span class="co">## predicted.class &lt;- predict(myMIX_BIC, newdata = trichoptera,  type = "posterior")</span>
+<span class="va">predicted.class</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<table class="table"><tbody>
+<tr class="odd">
+<td align="right">0.99</td>
+<td align="right">0.01</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">1.00</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">1.00</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">1.00</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">1.00</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">1.00</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+</tr>
+</tbody></table>
+<p>Setting <code>type = "response"</code>, we can predict the most likely group <span class="math inline">\(\hat{k}\)</span> instead:</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>,  type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span>
+<span class="va">predicted.class</span></code></pre></div>
+<pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 
+##  1  1  1  1  1  1  1  1  1  1  1  3  1  1  1  1  1  1  1  2  1  2  2  1  2  2 
+## 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 
+##  2  2  3  2  2  2  2  1  1  1  2  2  1  1  1  1  1  2  1  1  1  2  2 
+## Levels: 1 2 3</code></pre>
+<p>We can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used data set for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
+<p>Finally, we can get the coordinates of the new data on the same graph at the original ones with <code>type = "position"</code>. This is done by averaging the latent positions <span class="math inline">\(\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k\)</span> (found when the sample is assumed to come from group <span class="math inline">\(k\)</span>) and weighting them with the <span class="math inline">\(\hat{\pi}_k\)</span>. Some samples, have compositions that put them very far from their group mean.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">predicted.position</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>,  type <span class="op">=</span> <span class="st">"position"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html">prcomp</a></span><span class="op">(</span><span class="va">predicted.position</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_biplot</a></span><span class="op">(</span>col.ind <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span><span class="op">)</span></code></pre></div>
+<p><img src="PLNmixture_files/figure-html/predicted_position-1.png" width="672"></p>
+</div>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">
@@ -455,6 +610,8 @@
 
   
 
+
+  
 
   </body>
 </html>

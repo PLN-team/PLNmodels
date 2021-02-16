@@ -49,7 +49,7 @@
 <meta property="og:title" content="PLN RNG — rPLN" />
 <meta property="og:description" content="Random generation for the PLN model with latent mean equal to mu, latent covariance matrix
 equal to Sigma and average depths (sum of counts in a sample) equal to depths" />
-<meta property="og:image" content="/logo.png" />
+<meta property="og:image" content="https://pln-team.github.io/PLNmodels/logo.png" />
 
 
 
@@ -67,12 +67,18 @@ equal to Sigma and average depths (sum of counts in a sample) equal to depths" /
 
 
 
+  
+
+  
+
   </head>
 
   <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -83,22 +89,13 @@ equal to Sigma and average depths (sum of counts in a sample) equal to depths" /
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9010</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9330</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a>
-    <span class="fas fa-home"></span>
-     
-  </a>
-</li>
-<li>
-  <a href="../index.html">Home</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -140,8 +137,8 @@ equal to Sigma and average depths (sum of counts in a sample) equal to depths" /
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/pln-team/PLNmodels">
-    <span class="fas fa-github"></span>
+  <a href="https://github.com/pln-team/PLNmodels/">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -208,23 +205,23 @@ the different species.</p>
     <pre class="examples"><div class='input'><span class='co'>## 10 samples of 5 species with equal abundances, no covariance and target depths of 10,000</span>
 <span class='fu'>rPLN</span><span class='op'>(</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;        Y1   Y2   Y3   Y4   Y5
-#&gt; S1   1518  757  795  178 2877
-#&gt; S2   2339 1089  459 1284  969
-#&gt; S3   2796 3565  871 2005  836
-#&gt; S4    685  836 1442 4998 1512
-#&gt; S5    539 7208  713 1767 1050
-#&gt; S6    818 1012 4783 1745 2358
-#&gt; S7   4461  509 7013 6910  318
-#&gt; S8   4060  507 1084  642 5384
-#&gt; S9  11996  423 3310  405 1134
-#&gt; S10  2521  819  753  705  547</div><div class='input'><span class='co'>## 2 samples of 10 highly correlated species with target depths 1,000 and 100,000</span>
+#&gt; S1   2303 5042  701 1549  527
+#&gt; S2    238 1534  172  480 1230
+#&gt; S3   2217  281 1554 5584  867
+#&gt; S4    711  850  965  598 4025
+#&gt; S5    817  761  101 4507 1297
+#&gt; S6    762 2889 1233 2714 1431
+#&gt; S7  11237 1076 2451 1364 1315
+#&gt; S8   5412 3172 1520 3031 2161
+#&gt; S9    866 5268  659  198 1005
+#&gt; S10  2869  813  806  441  979</div><div class='input'><span class='co'>## 2 samples of 10 highly correlated species with target depths 1,000 and 100,000</span>
 <span class='co'>## very different abundances</span>
 <span class='va'>mu</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>1</span><span class='op'>)</span>, each <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>
 <span class='va'>Sigma</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>0.8</span>, <span class='fl'>10</span>, <span class='fl'>10</span><span class='op'>)</span>; <span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span><span class='op'>(</span><span class='va'>Sigma</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>
 <span class='fu'>rPLN</span><span class='op'>(</span>n<span class='op'>=</span><span class='fl'>2</span>, mu <span class='op'>=</span> <span class='va'>mu</span>, Sigma <span class='op'>=</span> <span class='va'>Sigma</span>, depths <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1e3</span>, <span class='fl'>1e5</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;      Y1   Y2   Y3   Y4   Y5  Y6  Y7  Y8  Y9 Y10
-#&gt; S1  260  244  170  435  197  28  28  29  21  50
-#&gt; S2 2059 3242 3152 3051 2457 463 179 282 522 459</div><div class='input'>
+</div><div class='output co'>#&gt;       Y1    Y2   Y3   Y4   Y5   Y6   Y7   Y8  Y9  Y10
+#&gt; S1    96   110  182  145  154   26   31   16  30   12
+#&gt; S2 11981 10108 9933 6396 9008 1437 1721 3151 564 1010</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -249,6 +246,8 @@ the different species.</p>
 
   
 
+
+  
 
   </body>
 </html>
