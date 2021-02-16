@@ -1,19 +1,21 @@
+
+url: https://pln-team.github.io/
+
 templates:
   params:
     bootswatch: readable
 
 navbar:
-  title: "PLNmodels"
-  type: inverse
-  left:
-    - icon: fa-home
-    - text: "Home"
-      href: index.html
-    - text: "Reference"
-      href: "reference/index.html"
-    - text: "Slideshow on PLN"
+  structure:
+    left:  [home, reference, slideshow, articles, news]
+    right: [github]
+  components:
+    home: ~
+    slideshow:
+      text: "Slideshow on PLN"
       href: "https://pln-team.github.io/slideshow/slides"
-    - text: "Vignettes"
+    articles:
+      text: "Vignettes"
       menu:
       - text: "The trichoptera data set"
         href: articles/Trichoptera.html
@@ -29,11 +31,6 @@ navbar:
         href: articles/PLNLDA.html
       - text: "PLNmixture: Model-based clustering for counts"
         href: articles/PLNmixture.html
-    - text: "Changelog"
-      href: news/index.html
-  right:
-    - icon: fa-github
-      href: https://github.com/pln-team/PLNmodels
 
 reference:
 - title: 'Top-level fitting functions'
