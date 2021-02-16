@@ -53,6 +53,7 @@ plot.PLNmixturefit <-
 #'
 #' Predict either posterior probabilities for each group or latent positions based on new samples
 #'
+#' @param object an R6 object with class [`PLNmixturefit`]
 #' @param newdata A data frame in which to look for variables, offsets and counts with which to predict.
 #' @param type The type of prediction required. The default `posterior` are posterior probabilities for each group ,
 #'  `response` is the group with maximal posterior probability and `latent` is the averaged latent in the latent space,
@@ -68,9 +69,9 @@ plot.PLNmixturefit <-
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
 #' myMixture <- getBestModel(fits)
-#' predict(myMixture, "posterior")
-#' predict(myMixture, "latent")
-#' predict(myMixture, "response")
+#' predict(myMixture, trichoptera, "posterior")
+#' predict(myMixture, trichoptera, "position")
+#' predict(myMixture, trichoptera, "response")
 predict.PLNmixturefit <-
   function(object, newdata,
            type = c("posterior", "response", "position"),

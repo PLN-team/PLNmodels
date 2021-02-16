@@ -25,5 +25,5 @@ myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera) \%>
 sigma(myPLN) ## Sigma
 }
 \seealso{
-\code{\link[=coef.PLNmixturefit]{coef.PLNmixturefit()}}, \code{\link[=standard_error.PLNmixturefit]{standard_error.PLNmixturefit()}} and \code{\link[=vcov.PLNmixturefit]{vcov.PLNmixturefit()}} for other ways to access \deqn{\Sigma}.
+\code{\link[=coef.PLNmixturefit]{coef.PLNmixturefit()}} for other ways to access \deqn{\Sigma}.
 }

@@ -14,6 +14,8 @@
 )
 }
 \arguments{
+\item{object}{an R6 object with class \code{\link{PLNmixturefit}}}
+
 \item{newdata}{A data frame in which to look for variables, offsets and counts with which to predict.}
 
 \item{type}{The type of prediction required. The default \code{posterior} are posterior probabilities for each group ,
@@ -38,7 +40,7 @@ data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
 myMixture <- getBestModel(fits)
-predict(myMixture, "posterior")
-predict(myMixture, "latent")
-predict(myMixture, "response")
+predict(myMixture, trichoptera, "posterior")
+predict(myMixture, trichoptera, "position")
+predict(myMixture, trichoptera, "response")
 }
