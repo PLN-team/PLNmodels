@@ -126,7 +126,7 @@ test_that("Predictions have the right dimensions.", {
   predictions_score <- predict(model, newdata = trichoptera)
   ## Train = Test
   expect_length(predictions_response, nrow(trichoptera))
-  expect_is(predictions_response, "factor")
+  expect_is(predictions_response, "integer")
   expect_equal(dim(predictions_post),
                c(nrow(trichoptera), length(levels(trichoptera$Group))))
   expect_equal(dim(predictions_score),

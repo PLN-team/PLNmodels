@@ -168,14 +168,16 @@ PLNmixturefit <-
 
         ## Extract the model matrices from the new data set with initial formula
         args <- extract_model(call("PLNmixture", formula = private$model, data = newdata, xlev = private$xlevels), envir)
+        n_new <- nrow(args$Y)
 
         ## Sanity checks
         stopifnot(ncol(args$X) == self$d)
-        stopifnot(ncol(args$O) == self$p)
+        stopifnot(ncol(args$O) == self$p, ncol(args$Y) == self$p)
         stopifnot(nrow(prior)  == nrow(args$X), ncol(prior) == self$k)
+        stopifnot(nrow(args$X) == n_new)
 
         ## The intercept term will serve as the mean in each group/component
-        intercept <- matrix(1, nrow(args$X), ncol = 1)
+        intercept <- matrix(1, n_new, ncol = 1)
         ## Initialize the posteriorProbabilities
         tau <- prior
         ## We make a copy of the offset, for accounting for fixed
@@ -187,33 +189,44 @@ PLNmixturefit <-
         ## ===========================================
         ## INITIALISATION
         cond <- FALSE; iter <- 1
-        control <- PLNmixture_param(control, nrow(args$Y), ncol(args$Y), 1)
+        control <- PLNmixture_param(control, n_new, self$p, 1)
         objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
         convergence <- numeric(control$maxit_out); convergence[iter] <- NA
+        ## Initialize the variational parameters with the appropriate new dimension of the data
+
+        for (k in seq.int(self$k)) {
+          self$components[[k]]$update(
+            M = matrix(0, n_new, self$p),
+            S2 = matrix(0.1, n_new, ifelse(self$components[[k]]$vcov_model == "spherical", 1, self$p))
+          )
+        }
+
         ## ===========================================
         ## OPTIMISATION
         while(!cond) {
           iter <- iter + 1
           if (control$trace > 1) cat("", iter)
 
+
           ## ---------------------------------------------------
           ## VE step of each component
           ve_step <- list(self$k)
-          for (k in seq.int(self$k))
+          for (k in seq.int(self$k)) {
             ve_step[[k]] <- self$components[[k]]$VEstep(intercept, args$O, args$Y, tau[, k], control = control)
+          }
 
           ## E - STEP
           ## UPDATE THE POSTERIOR PROBABILITIES
           if (self$k > 1) { # only needed when at least 2 components!
             tau <-
-              sapply(private$comp, function(comp) comp$loglik_vec) %>% # Jik
+              sapply(ve_step, function(comp) comp$log.lik) %>% # Jik
               sweep(2, log(self$mixtureParam), "+") %>% # computation in log space
               apply(1, .softmax) %>%        # exponentiation + normalization with soft-max
               t() %>% .check_boundaries()   # bound away probabilities from 0/1
           }
 
           ## Assess convergence
-          J_ik <- sapply(private$comp, function(comp_) comp_$loglik_vec)
+          J_ik <- sapply(ve_step, function(comp) comp$log.lik)
           J_ik[tau <= .Machine$double.eps] <- 0
           rowSums(tau * J_ik) - rowSums(.xlogx(tau)) + tau %*% log(colMeans(tau))
           objective[iter]   <- -sum(J_ik)
@@ -224,7 +237,7 @@ PLNmixturefit <-
 
         switch(type,
           "posterior" = {rownames(tau) <- rownames(newdata); tau},
-          "response"  = setNames(apply(tau, 1, which.max), rownames(newdata)),
+          "response"  = as.factor(setNames(apply(tau, 1, which.max), rownames(newdata))),
           "position"  = {
             latent_pos <- array(0, dim = c(nrow(args$X), self$k, self$p))
             for (k in seq.int(self$k)) {
@@ -308,7 +321,7 @@ PLNmixturefit <-
       #' @field n number of samples
       n = function() {nrow(private$tau)},
       #' @field p number of dimensions of the latent space
-      p = function() {ncol(self$var_par$M)},
+      p = function() {ncol(self$model_par$Theta)},
       #' @field k number of components
       k = function() {length(private$comp)},
       #' @field d number of covariates
@@ -352,7 +365,7 @@ PLNmixturefit <-
       #' @field criteria a vector with loglik, BIC, ICL, and number of parameters
       criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL)},
       #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
-      model_par  = function() {list(Theta = private$Theta, Sigma = private$mix_up('model_par$Sigma'), Mu = self$group_means)},
+      model_par  = function() {list(Theta = private$Theta, Sigma = private$mix_up('model_par$Sigma'), Mu = self$group_means, Pi = self$mixtureParam)},
       #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
       var_par    = function() {list(M  = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))},
       #' @field latent a matrix: values of the latent vector (Z in the model)
