@@ -6,6 +6,9 @@
 ^docs
 ^docs/*.*
 ^docs/*
+^pkgdown
+^pkgdown/*.*
+^pkgdown/*
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.git$
