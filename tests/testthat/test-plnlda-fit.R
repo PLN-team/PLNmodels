@@ -126,7 +126,7 @@ test_that("Predictions have the right dimensions.", {
   predictions_score <- predict(model, newdata = trichoptera)
   ## Train = Test
   expect_length(predictions_response, nrow(trichoptera))
-  expect_is(predictions_response, "integer")
+  expect_is(predictions_response, "factor")
   expect_equal(dim(predictions_post),
                c(nrow(trichoptera), length(levels(trichoptera$Group))))
   expect_equal(dim(predictions_score),
@@ -139,9 +139,9 @@ test_that("Predictions have the right dimensions.", {
   ## Train != Test
 
   ## test failing due to core dump
-  # test <- 1:nrow(trichoptera) < (nrow(trichoptera)/2)
-  # expect_equal(dim(predict(model, newdata = trichoptera[test, ], type = "scores")),
-  #              c(sum(test), model$rank))
+  test <- 1:nrow(trichoptera) < (nrow(trichoptera)/2)
+  expect_equal(dim(predict(model, newdata = trichoptera[test, ], type = "scores")),
+                c(sum(test), model$rank))
 
 
 })
