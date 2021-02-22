@@ -9,9 +9,9 @@ output:
 bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{PLNmixture}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r setup, include=FALSE}
@@ -25,11 +25,14 @@ knitr::opts_chunk$set(
 
 ## Preliminaries
 
-This vignette illustrates the standard use of the `PLNmixture` function and the methods accompanying the R6 Classes `PLNmixturefamily` and `PLNmixturefit`.
+This vignette illustrates the standard use of the `PLNmixture` function
+and the methods accompanying the R6 Classes `PLNmixturefamily` and
+`PLNmixturefit`.
 
 ### Requirements
 
-The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:
+The packages required for the analysis are **PLNmodels** plus some
+others for data manipulation and representation:
 
 ```{r requirement}
 library(PLNmodels)
@@ -37,69 +40,125 @@ library(PLNmodels)
 
 ### Data set
 
-We illustrate our point with the trichoptera data set, a full description of which can be found in [the corresponding vignette](Trichoptera.html). Data preparation is also detailed in [the specific vignette](Import_data.html).
+We illustrate our point with the trichoptera data set, a full
+description of which can be found in [the corresponding
+vignette](Trichoptera.html). Data preparation is also detailed in [the
+specific vignette](Import_data.html).
 
 ```{r data_load}
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ```
 
-The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`) and some vectors of covariates (`trichoptera$Wind`, `trichoptera$Temperature`, etc.)
+The `trichoptera` data frame stores a matrix of counts
+(`trichoptera$Abundance`), a matrix of offsets (`trichoptera$Offset`)
+and some vectors of covariates (`trichoptera$Wind`,
+`trichoptera$Temperature`, etc.)
 
 ### Mathematical background
 
-PLN-mixture for multivariate count data is a variant of the Poisson Lognormal model of @AiH89 (see [the PLN vignette](PLN.html) as a reminder) which can be viewed as a PLN model with an
-additional layer to the model by assuming that the latent observations found in the first layer are drawn from a mixture of $K$ multivariate Gaussian components. Each component $k$ have a
-prior probability $p(i \in k) = \pi_k$ such that $\sum_k \pi_k = 1$. We denote by $C_i\in \{1,\dots,K\}$ the multinomial variable $\mathcal{M}(1,\matr{\pi} = (\pi_1,\dots,\pi_K))$ describing the
-component of observation $i$. Introducing this additional layer, our PLN mixture model is as follows
-\begin{equation}
-  \begin{array}{rcl}
-  \text{layer 2 (clustering)} & \mathbf{C}_i \sim \mathcal{M}(1,\boldsymbol{\pi}) \\
-  \text{layer 1 (Gaussian)} &   \mathbf{Z}_i | \, \mathbf{C}_i =  k \sim \mathcal{N}({\boldsymbol\mu}^{(k)}, {\boldsymbol\Sigma}^{(k)}),, \\
-  \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} &   \mathbf{Y}_i | \mathbf{Z}_i\sim\mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right).
-  \end{array}
-\end{equation}
+PLN-mixture for multivariate count data is a variant of the Poisson
+Lognormal model of @AiH89 (see [the PLN vignette](PLN.html) as a
+reminder) which can be viewed as a PLN model with an additional mixture
+layer in the model: the latent observations found in the first layer are
+assumed to be drawn from a mixture of $K$ multivariate Gaussian
+components. Each component $k$ has a prior probability
+$p(i \in k) = \pi_k$ such that $\sum_k \pi_k = 1$. We denote by
+$C_i\in \{1,\dots,K\}$ the multinomial variable
+$\mathcal{M}(1,\boldsymbol{\pi} = (\pi_1,\dots,\pi_K))$ describing the
+component to which observation $i$ belongs to. Introducing this
+additional layer, our PLN mixture model is as follows
+
+$$
+\begin{array}{rcl}
+\text{layer 2 (clustering)} & \mathbf{C}\_i \sim \mathcal{M}(1,\boldsymbol{\pi}) \\
+\text{layer 1 (Gaussian)} & \mathbf{Z}\_i | \, \mathbf{C}\_i = k
+\sim \mathcal{N}({\boldsymbol\mu}^{(k)},
+{\boldsymbol\Sigma}^{(k)}), \\ 
+\text{observation space } & Y_{ij} \| Z_{ij} \quad \text{indep.} & \mathbf{Y}_i |
+\mathbf{Z}_i\sim\mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right).
+\end{array}
+$$
 
 #### Covariates and offsets
 
-Just like PLN, PLN-mixture generalizes to a formulation where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$ in each mixture component. The latent layer then reads
-\begin{equation}
-  \mathbf{Z}_i | \mathbf{C}_i = k \, \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^{\top{\boldsymbol\Theta}} + \boldsymbol\mu}^{(k)} + ,{\boldsymbol\Sigma}^{(k)}),
-\end{equation}
-where each ${\boldsymbol\Theta}$ is a $d\times p$ matrix of regression parameters common to all the mixture components.
+Just like PLN, PLN-mixture generalizes to a formulation where the main
+effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$
+and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$ in each
+mixture component. The latent layer then reads
+
+$$
+\mathbf{Z}_i | \mathbf{C}_i = k \, \sim
+\mathcal{N}({\mathbf{o}_i +
+\mathbf{x}_i^{\top}{\boldsymbol\Theta} + \boldsymbol\mu}^{(k)},{\boldsymbol\Sigma}^{(k)}),
+$$
+
+where ${\boldsymbol\Theta}$ is a $d\times p$ matrix of regression
+parameters common to all the mixture components.
 
 #### Parametrization of the covariance of the mixture models
 
-When using parametric mixture models like Gaussian mixture models, it is generally not recommended to have covariances matrices ${\boldsymbol\Sigma}^{(k)}$ with no special restriction, especially when dealing with a large number of variables. Indeed, the total number of parameters to estimate in the model can become prohibitive. 
+When using parametric mixture models like Gaussian mixture models, it is
+generally not recommended to have covariances matrices
+${\boldsymbol\Sigma}^{(k)}$ with no special restriction, especially when
+dealing with a large number of variables. Indeed, the total number of
+parameters to estimate in such unrestricted model can become
+prohibitive.
 
-To reduce the computational burden and avoid over-fitting two different, more constrained parametrizations of the covariance matrices of each component are currently implemented in the \texttt{PLNmodels} package (on top of the general form of $\Sigma_k$):
+To reduce the computational burden and avoid over-fitting the data, two
+different, more constrained parametrizations of the covariance matrices
+of each component are currently implemented in the `PLNmodels` package
+(on top of the general form of $\Sigma_k$):
 
+```{=tex}
 \begin{equation*}
 \begin{array}{rrcll}
     \text{diagonal covariances:} & \Sigma_k & = &\mathrm{diag}({d}_k) & \text{($2 K p$ parameters),} \\[1.5ex]
     \text{spherical covariances:} & \Sigma_k & = &  \sigma_k^2 {I} & \text{($K (p + 1)$ parameters).} 
 \end{array}
 \end{equation*}
+```
+The diagonal structure assumes that, given the group membership of a
+site, all variable abundances are independent. The spherical structure
+further assumes that all species have the same biological variability.
+In particular, in both parametrisations, all observed covariations are
+caused only by the group structure.
 
-The diagonal structure assumes that, given the group membership of a site, all variable abundances are independent. The spherical structure further assumes that all species have the same biological variability. In particular, in both parametrisations, all observed covariations are caused only by the group structure.
-
-For readers familiar with the \texttt{mclust} {\tt R} package \citep{fraley1999mclust}, which implements Gaussian mixture models with many variants of covariance matrices of each component, the spherical model corresponds to \texttt{VII} (spherical, unequal volume) and the diagonal model to \texttt{VVI} (diagonal, varying volume and shape). {Using constrained forms of the covariance matrices enables} PLN-mixture to {provide a clustering} even when the number of sites $n$ remains of the same order, or smaller, than the number of species $p$.
+For readers familiar with the `mclust` `R` package [@fraley1999], which
+implements Gaussian mixture models with many variants of covariance
+matrices of each component, the spherical model corresponds to `VII`
+(spherical, unequal volume) and the diagonal model to `VVI` (diagonal,
+varying volume and shape). {Using constrained forms of the covariance
+matrices enables} PLN-mixture to {provide a clustering} even when the
+number of sites $n$ remains of the same order, or smaller, than the
+number of species $p$.
 
 #### Optimization by Variational inference
 
-Just like with all models fitted in PLNmodels, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. In this case, it is not too difficult to show that PLN-mixture can be obtained by optimizing a collection of weighted standard PLN models.
+Just like with all models fitted in PLNmodels, we adopt a variational
+strategy to approximate the log-likelihood function and optimize the
+consecutive variational surrogate of the log-likelihood with a
+gradient-ascent-based approach. In this case, it is not too difficult to
+show that PLN-mixture can be obtained by optimizing a collection of
+weighted standard PLN models.
 
 ## Analysis of trichoptera data with a PLN-mixture model
 
-In the package, the PLN-mixture model is adjusted with the function `PLNmixture`, which we review in this section. This function adjusts the model for a series of value of $k$ and provides a collection of objects `PLNmixturefit` stored in an object with class `PLNmixturefamily`.
+In the package, the PLN-mixture model is adjusted with the function
+`PLNmixture`, which we review in this section. This function adjusts the
+model for a series of value of $k$ and provides a collection of objects
+`PLNmixturefit` stored in an object with class `PLNmixturefamily`.
 
-The class `PLNmixturefit` contains a collection of components constituting the mixture, each of whom inherits from the class `PLNfit`, so we strongly recommend the reader to be comfortable with `PLN` and `PLNfit` before using `PLNmixture` (see [the PLN vignette](PLN.html)).
+The class `PLNmixturefit` contains a collection of components
+constituting the mixture, each of whom inherits from the class `PLNfit`,
+so we strongly recommend the reader to be comfortable with `PLN` and
+`PLNfit` before using `PLNmixture` (see [the PLN vignette](PLN.html)).
 
 ### A mixture model with a latent main effects for the Trichoptera data set
 
 #### Adjusting a collection of fits
 
-We fit a collection of $K$ models as follows:
+We fit a collection of $K=4$ models as follows:
 
 ```{r nocov mixture}
 mixture_models <- PLNmixture(
@@ -109,45 +168,60 @@ mixture_models <- PLNmixture(
 )
 ```
 
-Note the use of the `formula` object to specify the model, similar to the one used in the function `PLN`.
+Note the use of the `formula` object to specify the model, similar to
+the one used in the function `PLN`.
 
 #### Structure of `PLNmixturefamily`
 
-The `mixture_models` variable is an `R6` object with class `PLNmixturefamily`, which comes with a couple of methods. The most basic is the `show/print` method, which sends a brief summary of the estimation process:
+The `mixture_models` variable is an `R6` object with class
+`PLNmixturefamily`, which comes with a couple of methods. The most basic
+is the `show/print` method, which outputs a brief summary of the
+estimation process:
 
 ```{r show nocov}
 mixture_models
 ```
 
-One can also easily access the successive values of the criteria in the collection
+One can also easily access the successive values of the criteria in the
+collection
 
 ```{r collection criteria}
 mixture_models$criteria %>% knitr::kable()
 ```
 
-A quick diagnostic of the optimization process is available via the `convergence` field:
+A quick diagnostic of the optimization process is available via the
+`convergence` field:
 
 ```{r convergence criteria}
 mixture_models$convergence  %>% knitr::kable()
 ```
 
-A visual representation of the optimization can be obtained be representing the objective function
+A visual representation of the optimization can be obtained be
+representing the objective function
+
 ```{r objective}
 mixture_models$plot_objective()
 ```
 
-
-Comprehensive information about `PLNmixturefamily` is available via `?PLNmixturefamily`.
+Comprehensive information about `PLNmixturefamily` is available via
+`?PLNmixturefamily`.
 
 #### Model selection
 
-The `plot` method of `PLNmixturefamily` displays evolution of the criteria mentioned above, and is a good starting point for model selection:
+The `plot` method of `PLNmixturefamily` displays evolution of the
+criteria mentioned above, and is a good starting point for model
+selection:
 
 ```{r plot nocov, fig.width=7, fig.height=5}
 plot(mixture_models)
 ```
 
-From this plot, we can see that the best model in terms of BIC is obtained for a number of clusters of `r which.max(mixture_models$criteria$BIC)`. We may extract the corresponding model with the method `getBestModel()`. A model with a specific number of clusters can be extracted with the `getModel()` method:
+From this plot, we can see that the best model in terms of BIC is
+obtained for a number of clusters of
+`r which.max(mixture_models$criteria$BIC)`. We may extract the
+corresponding model with the method `getBestModel()`. A model with a
+specific number of clusters can also be extracted with the `getModel()`
+method:
 
 ```{r model extraction}
 myMix_BIC <- getBestModel(mixture_models, "BIC")
@@ -156,7 +230,9 @@ myMix_2   <- getModel(mixture_models, 2)
 
 #### Structure of `PLNmixturefit`
 
-Object `myMix_BIC` is an `R6Class` object with class `PLNmixturefit` which in turns own a couple of methods. A good place to start is the `show/print` method:
+Object `myMix_BIC` is an `R6Class` object with class `PLNmixturefit`
+which in turns has a couple of methods. A good place to start is the
+`show/print` method:
 
 ```{r map, fig.width=8, fig.height=8}
 myMix_BIC
@@ -164,33 +240,37 @@ myMix_BIC
 
 #### Specific fields
 
-The user can easily access several fields of the `PLNLDAfit` object using active binding or `S3` methods:
+The user can easily access several fields of the `PLNmixturefit` object
+using active binding or `S3` methods:
 
--  the vector of group memberships and the group proportions:
+-   the vector of group memberships:
 
 ```{r}
 myMix_BIC$memberships
 ```
-- the group proportions:
+
+-   the group proportions:
 
 ```{r}
 myMix_BIC$mixtureParam
 ```
 
-- the posterior probabilities (often close to the boundaries $\{0,1\}$):
+-   the posterior probabilities (often close to the boundaries
+    $\{0,1\}$):
 
 ```{r}
-myMix_BIC$posteriorProb %>% head() %>% knitr::kable(digits = 2)
+myMix_BIC$posteriorProb %>% head() %>% knitr::kable(digits = 3)
 ```
 
-
-- a list of $K$  $p \times p$ covariance matrices $\hat{\boldsymbol{\Sigma}}$ (here spherical variances):
+-   a list of $K$ $p \times p$ covariance matrices
+    $\hat{\boldsymbol{\Sigma}}$ (here spherical variances):
 
 ```{r vcov}
 sigma(myMix_BIC) %>% purrr::map(diag)
 ```
 
-- the regression coefficient matrix  and other model of parameters (results not shown here, redundant with other fields)
+-   the regression coefficient matrix and other model of parameters
+    (results not shown here, redundant with other fields)
 
 ```{r coef, results='hide'}
 coef(myMix_BIC, 'main')       # equivalent to myMix_BIC$model_par$Theta
@@ -199,38 +279,45 @@ coef(myMix_BIC, 'means')      # equivalent to myMix_BIC$model_par$Mu, myMix_BIC$
 coef(myMix_BIC, 'covariance') # equivalent to myMix_BIC$model_par$Sigma, sigma(myMix_BIC)
 ```
 
-- the $p \times K$ matrix of group means $\mathbf{M}$
+-   the $p \times K$ matrix of group means $\mathbf{M}$
 
 ```{r group-means}
 myMix_BIC$group_means %>% head() %>% knitr::kable(digits = 2)
 ```
 
-In turn, eeach component of a `PLNmixturefit` is a `PLNfit` (see the corresponding vignette)
+In turn, each component of a `PLNmixturefit` is a `PLNfit` object (see the
+corresponding [vignette](PLN.html))
 
 ```{r}
 myMix_BIC$components[[1]]
 ```
 
-The `PLNmixturefit` class also benefits from two important methods: `plot` and `predict`.
+The `PLNmixturefit` class also benefits from two important methods:
+`plot` and `predict`.
 
 #### `plot` method
 
-We can visualize the clustered latent position by performing a PCA on the latent layer:
+We can visualize the clustered latent position by performing a PCA on
+the latent layer:
 
 ```{r plot clustering}
 plot(myMix_BIC, "pca")
 ```
 
-We can also plot the reordered data matrix to check wether it exhibit strong pattern or not:
+We can also plot the data matrix with samples reordered by clusters to check whether it exhibits
+strong pattern or not. The limits between clusters are highlighted by grey lines. 
 
 ```{r plot reordered data}
 plot(myMix_BIC, "matrix")
 ```
+
 #### `predict` method
 
-For PLNmixture, the goal of `predict` is to predict the membership based on observed newly *species counts*. 
+For PLNmixture, the goal of `predict` is to predict the membership based
+on observed newly *species counts*.
 
-By default, the `predict` use the argument `type = "posterior"` to output the matrix of posterior probabilities $\log(\hat{\pi})_k$
+By default, the `predict` use the argument `type = "posterior"` to
+output the matrix of posterior probabilities $\hat{\pi}_k$
 
 ```{r predict_class_posterior}
 predicted.class <- predict(myMix_BIC, newdata = trichoptera)
@@ -239,16 +326,24 @@ predicted.class <- predict(myMix_BIC, newdata = trichoptera)
 predicted.class %>% head() %>% knitr::kable(digits = 2)
 ```
 
-Setting `type = "response"`, we can predict the most likely group $\hat{k}$ instead: 
+Setting `type = "response"`, we can predict the most likely cluster
+$\hat{k} = \arg\max_{k = 1\dots K} \{ \hat{\pi_k}\}$ instead:
 
 ```{r predict_class}
 predicted.class <- predict(myMix_BIC, newdata = trichoptera,  type = "response")
 predicted.class
 ```
 
-We can assess that the predictions are quite similar to the real group (*this is not a proper validation of the method as we used data set for both model fitting and prediction and are thus at risk of overfitting*). 
+We can assess that the predictions are quite similar to the real group
+(*this is not a proper validation of the method as we used data set for
+both model fitting and prediction and are thus at risk of overfitting*).
 
-Finally, we can get the coordinates of the new data on the same graph at the original ones with `type = "position"`. This is done by averaging the latent positions $\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k$ (found when the sample is assumed to come from group $k$) and weighting them with the $\hat{\pi}_k$. Some samples, have compositions that put them very far from their group mean. 
+Finally, we can get the coordinates of the new data on the same graph at
+the original ones with `type = "position"`. This is done by averaging
+the latent positions $\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k$ (found
+when the sample is assumed to come from group $k$) and weighting them
+with the $\hat{\pi}_k$. Some samples, have compositions that put them
+very far from their group mean.
 
 ```{r predicted_position, fig.width=7, fig.height=5}
 predicted.position <- predict(myMix_BIC, newdata = trichoptera,  type = "position")
@@ -256,7 +351,4 @@ prcomp(predicted.position) %>%
   factoextra::fviz_pca_biplot(col.ind = trichoptera$Group)
 ```
 
-
-
 ## References
-
