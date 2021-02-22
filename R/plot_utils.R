@@ -176,7 +176,7 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
   if (!binary & !log_scale) {g <-  g +  scale_fill_viridis_b(limits = u, na.value = "transparent")}
   if (binary) {g <- g + scale_fill_manual(breaks = c("0", "1"),values = c("white", "black"),na.value = "transparent")}
 
-  g <- g  +  scale_x_discrete(drop = FALSE) + scale_y_discrete(drop = FALSE)
+  g <- g  +  scale_x_discrete(drop = FALSE, expand = expansion(0, 0)) + scale_y_discrete(drop = FALSE, expand = expansion(0, 0))
   g <- g + theme(axis.text.x = element_text(angle = 270, hjust = 0))
   g <- g +  labs(x = colFG, y = rowFG) +  theme(aspect.ratio = n1/n2)
 
