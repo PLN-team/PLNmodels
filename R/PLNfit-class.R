@@ -154,7 +154,7 @@ PLNfit <- R6Class(
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
     #' @return A list with three components:
     #'  * the matrix `M` of variational means,
-    #'  * the matrix `S` of variational variances
+    #'  * the matrix `S2` of variational variances
     #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
     VEstep = function(covariates, offsets, responses, weights, control = list()) {
 

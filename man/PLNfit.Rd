@@ -230,7 +230,7 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 A list with three components:
 \itemize{
 \item the matrix \code{M} of variational means,
-\item the matrix \code{S} of variational variances
+\item the matrix \code{S2} of variational variances
 \item the vector \code{log.lik} of (variational) log-likelihood of each new observation
 }
 }

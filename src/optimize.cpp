@@ -14,7 +14,7 @@ inline arma::vec logfact(arma::mat y) {
 
 inline arma::vec ki(arma::mat y) {
     arma::uword p = y.n_cols;
-    return -logfact(std::move(y)) + 0.5 * (1. + (1. - double(p)) * std::log(2. * M_PI));
+    return -logfact(std::move(y)) + 0.5 * double(p);
 }
 
 // ---------------------------------------------------------------------------------------
@@ -158,9 +158,8 @@ Rcpp::List cpp_optimize_spherical(
         const arma::uword p = Y.n_cols;
         arma::mat Z = O + X * Theta.t() + M;
         arma::mat A = exp(Z.each_col() + 0.5 * S2);
-        double sigma2 = arma::as_scalar(accu(M % (M.each_col() % w)) / (w_bar * double(p)) + accu(w % S2) / w_bar);
-        double objective = accu(diagmat(w) * (A - Y % Z)) - 0.5 * double(p) * accu(w % log(S2)) +
-                           0.5 * w_bar * double(p) * log(sigma2);
+        double sigma2 = arma::as_scalar(dot(w, sum(pow(M, 2), 1) + double(p) * S2)) / (double(p) * w_bar);
+        double objective = accu(diagmat(w) * (A - Y % Z)) - 0.5 * double(p) * dot(w, log(S2/sigma2)) ;
 
         metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
         metadata.map<M_ID>(grad) = diagmat(w) * (M / sigma2 + A - Y);
@@ -177,8 +176,7 @@ Rcpp::List cpp_optimize_spherical(
     arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
     // Variance parameters
     const arma::uword p = Y.n_cols;
-    const double n_sigma2 = arma::as_scalar(dot(w, sum(pow(M, 2), 1) + double(p) * S2));
-    const double sigma2 = n_sigma2 / (double(p) * w_bar);
+    const double sigma2 = arma::as_scalar(dot(w, sum(pow(M, 2), 1) + double(p) * S2)) / (double(p) * w_bar);
     arma::mat Sigma = arma::eye(p, p) * sigma2;
     arma::mat Omega = arma::eye(p, p) * pow(sigma2, -1);
     // Element-wise log-likelihood
