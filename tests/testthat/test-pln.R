@@ -127,25 +127,28 @@ test_that("PLN is working with unnamed data matrix",  {
     expect_error(PLN(Abundance ~ 1, data = trichoptera, control=list(algorithm="nawak")))
  })
 
-test_that("PLN: Check that all PLN models with different covariance are equivalent in the univariate case",  {
+test_that("PLN: Check that all univariate PLN models are equivalent with the multivariate diagonal case",  {
 
   p <- ncol(trichoptera$Abundance)
-  data <- prepare_data(counts = trichoptera$Abundance, covariates = trichoptera$Covariate)
+  Offset <- trichoptera$Offset
 
   univariate_full <- lapply(1:p, function(j) {
-    Abundance <- data$Abundance[, j, drop = FALSE]
-    PLN(Abundance ~ 1, control = list(trace = 0))
+    Abundance <- trichoptera$Abundance[, j, drop = FALSE]
+    PLN(Abundance ~ 1 + offset(log(Offset)), control = list(trace = 0))
   })
 
   univariate_diagonal <- lapply(1:p, function(j) {
-    Abundance <- data$Abundance[, j, drop = FALSE]
-    PLN(Abundance ~ 1, control = list(covariance = "diagonal", trace = 0))
+    Abundance <- trichoptera$Abundance[, j, drop = FALSE]
+    PLN(Abundance ~ 1 + offset(log(Offset)), control = list(covariance = "diagonal", trace = 0))
   })
 
   univariate_spherical <- lapply(1:p, function(j) {
-    Abundance <- data$Abundance[, j, drop = FALSE]
-    PLN(Abundance ~ 1, control = list(covariance = "spherical", trace = 0))
+    Abundance <- trichoptera$Abundance[, j, drop = FALSE]
+    PLN(Abundance ~ 1 + offset(log(Offset)), control = list(covariance = "spherical", trace = 0))
   })
+
+  multivariate_diagonal <-
+    PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, control = list(covariance = "diagonal", trace = 0))
 
   expect_true(all.equal(
     map_dbl(univariate_spherical, "nb_param"),
@@ -156,7 +159,7 @@ test_that("PLN: Check that all PLN models with different covariance are equivale
   expect_true(all.equal(
     #map_dbl(univariate_spherical, "loglik"),
     map_dbl(univariate_full     , "loglik"),
-    map_dbl(univariate_diagonal , "loglik"), tolerance = 1e-5
+    map_dbl(univariate_diagonal , "loglik"), tolerance = 1e-4
   ))
 
   expect_true(all.equal(
@@ -165,13 +168,14 @@ test_that("PLN: Check that all PLN models with different covariance are equivale
     map_dbl(univariate_diagonal , sigma), tolerance = 1e-2
   ))
 
-  multivariate_diagonal <-
-    PLN(Abundance ~ 1, data = data, control = list(covariance = "diagonal", trace = 0))
-
   expect_true(all.equal(
     map_dbl(univariate_full, "loglik") %>% sum(),
     multivariate_diagonal$loglik, tolerance = 0.25)
   )
 
-})
+  expect_true(all.equal(
+    map_dbl(univariate_diagonal, "loglik") %>% sum(),
+    multivariate_diagonal$loglik, tolerance = 0.25)
+  )
 
+})

@@ -14,7 +14,8 @@ inline arma::vec logfact(arma::mat y) {
 
 inline arma::vec ki(arma::mat y) {
     arma::uword p = y.n_cols;
-    return -logfact(std::move(y)) + 0.5 * double(p);
+//    return -logfact(std::move(y)) + 0.5 * (1. + (1. - double(p)) * std::log(2. * M_PI));
+    return -logfact(std::move(y)) + 0.5 * double(p) ;
 }
 
 // ---------------------------------------------------------------------------------------
@@ -85,7 +86,7 @@ Rcpp::List cpp_optimize_full(
     // Regression parameters
     arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
     // Variance parameters
-    arma::mat Sigma = (1. / w_bar) * (M.t() * (M.each_col() % w) + diagmat(sum(S2.each_col() % w, 0)));
+    arma::mat Sigma = (1. / w_bar) * (M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
     arma::mat Omega = inv_sympd(Sigma);
     // Element-wise log-likehood
     arma::mat Z = O + X * Theta.t() + M;
@@ -249,7 +250,8 @@ Rcpp::List cpp_optimize_diagonal(
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
         arma::mat A = exp(Z + 0.5 * S2);
-        arma::rowvec diag_sigma = sum(M % (M.each_col() % w) + (S2.each_col() % w), 0) / w_bar;
+//        arma::rowvec diag_sigma = sum(M % (M.each_col() % w) + (S2.each_col() % w), 0) / w_bar;
+        arma::rowvec diag_sigma = w.t() * (M % M + S2) / w_bar;
         double objective = accu(diagmat(w) * (A - Y % Z - 0.5 * log(S2))) + 0.5 * w_bar * accu(log(diag_sigma));
 
         metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
@@ -266,7 +268,7 @@ Rcpp::List cpp_optimize_diagonal(
     // Regression parameters
     arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
     // Variance parameters
-    arma::rowvec sigma2 = w.t() * (pow(M, 2) + S2) / w_bar;
+    arma::rowvec sigma2 = w.t() * (M % M + S2) / w_bar;
     arma::vec omega2 = pow(sigma2.t(), -1);
     arma::mat Sigma = diagmat(sigma2);
     arma::mat Omega = diagmat(omega2);
