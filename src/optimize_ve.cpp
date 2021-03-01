@@ -10,9 +10,9 @@ inline arma::vec logfact(arma::mat y) {
 
 inline arma::vec ki(arma::mat y) {
     arma::uword p = y.n_cols;
-    return -logfact(std::move(y)) + 0.5 * (1. + (1. - double(p)) * std::log(2. * M_PI));
+//    return -logfact(std::move(y)) + 0.5 * (1. + (1. - double(p)) * std::log(2. * M_PI));
+    return -logfact(std::move(y)) + 0.5 * double(p) ;
 }
-
 // ---------------------------------------------------------------------------------------
 // VE full
 
@@ -61,7 +61,7 @@ Rcpp::List cpp_optimize_vestep_full(
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
         arma::mat A = exp(Z + 0.5 * S2);
-        arma::mat nSigma = M.t() * diagmat(w) * M + diagmat(sum(S2.each_col() % w, 0));
+        arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2) ;
         double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * trace(Omega * nSigma);
 
         metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
@@ -135,13 +135,13 @@ Rcpp::List cpp_optimize_vestep_diagonal(
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
-        arma::mat A = exp(Z + 0.5 * S);
+        arma::mat A = exp(Z + 0.5 * S2);
         arma::vec omega2 = arma::diagvec(Omega);
         double objective =
-            accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * as_scalar(w.t() * (pow(M, 2) + S2) * omega2);
+            accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * as_scalar(w.t() * (pow(M, 2) + S2) * omega2) ;
 
-        metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
-        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % omega2 + S % A - pow(S, -1));
+        metadata.map<M_ID>(grad) = diagmat(w) * (M * arma::diagmat(omega2) + A - Y);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % omega2.t() + S % A - pow(S, -1));
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
