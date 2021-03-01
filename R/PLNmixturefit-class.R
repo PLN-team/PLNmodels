@@ -32,6 +32,7 @@ PLNmixturefit <-
     private = list(
       model      = NA, # the formula call for the model as specified by the user
       xlevels    = NA, # factor levels present in the original data, useful for predict() methods.
+      covariance = NA, # a string describing the covariance model
       comp       = NA, # list of mixture components (PLNfit)
       tau        = NA, # posterior probabilities of cluster belonging
       monitoring = NA, # a list with optimization monitoring quantities
@@ -85,6 +86,7 @@ PLNmixturefit <-
         private$Theta <- matrix(0, ncol(covariates), ncol(responses))
         private$model <- model
         private$xlevels <- model
+        private$covariance <- control$covariance
 
         ## Initializing the mixture components (only intercept of group mean)
         mu_k  <- setNames(matrix(1, self$n, ncol = 1), 'Intercept')
@@ -241,17 +243,26 @@ PLNmixturefit <-
           )
       },
 
+      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      ## Helper functions ----------------------
+      #' @description Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization
+      #' @return a n x q matrix of latent positions.
+      latent_pos = function(covariates, offsets) {
+        latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
+        latentPos
+      },
+
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -----------------
-      #' @description Plot the matrix of mean counts (without offsets, without covariate effects) reordered according the inferred clustering
+      #' @description Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering
       #' @param plot logical. Should the plot be displayed or sent back as [`ggplot`] object
       #' @param main character. A title for the plot.  An hopefully appropriate title will be used by default.
       #' @param log_scale logical. Should the color scale values be log-transform before plotting? Default is \code{TRUE}.
       #' @return a [`ggplot`] graphic
       plot_clustering_data = function(main = "Expected counts reorder by clustering", plot = TRUE, log_scale = TRUE) {
         M  <- self$var_par$M
-        S2 <- self$var_par$S2
-        A  <- exp(M + .5 * S2 %*% rbind(rep(1,ncol(M))))
+        S2 <- switch(private$covariance, "spherical" = self$var_par$S2 %*% rbind(rep(1, ncol(M))), self$var_par$S2)
+        A  <- exp(M + .5 * S2)
         p <- plot_matrix(A, 'samples', 'variables', self$memberships, log_scale)
         if (plot) print(p)
         invisible(p)
@@ -300,10 +311,14 @@ PLNmixturefit <-
       ## Print methods ---------------------
       #' @description User friendly print method
       show = function() {
-        cat("Poisson Lognormal mixture model with",self$k,"components.\n")
-        cat("* check fields $posteriorProb, $memberships, $model_par, $mixtureParam\n")
-        cat("* check S3 methods plot, coef, predict, fitted, sigma\n")
-        cat("* each $component[[i]] is a PLNfit with associated methods and fields\n")
+        cat("Poisson Lognormal mixture model with",self$k,"components and", self$vcov_model,"covariances.\n")
+        cat("* Useful fields\n")
+        cat("    $posteriorProb, $memberships, $mixtureParam, $group_means\n")
+        cat("    $model_par, $latent, $var_par, $optim_par\n")
+        cat("    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria\n")
+        cat("    $component[[i]] (a PLNfit with associated methods and fields)\n")
+        cat("* Useful S3 methods\n")
+        cat("    print(), coef(), sigma(), fitted(), predict() \n")
       },
       #' @description User friendly print method
       print = function() self$show()
@@ -360,6 +375,8 @@ PLNmixturefit <-
                                     Sigma = private$comp %>% map('model_par') %>% map('Sigma'),
                                     Mu = self$group_means,
                                     Pi = self$mixtureParam)},
+      #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal" or "full")
+      vcov_model = function() {private$covariance},
       #' @field var_par a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
       var_par    = function() {list(M  = private$mix_up('var_par$M'),
                                     S2 = private$mix_up('var_par$S2'))},
