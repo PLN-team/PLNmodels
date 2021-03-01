@@ -56,6 +56,8 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)}
 
+\item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
+
 \item{\code{var_par}}{a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
 #' @field latent a matrix: values of the latent vector (Z in the model)
 latent = function() {private$mix_up('latent')},}
@@ -72,6 +74,7 @@ latent = function() {private$mix_up('latent')},}
 \item \href{#method-new}{\code{PLNmixturefit$new()}}
 \item \href{#method-optimize}{\code{PLNmixturefit$optimize()}}
 \item \href{#method-predict}{\code{PLNmixturefit$predict()}}
+\item \href{#method-latent_pos}{\code{PLNmixturefit$latent_pos()}}
 \item \href{#method-plot_clustering_data}{\code{PLNmixturefit$plot_clustering_data()}}
 \item \href{#method-plot_clustering_pca}{\code{PLNmixturefit$plot_clustering_pca()}}
 \item \href{#method-postTreatment}{\code{PLNmixturefit$postTreatment()}}
@@ -181,10 +184,32 @@ with weights equal to the posterior probabilities.}
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-latent_pos"></a>}}
+\if{latex}{\out{\hypertarget{method-latent_pos}{}}}
+\subsection{Method \code{latent_pos()}}{
+Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$latent_pos(covariates, offsets)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{covariates}}{the matrix of covariates common to every models}
+
+\item{\code{offsets}}{the matrix of offsets common to every models}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a n x q matrix of latent positions.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_clustering_data"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_clustering_data}{}}}
 \subsection{Method \code{plot_clustering_data()}}{
-Plot the matrix of mean counts (without offsets, without covariate effects) reordered according the inferred clustering
+Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$plot_clustering_data(
   main = "Expected counts reorder by clustering",
