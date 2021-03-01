@@ -48,7 +48,9 @@ PLNmixturefit <-
       optimize_covariates = function(Y, X, O){
 
         M  <- private$comp %>%  map("var_par") %>% map("M")
-        S2 <- private$comp %>%  map("var_par") %>% map("S2") %>% map(~outer(as.numeric(.x), rep(1, self$p) ))
+        S2 <- private$comp %>%  map("var_par") %>% map("S2")
+        if(private$covariance == "spherical") S2 <- map(S2, ~outer(as.numeric(.x), rep(1, self$p) ))
+
         mu <- private$comp %>%  map(coef) %>% map(~outer(rep(1, self$n), as.numeric(.x)))
 
         Ak_tilde <- list(M, S2, mu) %>%
@@ -117,7 +119,7 @@ PLNmixturefit <-
           ## ---------------------------------------------------
           ## M - STEP
           ## UPDATE Theta, THE MATRIX OF REGRESSION COEFFICIENTS
-          if (ncol(covariates) > 1) {
+          if (ncol(covariates) > 0) {
             private$optimize_covariates(responses, covariates, offsets_)
             offsets <- offsets_ + covariates %*% private$Theta
           }

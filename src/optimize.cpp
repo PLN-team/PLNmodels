@@ -250,7 +250,6 @@ Rcpp::List cpp_optimize_diagonal(
         arma::mat S2 = S % S;
         arma::mat Z = O + X * Theta.t() + M;
         arma::mat A = exp(Z + 0.5 * S2);
-//        arma::rowvec diag_sigma = sum(M % (M.each_col() % w) + (S2.each_col() % w), 0) / w_bar;
         arma::rowvec diag_sigma = w.t() * (M % M + S2) / w_bar;
         double objective = accu(diagmat(w) * (A - Y % Z - 0.5 * log(S2))) + 0.5 * w_bar * accu(log(diag_sigma));
 
