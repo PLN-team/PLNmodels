@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9330</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9370</span>
       </span>
     </div>
 
@@ -50,7 +50,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="https://pln-team.github.io/slideshow/slides">Slideshow on PLN</a>
+  <a href="https://pln-team.github.io/slideshow/slides" class="external-link">Slideshow on PLN</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -88,7 +88,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/pln-team/PLNmodels/">
+  <a href="https://github.com/pln-team/PLNmodels/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -109,9 +109,9 @@
       <h1 data-toc-skip>Description of the Trichoptera data set</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2021-02-16</h4>
+            <h4 data-toc-skip class="date">2021-03-01</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/Trichoptera.Rmd"><code>vignettes/Trichoptera.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/Trichoptera.Rmd" class="external-link"><code>vignettes/Trichoptera.Rmd</code></a></small>
       <div class="hidden name"><code>Trichoptera.Rmd</code></div>
 
     </div>
@@ -124,7 +124,7 @@
 <p>This vignette describes the data set <code>trichoptera</code>, which is used in all examples, tests and other vignettes of the package <strong>PLNmodels</strong>. This data set regroups the main striking characteristics of ecological count data (encompassing tables of abundances and covariates). The low dimensional space of the data also ensures that it is well suited for illustrative purposes.</p>
 <p>The packages required to run the vignette are the following:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="the-trichoptera-data-set" class="section level2">
 <h2 class="hasAnchor">
@@ -137,7 +137,7 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 </div>
 <p>The data is directly available once <strong>PLNmodels</strong> is loaded. Comprehensive information and description are available to the user with <code><a href="../reference/trichoptera.html">?PLNmodels::trichoptera</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></code></pre></div>
 <div id="formatting" class="section level3">
 <h3 class="hasAnchor">
 <a href="#formatting" class="anchor"></a>Formatting</h3>
@@ -146,7 +146,7 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 <code class="sourceCode R"><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></code></pre></div>
 <p>Data are now stored in the <code>trichoptera</code> data frame which includes 49 rows (the observations - or trapping nights) and 9 columns. As can be seen, there are 2 multivariate columns (matrices of counts and offsets) and 7 univariate columns (vectors of covariates):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></code></pre></div>
 <pre><code>## 'data.frame':    49 obs. of  9 variables:
 ##  $ Abundance    : num [1:49, 1:17] 0 0 0 0 0 0 0 0 0 0 ...
 ##   ..- attr(*, "dimnames")=List of 2
@@ -167,7 +167,7 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 <a href="#table-of-counts-abundancies" class="anchor"></a>Table of counts (abundancies)</h3>
 <p>The <code>Abundance</code> column is a <span class="math inline">\(49 \times 17\)</span> matrix of abundancies (or counts) for the 17 species found during the 49 trapping nights.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">Che</th>
@@ -308,8 +308,8 @@ Macronema Zebratum captured by Y. Dubuc at Donacona (Québec), 06-20-2001.
 <p>In all other vignettes and journal papers associated with <strong>PLNmodels</strong>, the count table is denoted by <span class="math inline">\(\mathbf{Y}\)</span> in the mathematical model and <code>Y</code> in the <code>R</code> environment.</p>
 <p>A basic representation of the matrix of counts (here transposed and log-transformed), shows the typical huge dispersion between low and highly abundant species.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">corrplot</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/transpose-methods.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span><span class="op">)</span><span class="op">)</span>,
+<code class="sourceCode R"><span class="fu">corrplot</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/transpose-methods.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span><span class="op">)</span><span class="op">)</span>,
   is.corr <span class="op">=</span> <span class="cn">FALSE</span>,
   addgrid.col <span class="op">=</span> <span class="cn">NA</span>
 <span class="op">)</span></code></pre></div>
@@ -324,7 +324,7 @@ log-counts in the trichoptera data set
 <a href="#covariates-external-meteorological-effect-groups" class="anchor"></a>Covariates (external meteorological effect, groups)</h3>
 <p>Additional information was collected during the sampling, which corresponds to external covariates the effect of which may or may not be taken into account in the model (depending on the question at play). In the trichoptera data set, those covariates correspond to meteorological factors plus a categorical variable indicating the family of the caughts specimens.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">trichoptera</span>, <span class="op">-</span><span class="va">Offset</span>, <span class="op">-</span><span class="va">Abundance</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">trichoptera</span>, <span class="op">-</span><span class="va">Offset</span>, <span class="op">-</span><span class="va">Abundance</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">Temperature</th>
@@ -442,11 +442,13 @@ log-counts in the trichoptera data set
 
 
       <footer><div class="copyright">
-  <p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
+  <p></p>
+<p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

@@ -91,7 +91,7 @@ See the documentation for ..." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9330</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9370</span>
       </span>
     </div>
 
@@ -217,6 +217,8 @@ See the documentation for ...</p>
 
 <dt><code>model_par</code></dt><dd><p>a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)</p></dd>
 
+<dt><code>vcov_model</code></dt><dd><p>character: the model used for the covariance (either "spherical", "diagonal" or "full")</p></dd>
+
 <dt><code>var_par</code></dt><dd><p>a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
 #' @field latent a matrix: values of the latent vector (Z in the model)
 latent = function() private$mix_up('latent'),</p></dd>
@@ -229,12 +231,13 @@ latent = function() private$mix_up('latent'),</p></dd>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
-<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Public methods</h3>
+<h3 class='hasAnchor' id='public-methods'><a class='anchor' href='#public-methods'></a>Public methods</h3>
 
 <ul>
 <li><p><a href='#method-new'><code>PLNmixturefit$new()</code></a></p></li>
 <li><p><a href='#method-optimize'><code>PLNmixturefit$optimize()</code></a></p></li>
 <li><p><a href='#method-predict'><code>PLNmixturefit$predict()</code></a></p></li>
+<li><p><a href='#method-latent_pos'><code>PLNmixturefit$latent_pos()</code></a></p></li>
 <li><p><a href='#method-plot_clustering_data'><code>PLNmixturefit$plot_clustering_data()</code></a></p></li>
 <li><p><a href='#method-plot_clustering_pca'><code>PLNmixturefit$plot_clustering_pca()</code></a></p></li>
 <li><p><a href='#method-postTreatment'><code>PLNmixturefit$postTreatment()</code></a></p></li>
@@ -243,10 +246,43 @@ latent = function() private$mix_up('latent'),</p></dd>
 <li><p><a href='#method-clone'><code>PLNmixturefit$clone()</code></a></p></li>
 </ul>
 <p><hr>
-<a id="method-new"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>new()</code></h3>
+<a id="method-new"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>new()</code></h3>
 <p>Optimize a the</p>
 
-<p>Initialize a <code>PLNmixturefit</code> model</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p>Initialize a <code>PLNmixturefit</code> model</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
+  <span class='va'>responses</span>,
+  <span class='va'>covariates</span>,
+  <span class='va'>offsets</span>,
+  <span class='va'>posteriorProb</span>,
+  <span class='va'>model</span>,
+  <span class='va'>xlevels</span>,
+  <span class='va'>control</span>
+<span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
+
+<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
+
+<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
+
+<dt><code>posteriorProb</code></dt><dd><p>matrix ofposterior probability for cluster belonging</p></dd>
+
+<dt><code>model</code></dt><dd><p>model used for fitting, extracted from the formula in the upper-level call</p></dd>
+
+<dt><code>xlevels</code></dt><dd><p>named listed of factor levels included in the models, extracted from the formula in the upper-level call #'</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
+
+</dl><p></div></p>
+<h3 class='hasAnchor' id='list-new-'><a class='anchor' href='#list-new-'></a>Method <code>new()</code></h3>
+<p>Optimize a the</p>
+
+<p>Initialize a <code>PLNmixturefit</code> model</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
   <span class='va'>responses</span>,
   <span class='va'>covariates</span>,
@@ -277,8 +313,25 @@ latent = function() private$mix_up('latent'),</p></dd>
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-optimize"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
-<p>Optimize a <code>PLNmixturefit</code> model</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<a id="method-optimize"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
+<p>Optimize a <code>PLNmixturefit</code> model</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>optimize</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
+
+<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
+
+<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
+
+</dl><p></div></p>
+<h3 class='hasAnchor' id='list-optimize-'><a class='anchor' href='#list-optimize-'></a>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
+<p>Optimize a <code>PLNmixturefit</code> model</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>optimize</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -295,8 +348,33 @@ latent = function() private$mix_up('latent'),</p></dd>
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-predict"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code></h3>
-<p>Predict group of new samples</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<a id="method-predict"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code></h3>
+<p>Predict group of new samples</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>predict</span><span class='op'>(</span>
+  <span class='va'>newdata</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"posterior"</span>, <span class='st'>"response"</span>, <span class='st'>"position"</span><span class='op'>)</span>,
+  prior <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>/</span><span class='va'>self</span><span class='op'>$</span><span class='va'>k</span>, <span class='va'>self</span><span class='op'>$</span><span class='va'>k</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>newdata</span><span class='op'>)</span>, <span class='va'>self</span><span class='op'>$</span><span class='va'>k</span>, byrow <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>,
+  control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  envir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>newdata</code></dt><dd><p>A data frame in which to look for variables, offsets and counts with which to predict.</p></dd>
+
+<dt><code>type</code></dt><dd><p>The type of prediction required. The default <code>posterior</code> are posterior probabilities for each group ,
+<code>response</code> is the group with maximal posterior probability and <code>latent</code> is the averaged latent in the latent space,
+with weights equal to the posterior probabilities.</p></dd>
+
+<dt><code>prior</code></dt><dd><p>User-specified prior group probabilities in the new data. The default uses a uniform prior.</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See <code><a href='PLN.html'>PLN()</a></code> for details.</p></dd>
+
+<dt><code>envir</code></dt><dd><p>Environment in which the prediction is evaluated</p></dd>
+
+</dl><p></div></p>
+<h3 class='hasAnchor' id='list-predict-'><a class='anchor' href='#list-predict-'></a>Method <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code></h3>
+<p>Predict group of new samples</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>predict</span><span class='op'>(</span>
   <span class='va'>newdata</span>,
   type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"posterior"</span>, <span class='st'>"response"</span>, <span class='st'>"position"</span><span class='op'>)</span>,
@@ -321,8 +399,35 @@ with weights equal to the posterior probabilities.</p></dd>
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-plot_clustering_data"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>plot_clustering_data()</code></h3>
-<p>Plot the matrix of mean counts (without offsets, without covariate effects) reordered according the inferred clustering</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<a id="method-latent_pos"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>latent_pos()</code></h3>
+<p>Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>latent_pos</span><span class='op'>(</span><span class='va'>covariates</span>, <span class='va'>offsets</span><span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
+
+<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
+
+</dl><p></div></p>
+<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<p>a n x q matrix of latent positions.</p>
+<h3 class='hasAnchor' id='list-latent-pos-'><a class='anchor' href='#list-latent-pos-'></a>Method <code>latent_pos()</code></h3>
+<p>Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>latent_pos</span><span class='op'>(</span><span class='va'>covariates</span>, <span class='va'>offsets</span><span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
+
+<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
+
+</dl><p></div></p>
+<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<p>a n x q matrix of latent positions.</p>
+<p><hr>
+<a id="method-plot_clustering_data"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>plot_clustering_data()</code></h3>
+<p>Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>plot_clustering_data</span><span class='op'>(</span>
   main <span class='op'>=</span> <span class='st'>"Expected counts reorder by clustering"</span>,
   plot <span class='op'>=</span> <span class='cn'>TRUE</span>,
@@ -338,11 +443,30 @@ with weights equal to the posterior probabilities.</p></dd>
 <dt><code>log_scale</code></dt><dd><p>logical. Should the color scale values be log-transform before plotting? Default is <code>TRUE</code>.</p></dd>
 
 </dl><p></div></p>
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
+<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<p>a <code>ggplot</code> graphic</p>
+<h3 class='hasAnchor' id='list-plot-clustering-data-'><a class='anchor' href='#list-plot-clustering-data-'></a>Method <code>plot_clustering_data()</code></h3>
+<p>Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>plot_clustering_data</span><span class='op'>(</span>
+  main <span class='op'>=</span> <span class='st'>"Expected counts reorder by clustering"</span>,
+  plot <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  log_scale <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>main</code></dt><dd><p>character. A title for the plot.  An hopefully appropriate title will be used by default.</p></dd>
+
+<dt><code>plot</code></dt><dd><p>logical. Should the plot be displayed or sent back as <code>ggplot</code> object</p></dd>
+
+<dt><code>log_scale</code></dt><dd><p>logical. Should the color scale values be log-transform before plotting? Default is <code>TRUE</code>.</p></dd>
+
+</dl><p></div></p>
+<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
 <p>a <code>ggplot</code> graphic</p>
 <p><hr>
-<a id="method-plot_clustering_pca"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>plot_clustering_pca()</code></h3>
-<p>Plot the individual map of a PCA performed on the latent coordinate, where individuals are colored according to the memberships</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<a id="method-plot_clustering_pca"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>plot_clustering_pca()</code></h3>
+<p>Plot the individual map of a PCA performed on the latent coordinate, where individuals are colored according to the memberships</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>plot_clustering_pca</span><span class='op'>(</span>
   main <span class='op'>=</span> <span class='st'>"Clustering labels in Individual Factor Map"</span>,
   plot <span class='op'>=</span> <span class='cn'>TRUE</span>
@@ -355,11 +479,44 @@ with weights equal to the posterior probabilities.</p></dd>
 <dt><code>plot</code></dt><dd><p>logical. Should the plot be displayed or sent back as <code>ggplot</code> object</p></dd>
 
 </dl><p></div></p>
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
+<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<p>a <code>ggplot</code> graphic</p>
+<h3 class='hasAnchor' id='list-plot-clustering-pca-'><a class='anchor' href='#list-plot-clustering-pca-'></a>Method <code>plot_clustering_pca()</code></h3>
+<p>Plot the individual map of a PCA performed on the latent coordinate, where individuals are colored according to the memberships</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>plot_clustering_pca</span><span class='op'>(</span>
+  main <span class='op'>=</span> <span class='st'>"Clustering labels in Individual Factor Map"</span>,
+  plot <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>main</code></dt><dd><p>character. A title for the plot. An hopefully appropriate title will be used by default.</p></dd>
+
+<dt><code>plot</code></dt><dd><p>logical. Should the plot be displayed or sent back as <code>ggplot</code> object</p></dd>
+
+</dl><p></div></p>
+<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
 <p>a <code>ggplot</code> graphic</p>
 <p><hr>
-<a id="method-postTreatment"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>postTreatment()</code></h3>
-<p>Update fields after optimization</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<a id="method-postTreatment"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>postTreatment()</code></h3>
+<p>Update fields after optimization</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>postTreatment</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>weights</span>, <span class='va'>nullModel</span><span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
+
+<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
+
+<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
+
+<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
+
+<dt><code>nullModel</code></dt><dd><p>null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.</p></dd>
+
+</dl><p></div></p>
+<h3 class='hasAnchor' id='list-posttreatment-'><a class='anchor' href='#list-posttreatment-'></a>Method <code>postTreatment()</code></h3>
+<p>Update fields after optimization</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>postTreatment</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>weights</span>, <span class='va'>nullModel</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -376,18 +533,35 @@ with weights equal to the posterior probabilities.</p></dd>
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-show"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>show()</code></h3>
-<p>User friendly print method</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<a id="method-show"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>show()</code></h3>
+<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>show</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
+
+<h3 class='hasAnchor' id='list-show-'><a class='anchor' href='#list-show-'></a>Method <code>show()</code></h3>
+<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>show</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
 
 <p><hr>
-<a id="method-print"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
-<p>User friendly print method</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<a id="method-print"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
+<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>print</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
+
+<h3 class='hasAnchor' id='list-print-'><a class='anchor' href='#list-print-'></a>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
+<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>print</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
 
 <p><hr>
-<a id="method-clone"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>clone()</code></h3>
-<p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<a id="method-clone"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>clone()</code></h3>
+<p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span>deep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>deep</code></dt><dd><p>Whether to make a deep clone.</p></dd>
+
+</dl><p></div></p>
+<h3 class='hasAnchor' id='list-clone-'><a class='anchor' href='#list-clone-'></a>Method <code>clone()</code></h3>
+<p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span>deep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -409,11 +583,11 @@ with weights equal to the posterior probabilities.</p></dd>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
+  <p><p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9000.</p></p>
 </div>
 
       </footer>

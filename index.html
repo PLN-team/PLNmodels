@@ -47,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9330</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9370</span>
       </span>
     </div>
 
@@ -119,12 +119,12 @@
 <!-- badges: start -->
 
 <blockquote>
-<p>The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA, LDA and network inference for count data). This package implements efficient algorithms to fit such models accompanied with a set of functions for visualization and diagnostic. See <a href="https://pln-team.github.io/slideshow/slides">this deck of slides</a> for a comprehensive introduction.</p>
+<p>The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA, LDA and network inference for count data). This package implements efficient algorithms to fit such models accompanied with a set of functions for visualization and diagnostic. See <a href="https://pln-team.github.io/slideshow/slides" class="external-link">this deck of slides</a> for a comprehensive introduction.</p>
 </blockquote>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p><strong>PLNmodels</strong> is available on <a href="https://cran.r-project.org/package=PLNmodels">CRAN</a>. The development version is available on <a href="https://github.com/pln-team/PLNmodels">Github</a>.</p>
+<p><strong>PLNmodels</strong> is available on <a href="https://cran.r-project.org/package=PLNmodels" class="external-link">CRAN</a>. The development version is available on <a href="https://github.com/pln-team/PLNmodels" class="external-link">Github</a>.</p>
 <div id="r-package-installation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#r-package-installation" class="anchor"></a>R Package installation</h3>
@@ -151,17 +151,17 @@
 <li>For the last stable version, use the CRAN version</li>
 </ul>
 <!-- end list --><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"PLNmodels"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"PLNmodels"</span><span class="op">)</span></code></pre></div>
 <ul>
 <li>For the development version, use the github install</li>
 </ul>
 <!-- end list --><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"pln-team/PLNmodels"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"pln-team/PLNmodels"</span><span class="op">)</span></code></pre></div>
 <ul>
 <li>For a specific tagged release, use</li>
 </ul>
 <!-- end list --><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"pln-team/PLNmodels@tag_number"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"pln-team/PLNmodels@tag_number"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 </div>
@@ -170,10 +170,10 @@
 <a href="#usage-and-main-fitting-functions" class="anchor"></a>Usage and main fitting functions</h2>
 <p>The package comes with an ecological data set to present the functionality</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span>
 <span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></code></pre></div>
-<p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <a href="http://pln-team.github.io/PLNmodels/articles/" class="uri">http://pln-team.github.io/PLNmodels/articles/</a>).</p>
+<p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <a href="http://pln-team.github.io/PLNmodels/articles/" class="external-link uri">http://pln-team.github.io/PLNmodels/articles/</a>).</p>
 <div id="unpenalized-poisson-lognormal-model-aka-pln" class="section level3">
 <h3 class="hasAnchor">
 <a href="#unpenalized-poisson-lognormal-model-aka-pln" class="anchor"></a>Unpenalized Poisson lognormal model (aka PLN)</h3>
@@ -210,9 +210,9 @@
 <a href="#references" class="anchor"></a>References</h2>
 <p>Please cite our work using the following references:</p>
 <ul>
-<li><p>J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, bioRxiv preprint, 2020.. <a href="https://doi.org/10.1101/2020.10.07.329383">link</a></p></li>
-<li><p>J. Chiquet, M. Mariadassou and S. Robin: Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019. <a href="http://proceedings.mlr.press/v97/chiquet19a.html">link</a></p></li>
-<li><p>J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 12: 2674–2698, 2018. <a href="http://dx.doi.org/10.1214/18-AOAS1177">link</a></p></li>
+<li><p>J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, bioRxiv preprint, 2020.. <a href="https://doi.org/10.1101/2020.10.07.329383" class="external-link">link</a></p></li>
+<li><p>J. Chiquet, M. Mariadassou and S. Robin: Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019. <a href="http://proceedings.mlr.press/v97/chiquet19a.html" class="external-link">link</a></p></li>
+<li><p>J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 12: 2674–2698, 2018. <a href="http://dx.doi.org/10.1214/18-AOAS1177" class="external-link">link</a></p></li>
 </ul>
 </div>
 </div>
@@ -220,7 +220,7 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=PLNmodels">https://​cloud.r-project.org/​package=PLNmodels</a>
 </li>
@@ -232,7 +232,7 @@
 </div>
 
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>GPL (&gt;= 3)</li>
 </ul>
@@ -240,30 +240,30 @@
 
 
 <div class="citation">
-<h2>Citation</h2>
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
 <li><a href="authors.html">Citing PLNmodels</a></li>
 </ul>
 </div>
 
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Julien Chiquet <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3629-3429" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Mahendra Mariadassou <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2986-354X" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>François Gindraud <br><small class="roles"> Author </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="authors.html">More on authors...</a></li>
 </ul>
 </div>
 
 <div class="dev-status">
-<h2>Dev status</h2>
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/pln-team/PLNmodels/actions"><img src="https://github.com/pln-team/PLNmodels/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://codecov.io/github/pln-team/PLNmodels?branch=master"><img src="https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg" alt="Coverage status"></a></li>
-<li><a href="https://cran.r-project.org/package=PLNmodels"><img src="http://www.r-pkg.org/badges/version/PLNmodels" alt="CRAN_Status_Badge"></a></li>
-<li><a href="https://www.tidyverse.org/lifecycle/#stable"><img src="https://img.shields.io/badge/lifecycle-stable-blue.svg" alt="Lifecycle: stable"></a></li>
-<li><a href="https://github.com/pln-team/PLNmodels/commits/master"><img src="https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg"></a></li>
+<li><a href="https://github.com/pln-team/PLNmodels/actions" class="external-link"><img src="https://github.com/pln-team/PLNmodels/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://codecov.io/github/pln-team/PLNmodels?branch=master" class="external-link"><img src="https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg" alt="Coverage status"></a></li>
+<li><a href="https://cran.r-project.org/package=PLNmodels" class="external-link"><img src="http://www.r-pkg.org/badges/version/PLNmodels" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://www.tidyverse.org/lifecycle/#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-blue.svg" alt="Lifecycle: stable"></a></li>
+<li><a href="https://github.com/pln-team/PLNmodels/commits/master" class="external-link"><img src="https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg"></a></li>
 </ul>
 </div>
 
@@ -272,11 +272,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
+  <p></p>
+<p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
