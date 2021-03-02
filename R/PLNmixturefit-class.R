@@ -20,7 +20,7 @@
 #' @include PLNfit-class.R
 #'
 #' @importFrom R6 R6Class
-#' @importFrom purrr map2_dbl
+#' @importFrom purrr map2_dbl map2
 #' @importFrom parallel mclapply
 #' @importFrom purrr map_int map_dbl
 #' @seealso The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}
@@ -38,11 +38,9 @@ PLNmixturefit <-
       monitoring = NA, # a list with optimization monitoring quantities
       Theta      = NA, # the model parameters for the covariable
       mix_up     = function(var_name) {
-        Reduce("+",
-           Map(function(pi, comp) {
-             pi * eval(str2expression(paste0('comp$', var_name)))
-          }, self$mixtureParam, self$components)
-        )
+        private$comp %>%
+          map(function(C) C$weights * eval(str2expression(paste0('C$', var_name)))) %>%
+          reduce(`+`)
       },
       #' @description Optimize a the
       optimize_covariates = function(Y, X, O){
@@ -248,9 +246,10 @@ PLNmixturefit <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Helper functions ----------------------
       #' @description Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization
-      #' @return a n x q matrix of latent positions.
+      #' @return a n x p matrix of latent positions.
       latent_pos = function(covariates, offsets) {
-        latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
+        latentPos <- self$posteriorProb %*% t(self$group_means) + self$var_par$M +
+          tcrossprod(covariates, private$Theta) + offsets
         latentPos
       },
 
@@ -264,7 +263,8 @@ PLNmixturefit <-
       plot_clustering_data = function(main = "Expected counts reorder by clustering", plot = TRUE, log_scale = TRUE) {
         M  <- self$var_par$M
         S2 <- switch(private$covariance, "spherical" = self$var_par$S2 %*% rbind(rep(1, ncol(M))), self$var_par$S2)
-        A  <- exp(M + .5 * S2)
+        mu <- self$posteriorProb %*% t(self$group_means)
+        A  <- exp(mu + M + .5 * S2)
         p <- plot_matrix(A, 'samples', 'variables', self$memberships, log_scale)
         if (plot) print(p)
         invisible(p)
@@ -276,7 +276,8 @@ PLNmixturefit <-
       #' @param main character. A title for the plot. An hopefully appropriate title will be used by default.
       #' @return a [`ggplot`] graphic
       plot_clustering_pca = function(main = "Clustering labels in Individual Factor Map", plot = TRUE) {
-        svdM <- svd(self$var_par$M, nv = 2)
+        mu <- self$posteriorProb %*% t(self$group_means)
+        svdM <- svd(scale(self$var_par$M + mu, TRUE, FALSE), nv = 2)
         .scores <- data.frame(t(t(svdM$u[, 1:2]) * svdM$d[1:2]))
         colnames(.scores) <- paste("a",1:2,sep = "")
         .scores$labels <- as.factor(self$memberships)
@@ -336,6 +337,8 @@ PLNmixturefit <-
       d = function() {nrow(private$Theta)},
       #' @field components components of the mixture (PLNfits)
       components    = function(value) {if (missing(value)) return(private$comp) else private$comp <- value},
+      #' @field latent a matrix: values of the latent vector (Z in the model)
+      latent     = function() {private$mix_up('latent')},
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
       posteriorProb = function(value) {if (missing(value)) return(private$tau) else private$tau <- value},
       #' @field memberships vector for cluster index
@@ -355,7 +358,7 @@ PLNmixturefit <-
           })) + self$n * self$p * log(2*pi*exp(1)))
       },
       #' @field entropy Full entropy of the variational distribution (latent vector + clustering)
-      entropy       = function() {self$entropy_latent + self$entropy_clustering},
+      entropy = function() {self$entropy_latent + self$entropy_clustering},
       #' @field loglik variational lower bound of the loglikelihood
       loglik = function() {sum(self$loglik_vec)},
       #' @field loglik_vec element-wise variational lower bound of the loglikelihood
@@ -380,8 +383,13 @@ PLNmixturefit <-
       #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal" or "full")
       vcov_model = function() {private$covariance},
       #' @field var_par a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
-      var_par    = function() {list(M  = private$mix_up('var_par$M'),
-                                    S2 = private$mix_up('var_par$S2'))},
+      var_par    = function() {
+        M_k   <- map(private$comp, "var_par") %>% map("M")
+        M     <- reduce(M_k, `+`)
+        tau_k <- map(private$comp, "weights")
+        M_bar <- map2(tau_k, map(M_k, function(M_k_) rowSums((M_k_ - M)^2)), `*`) %>% reduce(`+`)
+        list(M  = M, S2 = private$mix_up('var_par$S2') + M_bar)
+        },
       #' #' @field latent a matrix: values of the latent vector (Z in the model)
       #' latent = function() {private$mix_up('latent')},
       #' @field fitted a matrix: fitted values of the observations (A in the model)
@@ -395,3 +403,5 @@ PLNmixturefit <-
     )
 )
 
+
+# \sum_k \tau_ik (m_ik - m_i)^\intercal (m_ik - m_i)
