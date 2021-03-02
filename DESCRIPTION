@@ -55,7 +55,8 @@ Suggests:
     biomformat,
     phyloseq,
     spelling,
-    factoextra
+    factoextra,
+    ggsignif
 LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)
 VignetteBuilder: knitr
 Collate: 
