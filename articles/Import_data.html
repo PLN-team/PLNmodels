@@ -26,8 +26,6 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
-
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -40,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9370</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9380</span>
       </span>
     </div>
 
@@ -50,7 +48,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="https://pln-team.github.io/slideshow/slides" class="external-link">Slideshow on PLN</a>
+  <a href="https://pln-team.github.io/slideshow/slides">Slideshow on PLN</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -88,7 +86,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/pln-team/PLNmodels/" class="external-link">
+  <a href="https://github.com/pln-team/PLNmodels/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -107,11 +105,11 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Data importation in PLNmodels</h1>
-                        <h4 data-toc-skip class="author">PLN team</h4>
+                        <h4 class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2021-03-01</h4>
+            <h4 class="date">2021-03-02</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/Import_data.Rmd" class="external-link"><code>vignettes/Import_data.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/Import_data.Rmd"><code>vignettes/Import_data.Rmd</code></a></small>
       <div class="hidden name"><code>Import_data.Rmd</code></div>
 
     </div>
@@ -128,17 +126,17 @@
 <a href="#format-description" class="anchor"></a>Format description</h2>
 <p>We illustrate the format using trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></code></pre></div>
 <p>The trichoptera data set is a list made of two data frames: <code>Abundance</code> (hereafter referred to as the <em>counts</em>) and <code>Covariate</code> (hereafter the <em>covariates</em>).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">trichoptera</span>, max.level <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">trichoptera</span>, max.level <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <pre><code>## List of 2
 ##  $ Abundance:'data.frame':   49 obs. of  17 variables:
 ##  $ Covariate:'data.frame':   49 obs. of  7 variables:</code></pre>
 <p>The covariates include, among others, the wind, pressure and humidity.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "Temperature"   "Wind"          "Pressure"      "Humidity"     
 ## [5] "Cloudiness"    "Precipitation" "Group"</code></pre>
 <p>In the PLN framework, we model the counts from the covariates, let’s say wind and pressure, using a Poisson Log-Normal model. Most models in R use the so-called <em>formula interface</em> and it would thus be natural to write something like</p>
@@ -149,7 +147,7 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">trichoptera2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span>counts     <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, 
                              covariates <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">trichoptera2</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">trichoptera2</span><span class="op">)</span></code></pre></div>
 <pre><code>## 'data.frame':    49 obs. of  9 variables:
 ##  $ Abundance    : num [1:49, 1:17] 0 0 0 0 0 0 0 0 0 0 ...
 ##   ..- attr(*, "dimnames")=List of 2
@@ -167,7 +165,7 @@
 <ul>
 <li>the first is a <code>list</code> whereas the second is a <code>data.frame</code><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>;</li>
 <li>
-<code>Abundance</code> is a matrix-column of <code>trichoptera2</code> that you can extract using the usual functions <code><a href="https://rdrr.io/r/base/Extract.html" class="external-link">[</a></code> and <code><a href="https://rdrr.io/r/base/Extract.html" class="external-link">[[</a></code> to retrieve the count matrix;</li>
+<code>Abundance</code> is a matrix-column of <code>trichoptera2</code> that you can extract using the usual functions <code><a href="https://rdrr.io/r/base/Extract.html">[</a></code> and <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> to retrieve the count matrix;</li>
 <li>
 <code>trichoptera2</code> has an additional <code>Offset</code> column (more on that later).</li>
 </ul>
@@ -181,7 +179,7 @@
 <li>Cumulative Sum Scaling (CSS), introduced in <span class="citation">(Paulson et al. <a href="#ref-CSS" role="doc-biblioref">2013</a>)</span>, where the offset of a sample if the cumulative sum of counts in that sample, up to a quantile determined in a data driven way.</li>
 <li>Relative Log-Expression (RLE), implemented in <span class="citation">(Anders and Huber <a href="#ref-DESeq2" role="doc-biblioref">2010</a>)</span>, where all samples are used to compute a reference sample, each sample is compared to the reference sample using log-ratios and the offset is the median log-ratio.</li>
 <li>Geometric Mean of Pairwise Ratio (GMPR), introduced in <span class="citation">(Chen et al. <a href="#ref-GMPR" role="doc-biblioref">2018</a>)</span> where each sample is compared to each other to compute a median log-ratio and the offset of a sample is the geometric means of those pairwise ratios.</li>
-<li>Wrench, introduced in <span class="citation">(Kumar et al. <a href="#ref-Kumar2018" role="doc-biblioref">2018</a>)</span> and fully implemented in the <a href="http://bioconductor.org/packages/release/bioc/html/Wrench.html" class="external-link">Wrench package</a>, where all samples are used to compute reference proportions and each sample is compared to the reference using ratios (and <strong>not log-ratios</strong>) of proportions to compute compositional correction factors. In that case, the offset is the product of (geometrically centered) compositional factors and (geometrically centered) depths.</li>
+<li>Wrench, introduced in <span class="citation">(Kumar et al. <a href="#ref-Kumar2018" role="doc-biblioref">2018</a>)</span> and fully implemented in the <a href="http://bioconductor.org/packages/release/bioc/html/Wrench.html">Wrench package</a>, where all samples are used to compute reference proportions and each sample is compared to the reference using ratios (and <strong>not log-ratios</strong>) of proportions to compute compositional correction factors. In that case, the offset is the product of (geometrically centered) compositional factors and (geometrically centered) depths.</li>
 </ul>
 <p>Each of these offset be computed from a counts matrix using the <code>compute_offset</code> function and changing its <code>offset</code> argument:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -259,7 +257,7 @@
 </h2>
 <p>We’ll already learned that <code>prepare_data</code> can join counts and covariates into a single data.frame. It can also compute offset through <code>compute_offset</code> and does so by default with <code>offset = "TSS"</code>, hence the <code>Offset</code> column in <code>trichoptera2</code>. You can change the offset method and provide additional arguments that will passed on to <code>compute_offset</code>.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, 
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, 
              <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span>, 
              offset <span class="op">=</span> <span class="st">"RLE"</span>, pseudocounts <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## 'data.frame':    49 obs. of  9 variables:
@@ -279,7 +277,7 @@
 <p>Finally, <code>prepare_data</code> enforces sample-consistency between the counts and the covariates and automatically trims away: - samples for which only covariates or only counts are available; - samples with no positive counts</p>
 <p>For example, if we remove the first sample from the counts and the last one from the covariates, we end up with 49 - 2 = 47 samples left, as expected.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span>, <span class="co">## remove first sample</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span>, <span class="co">## remove first sample</span>
                   <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">[</span><span class="op">-</span><span class="fl">49</span>,<span class="op">]</span>  <span class="co">## remove last sample</span>
                   <span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 47</code></pre>
@@ -288,20 +286,20 @@
 <h2 class="hasAnchor">
 <a href="#importing-data-from-biom-and-phyloseq-objects-using-prepare_data_from_phyloseqbiom" class="anchor"></a>Importing data from biom and phyloseq objects using <code>prepare_data_from_[phyloseq|biom]</code>
 </h2>
-<p>Community composition data are quite popular in microbial ecology and usually stored in flat files using the <a href="http://biom-format.org/" class="external-link">biom format</a> and/or imported in R as phyloseq-class objects <span class="citation">(McMurdie <a href="#ref-phyloseq" role="doc-biblioref">2013</a>)</span> using the Bioconductor <a href="https://joey711.github.io/phyloseq/" class="external-link">phyloseq</a> package.</p>
+<p>Community composition data are quite popular in microbial ecology and usually stored in flat files using the <a href="http://biom-format.org/">biom format</a> and/or imported in R as phyloseq-class objects <span class="citation">(McMurdie <a href="#ref-phyloseq" role="doc-biblioref">2013</a>)</span> using the Bioconductor <a href="https://joey711.github.io/phyloseq/">phyloseq</a> package.</p>
 <!-- We provide helper functions to directly import data from a biom file (or biom-class object) and a phyloseq-class object.  -->
 <p>We show here how to import data from a biom file (or biom-class object) and form a phyloseq-class object.</p>
 <div id="reading-from-a-biom-file" class="section level3">
 <h3 class="hasAnchor">
 <a href="#reading-from-a-biom-file" class="anchor"></a>Reading from a biom file</h3>
-<p>Reading from a biom file requires the bioconductor package <a href="https://www.bioconductor.org/packages/release/bioc/html/biomformat.html" class="external-link">biomformat</a>. This package is <strong>not</strong> a standard dependency of PLNmodels and needs to be installed separately.</p>
+<p>Reading from a biom file requires the bioconductor package <a href="https://www.bioconductor.org/packages/release/bioc/html/biomformat.html">biomformat</a>. This package is <strong>not</strong> a standard dependency of PLNmodels and needs to be installed separately.</p>
 <p>You can easily prepare your data from a biom file using the following steps:</p>
 <ul>
-<li>read your biom file with <code><a href="https://rdrr.io/pkg/biomformat/man/read_biom.html" class="external-link">biomformat::read_biom()</a></code>
+<li>read your biom file with <code><a href="https://rdrr.io/pkg/biomformat/man/read_biom.html">biomformat::read_biom()</a></code>
 </li>
-<li>extract the count table with <code><a href="https://rdrr.io/pkg/biomformat/man/biom_data-methods.html" class="external-link">biomformat::biom_data()</a></code>
+<li>extract the count table with <code><a href="https://rdrr.io/pkg/biomformat/man/biom_data-methods.html">biomformat::biom_data()</a></code>
 </li>
-<li>extract the covariates with <code><a href="https://rdrr.io/pkg/biomformat/man/sample_metadata-methods.html" class="external-link">biomformat::sample_metadata()</a></code> (or build your own)</li>
+<li>extract the covariates with <code><a href="https://rdrr.io/pkg/biomformat/man/sample_metadata-methods.html">biomformat::sample_metadata()</a></code> (or build your own)</li>
 <li>feed them to <code>prepare_data</code>
 </li>
 </ul>
@@ -312,26 +310,26 @@
 <span class="co">#   install.packages("BiocManager")</span>
 <span class="co"># }</span>
 <span class="co"># BiocManager::install("biomformat")</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joey711/biomformat/" class="external-link">biomformat</a></span><span class="op">)</span>
-<span class="va">biomfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>, package <span class="op">=</span> <span class="st">"biomformat"</span><span class="op">)</span>
-<span class="va">biom</span> <span class="op">&lt;-</span> <span class="fu">biomformat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/read_biom.html" class="external-link">read_biom</a></span><span class="op">(</span><span class="va">biomfile</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joey711/biomformat/">biomformat</a></span><span class="op">)</span>
+<span class="va">biomfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>, package <span class="op">=</span> <span class="st">"biomformat"</span><span class="op">)</span>
+<span class="va">biom</span> <span class="op">&lt;-</span> <span class="fu">biomformat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/read_biom.html">read_biom</a></span><span class="op">(</span><span class="va">biomfile</span><span class="op">)</span>
 <span class="co">## extract counts</span>
-<span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="fu">biomformat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/biom_data-methods.html" class="external-link">biom_data</a></span><span class="op">(</span><span class="va">biom</span><span class="op">)</span>, <span class="st">"matrix"</span><span class="op">)</span>
+<span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="fu">biomformat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/biom_data-methods.html">biom_data</a></span><span class="op">(</span><span class="va">biom</span><span class="op">)</span>, <span class="st">"matrix"</span><span class="op">)</span>
 <span class="co">## extract covariates (or prepare your own)</span>
-<span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">biomformat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/sample_metadata-methods.html" class="external-link">sample_metadata</a></span><span class="op">(</span><span class="va">biom</span><span class="op">)</span>
+<span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">biomformat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/sample_metadata-methods.html">sample_metadata</a></span><span class="op">(</span><span class="va">biom</span><span class="op">)</span>
 <span class="co">## prepare data</span>
 <span class="va">my_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">counts</span>, covariates <span class="op">=</span> <span class="va">covariates</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="reading-from-a-phyloseq-class-object" class="section level3">
 <h3 class="hasAnchor">
 <a href="#reading-from-a-phyloseq-class-object" class="anchor"></a>Reading from a phyloseq-class object</h3>
-<p>Likewise, preparing data from a phyloseq-class object requires the bioconductor package <a href="https://www.bioconductor.org/packages/release/bioc/html/phyloseq.html" class="external-link">phyloseq</a>. This package is <strong>not</strong> a standard dependency of PLNmodels and needs to be installed separately.</p>
+<p>Likewise, preparing data from a phyloseq-class object requires the bioconductor package <a href="https://www.bioconductor.org/packages/release/bioc/html/phyloseq.html">phyloseq</a>. This package is <strong>not</strong> a standard dependency of PLNmodels and needs to be installed separately.</p>
 <p>You can easily prepare your data from a phyloseq object using the following steps:</p>
 <ul>
-<li>extract the count table with <code><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html" class="external-link">phyloseq::otu_table()</a></code>
+<li>extract the count table with <code><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html">phyloseq::otu_table()</a></code>
 </li>
-<li>extract the covariates with <code><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html" class="external-link">phyloseq::sample_data()</a></code> (or build your own)</li>
+<li>extract the covariates with <code><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html">phyloseq::sample_data()</a></code> (or build your own)</li>
 <li>feed them to <code>prepare_data</code>
 </li>
 </ul>
@@ -343,15 +341,15 @@
 <span class="co">#   install.packages("BiocManager")</span>
 <span class="co"># }</span>
 <span class="co"># BiocManager::install("phyloseq")</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://dx.plos.org/10.1371/journal.pone.0061217" class="external-link">phyloseq</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"enterotype"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://dx.plos.org/10.1371/journal.pone.0061217">phyloseq</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"enterotype"</span><span class="op">)</span>
 <span class="co">## extract counts</span>
-<span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html" class="external-link">otu_table</a></span><span class="op">(</span><span class="va">enterotype</span><span class="op">)</span>, <span class="st">"matrix"</span><span class="op">)</span>
+<span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html">otu_table</a></span><span class="op">(</span><span class="va">enterotype</span><span class="op">)</span>, <span class="st">"matrix"</span><span class="op">)</span>
 <span class="co">## extract covariates (or prepare your own)</span>
-<span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html" class="external-link">sample_data</a></span><span class="op">(</span><span class="va">enterotype</span><span class="op">)</span>
+<span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html">sample_data</a></span><span class="op">(</span><span class="va">enterotype</span><span class="op">)</span>
 <span class="co">## prepare data</span>
 <span class="va">my_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">counts</span>, covariates <span class="op">=</span> <span class="va">covariates</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="mathematical-details-about-the-offsets" class="section level2">
@@ -460,19 +458,19 @@ O_i = \frac{\hat{\Lambda}_i}{(\prod_{i = 1}^n \hat{\Lambda}_i)^{1/n}} \times \fr
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-DESeq2">
-<p>Anders, Simon, and Wolfgang Huber. 2010. “Differential Expression Analysis for Sequence Count Data.” <em>Genome Biology</em> 11 (10): R106. <a href="https://doi.org/10.1186/gb-2010-11-10-r106" class="external-link">https://doi.org/10.1186/gb-2010-11-10-r106</a>.</p>
+<p>Anders, Simon, and Wolfgang Huber. 2010. “Differential Expression Analysis for Sequence Count Data.” <em>Genome Biology</em> 11 (10): R106. <a href="https://doi.org/10.1186/gb-2010-11-10-r106">https://doi.org/10.1186/gb-2010-11-10-r106</a>.</p>
 </div>
 <div id="ref-GMPR">
-<p>Chen, Li, James Reeve, Lujun Zhang, Shengbing Huang, Xuefeng Wang, and Jun Chen. 2018. “GMPR: A Robust Normalization Method for Zero-Inflated Count Data with Application to Microbiome Sequencing Data.” <em>PeerJ</em> 6 (April): e4600. <a href="https://doi.org/10.7717/peerj.4600" class="external-link">https://doi.org/10.7717/peerj.4600</a>.</p>
+<p>Chen, Li, James Reeve, Lujun Zhang, Shengbing Huang, Xuefeng Wang, and Jun Chen. 2018. “GMPR: A Robust Normalization Method for Zero-Inflated Count Data with Application to Microbiome Sequencing Data.” <em>PeerJ</em> 6 (April): e4600. <a href="https://doi.org/10.7717/peerj.4600">https://doi.org/10.7717/peerj.4600</a>.</p>
 </div>
 <div id="ref-Kumar2018">
-<p>Kumar, M. Senthil, Eric V. Slud, Kwame Okrah, Stephanie C. Hicks, Sridhar Hannenhalli, and Héctor Corrada Bravo. 2018. “Analysis and Correction of Compositional Bias in Sparse Sequencing Count Data.” <em>BMC Genomics</em> 19 (1). <a href="https://doi.org/10.1186/s12864-018-5160-5" class="external-link">https://doi.org/10.1186/s12864-018-5160-5</a>.</p>
+<p>Kumar, M. Senthil, Eric V. Slud, Kwame Okrah, Stephanie C. Hicks, Sridhar Hannenhalli, and Héctor Corrada Bravo. 2018. “Analysis and Correction of Compositional Bias in Sparse Sequencing Count Data.” <em>BMC Genomics</em> 19 (1). <a href="https://doi.org/10.1186/s12864-018-5160-5">https://doi.org/10.1186/s12864-018-5160-5</a>.</p>
 </div>
 <div id="ref-phyloseq">
-<p>McMurdie, Paul J. AND Holmes. 2013. “Phyloseq: An R Package for Reproducible Interactive Analysis and Graphics of Microbiome Census Data.” <em>PLoS ONE</em> 8 (4): e61217. <a href="https://doi.org/10.1371/journal.pone.0061217" class="external-link">https://doi.org/10.1371/journal.pone.0061217</a>.</p>
+<p>McMurdie, Paul J. AND Holmes. 2013. “Phyloseq: An R Package for Reproducible Interactive Analysis and Graphics of Microbiome Census Data.” <em>PLoS ONE</em> 8 (4): e61217. <a href="https://doi.org/10.1371/journal.pone.0061217">https://doi.org/10.1371/journal.pone.0061217</a>.</p>
 </div>
 <div id="ref-CSS">
-<p>Paulson, Joseph N, O. Colin Stine, Héctor Corrada Bravo, and Mihai Pop. 2013. “Differential Abundance Analysis for Microbial Marker-Gene Surveys.” <em>Nat Methods</em> 10 (September): 1200–1202. <a href="https://doi.org/10.1038/nmeth.2658" class="external-link">https://doi.org/10.1038/nmeth.2658</a>.</p>
+<p>Paulson, Joseph N, O. Colin Stine, Héctor Corrada Bravo, and Mihai Pop. 2013. “Differential Abundance Analysis for Microbial Marker-Gene Surveys.” <em>Nat Methods</em> 10 (September): 1200–1202. <a href="https://doi.org/10.1038/nmeth.2658">https://doi.org/10.1038/nmeth.2658</a>.</p>
 </div>
 </div>
 </div>
@@ -495,13 +493,11 @@ O_i = \frac{\hat{\Lambda}_i}{(\prod_{i = 1}^n \hat{\Lambda}_i)^{1/n}} \times \fr
 
 
       <footer><div class="copyright">
-  <p></p>
-<p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
+  <p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
@@ -509,8 +505,6 @@ O_i = \frac{\hat{\Lambda}_i}{(\prod_{i = 1}^n \hat{\Lambda}_i)^{1/n}} \times \fr
 
   
 
-
-  
 
   </body>
 </html>

@@ -58,8 +58,6 @@ Fields are accessed via active binding and cannot be changed by the user." />
 
 
 
-
-
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
@@ -71,15 +69,9 @@ Fields are accessed via active binding and cannot be changed by the user." />
 
 
 
-  
-
-  
-
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    
-
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -93,7 +85,7 @@ Fields are accessed via active binding and cannot be changed by the user." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9370</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9380</span>
       </span>
     </div>
 
@@ -239,7 +231,7 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
-<h3 class='hasAnchor' id='public-methods'><a class='anchor' href='#public-methods'></a>Public methods</h3>
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Public methods</h3>
 
 <ul>
 <li><p><a href='#method-update'><code>PLNfit$update()</code></a></p></li>
@@ -257,8 +249,8 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 <li><p><a href='#method-clone'><code>PLNfit$clone()</code></a></p></li>
 </ul>
 <p><hr>
-<a id="method-update"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/stats/update.html'>update()</a></code></h3>
-<p>Update a <code>PLNfit</code> object</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-update"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/update.html'>update()</a></code></h3>
+<p>Update a <code>PLNfit</code> object</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>update</span><span class='op'>(</span>
   Theta <span class='op'>=</span> <span class='cn'>NA</span>,
   Sigma <span class='op'>=</span> <span class='cn'>NA</span>,
@@ -292,69 +284,11 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 <dt><code>monitoring</code></dt><dd><p>a list with optimization monitoring quantities</p></dd>
 
 </dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
-<p>Update the current <code>PLNfit</code> object</p>
-<h3 class='hasAnchor' id='list-update-'><a class='anchor' href='#list-update-'></a>Method <code><a href='https://rdrr.io/r/stats/update.html'>update()</a></code></h3>
-<p>Update a <code>PLNfit</code> object</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>update</span><span class='op'>(</span>
-  Theta <span class='op'>=</span> <span class='cn'>NA</span>,
-  Sigma <span class='op'>=</span> <span class='cn'>NA</span>,
-  M <span class='op'>=</span> <span class='cn'>NA</span>,
-  S2 <span class='op'>=</span> <span class='cn'>NA</span>,
-  Ji <span class='op'>=</span> <span class='cn'>NA</span>,
-  R2 <span class='op'>=</span> <span class='cn'>NA</span>,
-  Z <span class='op'>=</span> <span class='cn'>NA</span>,
-  A <span class='op'>=</span> <span class='cn'>NA</span>,
-  monitoring <span class='op'>=</span> <span class='cn'>NA</span>
-<span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>Theta</code></dt><dd><p>matrix of regression matrix</p></dd>
-
-<dt><code>Sigma</code></dt><dd><p>variance-covariance matrix of the latent variables</p></dd>
-
-<dt><code>M</code></dt><dd><p>matrix of mean vectors for the variational approximation</p></dd>
-
-<dt><code>S2</code></dt><dd><p>matrix of variance vectors for the variational approximation</p></dd>
-
-<dt><code>Ji</code></dt><dd><p>vector of variational lower bounds of the log-likelihoods (one value per sample)</p></dd>
-
-<dt><code>R2</code></dt><dd><p>approximate R^2 goodness-of-fit criterion</p></dd>
-
-<dt><code>Z</code></dt><dd><p>matrix of latent vectors (includes covariates and offset effects)</p></dd>
-
-<dt><code>A</code></dt><dd><p>matrix of fitted values</p></dd>
-
-<dt><code>monitoring</code></dt><dd><p>a list with optimization monitoring quantities</p></dd>
-
-</dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>Update the current <code>PLNfit</code> object</p>
 <p><hr>
-<a id="method-new"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>new()</code></h3>
-<p>Initialize a <code>PLNfit</code> model</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>weights</span>, <span class='va'>model</span>, <span class='va'>xlevels</span>, <span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
-
-<dt><code>model</code></dt><dd><p>model used for fitting, extracted from the formula in the upper-level call</p></dd>
-
-<dt><code>xlevels</code></dt><dd><p>named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.</p></dd>
-
-<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
-
-</dl><p></div></p>
-<h3 class='hasAnchor' id='list-new-'><a class='anchor' href='#list-new-'></a>Method <code>new()</code></h3>
-<p>Initialize a <code>PLNfit</code> model</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-new"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>new()</code></h3>
+<p>Initialize a <code>PLNfit</code> model</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>weights</span>, <span class='va'>model</span>, <span class='va'>xlevels</span>, <span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -375,25 +309,8 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-optimize"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
-<p>Call to the C++ optimizer and update of the relevant fields</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>optimize</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>weights</span>, <span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
-
-<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
-
-</dl><p></div></p>
-<h3 class='hasAnchor' id='list-optimize-'><a class='anchor' href='#list-optimize-'></a>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
-<p>Call to the C++ optimizer and update of the relevant fields</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-optimize"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
+<p>Call to the C++ optimizer and update of the relevant fields</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>optimize</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>weights</span>, <span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -410,8 +327,8 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-VEstep"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>VEstep()</code></h3>
-<p>Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-VEstep"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>VEstep()</code></h3>
+<p>Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>VEstep</span><span class='op'>(</span><span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>responses</span>, <span class='va'>weights</span>, control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -427,31 +344,7 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 <dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
 
 </dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
-<p>A list with three components:</p><ul>
-<li><p>the matrix <code>M</code> of variational means,</p></li>
-<li><p>the matrix <code>S2</code> of variational variances</p></li>
-<li><p>the vector <code>log.lik</code> of (variational) log-likelihood of each new observation</p></li>
-</ul>
-
-<h3 class='hasAnchor' id='list-vestep-'><a class='anchor' href='#list-vestep-'></a>Method <code>VEstep()</code></h3>
-<p>Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>VEstep</span><span class='op'>(</span><span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>responses</span>, <span class='va'>weights</span>, control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
-
-<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
-
-</dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>A list with three components:</p><ul>
 <li><p>the matrix <code>M</code> of variational means,</p></li>
 <li><p>the matrix <code>S2</code> of variational variances</p></li>
@@ -459,25 +352,8 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 </ul>
 
 <p><hr>
-<a id="method-set_R2"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>set_R2()</code></h3>
-<p>Update R2 field after optimization</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>set_R2</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>weights</span>, nullModel <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
-
-<dt><code>nullModel</code></dt><dd><p>null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.</p></dd>
-
-</dl><p></div></p>
-<h3 class='hasAnchor' id='list-set-r-'><a class='anchor' href='#list-set-r-'></a>Method <code>set_R2()</code></h3>
-<p>Update R2 field after optimization</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-set_R2"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>set_R2()</code></h3>
+<p>Update R2 field after optimization</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>set_R2</span><span class='op'>(</span><span class='va'>responses</span>, <span class='va'>covariates</span>, <span class='va'>offsets</span>, <span class='va'>weights</span>, nullModel <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -494,8 +370,8 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-compute_fisher"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>compute_fisher()</code></h3>
-<p>Safely compute the fisher information matrix (FIM)</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-compute_fisher"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>compute_fisher()</code></h3>
+<p>Safely compute the fisher information matrix (FIM)</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>compute_fisher</span><span class='op'>(</span>type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"wald"</span>, <span class='st'>"louis"</span><span class='op'>)</span>, X <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -505,63 +381,18 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 <dt><code>X</code></dt><dd><p>design matrix used to compute the FIM</p></dd>
 
 </dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
-<p>a sparse matrix with sensible dimension names</p>
-<h3 class='hasAnchor' id='list-compute-fisher-'><a class='anchor' href='#list-compute-fisher-'></a>Method <code>compute_fisher()</code></h3>
-<p>Safely compute the fisher information matrix (FIM)</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>compute_fisher</span><span class='op'>(</span>type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"wald"</span>, <span class='st'>"louis"</span><span class='op'>)</span>, X <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>type</code></dt><dd><p>approximation scheme to compute the fisher information matrix. Either <code>wald</code> (default) or <code>louis</code>. <code>type = "louis"</code> results in smaller confidence intervals.</p></dd>
-
-<dt><code>X</code></dt><dd><p>design matrix used to compute the FIM</p></dd>
-
-</dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a sparse matrix with sensible dimension names</p>
 <p><hr>
-<a id="method-compute_standard_error"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>compute_standard_error()</code></h3>
-<p>Compute univariate standard error for coefficients of Theta from the FIM</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-compute_standard_error"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>compute_standard_error()</code></h3>
+<p>Compute univariate standard error for coefficients of Theta from the FIM</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>compute_standard_error</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
 
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
-<p>a matrix of standard deviations.</p>
-<h3 class='hasAnchor' id='list-compute-standard-error-'><a class='anchor' href='#list-compute-standard-error-'></a>Method <code>compute_standard_error()</code></h3>
-<p>Compute univariate standard error for coefficients of Theta from the FIM</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>compute_standard_error</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a matrix of standard deviations.</p>
 <p><hr>
-<a id="method-postTreatment"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>postTreatment()</code></h3>
-<p>Update R2, fisher and std_err fields after optimization</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>postTreatment</span><span class='op'>(</span>
-  <span class='va'>responses</span>,
-  <span class='va'>covariates</span>,
-  <span class='va'>offsets</span>,
-  weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>responses</span><span class='op'>)</span><span class='op'>)</span>,
-  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"wald"</span>, <span class='st'>"louis"</span>, <span class='st'>"none"</span><span class='op'>)</span>,
-  nullModel <span class='op'>=</span> <span class='cn'>NULL</span>
-<span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
-
-<dt><code>type</code></dt><dd><p>approximation scheme to compute the fisher information matrix. Either <code>wald</code> (default) or <code>louis</code>. <code>type = "louis"</code> results in smaller confidence intervals.</p></dd>
-
-<dt><code>nullModel</code></dt><dd><p>null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.</p></dd>
-
-</dl><p></div></p>
-<h3 class='hasAnchor' id='list-posttreatment-'><a class='anchor' href='#list-posttreatment-'></a>Method <code>postTreatment()</code></h3>
-<p>Update R2, fisher and std_err fields after optimization</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-postTreatment"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>postTreatment()</code></h3>
+<p>Update R2, fisher and std_err fields after optimization</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>postTreatment</span><span class='op'>(</span>
   <span class='va'>responses</span>,
   <span class='va'>covariates</span>,
@@ -587,8 +418,8 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-latent_pos"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>latent_pos()</code></h3>
-<p>Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-latent_pos"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>latent_pos()</code></h3>
+<p>Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>latent_pos</span><span class='op'>(</span><span class='va'>covariates</span>, <span class='va'>offsets</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -598,24 +429,11 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 <dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
 
 </dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
-<p>a n x q matrix of latent positions.</p>
-<h3 class='hasAnchor' id='list-latent-pos-'><a class='anchor' href='#list-latent-pos-'></a>Method <code>latent_pos()</code></h3>
-<p>Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>latent_pos</span><span class='op'>(</span><span class='va'>covariates</span>, <span class='va'>offsets</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-</dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a n x q matrix of latent positions.</p>
 <p><hr>
-<a id="method-predict"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code></h3>
-<p>Predict position, scores or observations of new data.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-predict"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code></h3>
+<p>Predict position, scores or observations of new data.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>predict</span><span class='op'>(</span><span class='va'>newdata</span>, type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"link"</span>, <span class='st'>"response"</span><span class='op'>)</span>, envir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -627,38 +445,11 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 <dt><code>envir</code></dt><dd><p>Environment in which the prediction is evaluated</p></dd>
 
 </dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
-<p>A matrix with predictions scores or counts.</p>
-<h3 class='hasAnchor' id='list-predict-'><a class='anchor' href='#list-predict-'></a>Method <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code></h3>
-<p>Predict position, scores or observations of new data.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>predict</span><span class='op'>(</span><span class='va'>newdata</span>, type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"link"</span>, <span class='st'>"response"</span><span class='op'>)</span>, envir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>newdata</code></dt><dd><p>A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.</p></dd>
-
-<dt><code>type</code></dt><dd><p>Scale used for the prediction. Either <code>link</code> (default, predicted positions in the latent space) or <code>response</code> (predicted counts).</p></dd>
-
-<dt><code>envir</code></dt><dd><p>Environment in which the prediction is evaluated</p></dd>
-
-</dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>A matrix with predictions scores or counts.</p>
 <p><hr>
-<a id="method-show"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>show()</code></h3>
-<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>show</span><span class='op'>(</span>
-  model <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"A multivariate Poisson Lognormal fit with"</span>, <span class='va'>private</span><span class='op'>$</span><span class='va'>covariance</span>,
-    <span class='st'>"covariance model.\n"</span><span class='op'>)</span>
-<span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>model</code></dt><dd><p>First line of the print output</p></dd>
-
-</dl><p></div></p>
-<h3 class='hasAnchor' id='list-show-'><a class='anchor' href='#list-show-'></a>Method <code>show()</code></h3>
-<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-show"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>show()</code></h3>
+<p>User friendly print method</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>show</span><span class='op'>(</span>
   model <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"A multivariate Poisson Lognormal fit with"</span>, <span class='va'>private</span><span class='op'>$</span><span class='va'>covariance</span>,
     <span class='st'>"covariance model.\n"</span><span class='op'>)</span>
@@ -670,26 +461,13 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-print"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
-<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>print</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
-
-<h3 class='hasAnchor' id='list-print-'><a class='anchor' href='#list-print-'></a>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
-<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-print"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
+<p>User friendly print method</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>print</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
 
 <p><hr>
-<a id="method-clone"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>clone()</code></h3>
-<p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span>deep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>deep</code></dt><dd><p>Whether to make a deep clone.</p></dd>
-
-</dl><p></div></p>
-<h3 class='hasAnchor' id='list-clone-'><a class='anchor' href='#list-clone-'></a>Method <code>clone()</code></h3>
-<p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-clone"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>clone()</code></h3>
+<p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span>deep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -720,11 +498,11 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
       <footer>
       <div class="copyright">
-  <p><p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p></p>
+  <p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
 </div>
 
 <div class="pkgdown">
-  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9000.</p></p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
@@ -732,8 +510,6 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
   
 
-
-  
 
   </body>
 </html>

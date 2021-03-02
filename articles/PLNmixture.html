@@ -26,8 +26,6 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
-
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -40,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9370</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9380</span>
       </span>
     </div>
 
@@ -50,7 +48,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="https://pln-team.github.io/slideshow/slides" class="external-link">Slideshow on PLN</a>
+  <a href="https://pln-team.github.io/slideshow/slides">Slideshow on PLN</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -88,7 +86,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/pln-team/PLNmodels/" class="external-link">
+  <a href="https://github.com/pln-team/PLNmodels/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -107,11 +105,11 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Clustering of multivariate count data with PLN-mixture</h1>
-                        <h4 data-toc-skip class="author">PLN team</h4>
+                        <h4 class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2021-03-01</h4>
+            <h4 class="date">2021-03-02</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNmixture.Rmd" class="external-link"><code>vignettes/PLNmixture.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNmixture.Rmd"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
 
     </div>
@@ -127,14 +125,15 @@
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.sthda.com/english/rpkgs/factoextra">factoextra</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
 <a href="#data-set" class="anchor"></a>Data set</h3>
 <p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>. Data preparation is also detailed in <a href="Import_data.html">the specific vignette</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span>
 <span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></code></pre></div>
 <p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
 </div>
@@ -198,7 +197,7 @@
 <p>We fit a collection of <span class="math inline">\(K=4\)</span> models as follows:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mixture_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNmixture.html">PLNmixture</a></span><span class="op">(</span>
-  <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,
+  <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,
   data  <span class="op">=</span> <span class="va">trichoptera</span>,
   clusters <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>
 <span class="op">)</span></code></pre></div>
@@ -237,11 +236,11 @@
 ##  Task: Mixture Model 
 ## ========================================================
 ##  - Number of clusters considered: from 1 to 4 
-##  - Best model (regarding BIC): cluster = 3 
-##  - Best model (regarding ICL): cluster = 2</code></pre>
+##  - Best model (regarding BIC): cluster = 4 
+##  - Best model (regarding ICL): cluster = 4</code></pre>
 <p>One can also easily access the successive values of the criteria in the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mixture_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">mixture_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">param</th>
@@ -254,36 +253,36 @@
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">18</td>
-<td align="right">-1804.793</td>
-<td align="right">-1839.820</td>
-<td align="right">-2695.608</td>
+<td align="right">-1398.668</td>
+<td align="right">-1433.695</td>
+<td align="right">-1891.706</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">37</td>
-<td align="right">-1735.758</td>
-<td align="right">-1807.756</td>
-<td align="right">-2630.887</td>
+<td align="right">-1282.496</td>
+<td align="right">-1354.495</td>
+<td align="right">-1670.061</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">56</td>
-<td align="right">-1658.312</td>
-<td align="right">-1767.283</td>
-<td align="right">-2652.408</td>
+<td align="right">-1238.522</td>
+<td align="right">-1347.493</td>
+<td align="right">-1559.130</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-1632.248</td>
-<td align="right">-1778.191</td>
-<td align="right">-2676.545</td>
+<td align="right">-1181.851</td>
+<td align="right">-1327.794</td>
+<td align="right">-1317.699</td>
 </tr>
 </tbody>
 </table>
 <p>A quick diagnostic of the optimization process is available via the <code>convergence</code> field:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mixture_models</span><span class="op">$</span><span class="va">convergence</span>  <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">mixture_models</span><span class="op">$</span><span class="va">convergence</span>  <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
@@ -298,15 +297,15 @@
 <td align="left">out</td>
 <td align="right">1</td>
 <td align="left">18</td>
-<td align="left">1804.793292</td>
-<td align="left">0.000555</td>
+<td align="left">1398.668455</td>
+<td align="left">0.000005</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
 <td align="right">2</td>
 <td align="left">37</td>
-<td align="left">1735.757549</td>
+<td align="left">1282.496253</td>
 <td align="left">0.000000</td>
 <td align="left">2.000000</td>
 </tr>
@@ -314,17 +313,17 @@
 <td align="left">elt.1</td>
 <td align="right">3</td>
 <td align="left">56</td>
-<td align="left">1658.311535</td>
-<td align="left">0.000083</td>
-<td align="left">4.000000</td>
+<td align="left">1238.521576</td>
+<td align="left">0.000000</td>
+<td align="left">2.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">1632.247849</td>
-<td align="left">0.000969</td>
-<td align="left">5.000000</td>
+<td align="left">1181.851057</td>
+<td align="left">0.000681</td>
+<td align="left">4.000000</td>
 </tr>
 </tbody>
 </table>
@@ -339,9 +338,9 @@
 <a href="#model-selection" class="anchor"></a>Model selection</h4>
 <p>The <code>plot</code> method of <code>PLNmixturefamily</code> displays evolution of the criteria mentioned above, and is a good starting point for model selection:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mixture_models</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mixture_models</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNmixture_files/figure-html/plot%20nocov-1.png" width="672"></p>
-<p>From this plot, we can see that the best model in terms of BIC is obtained for a number of clusters of 3. We may extract the corresponding model with the method <code><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel()</a></code>. A model with a specific number of clusters can also be extracted with the <code><a href="../reference/getModel.PLNPCAfamily.html">getModel()</a></code> method:</p>
+<p>From this plot, we can see that the best model in terms of BIC is obtained for a number of clusters of 4. We may extract the corresponding model with the method <code><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel()</a></code>. A model with a specific number of clusters can also be extracted with the <code><a href="../reference/getModel.PLNPCAfamily.html">getModel()</a></code> method:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel</a></span><span class="op">(</span><span class="va">mixture_models</span>, <span class="st">"BIC"</span><span class="op">)</span>
 <span class="va">myMix_2</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModel.PLNPCAfamily.html">getModel</a></span><span class="op">(</span><span class="va">mixture_models</span>, <span class="fl">2</span><span class="op">)</span></code></pre></div>
@@ -353,7 +352,7 @@
 <p>Object <code>myMix_BIC</code> is an <code>R6Class</code> object with class <code>PLNmixturefit</code> which in turns has a couple of methods. A good place to start is the <code>show/print</code> method:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span></code></pre></div>
-<pre><code>## Poisson Lognormal mixture model with 3 components and spherical covariances.
+<pre><code>## Poisson Lognormal mixture model with 4 components and spherical covariances.
 ## * Useful fields
 ##     $posteriorProb, $memberships, $mixtureParam, $group_means
 ##     $model_par, $latent, $var_par, $optim_par
@@ -371,48 +370,54 @@
 </ul>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">memberships</span></code></pre></div>
-<pre><code>##  [1] 1 2 1 1 1 2 2 1 2 2 2 2 1 1 1 1 1 1 1 1 1 2 2 2 2 1 1 2 2 3 3 1 1 1 1 1 1 2
-## [39] 2 2 1 1 1 1 1 1 2 1 1</code></pre>
+<pre><code>##  [1] 2 3 2 4 4 2 3 4 3 3 3 3 2 2 2 2 2 2 2 2 4 3 3 3 3 3 3 3 3 1 1 4 4 4 4 4 4 3
+## [39] 3 2 4 4 4 4 2 2 3 3 3</code></pre>
 <ul>
 <li>the group proportions:</li>
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">mixtureParam</span></code></pre></div>
-<pre><code>## [1] 0.61067528 0.34850839 0.04081633</code></pre>
+<pre><code>## [1] 0.04081633 0.29450224 0.38775510 0.27692633</code></pre>
 <ul>
 <li>the posterior probabilities (often close to the boundaries <span class="math inline">\(\{0,1\}\)</span>):</li>
 </ul>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">posteriorProb</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">posteriorProb</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
-<td align="right">0.999</td>
-<td align="right">0.001</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">0.000</td>
-<td align="right">1.000</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="right">1.000</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">1.000</td>
-<td align="right">0.000</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="odd">
-<td align="right">1.000</td>
-<td align="right">0.000</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
-<td align="right">0.000</td>
-<td align="right">1.000</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
 <td align="right">0</td>
 </tr>
 </tbody></table>
@@ -420,87 +425,102 @@
 <li>a list of <span class="math inline">\(K\)</span> <span class="math inline">\(p \times p\)</span> covariance matrices <span class="math inline">\(\hat{\boldsymbol{\Sigma}}\)</span> (here spherical variances):</li>
 </ul>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myMix_BIC</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html">sigma</a></span><span class="op">(</span><span class="va">myMix_BIC</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></code></pre></div>
 <pre><code>## [[1]]
-##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath 
-## 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 
-##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve 
-## 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 0.9364786 
-##       Sta 
-## 0.9364786 
+##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
+## 0.04218642 0.04218642 0.04218642 0.04218642 0.04218642 0.04218642 0.04218642 
+##        Ath        Cea        Ced        Set        All        Han        Hfo 
+## 0.04218642 0.04218642 0.04218642 0.04218642 0.04218642 0.04218642 0.04218642 
+##        Hsp        Hve        Sta 
+## 0.04218642 0.04218642 0.04218642 
 ## 
 ## [[2]]
-##      Che      Hyc      Hym      Hys      Psy      Aga      Glo      Ath 
-## 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 
-##      Cea      Ced      Set      All      Han      Hfo      Hsp      Hve 
-## 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 2.207197 
-##      Sta 
-## 2.207197 
+##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
+## 0.01958311 0.01958311 0.01958311 0.01958311 0.01958311 0.01958311 0.01958311 
+##        Ath        Cea        Ced        Set        All        Han        Hfo 
+## 0.01958311 0.01958311 0.01958311 0.01958311 0.01958311 0.01958311 0.01958311 
+##        Hsp        Hve        Sta 
+## 0.01958311 0.01958311 0.01958311 
 ## 
 ## [[3]]
-##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
-## 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 
-##        Ath        Cea        Ced        Set        All        Han        Hfo 
-## 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 0.04905692 
-##        Hsp        Hve        Sta 
-## 0.04905692 0.04905692 0.04905692</code></pre>
+##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath 
+## 0.1645146 0.1645146 0.1645146 0.1645146 0.1645146 0.1645146 0.1645146 0.1645146 
+##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve 
+## 0.1645146 0.1645146 0.1645146 0.1645146 0.1645146 0.1645146 0.1645146 0.1645146 
+##       Sta 
+## 0.1645146 
+## 
+## [[4]]
+##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath 
+## 0.1367105 0.1367105 0.1367105 0.1367105 0.1367105 0.1367105 0.1367105 0.1367105 
+##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve 
+## 0.1367105 0.1367105 0.1367105 0.1367105 0.1367105 0.1367105 0.1367105 0.1367105 
+##       Sta 
+## 0.1367105</code></pre>
 <ul>
 <li>the regression coefficient matrix and other model of parameters (results not shown here, redundant with other fields)</li>
 </ul>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'main'</span><span class="op">)</span>       <span class="co"># equivalent to myMix_BIC$model_par$Theta</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'mixture'</span><span class="op">)</span>    <span class="co"># equivalent to myMix_BIC$model_par$Pi, myMix_BIC$mixtureParam</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'means'</span><span class="op">)</span>      <span class="co"># equivalent to myMix_BIC$model_par$Mu, myMix_BIC$group_means</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'covariance'</span><span class="op">)</span> <span class="co"># equivalent to myMix_BIC$model_par$Sigma, sigma(myMix_BIC)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'main'</span><span class="op">)</span>       <span class="co"># equivalent to myMix_BIC$model_par$Theta</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'mixture'</span><span class="op">)</span>    <span class="co"># equivalent to myMix_BIC$model_par$Pi, myMix_BIC$mixtureParam</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'means'</span><span class="op">)</span>      <span class="co"># equivalent to myMix_BIC$model_par$Mu, myMix_BIC$group_means</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">'covariance'</span><span class="op">)</span> <span class="co"># equivalent to myMix_BIC$model_par$Sigma, sigma(myMix_BIC)</span></code></pre></div>
 <ul>
 <li>the <span class="math inline">\(p \times K\)</span> matrix of group means <span class="math inline">\(\mathbf{M}\)</span>
 </li>
 </ul>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">group_means</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">group_means</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
 <th align="right">group_1</th>
 <th align="right">group_2</th>
 <th align="right">group_3</th>
+<th align="right">group_4</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-5.94</td>
-<td align="right">-4.78</td>
-<td align="right">-10.75</td>
+<td align="right">-16.54</td>
+<td align="right">-6.64</td>
+<td align="right">-5.97</td>
+<td align="right">-17.36</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-6.00</td>
-<td align="right">-4.79</td>
-<td align="right">-8.38</td>
+<td align="right">-8.42</td>
+<td align="right">-7.34</td>
+<td align="right">-5.99</td>
+<td align="right">-17.36</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-3.03</td>
-<td align="right">-2.80</td>
-<td align="right">-6.01</td>
+<td align="right">-6.00</td>
+<td align="right">-3.38</td>
+<td align="right">-2.30</td>
+<td align="right">-2.66</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-5.72</td>
-<td align="right">-4.76</td>
-<td align="right">-10.75</td>
+<td align="right">-16.54</td>
+<td align="right">-6.65</td>
+<td align="right">-5.96</td>
+<td align="right">-6.08</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">-0.58</td>
-<td align="right">-1.36</td>
 <td align="right">-0.21</td>
+<td align="right">-0.35</td>
+<td align="right">-0.91</td>
+<td align="right">-0.54</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">-3.53</td>
-<td align="right">-4.74</td>
 <td align="right">-7.32</td>
+<td align="right">-3.35</td>
+<td align="right">-5.96</td>
+<td align="right">-3.38</td>
 </tr>
 </tbody>
 </table>
@@ -509,8 +529,8 @@
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">components</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
 <pre><code>## A multivariate Poisson Lognormal fit with spherical covariance model.
 ## ==================================================================
-##  nb_param    loglik       BIC      ICL
-##        18 -1123.806 -1158.832 -1708.78
+##  nb_param   loglik     BIC      ICL
+##        18 -120.113 -155.14 -331.769
 ## ==================================================================
 ## * Useful fields
 ##     $model_par, $latent, $var_par, $optim_par
@@ -524,11 +544,11 @@
 <a href="#plot-method" class="anchor"></a><code>plot</code> method</h4>
 <p>We can visualize the clustered latent position by performing a PCA on the latent layer:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">"pca"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">"pca"</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNmixture_files/figure-html/plot%20clustering-1.png" width="700"></p>
 <p>We can also plot the data matrix with samples reordered by clusters to check whether it exhibits strong pattern or not. The limits between clusters are highlighted by grey lines.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">"matrix"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">"matrix"</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNmixture_files/figure-html/plot%20reordered%20data-1.png" width="700"></p>
 </div>
 <div id="predict-method" class="section level4">
@@ -537,57 +557,63 @@
 <p>For PLNmixture, the goal of <code>predict</code> is to predict the membership based on observed newly <em>species counts</em>.</p>
 <p>By default, the <code>predict</code> use the argument <code>type = "posterior"</code> to output the matrix of posterior probabilities <span class="math inline">\(\hat{\pi}_k\)</span></p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span>
 <span class="co">## equivalent to </span>
 <span class="co">## predicted.class &lt;- predict(myMIX_BIC, newdata = trichoptera,  type = "posterior")</span>
-<span class="va">predicted.class</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<span class="va">predicted.class</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
-<td align="right">0.25</td>
-<td align="right">0.75</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.00</td>
 </tr>
 <tr class="even">
-<td align="right">0.50</td>
-<td align="right">0.50</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">0.99</td>
 </tr>
 <tr class="odd">
-<td align="right">1.00</td>
-<td align="right">0.00</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
 </tr>
 <tr class="even">
-<td align="right">1.00</td>
-<td align="right">0.00</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
 </tr>
 <tr class="odd">
-<td align="right">1.00</td>
-<td align="right">0.00</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
 </tr>
 <tr class="even">
-<td align="right">0.95</td>
-<td align="right">0.05</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
 </tr>
 </tbody></table>
 <p>Setting <code>type = "response"</code>, we can predict the most likely cluster <span class="math inline">\(\hat{k} = \arg\max_{k = 1\dots K} \{ \hat{\pi_k}\}\)</span> instead:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>,  type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>,  type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span>
 <span class="va">predicted.class</span></code></pre></div>
 <pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 
-##  2  1  1  1  1  1  2  1  1  3  1  3  1  1  2  1  1  1  1  2  1  2  2  3  2  2 
+##  3  4  4  4  4  4  3  4  4  3  4  4  4  4  4  4  3  2  4  3  3  3  3  4  3  3 
 ## 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 
-##  2  2  3  2  2  2  2  1  1  1  2  2  2  1  1  1  1  2  1  2  1  2  2 
-## Levels: 1 2 3</code></pre>
+##  3  3  3  3  3  4  4  4  4  4  4  3  3  4  4  4  4  4  4  4  3  3  3 
+## Levels: 2 3 4</code></pre>
 <p>We can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used data set for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
 <p>Finally, we can get the coordinates of the new data on the same graph at the original ones with <code>type = "position"</code>. This is done by averaging the latent positions <span class="math inline">\(\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k\)</span> (found when the sample is assumed to come from group <span class="math inline">\(k\)</span>) and weighting them with the <span class="math inline">\(\hat{\pi}_k\)</span>. Some samples, have compositions that put them very far from their group mean.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">predicted.position</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>,  type <span class="op">=</span> <span class="st">"position"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span><span class="va">predicted.position</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_biplot</a></span><span class="op">(</span>col.ind <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">predicted.position</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>,  type <span class="op">=</span> <span class="st">"position"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html">prcomp</a></span><span class="op">(</span><span class="va">predicted.position</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_biplot</a></span><span class="op">(</span>col.ind <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNmixture_files/figure-html/predicted_position-1.png" width="672"></p>
 </div>
 </div>
@@ -600,7 +626,7 @@
 <p>Aitchison, J., and C. H. Ho. 1989. “The Multivariate Poisson-Log Normal Distribution.” <em>Biometrika</em> 76 (4): 643–53.</p>
 </div>
 <div id="ref-fraley1999">
-<p>Fraley, Chris, and Adrian E. Raftery. 1999. “MCLUST: Software for Model-Based Cluster Analysis.” <em>Journal of Classification</em> 16 (2): 297–306. <a href="https://doi.org/10.1007/s003579900058" class="external-link">https://doi.org/10.1007/s003579900058</a>.</p>
+<p>Fraley, Chris, and Adrian E. Raftery. 1999. “MCLUST: Software for Model-Based Cluster Analysis.” <em>Journal of Classification</em> 16 (2): 297–306. <a href="https://doi.org/10.1007/s003579900058">https://doi.org/10.1007/s003579900058</a>.</p>
 </div>
 </div>
 </div>
@@ -617,13 +643,11 @@
 
 
       <footer><div class="copyright">
-  <p></p>
-<p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
+  <p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
@@ -631,8 +655,6 @@
 
   
 
-
-  
 
   </body>
 </html>

@@ -55,8 +55,6 @@ See the documentation for getBestModel(), getModel() and plot()." />
 
 
 
-
-
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
@@ -68,15 +66,9 @@ See the documentation for getBestModel(), getModel() and plot()." />
 
 
 
-  
-
-  
-
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    
-
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -90,7 +82,7 @@ See the documentation for getBestModel(), getModel() and plot()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9370</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9380</span>
       </span>
     </div>
 
@@ -184,7 +176,7 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
-<h3 class='hasAnchor' id='public-methods'><a class='anchor' href='#public-methods'></a>Public methods</h3>
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Public methods</h3>
 
 <ul>
 <li><p><a href='#method-new'><code>PLNmixturefamily$new()</code></a></p></li>
@@ -205,39 +197,8 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 </details>
 
 <hr>
-<a id="method-new"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>new()</code></h3>
-<p>Initialize all models in the collection.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
-  <span class='va'>clusters</span>,
-  <span class='va'>responses</span>,
-  <span class='va'>covariates</span>,
-  <span class='va'>offsets</span>,
-  <span class='va'>model</span>,
-  <span class='va'>xlevels</span>,
-  <span class='va'>control</span>
-<span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>clusters</code></dt><dd><p>the dimensions of the successively fitted models</p></dd>
-
-<dt><code>responses</code></dt><dd><p>the matrix of responses common to every models</p></dd>
-
-<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
-
-<dt><code>model</code></dt><dd><p>model used for fitting, extracted from the formula in the upper-level call</p></dd>
-
-<dt><code>xlevels</code></dt><dd><p>named listed of factor levels included in the models, extracted from the formula in the upper-level call #'</p></dd>
-
-<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
-
-<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
-
-</dl><p></div></p>
-<h3 class='hasAnchor' id='list-new-'><a class='anchor' href='#list-new-'></a>Method <code>new()</code></h3>
-<p>Initialize all models in the collection.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-new"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>new()</code></h3>
+<p>Initialize all models in the collection.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>
   <span class='va'>clusters</span>,
   <span class='va'>responses</span>,
@@ -268,19 +229,8 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-optimize"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
-<p>Call to the optimizer on all models of the collection</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>optimize</span><span class='op'>(</span><span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
-
-<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
-
-</dl><p></div></p>
-<h3 class='hasAnchor' id='list-optimize-'><a class='anchor' href='#list-optimize-'></a>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
-<p>Call to the optimizer on all models of the collection</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-optimize"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/optimize.html'>optimize()</a></code></h3>
+<p>Call to the optimizer on all models of the collection</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>optimize</span><span class='op'>(</span><span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -291,17 +241,8 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-smooth"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/stats/smooth.html'>smooth()</a></code></h3>
-<p>function to restart clustering to avoid local minima by smoothing the logliklihood values as a function of the number of clusters</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>smooth</span><span class='op'>(</span><span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>control</code></dt><dd><p>a list to control the smoothing process</p></dd>
-
-</dl><p></div></p>
-<h3 class='hasAnchor' id='list-smooth-'><a class='anchor' href='#list-smooth-'></a>Method <code><a href='https://rdrr.io/r/stats/smooth.html'>smooth()</a></code></h3>
-<p>function to restart clustering to avoid local minima by smoothing the logliklihood values as a function of the number of clusters</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-smooth"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/smooth.html'>smooth()</a></code></h3>
+<p>function to restart clustering to avoid local minima by smoothing the logliklihood values as a function of the number of clusters</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>smooth</span><span class='op'>(</span><span class='va'>control</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -310,8 +251,8 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 
 </dl><p></div></p>
 <p><hr>
-<a id="method-plot"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code></h3>
-<p>Lineplot of selected criteria for all models in the collection</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-plot"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code></h3>
+<p>Lineplot of selected criteria for all models in the collection</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>plot</span><span class='op'>(</span>criteria <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"ICL"</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -319,35 +260,18 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 <dt><code>criteria</code></dt><dd><p>A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).</p></dd>
 
 </dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
-<p>A <code>ggplot2</code> object</p>
-<h3 class='hasAnchor' id='list-plot-'><a class='anchor' href='#list-plot-'></a>Method <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code></h3>
-<p>Lineplot of selected criteria for all models in the collection</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>plot</span><span class='op'>(</span>criteria <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"ICL"</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>criteria</code></dt><dd><p>A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).</p></dd>
-
-</dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>A <code>ggplot2</code> object</p>
 <p><hr>
-<a id="method-plot_objective"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>plot_objective()</code></h3>
-<p>Plot objective value of the optimization problem along the penalty path</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-plot_objective"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>plot_objective()</code></h3>
+<p>Plot objective value of the optimization problem along the penalty path</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>plot_objective</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
 
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
-<p>a <code>ggplot</code> graph</p>
-<h3 class='hasAnchor' id='list-plot-objective-'><a class='anchor' href='#list-plot-objective-'></a>Method <code>plot_objective()</code></h3>
-<p>Plot objective value of the optimization problem along the penalty path</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>plot_objective</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a <code>ggplot</code> graph</p>
 <p><hr>
-<a id="method-getBestModel"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='getBestModel.PLNPCAfamily.html'>getBestModel()</a></code></h3>
-<p>Extract best model in the collection</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-getBestModel"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='getBestModel.PLNPCAfamily.html'>getBestModel()</a></code></h3>
+<p>Extract best model in the collection</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>getBestModel</span><span class='op'>(</span>crit <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"BIC"</span>, <span class='st'>"ICL"</span>, <span class='st'>"loglik"</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -356,50 +280,21 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 "BIC", "ICL" or "loglik". Default is <code>ICL</code></p></dd>
 
 </dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
-<p>a <code><a href='PLNmixturefit.html'>PLNmixturefit</a></code> object</p>
-<h3 class='hasAnchor' id='list-getbestmodel-'><a class='anchor' href='#list-getbestmodel-'></a>Method <code><a href='getBestModel.PLNPCAfamily.html'>getBestModel()</a></code></h3>
-<p>Extract best model in the collection</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>getBestModel</span><span class='op'>(</span>crit <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"BIC"</span>, <span class='st'>"ICL"</span>, <span class='st'>"loglik"</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>crit</code></dt><dd><p>a character for the criterion used to performed the selection. Either
-"BIC", "ICL" or "loglik". Default is <code>ICL</code></p></dd>
-
-</dl><p></div></p>
-<h4 class='hasAnchor' id='returns'><a class='anchor' href='#returns'></a>Returns</h4>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a <code><a href='PLNmixturefit.html'>PLNmixturefit</a></code> object</p>
 <p><hr>
-<a id="method-show"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>show()</code></h3>
-<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>show</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
-
-<h3 class='hasAnchor' id='list-show-'><a class='anchor' href='#list-show-'></a>Method <code>show()</code></h3>
-<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-show"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>show()</code></h3>
+<p>User friendly print method</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>show</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
 
 <p><hr>
-<a id="method-print"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
-<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>print</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
-
-<h3 class='hasAnchor' id='list-print-'><a class='anchor' href='#list-print-'></a>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
-<p>User friendly print method</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-print"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/base/print.html'>print()</a></code></h3>
+<p>User friendly print method</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>print</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
 
 <p><hr>
-<a id="method-clone"></a></p><h3 class='hasAnchor' id='method-'><a class='anchor' href='#method-'></a>Method <code>clone()</code></h3>
-<p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span>deep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>deep</code></dt><dd><p>Whether to make a deep clone.</p></dd>
-
-</dl><p></div></p>
-<h3 class='hasAnchor' id='list-clone-'><a class='anchor' href='#list-clone-'></a>Method <code>clone()</code></h3>
-<p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='usage'><a class='anchor' href='#usage'></a>Usage</h4>
+<a id="method-clone"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>clone()</code></h3>
+<p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span>deep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -421,11 +316,11 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 
       <footer>
       <div class="copyright">
-  <p><p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p></p>
+  <p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
 </div>
 
 <div class="pkgdown">
-  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9000.</p></p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
@@ -433,8 +328,6 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 
   
 
-
-  
 
   </body>
 </html>
