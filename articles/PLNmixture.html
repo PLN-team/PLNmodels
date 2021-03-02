@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9380</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9400</span>
       </span>
     </div>
 
@@ -274,9 +274,9 @@
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-1189.284</td>
-<td align="right">-1335.227</td>
-<td align="right">-1350.698</td>
+<td align="right">-1189.908</td>
+<td align="right">-1335.851</td>
+<td align="right">-1374.206</td>
 </tr>
 </tbody>
 </table>
@@ -321,7 +321,7 @@
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">1189.284159</td>
+<td align="left">1189.907738</td>
 <td align="left">0.000000</td>
 <td align="left">2.000000</td>
 </tr>
@@ -370,14 +370,14 @@
 </ul>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">memberships</span></code></pre></div>
-<pre><code>##  [1] 2 3 4 2 2 4 3 4 3 3 3 3 2 4 4 4 2 4 4 4 4 3 3 3 3 3 3 3 3 1 1 2 2 2 2 2 2 3
-## [39] 3 2 4 2 4 2 4 4 3 3 3</code></pre>
+<pre><code>##  [1] 1 4 1 2 1 1 4 1 4 4 4 4 1 1 2 2 1 1 1 1 1 4 4 4 4 4 4 4 4 3 3 2 2 2 1 2 1 4
+## [39] 4 1 1 1 1 1 1 1 4 4 4</code></pre>
 <ul>
 <li>the group proportions:</li>
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">mixtureParam</span></code></pre></div>
-<pre><code>## [1] 0.04081633 0.28571429 0.38775510 0.28571428</code></pre>
+<pre><code>## [1] 0.42857142 0.14285715 0.04081633 0.38775510</code></pre>
 <ul>
 <li>the posterior probabilities (often close to the boundaries <span class="math inline">\(\{0,1\}\)</span>):</li>
 </ul>
@@ -385,40 +385,40 @@
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">posteriorProb</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
-<td align="right">0</td>
 <td align="right">1</td>
+<td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0</td>
 <td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="right">0</td>
 <td align="right">1</td>
 <td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="right">0</td>
-<td align="right">1</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
 <td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 </tbody></table>
 <ul>
@@ -428,35 +428,35 @@
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html">sigma</a></span><span class="op">(</span><span class="va">myMix_BIC</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></code></pre></div>
 <pre><code>## [[1]]
 ##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
+## 0.04626329 0.04626329 0.04626329 0.04626329 0.04626329 0.04626329 0.04626329 
+##        Ath        Cea        Ced        Set        All        Han        Hfo 
+## 0.04626329 0.04626329 0.04626329 0.04626329 0.04626329 0.04626329 0.04626329 
+##        Hsp        Hve        Sta 
+## 0.04626329 0.04626329 0.04626329 
+## 
+## [[2]]
+##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath 
+## 0.1989391 0.1989391 0.1989391 0.1989391 0.1989391 0.1989391 0.1989391 0.1989391 
+##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve 
+## 0.1989391 0.1989391 0.1989391 0.1989391 0.1989391 0.1989391 0.1989391 0.1989391 
+##       Sta 
+## 0.1989391 
+## 
+## [[3]]
+##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
 ## 0.04218818 0.04218818 0.04218818 0.04218818 0.04218818 0.04218818 0.04218818 
 ##        Ath        Cea        Ced        Set        All        Han        Hfo 
 ## 0.04218818 0.04218818 0.04218818 0.04218818 0.04218818 0.04218818 0.04218818 
 ##        Hsp        Hve        Sta 
 ## 0.04218818 0.04218818 0.04218818 
 ## 
-## [[2]]
-##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath 
-## 0.1386406 0.1386406 0.1386406 0.1386406 0.1386406 0.1386406 0.1386406 0.1386406 
-##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve 
-## 0.1386406 0.1386406 0.1386406 0.1386406 0.1386406 0.1386406 0.1386406 0.1386406 
-##       Sta 
-## 0.1386406 
-## 
-## [[3]]
-##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath 
-## 0.1645214 0.1645214 0.1645214 0.1645214 0.1645214 0.1645214 0.1645214 0.1645214 
-##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve 
-## 0.1645214 0.1645214 0.1645214 0.1645214 0.1645214 0.1645214 0.1645214 0.1645214 
-##       Sta 
-## 0.1645214 
-## 
 ## [[4]]
-##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
-## 0.02214216 0.02214216 0.02214216 0.02214216 0.02214216 0.02214216 0.02214216 
-##        Ath        Cea        Ced        Set        All        Han        Hfo 
-## 0.02214216 0.02214216 0.02214216 0.02214216 0.02214216 0.02214216 0.02214216 
-##        Hsp        Hve        Sta 
-## 0.02214216 0.02214216 0.02214216</code></pre>
+##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath 
+## 0.1644948 0.1644948 0.1644948 0.1644948 0.1644948 0.1644948 0.1644948 0.1644948 
+##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve 
+## 0.1644948 0.1644948 0.1644948 0.1644948 0.1644948 0.1644948 0.1644948 0.1644948 
+##       Sta 
+## 0.1644948</code></pre>
 <ul>
 <li>the regression coefficient matrix and other model of parameters (results not shown here, redundant with other fields)</li>
 </ul>
@@ -482,45 +482,45 @@
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
+<td align="right">-6.44</td>
+<td align="right">-17.82</td>
 <td align="right">-16.54</td>
-<td align="right">-7.19</td>
 <td align="right">-5.97</td>
-<td align="right">-7.35</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
+<td align="right">-7.13</td>
+<td align="right">-17.82</td>
 <td align="right">-8.42</td>
-<td align="right">-15.90</td>
 <td align="right">-5.99</td>
-<td align="right">-7.35</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
+<td align="right">-2.60</td>
+<td align="right">-3.48</td>
 <td align="right">-6.00</td>
-<td align="right">-2.68</td>
 <td align="right">-2.30</td>
-<td align="right">-3.34</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
+<td align="right">-5.52</td>
+<td align="right">-17.82</td>
 <td align="right">-16.54</td>
-<td align="right">-6.07</td>
 <td align="right">-5.96</td>
-<td align="right">-6.65</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
+<td align="right">-0.44</td>
+<td align="right">-0.45</td>
 <td align="right">-0.21</td>
-<td align="right">-0.52</td>
 <td align="right">-0.91</td>
-<td align="right">-0.37</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
+<td align="right">-3.49</td>
+<td align="right">-3.20</td>
 <td align="right">-7.32</td>
-<td align="right">-3.33</td>
 <td align="right">-5.96</td>
-<td align="right">-3.39</td>
 </tr>
 </tbody>
 </table>
@@ -529,8 +529,8 @@
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">components</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
 <pre><code>## A multivariate Poisson Lognormal fit with spherical covariance model.
 ## ==================================================================
-##  nb_param   loglik     BIC      ICL
-##        18 -120.113 -155.14 -331.773
+##  nb_param   loglik      BIC      ICL
+##        18 -476.526 -511.552 -571.048
 ## ==================================================================
 ## * Useful fields
 ##     $model_par, $latent, $var_par, $optim_par
@@ -563,40 +563,40 @@
 <span class="va">predicted.class</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
+<td align="right">0.00</td>
+<td align="right">0.00</td>
 <td align="right">0</td>
-<td align="right">0.01</td>
-<td align="right">0.99</td>
-<td align="right">0</td>
+<td align="right">1.00</td>
 </tr>
 <tr class="even">
+<td align="right">0.00</td>
+<td align="right">0.74</td>
 <td align="right">0</td>
-<td align="right">0.99</td>
-<td align="right">0.01</td>
-<td align="right">0</td>
+<td align="right">0.26</td>
 </tr>
 <tr class="odd">
+<td align="right">0.06</td>
+<td align="right">0.94</td>
 <td align="right">0</td>
-<td align="right">1.00</td>
 <td align="right">0.00</td>
-<td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">0</td>
-<td align="right">1.00</td>
 <td align="right">0.00</td>
+<td align="right">1.00</td>
 <td align="right">0</td>
+<td align="right">0.00</td>
 </tr>
 <tr class="odd">
-<td align="right">0</td>
-<td align="right">1.00</td>
 <td align="right">0.00</td>
+<td align="right">1.00</td>
 <td align="right">0</td>
+<td align="right">0.00</td>
 </tr>
 <tr class="even">
-<td align="right">0</td>
-<td align="right">1.00</td>
 <td align="right">0.00</td>
+<td align="right">1.00</td>
 <td align="right">0</td>
+<td align="right">0.00</td>
 </tr>
 </tbody></table>
 <p>Setting <code>type = "response"</code>, we can predict the most likely cluster <span class="math inline">\(\hat{k} = \arg\max_{k = 1\dots K} \{ \hat{\pi_k}\}\)</span> instead:</p>
@@ -604,10 +604,10 @@
 <code class="sourceCode R"><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>,  type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span>
 <span class="va">predicted.class</span></code></pre></div>
 <pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 
-##  3  2  2  2  2  2  3  2  2  3  2  2  2  2  2  2  3  3  4  3  3  3  3  2  3  3 
+##  4  2  2  2  2  2  4  2  4  4  4  2  2  4  2  2  4  4  2  4  4  4  4  4  4  4 
 ## 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 
-##  3  3  3  3  3  2  2  2  2  2  2  3  3  2  2  2  2  2  2  2  3  3  3 
-## Levels: 2 3 4</code></pre>
+##  4  4  4  4  4  2  2  2  2  2  4  4  4  2  2  4  2  4  4  2  4  4  4 
+## Levels: 2 4</code></pre>
 <p>We can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used data set for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
 <p>Finally, we can get the coordinates of the new data on the same graph at the original ones with <code>type = "position"</code>. This is done by averaging the latent positions <span class="math inline">\(\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k\)</span> (found when the sample is assumed to come from group <span class="math inline">\(k\)</span>) and weighting them with the <span class="math inline">\(\hat{\pi}_k\)</span>. Some samples, have compositions that put them very far from their group mean.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">

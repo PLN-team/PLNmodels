@@ -83,7 +83,7 @@ See the documentation for ..." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9380</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9400</span>
       </span>
     </div>
 
@@ -178,6 +178,8 @@ See the documentation for ...</p>
 <dt><code>d</code></dt><dd><p>number of covariates</p></dd>
 
 <dt><code>components</code></dt><dd><p>components of the mixture (PLNfits)</p></dd>
+
+<dt><code>latent</code></dt><dd><p>a matrix: values of the latent vector (Z in the model)</p></dd>
 
 <dt><code>posteriorProb</code></dt><dd><p>matrix ofposterior probability for cluster belonging</p></dd>
 
@@ -328,7 +330,7 @@ with weights equal to the posterior probabilities.</p></dd>
 
 </dl><p></div></p>
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
-<p>a n x q matrix of latent positions.</p>
+<p>a n x p matrix of latent positions.</p>
 <p><hr>
 <a id="method-plot_clustering_data"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>plot_clustering_data()</code></h3>
 <p>Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
