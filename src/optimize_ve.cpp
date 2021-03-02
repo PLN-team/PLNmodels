@@ -219,7 +219,7 @@ Rcpp::List cpp_optimize_vestep_spherical(
         double objective = accu(w.t() * (A - Y % Z)) - 0.5 * double(p) * dot(w, log(S2)) + 0.5 * n_sigma2 * omega2;
 
         metadata.map<M_ID>(grad) = diagmat(w) * (M * omega2 + A - Y);
-        metadata.map<S_ID>(grad) = w % (S % sum(A, 1) - double(p) * pow(S, -1) - double(p) * S * omega2);
+        metadata.map<S_ID>(grad) = w % (double(p) * S * omega2 + S % sum(A, 1) - double(p) * pow(S, -1));
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);

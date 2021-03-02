@@ -114,13 +114,13 @@ PLNfit <- R6Class(
           private$Sigma <- crossprod(residuals)/n + diag(colMeans(private$S2), nrow = p)
         }
       }
-
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
+
       optim_out <- private$optimizer(
         list(
           Theta = private$Theta,

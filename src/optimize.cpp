@@ -75,6 +75,7 @@ Rcpp::List cpp_optimize_full(
         metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
         metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
         metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
+
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -153,18 +154,19 @@ Rcpp::List cpp_optimize_spherical(
     auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &w_bar](const double * params, double * grad) -> double {
         const arma::mat Theta = metadata.map<THETA_ID>(params);
         const arma::mat M = metadata.map<M_ID>(params);
-        const arma::vec S = metadata.map<S_ID>(params);
+        const arma::mat S = metadata.map<S_ID>(params);
 
-        arma::vec S2 = S % S;
+        arma::mat S2 = S % S;
         const arma::uword p = Y.n_cols;
         arma::mat Z = O + X * Theta.t() + M;
-        arma::mat A = exp(Z.each_col() + 0.5 * S2);
-        double sigma2 = arma::as_scalar(dot(w, sum(pow(M, 2), 1) + double(p) * S2)) / (double(p) * w_bar);
-        double objective = accu(diagmat(w) * (A - Y % Z)) - 0.5 * double(p) * dot(w, log(S2/sigma2)) ;
+        arma::mat A = exp(Z + 0.5 * S2 * arma::ones(p).t());
+        double sigma2 = arma::as_scalar(dot(w, sum(pow(M, 2), 1) + double(p) * S2) / (double(p) * w_bar) );
+        double objective = accu(w.t() * (A - Y % Z)) - 0.5 * double(p) * dot(w, log(S2/sigma2)) ;
 
         metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
         metadata.map<M_ID>(grad) = diagmat(w) * (M / sigma2 + A - Y);
-        metadata.map<S_ID>(grad) = w % (S % sum(A, 1) - double(p) * pow(S, -1) - double(p) * S / sigma2);
+        metadata.map<S_ID>(grad) = w % (double(p) * S / sigma2 + S % sum(A, 1) - double(p) * pow(S, -1));
+
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -172,7 +174,7 @@ Rcpp::List cpp_optimize_spherical(
     // Variational parameters
     arma::mat M = metadata.copy<M_ID>(parameters.data());
     arma::mat S = metadata.copy<S_ID>(parameters.data()); // vec(n) -> mat(n, 1)
-    arma::vec S2 = S % S;
+    arma::mat S2 = S % S;
     // Regression parameters
     arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
     // Variance parameters
@@ -182,7 +184,7 @@ Rcpp::List cpp_optimize_spherical(
     arma::mat Omega = arma::eye(p, p) * pow(sigma2, -1);
     // Element-wise log-likelihood
     arma::mat Z = O + X * Theta.t() + M;
-    arma::mat A = exp(Z.each_col() + 0.5 * S2);
+    arma::mat A = exp(Z + 0.5 * S2 * arma::ones(p).t());
     arma::mat loglik = sum(Y % Z - A - 0.5 * pow(M, 2) / sigma2, 1) - 0.5 * double(p) * S2 / sigma2 +
                        0.5 * double(p) * log(S2 / sigma2) + ki(Y);
 
