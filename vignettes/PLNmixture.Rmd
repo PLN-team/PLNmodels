@@ -36,6 +36,7 @@ others for data manipulation and representation:
 
 ```{r requirement}
 library(PLNmodels)
+library(factoextra)
 ```
 
 ### Data set
