@@ -26,6 +26,8 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{components}}{components of the mixture (PLNfits)}
 
+\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+
 \item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
 
 \item{\code{memberships}}{vector for cluster index}
@@ -202,7 +204,7 @@ Compute matrix of latent positions, noted as Z in the model. Used to compute the
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-a n x q matrix of latent positions.
+a n x p matrix of latent positions.
 }
 }
 \if{html}{\out{<hr>}}
