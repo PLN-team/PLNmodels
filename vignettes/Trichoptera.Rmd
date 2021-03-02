@@ -116,3 +116,4 @@ trichoptera$Offset
 Offsets are denoted by $\mathbf{O}$ in the mathematical model across other vignettes, and by `O` in the `R` environment.
 
 ## References
+

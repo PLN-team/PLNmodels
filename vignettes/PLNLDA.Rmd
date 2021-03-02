@@ -283,3 +283,4 @@ table(predicted.class_cov, trichoptera$Group, dnn = c("predicted", "true"))
 
 
 ## References
+
