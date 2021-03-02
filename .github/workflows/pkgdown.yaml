@@ -1,6 +1,8 @@
 on:
   push:
-    branches: master
+    branches:
+      - main
+      - master
 
 name: pkgdown
 
@@ -23,25 +25,17 @@ jobs:
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
 
-     - name: Cache R packages
+      - name: Cache R packages
         uses: actions/cache@v2
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      # - name: Install system dependencies
-      #   run: |
-      #     while read -r cmd
-      #     do
-      #       eval sudo $cmd
-      #     done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
-
       - name: Install dependencies
         run: |
-          install.packages("remotes")
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_dev("pkgdown")
+          install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
 
       - name: Install package
@@ -52,4 +46,12 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE)'
+
+
+# - name: Install system dependencies
+#   run: |
+#     while read -r cmd
+#     do
+#       eval sudo $cmd
+#     done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
 
