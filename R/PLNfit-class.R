@@ -79,14 +79,6 @@ PLNfit <- R6Class(
       private$xlevels    <- xlevels
       ## initialize the covariance model
       private$covariance <- control$covariance
-      private$optimizer  <-
-        switch(control$covariance,
-               "spherical" = cpp_optimize_spherical,
-               "diagonal"  = cpp_optimize_diagonal ,
-               "full"      = cpp_optimize_full     ,
-               "rank"      = cpp_optimize_rank     , # FIXME will fail in optimize (missing B param)
-               "sparse"    = cpp_optimize_sparse     # FIXME will fail in optimize (missing omega value)
-        )
 
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -121,7 +113,14 @@ PLNfit <- R6Class(
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
 
-      optim_out <- private$optimizer(
+      optimizer  <-
+        switch(control$covariance,
+               "spherical" = cpp_optimize_spherical,
+               "diagonal"  = cpp_optimize_diagonal ,
+               "full"      = cpp_optimize_full
+        )
+
+      optim_out <- optimizer(
         list(
           Theta = private$Theta,
           M = private$M,
@@ -353,7 +352,6 @@ PLNfit <- R6Class(
     .std_err   = NA, # element-wise standard error for the elements of Theta computed
     # from the Fisher information matrix
     covariance = NA, # a string describing the covariance model
-    optimizer  = NA, # link to the function that performs the optimization
     monitoring = NA  # a list with optimization monitoring quantities
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
