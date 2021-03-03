@@ -23,7 +23,6 @@
 #' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)
 #' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
 #'
-#'
 #' @rdname PLNLDA
 #' @examples
 #' data(trichoptera)
@@ -55,7 +54,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   args$X <- cbind(covar, design_group)
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y), ncol(args$X))
+  ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y))
 
   ## Initialize LDA by adjusting a PLN
   myLDA <- PLNLDAfit$new(grouping, args$Y, args$X, args$O, args$w,

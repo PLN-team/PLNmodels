@@ -11,7 +11,7 @@ test_that("PLNfamily: main function, field access and methods", {
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## extract the data matrices and weights
-  ctrl_init <- PLNmodels:::PLN_param(list(), nrow(Y), ncol(Y), ncol(X))
+  ctrl_init <- PLNmodels:::PLN_param(list(), nrow(Y), ncol(Y))
   ctrl_main <- PLNmodels:::PLNPCA_param(list())
 
   ## Simple PLN models

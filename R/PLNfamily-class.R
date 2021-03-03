@@ -34,7 +34,7 @@ PLNfamily <-
       #' @field offsets the matrix of offsets common to every models
       offsets    = NULL, # the O matrix
       #' @field weights the vector of observation weights
-      weights    = NULL, # the vector of obervation weights
+      weights    = NULL, # the vector of observation weights
       #' @field inception a [PLNfit] object, obtained when no sparsifying penalty is applied.
       inception  = NULL, # the basic model in the collection (no regularization, nor sparsity, nor rank)
       #' @field models a list of [PLNfit] object, one per penalty.
@@ -144,10 +144,10 @@ PLNfamily <-
     ## PRIVATE MEMBERS ----
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     private = list(
-      params     = NULL, # vector of parameters that indexes the models (either sparsity, rank, number of cluster, etc.)
-      n          = NULL, # number of samples
-      p          = NULL, # number of responses
-      d          = NULL  # number of covariates
+      params = NULL, # vector of parameters that indexes the models (either sparsity, rank, number of cluster, etc.)
+      n      = NULL, # number of samples
+      p      = NULL, # number of responses
+      d      = NULL  # number of covariates
     ),
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -163,7 +163,7 @@ PLNfit <- R6Class(
 
       ## define default control parameters for optim and overwrite by user defined parameters
       control$covariance <- self$vcov_model
-      control <- PLN_param(control, n, p, d)
+      control <- PLN_param(control, n, p)
 
       VEstep_optimizer  <-
         switch(control$covariance,

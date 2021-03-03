@@ -46,8 +46,8 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control_init = li
   args <- extract_model(the_call, parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y), ncol(args$X))
-  ctrl_main <- PLNmixture_param(control_main, nrow(args$Y), ncol(args$Y), ncol(args$X))
+  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y))
+  ctrl_main <- PLNmixture_param(control_main, nrow(args$Y), ncol(args$Y))
   ctrl_init$covariance <- ctrl_main$covariance
   ctrl_init$cores      <- ctrl_main$cores
   ctrl_init$init_cl    <- ctrl_main$init_cl

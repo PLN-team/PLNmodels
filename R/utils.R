@@ -144,7 +144,7 @@ available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR
 ##  Series of setter to default parameters for user's main functions
 ##
 ## should be ready to pass to nlopt optimizer
-PLN_param <- function(control, n, p, d) {
+PLN_param <- function(control, n, p) {
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "full"    , control$covariance)
   covariance  <- ifelse(is.null(control$inception)  , covariance, control$inception$vcov_model)
@@ -166,7 +166,7 @@ PLN_param <- function(control, n, p, d) {
 }
 
 ## should be ready to pass to nlopt optimizer
-PLNmixture_param <- function(control, n, p, d) {
+PLNmixture_param <- function(control, n, p) {
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
   covariance  <- ifelse(is.null(control$covariance) , "spherical", control$covariance)
   covariance  <- ifelse(is.null(control$inception), covariance  , control$inception$model)
@@ -210,7 +210,7 @@ PLNPCA_param <- function(control) {
   ctrl
 }
 
-PLNnetwork_param <- function(control, n, p, d) {
+PLNnetwork_param <- function(control, n, p) {
   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
   ctrl <-  list(
     "ftol_out"  = 1e-5,

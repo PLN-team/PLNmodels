@@ -191,7 +191,7 @@ PLNmixturefit <-
         ## ===========================================
         ## INITIALISATION
         cond <- FALSE; iter <- 1
-        control <- PLNmixture_param(control, n_new, self$p, 1)
+        control <- PLNmixture_param(control, n_new, self$p)
         objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
         convergence <- numeric(control$maxit_out); convergence[iter] <- NA
 

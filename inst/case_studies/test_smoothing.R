@@ -23,7 +23,7 @@ tau_candidates <- lapply(combn(k, 2, simplify = FALSE), function(couple) {
   tau_merged
 })
 
-control <- PLNmodels:::PLNmixture_param(list(maxit_out = 2), my_model$n, my_model$p, my_model$d)
+control <- PLNmodels:::PLNmixture_param(list(maxit_out = 2), my_model$n, my_model$p)
 
 loglik_candidates <- mclapply(tau_candidates, function(tau) {
 

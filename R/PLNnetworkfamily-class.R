@@ -124,7 +124,7 @@ PLNnetworkfamily <- R6Class(
           S2 = inception_$var_par$S2[subsample, ]
         )
 
-        ctrl_init <- PLN_param(list(), inception_$n, inception_$p, inception_$d)
+        ctrl_init <- PLN_param(list(), inception_$n, inception_$p)
         ctrl_init$trace <- 0
         ctrl_init$inception <- inception_
         myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
@@ -135,7 +135,7 @@ PLNnetworkfamily <- R6Class(
                                       xlevels    = private$xlevels,
                                       weights    = self$weights   [subsample], control = ctrl_init)
 
-        ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p, inception_$d)
+        ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p)
         ctrl_main$trace <- 0
         myPLN$optimize(ctrl_main)
         nets <- do.call(cbind, lapply(myPLN$models, function(model) {
