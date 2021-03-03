@@ -33,9 +33,6 @@
 #' @export
 PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
 
-  ## extract the data matrices and weights
-  args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
-
   ## look for grouping in the data or the parent frame
   if (class(try(eval(grouping), silent = TRUE)) == "try-error") {
     grouping <- try(eval(substitute(grouping), data), silent = TRUE)
@@ -43,15 +40,12 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   }
   grouping <- as.factor(grouping)
 
-  ## treatment of the design, which is specific to LDA
-  # - save the covariates
-  covar <- args$X
-  # - remove intercept so that 'grouping' describes group means
-  xint <- match("(Intercept)", colnames(covar), nomatch = 0L)
-  if (xint > 0L) covar <- covar[, -xint, drop = FALSE]
-  # - build the design matrix encompassing covariates and LDA grouping
-  design_group <- model.matrix(~ grouping + 0)
-  args$X <- cbind(covar, design_group)
+  # remove the intercept term if any (will be used to deal with group means)
+  the_call <- match.call(expand.dots = FALSE)
+  the_call$formula <- update.formula(formula(the_call), ~ . -1)
+
+  ## extract the data matrices and weights
+  args <- extract_model(the_call, parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y))
@@ -62,10 +56,10 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
 
   ## Compute the group means
   if (ctrl$trace > 0) cat("\n Performing discriminant Analysis...")
-  myLDA$optimize(args$X, covar, design_group, ctrl)
+  myLDA$optimize(grouping, args$X, ctrl)
 
   ## Post-treatment: prepare LDA visualization
-  myLDA$postTreatment(args$Y, args$X, args$O)
+  myLDA$postTreatment(grouping, args$Y, args$X, args$O)
 
   if (ctrl$trace > 0) cat("\n DONE!\n")
   myLDA

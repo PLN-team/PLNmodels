@@ -53,6 +53,7 @@ PLNLDAfit <- R6Class(
     ## Creation functions ----------------
     #' @description Initialize a [`PLNLDAfit`] object
     initialize = function(grouping, responses, covariates, offsets, weights, model, xlevels, control) {
+      covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
       super$initialize(responses, covariates, offsets, weights, model, xlevels, control)
       private$grouping <- grouping
       super$optimize(responses, covariates, offsets, weights, control)
@@ -63,13 +64,14 @@ PLNLDAfit <- R6Class(
     #' @description Compute group means and axis of the LDA (noted B in the model) in the
     #' latent space, update corresponding fields
     #' @param X Abundance matrix.
-    #' @param covar design matrix. Automatically built from the covariates and the formula from the call
-    #' @param design_group design matrix for the grouping variable
-    optimize = function(X, covar, design_group, control) {
+    #' @param covariates design matrix. Automatically built from the covariates and the formula from the call
+    #' @param grouping design matrix for the grouping variable
+    optimize = function(grouping, covariates, control) {
+      design_group <- model.matrix( ~ grouping + 0)
       ## extract group means
-      if (ncol(covar) > 0) {
-        proj_orth_X <- (diag(self$n) - covar %*% solve(crossprod(covar)) %*% t(covar))
-        P <- proj_orth_X %*% self$latent_pos(X, matrix(0, self$n, self$q))
+      if (ncol(covariates) > 0) {
+        proj_orth_X <- (diag(self$n) - covariates %*% solve(crossprod(covariates)) %*% t(covariates))
+        P <- proj_orth_X %*% self$latent_pos(cbind(covariates, design_group), matrix(0, self$n, self$q))
         Mu <- t(rowsum(P, private$grouping) / tabulate(private$grouping))
       } else {
         Mu <- private$Theta
@@ -86,7 +88,8 @@ PLNLDAfit <- R6Class(
     ## Post treatment --------------------
     #' @description  Update R2, fisher and std_err fields and visualization
     #' after optimization
-    postTreatment = function(responses, covariates, offsets) {
+    postTreatment = function(grouping, responses, covariates, offsets) {
+      covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
       super$postTreatment(responses, covariates, offsets)
       rownames(private$B) <- colnames(private$B) <- colnames(responses)
       if (private$covariance != "spherical") colnames(private$S2) <- 1:self$q
@@ -221,10 +224,10 @@ PLNLDAfit <- R6Class(
                        prior = NULL,
                        control = list(), envir = parent.frame()) {
 
-      type = match.arg(type)
+      type <- match.arg(type)
 
       if (type == "scores") scale <- "prob"
-      scale = match.arg(scale)
+      scale <- match.arg(scale)
 
       ## Extract the model matrices from the new data set with initial formula
       args <- extract_model(call("PLNLDA", formula = private$model, data = newdata, xlev = private$xlevels), envir)
@@ -250,9 +253,6 @@ PLNLDAfit <- R6Class(
       for (k in 1:K) { ## One VE-step to estimate the conditional (variational) likelihood of each group
         grouping <- factor(rep(groups[k], n.new), levels = groups)
         X <- cbind(args$X, model.matrix( ~ grouping + 0))
-        # - remove intercept so that design matrix is compatible with the one used for inference
-        xint <- match("(Intercept)", colnames(X), nomatch = 0L)
-        if (xint > 0L) X <- X[, -xint, drop = FALSE]
         ve_step <- self$VEstep(X, args$O, args$Y, args$w, control = control)
         cond.log.lik[, k] <- ve_step$log.lik
         if (type == "scores") {

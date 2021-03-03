@@ -119,19 +119,19 @@ Initialize a \code{\link{PLNLDAfit}} object
 Compute group means and axis of the LDA (noted B in the model) in the
 latent space, update corresponding fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$optimize(X, covar, design_group, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$optimize(grouping, covariates, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{X}}{Abundance matrix.}
+\item{\code{grouping}}{design matrix for the grouping variable}
 
-\item{\code{covar}}{design matrix. Automatically built from the covariates and the formula from the call}
-
-\item{\code{design_group}}{design matrix for the grouping variable}
+\item{\code{covariates}}{design matrix. Automatically built from the covariates and the formula from the call}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
+
+\item{\code{X}}{Abundance matrix.}
 }
 \if{html}{\out{</div>}}
 }
@@ -143,12 +143,14 @@ latent space, update corresponding fields
 Update R2, fisher and std_err fields and visualization
 after optimization
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(responses, covariates, offsets)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(grouping, responses, covariates, offsets)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
+
 \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}

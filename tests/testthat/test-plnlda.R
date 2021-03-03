@@ -25,7 +25,7 @@ test_that("Check PLNLDA weights",  {
   model1 <- PLNLDA(Abundance ~ 0, grouping = Group, data = trichoptera)
 
   ## equivalent weigths
-  model2 <- PLNLDA(Abundance ~ 0, weights = rep(1.0, nrow(trichoptera)),
+  model2 <- PLNLDA(Abundance ~ 0, weights = rep(1.0, nrow(trichoptera$Abundance)),
                    grouping = Group, data = trichoptera)
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
