@@ -58,7 +58,7 @@ PLNmixturefamily <-
       }
       if (trace) cat("\r                                                                                                    \r")
       },
-      smooth_backward = function(control) {
+      smooth_backward_old = function(control) {
         trace <- control$trace > 0; control$trace <- FALSE
         if (trace) cat("   Going backward ")
         for (k in rev(self$clusters[-1])) {
@@ -81,7 +81,41 @@ PLNmixturefamily <-
           }
         }
         if (trace) cat("\r                                                                                                    \r")
+      },
+      smooth_backward = function(control) {
+        trace <- control$trace > 0; control$trace <- FALSE
+        control_fast <- control
+        control_fast$maxit_out <- 2
+        if (trace) cat("   Going backward ")
+        for (k in rev(self$clusters[-1])) {
+          if (trace) cat('+')
+
+          tau <- self$models[[k]]$posteriorProb
+          tau_candidates <- lapply(combn(k, 2, simplify = FALSE), function(couple) {
+            i <- min(couple); j <- max(couple)
+            tau_merged <- tau[, -j, drop = FALSE]
+            tau_merged[, i] <- rowSums(tau[, c(i,j)])
+            tau_merged
+          })
+
+          loglik_candidates <- unlist(mclapply(tau_candidates, function(tau_) {
+            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, private$xlevels, control_fast)
+            model$optimize(self$responses, self$covariates, self$offsets, control_fast)
+            model$loglik
+          }, mc.cores = control$cores))
+
+          best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, private$xlevels, control)
+          best_one$optimize(self$responses, self$covariates, self$offsets, control)
+
+          if (best_one$loglik > self$models[[k - 1]]$loglik) {
+              self$models[[k - 1]] <- best_one
+              # cat("found one")
+          }
+
+        }
+        if (trace) cat("\r                                                                                                    \r")
       }
+
     ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ----

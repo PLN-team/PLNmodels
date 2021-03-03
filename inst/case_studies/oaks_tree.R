@@ -65,14 +65,14 @@ stability_selection(myPLNnets, mc.cores = nb_cores)
 plot(getBestModel(myPLNnets, "StARS", stability = .985))
 
 ## Mixture model to recover tree structure
-system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:7, control_main = list(cores = nb_cores)))
+system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:6, control_main = list(cores = nb_cores)))
 
 plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"))
 
 myPLN <- my_mixtures %>% getModel(3)
 
 plot(myPLN, "pca", main = 'clustering memberships in individual factor map')
-plot(myPLN, "matrix")
+myPLN$plot_clustering_data(myPLN, log_scale = TRUE)
 
 aricode::ARI(myPLN$memberships, oaks$tree)
 table(myPLN$memberships, oaks$tree)

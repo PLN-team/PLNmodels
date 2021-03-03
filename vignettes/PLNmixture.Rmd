@@ -165,7 +165,7 @@ We fit a collection of $K=4$ models as follows:
 mixture_models <- PLNmixture(
   Abundance ~ 1 + offset(log(Offset)),
   data  = trichoptera,
-  clusters = 1:4
+  clusters = 1:5
 )
 ```
 

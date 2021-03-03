@@ -384,11 +384,12 @@ PLNmixturefit <-
       vcov_model = function() {private$covariance},
       #' @field var_par a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
       var_par    = function() {
-        M_k   <- map(private$comp, "var_par") %>% map("M")
-        M     <- reduce(M_k, `+`)
-        tau_k <- map(private$comp, "weights")
-        M_bar <- map2(tau_k, map(M_k, function(M_k_) rowSums((M_k_ - M)^2)), `*`) %>% reduce(`+`)
-        list(M  = M, S2 = private$mix_up('var_par$S2') + M_bar)
+        # M_k   <- map(private$comp, "var_par") %>% map("M")
+        # M     <- reduce(M_k, `+`)
+        #tau_k <- map(private$comp, "weights")
+        #M_bar <- map2(tau_k, map(M_k, function(M_k_) rowSums((M_k_ - M)^2)), `*`) %>% reduce(`+`)
+        # list(M  = M, S2 = private$mix_up('var_par$S2') + M_bar)
+        list(M  = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))
         },
       #' #' @field latent a matrix: values of the latent vector (Z in the model)
       #' latent = function() {private$mix_up('latent')},
@@ -402,6 +403,3 @@ PLNmixturefit <-
       }
     )
 )
-
-
-# \sum_k \tau_ik (m_ik - m_i)^\intercal (m_ik - m_i)
