@@ -56,7 +56,7 @@ COLLECTION OF 5 POISSON LOGNORMAL MODELS
 ========================================================
  - Ranks considered: from 1 to 5
  - Best model (greater BIC): rank = 5
- - Best model (greater ICL): rank = 4 - R2 = 0.98",
+ - Best model (greater ICL): rank = 4",
   fixed = TRUE)
 })
 
