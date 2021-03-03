@@ -274,7 +274,7 @@ myMix_BIC$posteriorProb %>% head() %>% knitr::kable(digits = 3)
     $\hat{\boldsymbol{\Sigma}}$ (here spherical variances):
 
 ```{r vcov}
-sigma(myMix_BIC) %>% purrr::map(diag)
+sigma(myMix_BIC) %>% purrr::map(as.matrix) %>% purrr::map(diag)
 ```
 
 -   the regression coefficient matrix and other model of parameters
