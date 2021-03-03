@@ -5,11 +5,11 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
 test_that("PLNPCAfamily: main function, field access and methods", {
 
-  output <- "\n Initialization...\n\n Adjusting 5 PLN models for PCA analysis.\n Rank approximation = 1\n\t conservative convex separable approximation for gradient descent Rank approximation = 2\n\t conservative convex separable approximation for gradient descent Rank approximation = 3\n\t conservative convex separable approximation for gradient descent Rank approximation = 4\n\t conservative convex separable approximation for gradient descent Rank approximation = 5\n\t conservative convex separable approximation for gradient descent\n Post-treatments\n DONE!"
-
-  expect_output(models <- PLNPCA(Abundance ~ 1, data = trichoptera,
-                                 ranks = 1:5, control_main = list(trace = 2)),
-              output, fixed = TRUE)
+  ##  does not work because of future evaluating in random order the models
+  # output <- "\n Initialization...\n\n Adjusting 5 PLN models for PCA analysis.\n Rank approximation = 1\n\t conservative convex separable approximation for gradient descent Rank approximation = 2\n\t conservative convex separable approximation for gradient descent Rank approximation = 3\n\t conservative convex separable approximation for gradient descent Rank approximation = 4\n\t conservative convex separable approximation for gradient descent Rank approximation = 5\n\t conservative convex separable approximation for gradient descent\n Post-treatments\n DONE!"
+  #
+  models <- PLNPCA(Abundance ~ 1, data = trichoptera,
+                                  ranks = 1:5, control_main = list(trace = 0))
 
   expect_is(models, "PLNPCAfamily")
   expect_is(plot(models), "ggplot")
@@ -47,17 +47,17 @@ test_that("PLNPCAfamily: main function, field access and methods", {
 
   ## test fail on Mac OS : fit is slightly different between OS X and Ubuntu
   ## probably due to the version of optimization libraries...
-#   ## Show method
-#   expect_output(models$show(),
-# "--------------------------------------------------------
-# COLLECTION OF 5 POISSON LOGNORMAL MODELS
-# --------------------------------------------------------
-#  Task: Principal Component Analysis
-# ========================================================
-#  - Ranks considered: from 1 to 5
-#  - Best model (greater BIC): rank = 4 - R2 = 0.98
-#  - Best model (greater ICL): rank = 4 - R2 = 0.98",
-#   fixed = TRUE)
+  ## Show method
+  expect_output(models$show(),
+"--------------------------------------------------------
+COLLECTION OF 5 POISSON LOGNORMAL MODELS
+--------------------------------------------------------
+ Task: Principal Component Analysis
+========================================================
+ - Ranks considered: from 1 to 5
+ - Best model (greater BIC): rank = 5
+ - Best model (greater ICL): rank = 4 - R2 = 0.98",
+  fixed = TRUE)
 })
 
 # test_that("PLNPCA is fast on low ranks", {

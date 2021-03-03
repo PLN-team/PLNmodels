@@ -182,7 +182,6 @@ PLNmixture_param <- function(control, n, p) {
     "xtol_abs"    = xtol_abs,
     "trace"       = 1,
     "covariance"  = covariance,
-    "cores"       = 1,
     "iterates"    = 2,
     "smoothing"   = 'both',
     "inception"   = NULL,
@@ -202,7 +201,6 @@ PLNPCA_param <- function(control) {
       "maxeval"     = 10000   ,
       "maxtime"     = -1      ,
       "trace"       = 1       ,
-      "cores"       = 1       ,
       "covariance"  = "rank"
     )
   ctrl[names(control)] <- control

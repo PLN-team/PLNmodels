@@ -39,6 +39,13 @@ library(PLNmodels)
 library(factoextra)
 ```
 
+The main function `PLNmixture` integrates some features of the **future** package to perform parallel computing: we set our plan now to speed the fit by relying on 2 workers:
+
+```{r future}
+library(future)
+plan(multisession, workers = 2)
+```
+
 ### Data set
 
 We illustrate our point with the trichoptera data set, a full

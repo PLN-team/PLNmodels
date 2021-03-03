@@ -22,7 +22,6 @@
 #' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)
 #' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
 #'
-#'
 #' @rdname PLN
 #' @include PLNfit-class.R
 #' @examples

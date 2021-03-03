@@ -21,7 +21,6 @@
 #'
 #' @importFrom R6 R6Class
 #' @importFrom purrr map2_dbl map2
-#' @importFrom parallel mclapply
 #' @importFrom purrr map_int map_dbl
 #' @seealso The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}
 PLNmixturefit <-

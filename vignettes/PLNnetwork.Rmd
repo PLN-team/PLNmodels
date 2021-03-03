@@ -148,8 +148,17 @@ model_BIC <- getBestModel(network_models, "BIC")   # if no criteria is specified
 
 An alternative strategy is to use StARS [@stars], which performs resampling to evaluate the robustness of the network along the path of solutions in a similar fashion as the stability selection approach of @stabilitySelection, but in a network inference context. 
 
+Resampling can be computationally demanding but is easily parallelized: the function `stability_selection` integrates some features of the **future** package to perform parallel computing. We set our plan to speed the process by relying on 2 workers:
+
+```{r future}
+library(future)
+plan(multisession, workers = 2)
+```
+
+Requesting 'StARS' in `gestBestmodel` invokes `stability_selection`, if it has not yet been run:
+
 ```{r extract models stars}
-model_StARS <- getBestModel(network_models, "StARS") # if StARS is requested, stability selection is performed if needed 
+model_StARS <- getBestModel(network_models, "StARS")
 ```
 
 When "StARS" is requested for the first time, `getBestModel` automatically calls the method `stability_selection` with the default parameters. After the first call, the stability path is available from the ` plot` function:

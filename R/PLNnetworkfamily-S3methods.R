@@ -94,7 +94,6 @@ coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
 #' @param Robject an object with class [`PLNnetworkfamily`], i.e. an output from [PLNnetwork()]
 #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines th number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
 #' @param control a list controlling the main optimization process in each call to PLNnetwork. See [PLNnetwork()] for details.
-#' @param mc.cores the number of cores to used. Default is 1.
 #' @param force force computation of the stability path, even if a previous one has been detected.
 #'
 #' @return the list of subsamples. The estimated probabilities of selection of the edges are stored in the fields `stability_path` of the initial Robject with class [`PLNnetworkfamily`]
@@ -108,11 +107,10 @@ coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
 #' stability_selection(nets, subsamples = subs)
 #' }
 #' @export
-stability_selection <- function(Robject, subsamples = NULL, control = list(),
-                                mc.cores = 1, force = FALSE) {
+stability_selection <- function(Robject, subsamples = NULL, control = list(), force = FALSE) {
   stopifnot(isPLNnetworkfamily(Robject))
   if (force || anyNA(Robject$stability)) {
-    Robject$stability_selection(subsamples, control, mc.cores)
+    Robject$stability_selection(subsamples, control)
   } else {
     message("Previous stability selection detected. Use \"force = TRUE\" to recompute it.")
   }

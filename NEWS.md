@@ -1,9 +1,10 @@
 # PLNmodels 0.11.3
 
 * support for covariates in PLNmixture (spherical, diagonal, full)
+* use future_lapply in PLNPCA, PLNmixture and stability_selection (plan must be set by the user)
 * bug fix in prediction for PLN-LDA
 * bug fix in gradients of PLN-network and PLN-spherical
-* more support for PLNmixture (S3/R6 methods, vignette)
+* more support for PLNmixture (S3/R6 methods, vignette, faster smoothing)
 
 # PLNmodels 0.11.2
 

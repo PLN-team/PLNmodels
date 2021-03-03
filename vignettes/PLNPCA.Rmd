@@ -38,6 +38,13 @@ library(corrplot)
 library(factoextra)
 ```
 
+The main function `PLNPCA` integrates some features of the **future** package to perform parallel computing: we set our plan now to speed the fit by relying on 2 workers:
+
+```{r future}
+library(future)
+plan(multisession, workers = 2)
+```
+
 ### Data set
 
 We illustrate our point with the trichoptera data set, a full description of which can be found in [the corresponding vignette](Trichoptera.html). Data preparation is also detailed in [the specific vignette](Import_data.html).

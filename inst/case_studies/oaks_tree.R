@@ -1,7 +1,11 @@
 library(PLNmodels)
 library(factoextra)
+library(future)
 
+## setting up future for parallelism
 nb_cores <- 10
+options(future.fork.enable = TRUE)
+future::plan(multicore, workers = nb_cores)
 
 ## get oaks data set
 data(oaks)
@@ -34,7 +38,7 @@ myLDA_orientation <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = orie
 plot(myLDA_orientation)
 
 ## Dimension reduction with PCA
-system.time(myPLNPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = oaks, ranks = 1:30, control_main = list(cores = nb_cores))) # about 40 sec.
+system.time(myPLNPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = oaks, ranks = 1:30)) # about 40 secs.
 plot(myPLNPCAs)
 myPLNPCA <- getBestModel(myPLNPCAs)
 plot(myPLNPCA, ind_cols = oaks$tree)
@@ -46,7 +50,7 @@ factoextra::fviz_pca_biplot(
   ) + labs(col = "distance (cm)") + scale_color_viridis_d()
 
 ## Dimension reduction with PCA
-system.time(myPLNPCAs_tree <- PLNPCA(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, ranks = 1:30, control_main = list(cores = nb_cores))) # about 40 sec.
+system.time(myPLNPCAs_tree <- PLNPCA(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, ranks = 1:30)) # about 40 sec.
 plot(myPLNPCAs_tree)
 myPLNPCA_tree <- getBestModel(myPLNPCAs_tree)
 

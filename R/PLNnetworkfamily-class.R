@@ -103,8 +103,7 @@ PLNnetworkfamily <- R6Class(
     #' @description Compute the stability path by stability selection
     #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
     #' @param control a list controlling the main optimization process in each call to PLNnetwork. See [PLNnetwork()] for details.
-    #' @param mc.cores the number of cores to used. Default is 1.
-    stability_selection = function(subsamples = NULL, control = list(), mc.cores = 1) {
+    stability_selection = function(subsamples = NULL, control = list()) {
 
       ## select default subsamples according
       if (is.null(subsamples)) {
@@ -116,7 +115,7 @@ PLNnetworkfamily <- R6Class(
       cat("\nStability Selection for PLNnetwork: ")
       cat("\nsubsampling: ")
 
-      stabs_out <- mclapply(subsamples, function(subsample) {
+      stabs_out <- future.apply::future_lapply(subsamples, function(subsample) {
         cat("+")
         inception_ <- self$getModel(self$penalties[1])
         inception_$update(
@@ -142,7 +141,7 @@ PLNnetworkfamily <- R6Class(
           as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
         }))
         nets
-      }, mc.cores = mc.cores)
+      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
 
       prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
       ## formatting/tyding

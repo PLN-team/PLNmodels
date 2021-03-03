@@ -21,13 +21,11 @@
 #' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 #' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
 #'     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
-#' * "cores" integer for number of cores used. Default is 1.
 #' * "trace" integer for verbosity. Useless when `cores > 1`
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
 #' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
 #' * "penalize_diagonal" boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.
 #' * "penalty_weights" p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
-#'
 #'
 #' The list of parameters `control_init` controls the optimization process in the initialization and in the function [PLN()], plus two additional parameters:
 #' * "nPenalties" an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`

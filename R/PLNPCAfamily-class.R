@@ -22,6 +22,7 @@
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @import ggplot2
+#' @import future
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
@@ -60,7 +61,7 @@ PLNPCAfamily <- R6Class(
     ## Optimization -------------------
     #' @description Call to the C++ optimizer on all models of the collection
     optimize = function(control) {
-      self$models <- mclapply(self$models, function(model) {
+      self$models <- future.apply::future_lapply(self$models, function(model) {
         if (control$trace == 1) {
           cat("\t Rank approximation =",model$rank, "\r")
           flush.console()
@@ -71,7 +72,7 @@ PLNPCAfamily <- R6Class(
         }
         model$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
         model
-      }, mc.cores = control$cores, mc.allow.recursive = FALSE)
+      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
