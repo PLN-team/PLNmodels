@@ -83,7 +83,7 @@ getModel() and plot()" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9400</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9500</span>
       </span>
     </div>
 
@@ -215,7 +215,7 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
   <span class='va'>covariates</span>,
   <span class='va'>offsets</span>,
   <span class='va'>weights</span>,
-  <span class='va'>model</span>,
+  <span class='va'>formula</span>,
   <span class='va'>xlevels</span>,
   <span class='va'>control</span>
 <span class='op'>)</span></pre><p></div></p>
@@ -232,7 +232,7 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 
 <dt><code>weights</code></dt><dd><p>the vector of observation weights</p></dd>
 
-<dt><code>model</code></dt><dd><p>model used for fitting, extracted from the formula in the upper-level call</p></dd>
+<dt><code>formula</code></dt><dd><p>model formula used for fitting, extracted from the formula in the upper-level call</p></dd>
 
 <dt><code>xlevels</code></dt><dd><p>named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.</p></dd>
 
@@ -254,19 +254,13 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 <p><hr>
 <a id="method-stability_selection"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='stability_selection.html'>stability_selection()</a></code></h3>
 <p>Compute the stability path by stability selection</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'>stability_selection</span><span class='op'>(</span>
-  subsamples <span class='op'>=</span> <span class='cn'>NULL</span>,
-  control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
-  mc.cores <span class='op'>=</span> <span class='fl'>1</span>
-<span class='op'>)</span></pre><p></div></p>
+<p><div class="r"></p><pre><span class='va'>PLNnetworkfamily</span><span class='op'>$</span><span class='fu'>stability_selection</span><span class='op'>(</span>subsamples <span class='op'>=</span> <span class='cn'>NULL</span>, control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>subsamples</code></dt><dd><p>a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size <code>10*sqrt(n)</code> if <code>n &gt;= 144</code> and <code>0.8*n</code> otherwise following Liu et al. (2010) recommendations.</p></dd>
 
 <dt><code>control</code></dt><dd><p>a list controlling the main optimization process in each call to PLNnetwork. See <code><a href='PLNnetwork.html'>PLNnetwork()</a></code> for details.</p></dd>
-
-<dt><code>mc.cores</code></dt><dd><p>the number of cores to used. Default is 1.</p></dd>
 
 </dl><p></div></p>
 <p><hr>
