@@ -84,7 +84,7 @@ Initialize a \code{\link{PLNLDAfit}} object
   covariates,
   offsets,
   weights,
-  model,
+  formula,
   xlevels,
   control
 )}\if{html}{\out{</div>}}
@@ -103,7 +103,7 @@ Initialize a \code{\link{PLNLDAfit}} object
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{model}}{model used for fitting, extracted from the formula in the upper-level call}
+\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
 \item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.}
 

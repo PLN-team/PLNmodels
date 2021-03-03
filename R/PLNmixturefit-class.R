@@ -11,7 +11,7 @@
 #' @param offsets the matrix of offsets common to every models
 #' @param control a list for controlling the optimization. See details.
 #' @param clusters the dimensions of the successively fitted models
-#' @param model model used for fitting, extracted from the formula in the upper-level call
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call #'
 #' @param cluster the number of clusters of the current model
@@ -80,11 +80,11 @@ PLNmixturefit <-
     public  = list(
       #' @description Initialize a [`PLNmixturefit`] model
       #'@param posteriorProb matrix ofposterior probability for cluster belonging
-      initialize = function(responses, covariates, offsets, posteriorProb, model, xlevels, control) {
+      initialize = function(responses, covariates, offsets, posteriorProb, formula, xlevels, control) {
         private$tau   <- posteriorProb
         private$comp  <- vector('list', ncol(posteriorProb))
         private$Theta <- matrix(0, ncol(covariates), ncol(responses))
-        private$model <- model
+        private$formula <- model
         private$xlevels <- model
         private$covariance <- control$covariance
 
@@ -169,7 +169,7 @@ PLNmixturefit <-
         type  <- match.arg(type)
 
         ## Extract the model matrices from the new data set with initial formula
-        args <- extract_model(call("PLNmixture", formula = private$model, data = newdata, xlev = private$xlevels), envir)
+        args <- extract_model(call("PLNmixture", formula = private$formula, data = newdata, xlev = private$xlevels), envir)
         n_new <- nrow(args$Y)
 
         ## Sanity checks

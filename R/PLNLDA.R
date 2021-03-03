@@ -52,7 +52,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
 
   ## Initialize LDA by adjusting a PLN
   myLDA <- PLNLDAfit$new(grouping, args$Y, args$X, args$O, args$w,
-                         args$model, args$xlevels, ctrl)
+                         args$formula, args$xlevels, ctrl)
 
   ## Compute the group means
   if (ctrl$trace > 0) cat("\n Performing discriminant Analysis...")

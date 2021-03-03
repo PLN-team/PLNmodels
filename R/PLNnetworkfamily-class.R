@@ -12,7 +12,7 @@
 #' @param covariates the matrix of covariates common to every models
 #' @param offsets the matrix of offsets common to every models
 #' @param weights the vector of observation weights
-#' @param model model used for fitting, extracted from the formula in the upper-level call
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
 #' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
@@ -38,12 +38,12 @@ PLNnetworkfamily <- R6Class(
     ## Creation functions ----------------
     #' @description Initialize all models in the collection
     #' @return Update current [`PLNnetworkfit`] with smart starting values
-    initialize = function(penalties, responses, covariates, offsets, weights, model, xlevels, control) {
+    initialize = function(penalties, responses, covariates, offsets, weights, formula, xlevels, control) {
 
       ## initialize fields shared by the super class
       super$initialize(responses, covariates, offsets, weights, control)
       ## A basic model for inception
-      myPLN <- PLNfit$new(responses, covariates, offsets, weights, model, xlevels, control)
+      myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, xlevels, control)
       myPLN$optimize(responses, covariates, offsets, weights, control)
       control$inception <- myPLN
       ## Get an appropriate grid of penalties
@@ -60,7 +60,7 @@ PLNnetworkfamily <- R6Class(
       ## instantiate as many models as penalties
       private$params <- sort(penalties, decreasing = TRUE)
       self$models <- lapply(private$params, function(penalty) {
-        PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, model, xlevels, control)
+        PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, formula, xlevels, control)
       })
 
     },
@@ -131,7 +131,7 @@ PLNnetworkfamily <- R6Class(
                                       responses  = self$responses [subsample, , drop = FALSE],
                                       covariates = self$covariates[subsample, , drop = FALSE],
                                       offsets    = self$offsets   [subsample, , drop = FALSE],
-                                      model      = private$model,
+                                      model      = private$formula,
                                       xlevels    = private$xlevels,
                                       weights    = self$weights   [subsample], control = ctrl_init)
 

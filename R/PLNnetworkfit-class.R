@@ -12,7 +12,7 @@
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param penalty a positive real number controlling the level of sparsity of the underlying network.
 #' @param control a list for controlling the optimization of the PLN model used at initialization. See [PLNnetwork()] for details.
-#' @param model model used for fitting, extracted from the formula in the upper-level call
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in [PLNnetwork()] call
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #'
@@ -39,8 +39,8 @@ PLNnetworkfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
-    initialize = function(penalty, responses, covariates, offsets, weights, model, xlevels, control) {
-      super$initialize(responses, covariates, offsets, weights, model, xlevels, control)
+    initialize = function(penalty, responses, covariates, offsets, weights, formula, xlevels, control) {
+      super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
       private$lambda <- penalty
     },
     #' @description Update fields of a [`PLNnetworkfit`] object

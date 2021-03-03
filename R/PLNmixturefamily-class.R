@@ -10,7 +10,7 @@
 #' @param offsets the matrix of offsets common to every models
 #' @param control a list for controlling the optimization. See details.
 #' @param clusters the dimensions of the successively fitted models
-#' @param model model used for fitting, extracted from the formula in the upper-level call
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call #'
 #' @include PLNfamily-class.R
@@ -42,7 +42,7 @@ PLNmixturefamily <-
               J1 <- base::sample(J, floor(length(J)/2))
               J2 <- setdiff(J, J1)
               cl[J1] <- l; cl[J2] <- k + 1
-              model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl), private$model, private$xlevels, control)
+              model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl), private$formula, private$xlevels, control)
               model$optimize(self$responses, self$covariates, self$offsets, control)
             } else {
               model <- self$models[[k + 1]]$clone()
@@ -69,7 +69,7 @@ PLNmixturefamily <-
               cl_fusion <- cl0
               levels(cl_fusion)[which(levels(cl_fusion) == paste(couple[1]))] <- paste(couple[2])
               levels(cl_fusion) <- as.character(1:(k - 1))
-              model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl_fusion), private$model, private$xlevels, control)
+              model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl_fusion), private$formula, private$xlevels, control)
               model$optimize(self$responses, self$covariates, self$offsets, control)
               model
             }, mc.cores = control$cores)
@@ -90,15 +90,15 @@ PLNmixturefamily <-
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation -----------------------
     #' @description Initialize all models in the collection.
-      initialize = function(clusters, responses, covariates, offsets, model, xlevels, control) {
+      initialize = function(clusters, responses, covariates, offsets, formula, xlevels, control) {
 
         ## initialize the required fields
         super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
         private$params  <- clusters
-        private$model   <- model
+        private$formula   <- model
         private$xlevels <- xlevels
 
-        myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), model, xlevels, control)
+        myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, xlevels, control)
         myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
 
         if(control$covariance == 'spherical')
@@ -120,7 +120,7 @@ PLNmixturefamily <-
           clusterings %>%
             map(as_indicator) %>%
             map(.check_boundaries) %>%
-            map(function(Z) PLNmixturefit$new(responses, covariates, offsets, Z, model, xlevels, control))
+            map(function(Z) PLNmixturefit$new(responses, covariates, offsets, Z, formula, xlevels, control))
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Optimization ----------------------

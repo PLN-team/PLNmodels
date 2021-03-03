@@ -9,7 +9,7 @@
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
 #' @param weights an optional vector of observation weights to be used in the fitting process.
-#' @param model model used for fitting, extracted from the formula in the upper-level call
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param rank rank of the PCA (or equivalently, dimension of the latent space)
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
@@ -45,8 +45,8 @@ PLNPCAfit <- R6Class(
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Creation functions ----------------
       #' @description Initialize a [`PLNPCAfit`] object
-      initialize = function(rank, responses, covariates, offsets, weights, model, xlevels, control) {
-        super$initialize(responses, covariates, offsets, weights, model, xlevels, control)
+      initialize = function(rank, responses, covariates, offsets, weights, formula, xlevels, control) {
+        super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {
