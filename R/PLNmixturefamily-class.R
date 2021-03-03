@@ -26,7 +26,7 @@ PLNmixturefamily <-
       clusters = function() private$params
     ),
     private = list(
-      model = NULL,
+      formula = NULL,
       xlevels = NULL,
       smooth_forward = function(control) {
       trace <- control$trace > 0; control$trace <- FALSE
@@ -95,7 +95,7 @@ PLNmixturefamily <-
         ## initialize the required fields
         super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
         private$params  <- clusters
-        private$formula   <- model
+        private$formula <- formula
         private$xlevels <- xlevels
 
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, xlevels, control)

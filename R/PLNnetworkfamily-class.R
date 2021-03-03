@@ -131,7 +131,7 @@ PLNnetworkfamily <- R6Class(
                                       responses  = self$responses [subsample, , drop = FALSE],
                                       covariates = self$covariates[subsample, , drop = FALSE],
                                       offsets    = self$offsets   [subsample, , drop = FALSE],
-                                      model      = private$formula,
+                                      formula    = private$formula,
                                       xlevels    = private$xlevels,
                                       weights    = self$weights   [subsample], control = ctrl_init)
 

@@ -30,7 +30,7 @@ PLNmixturefit <-
     ## PRIVATE MEMBERS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     private = list(
-      model      = NA, # the formula call for the model as specified by the user
+      formula    = NA, # the formula call for the model as specified by the user
       xlevels    = NA, # factor levels present in the original data, useful for predict() methods.
       covariance = NA, # a string describing the covariance model
       comp       = NA, # list of mixture components (PLNfit)
@@ -84,8 +84,8 @@ PLNmixturefit <-
         private$tau   <- posteriorProb
         private$comp  <- vector('list', ncol(posteriorProb))
         private$Theta <- matrix(0, ncol(covariates), ncol(responses))
-        private$formula <- model
-        private$xlevels <- model
+        private$formula <- formula
+        private$xlevels <- xlevels
         private$covariance <- control$covariance
 
         ## Initializing the mixture components (only intercept of group mean)
