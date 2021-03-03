@@ -82,11 +82,11 @@ test_that("PLN: Check consistency of observation weights - spherical covariance"
   tol <- 1e-2
 
   ## no weights
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal", trace = 0))
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical", trace = 0))
 
   ## equivalent weigths
-  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(covariance = "diagonal", trace = 0))
-  model3 <- PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(covariance = "diagonal", trace = 0))
+  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = list(covariance = "spherical", trace = 0))
+  model3 <- PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = list(covariance = "spherical", trace = 0))
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
 })
@@ -172,9 +172,9 @@ test_that("PLN: Check that all univariate PLN models are equivalent with the mul
   )
 
   expect_true(all.equal(
-    map_dbl(univariate_spherical, sigma),
-    map_dbl(univariate_full     , sigma),
-    map_dbl(univariate_diagonal , sigma), tolerance = 1e-2
+    map(univariate_spherical, sigma) %>% map_dbl(as.double),
+    map(univariate_full     , sigma) %>% map_dbl(as.double),
+    map(univariate_diagonal , sigma) %>% map_dbl(as.double), tolerance = 1e-2
   ))
 
 })

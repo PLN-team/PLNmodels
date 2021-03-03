@@ -60,7 +60,7 @@ test_that("PLNmixture fit: check classes, getters and field access",  {
   expect_true(inherits(model$mixtureParam   , "numeric"))
   expect_true(inherits(model$group_means    , "data.frame"))
   expect_true(inherits(model$model_par$Sigma, "list"))
-  expect_true(all(map_lgl(model$model_par$Sigma, inherits, "matrix")))
+  expect_true(all(map_lgl(model$model_par$Sigma, inherits, "dgCMatrix")))
 
   ## fields and active bindings
    expect_equal(dim(model$model_par$Theta), c(d, p))
@@ -160,7 +160,7 @@ test_that("Diagonal model of the covariance is working", {
   expect_true(inherits(model$mixtureParam   , "numeric"))
   expect_true(inherits(model$group_means    , "data.frame"))
   expect_true(inherits(model$model_par$Sigma, "list"))
-  expect_true(all(map_lgl(model$model_par$Sigma, inherits, "matrix")))
+  expect_true(all(map_lgl(model$model_par$Sigma, inherits, "dgCMatrix")))
 
   ## fields and active bindings
    expect_equal(dim(model$model_par$Theta), c(d, p))
@@ -216,7 +216,7 @@ test_that("Diagonal model of the covariance is working", {
 ###
 ### FULL, NO COVARIATE
 model <- getModel(models_full, k)
-test_that("Diagonal model of the covariance is working", {
+test_that("Full model of the covariance is working", {
 
   expect_is(models_diag, "PLNmixturefamily")
   expect_is(model , "PLNmixturefit")
@@ -318,7 +318,7 @@ test_that("Spherical model of the covariance is working with covariate", {
   expect_true(inherits(model$mixtureParam   , "numeric"))
   expect_true(inherits(model$group_means    , "data.frame"))
   expect_true(inherits(model$model_par$Sigma, "list"))
-  expect_true(all(map_lgl(model$model_par$Sigma, inherits, "matrix")))
+  expect_true(all(map_lgl(model$model_par$Sigma, inherits, "dgCMatrix")))
 
    ## fields and active bindings
    expect_equal(dim(model$model_par$Theta), c(d, p))
@@ -329,7 +329,6 @@ test_that("Spherical model of the covariance is working with covariate", {
    expect_equal(dim(model$var_par$S2), c(n, 1))
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
-   expect_lt(model$ICL, model$loglik)
    expect_gt(model$R_squared, 0)
    expect_equal(model$nb_param, p * d + (k - 1) + k * (p + 1) )
 
@@ -368,7 +367,7 @@ test_that("Spherical model of the covariance is working with covariate", {
 })
 
 model  <- getModel(models_diag_cov, k)
-test_that("Spherical model of the covariance is working with covariate", {
+test_that("Diagonal model of the covariance is working with covariate", {
 
   expect_is(models_sphr, "PLNmixturefamily")
   expect_is(model , "PLNmixturefit")
@@ -385,7 +384,7 @@ test_that("Spherical model of the covariance is working with covariate", {
   expect_true(inherits(model$mixtureParam   , "numeric"))
   expect_true(inherits(model$group_means    , "data.frame"))
   expect_true(inherits(model$model_par$Sigma, "list"))
-  expect_true(all(map_lgl(model$model_par$Sigma, inherits, "matrix")))
+  expect_true(all(map_lgl(model$model_par$Sigma, inherits, "dgCMatrix")))
 
    ## fields and active bindings
    expect_equal(dim(model$model_par$Theta), c(d, p))

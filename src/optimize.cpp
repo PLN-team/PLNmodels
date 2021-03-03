@@ -180,8 +180,8 @@ Rcpp::List cpp_optimize_spherical(
     // Variance parameters
     const arma::uword p = Y.n_cols;
     const double sigma2 = arma::as_scalar(dot(w, sum(pow(M, 2), 1) + double(p) * S2)) / (double(p) * w_bar);
-    arma::mat Sigma = arma::eye(p, p) * sigma2;
-    arma::mat Omega = arma::eye(p, p) * pow(sigma2, -1);
+    arma::sp_mat Sigma(p,p); Sigma.diag() = arma::ones<arma::vec>(p) * sigma2;
+    arma::sp_mat Omega(p,p); Omega.diag() = arma::ones<arma::vec>(p) * pow(sigma2, -1);
     // Element-wise log-likelihood
     arma::mat Z = O + X * Theta.t() + M;
     arma::mat A = exp(Z + 0.5 * S2 * arma::ones(p).t());
@@ -271,8 +271,10 @@ Rcpp::List cpp_optimize_diagonal(
     // Variance parameters
     arma::rowvec sigma2 = w.t() * (M % M + S2) / w_bar;
     arma::vec omega2 = pow(sigma2.t(), -1);
-    arma::mat Sigma = diagmat(sigma2);
-    arma::mat Omega = diagmat(omega2);
+    arma::sp_mat Sigma(Y.n_cols, Y.n_cols);
+    Sigma.diag() = sigma2;
+    arma::sp_mat Omega(Y.n_cols, Y.n_cols);
+    Omega.diag() = omega2;
     // Element-wise log-likelihood
     arma::mat Z = O + X * Theta.t() + M;
     arma::mat A = exp(Z + 0.5 * S2);
