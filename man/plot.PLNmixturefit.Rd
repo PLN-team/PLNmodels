@@ -25,17 +25,10 @@ Represent the result of the clustering either by coloring the individual in a tw
 or by representing the expected matrix  of count reorder according to the clustering.
 }
 \examples{
-## Use future to dispatch the computations on 2 workers
-future::plan("multisession", workers = 2)
-
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
-myMixture <- getBestModel(fits)
-
-plot(myMixture, "pca")
-plot(myMixture, "matrix")
-
-# Shut down parallel workers
-future::plan("sequential")
+myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
+           data = trichoptera, control_main = list(iterates = 0))  \%>\% getBestModel()
+plot(myPLN, "pca")
+plot(myPLN, "matrix")
 }

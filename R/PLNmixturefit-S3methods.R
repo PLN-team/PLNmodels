@@ -22,19 +22,12 @@ isPLNmixturefit <- function(Robject) {inherits(Robject, "PLNmixturefit")}
 #'
 #' @return a [`ggplot`] graphic
 #' @examples
-#' ## Use future to dispatch the computations on 2 workers
-#' future::plan("multisession", workers = 2)
-#'
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
-#' myMixture <- getBestModel(fits)
-#'
-#' plot(myMixture, "pca")
-#' plot(myMixture, "matrix")
-#'
-#' # Shut down parallel workers
-#' future::plan("sequential")
+#' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
+#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#' plot(myPLN, "pca")
+#' plot(myPLN, "matrix")
 #' @export
 plot.PLNmixturefit <-
   function(x,
@@ -70,19 +63,13 @@ plot.PLNmixturefit <-
 #' latent space (if type = "position") or a vector of predicted groups (if type = "response").
 #' @export
 #' @examples
-#' ## Use future to dispatch the computations on 2 workers
-#' future::plan("multisession", workers = 2)
-#'
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera) # no smoothing to save time
-#' myMixture <- getBestModel(fits)
-#' predict(myMixture, trichoptera, "posterior")
-#' predict(myMixture, trichoptera, "position")
-#' predict(myMixture, trichoptera, "response")
-#'
-#' # Shut down parallel workers
-#' future::plan("sequential")
+#' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
+#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#' predict(myPLN, trichoptera, "posterior")
+#' predict(myPLN, trichoptera, "position")
+#' predict(myPLN, trichoptera, "response")
 predict.PLNmixturefit <-
   function(object, newdata,
            type = c("posterior", "response", "position"),
