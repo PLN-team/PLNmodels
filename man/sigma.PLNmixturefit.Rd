@@ -21,7 +21,8 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
 \examples{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera) \%>\% getBestModel()
+myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
+           data = trichoptera, control_main = list(iterates = 0))  \%>\% getBestModel()
 sigma(myPLN) ## Sigma
 }
 \seealso{

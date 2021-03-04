@@ -22,6 +22,7 @@ isPLNmixturefit <- function(Robject) {inherits(Robject, "PLNmixturefit")}
 #'
 #' @return a [`ggplot`] graphic
 #' @examples
+#' future::plan("multisession", workers = 2) # use future to dispatch the computations on 2 workers
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
@@ -65,9 +66,10 @@ plot.PLNmixturefit <-
 #' latent space (if type = "position") or a vector of predicted groups (if type = "response").
 #' @export
 #' @examples
+#' future::plan("multisession", workers = 2) # use future to dispatch the computations on 2 workers
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
+#' fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera) # no smoothing to save time
 #' myMixture <- getBestModel(fits)
 #' predict(myMixture, trichoptera, "posterior")
 #' predict(myMixture, trichoptera, "position")
@@ -101,8 +103,9 @@ predict.PLNmixturefit <-
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera) %>% getBestModel()
-#' coef(myPLN) ## Theta
+#' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
+#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#' coef(myPLN) ## Theta - empty here
 #' coef(myPLN, type = "mixture") ## pi
 #' coef(myPLN, type = "means") ## mu
 #' coef(myPLN, type = "covariance") ## Sigma
@@ -146,7 +149,8 @@ fitted.PLNmixturefit <- function(object, ...) {
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera) %>% getBestModel()
+#' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
+#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
 #' sigma(myPLN) ## Sigma
 sigma.PLNmixturefit <- function(object, ...) {
   stopifnot(isPLNmixturefit(object))

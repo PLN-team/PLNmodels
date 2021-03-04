@@ -36,9 +36,10 @@ latent space (if type = "position") or a vector of predicted groups (if type = "
 Predict either posterior probabilities for each group or latent positions based on new samples
 }
 \examples{
+future::plan("multisession", workers = 2) # use future to dispatch the computations on 2 workers
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
+fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera) # no smoothing to save time
 myMixture <- getBestModel(fits)
 predict(myMixture, trichoptera, "posterior")
 predict(myMixture, trichoptera, "position")

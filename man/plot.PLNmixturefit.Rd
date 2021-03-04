@@ -25,6 +25,7 @@ Represent the result of the clustering either by coloring the individual in a tw
 or by representing the expected matrix  of count reorder according to the clustering.
 }
 \examples{
+future::plan("multisession", workers = 2) # use future to dispatch the computations on 2 workers
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 fits <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)

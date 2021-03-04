@@ -20,12 +20,11 @@ isPLNmixturefamily     <- function(Robject) {inherits(Robject, "PLNmixturefamily
 #' highlighting the best model in terms of BIC and ICL (the greater, the better).
 #' These criteria have the form 'loglik - 1/2 * penalty' so that they are on the same scale as the model loglikelihood.
 #' @examples
+#' future::plan("multisession", workers = 2) # use future to dispatch the computations on 2 workers
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myMixtures <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
-#' \dontrun{
 #' plot(myMixtures)
-#' }
 #' @export
 plot.PLNmixturefamily <- function(x, criteria = c("loglik", "BIC", "ICL"), ...) {
   stopifnot(isPLNfamily(x))

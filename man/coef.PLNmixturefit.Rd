@@ -23,8 +23,9 @@ Extracts model coefficients from objects returned by \code{\link[=PLN]{PLN()}} a
 \examples{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera) \%>\% getBestModel()
-coef(myPLN) ## Theta
+myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
+           data = trichoptera, control_main = list(iterates = 0))  \%>\% getBestModel()
+coef(myPLN) ## Theta - empty here
 coef(myPLN, type = "mixture") ## pi
 coef(myPLN, type = "means") ## mu
 coef(myPLN, type = "covariance") ## Sigma
