@@ -23,9 +23,14 @@ These criteria have the form 'loglik - 1/2 * penalty' so that they are on the sa
 Display the criteria associated with a collection of PLNmixture fits (a PLNmixturefamily)
 }
 \examples{
-future::plan("multisession", workers = 2) # use future to dispatch the computations on 2 workers
+## Use future to dispatch the computations on 2 workers
+future::plan("multisession", workers = 2)
+
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myMixtures <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera)
 plot(myMixtures)
+
+# Shut down parallel workers
+future::plan("sequential")
 }

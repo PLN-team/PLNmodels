@@ -27,10 +27,15 @@
 #'
 #' @rdname PLNPCA
 #' @examples
-#' future::plan(multisession, workers = 2) # use future to dispatch the computations on 2 workers
+#' ## Use future to dispatch the computations on 2 workers
+#' future::plan("multisession", workers = 2)
+#'
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
+#'
+#' # Shut down parallel workers
+#' future::plan("sequential")
 #' @seealso The classes [`PLNPCAfamily`] and [`PLNPCAfit`]
 #' @importFrom stats model.frame model.matrix model.response model.offset
 #' @export
