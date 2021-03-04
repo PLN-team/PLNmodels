@@ -183,7 +183,8 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
 <span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
-<span class='va'>myPLN</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNmixture.html'>PLNmixture</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='getBestModel.PLNPCAfamily.html'>getBestModel</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>myPLN</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNmixture.html'>PLNmixture</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>,
+           data <span class='op'>=</span> <span class='va'>trichoptera</span>, control_main <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>iterates <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>  <span class='op'>%&gt;%</span> <span class='fu'><a href='getBestModel.PLNPCAfamily.html'>getBestModel</a></span><span class='op'>(</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt; 
@@ -191,18 +192,18 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
 #&gt; 	number of cluster = 1 	number of cluster = 2 	number of cluster = 3 	number of cluster = 4 	number of cluster = 5 
 #&gt; 
 #&gt;  Smoothing PLN mixture models.
-#&gt;    Going backward ++++                                                                                                       Going forward ++++                                                                                                       Going backward ++++                                                                                                       Going forward ++++                                                                                                    
+#&gt; 
 #&gt;  Post-treatments
 #&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/sigma.html'>sigma</a></span><span class='op'>(</span><span class='va'>myPLN</span><span class='op'>)</span> <span class='co'>## Sigma</span>
 </div><div class='output co'>#&gt; [[1]]
 #&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                          
-#&gt; Che 0.1650828 .         .         .         .         .         .        
-#&gt; Hyc .         0.1650828 .         .         .         .         .        
-#&gt; Hym .         .         0.1650828 .         .         .         .        
-#&gt; Hys .         .         .         0.1650828 .         .         .        
-#&gt; Psy .         .         .         .         0.1650828 .         .        
-#&gt; Aga .         .         .         .         .         0.1650828 .        
-#&gt; Glo .         .         .         .         .         .         0.1650828
+#&gt; Che 0.0462633 .         .         .         .         .         .        
+#&gt; Hyc .         0.0462633 .         .         .         .         .        
+#&gt; Hym .         .         0.0462633 .         .         .         .        
+#&gt; Hys .         .         .         0.0462633 .         .         .        
+#&gt; Psy .         .         .         .         0.0462633 .         .        
+#&gt; Aga .         .         .         .         .         0.0462633 .        
+#&gt; Glo .         .         .         .         .         .         0.0462633
 #&gt; Ath .         .         .         .         .         .         .        
 #&gt; Cea .         .         .         .         .         .         .        
 #&gt; Ced .         .         .         .         .         .         .        
@@ -221,13 +222,13 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
 #&gt; Psy .         .         .         .         .         .         .        
 #&gt; Aga .         .         .         .         .         .         .        
 #&gt; Glo .         .         .         .         .         .         .        
-#&gt; Ath 0.1650828 .         .         .         .         .         .        
-#&gt; Cea .         0.1650828 .         .         .         .         .        
-#&gt; Ced .         .         0.1650828 .         .         .         .        
-#&gt; Set .         .         .         0.1650828 .         .         .        
-#&gt; All .         .         .         .         0.1650828 .         .        
-#&gt; Han .         .         .         .         .         0.1650828 .        
-#&gt; Hfo .         .         .         .         .         .         0.1650828
+#&gt; Ath 0.0462633 .         .         .         .         .         .        
+#&gt; Cea .         0.0462633 .         .         .         .         .        
+#&gt; Ced .         .         0.0462633 .         .         .         .        
+#&gt; Set .         .         .         0.0462633 .         .         .        
+#&gt; All .         .         .         .         0.0462633 .         .        
+#&gt; Han .         .         .         .         .         0.0462633 .        
+#&gt; Hfo .         .         .         .         .         .         0.0462633
 #&gt; Hsp .         .         .         .         .         .         .        
 #&gt; Hve .         .         .         .         .         .         .        
 #&gt; Sta .         .         .         .         .         .         .        
@@ -246,19 +247,19 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
 #&gt; All .         .         .        
 #&gt; Han .         .         .        
 #&gt; Hfo .         .         .        
-#&gt; Hsp 0.1650828 .         .        
-#&gt; Hve .         0.1650828 .        
-#&gt; Sta .         .         0.1650828
+#&gt; Hsp 0.0462633 .         .        
+#&gt; Hve .         0.0462633 .        
+#&gt; Sta .         .         0.0462633
 #&gt; 
 #&gt; [[2]]
 #&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                          
-#&gt; Che 0.1303606 .         .         .         .         .         .        
-#&gt; Hyc .         0.1303606 .         .         .         .         .        
-#&gt; Hym .         .         0.1303606 .         .         .         .        
-#&gt; Hys .         .         .         0.1303606 .         .         .        
-#&gt; Psy .         .         .         .         0.1303606 .         .        
-#&gt; Aga .         .         .         .         .         0.1303606 .        
-#&gt; Glo .         .         .         .         .         .         0.1303606
+#&gt; Che 0.1989391 .         .         .         .         .         .        
+#&gt; Hyc .         0.1989391 .         .         .         .         .        
+#&gt; Hym .         .         0.1989391 .         .         .         .        
+#&gt; Hys .         .         .         0.1989391 .         .         .        
+#&gt; Psy .         .         .         .         0.1989391 .         .        
+#&gt; Aga .         .         .         .         .         0.1989391 .        
+#&gt; Glo .         .         .         .         .         .         0.1989391
 #&gt; Ath .         .         .         .         .         .         .        
 #&gt; Cea .         .         .         .         .         .         .        
 #&gt; Ced .         .         .         .         .         .         .        
@@ -277,13 +278,13 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
 #&gt; Psy .         .         .         .         .         .         .        
 #&gt; Aga .         .         .         .         .         .         .        
 #&gt; Glo .         .         .         .         .         .         .        
-#&gt; Ath 0.1303606 .         .         .         .         .         .        
-#&gt; Cea .         0.1303606 .         .         .         .         .        
-#&gt; Ced .         .         0.1303606 .         .         .         .        
-#&gt; Set .         .         .         0.1303606 .         .         .        
-#&gt; All .         .         .         .         0.1303606 .         .        
-#&gt; Han .         .         .         .         .         0.1303606 .        
-#&gt; Hfo .         .         .         .         .         .         0.1303606
+#&gt; Ath 0.1989391 .         .         .         .         .         .        
+#&gt; Cea .         0.1989391 .         .         .         .         .        
+#&gt; Ced .         .         0.1989391 .         .         .         .        
+#&gt; Set .         .         .         0.1989391 .         .         .        
+#&gt; All .         .         .         .         0.1989391 .         .        
+#&gt; Han .         .         .         .         .         0.1989391 .        
+#&gt; Hfo .         .         .         .         .         .         0.1989391
 #&gt; Hsp .         .         .         .         .         .         .        
 #&gt; Hve .         .         .         .         .         .         .        
 #&gt; Sta .         .         .         .         .         .         .        
@@ -302,18 +303,18 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
 #&gt; All .         .         .        
 #&gt; Han .         .         .        
 #&gt; Hfo .         .         .        
-#&gt; Hsp 0.1303606 .         .        
-#&gt; Hve .         0.1303606 .        
-#&gt; Sta .         .         0.1303606
+#&gt; Hsp 0.1989391 .         .        
+#&gt; Hve .         0.1989391 .        
+#&gt; Sta .         .         0.1989391
 #&gt; 
 #&gt; [[3]]
 #&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                      
-#&gt; Che 0.04218758 .          .          .          .          .         
-#&gt; Hyc .          0.04218758 .          .          .          .         
-#&gt; Hym .          .          0.04218758 .          .          .         
-#&gt; Hys .          .          .          0.04218758 .          .         
-#&gt; Psy .          .          .          .          0.04218758 .         
-#&gt; Aga .          .          .          .          .          0.04218758
+#&gt; Che 0.04218818 .          .          .          .          .         
+#&gt; Hyc .          0.04218818 .          .          .          .         
+#&gt; Hym .          .          0.04218818 .          .          .         
+#&gt; Hys .          .          .          0.04218818 .          .         
+#&gt; Psy .          .          .          .          0.04218818 .         
+#&gt; Aga .          .          .          .          .          0.04218818
 #&gt; Glo .          .          .          .          .          .         
 #&gt; Ath .          .          .          .          .          .         
 #&gt; Cea .          .          .          .          .          .         
@@ -332,12 +333,12 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
 #&gt; Hys .          .          .          .          .          .         
 #&gt; Psy .          .          .          .          .          .         
 #&gt; Aga .          .          .          .          .          .         
-#&gt; Glo 0.04218758 .          .          .          .          .         
-#&gt; Ath .          0.04218758 .          .          .          .         
-#&gt; Cea .          .          0.04218758 .          .          .         
-#&gt; Ced .          .          .          0.04218758 .          .         
-#&gt; Set .          .          .          .          0.04218758 .         
-#&gt; All .          .          .          .          .          0.04218758
+#&gt; Glo 0.04218818 .          .          .          .          .         
+#&gt; Ath .          0.04218818 .          .          .          .         
+#&gt; Cea .          .          0.04218818 .          .          .         
+#&gt; Ced .          .          .          0.04218818 .          .         
+#&gt; Set .          .          .          .          0.04218818 .         
+#&gt; All .          .          .          .          .          0.04218818
 #&gt; Han .          .          .          .          .          .         
 #&gt; Hfo .          .          .          .          .          .         
 #&gt; Hsp .          .          .          .          .          .         
@@ -356,20 +357,20 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
 #&gt; Ced .          .          .          .          .         
 #&gt; Set .          .          .          .          .         
 #&gt; All .          .          .          .          .         
-#&gt; Han 0.04218758 .          .          .          .         
-#&gt; Hfo .          0.04218758 .          .          .         
-#&gt; Hsp .          .          0.04218758 .          .         
-#&gt; Hve .          .          .          0.04218758 .         
-#&gt; Sta .          .          .          .          0.04218758
+#&gt; Han 0.04218818 .          .          .          .         
+#&gt; Hfo .          0.04218818 .          .          .         
+#&gt; Hsp .          .          0.04218818 .          .         
+#&gt; Hve .          .          .          0.04218818 .         
+#&gt; Sta .          .          .          .          0.04218818
 #&gt; 
 #&gt; [[4]]
 #&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                            
-#&gt; Che 0.002944662 .           .           .           .           .          
-#&gt; Hyc .           0.002944662 .           .           .           .          
-#&gt; Hym .           .           0.002944662 .           .           .          
-#&gt; Hys .           .           .           0.002944662 .           .          
-#&gt; Psy .           .           .           .           0.002944662 .          
-#&gt; Aga .           .           .           .           .           0.002944662
+#&gt; Che 0.004292829 .           .           .           .           .          
+#&gt; Hyc .           0.004292829 .           .           .           .          
+#&gt; Hym .           .           0.004292829 .           .           .          
+#&gt; Hys .           .           .           0.004292829 .           .          
+#&gt; Psy .           .           .           .           0.004292829 .          
+#&gt; Aga .           .           .           .           .           0.004292829
 #&gt; Glo .           .           .           .           .           .          
 #&gt; Ath .           .           .           .           .           .          
 #&gt; Cea .           .           .           .           .           .          
@@ -388,12 +389,12 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
 #&gt; Hys .           .           .           .           .           .          
 #&gt; Psy .           .           .           .           .           .          
 #&gt; Aga .           .           .           .           .           .          
-#&gt; Glo 0.002944662 .           .           .           .           .          
-#&gt; Ath .           0.002944662 .           .           .           .          
-#&gt; Cea .           .           0.002944662 .           .           .          
-#&gt; Ced .           .           .           0.002944662 .           .          
-#&gt; Set .           .           .           .           0.002944662 .          
-#&gt; All .           .           .           .           .           0.002944662
+#&gt; Glo 0.004292829 .           .           .           .           .          
+#&gt; Ath .           0.004292829 .           .           .           .          
+#&gt; Cea .           .           0.004292829 .           .           .          
+#&gt; Ced .           .           .           0.004292829 .           .          
+#&gt; Set .           .           .           .           0.004292829 .          
+#&gt; All .           .           .           .           .           0.004292829
 #&gt; Han .           .           .           .           .           .          
 #&gt; Hfo .           .           .           .           .           .          
 #&gt; Hsp .           .           .           .           .           .          
@@ -412,67 +413,67 @@ or PLNmixture, it is a weighted mean of the variance-covariance matrices of each
 #&gt; Ced .           .           .           .           .          
 #&gt; Set .           .           .           .           .          
 #&gt; All .           .           .           .           .          
-#&gt; Han 0.002944662 .           .           .           .          
-#&gt; Hfo .           0.002944662 .           .           .          
-#&gt; Hsp .           .           0.002944662 .           .          
-#&gt; Hve .           .           .           0.002944662 .          
-#&gt; Sta .           .           .           .           0.002944662
+#&gt; Han 0.004292829 .           .           .           .          
+#&gt; Hfo .           0.004292829 .           .           .          
+#&gt; Hsp .           .           0.004292829 .           .          
+#&gt; Hve .           .           .           0.004292829 .          
+#&gt; Sta .           .           .           .           0.004292829
 #&gt; 
 #&gt; [[5]]
-#&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                      
-#&gt; Che 0.02526235 .          .          .          .          .         
-#&gt; Hyc .          0.02526235 .          .          .          .         
-#&gt; Hym .          .          0.02526235 .          .          .         
-#&gt; Hys .          .          .          0.02526235 .          .         
-#&gt; Psy .          .          .          .          0.02526235 .         
-#&gt; Aga .          .          .          .          .          0.02526235
-#&gt; Glo .          .          .          .          .          .         
-#&gt; Ath .          .          .          .          .          .         
-#&gt; Cea .          .          .          .          .          .         
-#&gt; Ced .          .          .          .          .          .         
-#&gt; Set .          .          .          .          .          .         
-#&gt; All .          .          .          .          .          .         
-#&gt; Han .          .          .          .          .          .         
-#&gt; Hfo .          .          .          .          .          .         
-#&gt; Hsp .          .          .          .          .          .         
-#&gt; Hve .          .          .          .          .          .         
-#&gt; Sta .          .          .          .          .          .         
-#&gt;                                                                      
-#&gt; Che .          .          .          .          .          .         
-#&gt; Hyc .          .          .          .          .          .         
-#&gt; Hym .          .          .          .          .          .         
-#&gt; Hys .          .          .          .          .          .         
-#&gt; Psy .          .          .          .          .          .         
-#&gt; Aga .          .          .          .          .          .         
-#&gt; Glo 0.02526235 .          .          .          .          .         
-#&gt; Ath .          0.02526235 .          .          .          .         
-#&gt; Cea .          .          0.02526235 .          .          .         
-#&gt; Ced .          .          .          0.02526235 .          .         
-#&gt; Set .          .          .          .          0.02526235 .         
-#&gt; All .          .          .          .          .          0.02526235
-#&gt; Han .          .          .          .          .          .         
-#&gt; Hfo .          .          .          .          .          .         
-#&gt; Hsp .          .          .          .          .          .         
-#&gt; Hve .          .          .          .          .          .         
-#&gt; Sta .          .          .          .          .          .         
-#&gt;                                                           
-#&gt; Che .          .          .          .          .         
-#&gt; Hyc .          .          .          .          .         
-#&gt; Hym .          .          .          .          .         
-#&gt; Hys .          .          .          .          .         
-#&gt; Psy .          .          .          .          .         
-#&gt; Aga .          .          .          .          .         
-#&gt; Glo .          .          .          .          .         
-#&gt; Ath .          .          .          .          .         
-#&gt; Cea .          .          .          .          .         
-#&gt; Ced .          .          .          .          .         
-#&gt; Set .          .          .          .          .         
-#&gt; All .          .          .          .          .         
-#&gt; Han 0.02526235 .          .          .          .         
-#&gt; Hfo .          0.02526235 .          .          .         
-#&gt; Hsp .          .          0.02526235 .          .         
-#&gt; Hve .          .          .          0.02526235 .         
-#&gt; Sta .          .          .          .          0.02526235
+#&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                          
+#&gt; Che 0.1628787 .         .         .         .         .         .        
+#&gt; Hyc .         0.1628787 .         .         .         .         .        
+#&gt; Hym .         .         0.1628787 .         .         .         .        
+#&gt; Hys .         .         .         0.1628787 .         .         .        
+#&gt; Psy .         .         .         .         0.1628787 .         .        
+#&gt; Aga .         .         .         .         .         0.1628787 .        
+#&gt; Glo .         .         .         .         .         .         0.1628787
+#&gt; Ath .         .         .         .         .         .         .        
+#&gt; Cea .         .         .         .         .         .         .        
+#&gt; Ced .         .         .         .         .         .         .        
+#&gt; Set .         .         .         .         .         .         .        
+#&gt; All .         .         .         .         .         .         .        
+#&gt; Han .         .         .         .         .         .         .        
+#&gt; Hfo .         .         .         .         .         .         .        
+#&gt; Hsp .         .         .         .         .         .         .        
+#&gt; Hve .         .         .         .         .         .         .        
+#&gt; Sta .         .         .         .         .         .         .        
+#&gt;                                                                          
+#&gt; Che .         .         .         .         .         .         .        
+#&gt; Hyc .         .         .         .         .         .         .        
+#&gt; Hym .         .         .         .         .         .         .        
+#&gt; Hys .         .         .         .         .         .         .        
+#&gt; Psy .         .         .         .         .         .         .        
+#&gt; Aga .         .         .         .         .         .         .        
+#&gt; Glo .         .         .         .         .         .         .        
+#&gt; Ath 0.1628787 .         .         .         .         .         .        
+#&gt; Cea .         0.1628787 .         .         .         .         .        
+#&gt; Ced .         .         0.1628787 .         .         .         .        
+#&gt; Set .         .         .         0.1628787 .         .         .        
+#&gt; All .         .         .         .         0.1628787 .         .        
+#&gt; Han .         .         .         .         .         0.1628787 .        
+#&gt; Hfo .         .         .         .         .         .         0.1628787
+#&gt; Hsp .         .         .         .         .         .         .        
+#&gt; Hve .         .         .         .         .         .         .        
+#&gt; Sta .         .         .         .         .         .         .        
+#&gt;                                  
+#&gt; Che .         .         .        
+#&gt; Hyc .         .         .        
+#&gt; Hym .         .         .        
+#&gt; Hys .         .         .        
+#&gt; Psy .         .         .        
+#&gt; Aga .         .         .        
+#&gt; Glo .         .         .        
+#&gt; Ath .         .         .        
+#&gt; Cea .         .         .        
+#&gt; Ced .         .         .        
+#&gt; Set .         .         .        
+#&gt; All .         .         .        
+#&gt; Han .         .         .        
+#&gt; Hfo .         .         .        
+#&gt; Hsp 0.1628787 .         .        
+#&gt; Hve .         0.1628787 .        
+#&gt; Sta .         .         0.1628787
 #&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

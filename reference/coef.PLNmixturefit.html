@@ -186,7 +186,8 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
 <span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
-<span class='va'>myPLN</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNmixture.html'>PLNmixture</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='getBestModel.PLNPCAfamily.html'>getBestModel</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>myPLN</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNmixture.html'>PLNmixture</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>,
+           data <span class='op'>=</span> <span class='va'>trichoptera</span>, control_main <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>iterates <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>  <span class='op'>%&gt;%</span> <span class='fu'><a href='getBestModel.PLNPCAfamily.html'>getBestModel</a></span><span class='op'>(</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt; 
@@ -194,87 +195,31 @@
 #&gt; 	number of cluster = 1 	number of cluster = 2 	number of cluster = 3 	number of cluster = 4 	number of cluster = 5 
 #&gt; 
 #&gt;  Smoothing PLN mixture models.
-#&gt;    Going backward ++++                                                                                                       Going forward ++++                                                                                                       Going backward ++++                                                                                                       Going forward ++++                                                                                                    
+#&gt; 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>myPLN</span><span class='op'>)</span> <span class='co'>## Theta</span>
+#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>myPLN</span><span class='op'>)</span> <span class='co'>## Theta - empty here</span>
 </div><div class='output co'>#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14]
 #&gt;      [,15] [,16] [,17]</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>myPLN</span>, type <span class='op'>=</span> <span class='st'>"mixture"</span><span class='op'>)</span> <span class='co'>## pi</span>
-</div><div class='output co'>#&gt; [1] 0.40816327 0.04081633 0.14285717 0.20408163 0.20408161</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>myPLN</span>, type <span class='op'>=</span> <span class='st'>"means"</span><span class='op'>)</span> <span class='co'>## mu</span>
-</div><div class='output co'>#&gt;         group_1     group_2     group_3     group_4     group_5
-#&gt; Che  -6.0411379 -16.5434400 -17.8237511  -5.7455624 -18.2121852
-#&gt; Hyc  -6.0627487  -8.4245989 -17.8237511  -6.4389288 -18.2121852
-#&gt; Hym  -2.2593312  -6.0004084  -3.4789235  -3.0341400  -2.3497928
-#&gt; Hys  -6.0351348 -16.5434400 -17.8237511  -5.7444679  -5.2764006
-#&gt; Psy  -0.8889712  -0.2113763  -0.4542008  -0.3743917  -0.5062454
-#&gt; Aga  -6.0394563  -7.3230060  -3.1961887  -3.6036943  -3.3284217
-#&gt; Glo  -6.0394563  -6.4804711 -17.8237511  -5.3407708  -5.2729847
-#&gt; Ath  -4.9241621  -7.7356107  -6.7752706  -5.0514818  -5.2757641
-#&gt; Cea  -6.0411379  -6.8200542 -17.8237511  -6.4380360 -18.2121852
-#&gt; Ced  -2.9206313  -5.6324584  -4.3583201  -3.1760483  -3.1442763
-#&gt; Set  -3.5310134  -3.5983016  -5.2696817  -2.7612023  -4.4333792
-#&gt; All  -4.6402212  -8.4368132  -3.9586694  -4.2385442  -4.2946172
-#&gt; Han  -2.6100478  -4.6477239  -3.0776949 -36.4195204  -3.8211567
-#&gt; Hfo  -3.9537623  -3.5897330  -7.3757920  -5.3419003 -18.2121852
-#&gt; Hsp  -2.1294465  -2.4297338  -4.6747416  -4.2454721  -5.6833682
-#&gt; Hve -18.7963064  -7.7356107  -7.4362609  -5.0528805  -5.6862649
-#&gt; Sta  -2.5924853  -5.6786856  -2.6218787  -2.5993516  -2.1738906</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>myPLN</span>, type <span class='op'>=</span> <span class='st'>"covariance"</span><span class='op'>)</span> <span class='co'>## Sigma</span>
+</div><div class='output co'>#&gt; [1] 0.04081633 0.42857004 0.28571567 0.10204082 0.14285715</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>myPLN</span>, type <span class='op'>=</span> <span class='st'>"means"</span><span class='op'>)</span> <span class='co'>## mu</span>
+</div><div class='output co'>#&gt;         group_1    group_2     group_3     group_4     group_5
+#&gt; Che -16.5434400 -6.4411570  -5.9009924 -38.0428187 -17.8237509
+#&gt; Hyc  -8.4245989 -7.1344793  -5.9257741 -38.0428187 -17.8237509
+#&gt; Hym  -6.0004084 -2.6049332  -2.3763874  -1.7057903  -3.4789235
+#&gt; Hys -16.5434400 -5.5193365  -5.8940314 -37.3496801 -17.8237509
+#&gt; Psy  -0.2113763 -0.4418577  -0.9571779  -0.6061475  -0.4542008
+#&gt; Aga  -7.3230060 -3.4898779  -5.8990463 -34.4501114  -3.1961887
+#&gt; Glo  -6.4804711 -5.3409966  -5.8990463 -36.5023721 -17.8237509
+#&gt; Ath  -7.7356107 -5.1840728  -5.1978700  -3.0937410  -6.7752706
+#&gt; Cea  -6.8200542 -7.1318586  -5.9009924 -37.1955285 -17.8237509
+#&gt; Ced  -5.6324584 -3.1443709  -2.8569363 -35.0892665  -4.3583201
+#&gt; Set  -3.5983016 -3.3399411  -3.3836790 -33.8996654  -5.2696817
+#&gt; All  -8.4368132 -4.2328817  -4.7851952 -35.1901963  -3.9586694
+#&gt; Han  -4.6477239 -4.5671693  -2.4521137 -78.3059590  -3.0776949
+#&gt; Hfo  -3.5897330 -5.7520687  -4.1087813  -3.0937410  -7.3757920
+#&gt; Hsp  -2.4297338 -4.5801257  -2.0897046  -1.9962314  -4.6747416
+#&gt; Hve  -7.7356107 -5.3446559 -17.8980881 -36.9859392  -7.4362609
+#&gt; Sta  -5.6786856 -2.4070712  -2.5058386  -3.0937410  -2.6218787</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>myPLN</span>, type <span class='op'>=</span> <span class='st'>"covariance"</span><span class='op'>)</span> <span class='co'>## Sigma</span>
 </div><div class='output co'>#&gt; [[1]]
-#&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                          
-#&gt; Che 0.1613483 .         .         .         .         .         .        
-#&gt; Hyc .         0.1613483 .         .         .         .         .        
-#&gt; Hym .         .         0.1613483 .         .         .         .        
-#&gt; Hys .         .         .         0.1613483 .         .         .        
-#&gt; Psy .         .         .         .         0.1613483 .         .        
-#&gt; Aga .         .         .         .         .         0.1613483 .        
-#&gt; Glo .         .         .         .         .         .         0.1613483
-#&gt; Ath .         .         .         .         .         .         .        
-#&gt; Cea .         .         .         .         .         .         .        
-#&gt; Ced .         .         .         .         .         .         .        
-#&gt; Set .         .         .         .         .         .         .        
-#&gt; All .         .         .         .         .         .         .        
-#&gt; Han .         .         .         .         .         .         .        
-#&gt; Hfo .         .         .         .         .         .         .        
-#&gt; Hsp .         .         .         .         .         .         .        
-#&gt; Hve .         .         .         .         .         .         .        
-#&gt; Sta .         .         .         .         .         .         .        
-#&gt;                                                                          
-#&gt; Che .         .         .         .         .         .         .        
-#&gt; Hyc .         .         .         .         .         .         .        
-#&gt; Hym .         .         .         .         .         .         .        
-#&gt; Hys .         .         .         .         .         .         .        
-#&gt; Psy .         .         .         .         .         .         .        
-#&gt; Aga .         .         .         .         .         .         .        
-#&gt; Glo .         .         .         .         .         .         .        
-#&gt; Ath 0.1613483 .         .         .         .         .         .        
-#&gt; Cea .         0.1613483 .         .         .         .         .        
-#&gt; Ced .         .         0.1613483 .         .         .         .        
-#&gt; Set .         .         .         0.1613483 .         .         .        
-#&gt; All .         .         .         .         0.1613483 .         .        
-#&gt; Han .         .         .         .         .         0.1613483 .        
-#&gt; Hfo .         .         .         .         .         .         0.1613483
-#&gt; Hsp .         .         .         .         .         .         .        
-#&gt; Hve .         .         .         .         .         .         .        
-#&gt; Sta .         .         .         .         .         .         .        
-#&gt;                                  
-#&gt; Che .         .         .        
-#&gt; Hyc .         .         .        
-#&gt; Hym .         .         .        
-#&gt; Hys .         .         .        
-#&gt; Psy .         .         .        
-#&gt; Aga .         .         .        
-#&gt; Glo .         .         .        
-#&gt; Ath .         .         .        
-#&gt; Cea .         .         .        
-#&gt; Ced .         .         .        
-#&gt; Set .         .         .        
-#&gt; All .         .         .        
-#&gt; Han .         .         .        
-#&gt; Hfo .         .         .        
-#&gt; Hsp 0.1613483 .         .        
-#&gt; Hve .         0.1613483 .        
-#&gt; Sta .         .         0.1613483
-#&gt; 
-#&gt; [[2]]
 #&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                      
 #&gt; Che 0.04218818 .          .          .          .          .         
 #&gt; Hyc .          0.04218818 .          .          .          .         
@@ -330,15 +275,15 @@
 #&gt; Hve .          .          .          0.04218818 .         
 #&gt; Sta .          .          .          .          0.04218818
 #&gt; 
-#&gt; [[3]]
+#&gt; [[2]]
 #&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                          
-#&gt; Che 0.1989392 .         .         .         .         .         .        
-#&gt; Hyc .         0.1989392 .         .         .         .         .        
-#&gt; Hym .         .         0.1989392 .         .         .         .        
-#&gt; Hys .         .         .         0.1989392 .         .         .        
-#&gt; Psy .         .         .         .         0.1989392 .         .        
-#&gt; Aga .         .         .         .         .         0.1989392 .        
-#&gt; Glo .         .         .         .         .         .         0.1989392
+#&gt; Che 0.0462633 .         .         .         .         .         .        
+#&gt; Hyc .         0.0462633 .         .         .         .         .        
+#&gt; Hym .         .         0.0462633 .         .         .         .        
+#&gt; Hys .         .         .         0.0462633 .         .         .        
+#&gt; Psy .         .         .         .         0.0462633 .         .        
+#&gt; Aga .         .         .         .         .         0.0462633 .        
+#&gt; Glo .         .         .         .         .         .         0.0462633
 #&gt; Ath .         .         .         .         .         .         .        
 #&gt; Cea .         .         .         .         .         .         .        
 #&gt; Ced .         .         .         .         .         .         .        
@@ -357,13 +302,13 @@
 #&gt; Psy .         .         .         .         .         .         .        
 #&gt; Aga .         .         .         .         .         .         .        
 #&gt; Glo .         .         .         .         .         .         .        
-#&gt; Ath 0.1989392 .         .         .         .         .         .        
-#&gt; Cea .         0.1989392 .         .         .         .         .        
-#&gt; Ced .         .         0.1989392 .         .         .         .        
-#&gt; Set .         .         .         0.1989392 .         .         .        
-#&gt; All .         .         .         .         0.1989392 .         .        
-#&gt; Han .         .         .         .         .         0.1989392 .        
-#&gt; Hfo .         .         .         .         .         .         0.1989392
+#&gt; Ath 0.0462633 .         .         .         .         .         .        
+#&gt; Cea .         0.0462633 .         .         .         .         .        
+#&gt; Ced .         .         0.0462633 .         .         .         .        
+#&gt; Set .         .         .         0.0462633 .         .         .        
+#&gt; All .         .         .         .         0.0462633 .         .        
+#&gt; Han .         .         .         .         .         0.0462633 .        
+#&gt; Hfo .         .         .         .         .         .         0.0462633
 #&gt; Hsp .         .         .         .         .         .         .        
 #&gt; Hve .         .         .         .         .         .         .        
 #&gt; Sta .         .         .         .         .         .         .        
@@ -382,18 +327,74 @@
 #&gt; All .         .         .        
 #&gt; Han .         .         .        
 #&gt; Hfo .         .         .        
-#&gt; Hsp 0.1989392 .         .        
-#&gt; Hve .         0.1989392 .        
-#&gt; Sta .         .         0.1989392
+#&gt; Hsp 0.0462633 .         .        
+#&gt; Hve .         0.0462633 .        
+#&gt; Sta .         .         0.0462633
+#&gt; 
+#&gt; [[3]]
+#&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                          
+#&gt; Che 0.1628787 .         .         .         .         .         .        
+#&gt; Hyc .         0.1628787 .         .         .         .         .        
+#&gt; Hym .         .         0.1628787 .         .         .         .        
+#&gt; Hys .         .         .         0.1628787 .         .         .        
+#&gt; Psy .         .         .         .         0.1628787 .         .        
+#&gt; Aga .         .         .         .         .         0.1628787 .        
+#&gt; Glo .         .         .         .         .         .         0.1628787
+#&gt; Ath .         .         .         .         .         .         .        
+#&gt; Cea .         .         .         .         .         .         .        
+#&gt; Ced .         .         .         .         .         .         .        
+#&gt; Set .         .         .         .         .         .         .        
+#&gt; All .         .         .         .         .         .         .        
+#&gt; Han .         .         .         .         .         .         .        
+#&gt; Hfo .         .         .         .         .         .         .        
+#&gt; Hsp .         .         .         .         .         .         .        
+#&gt; Hve .         .         .         .         .         .         .        
+#&gt; Sta .         .         .         .         .         .         .        
+#&gt;                                                                          
+#&gt; Che .         .         .         .         .         .         .        
+#&gt; Hyc .         .         .         .         .         .         .        
+#&gt; Hym .         .         .         .         .         .         .        
+#&gt; Hys .         .         .         .         .         .         .        
+#&gt; Psy .         .         .         .         .         .         .        
+#&gt; Aga .         .         .         .         .         .         .        
+#&gt; Glo .         .         .         .         .         .         .        
+#&gt; Ath 0.1628787 .         .         .         .         .         .        
+#&gt; Cea .         0.1628787 .         .         .         .         .        
+#&gt; Ced .         .         0.1628787 .         .         .         .        
+#&gt; Set .         .         .         0.1628787 .         .         .        
+#&gt; All .         .         .         .         0.1628787 .         .        
+#&gt; Han .         .         .         .         .         0.1628787 .        
+#&gt; Hfo .         .         .         .         .         .         0.1628787
+#&gt; Hsp .         .         .         .         .         .         .        
+#&gt; Hve .         .         .         .         .         .         .        
+#&gt; Sta .         .         .         .         .         .         .        
+#&gt;                                  
+#&gt; Che .         .         .        
+#&gt; Hyc .         .         .        
+#&gt; Hym .         .         .        
+#&gt; Hys .         .         .        
+#&gt; Psy .         .         .        
+#&gt; Aga .         .         .        
+#&gt; Glo .         .         .        
+#&gt; Ath .         .         .        
+#&gt; Cea .         .         .        
+#&gt; Ced .         .         .        
+#&gt; Set .         .         .        
+#&gt; All .         .         .        
+#&gt; Han .         .         .        
+#&gt; Hfo .         .         .        
+#&gt; Hsp 0.1628787 .         .        
+#&gt; Hve .         0.1628787 .        
+#&gt; Sta .         .         0.1628787
 #&gt; 
 #&gt; [[4]]
 #&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                            
-#&gt; Che 0.008018762 .           .           .           .           .          
-#&gt; Hyc .           0.008018762 .           .           .           .          
-#&gt; Hym .           .           0.008018762 .           .           .          
-#&gt; Hys .           .           .           0.008018762 .           .          
-#&gt; Psy .           .           .           .           0.008018762 .          
-#&gt; Aga .           .           .           .           .           0.008018762
+#&gt; Che 0.004292829 .           .           .           .           .          
+#&gt; Hyc .           0.004292829 .           .           .           .          
+#&gt; Hym .           .           0.004292829 .           .           .          
+#&gt; Hys .           .           .           0.004292829 .           .          
+#&gt; Psy .           .           .           .           0.004292829 .          
+#&gt; Aga .           .           .           .           .           0.004292829
 #&gt; Glo .           .           .           .           .           .          
 #&gt; Ath .           .           .           .           .           .          
 #&gt; Cea .           .           .           .           .           .          
@@ -412,12 +413,12 @@
 #&gt; Hys .           .           .           .           .           .          
 #&gt; Psy .           .           .           .           .           .          
 #&gt; Aga .           .           .           .           .           .          
-#&gt; Glo 0.008018762 .           .           .           .           .          
-#&gt; Ath .           0.008018762 .           .           .           .          
-#&gt; Cea .           .           0.008018762 .           .           .          
-#&gt; Ced .           .           .           0.008018762 .           .          
-#&gt; Set .           .           .           .           0.008018762 .          
-#&gt; All .           .           .           .           .           0.008018762
+#&gt; Glo 0.004292829 .           .           .           .           .          
+#&gt; Ath .           0.004292829 .           .           .           .          
+#&gt; Cea .           .           0.004292829 .           .           .          
+#&gt; Ced .           .           .           0.004292829 .           .          
+#&gt; Set .           .           .           .           0.004292829 .          
+#&gt; All .           .           .           .           .           0.004292829
 #&gt; Han .           .           .           .           .           .          
 #&gt; Hfo .           .           .           .           .           .          
 #&gt; Hsp .           .           .           .           .           .          
@@ -436,67 +437,67 @@
 #&gt; Ced .           .           .           .           .          
 #&gt; Set .           .           .           .           .          
 #&gt; All .           .           .           .           .          
-#&gt; Han 0.008018762 .           .           .           .          
-#&gt; Hfo .           0.008018762 .           .           .          
-#&gt; Hsp .           .           0.008018762 .           .          
-#&gt; Hve .           .           .           0.008018762 .          
-#&gt; Sta .           .           .           .           0.008018762
+#&gt; Han 0.004292829 .           .           .           .          
+#&gt; Hfo .           0.004292829 .           .           .          
+#&gt; Hsp .           .           0.004292829 .           .          
+#&gt; Hve .           .           .           0.004292829 .          
+#&gt; Sta .           .           .           .           0.004292829
 #&gt; 
 #&gt; [[5]]
-#&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                      
-#&gt; Che 0.05250411 .          .          .          .          .         
-#&gt; Hyc .          0.05250411 .          .          .          .         
-#&gt; Hym .          .          0.05250411 .          .          .         
-#&gt; Hys .          .          .          0.05250411 .          .         
-#&gt; Psy .          .          .          .          0.05250411 .         
-#&gt; Aga .          .          .          .          .          0.05250411
-#&gt; Glo .          .          .          .          .          .         
-#&gt; Ath .          .          .          .          .          .         
-#&gt; Cea .          .          .          .          .          .         
-#&gt; Ced .          .          .          .          .          .         
-#&gt; Set .          .          .          .          .          .         
-#&gt; All .          .          .          .          .          .         
-#&gt; Han .          .          .          .          .          .         
-#&gt; Hfo .          .          .          .          .          .         
-#&gt; Hsp .          .          .          .          .          .         
-#&gt; Hve .          .          .          .          .          .         
-#&gt; Sta .          .          .          .          .          .         
-#&gt;                                                                      
-#&gt; Che .          .          .          .          .          .         
-#&gt; Hyc .          .          .          .          .          .         
-#&gt; Hym .          .          .          .          .          .         
-#&gt; Hys .          .          .          .          .          .         
-#&gt; Psy .          .          .          .          .          .         
-#&gt; Aga .          .          .          .          .          .         
-#&gt; Glo 0.05250411 .          .          .          .          .         
-#&gt; Ath .          0.05250411 .          .          .          .         
-#&gt; Cea .          .          0.05250411 .          .          .         
-#&gt; Ced .          .          .          0.05250411 .          .         
-#&gt; Set .          .          .          .          0.05250411 .         
-#&gt; All .          .          .          .          .          0.05250411
-#&gt; Han .          .          .          .          .          .         
-#&gt; Hfo .          .          .          .          .          .         
-#&gt; Hsp .          .          .          .          .          .         
-#&gt; Hve .          .          .          .          .          .         
-#&gt; Sta .          .          .          .          .          .         
-#&gt;                                                           
-#&gt; Che .          .          .          .          .         
-#&gt; Hyc .          .          .          .          .         
-#&gt; Hym .          .          .          .          .         
-#&gt; Hys .          .          .          .          .         
-#&gt; Psy .          .          .          .          .         
-#&gt; Aga .          .          .          .          .         
-#&gt; Glo .          .          .          .          .         
-#&gt; Ath .          .          .          .          .         
-#&gt; Cea .          .          .          .          .         
-#&gt; Ced .          .          .          .          .         
-#&gt; Set .          .          .          .          .         
-#&gt; All .          .          .          .          .         
-#&gt; Han 0.05250411 .          .          .          .         
-#&gt; Hfo .          0.05250411 .          .          .         
-#&gt; Hsp .          .          0.05250411 .          .         
-#&gt; Hve .          .          .          0.05250411 .         
-#&gt; Sta .          .          .          .          0.05250411
+#&gt; 17 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span></div><div class='output co'>#&gt;                                                                          
+#&gt; Che 0.1989391 .         .         .         .         .         .        
+#&gt; Hyc .         0.1989391 .         .         .         .         .        
+#&gt; Hym .         .         0.1989391 .         .         .         .        
+#&gt; Hys .         .         .         0.1989391 .         .         .        
+#&gt; Psy .         .         .         .         0.1989391 .         .        
+#&gt; Aga .         .         .         .         .         0.1989391 .        
+#&gt; Glo .         .         .         .         .         .         0.1989391
+#&gt; Ath .         .         .         .         .         .         .        
+#&gt; Cea .         .         .         .         .         .         .        
+#&gt; Ced .         .         .         .         .         .         .        
+#&gt; Set .         .         .         .         .         .         .        
+#&gt; All .         .         .         .         .         .         .        
+#&gt; Han .         .         .         .         .         .         .        
+#&gt; Hfo .         .         .         .         .         .         .        
+#&gt; Hsp .         .         .         .         .         .         .        
+#&gt; Hve .         .         .         .         .         .         .        
+#&gt; Sta .         .         .         .         .         .         .        
+#&gt;                                                                          
+#&gt; Che .         .         .         .         .         .         .        
+#&gt; Hyc .         .         .         .         .         .         .        
+#&gt; Hym .         .         .         .         .         .         .        
+#&gt; Hys .         .         .         .         .         .         .        
+#&gt; Psy .         .         .         .         .         .         .        
+#&gt; Aga .         .         .         .         .         .         .        
+#&gt; Glo .         .         .         .         .         .         .        
+#&gt; Ath 0.1989391 .         .         .         .         .         .        
+#&gt; Cea .         0.1989391 .         .         .         .         .        
+#&gt; Ced .         .         0.1989391 .         .         .         .        
+#&gt; Set .         .         .         0.1989391 .         .         .        
+#&gt; All .         .         .         .         0.1989391 .         .        
+#&gt; Han .         .         .         .         .         0.1989391 .        
+#&gt; Hfo .         .         .         .         .         .         0.1989391
+#&gt; Hsp .         .         .         .         .         .         .        
+#&gt; Hve .         .         .         .         .         .         .        
+#&gt; Sta .         .         .         .         .         .         .        
+#&gt;                                  
+#&gt; Che .         .         .        
+#&gt; Hyc .         .         .        
+#&gt; Hym .         .         .        
+#&gt; Hys .         .         .        
+#&gt; Psy .         .         .        
+#&gt; Aga .         .         .        
+#&gt; Glo .         .         .        
+#&gt; Ath .         .         .        
+#&gt; Cea .         .         .        
+#&gt; Ced .         .         .        
+#&gt; Set .         .         .        
+#&gt; All .         .         .        
+#&gt; Han .         .         .        
+#&gt; Hfo .         .         .        
+#&gt; Hsp 0.1989391 .         .        
+#&gt; Hve .         0.1989391 .        
+#&gt; Sta .         .         0.1989391
 #&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

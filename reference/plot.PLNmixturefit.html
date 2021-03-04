@@ -192,22 +192,20 @@ or by representing the expected matrix  of count reorder according to the cluste
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>
 <span class='va'>trichoptera</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_data.html'>prepare_data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Abundance</span>, <span class='va'>trichoptera</span><span class='op'>$</span><span class='va'>Covariate</span><span class='op'>)</span>
-<span class='va'>fits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNmixture.html'>PLNmixture</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span>, clusters <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>, data <span class='op'>=</span> <span class='va'>trichoptera</span><span class='op'>)</span>
+<span class='va'>myPLN</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PLNmixture.html'>PLNmixture</a></span><span class='op'>(</span><span class='va'>Abundance</span> <span class='op'>~</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/offset.html'>offset</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>Offset</span><span class='op'>)</span><span class='op'>)</span>,
+           data <span class='op'>=</span> <span class='va'>trichoptera</span>, control_main <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>iterates <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>  <span class='op'>%&gt;%</span> <span class='fu'><a href='getBestModel.PLNPCAfamily.html'>getBestModel</a></span><span class='op'>(</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; 
 #&gt;  Initialization...
 #&gt; 
-#&gt;  Adjusting 4 PLN mixture models.
-#&gt; 	number of cluster = 1 	number of cluster = 2 	number of cluster = 3 	number of cluster = 4 
+#&gt;  Adjusting 5 PLN mixture models.
+#&gt; 	number of cluster = 1 	number of cluster = 2 	number of cluster = 3 	number of cluster = 4 	number of cluster = 5 
 #&gt; 
 #&gt;  Smoothing PLN mixture models.
-#&gt;    Going backward +++                                                                                                       Going forward +++                                                                                                       Going backward +++                                                                                                       Going forward +++                                                                                                    
+#&gt; 
 #&gt;  Post-treatments
-#&gt;  DONE!</div><div class='input'><span class='va'>myMixture</span> <span class='op'>&lt;-</span> <span class='fu'><a href='getBestModel.PLNPCAfamily.html'>getBestModel</a></span><span class='op'>(</span><span class='va'>fits</span><span class='op'>)</span>
-<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>myMixture</span>, <span class='st'>"pca"</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>myMixture</span>, <span class='st'>"matrix"</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+#&gt;  DONE!</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>myPLN</span>, <span class='st'>"pca"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.PLNmixturefit-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>myPLN</span>, <span class='st'>"matrix"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.PLNmixturefit-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
