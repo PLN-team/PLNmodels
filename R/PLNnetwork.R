@@ -24,7 +24,7 @@
 #' * "trace" integer for verbosity. Useless when `cores > 1`
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
 #' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
-#' * "penalize_diagonal" boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is FALSE.
+#' * "penalize_diagonal" boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is TRUE
 #' * "penalty_weights" p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 #'
 #' The list of parameters `control_init` controls the optimization process in the initialization and in the function [PLN()], plus two additional parameters:
