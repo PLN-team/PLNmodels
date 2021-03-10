@@ -155,7 +155,8 @@ PLNmixturefit <-
       #' @description Predict group of new samples
       #' @param newdata A data frame in which to look for variables, offsets and counts with which to predict.
       #' @param type The type of prediction required. The default `posterior` are posterior probabilities for each group ,
-      #'  `response` is the group with maximal posterior probability and `latent` is the averaged latent in the latent space,
+      #'  `response` is the group with maximal posterior probability and `latent` is the averaged latent coordinate (without
+      #'  offset and nor covariate effects),
       #'  with weights equal to the posterior probabilities.
       #' @param prior User-specified prior group probabilities in the new data. The default uses a uniform prior.
       #' @param control a list for controlling the optimization. See [PLN()] for details.
@@ -212,7 +213,7 @@ PLNmixturefit <-
           if (self$k > 1) { # only needed when at least 2 components!
             tau <-
               sapply(ve_step, function(comp) comp$log.lik) %>% # Jik
-              sweep(2, log(self$mixtureParam), "+") %>% # computation in log space
+              sweep(2, log(colMeans(tau)), "+") %>% # computation in log space
               apply(1, .softmax) %>%        # exponentiation + normalization with soft-max
               t() %>% .check_boundaries()   # bound away probabilities from 0/1
           }
@@ -242,8 +243,6 @@ PLNmixturefit <-
           )
       },
 
-# self$posteriorProb %*% t(self$group_means) + self$var_par$M
-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -----------------
       #' @description Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering
@@ -252,8 +251,8 @@ PLNmixturefit <-
       #' @param log_scale logical. Should the color scale values be log-transform before plotting? Default is \code{TRUE}.
       #' @return a [`ggplot`] graphic
       plot_clustering_data = function(main = "Expected counts reorder by clustering", plot = TRUE, log_scale = TRUE) {
-        M  <- self$var_par$M
-        S2 <- switch(private$covariance, "spherical" = self$var_par$S2 %*% rbind(rep(1, ncol(M))), self$var_par$S2)
+        M  <- private$mix_up('var_par$M')
+        S2 <- switch(private$covariance, "spherical" = private$mix_up('var_par$S2') %*% rbind(rep(1, ncol(M))), private$mix_up('var_par$S2'))
         mu <- self$posteriorProb %*% t(self$group_means)
         A  <- exp(mu + M + .5 * S2)
         p <- plot_matrix(A, 'samples', 'variables', self$memberships, log_scale)
@@ -308,7 +307,7 @@ PLNmixturefit <-
         cat("Poisson Lognormal mixture model with",self$k,"components and", self$vcov_model,"covariances.\n")
         cat("* Useful fields\n")
         cat("    $posteriorProb, $memberships, $mixtureParam, $group_means\n")
-        cat("    $model_par, $latent, $var_par, $optim_par\n")
+        cat("    $model_par, $latent, $latent_pos, $optim_par\n")
         cat("    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria\n")
         cat("    $component[[i]] (a PLNfit with associated methods and fields)\n")
         cat("* Useful S3 methods\n")
@@ -329,7 +328,9 @@ PLNmixturefit <-
       #' @field components components of the mixture (PLNfits)
       components    = function(value) {if (missing(value)) return(private$comp) else private$comp <- value},
       #' @field latent a matrix: values of the latent vector (Z in the model)
-      latent     = function() {private$mix_up('latent')},
+      latent = function() {private$mix_up('latent')},
+      #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
+      latent_pos = function() {private$mix_up('var_par$M') + self$posteriorProb %*% t(self$group_means)},
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
       posteriorProb = function(value) {if (missing(value)) return(private$tau) else private$tau <- value},
       #' @field memberships vector for cluster index
@@ -373,10 +374,6 @@ PLNmixturefit <-
                                     Pi = self$mixtureParam)},
       #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal" or "full")
       vcov_model = function() {private$covariance},
-      #' #' @field var_par a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
-      #' var_par    = function() {
-      #'   list(M = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))
-      #'   },
       #' @field fitted a matrix: fitted values of the observations (A in the model)
       fitted = function() {private$mix_up('fitted')},
       #' @field group_means a matrix of group mean vectors in the latent space.

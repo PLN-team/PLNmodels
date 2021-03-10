@@ -116,7 +116,7 @@ test_that("PLNPCA fit: check print message",  {
 capture_output(print(as.data.frame(round(myPLNfit$criteria, digits = 3), row.names = ""))),
 "==================================================================
 * Useful fields
-    $model_par, $latent, $var_par, $optim_par
+    $model_par, $latent, $latent_pos, $var_par, $optim_par
     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
 * Useful S3 methods
     print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()

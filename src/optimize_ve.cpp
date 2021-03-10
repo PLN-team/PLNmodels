@@ -211,10 +211,10 @@ Rcpp::List cpp_optimize_vestep_spherical(
         const arma::mat S = metadata.map<S_ID>(params);
 
         arma::vec S2 = S % S;
-        arma::mat Z = O + X * Theta.t() + M;
-        arma::mat A = exp(Z.each_col() + 0.5 * S2);
         const arma::uword p = Y.n_cols;
-        double n_sigma2 = dot(w, sum(pow(M, 2), 1) + double(p) * S);
+        arma::mat Z = O + X * Theta.t() + M;
+        arma::mat A = exp(Z + 0.5 * S2 * arma::ones(p).t());
+        double n_sigma2 = dot(w, sum(pow(M, 2), 1) + double(p) * S2);
         double omega2 = Omega(0, 0);
         double objective = accu(w.t() * (A - Y % Z)) - 0.5 * double(p) * dot(w, log(S2)) + 0.5 * n_sigma2 * omega2;
 
@@ -230,9 +230,9 @@ Rcpp::List cpp_optimize_vestep_spherical(
     arma::vec S2 = S % S;
     double omega2 = Omega(0, 0);
     // Element-wise log-likelihood
-    arma::mat Z = O + X * Theta.t() + M;
-    arma::mat A = exp(Z.each_col() + 0.5 * S2);
     const arma::uword p = Y.n_cols;
+    arma::mat Z = O + X * Theta.t() + M;
+    arma::mat A = exp(Z + 0.5 * S2 * arma::ones(p).t());
     arma::mat loglik = sum(Y % Z - A - 0.5 * pow(M, 2) * omega2, 1) - 0.5 * double(p) * omega2 * S2 +
                        0.5 * double(p) * log(S2 * omega2) + ki(Y);
 

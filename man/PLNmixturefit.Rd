@@ -28,6 +28,8 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
+\item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
+
 \item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
 
 \item{\code{memberships}}{vector for cluster index}
@@ -58,11 +60,7 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)}
 
-\item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")
-#' @field var_par a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
-var_par    = function() {
-list(M = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))
-},}
+\item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
 
 \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 
@@ -172,7 +170,8 @@ Predict group of new samples
 \item{\code{newdata}}{A data frame in which to look for variables, offsets and counts with which to predict.}
 
 \item{\code{type}}{The type of prediction required. The default \code{posterior} are posterior probabilities for each group ,
-\code{response} is the group with maximal posterior probability and \code{latent} is the averaged latent in the latent space,
+\code{response} is the group with maximal posterior probability and \code{latent} is the averaged latent coordinate (without
+offset and nor covariate effects),
 with weights equal to the posterior probabilities.}
 
 \item{\code{prior}}{User-specified prior group probabilities in the new data. The default uses a uniform prior.}

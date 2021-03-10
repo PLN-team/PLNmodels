@@ -338,7 +338,8 @@ Setting `type = "response"`, we can predict the most likely cluster
 $\hat{k} = \arg\max_{k = 1\dots K} \{ \hat{\pi_k}\}$ instead:
 
 ```{r predict_class}
-predicted.class <- predict(myMix_BIC, newdata = trichoptera,  type = "response")
+predicted.class <- predict(myMix_BIC, newdata = trichoptera, 
+                           prior = myMix_BIC$posteriorProb,  type = "response")
 predicted.class
 ```
 
@@ -354,9 +355,10 @@ with the $\hat{\pi}_k$. Some samples, have compositions that put them
 very far from their group mean.
 
 ```{r predicted_position, fig.width=7, fig.height=5}
-predicted.position <- predict(myMix_BIC, newdata = trichoptera,  type = "position")
+predicted.position <- predict(myMix_BIC, newdata = trichoptera, 
+                              prior = myMix_BIC$posteriorProb, type = "position")
 prcomp(predicted.position) %>% 
-  factoextra::fviz_pca_biplot(col.ind = trichoptera$Group)
+  factoextra::fviz_pca_ind(col.ind = predicted.class)
 ```
 
 ## References

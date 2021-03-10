@@ -31,6 +31,8 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 
 \item{\code{entropy}}{entropy of the variational distribution}
 
+\item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
+
 \item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)}
 
 \item{\code{percent_var}}{the percent of variance explained by each axis}

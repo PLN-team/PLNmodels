@@ -67,8 +67,6 @@ test_that("PLNmixture fit: check classes, getters and field access",  {
    expect_equal(dim(model$model_par$Mu), c(p, k))
    expect_true(all(map_lgl(model$model_par$Sigma, ~all.equal(dim(.x), c(p,p)))))
    expect_equal(length(model$mixtureParam), k)
-   expect_equal(dim(model$var_par$M), c(n, p))
-   expect_equal(dim(model$var_par$S2), c(n, 1))
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
    expect_lt(model$ICL, model$loglik)
@@ -97,7 +95,7 @@ test_that("PLNmixture fit: check print message",  {
 "Poisson Lognormal mixture model with 3 components and spherical covariances.",
 "* Useful fields",
 "    $posteriorProb, $memberships, $mixtureParam, $group_means",
-"    $model_par, $latent, $var_par, $optim_par",
+"    $model_par, $latent, $latent_pos, $optim_par",
 "    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria",
 "    $component[[i]] (a PLNfit with associated methods and fields)",
 "* Useful S3 methods",
@@ -167,8 +165,6 @@ test_that("Diagonal model of the covariance is working", {
    expect_equal(dim(model$model_par$Mu), c(p, k))
    expect_true(all(map_lgl(model$model_par$Sigma, ~all.equal(dim(.x), c(p,p)))))
    expect_equal(length(model$mixtureParam), k)
-   expect_equal(dim(model$var_par$M), c(n, p))
-   expect_equal(dim(model$var_par$S2), c(n, p))
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
    expect_lt(model$ICL, model$loglik)
@@ -245,8 +241,6 @@ test_that("Full model of the covariance is working", {
    expect_equal(dim(model$model_par$Mu), c(p, k))
    expect_true(all(map_lgl(model$model_par$Sigma, ~all.equal(dim(.x), c(p,p)))))
    expect_equal(length(model$mixtureParam), k)
-   expect_equal(dim(model$var_par$M), c(n, p))
-   expect_equal(dim(model$var_par$S2), c(n, p))
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
    expect_lt(model$ICL, model$loglik)
@@ -325,8 +319,6 @@ test_that("Spherical model of the covariance is working with covariate", {
    expect_equal(dim(model$model_par$Mu), c(p, k))
    expect_true(all(map_lgl(model$model_par$Sigma, ~all.equal(dim(.x), c(p,p)))))
    expect_equal(length(model$mixtureParam), k)
-   expect_equal(dim(model$var_par$M), c(n, p))
-   expect_equal(dim(model$var_par$S2), c(n, 1))
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
    expect_gt(model$R_squared, 0)
@@ -391,8 +383,6 @@ test_that("Diagonal model of the covariance is working with covariate", {
    expect_equal(dim(model$model_par$Mu), c(p, k))
    expect_true(all(map_lgl(model$model_par$Sigma, ~all.equal(dim(.x), c(p,p)))))
    expect_equal(length(model$mixtureParam), k)
-   expect_equal(dim(model$var_par$M), c(n, p))
-   expect_equal(dim(model$var_par$S2), c(n, p))
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
    expect_lt(model$ICL, model$loglik)
@@ -458,8 +448,6 @@ test_that("Full model of the covariance is working with covariate", {
    expect_equal(dim(model$model_par$Mu), c(p, k))
    expect_true(all(map_lgl(model$model_par$Sigma, ~all.equal(dim(.x), c(p,p)))))
    expect_equal(length(model$mixtureParam), k)
-   expect_equal(dim(model$var_par$M), c(n, p))
-   expect_equal(dim(model$var_par$S2), c(n, p))
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
    expect_lt(model$ICL, model$loglik)

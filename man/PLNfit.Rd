@@ -58,6 +58,8 @@ print(myPLN)
 
 \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
+\item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
+
 \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 
 \item{\code{nb_param}}{number of parameters in the current PLN model}

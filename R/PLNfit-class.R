@@ -185,10 +185,13 @@ PLNfit <- R6Class(
         control
       )
 
+      Ji <- optim_out$loglik
+      attr(Ji, "weights") <- weights
+
       ## output
       list(M       = optim_out$M,
            S2      = (optim_out$S)**2,
-           log.lik = setNames(optim_out$loglik, rownames(responses)))
+           log.lik = setNames(Ji, rownames(responses)))
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -311,7 +314,7 @@ PLNfit <- R6Class(
       print(as.data.frame(round(self$criteria, digits = 3), row.names = ""))
       cat("==================================================================\n")
       cat("* Useful fields\n")
-      cat("    $model_par, $latent, $var_par, $optim_par\n")
+      cat("    $model_par, $latent, $latent_pos, $var_par, $optim_par\n")
       cat("    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria\n")
       cat("* Useful S3 methods\n")
       cat("    print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()\n")
@@ -367,6 +370,8 @@ PLNfit <- R6Class(
     var_par    = function() {list(M = private$M, S2 = private$S2)},
     #' @field latent a matrix: values of the latent vector (Z in the model)
     latent     = function() {private$Z},
+    #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
+    latent_pos = function() {private$M},
     #' @field fitted a matrix: fitted values of the observations (A in the model)
     fitted     = function() {private$A},
     #' @field nb_param number of parameters in the current PLN model
