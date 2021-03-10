@@ -60,7 +60,6 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \item \href{#method-setVisualization}{\code{PLNPCAfit$setVisualization()}}
 \item \href{#method-postTreatment}{\code{PLNPCAfit$postTreatment()}}
 \item \href{#method-compute_fisher}{\code{PLNPCAfit$compute_fisher()}}
-\item \href{#method-latent_pos}{\code{PLNPCAfit$latent_pos()}}
 \item \href{#method-plot_individual_map}{\code{PLNPCAfit$plot_individual_map()}}
 \item \href{#method-plot_correlation_circle}{\code{PLNPCAfit$plot_correlation_circle()}}
 \item \href{#method-plot_PCA}{\code{PLNPCAfit$plot_PCA()}}
@@ -256,29 +255,6 @@ Safely compute the fisher information matrix (FIM)
 }
 \subsection{Returns}{
 a sparse matrix with sensible dimension names
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-latent_pos"></a>}}
-\if{latex}{\out{\hypertarget{method-latent_pos}{}}}
-\subsection{Method \code{latent_pos()}}{
-Compute matrix of latent positions, noted as Z in the model.
-Useful to compute the likelihood or for data visualization
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$latent_pos(covariates, offsets)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a n x q matrix of latent positions.
 }
 }
 \if{html}{\out{<hr>}}

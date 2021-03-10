@@ -18,7 +18,7 @@ test_that("PLNnetwork fit: check classes, getters and field access", {
   myPLNfit <- getBestModel(models)
 
   ## fields and active bindings
-  expect_equal(dim(myPLNfit$latent_pos(X, O)), dim(Y))
+  expect_equal(dim(myPLNfit$latent), dim(Y))
   expect_equal(dim(myPLNfit$model_par$Theta), c(ncol(Y), ncol(X)))
   expect_equal(dim(myPLNfit$model_par$Omega), c(ncol(Y), ncol(Y)))
   expect_equal(dim(myPLNfit$model_par$Sigma), c(ncol(Y), ncol(Y)))

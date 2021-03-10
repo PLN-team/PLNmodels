@@ -58,11 +58,11 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)}
 
-\item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
-
-\item{\code{var_par}}{a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
-#' @field latent a matrix: values of the latent vector (Z in the model)
-latent = function() {private$mix_up('latent')},}
+\item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")
+#' @field var_par a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
+var_par    = function() {
+list(M = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))
+},}
 
 \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 
@@ -76,7 +76,6 @@ latent = function() {private$mix_up('latent')},}
 \item \href{#method-new}{\code{PLNmixturefit$new()}}
 \item \href{#method-optimize}{\code{PLNmixturefit$optimize()}}
 \item \href{#method-predict}{\code{PLNmixturefit$predict()}}
-\item \href{#method-latent_pos}{\code{PLNmixturefit$latent_pos()}}
 \item \href{#method-plot_clustering_data}{\code{PLNmixturefit$plot_clustering_data()}}
 \item \href{#method-plot_clustering_pca}{\code{PLNmixturefit$plot_clustering_pca()}}
 \item \href{#method-postTreatment}{\code{PLNmixturefit$postTreatment()}}
@@ -186,28 +185,6 @@ with weights equal to the posterior probabilities.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-latent_pos"></a>}}
-\if{latex}{\out{\hypertarget{method-latent_pos}{}}}
-\subsection{Method \code{latent_pos()}}{
-Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$latent_pos(covariates, offsets)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a n x p matrix of latent positions.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot_clustering_data"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_clustering_data}{}}}
 \subsection{Method \code{plot_clustering_data()}}{
@@ -239,7 +216,7 @@ a \code{\link{ggplot}} graphic
 \if{html}{\out{<a id="method-plot_clustering_pca"></a>}}
 \if{latex}{\out{\hypertarget{method-plot_clustering_pca}{}}}
 \subsection{Method \code{plot_clustering_pca()}}{
-Plot the individual map of a PCA performed on the latent coordinate, where individuals are colored according to the memberships
+Plot the individual map of a PCA performed on the latent coordinates, where individuals are colored according to the memberships
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$plot_clustering_pca(
   main = "Clustering labels in Individual Factor Map",

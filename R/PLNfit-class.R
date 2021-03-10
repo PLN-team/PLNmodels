@@ -196,7 +196,7 @@ PLNfit <- R6Class(
     #' @description Update R2 field after optimization
     set_R2 = function(responses, covariates, offsets, weights, nullModel = NULL) {
       if (is.null(nullModel)) nullModel <- nullModelPoisson(responses, covariates, offsets, weights)
-      loglik <- logLikPoisson(responses, self$latent_pos(covariates, offsets), weights)
+      loglik <- logLikPoisson(responses, self$latent, weights)
       lmin   <- logLikPoisson(responses, nullModel, weights)
       lmax   <- logLikPoisson(responses, fullModelPoisson(responses, weights), weights)
       private$R2 <- (loglik - lmin) / (lmax - lmin)
@@ -275,15 +275,6 @@ PLNfit <- R6Class(
         ## compute and store matrix of standard errors
         private$.std_err <- self$compute_standard_error()
       }
-    },
-
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## Helper functions ----------------------
-    #' @description Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization
-    #' @return a n x q matrix of latent positions.
-    latent_pos = function(covariates, offsets) {
-      latentPos <- private$M + tcrossprod(covariates, private$Theta) + offsets
-      latentPos
     },
 
     #' @description Predict position, scores or observations of new data.

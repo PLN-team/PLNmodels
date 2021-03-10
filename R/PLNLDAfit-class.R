@@ -71,7 +71,7 @@ PLNLDAfit <- R6Class(
       ## extract group means
       if (ncol(covariates) > 0) {
         proj_orth_X <- (diag(self$n) - covariates %*% solve(crossprod(covariates)) %*% t(covariates))
-        P <- proj_orth_X %*% self$latent_pos(cbind(covariates, design_group), matrix(0, self$n, self$q))
+        P <- proj_orth_X %*% (tcrossprod(cbind(covariates, design_group), private$Theta) + private$M)
         Mu <- t(rowsum(P, private$grouping) / tabulate(private$grouping))
       } else {
         Mu <- private$Theta

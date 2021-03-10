@@ -95,7 +95,6 @@ print(myPLN)
 \item \href{#method-compute_fisher}{\code{PLNfit$compute_fisher()}}
 \item \href{#method-compute_standard_error}{\code{PLNfit$compute_standard_error()}}
 \item \href{#method-postTreatment}{\code{PLNfit$postTreatment()}}
-\item \href{#method-latent_pos}{\code{PLNfit$latent_pos()}}
 \item \href{#method-predict}{\code{PLNfit$predict()}}
 \item \href{#method-show}{\code{PLNfit$show()}}
 \item \href{#method-print}{\code{PLNfit$print()}}
@@ -327,28 +326,6 @@ Update R2, fisher and std_err fields after optimization
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }
 \if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-latent_pos"></a>}}
-\if{latex}{\out{\hypertarget{method-latent_pos}{}}}
-\subsection{Method \code{latent_pos()}}{
-Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$latent_pos(covariates, offsets)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a n x q matrix of latent positions.
 }
 }
 \if{html}{\out{<hr>}}

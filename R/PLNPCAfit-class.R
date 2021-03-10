@@ -140,16 +140,6 @@ PLNPCAfit <- R6Class(
       },
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      ## Extractors ------------------------
-      #' @description Compute matrix of latent positions, noted as Z in the model.
-      #' Useful to compute the likelihood or for data visualization
-      #' @return a n x q matrix of latent positions.
-      latent_pos = function(covariates, offsets) {
-        latentPos <- tcrossprod(private$M, private$B) + tcrossprod(covariates, private$Theta) + offsets
-        latentPos
-      },
-
-      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -----------------
 
       #' @description Plot the factorial map of the PCA

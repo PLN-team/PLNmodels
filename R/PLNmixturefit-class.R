@@ -242,15 +242,7 @@ PLNmixturefit <-
           )
       },
 
-      ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      ## Helper functions ----------------------
-      #' @description Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization
-      #' @return a n x p matrix of latent positions.
-      latent_pos = function(covariates, offsets) {
-        latentPos <- self$posteriorProb %*% t(self$group_means) + self$var_par$M +
-          tcrossprod(covariates, private$Theta) + offsets
-        latentPos
-      },
+# self$posteriorProb %*% t(self$group_means) + self$var_par$M
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -----------------
@@ -270,13 +262,13 @@ PLNmixturefit <-
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -----------------
-      #' @description Plot the individual map of a PCA performed on the latent coordinate, where individuals are colored according to the memberships
+      #' @description Plot the individual map of a PCA performed on the latent coordinates, where individuals are colored according to the memberships
       #' @param plot logical. Should the plot be displayed or sent back as [`ggplot`] object
       #' @param main character. A title for the plot. An hopefully appropriate title will be used by default.
       #' @return a [`ggplot`] graphic
       plot_clustering_pca = function(main = "Clustering labels in Individual Factor Map", plot = TRUE) {
-        mu <- self$posteriorProb %*% t(self$group_means)
-        svdM <- svd(scale(self$var_par$M + mu, TRUE, FALSE), nv = 2)
+        mu <- self$posteriorProb %*% t(self$group_means) + private$mix_up('var_par$M')
+        svdM <- svd(scale(mu, TRUE, FALSE), nv = 2)
         .scores <- data.frame(t(t(svdM$u[, 1:2]) * svdM$d[1:2]))
         colnames(.scores) <- paste("a",1:2,sep = "")
         .scores$labels <- as.factor(self$memberships)
@@ -341,7 +333,7 @@ PLNmixturefit <-
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
       posteriorProb = function(value) {if (missing(value)) return(private$tau) else private$tau <- value},
       #' @field memberships vector for cluster index
-      memberships   = function(value) {apply(private$tau, 1, which.max)},
+      memberships = function(value) {apply(private$tau, 1, which.max)},
       #' @field mixtureParam vector of cluster proporitions
       mixtureParam  = function() {colMeans(private$tau)},
       #' @field optim_par a list with parameters useful for monitoring the optimization
@@ -381,17 +373,10 @@ PLNmixturefit <-
                                     Pi = self$mixtureParam)},
       #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal" or "full")
       vcov_model = function() {private$covariance},
-      #' @field var_par a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
-      var_par    = function() {
-        # M_k   <- map(private$comp, "var_par") %>% map("M")
-        # M     <- reduce(M_k, `+`)
-        #tau_k <- map(private$comp, "weights")
-        #M_bar <- map2(tau_k, map(M_k, function(M_k_) rowSums((M_k_ - M)^2)), `*`) %>% reduce(`+`)
-        # list(M  = M, S2 = private$mix_up('var_par$S2') + M_bar)
-        list(M  = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))
-        },
-      #' #' @field latent a matrix: values of the latent vector (Z in the model)
-      #' latent = function() {private$mix_up('latent')},
+      #' #' @field var_par a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
+      #' var_par    = function() {
+      #'   list(M = private$mix_up('var_par$M'), S2 = private$mix_up('var_par$S2'))
+      #'   },
       #' @field fitted a matrix: fitted values of the observations (A in the model)
       fitted = function() {private$mix_up('fitted')},
       #' @field group_means a matrix of group mean vectors in the latent space.
