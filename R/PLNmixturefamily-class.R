@@ -28,36 +28,7 @@ PLNmixturefamily <-
     private = list(
       formula = NULL,
       xlevels = NULL,
-      smooth_forward_old = function(control) {
-      trace <- control$trace > 0; control$trace <- FALSE
-      if (trace) cat("   Going forward ")
-      for (k in self$clusters[-length(self$clusters)]) {
-        if (trace) cat("+")
-        cl0 <- self$models[[k]]$memberships
-        if (length(unique(cl0)) == k) { # when would this not happens ?
-          candidates <- future.apply::future_lapply(1:k, function(l) {
-            cl <- cl0
-            J  <- which(cl == l)
-            if (length(J) > 4) {
-              J1 <- base::sample(J, floor(length(J)/2))
-              J2 <- setdiff(J, J1)
-              cl[J1] <- l; cl[J2] <- k + 1
-              model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, as_indicator(cl), private$formula, private$xlevels, control)
-              model$optimize(self$responses, self$covariates, self$offsets, control)
-            } else {
-              model <- self$models[[k + 1]]$clone()
-            }
-            model
-          }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
-          best_one <- candidates[[which.max(map_dbl(candidates, 'loglik'))]]
-          if (best_one$loglik > self$models[[k + 1]]$loglik) {
-            self$models[[k + 1]] <- best_one
-            # cat("found one")
-          }
-        }
-      }
-      if (trace) cat("\r                                                                                                    \r")
-      },
+
       smooth_forward = function(control) {
 
         trace <- control$trace > 0; control$trace <- FALSE
