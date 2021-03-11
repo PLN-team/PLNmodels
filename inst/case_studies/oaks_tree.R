@@ -65,17 +65,15 @@ factoextra::fviz_pca_var(myPLNPCA_tree, axes = c(1,2), select.var = list(contrib
 ## Network inference with sparce covariance estimation
 system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control_main = list(trace = 2)))
 stability_selection(myPLNnets)
-plot(getBestModel(myPLNnets, "StARS", stability = .995))
+plot(getBestModel(myPLNnets, "StARS", stability = .975))
 
 ## Mixture model to recover tree structure
-system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:6, control_main = list(cores = nb_cores)))
-
-plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"))
+system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:6))
 
 myPLN <- my_mixtures %>% getModel(3)
 
 plot(myPLN, "pca", main = 'clustering memberships in individual factor map')
-myPLN$plot_clustering_data(myPLN, log_scale = TRUE)
+myPLN$plot_clustering_data(myPLN)
 
 aricode::ARI(myPLN$memberships, oaks$tree)
 table(myPLN$memberships, oaks$tree)
@@ -91,7 +89,7 @@ data.frame(
   ggplot(aes(x = nb_components, y = value, colour = score)) + geom_line() + theme_bw() + labs(y = "clustering similarity", x = "number of components")
 
 ## Mixture model to recover tree structure - with covariates
-system.time(my_mixtures <- PLNmixture(Abundance ~ 0 + tree + distTOground + offset(log(Offset)), data = oaks, clusters = 1:5, control_main = list(cores = nb_cores)))
+system.time(my_mixtures <- PLNmixture(Abundance ~ 0 + tree + distTOground + offset(log(Offset)), data = oaks, clusters = 1:5))
 
 plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"))
 

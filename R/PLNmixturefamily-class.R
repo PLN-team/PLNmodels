@@ -28,7 +28,7 @@ PLNmixturefamily <-
     private = list(
       formula = NULL,
       xlevels = NULL,
-      smooth_forward = function(control) {
+      smooth_forward_old = function(control) {
       trace <- control$trace > 0; control$trace <- FALSE
       if (trace) cat("   Going forward ")
       for (k in self$clusters[-length(self$clusters)]) {
@@ -55,6 +55,50 @@ PLNmixturefamily <-
             # cat("found one")
           }
         }
+      }
+      if (trace) cat("\r                                                                                                    \r")
+      },
+      smooth_forward = function(control) {
+
+        trace <- control$trace > 0; control$trace <- FALSE
+        control_fast <- control
+        control_fast$maxit_out <- 2
+
+        if (trace) cat("   Going forward ")
+        for (k in self$clusters[-length(self$clusters)]) {
+          if (trace) cat("+")
+          ## current clustering
+          cl  <- self$models[[k]]$memberships
+          ## all best split according to kmeans
+          data_split <- self$models[[k]]$latent_pos %>% as.data.frame() %>% split(cl)
+          cl_splitable <- (1:k)[tabulate(cl) >= 3]
+          cl_split <- vector("list", k)
+          cl_split[cl_splitable] <- data_split[cl_splitable] %>% map(kmeans, 2, nstart = 10) %>% map("cluster")
+
+          ## Reformating into indicator of clusters
+          tau_candidates <- map(cl_splitable, function(k_)  {
+            split <- cl_split[[k_]]
+            split[cl_split[[k_]] == 1] <- k_
+            split[cl_split[[k_]] == 2] <- k + 1
+            candidate <- cl
+            candidate[candidate == k_] <- split
+            candidate
+          }) %>% map(as_indicator)
+
+          loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
+            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, private$xlevels, control_fast)
+            model$optimize(self$responses, self$covariates, self$offsets, control_fast)
+            model$loglik
+          }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
+
+          best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, private$xlevels, control)
+          best_one$optimize(self$responses, self$covariates, self$offsets, control)
+
+          if (best_one$loglik > self$models[[k + 1]]$loglik) {
+            self$models[[k + 1]] <- best_one
+            # cat("found one")
+          }
+
       }
       if (trace) cat("\r                                                                                                    \r")
       },
