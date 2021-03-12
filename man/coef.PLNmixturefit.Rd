@@ -10,7 +10,7 @@
 \item{object}{an R6 object with class \code{\link{PLNmixturefit}}}
 
 \item{type}{type of parameter that should be extracted. Either "main" (default) for \deqn{\Theta},
-"means" for \deqn{\Mu}, "mixture" for \deqn{\pi} or "covariance" for \deqn{\Sigma}}
+"means" for \deqn{\mu}, "mixture" for \deqn{\pi} or "covariance" for \deqn{\Sigma}}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }

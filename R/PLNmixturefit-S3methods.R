@@ -89,7 +89,7 @@ predict.PLNmixturefit <-
 #'
 #' @param object an R6 object with class [`PLNmixturefit`]
 #' @param type type of parameter that should be extracted. Either "main" (default) for \deqn{\Theta},
-#' "means" for \deqn{\Mu}, "mixture" for \deqn{\pi} or "covariance" for \deqn{\Sigma}
+#' "means" for \deqn{\mu}, "mixture" for \deqn{\pi} or "covariance" for \deqn{\Sigma}
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of coefficients extracted from the PLNfit model.
 #'
