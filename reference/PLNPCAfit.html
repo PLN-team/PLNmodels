@@ -82,7 +82,7 @@ See the documentation for the methods inherited by  PLNfit and the plot() method
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9500</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9560</span>
       </span>
     </div>
 
@@ -176,6 +176,8 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 
 <dt><code>entropy</code></dt><dd><p>entropy of the variational distribution</p></dd>
 
+<dt><code>latent_pos</code></dt><dd><p>a matrix: values of the latent position vector (Z) without covariates effects or offset</p></dd>
+
 <dt><code>model_par</code></dt><dd><p>a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)</p></dd>
 
 <dt><code>percent_var</code></dt><dd><p>the percent of variance explained by each axis</p></dd>
@@ -207,7 +209,6 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 <li><p><a href='#method-setVisualization'><code>PLNPCAfit$setVisualization()</code></a></p></li>
 <li><p><a href='#method-postTreatment'><code>PLNPCAfit$postTreatment()</code></a></p></li>
 <li><p><a href='#method-compute_fisher'><code>PLNPCAfit$compute_fisher()</code></a></p></li>
-<li><p><a href='#method-latent_pos'><code>PLNPCAfit$latent_pos()</code></a></p></li>
 <li><p><a href='#method-plot_individual_map'><code>PLNPCAfit$plot_individual_map()</code></a></p></li>
 <li><p><a href='#method-plot_correlation_circle'><code>PLNPCAfit$plot_correlation_circle()</code></a></p></li>
 <li><p><a href='#method-plot_PCA'><code>PLNPCAfit$plot_PCA()</code></a></p></li>
@@ -360,21 +361,6 @@ after optimization</p><h4 class='hasAnchor' id='arguments'><a class='anchor' hre
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>a sparse matrix with sensible dimension names</p>
 <p><hr>
-<a id="method-latent_pos"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>latent_pos()</code></h3>
-<p>Compute matrix of latent positions, noted as Z in the model.
-Useful to compute the likelihood or for data visualization</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>latent_pos</span><span class='op'>(</span><span class='va'>covariates</span>, <span class='va'>offsets</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
-
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
-
-</dl><p></div></p>
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
-<p>a n x q matrix of latent positions.</p>
-<p><hr>
 <a id="method-plot_individual_map"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>plot_individual_map()</code></h3>
 <p>Plot the factorial map of the PCA</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>plot_individual_map</span><span class='op'>(</span>
@@ -480,7 +466,7 @@ Useful to compute the likelihood or for data visualization</p><h4 class='hasAnch
 #&gt;        65 -637.77 -764.254 -824.343
 #&gt; ==================================================================
 #&gt; * Useful fields
-#&gt;     $model_par, $latent, $var_par, $optim_par
+#&gt;     $model_par, $latent, $latent_pos, $var_par, $optim_par
 #&gt;     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
 #&gt; * Useful S3 methods
 #&gt;     print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()

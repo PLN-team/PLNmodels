@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9500</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9560</span>
       </span>
     </div>
 
@@ -107,7 +107,7 @@
       <h1 data-toc-skip>Sparse structure estimation for multivariate count data with PLN-network</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2021-03-05</h4>
+            <h4 class="date">2021-03-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNnetwork.Rmd"><code>vignettes/PLNnetwork.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -472,7 +472,7 @@
 ##        20 -1247.036 -1285.955 -2757.389       3 -1291.676  -1250.838   0.021
 ## ==================================================================
 ## * Useful fields
-##     $model_par, $latent, $var_par, $optim_par
+##     $model_par, $latent, $latent_pos, $var_par, $optim_par
 ##     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
 ## * Useful S3 methods
 ##     print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()
@@ -484,11 +484,11 @@
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="va">my_graph</span></code></pre></div>
-<pre><code>## IGRAPH 01bebdc UNW- 17 3 -- 
+<pre><code>## IGRAPH 6e3b987 UNW- 17 3 -- 
 ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
 ## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),
 ## | width (e/n)
-## + edges from 01bebdc (vertex names):
+## + edges from 6e3b987 (vertex names):
 ## [1] Che--Hve Glo--Hfo Hfo--Hsp</code></pre>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></code></pre></div>

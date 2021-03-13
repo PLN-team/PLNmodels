@@ -85,7 +85,7 @@ Fields are accessed via active binding and cannot be changed by the user." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9500</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9560</span>
       </span>
     </div>
 
@@ -203,6 +203,8 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 
 <dt><code>latent</code></dt><dd><p>a matrix: values of the latent vector (Z in the model)</p></dd>
 
+<dt><code>latent_pos</code></dt><dd><p>a matrix: values of the latent position vector (Z) without covariates effects or offset</p></dd>
+
 <dt><code>fitted</code></dt><dd><p>a matrix: fitted values of the observations (A in the model)</p></dd>
 
 <dt><code>nb_param</code></dt><dd><p>number of parameters in the current PLN model</p></dd>
@@ -242,7 +244,6 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 <li><p><a href='#method-compute_fisher'><code>PLNfit$compute_fisher()</code></a></p></li>
 <li><p><a href='#method-compute_standard_error'><code>PLNfit$compute_standard_error()</code></a></p></li>
 <li><p><a href='#method-postTreatment'><code>PLNfit$postTreatment()</code></a></p></li>
-<li><p><a href='#method-latent_pos'><code>PLNfit$latent_pos()</code></a></p></li>
 <li><p><a href='#method-predict'><code>PLNfit$predict()</code></a></p></li>
 <li><p><a href='#method-show'><code>PLNfit$show()</code></a></p></li>
 <li><p><a href='#method-print'><code>PLNfit$print()</code></a></p></li>
@@ -417,20 +418,6 @@ See the documentation for <code><a href='https://rdrr.io/r/stats/coef.html'>coef
 <dt><code>nullModel</code></dt><dd><p>null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.</p></dd>
 
 </dl><p></div></p>
-<p><hr>
-<a id="method-latent_pos"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>latent_pos()</code></h3>
-<p>Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNfit</span><span class='op'>$</span><span class='fu'>latent_pos</span><span class='op'>(</span><span class='va'>covariates</span>, <span class='va'>offsets</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-</dl><p></div></p>
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
-<p>a n x q matrix of latent positions.</p>
 <p><hr>
 <a id="method-predict"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/stats/predict.html'>predict()</a></code></h3>
 <p>Predict position, scores or observations of new data.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>

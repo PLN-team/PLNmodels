@@ -83,7 +83,7 @@ See the documentation for ..." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9500</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9560</span>
       </span>
     </div>
 
@@ -181,6 +181,8 @@ See the documentation for ...</p>
 
 <dt><code>latent</code></dt><dd><p>a matrix: values of the latent vector (Z in the model)</p></dd>
 
+<dt><code>latent_pos</code></dt><dd><p>a matrix: values of the latent position vector (Z) without covariates effects or offset</p></dd>
+
 <dt><code>posteriorProb</code></dt><dd><p>matrix ofposterior probability for cluster belonging</p></dd>
 
 <dt><code>memberships</code></dt><dd><p>vector for cluster index</p></dd>
@@ -213,10 +215,6 @@ See the documentation for ...</p>
 
 <dt><code>vcov_model</code></dt><dd><p>character: the model used for the covariance (either "spherical", "diagonal" or "full")</p></dd>
 
-<dt><code>var_par</code></dt><dd><p>a list with two matrices, M and S2, which are themselves weighted mean of the estimated variationals parameter of each component
-#' @field latent a matrix: values of the latent vector (Z in the model)
-latent = function() private$mix_up('latent'),</p></dd>
-
 <dt><code>fitted</code></dt><dd><p>a matrix: fitted values of the observations (A in the model)</p></dd>
 
 <dt><code>group_means</code></dt><dd><p>a matrix of group mean vectors in the latent space.</p></dd>
@@ -231,7 +229,6 @@ latent = function() private$mix_up('latent'),</p></dd>
 <li><p><a href='#method-new'><code>PLNmixturefit$new()</code></a></p></li>
 <li><p><a href='#method-optimize'><code>PLNmixturefit$optimize()</code></a></p></li>
 <li><p><a href='#method-predict'><code>PLNmixturefit$predict()</code></a></p></li>
-<li><p><a href='#method-latent_pos'><code>PLNmixturefit$latent_pos()</code></a></p></li>
 <li><p><a href='#method-plot_clustering_data'><code>PLNmixturefit$plot_clustering_data()</code></a></p></li>
 <li><p><a href='#method-plot_clustering_pca'><code>PLNmixturefit$plot_clustering_pca()</code></a></p></li>
 <li><p><a href='#method-postTreatment'><code>PLNmixturefit$postTreatment()</code></a></p></li>
@@ -307,7 +304,8 @@ latent = function() private$mix_up('latent'),</p></dd>
 <dt><code>newdata</code></dt><dd><p>A data frame in which to look for variables, offsets and counts with which to predict.</p></dd>
 
 <dt><code>type</code></dt><dd><p>The type of prediction required. The default <code>posterior</code> are posterior probabilities for each group ,
-<code>response</code> is the group with maximal posterior probability and <code>latent</code> is the averaged latent in the latent space,
+<code>response</code> is the group with maximal posterior probability and <code>latent</code> is the averaged latent coordinate (without
+offset and nor covariate effects),
 with weights equal to the posterior probabilities.</p></dd>
 
 <dt><code>prior</code></dt><dd><p>User-specified prior group probabilities in the new data. The default uses a uniform prior.</p></dd>
@@ -317,20 +315,6 @@ with weights equal to the posterior probabilities.</p></dd>
 <dt><code>envir</code></dt><dd><p>Environment in which the prediction is evaluated</p></dd>
 
 </dl><p></div></p>
-<p><hr>
-<a id="method-latent_pos"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>latent_pos()</code></h3>
-<p>Compute matrix of latent positions, noted as Z in the model. Used to compute the likelihood or for data visualization</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>latent_pos</span><span class='op'>(</span><span class='va'>covariates</span>, <span class='va'>offsets</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>covariates</code></dt><dd><p>the matrix of covariates common to every models</p></dd>
-
-<dt><code>offsets</code></dt><dd><p>the matrix of offsets common to every models</p></dd>
-
-</dl><p></div></p>
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
-<p>a n x p matrix of latent positions.</p>
 <p><hr>
 <a id="method-plot_clustering_data"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>plot_clustering_data()</code></h3>
 <p>Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
@@ -353,7 +337,7 @@ with weights equal to the posterior probabilities.</p></dd>
 <p>a <code>ggplot</code> graphic</p>
 <p><hr>
 <a id="method-plot_clustering_pca"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>plot_clustering_pca()</code></h3>
-<p>Plot the individual map of a PCA performed on the latent coordinate, where individuals are colored according to the memberships</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p>Plot the individual map of a PCA performed on the latent coordinates, where individuals are colored according to the memberships</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>PLNmixturefit</span><span class='op'>$</span><span class='fu'>plot_clustering_pca</span><span class='op'>(</span>
   main <span class='op'>=</span> <span class='st'>"Clustering labels in Individual Factor Map"</span>,
   plot <span class='op'>=</span> <span class='cn'>TRUE</span>
