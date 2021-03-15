@@ -11,18 +11,10 @@ isPLNPCAfamily     <- function(Robject) {inherits(Robject, "PLNPCAfamily"    )}
 #'
 #' @name plot.PLNPCAfamily
 #'
-#' @param x an R6 object with class [`PLNfamily`]
-#' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL").
-#' Default is  c("loglik", "BIC", "ICL").
-#' @param reverse A logical indicating whether to plot the value of the criteria in the "natural" direction
-#' (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
-#' natural direction, on the same scale as the log-likelihood..
-#' @param ... additional parameters for S3 compatibility. Not used
+#' @param x an R6 object with class [`PLNPCAfamily`]
+#' @inheritParams plot.PLNfamily
+#' @inherit plot.PLNfamily return details
 #'
-#' @return Produces a plot  representing the evolution of the criteria of the different models considered,
-#' highlighting the best model in terms of BIC and ICL. These criteria have the form 'loglik - 1/2 * penalty'
-#' so that they are on the same scale as the model log-likelihood. You can change this direction by setting
-#' the parameter \code{reverse} to \code{TRUE}.
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
