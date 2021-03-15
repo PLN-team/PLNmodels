@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9580</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9590</span>
       </span>
     </div>
 
@@ -163,7 +163,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>an R6 object with class <code><a href='PLNfamily.html'>PLNfamily</a></code></p></td>
+      <td><p>an R6 object with class <code><a href='PLNPCAfamily.html'>PLNPCAfamily</a></code></p></td>
     </tr>
     <tr>
       <th>criteria</th>
@@ -174,7 +174,7 @@ Default is  c("loglik", "BIC", "ICL").</p></td>
       <th>reverse</th>
       <td><p>A logical indicating whether to plot the value of the criteria in the "natural" direction
 (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
-natural direction, on the same scale as the log-likelihood..</p></td>
+natural direction, on the same scale as the log-likelihood.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -185,9 +185,11 @@ natural direction, on the same scale as the log-likelihood..</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Produces a plot  representing the evolution of the criteria of the different models considered,
-highlighting the best model in terms of BIC and ICL. These criteria have the form 'loglik - 1/2 * penalty'
-so that they are on the same scale as the model log-likelihood. You can change this direction by setting
-the parameter <code>reverse</code> to <code>TRUE</code>.</p>
+highlighting the best model in terms of BIC and ICL (see details).</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The BIC and ICL criteria have the form 'loglik - 1/2 * penalty'
+so that they are on the same scale as the model log-likelihood. You can change this direction and use the alternate form '-2*loglik + penalty', as some authors do, by setting <code>reverse = TRUE</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>

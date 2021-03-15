@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9580</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9590</span>
       </span>
     </div>
 
@@ -206,10 +206,11 @@ natural direction, on the same scale as the log-likelihood.</p></td>
 
     <p>Produces either a diagnostic plot (with <code>type = 'diagnostic'</code>), a stability plot
 (with <code>type = 'stability'</code>) or the evolution of the criteria of the different models considered
-(with <code>type = 'criteria'</code>, the default). The latter highlights the best
-model in terms of BIC and EBIC. These criteria have the form 'loglik - 1/2 * penalty'
-so that they are on the same scale as the model log-likelihood. You can change this direction by setting
-the parameter <code>reverse</code> to <code>TRUE</code>.</p>
+(with <code>type = 'criteria'</code>, the default).</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The BIC and ICL criteria have the form 'loglik - 1/2 * penalty'
+so that they are on the same scale as the model log-likelihood. You can change this direction and use the alternate form '-2*loglik + penalty', as some authors do, by setting <code>reverse = TRUE</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>trichoptera</span><span class='op'>)</span>

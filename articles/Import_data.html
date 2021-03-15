@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9580</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9590</span>
       </span>
     </div>
 
@@ -393,7 +393,7 @@ O_i = \text{median}_{i' != i} r_{ii'}
 <div id="wrench-normalisation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#wrench-normalisation" class="anchor"></a>Wrench normalisation</h3>
-<p>This method is fully detailed in <span class="citation">Kumar et al. (<a href="#ref-Kumar2018" role="doc-biblioref">2018</a>)</span> and we only provide a barebone implementation corresponding to the defaults parameters of <code>Wrench::wrench()</code>. Assume that samples belong to <span class="math inline">\(K\)</span> discrete groups and note <span class="math inline">\(g_i\)</span> the group of sample <span class="math inline">\(i\)</span>. Wrench is based on the following (simplified) log-normal model for counts: <span class="math display">\[
+<p>This method is fully detailed in <span class="citation">Kumar et al. (<a href="#ref-Kumar2018" role="doc-biblioref">2018</a>)</span> and we only provide a barebone implementation corresponding to the defaults parameters of <code><a href="https://rdrr.io/pkg/Wrench/man/wrench.html">Wrench::wrench()</a></code>. Assume that samples belong to <span class="math inline">\(K\)</span> discrete groups and note <span class="math inline">\(g_i\)</span> the group of sample <span class="math inline">\(i\)</span>. Wrench is based on the following (simplified) log-normal model for counts: <span class="math display">\[
 Y_{ij} \sim \pi_{ij} \delta_0 + (1 - \pi_{ij})\log\mathcal{N}(\mu_{ij}, \sigma^2_j)
 \]</span> where the <span class="math inline">\(Y_{ij}\)</span> are independent and the mean <span class="math inline">\(\mu_{ij}\)</span> is decomposed as: <span class="math display">\[
 \mu_{ij} = \underbrace{\log{p_{0j}}}_{\text{log-ref. prop.}} +  \underbrace{\log{d_i}}_{\text{log-depth}} + \underbrace{\log{\zeta_{0g_i}}}_{\text{log effect of group } g_i} + \underbrace{a_{i}}_{\text{(f|m)ixed effect}} + \underbrace{b_{ij}}_{\text{mixed effects}}
@@ -417,7 +417,7 @@ p_{ij} = \frac{Y_{ij}}{\sum_{j=1}^p Y_{ij}} \qquad p_{0j} = \frac{1}{n} \sum_{i=
 </li>
 <li>The species variances <span class="math inline">\(\sigma^2_j\)</span> are estimated by fitting the following linear model (with no zero-inflation component) <span class="math display">\[
 \log Y_{ij} \sim \log(d_i) + \mu_{g_i} + \mathcal{N}(0, \sigma^2_j)
-\]</span> Note that in the original <code>Wrench::wrench()</code>, the log depth <span class="math inline">\(\log(d_i)\)</span> is used as predictor but I believe it makes more sense to use it an offset.</li>
+\]</span> Note that in the original <code><a href="https://rdrr.io/pkg/Wrench/man/wrench.html">Wrench::wrench()</a></code>, the log depth <span class="math inline">\(\log(d_i)\)</span> is used as predictor but I believe it makes more sense to use it an offset.</li>
 <li>set the group proportions <span class="math inline">\(p_{gj}\)</span> and group ratios <span class="math inline">\(r_{gj}\)</span> to: <span class="math display">\[
 p_{gj} = \frac{\sum_{i : g_i = g} Y_{ij}}{\sum_{j, i : g_i = g} Y_{ij}} \qquad r_{gj} = \frac{p_{gj}}{p_{0j}}
 \]</span>
