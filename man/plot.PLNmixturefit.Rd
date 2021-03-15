@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNmixturefit-S3methods.R
 \name{plot.PLNmixturefit}
 \alias{plot.PLNmixturefit}
-\title{Mixture vizualisation of a \code{\link{PLNmixturefit}} object}
+\title{Mixture visualization of a \code{\link{PLNmixturefit}} object}
 \usage{
 \method{plot}{PLNmixturefit}(x, type = c("pca", "matrix"), main = NULL, plot = TRUE, ...)
 }

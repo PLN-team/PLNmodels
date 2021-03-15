@@ -37,7 +37,7 @@
 # PLNmodels 0.10.6
 
 * Correction in likelihood of diagonal PLN
-* amending test-pln to fullfil CRAN request (error on ATLAS variant of BLAS...)
+* amending test-pln to fulfill CRAN request (error on ATLAS variant of BLAS...)
 
 # PLNmodels 0.10.5
 

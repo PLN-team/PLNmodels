@@ -300,7 +300,7 @@ $$
 \qquad
 \hat{\eta}_{g}^2 = \frac{\sum_{j: r_{gj} \neq 1} (\log{r_{gj}} - \log{r_{g.}})^2}{\sum_{j: r_{gj} \neq 0} 1}
 $$
-- Estimate the mixed effects as shrinked (and scaled) averages of the ratios
+- Estimate the mixed effects as shrunken (and scaled) averages of the ratios
 $$
   \hat{a}_i = \frac{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j} (\log{r_{ij}} - \log{\hat{\zeta}_{0g_i}})}{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j}}
   \qquad 

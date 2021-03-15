@@ -7,7 +7,7 @@
 ## Auxiliary functions to check the given class of an objet
 isPLNmixturefit <- function(Robject) {inherits(Robject, "PLNmixturefit")}
 
-#' Mixture vizualisation of a [`PLNmixturefit`] object
+#' Mixture visualization of a [`PLNmixturefit`] object
 #'
 #' Represent the result of the clustering either by coloring the individual in a two-dimension PCA factor map,
 #' or by representing the expected matrix  of count reorder according to the clustering.

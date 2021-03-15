@@ -34,7 +34,7 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 
 \item{\code{memberships}}{vector for cluster index}
 
-\item{\code{mixtureParam}}{vector of cluster proporitions}
+\item{\code{mixtureParam}}{vector of cluster proportions}
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 

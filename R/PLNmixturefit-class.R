@@ -335,7 +335,7 @@ PLNmixturefit <-
       posteriorProb = function(value) {if (missing(value)) return(private$tau) else private$tau <- value},
       #' @field memberships vector for cluster index
       memberships = function(value) {apply(private$tau, 1, which.max)},
-      #' @field mixtureParam vector of cluster proporitions
+      #' @field mixtureParam vector of cluster proportions
       mixtureParam  = function() {colMeans(private$tau)},
       #' @field optim_par a list with parameters useful for monitoring the optimization
       optim_par  = function() {private$monitoring},

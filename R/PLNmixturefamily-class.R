@@ -171,7 +171,7 @@ PLNmixturefamily <-
         }
       },
       #' @description
-      #' function to restart clustering to avoid local minima by smoothing the logliklihood values as a function of the number of clusters
+      #' function to restart clustering to avoid local minima by smoothing the loglikelihood values as a function of the number of clusters
       #' @param control a list to control the smoothing process
       smooth = function(control) {
         if (control$trace > 0) control$trace <- TRUE else control$trace <- FALSE

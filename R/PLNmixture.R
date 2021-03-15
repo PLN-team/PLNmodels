@@ -12,8 +12,8 @@
 #' @return an R6 object with class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}, which contains
 #' a collection of models with class \code{\link[=PLNmixturefit]{PLNmixturefit}}
 #'
-#' @details The list of parameters \code{control_init} and \code{control_main} control the optimization of the intialization and the main process, with the following entries
-#' * "covariance" character setting the model for the covariance matrices of the mxiture components. Either "full", "diagonal" or "spherical". Default is "spherical".
+#' @details The list of parameters \code{control_init} and \code{control_main} control the optimization of the initialization and the main process, with the following entries
+#' * "covariance" character setting the model for the covariance matrices of the mixture components. Either "full", "diagonal" or "spherical". Default is "spherical".
 #' * "trace" integer for verbosity.
 #' * "inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit), which sometimes speeds up the inference.
 #' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.

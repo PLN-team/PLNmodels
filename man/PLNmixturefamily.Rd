@@ -106,7 +106,7 @@ Call to the optimizer on all models of the collection
 \if{html}{\out{<a id="method-smooth"></a>}}
 \if{latex}{\out{\hypertarget{method-smooth}{}}}
 \subsection{Method \code{smooth()}}{
-function to restart clustering to avoid local minima by smoothing the logliklihood values as a function of the number of clusters
+function to restart clustering to avoid local minima by smoothing the loglikelihood values as a function of the number of clusters
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$smooth(control)}\if{html}{\out{</div>}}
 }

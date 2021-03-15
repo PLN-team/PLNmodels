@@ -47,7 +47,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 
 \item{\code{var}}{a list of data frames with PCA results for the variables: \code{coord} (coordinates of the variables), \code{cor} (correlation between variables and dimensions), \code{cos2} (Cosine of the variables) and \code{contrib} (contributions of the variable to the axes)}
 
-\item{\code{ind}}{a list of data frames with PCA results for the individuals: \code{coord} (coordinates of the individuas), \code{cos2} (Cosine of the individuals), \code{contrib} (contributions of individuals to an axis inertia) and \code{dist} (distance of individuals to the origin).}
+\item{\code{ind}}{a list of data frames with PCA results for the individuals: \code{coord} (coordinates of the individuals), \code{cos2} (Cosine of the individuals), \code{contrib} (contributions of individuals to an axis inertia) and \code{dist} (distance of individuals to the origin).}
 
 \item{\code{call}}{Hacky binding for compatibility with factoextra functions}
 }

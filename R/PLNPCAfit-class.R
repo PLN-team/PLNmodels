@@ -339,7 +339,7 @@ PLNPCAfit <- R6Class(
              cos2    = cos2,
              contrib = contrib)
       },
-      #' @field ind a list of data frames with PCA results for the individuals: `coord` (coordinates of the individuas), `cos2` (Cosine of the individuals), `contrib` (contributions of individuals to an axis inertia) and `dist` (distance of individuals to the origin).
+      #' @field ind a list of data frames with PCA results for the individuals: `coord` (coordinates of the individuals), `cos2` (Cosine of the individuals), `contrib` (contributions of individuals to an axis inertia) and `dist` (distance of individuals to the origin).
       ind = function() {
         coord  <- private$svdBM$u[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], ncol = self$rank, nrow = self$n, byrow = TRUE)
         ## coord[i, k] = d[k] * v[i, k]
