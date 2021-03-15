@@ -119,15 +119,19 @@ PLNfamily <-
         stopifnot(!anyNA(self$criteria[criteria]))
         dplot <- self$criteria %>%
           dplyr::select(c("param", criteria)) %>%
-          tidyr::gather(key = "criterion", value = "value", -param)
-        if (reverse) {
-          dplot <- dplot %>% mutate(value = -2 * value)
-          to_change <- grepl('loglik', dplot$criterion)
-          dplot$criterion[to_change] <- paste0("-2", dplot$criterion[to_change])
-        }
-        dplot <- dplyr::group_by(dplot, criterion)
+          tidyr::gather(key = "criterion", value = "value", -param) %>%
+          {if (reverse)
+            dplyr::mutate(
+              .data = .,
+              value = -2 * value,
+              criterion = dplyr::if_else(grepl('loglik', criterion), paste0("-2", criterion), criterion))
+            else . } %>%
+          dplyr::group_by(criterion)
         p <- ggplot(dplot, aes(x = param, y = value, group = criterion, colour = criterion)) +
-          geom_line() + geom_point() + ggtitle("Model selection criteria") + theme_bw()
+          geom_line() + geom_point() +
+          ggtitle(label    = "Model selection criteria",
+                  subtitle = if (reverse) "Lower is better" else "Higher is better") +
+          theme_bw()
         p
       },
 
