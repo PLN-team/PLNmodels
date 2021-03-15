@@ -1,11 +1,16 @@
-# PLNmodels 0.11.3
+# PLNmodels dev version
 
-* support for covariates in PLNmixture (spherical, diagonal, full)
 * use future_lapply in PLNPCA, PLNmixture and stability_selection (plan must be set by the user)
 * bug fix in prediction for PLN-LDA
 * bug fix in gradients of PLN-network and PLN-spherical
 * suppressing method `$latent_pos()` which is equivalent to active binding `$latent`
-* more support for PLNmixture (S3/R6 methods, vignette, faster smoothing)
+* finalizing integration of PLNmixture (in particular faster smoothing)
+* added an argument 'reverse' to the plot methods for criteria, so that users can get their "usual" BIC definition (-2 loglik)
+
+# PLNmodels 0.11.3
+
+* support for covariates in PLNmixture (spherical, diagonal, full)
+* more support for PLNmixture (S3/R6 methods, vignette)
 
 # PLNmodels 0.11.2
 

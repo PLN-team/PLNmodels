@@ -125,13 +125,17 @@ function to restart clustering to avoid local minima by smoothing the loglikliho
 \subsection{Method \code{plot()}}{
 Lineplot of selected criteria for all models in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$plot(criteria = c("loglik", "BIC", "ICL"))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$plot(criteria = c("loglik", "BIC", "ICL"), reverse = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{criteria}}{A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).}
+
+\item{\code{reverse}}{A logical indicating whether to plot the value of the criteria in the "natural" direction
+(loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
+natural direction, on the same scale as the log-likelihood..}
 }
 \if{html}{\out{</div>}}
 }

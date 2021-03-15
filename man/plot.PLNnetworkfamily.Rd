@@ -8,6 +8,7 @@
   x,
   type = c("criteria", "stability", "diagnostic"),
   criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
+  reverse = FALSE,
   log.x = TRUE,
   stability = 0.9,
   ...
@@ -21,6 +22,10 @@
 \item{criteria}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
 Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when \code{type = "criteria"}.}
 
+\item{reverse}{A logical indicating whether to plot the value of the criteria in the "natural" direction
+(loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
+natural direction, on the same scale as the log-likelihood.}
+
 \item{log.x}{logical: should the x-axis be represented in log-scale? Default is \code{TRUE}.}
 
 \item{stability}{scalar: the targeted level of stability in stability plot. Default is .9.}
@@ -28,9 +33,12 @@ Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when \code{t
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
 \value{
-Produces a plot representing the evolution of the criteria of the different models considered,
-highlighting the best model in terms of BIC and EBIC (the greater, the better).
-These criteria have the form 'loglik - 1/2 * penalty' so that they are on the same scale as the model loglikelihood.
+Produces either a diagnostic plot (with \code{type = 'diagnostic'}), a stability plot
+(with \code{type = 'stability'}) or the evolution of the criteria of the different models considered
+(with \code{type = 'criteria'}, the default). The latter highlights the best
+model in terms of BIC and EBIC. These criteria have the form 'loglik - 1/2 * penalty'
+so that they are on the same scale as the model log-likelihood. You can change this direction by setting
+the parameter \code{reverse} to \code{TRUE}.
 }
 \description{
 Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a \code{\link{PLNnetworkfamily}})

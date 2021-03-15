@@ -215,11 +215,14 @@ PLNnetworkfamily <- R6Class(
     ## Graphical methods -----------------
     #' @description Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a [`PLNnetworkfamily`])
     #' @param criteria vector of characters. The criteria to plot in `c("loglik", "pen_loglik", "BIC", "EBIC")`. Defaults to all of them.
+    #' @param reverse A logical indicating whether to plot the value of the criteria in the "natural" direction
+    #' (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
+    #' natural direction, on the same scale as the log-likelihood..
     #' @param log.x logical: should the x-axis be represented in log-scale? Default is `TRUE`.
     #' @return a [`ggplot`] graph
-    plot = function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), log.x = TRUE) {
+    plot = function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), reverse = FALSE, log.x = TRUE) {
       vlines <- sapply(intersect(criteria, c("BIC", "EBIC")) , function(crit) self$getBestModel(crit)$penalty)
-      p <- super$plot(criteria) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
+      p <- super$plot(criteria, reverse) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
       if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
       p
     },
@@ -311,7 +314,8 @@ PLNnetworkfamily <- R6Class(
       }
       stability
     },
-    #' @field criteria a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2, stability) for the collection of models / fits
+    #' @field criteria a data frame with the values of some criteria (approximated log-likelihood, (E)BIC, ICL and R2, stability) for the collection of models / fits
+    #' BIC, ICL and EBIC are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty
     criteria = function() {mutate(super$criteria, stability = self$stability)}
   )
 

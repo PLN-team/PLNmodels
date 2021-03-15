@@ -31,7 +31,8 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 
 \item{\code{stability}}{mean edge stability along the penalty path}
 
-\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2, stability) for the collection of models / fits}
+\item{\code{criteria}}{a data frame with the values of some criteria (approximated log-likelihood, (E)BIC, ICL and R2, stability) for the collection of models / fits
+BIC, ICL and EBIC are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty}
 }
 \if{html}{\out{</div>}}
 }
@@ -187,6 +188,7 @@ Display various outputs (goodness-of-fit criteria, robustness, diagnostic) assoc
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$plot(
   criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
+  reverse = FALSE,
   log.x = TRUE
 )}\if{html}{\out{</div>}}
 }
@@ -195,6 +197,10 @@ Display various outputs (goodness-of-fit criteria, robustness, diagnostic) assoc
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{criteria}}{vector of characters. The criteria to plot in \code{c("loglik", "pen_loglik", "BIC", "EBIC")}. Defaults to all of them.}
+
+\item{\code{reverse}}{A logical indicating whether to plot the value of the criteria in the "natural" direction
+(loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
+natural direction, on the same scale as the log-likelihood..}
 
 \item{\code{log.x}}{logical: should the x-axis be represented in log-scale? Default is \code{TRUE}.}
 }

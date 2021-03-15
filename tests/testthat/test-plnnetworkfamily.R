@@ -37,6 +37,8 @@ test_that("PLNnetwork: main function, fields access and methods", {
   ## S3 methods
   expect_true(PLNmodels:::isPLNnetworkfamily(myPLN))
   expect_is(plot(myPLN), "ggplot")
+  expect_is(plot(myPLN, reverse = TRUE), "ggplot")
+  expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
   expect_is(getBestModel(myPLN), "PLNnetworkfit")
   expect_is(getModel(myPLN, myPLN$penalties[1]), "PLNnetworkfit")
 
@@ -51,6 +53,7 @@ test_that("PLNnetwork: main function, fields access and methods", {
                     sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
                     simplify = FALSE)
   myPLN$stability_selection(subsamples = subs)
+  expect_is(plot(myPLN, type = "stability"), "ggplot")
   expect_true(!is.null(myPLN$stability_path))
   expect_true(inherits(myPLN$plot(), "ggplot"))
   expect_true(inherits(myPLN$plot_objective(), "ggplot"))
@@ -92,6 +95,8 @@ test_that("PLNnetwork: matrix of penalties work", {
   ## S3 methods
   expect_true(PLNmodels:::isPLNnetworkfamily(myPLN))
   expect_is(plot(myPLN), "ggplot")
+  expect_is(plot(myPLN, reverse = TRUE), "ggplot")
+  expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
   expect_is(getBestModel(myPLN), "PLNnetworkfit")
   expect_is(getModel(myPLN, myPLN$penalties[1]), "PLNnetworkfit")
 
@@ -106,6 +111,7 @@ test_that("PLNnetwork: matrix of penalties work", {
                     sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
                     simplify = FALSE)
   myPLN$stability_selection(subsamples = subs, control = list(penalty_weights = W))
+  expect_is(plot(myPLN, type = "stability"), "ggplot")
   expect_true(!is.null(myPLN$stability_path))
   expect_true(inherits(myPLN$plot(), "ggplot"))
   expect_true(inherits(myPLN$plot_objective(), "ggplot"))

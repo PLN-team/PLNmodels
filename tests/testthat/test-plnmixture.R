@@ -38,6 +38,16 @@ test_that("Check that PLNmixture is running and robust (spherical variant)",  {
   expect_equal(model$components[[2]]$vcov_model, "spherical")
   expect_equal(model$components[[3]]$vcov_model, "spherical")
 
+  expect_is(plot(models_sphr, reverse = TRUE), "ggplot")
+  expect_is(plot(models_diag, reverse = TRUE), "ggplot")
+  expect_is(plot(models_full, reverse = TRUE), "ggplot")
+  expect_is(plot(models_sphr), "ggplot")
+  expect_is(plot(models_diag), "ggplot")
+  expect_is(plot(models_full), "ggplot")
+  expect_is(plot(models_sphr, type = 'diagnostic'), "ggplot")
+  expect_is(plot(models_diag, type = 'diagnostic'), "ggplot")
+  expect_is(plot(models_full, type = 'diagnostic'), "ggplot")
+
   expect_error(PLNmixture(Abundance ~ 0 + offset(log(Offset)), clusters =-2, data = trichoptera))
 
   expect_error(PLNmixture(Abundance ~ 0, weights = rep(1.0, nrow(trichoptera)), data = trichoptera))

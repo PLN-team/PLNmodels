@@ -46,7 +46,8 @@ The parameter \code{control} is a list controlling the optimization with the fol
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{criteria}}{a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the collection of models / fits}
+\item{\code{criteria}}{a data frame with the values of some criteria (approximated log-likelihood, BIC, ICL, etc.) for the collection of models / fits
+BIC and ICL are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty}
 
 \item{\code{convergence}}{sends back a data frame with some convergence diagnostics associated with the optimization process (method, optimal value, etc)}
 }
@@ -130,13 +131,17 @@ A \code{\link{PLNfit}} object
 \subsection{Method \code{plot()}}{
 Lineplot of selected criteria for all models in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$plot(criteria)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$plot(criteria, reverse)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{criteria}}{A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)}
+
+\item{\code{reverse}}{A logical indicating whether to plot the value of the criteria in the "natural" direction
+(loglik - penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the natural direction, on
+the same scale as the log-likelihood.}
 }
 \if{html}{\out{</div>}}
 }

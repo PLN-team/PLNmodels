@@ -16,6 +16,9 @@ isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
 #' @param type a character, either "criteria", "stability" or "diagnostic" for the type of plot.
 #' @param criteria vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
 #' Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when `type = "criteria"`.
+#' @param reverse A logical indicating whether to plot the value of the criteria in the "natural" direction
+#' (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
+#' natural direction, on the same scale as the log-likelihood.
 #' @param log.x logical: should the x-axis be represented in log-scale? Default is `TRUE`.
 #' @param stability scalar: the targeted level of stability in stability plot. Default is .9.
 #' @param ... additional parameters for S3 compatibility. Not used
@@ -26,21 +29,24 @@ isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamily")}
 #' \dontrun{
 #' plot(fits)
 #' }
-#' @return Produces a plot representing the evolution of the criteria of the different models considered,
-#' highlighting the best model in terms of BIC and EBIC (the greater, the better).
-#' These criteria have the form 'loglik - 1/2 * penalty' so that they are on the same scale as the model loglikelihood.
-#'
+#' @return Produces either a diagnostic plot (with \code{type = 'diagnostic'}), a stability plot
+#' (with \code{type = 'stability'}) or the evolution of the criteria of the different models considered
+#' (with \code{type = 'criteria'}, the default). The latter highlights the best
+#' model in terms of BIC and EBIC. These criteria have the form 'loglik - 1/2 * penalty'
+#' so that they are on the same scale as the model log-likelihood. You can change this direction by setting
+#' the parameter \code{reverse} to \code{TRUE}.
 #' @export
 plot.PLNnetworkfamily <-
   function(x,
            type     = c("criteria", "stability", "diagnostic"),
            criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
+           reverse = FALSE,
            log.x    = TRUE,
            stability = 0.9, ...) {
   stopifnot(isPLNnetworkfamily(x))
   type <- match.arg(type)
   if (type == "criteria")
-    p <- x$plot(criteria)
+    p <- x$plot(criteria, reverse)
   if (type == "stability")
     p <- x$plot_stars(stability, log.x)
   if (type == "diagnostic")

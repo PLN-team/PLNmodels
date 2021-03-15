@@ -111,13 +111,21 @@ PLNfamily <-
       #' @description
       #' Lineplot of selected criteria for all models in the collection
       #' @param criteria A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)
+      #' @param reverse A logical indicating whether to plot the value of the criteria in the "natural" direction
+      #' (loglik - penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the natural direction, on
+      #' the same scale as the log-likelihood.
       #' @return A [`ggplot2`] object
-      plot = function(criteria) {
+      plot = function(criteria, reverse) {
         stopifnot(!anyNA(self$criteria[criteria]))
         dplot <- self$criteria %>%
           dplyr::select(c("param", criteria)) %>%
-          tidyr::gather(key = "criterion", value = "value", -param) %>%
-          dplyr::group_by(criterion)
+          tidyr::gather(key = "criterion", value = "value", -param)
+        if (reverse) {
+          dplot <- dplot %>% mutate(value = -2 * value)
+          to_change <- grepl('loglik', dplot$criterion)
+          dplot$criterion[to_change] <- paste0("-2", dplot$criterion[to_change])
+        }
+        dplot <- dplyr::group_by(dplot, criterion)
         p <- ggplot(dplot, aes(x = param, y = value, group = criterion, colour = criterion)) +
           geom_line() + geom_point() + ggtitle("Model selection criteria") + theme_bw()
         p
@@ -154,7 +162,8 @@ PLNfamily <-
     ## ACTIVE BINDINGS ----
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     active = list(
-      #' @field criteria a data frame with the values of some criteria (variational lower bound J, BIC, ICL and R2) for the collection of models / fits
+      #' @field criteria a data frame with the values of some criteria (approximated log-likelihood, BIC, ICL, etc.) for the collection of models / fits
+      #' BIC and ICL are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty
       criteria = function() {
         res <- purrr::map(self$models, 'criteria') %>%
           purrr::reduce(rbind)

@@ -13,6 +13,7 @@ test_that("PLNPCAfamily: main function, field access and methods", {
 
   expect_is(models, "PLNPCAfamily")
   expect_is(plot(models), "ggplot")
+  expect_is(plot(models, reverse = TRUE), "ggplot")
   expect_is(plot(models, map="individual"), "ggplot")
   expect_is(plot(models, map="variable"), "ggplot")
   expect_is(getBestModel(models), "PLNPCAfit")

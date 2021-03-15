@@ -4,20 +4,34 @@
 \alias{plot.PLNmixturefamily}
 \title{Display the criteria associated with a collection of PLNmixture fits (a PLNmixturefamily)}
 \usage{
-\method{plot}{PLNmixturefamily}(x, criteria = c("loglik", "BIC", "ICL"), ...)
+\method{plot}{PLNmixturefamily}(
+  x,
+  type = c("criteria", "diagnostic"),
+  criteria = c("loglik", "BIC", "ICL"),
+  reverse = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{an R6 object with class \code{\link{PLNfamily}}}
 
+\item{type}{a character, either "criteria" or "diagnostic" for the type of plot.}
+
 \item{criteria}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL").
 Default is  c("loglik", "BIC", "ICL").}
+
+\item{reverse}{A logical indicating whether to plot the value of the criteria in the "natural" direction
+(loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
+natural direction, on the same scale as the log-likelihood..}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
 \value{
-Produces a plot  representing the evolution of the criteria of the different models considered,
-highlighting the best model in terms of BIC and ICL (the greater, the better).
-These criteria have the form 'loglik - 1/2 * penalty' so that they are on the same scale as the model loglikelihood.
+Produces either a diagnostic plot (with \code{type = 'diagnostic'}) or the evolution of the criteria
+of the different models considered (with \code{type = 'criteria'}, the default). The latter highlights the best
+model in terms of BIC and ICL. These criteria have the form 'loglik - 1/2 * penalty'
+so that they are on the same scale as the model log-likelihood. You can change this direction by setting
+the parameter \code{reverse} to \code{TRUE}.
 }
 \description{
 Display the criteria associated with a collection of PLNmixture fits (a PLNmixturefamily)
