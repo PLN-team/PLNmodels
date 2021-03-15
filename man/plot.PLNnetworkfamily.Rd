@@ -35,13 +35,14 @@ natural direction, on the same scale as the log-likelihood.}
 \value{
 Produces either a diagnostic plot (with \code{type = 'diagnostic'}), a stability plot
 (with \code{type = 'stability'}) or the evolution of the criteria of the different models considered
-(with \code{type = 'criteria'}, the default). The latter highlights the best
-model in terms of BIC and EBIC. These criteria have the form 'loglik - 1/2 * penalty'
-so that they are on the same scale as the model log-likelihood. You can change this direction by setting
-the parameter \code{reverse} to \code{TRUE}.
+(with \code{type = 'criteria'}, the default).
 }
 \description{
 Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a \code{\link{PLNnetworkfamily}})
+}
+\details{
+The BIC and ICL criteria have the form 'loglik - 1/2 * penalty'
+so that they are on the same scale as the model log-likelihood. You can change this direction and use the alternate form '-2*loglik + penalty', as some authors do, by setting \code{reverse = TRUE}.
 }
 \examples{
 data(trichoptera)
