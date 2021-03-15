@@ -12,7 +12,7 @@ isPLNmixturefamily     <- function(Robject) {inherits(Robject, "PLNmixturefamily
 #' @name plot.PLNmixturefamily
 #'
 #' @inheritParams plot.PLNfamily
-#' @param x an R6 object with class [`PLNnetwokfamily`]
+#' @param x an R6 object with class [`PLNmixturefamily`]
 #' @param type a character, either `"criteria"` or `"diagnostic"` for the type of plot.
 #'
 #' @inherit plot.PLNfamily return details

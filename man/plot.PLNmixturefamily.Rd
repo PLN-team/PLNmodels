@@ -13,7 +13,7 @@
 )
 }
 \arguments{
-\item{x}{an R6 object with class \code{\link{PLNnetwokfamily}}}
+\item{x}{an R6 object with class \code{\link{PLNmixturefamily}}}
 
 \item{type}{a character, either \code{"criteria"} or \code{"diagnostic"} for the type of plot.}
 
