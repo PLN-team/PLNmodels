@@ -224,7 +224,13 @@ selection:
 plot(mixture_models)
 ```
 
-From this plot, we can see that the best model in terms of BIC is
+Note that we use the original definition of the BIC/ICL criterion ($\texttt{loglik} - \frac{1}{2}\texttt{pen}$), which is on the same scale as the log-likelihood. A [popular alternative](https://en.wikipedia.org/wiki/Bayesian_information_criterion) consists in using $-2\texttt{loglik} + \texttt{pen}$ instead. You can do so by specifying `reverse = TRUE`:
+
+```{r plot nocov-reverse, fig.width=7, fig.height=5}
+plot(mixture_models, reverse = TRUE)
+```
+
+From those plots, we can see that the best model in terms of BIC is
 obtained for a number of clusters of
 `r which.max(mixture_models$criteria$BIC)`. We may extract the
 corresponding model with the method `getBestModel()`. A model with a

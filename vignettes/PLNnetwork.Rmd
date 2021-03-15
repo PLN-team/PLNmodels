@@ -126,7 +126,13 @@ By default, the `plot` method of `PLNnetworkfamily` displays evolution of the cr
 plot(network_models)
 ```
 
-In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with a lower level of penalty (meaning more edges in the network). The same holds true for the penalized counterpart of the variational surrogate. Generally, smoothness of these criteria is a good sanity check of optimization process. BIC and its extended-version high-dimensional version EBIC are classically used for selecting the correct amount of penalization with sparse estimator like the one used by PLN-network. However, we will consider later a more robust albeit more computationally intensive strategy to chose the appropriate number of edges in the network.
+Note that we use the original definition of the BIC/ICL criterion ($\texttt{loglik} - \frac{1}{2}\texttt{pen}$), which is on the same scale as the log-likelihood. A [popular alternative](https://en.wikipedia.org/wiki/Bayesian_information_criterion) consists in using $-2\texttt{loglik} + \texttt{pen}$ instead. You can do so by specifying `reverse = TRUE`:
+
+```{r plot-reverse, fig.width=7, fig.height=5}
+plot(network_models, reverse = TRUE)
+```
+
+In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing (or rather decreasing if using `reverse = TRUE`) with a lower level of penalty (meaning more edges in the network). The same holds true for the penalized counterpart of the variational surrogate. Generally, smoothness of these criteria is a good sanity check of optimization process. BIC and its extended-version high-dimensional version EBIC are classically used for selecting the correct amount of penalization with sparse estimator like the one used by PLN-network. However, we will consider later a more robust albeit more computationally intensive strategy to chose the appropriate number of edges in the network.
 
 To pursue the analysis, we can represent the coefficient path (i.e., value of the edges in the network according to the penalty level) to see if some edges clearly come off.  An alternative and more intuitive view consists in plotting the values of the partial correlations along the path, which can be obtained with the options `corr = TRUE`. To this end, we provide the S3 function `coefficient_path`:
 

@@ -142,7 +142,13 @@ The `plot` method of `PLNPCAfamily` displays evolution of the criteria mentioned
 plot(PCA_models)
 ```
 
-In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing with the number of axes (or subspace dimension). Also note the (approximated) $R^2$ which is displayed for each value of $q$ (see [@PLNPCA] for details on its computation).
+Note that we use the original definition of the BIC/ICL criterion ($\texttt{loglik} - \frac{1}{2}\texttt{pen}$), which is on the same scale as the log-likelihood. A [popular alternative](https://en.wikipedia.org/wiki/Bayesian_information_criterion) consists in using $-2\texttt{loglik} + \texttt{pen}$ instead. You can do so by specifying `reverse = TRUE`:
+
+```{r plot nocov-reverse, fig.width=7, fig.height=5}
+plot(PCA_models, reverse = TRUE)
+```
+
+In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing (or rather decreasing if using `reverse = TRUE`) with the number of axes (or subspace dimension). Also note the (approximated) $R^2$ which is displayed for each value of $q$ (see [@PLNPCA] for details on its computation).
 
 From this plot, we can see that the best model in terms of BIC or ICL is obtained for a rank $q=4$ or $q=3$. We may extract the corresponding model with the method `getBestModel("ICL")`. A model with a specific rank can be extracted with the `getModel()` method:
 
