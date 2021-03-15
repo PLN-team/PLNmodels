@@ -430,7 +430,7 @@ p_{gj} = \frac{\sum_{i : g_i = g} Y_{ij}}{\sum_{j, i : g_i = g} Y_{ij}} \qquad r
 \hat{\eta}_{g}^2 = \frac{\sum_{j: r_{gj} \neq 1} (\log{r_{gj}} - \log{r_{g.}})^2}{\sum_{j: r_{gj} \neq 0} 1}
 \]</span>
 </li>
-<li>Estimate the mixed effects as shrinked (and scaled) averages of the ratios <span class="math display">\[
+<li>Estimate the mixed effects as shrunken (and scaled) averages of the ratios <span class="math display">\[
 \hat{a}_i = \frac{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j} (\log{r_{ij}} - \log{\hat{\zeta}_{0g_i}})}{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j}}
 \qquad 
 \hat{b}_{ij} = \frac{\hat{\eta}^2_{g_i}}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j} \left( \log{r_{ij}} - \log\hat{\zeta}_{0g_i} - \hat{a}_i\right)
