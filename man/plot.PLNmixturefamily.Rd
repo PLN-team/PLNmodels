@@ -41,6 +41,6 @@ so that they are on the same scale as the model log-likelihood. You can change t
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-           data = trichoptera, control_main = list(smoothing = "forward"))
+           data = trichoptera, control_main = list(smoothing = "forward", iterates = 1))
 plot(myMixtures, reverse = TRUE)
 }

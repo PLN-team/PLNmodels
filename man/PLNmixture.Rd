@@ -59,7 +59,7 @@ future::plan("multisession", workers = 2)
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
-               control_main = list(smoothing = "forward"))
+               control_main = list(smoothing = "forward", iterates = 1))
 
 # Shut down parallel workers
 future::plan("sequential")

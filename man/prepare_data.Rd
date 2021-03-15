@@ -36,13 +36,13 @@ proper_data$Abundance
 proper_data$Offset
 }
 \references{
-Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \url{https://doi.org/10.7717/peerj.4600}
+Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \doi{10.7717/peerj.4600}
 
-Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \url{http://dx.doi.org/10.1038/nmeth.2658}
+Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \doi{10.1038/nmeth.2658}
 
-Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
+Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \doi{10.1186/gb-2010-11-10-r106}
 
-Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 \url{https://doi.org/10.1186/s12864-018-5160-5}
+Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 \doi{10.1186/s12864-018-5160-5}
 }
 \seealso{
 \code{\link[=compute_offset]{compute_offset()}} for details on the different normalization schemes

@@ -107,7 +107,7 @@ offset_tss <- function(counts) {
   rowSums(counts)
 }
 
-## Geometric Mean Pairwise Ratio (GMPR) normalization (as presented in doi.org/10.7717/peerj.4600)
+## Geometric Mean Pairwise Ratio (GMPR) normalization (as presented in \doi{10.7717/peerj.4600})
 offset_gmpr <- function(counts) {
   if (nrow(counts) == 1) stop("GMPR is not defined when there is only one sample.")
   ## median of pairwise ratios between counts of samples i and j, limited to positive counts
@@ -146,7 +146,7 @@ offset_rle <- function(counts, pseudocounts = 0L, type = c("ratio", "poscounts")
   size_factor
 }
 
-## Cumulative Sum Scaling (CSS) normalization (as used in metagenomeSeq and presented in doi.org/10.1038/nmeth.2658)
+## Cumulative Sum Scaling (CSS) normalization (as used in metagenomeSeq and presented in \doi{10.1038/nmeth.2658})
 offset_css <- function(counts, reference = median) {
   ## special treatment for edge case of one-column matrix (1 OTU, many samples)
   if (ncol(counts) == 1) return( counts[, 1] / median(counts) )
@@ -181,7 +181,7 @@ offset_css <- function(counts, reference = median) {
   unname(size_factors)
 }
 
-## Wrench normalization (from doi:10.1186/s12864-018-5160-5) in its simplest form
+## Wrench normalization (from \doi{10.1186/s12864-018-5160-5}) in its simplest form
 ## @importFrom matrixStats rowWeightedMeans rowVars
 #' @importFrom stats binomial var
 offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrench", "simple")) {
@@ -340,10 +340,10 @@ species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_of
 #' @param offset Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018), Wrench (introduced in Kumar et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
 #' @param ... Additional parameters passed on to [compute_offset()]
 #'
-#' @references Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \url{https://doi.org/10.7717/peerj.4600}
-#' @references Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \url{http://dx.doi.org/10.1038/nmeth.2658}
-#' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \url{https://doi.org/10.1186/gb-2010-11-10-r106}
-#' @references Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 \url{https://doi.org/10.1186/s12864-018-5160-5}
+#' @references Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \doi{10.7717/peerj.4600}
+#' @references Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \doi{10.1038/nmeth.2658}
+#' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \doi{10.1186/gb-2010-11-10-r106}
+#' @references Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 \doi{10.1186/s12864-018-5160-5}
 #'
 #' @return A data.frame suited for use in [PLN()] and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
 #' @note User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
