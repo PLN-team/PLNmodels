@@ -1,4 +1,4 @@
-# PLNmodels dev version
+# PLNmodels 0.11.4
 
 * use future_lapply in PLNPCA, PLNmixture and stability_selection (plan must be set by the user)
 * bug fix in prediction for PLN-LDA

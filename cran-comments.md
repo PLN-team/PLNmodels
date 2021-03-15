@@ -1,23 +1,26 @@
 
-## Resubmission
+Submitting PLNmodels version 0.11-4 to CRAN. Last version available on CRAN is 0.10-6.
 
-* commenting tests that fail on some plaforms (ATLAS) due to numerical precision
+The following major changes have been made since 0.10-6
 
-## Minor release to answer CRAN request
-
-* amending test-pln to fullfil a CRAN maintainer request 
-  (error on an ATLAS variant of BLAS in some anecdotal tests...)
-* Correction in likelihood of diagonal PLN
+* use future to parallelize code in  PLNmixture and stability_selection (plan must be set by the user)
+* various bug fixes
+* integration of a new series of fitting procedure via PLNmixture
+* Rewriting C++ by merging modern_cpp to dev
+* Enhanced vignettes for PLNPCA and PLNmixture
+* Add compatibility with factoextra for PLNPCA and PLNLDA
+* couple of additional dependencies
 
 ## Tested environments
 
-- macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
-- macOS Catalina 10.15, R-release (github action)
+- Linux ubuntu 20.04 R-release, (local)
+- Linux ubuntu 20.04, R-devel (github-action)
+- Linux ubuntu 20.04, R-release (github-action)
 - macOS Catalina 10.15, R-devel (github action)
-- Linux ubuntu 16.04, R-release (github-action)
-- Linux ubuntu 18.04 R-release, (local)
+- Windows Server 2019, R-devel (github action)
+
+- macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
 - Linux Debian GCC  R-devel, (R hub)
-- Windows Server 2019, R-release (github action)
 - Windows Server 2008 R2 SP1, R-release  (R hub)
 - Windows, R-release (winbuilder)
 - Windows, R-release  (winbuilder)
