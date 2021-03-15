@@ -82,7 +82,7 @@ See the documentation for getBestModel(), getModel() and plot()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9560</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.3-9580</span>
       </span>
     </div>
 
@@ -253,11 +253,15 @@ See the documentation for <code><a href='getBestModel.PLNPCAfamily.html'>getBest
 <p><hr>
 <a id="method-plot"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code></h3>
 <p>Lineplot of selected criteria for all models in the collection</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>plot</span><span class='op'>(</span>criteria <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"ICL"</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
+<p><div class="r"></p><pre><span class='va'>PLNmixturefamily</span><span class='op'>$</span><span class='fu'>plot</span><span class='op'>(</span>criteria <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"loglik"</span>, <span class='st'>"BIC"</span>, <span class='st'>"ICL"</span><span class='op'>)</span>, reverse <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>criteria</code></dt><dd><p>A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).</p></dd>
+
+<dt><code>reverse</code></dt><dd><p>A logical indicating whether to plot the value of the criteria in the "natural" direction
+(loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
+natural direction, on the same scale as the log-likelihood..</p></dd>
 
 </dl><p></div></p>
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
