@@ -35,8 +35,8 @@
 #'
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myMixtures <- PLNmixture(Abundance ~ 1, clusters = 1:4, data = trichoptera,
-#'                control_main = list(iterates = 1))
+#' myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
+#'                control_main = list(smoothing = "forward"))
 #'
 #' # Shut down parallel workers
 #' future::plan("sequential")
