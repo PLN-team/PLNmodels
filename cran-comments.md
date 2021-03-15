@@ -20,7 +20,6 @@ The following major changes have been made since 0.10-6
 - Windows Server 2019, R-devel (github action)
 - macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
 - Windows Server 2008 R2 SP1, R-release  (R hub)
-- Oracle Solaris 10, x86, 32 bit, R-release (R hub)
 - Windows, R-release (winbuilder)
 - Windows, R-devel  (winbuilder)
 - Windows, R-oldrelease  (winbuilder)
@@ -33,6 +32,8 @@ all status OK except for one note:
     doc    2.1Mb
     libs   2.7Mb (plateform dependent)
 
++ some examples exceed the 5 secs in Windows
+ 
 ## R CMD check results
 
 On my computer I get (Ubuntu 20.04, Intel Xeon 3.5 GHz; 64 Go mem)
