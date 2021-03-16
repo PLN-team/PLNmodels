@@ -9,7 +9,7 @@ status](https://github.com/pln-team/PLNmodels/workflows/R-CMD-check/badge.svg)](
 status](https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/pln-team/PLNmodels?branch=master)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 [![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://www.tidyverse.org/lifecycle/#stable)
+stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![](https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg)](https://github.com/pln-team/PLNmodels/commits/master)
 <!-- badges: end -->
 
@@ -102,7 +102,7 @@ The main fitting functions work with the usual `R formula` notations,
 with mutivariate responses on the left hand side. You probably want to
 start by one of them. Check the corresponding vignette and documentation
 page. There is a dedicated vignettes for each model in the package (See
-<http://pln-team.github.io/PLNmodels/articles/>).
+<https://pln-team.github.io/PLNmodels/articles/>).
 
 ### Unpenalized Poisson lognormal model (aka PLN)
 
@@ -150,4 +150,4 @@ Please cite our work using the following references:
 
   - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
     probabilistic Poisson PCA, the Annals of Applied Statistics, 12:
-    2674–2698, 2018. [link](http://dx.doi.org/10.1214/18-AOAS1177)
+    2674–2698, 2018. [link](https://dx.doi.org/10.1214/18-AOAS1177)

@@ -33,6 +33,7 @@
 #' ## Use future to dispatch the computations on 2 workers
 #' \dontrun{
 #' future::plan("multisession", workers = 2)
+#' }
 #'
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
@@ -40,6 +41,7 @@
 #'                control_main = list(smoothing = "forward", iterates = 1))
 #'
 #' # Shut down parallel workers
+#' \dontrun{
 #' future::plan("sequential")
 #' }
 #' @seealso The classes \code{\link[=PLNmixture]{PLNmixturefamily}} and \code{\link[=PLNmixturefit]{PLNmixturefit}}
