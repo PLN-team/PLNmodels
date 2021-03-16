@@ -54,6 +54,7 @@ The list of parameters \code{control_init} and \code{control_main} control the o
 }
 \examples{
 ## Use future to dispatch the computations on 2 workers
+\dontrun{
 future::plan("multisession", workers = 2)
 
 data(trichoptera)
@@ -63,6 +64,7 @@ myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera
 
 # Shut down parallel workers
 future::plan("sequential")
+}
 }
 \seealso{
 The classes \code{\link[=PLNmixture]{PLNmixturefamily}} and \code{\link[=PLNmixturefit]{PLNmixturefit}}
