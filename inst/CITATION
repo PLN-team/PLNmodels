@@ -1,14 +1,14 @@
 citHeader("To cite PLNmodels (either PLNPCA or PLNnetwork) in publications, please use:")
 
 citEntry(entry = "article",
-  key = "PLNPCA",
+  key = "PLNmodels",
   author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
-  title = "Variational inference for probabilistic Poisson PCA",
-  journal = "The Annals of Applied Statistics",
-  year = "2018",
-  volume = "12", pages = "2674--2698",
-  url = "https://dx.doi.org/10.1214/18-AOAS1177",
-  textVersion = "J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 2018."
+  title = "The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances",
+  journal = "bioRxiv preprint",
+  year = "2020",
+  doi = "2020.10.07.329383",
+  url = "https://dx.doi.org/10.1101/2020.10.07.329383",
+  textVersion = "J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, bioRxiv preprint, 2020."
 )
 
 citEntry(entry = "inproceedings",
@@ -23,13 +23,14 @@ citEntry(entry = "inproceedings",
   textVersion = "J. Chiquet, M. Mariadassou and S. Robin:  Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019."
 )
 
-
 citEntry(entry = "article",
-  key = "PLNmodels",
+  key = "PLNPCA",
   author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
-  title = "The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances",
-  journal = "bioRxiv preprint",
-  year = "2020",
-  url = "https://dx.doi.org/10.1101/2020.10.07.329383",
-  textVersion = "J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, bioRxiv preprint, 2020."
+  title = "Variational inference for probabilistic Poisson PCA",
+  journal = "The Annals of Applied Statistics",
+  year = "2018",
+  volume = "12", pages = "2674--2698",
+  doi = "10.1214/18-AOAS1177",
+  textVersion = "J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 2018."
 )
+
