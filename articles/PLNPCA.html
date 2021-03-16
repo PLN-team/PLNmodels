@@ -107,7 +107,7 @@
       <h1 data-toc-skip>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2021-03-15</h4>
+            <h4 class="date">2021-03-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNPCA.Rmd"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -196,11 +196,11 @@
 ##  Initialization...
 ## 
 ##  Adjusting 5 PLN models for PCA analysis.
-##   Rank approximation = 2 
-     Rank approximation = 1 
-     Rank approximation = 4 
-     Rank approximation = 5 
+##   Rank approximation = 4 
      Rank approximation = 3 
+     Rank approximation = 5 
+     Rank approximation = 2 
+     Rank approximation = 1 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
@@ -515,12 +515,82 @@
 ##     plot.PLNPCAfit()</code></pre>
 </div>
 </div>
+<div id="additional-visualization" class="section level3">
+<h3 class="hasAnchor">
+<a href="#additional-visualization" class="anchor"></a>Additional visualization</h3>
+<p>We provide simple plotting functions but a wealth of plotting utilities are available for factorial analyses results. The following bindings allow you to use widely popular tools to make your own plots: <code>$eig</code>, <code>$var</code> and <code>$ind</code>.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## All summaries associated to the individuals</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">ind</span><span class="op">)</span></code></pre></div>
+<pre><code>## List of 4
+##  $ coord  : num [1:49, 1:3] -1.78 3.55 7.48 6.39 4.64 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
+##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
+##  $ cos2   : num [1:49, 1:3] 0.794 0.706 0.963 0.889 0.953 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
+##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
+##  $ contrib: num [1:49, 1:3] 0.638 2.529 11.226 8.187 4.313 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
+##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
+##  $ dist   : Named num [1:49] 2 4.23 7.63 6.78 4.75 ...
+##   ..- attr(*, "names")= chr [1:49] "1" "2" "3" "4" ...</code></pre>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Coordinates of the individuals in the principal plane</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">ind</span><span class="op">$</span><span class="va">coord</span><span class="op">)</span></code></pre></div>
+<pre><code>##       Dim.1       Dim.2      Dim.3
+## 1 -1.784539 -0.54201920  0.7286718
+## 2  3.552078  0.93644483  2.0894982
+## 3  7.483642 -1.37264864  0.5414918
+## 4  6.390614 -1.44447329 -1.7317168
+## 5  4.638267 -0.02029232 -1.0296252
+## 6  3.994086  0.80735391  0.4706903</code></pre>
+<p>You can also use high level functions from the <a href="https://cran.r-project.org/package=factoextra">factoextra</a> package to extract relevant informations</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Eigenvalues</span>
+<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/eigenvalue.html">get_eig</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<pre><code>##       eigenvalue variance.percent cumulative.variance.percent
+## Dim.1   498.8638         38.80293                    38.80293
+## Dim.2   314.7485         24.48196                    63.28489
+## Dim.3   219.2953         17.05736                    80.34225</code></pre>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Variables</span>
+<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html">get_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<pre><code>## Principal Component Analysis Results for variables
+##  ===================================================
+##   Name       Description                                    
+## 1 "$coord"   "Coordinates for the variables"                
+## 2 "$cor"     "Correlations between variables and dimensions"
+## 3 "$cos2"    "Cos2 for the variables"                       
+## 4 "$contrib" "contributions of the variables"</code></pre>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Individuals</span>
+<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html">get_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<pre><code>## Principal Component Analysis Results for individuals
+##  ===================================================
+##   Name       Description                       
+## 1 "$coord"   "Coordinates for the individuals" 
+## 2 "$cos2"    "Cos2 for the individuals"        
+## 3 "$contrib" "contributions of the individuals"</code></pre>
+<p>And some of the very nice plotting methods such as biplots, correlation circles and scatter plots of the scores.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_biplot</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<p><img src="PLNPCA_files/figure-html/fviz_biplot-1.png" width="700"></p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<p><img src="PLNPCA_files/figure-html/fviz_cor_circle-1.png" width="700"></p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<p><img src="PLNPCA_files/figure-html/fviz_principal_plane-1.png" width="700"></p>
+</div>
 <div id="a-model-accounting-for-meteorological-covariates" class="section level3">
 <h3 class="hasAnchor">
 <a href="#a-model-accounting-for-meteorological-covariates" class="anchor"></a>A model accounting for meteorological covariates</h3>
 <p>A contribution of PLN-PCA is to let the possibility to taking into account some covariates in the parameter space. Such a strategy often completely changes the interpretation of PCA. Indeed, the covariates are often responsible for some strong structure in the data. The effect of the covariates should be removed since they are often quite obvious for the analyst and may hide some more important and subtle effects.</p>
 <p>In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the temperature, the wind and the cloudiness. This can be done thanks to the model formula:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">PCA_models_cov</span> <span class="op">&lt;-</span> 
   <span class="fu"><a href="../reference/PLNPCA.html">PLNPCA</a></span><span class="op">(</span>
     <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="va">Temperature</span> <span class="op">+</span> <span class="va">Wind</span> <span class="op">+</span> <span class="va">Cloudiness</span>,
@@ -531,20 +601,20 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 1 
+##   Rank approximation = 3 
      Rank approximation = 4 
      Rank approximation = 2 
-     Rank approximation = 3 
+     Rank approximation = 1 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">PCA_models_cov</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/extraction%20cov-1.png" width="672"></p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myPCA_cov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel</a></span><span class="op">(</span><span class="va">PCA_models_cov</span>, <span class="st">"ICL"</span><span class="op">)</span></code></pre></div>
 <p>Suppose that we want to have a closer look to the first two axes. This can be done thanks to the plot method:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html">grid.arrange</a></span><span class="op">(</span>
   <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myPCA_cov</span>, map <span class="op">=</span> <span class="st">"individual"</span>, ind_cols <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
   <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myPCA_cov</span>, map <span class="op">=</span> <span class="st">"variable"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
@@ -552,7 +622,7 @@
 <span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/maps-1.png" width="672"></p>
 <p>We can check that the fitted value of the counts – even with this low-rank covariance matrix – are close to the observed ones:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
   fitted   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span><span class="op">)</span>,
   observed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span><span class="op">)</span>
@@ -568,76 +638,6 @@ fitted value vs. observation
 </p>
 </div>
 </div>
-<div id="additional-visualization" class="section level3">
-<h3 class="hasAnchor">
-<a href="#additional-visualization" class="anchor"></a>Additional visualization</h3>
-<p>We provide simple plotting functions but a wealth of plotting utilities are available for factorial analyses results. The following bindings allow you to use widely popular tools to make your own plots: <code>$eig</code>, <code>$var</code> and <code>$ind</code>.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## All summaries associated to the individuals</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">$</span><span class="va">ind</span><span class="op">)</span></code></pre></div>
-<pre><code>## List of 4
-##  $ coord  : num [1:49, 1:3] -1.66 4.2 4.79 6.19 4.3 ...
-##   ..- attr(*, "dimnames")=List of 2
-##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
-##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
-##  $ cos2   : num [1:49, 1:3] 0.927 0.835 0.65 0.832 0.943 ...
-##   ..- attr(*, "dimnames")=List of 2
-##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
-##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
-##  $ contrib: num [1:49, 1:3] 0.374 2.394 3.123 5.208 2.511 ...
-##   ..- attr(*, "dimnames")=List of 2
-##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
-##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
-##  $ dist   : Named num [1:49] 1.72 4.59 5.95 6.79 4.43 ...
-##   ..- attr(*, "names")= chr [1:49] "1" "2" "3" "4" ...</code></pre>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Coordinates of the individuals in the principal plane</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">$</span><span class="va">ind</span><span class="op">$</span><span class="va">coord</span><span class="op">)</span></code></pre></div>
-<pre><code>##       Dim.1     Dim.2      Dim.3
-## 1 -1.658428 0.1426293 -0.4445295
-## 2  4.196220 1.8245955 -0.3831746
-## 3  4.792615 3.0614442 -1.7336272
-## 4  6.189135 1.3772081 -2.4178181
-## 5  4.297486 0.4923342 -0.9335276
-## 6  6.094833 1.2443428 -0.6174901</code></pre>
-<p>You can also use high level functions from the <a href="https://cran.r-project.org/package=factoextra">factoextra</a> package to extract relevant informations</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Eigenvalues</span>
-<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/eigenvalue.html">get_eig</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span></code></pre></div>
-<pre><code>##       eigenvalue variance.percent cumulative.variance.percent
-## Dim.1   735.5188        49.845721                    49.84572
-## Dim.2   228.5408        15.488093                    65.33381
-## Dim.3   100.1806         6.789189                    72.12300</code></pre>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Variables</span>
-<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html">get_pca_var</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span></code></pre></div>
-<pre><code>## Principal Component Analysis Results for variables
-##  ===================================================
-##   Name       Description                                    
-## 1 "$coord"   "Coordinates for the variables"                
-## 2 "$cor"     "Correlations between variables and dimensions"
-## 3 "$cos2"    "Cos2 for the variables"                       
-## 4 "$contrib" "contributions of the variables"</code></pre>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Individuals</span>
-<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html">get_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span></code></pre></div>
-<pre><code>## Principal Component Analysis Results for individuals
-##  ===================================================
-##   Name       Description                       
-## 1 "$coord"   "Coordinates for the individuals" 
-## 2 "$cos2"    "Cos2 for the individuals"        
-## 3 "$contrib" "contributions of the individuals"</code></pre>
-<p>And some of the very nice plotting methods such as biplots, correlation circles and scatter plots of the scores.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_biplot</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span></code></pre></div>
-<p><img src="PLNPCA_files/figure-html/fviz_biplot-1.png" width="700"></p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_var</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span></code></pre></div>
-<p><img src="PLNPCA_files/figure-html/fviz_cor_circle-1.png" width="700"></p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span></code></pre></div>
-<p><img src="PLNPCA_files/figure-html/fviz_principal_plane-1.png" width="700"></p>
-</div>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
@@ -647,7 +647,7 @@ fitted value vs. observation
 <p>Aitchison, J., and C. H. Ho. 1989. “The Multivariate Poisson-Log Normal Distribution.” <em>Biometrika</em> 76 (4): 643–53.</p>
 </div>
 <div id="ref-PLNPCA">
-<p>Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018. “Variational Inference for Probabilistic Poisson Pca.” <em>The Annals of Applied Statistics</em> 12: 2674–98. <a href="http://dx.doi.org/10.1214/18-AOAS1177">http://dx.doi.org/10.1214/18-AOAS1177</a>.</p>
+<p>Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018. “Variational Inference for Probabilistic Poisson Pca.” <em>The Annals of Applied Statistics</em> 12: 2674–98. <a href="https://doi.org/10.1214/18-AOAS1177">https://doi.org/10.1214/18-AOAS1177</a>.</p>
 </div>
 <div id="ref-nlopt">
 <p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/">https://nlopt.readthedocs.io/en/latest/</a>.</p>
