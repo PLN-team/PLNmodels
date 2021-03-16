@@ -204,6 +204,42 @@ myPCA_ICL$scores %>% head() %>% knitr::kable()
 myPCA_ICL
 ```
 
+### Additional visualization 
+
+We provide simple plotting functions but a wealth of plotting utilities are available for factorial analyses results. The following bindings allow you to use widely popular tools to make your own plots: `$eig`, `$var` and `$ind`. 
+
+```{r pca_bindings_example}
+## All summaries associated to the individuals
+str(myPCA_ICL$ind)
+## Coordinates of the individuals in the principal plane
+head(myPCA_ICL$ind$coord)
+```
+
+You can also use high level functions from the [factoextra](https://cran.r-project.org/package=factoextra) package to extract relevant informations 
+
+```{r pca_bindings}
+## Eigenvalues
+factoextra::get_eig(myPCA_ICL)
+## Variables
+factoextra::get_pca_var(myPCA_ICL)
+## Individuals
+factoextra::get_pca_ind(myPCA_ICL)
+```
+
+And some of the very nice plotting methods such as biplots, correlation circles and scatter plots of the scores. 
+
+```{r fviz_biplot}
+factoextra::fviz_pca_biplot(myPCA_ICL)
+```
+
+```{r fviz_cor_circle}
+factoextra::fviz_pca_var(myPCA_ICL)
+```
+
+```{r fviz_principal_plane}
+factoextra::fviz_pca_ind(myPCA_ICL)
+```
+
 ### A model accounting for meteorological covariates
 
 A contribution of PLN-PCA is to let the possibility to taking into account some covariates in the parameter space. Such a strategy often completely changes the interpretation of PCA. Indeed, the covariates are often responsible for some strong structure in the data. The effect of the covariates should be removed since they are often quite obvious for the analyst and may hide some more important and subtle effects.
@@ -248,42 +284,6 @@ data.frame(
     scale_x_log10(limits = c(1,1000)) + 
     scale_y_log10(limits = c(1,1000)) + 
     theme_bw() + annotation_logticks()
-```
-
-### Additional visualization 
-
-We provide simple plotting functions but a wealth of plotting utilities are available for factorial analyses results. The following bindings allow you to use widely popular tools to make your own plots: `$eig`, `$var` and `$ind`. 
-
-```{r pca_bindings_example}
-## All summaries associated to the individuals
-str(myPCA_cov$ind)
-## Coordinates of the individuals in the principal plane
-head(myPCA_cov$ind$coord)
-```
-
-You can also use high level functions from the [factoextra](https://cran.r-project.org/package=factoextra) package to extract relevant informations 
-
-```{r pca_bindings}
-## Eigenvalues
-factoextra::get_eig(myPCA_cov)
-## Variables
-factoextra::get_pca_var(myPCA_cov)
-## Individuals
-factoextra::get_pca_ind(myPCA_cov)
-```
-
-And some of the very nice plotting methods such as biplots, correlation circles and scatter plots of the scores. 
-
-```{r fviz_biplot}
-factoextra::fviz_pca_biplot(myPCA_cov)
-```
-
-```{r fviz_cor_circle}
-factoextra::fviz_pca_var(myPCA_cov)
-```
-
-```{r fviz_principal_plane}
-factoextra::fviz_pca_ind(myPCA_cov)
 ```
 
 ## References
