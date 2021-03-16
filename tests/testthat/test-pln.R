@@ -1,7 +1,7 @@
 context("test-pln")
 
 data(trichoptera)
-trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+trichoptera <- prepare_data(trichoptera$Abundance[1:20, 1:5], trichoptera$Covariate[1:20, ])
 
 test_that("PLN: Check that PLN is running and robust",  {
 
