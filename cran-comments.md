@@ -34,26 +34,6 @@ all status OK except for
     doc    2.1Mb
     libs   2.7Mb (platform dependent)
 
-* On some Debian system I get a NOTE about invalid URLs which are indeed correct
-
-Found the following (possibly) invalid URLs:
-  URL: https://doi.org/10.1214/18-AOAS1177
-    From: inst/doc/PLNPCA.html
-    Status: 500
-    Message: Internal Server Error
-  URL: https://dx.doi.org/10.1214/18-AOAS1177
-    From: inst/CITATION
-    Status: 500
-    Message: Internal Server Error
-
-Found the following (possibly) invalid DOIs:
-  DOI: 10.1214/18-AOAS1177
-    From: DESCRIPTION
-    Status: Internal Server Error
-    Message: 500
-
-## R CMD check results
-
 On my computer I get (Ubuntu 20.04, Intel Xeon 3.5 GHz; 64 Go mem)
 
 ── R CMD check results ─────────────────────────────────── PLNmodels 0.11.4 ────

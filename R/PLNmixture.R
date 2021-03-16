@@ -31,6 +31,7 @@
 #' @rdname PLNmixture
 #' @examples
 #' ## Use future to dispatch the computations on 2 workers
+#' \dontrun{
 #' future::plan("multisession", workers = 2)
 #'
 #' data(trichoptera)
@@ -40,6 +41,7 @@
 #'
 #' # Shut down parallel workers
 #' future::plan("sequential")
+#' }
 #' @seealso The classes \code{\link[=PLNmixture]{PLNmixturefamily}} and \code{\link[=PLNmixturefit]{PLNmixturefit}}
 #' @importFrom stats model.frame model.matrix model.response model.offset update.formula
 #' @export
