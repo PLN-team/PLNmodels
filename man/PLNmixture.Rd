@@ -56,6 +56,7 @@ The list of parameters \code{control_init} and \code{control_main} control the o
 ## Use future to dispatch the computations on 2 workers
 \dontrun{
 future::plan("multisession", workers = 2)
+}
 
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
@@ -63,6 +64,7 @@ myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera
                control_main = list(smoothing = "forward", iterates = 1))
 
 # Shut down parallel workers
+\dontrun{
 future::plan("sequential")
 }
 }
