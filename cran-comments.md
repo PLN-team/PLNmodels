@@ -24,16 +24,34 @@ The following major changes have been made since 0.10-6
 - Windows, R-devel  (winbuilder)
 - Windows, R-oldrelease  (winbuilder)
 
-all status OK except for one note:
+all status OK except for
 
-* checking installed package size ... NOTE
+* the usual NOTE about libs size (RccpArmadillo)
+
+  checking installed package size ... NOTE
   installed size is  6.0Mb
   sub-directories of 1Mb or more:
     doc    2.1Mb
-    libs   2.7Mb (plateform dependent)
+    libs   2.7Mb (platform dependent)
 
-+ some examples exceed the 5 secs in Windows
- 
+* On some Debian system I get a NOTE about invalid URLs which are indeed correct
+
+Found the following (possibly) invalid URLs:
+  URL: https://doi.org/10.1214/18-AOAS1177
+    From: inst/doc/PLNPCA.html
+    Status: 500
+    Message: Internal Server Error
+  URL: https://dx.doi.org/10.1214/18-AOAS1177
+    From: inst/CITATION
+    Status: 500
+    Message: Internal Server Error
+
+Found the following (possibly) invalid DOIs:
+  DOI: 10.1214/18-AOAS1177
+    From: DESCRIPTION
+    Status: Internal Server Error
+    Message: 500
+
 ## R CMD check results
 
 On my computer I get (Ubuntu 20.04, Intel Xeon 3.5 GHz; 64 Go mem)
