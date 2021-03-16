@@ -1,7 +1,8 @@
 context("test-plnnetworkfamily")
 
 data(trichoptera)
-trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+## use a subset t save some time
+trichoptera <- prepare_data(trichoptera$Abundance[1:20, 1:5], trichoptera$Covariate[1:20, ])
 
 models <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 

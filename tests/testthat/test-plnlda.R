@@ -1,6 +1,7 @@
 context("test-plnlda")
 
 data(trichoptera)
+## Use a subset to save some time
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
 test_that("Check that PLNLDA is running and robust",  {
