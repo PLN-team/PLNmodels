@@ -22,7 +22,7 @@
 #'
 #'
 #' @seealso [prepare_data()]
-#' @references Jakuschkin, B., Fievet, V., Schwaller, L. et al. Deciphering the Pathobiome: Intra- and Interkingdom Interactions Involving the Pathogen Erysiphe alphitoides . Microb Ecol 72, 870–880 (2016). [https://doi.org/10.1007/s00248-016-0777-x](https://doi.org/10.1007/s00248-016-0777-x)
+#' @references Jakuschkin, B., Fievet, V., Schwaller, L. et al. Deciphering the Pathobiome: Intra- and Interkingdom Interactions Involving the Pathogen Erysiphe alphitoides . Microb Ecol 72, 870–880 (2016). \doi{10.1007/s00248-016-0777-x}
 #' @examples
 #' data(oaks)
 #' \dontrun{
