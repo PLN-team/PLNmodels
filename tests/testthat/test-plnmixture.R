@@ -2,19 +2,21 @@ context("test-plnmixture")
 
 library(purrr)
 data(trichoptera)
-trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+## use a subset to save some time
+trichoptera <- prepare_data(trichoptera$Abundance[1:20, 1:5], trichoptera$Covariate[1:20, ])
 
-mix_wt <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
+mix_wt <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:3, data = trichoptera,
                       control_main = list(iterates = 0))
-mix_wo <- PLNmixture(Abundance ~ 0 + offset(log(Offset)), data = trichoptera,
+mix_wo <- PLNmixture(Abundance ~ 0 + offset(log(Offset)), clusters = 1:3, data = trichoptera,
                      control_main = list(iterates = 0))
 
-models_sphr <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+models_sphr <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:3, data = trichoptera,
+                          control_main = list(covariance = "spherical", iterates = 0))
 
-models_diag <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
+models_diag <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:3, data = trichoptera,
                        control_main = list(covariance = "diagonal", iterates = 0))
 
-models_full <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
+models_full <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:3, data = trichoptera,
                        control_main = list(covariance = "full", iterates = 0))
 
 n <- nrow(trichoptera$Abundance)
@@ -79,7 +81,6 @@ test_that("PLNmixture fit: check classes, getters and field access",  {
    expect_equal(length(model$mixtureParam), k)
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
-   expect_lt(model$ICL, model$loglik)
    expect_gt(model$R_squared, 0)
    expect_equal(model$nb_param, p * d + (k - 1) + k * (1 + p))
 
@@ -294,13 +295,16 @@ test_that("Full model of the covariance is working", {
 
 #### With COVARIATE
 
-models_sphr_cov <- PLNmixture(Abundance ~ 1 + Precipitation + offset(log(Offset)), data = trichoptera,
-                              control_main = list(covariance = "spherical", iterates = 1))
+models_sphr_cov <- PLNmixture(Abundance ~ 1 + Precipitation + offset(log(Offset)),
+                              clusters = 1:3, data = trichoptera,
+                              control_main = list(covariance = "spherical", iterates = 0))
 
-models_diag_cov <- PLNmixture(Abundance ~ 1 + Precipitation + offset(log(Offset)), data = trichoptera,
+models_diag_cov <- PLNmixture(Abundance ~ 1 + Precipitation + offset(log(Offset)),
+                              clusters = 1:3, data = trichoptera,
                        control_main = list(covariance = "diagonal", iterates = 0))
 
-models_full_cov <- PLNmixture(Abundance ~ 1 + Precipitation + offset(log(Offset)), data = trichoptera,
+models_full_cov <- PLNmixture(Abundance ~ 1 + Precipitation + offset(log(Offset)),
+                              clusters = 1:3, data = trichoptera,
                        control_main = list(covariance = "full", iterates = 0))
 d <- 1
 

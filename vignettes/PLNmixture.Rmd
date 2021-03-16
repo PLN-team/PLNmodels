@@ -39,9 +39,9 @@ library(PLNmodels)
 library(factoextra)
 ```
 
-The main function `PLNmixture` integrates some features of the **future** package to perform parallel computing: we set our plan now to speed the fit by relying on 2 workers:
+The main function `PLNmixture` integrates some features of the **future** package to perform parallel computing: you can set your plan to speed the fit by relying on 2 workers as follows:
 
-```{r future}
+```{r future, eval = FALSE}
 library(future)
 plan(multisession, workers = 2)
 ```
@@ -166,13 +166,14 @@ so we strongly recommend the reader to be comfortable with `PLN` and
 
 #### Adjusting a collection of fits
 
-We fit a collection of $K=4$ models as follows:
+We fit a collection of $K=5$ models with one iteration of forward smoothing of the log-likelihood as follows:
 
 ```{r nocov mixture}
 mixture_models <- PLNmixture(
   Abundance ~ 1 + offset(log(Offset)),
   data  = trichoptera,
-  clusters = 1:5
+  clusters = 1:5,
+  control_main = list(smoothing = "forward", iterates = 1)
 )
 ```
 
@@ -365,6 +366,12 @@ predicted.position <- predict(myMix_BIC, newdata = trichoptera,
                               prior = myMix_BIC$posteriorProb, type = "position")
 prcomp(predicted.position) %>% 
   factoextra::fviz_pca_ind(col.ind = predicted.class)
+```
+
+When you are done, do not forget to get back to the standard sequential plan with *future*.
+
+```{r future_off, eval = FALSE}
+future::plan("sequential")
 ```
 
 ## References

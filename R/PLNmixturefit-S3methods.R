@@ -26,8 +26,10 @@ isPLNmixturefit <- function(Robject) {inherits(Robject, "PLNmixturefit")}
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
 #'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#' \dontrun{
 #' plot(myPLN, "pca")
 #' plot(myPLN, "matrix")
+#' }
 #' @export
 plot.PLNmixturefit <-
   function(x,
