@@ -38,9 +38,9 @@ library(corrplot)
 library(factoextra)
 ```
 
-The main function `PLNPCA` integrates some features of the **future** package to perform parallel computing: we set our plan now to speed the fit by relying on 2 workers:
+The main function `PLNPCA` integrates some features of the **future** package to perform parallel computing: you can set your plan now to speed the fit by relying on 2 workers as follows:
 
-```{r future}
+```{r future, eval = FALSE}
 library(future)
 plan(multisession, workers = 2)
 ```
@@ -166,14 +166,6 @@ Objects `myPCA_ICL` and `myPCA_BIC` are `R6Class` objects of class `PLNPCAfit` w
 plot(myPCA_ICL, ind_cols = trichoptera$Group)
 ```
 
-<!-- Indeed, let us visualize the first three axes of model $q=3$: -->
-
-<!-- ```{r map q3, fig.width=8, fig.height=8} -->
-<!-- plot(myPCA_BIC, ind_cols = trichoptera$Group) -->
-<!-- ``` -->
-
-<!-- We can see that the maps for axes (1,2) is slightly different for the model with $q=3$ from the one obtained for axes (1,2) in the $q=4$ model -->
-
 Among other fields and methods (see `?PLNPCAfit` for a comprehensive view), the most interesting for the end-user in the context of PCA are 
 
 - the regression coefficient matrix
@@ -284,6 +276,12 @@ data.frame(
     scale_x_log10(limits = c(1,1000)) + 
     scale_y_log10(limits = c(1,1000)) + 
     theme_bw() + annotation_logticks()
+```
+
+When you are done, do not forget to get back to the standard sequential plan with *future*.
+
+```{r future_off, eval = FALSE}
+future::plan("sequential")
 ```
 
 ## References

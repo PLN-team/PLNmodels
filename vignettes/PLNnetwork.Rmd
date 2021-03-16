@@ -156,7 +156,7 @@ An alternative strategy is to use StARS [@stars], which performs resampling to e
 
 Resampling can be computationally demanding but is easily parallelized: the function `stability_selection` integrates some features of the **future** package to perform parallel computing. We set our plan to speed the process by relying on 2 workers:
 
-```{r future}
+```{r future, eval = FALSE}
 library(future)
 plan(multisession, workers = 2)
 ```
@@ -171,6 +171,12 @@ When "StARS" is requested for the first time, `getBestModel` automatically calls
 
 ```{r plot stability, fig.width=7, fig.height=5}
 plot(network_models, "stability")
+```
+
+When you are done, do not forget to get back to the standard sequential plan with *future*.
+
+```{r future_off, eval = FALSE}
+future::plan("sequential")
 ```
 
 ### Structure of a `PLNnetworkfit`
