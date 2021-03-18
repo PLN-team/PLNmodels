@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.4-9000</span>
       </span>
     </div>
 
@@ -107,7 +107,7 @@
       <h1 data-toc-skip>Clustering of multivariate count data with PLN-mixture</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2021-03-16</h4>
+            <h4 class="date">2021-03-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNmixture.Rmd"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
@@ -127,7 +127,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.sthda.com/english/rpkgs/factoextra">factoextra</a></span><span class="op">)</span></code></pre></div>
-<p>The main function <code>PLNmixture</code> integrates some features of the <strong>future</strong> package to perform parallel computing: we set our plan now to speed the fit by relying on 2 workers:</p>
+<p>The main function <code>PLNmixture</code> integrates some features of the <strong>future</strong> package to perform parallel computing: you can set your plan to speed the fit by relying on 2 workers as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/HenrikBengtsson/future">future</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
@@ -198,12 +198,13 @@
 <div id="adjusting-a-collection-of-fits" class="section level4">
 <h4 class="hasAnchor">
 <a href="#adjusting-a-collection-of-fits" class="anchor"></a>Adjusting a collection of fits</h4>
-<p>We fit a collection of <span class="math inline">\(K=4\)</span> models as follows:</p>
+<p>We fit a collection of <span class="math inline">\(K=5\)</span> models with one iteration of forward smoothing of the log-likelihood as follows:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mixture_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNmixture.html">PLNmixture</a></span><span class="op">(</span>
   <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,
   data  <span class="op">=</span> <span class="va">trichoptera</span>,
-  clusters <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>
+  clusters <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,
+  control_main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>smoothing <span class="op">=</span> <span class="st">"forward"</span>, iterates <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
 <pre><code>## 
 ##  Initialization...
@@ -216,13 +217,7 @@
     number of cluster = 5 
 ## 
 ##  Smoothing PLN mixture models.
-##    Going backward ++++
-                                                                                                    
-   Going forward ++++
-                                                                                                    
-   Going backward ++++
-                                                                                                    
-   Going forward ++++
+##    Going forward ++++
                                                                                                     
 ##  Post-treatments
 ##  DONE!</code></pre>
@@ -272,23 +267,23 @@
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">56</td>
-<td align="right">-1185.427</td>
-<td align="right">-1294.398</td>
-<td align="right">-1194.4714</td>
+<td align="right">-1215.355</td>
+<td align="right">-1324.326</td>
+<td align="right">-1428.8086</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-1121.563</td>
-<td align="right">-1267.507</td>
-<td align="right">-866.3668</td>
+<td align="right">-1150.241</td>
+<td align="right">-1296.184</td>
+<td align="right">-1124.3524</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">94</td>
-<td align="right">-1079.735</td>
-<td align="right">-1262.650</td>
-<td align="right">-824.3451</td>
+<td align="right">-1092.456</td>
+<td align="right">-1275.372</td>
+<td align="right">-746.8118</td>
 </tr>
 </tbody>
 </table>
@@ -325,23 +320,23 @@
 <td align="left">elt.1</td>
 <td align="right">3</td>
 <td align="left">56</td>
-<td align="left">1185.427134</td>
-<td align="left">0.000009</td>
+<td align="left">1215.354620</td>
+<td align="left">0.000000</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">1121.563286</td>
-<td align="left">0.000013</td>
+<td align="left">1150.241166</td>
+<td align="left">0.000000</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.3</td>
 <td align="right">5</td>
 <td align="left">94</td>
-<td align="left">1079.734927</td>
+<td align="left">1092.456150</td>
 <td align="left">0.000009</td>
 <td align="left">2.000000</td>
 </tr>
@@ -394,14 +389,14 @@
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">memberships</span></code></pre></div>
-<pre><code>##  [1] 4 4 3 3 3 4 4 3 4 4 4 4 3 4 3 3 4 4 4 4 4 4 4 4 4 5 5 4 4 2 2 1 1 1 4 4 4 4
-## [39] 4 3 4 4 4 4 4 4 4 4 5</code></pre>
+<pre><code>##  [1] 4 4 5 5 5 4 4 5 4 4 4 4 5 4 5 5 4 4 4 4 4 4 4 4 4 3 3 4 4 2 2 3 3 1 4 4 4 4
+## [39] 4 5 4 4 4 4 4 4 4 4 3</code></pre>
 <ul>
 <li>the group proportions:</li>
 </ul>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">mixtureParam</span></code></pre></div>
-<pre><code>## [1] 0.06122449 0.04081633 0.16326531 0.67346939 0.06122449</code></pre>
+<pre><code>## [1] 0.02040816 0.04081633 0.10204082 0.67346939 0.16326531</code></pre>
 <ul>
 <li>the posterior probabilities (often close to the boundaries <span class="math inline">\(\{0,1\}\)</span>):</li>
 </ul>
@@ -425,23 +420,23 @@
 <tr class="odd">
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
@@ -457,12 +452,12 @@
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html">sigma</a></span><span class="op">(</span><span class="va">myMix_BIC</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">as.matrix</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></code></pre></div>
 <pre><code>## [[1]]
-##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
-## 0.05124919 0.05124919 0.05124919 0.05124919 0.05124919 0.05124919 0.05124919 
-##        Ath        Cea        Ced        Set        All        Han        Hfo 
-## 0.05124919 0.05124919 0.05124919 0.05124919 0.05124919 0.05124919 0.05124919 
-##        Hsp        Hve        Sta 
-## 0.05124919 0.05124919 0.05124919 
+##          Che          Hyc          Hym          Hys          Psy          Aga 
+## 2.388859e-08 2.388859e-08 2.388859e-08 2.388859e-08 2.388859e-08 2.388859e-08 
+##          Glo          Ath          Cea          Ced          Set          All 
+## 2.388859e-08 2.388859e-08 2.388859e-08 2.388859e-08 2.388859e-08 2.388859e-08 
+##          Han          Hfo          Hsp          Hve          Sta 
+## 2.388859e-08 2.388859e-08 2.388859e-08 2.388859e-08 2.388859e-08 
 ## 
 ## [[2]]
 ##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
@@ -473,12 +468,12 @@
 ## 0.04218818 0.04218818 0.04218818 
 ## 
 ## [[3]]
-##          Che          Hyc          Hym          Hys          Psy          Aga 
-## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
-##          Glo          Ath          Cea          Ced          Set          All 
-## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
-##          Han          Hfo          Hsp          Hve          Sta 
-## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
+##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath 
+## 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 
+##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve 
+## 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 
+##       Sta 
+## 0.1225584 
 ## 
 ## [[4]]
 ##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
@@ -489,12 +484,12 @@
 ## 0.05717905 0.05717905 0.05717905 
 ## 
 ## [[5]]
-##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
-## 0.05016157 0.05016157 0.05016157 0.05016157 0.05016157 0.05016157 0.05016157 
-##        Ath        Cea        Ced        Set        All        Han        Hfo 
-## 0.05016157 0.05016157 0.05016157 0.05016157 0.05016157 0.05016157 0.05016157 
-##        Hsp        Hve        Sta 
-## 0.05016157 0.05016157 0.05016157</code></pre>
+##          Che          Hyc          Hym          Hys          Psy          Aga 
+## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
+##          Glo          Ath          Cea          Ced          Set          All 
+## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
+##          Han          Hfo          Hsp          Hve          Sta 
+## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058</code></pre>
 <ul>
 <li>the regression coefficient matrix and other model of parameters (results not shown here, redundant with other fields)</li>
 </ul>
@@ -521,51 +516,51 @@
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-19.86</td>
+<td align="right">-20.28</td>
 <td align="right">-16.54</td>
-<td align="right">-7.08</td>
+<td align="right">-18.11</td>
 <td align="right">-6.50</td>
-<td align="right">-19.54</td>
+<td align="right">-7.08</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-19.86</td>
+<td align="right">-20.28</td>
 <td align="right">-8.42</td>
-<td align="right">-66.08</td>
+<td align="right">-6.01</td>
 <td align="right">-7.19</td>
-<td align="right">-5.16</td>
+<td align="right">-66.08</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-2.75</td>
+<td align="right">-3.08</td>
 <td align="right">-6.00</td>
-<td align="right">-4.30</td>
+<td align="right">-2.96</td>
 <td align="right">-2.37</td>
-<td align="right">-3.77</td>
+<td align="right">-4.30</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-19.86</td>
+<td align="right">-20.28</td>
 <td align="right">-16.54</td>
-<td align="right">-66.08</td>
+<td align="right">-18.11</td>
 <td align="right">-5.39</td>
-<td align="right">-19.54</td>
+<td align="right">-66.08</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">-0.70</td>
+<td align="right">-0.40</td>
 <td align="right">-0.21</td>
-<td align="right">-0.16</td>
+<td align="right">-1.11</td>
 <td align="right">-0.58</td>
-<td align="right">-1.26</td>
+<td align="right">-0.16</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">-2.88</td>
+<td align="right">-2.79</td>
 <td align="right">-7.32</td>
-<td align="right">-3.47</td>
+<td align="right">-3.62</td>
 <td align="right">-3.58</td>
-<td align="right">-19.54</td>
+<td align="right">-3.47</td>
 </tr>
 </tbody>
 </table>
@@ -575,7 +570,7 @@
 <pre><code>## A multivariate Poisson Lognormal fit with spherical covariance model.
 ## ==================================================================
 ##  nb_param  loglik     BIC      ICL
-##        18 -84.204 -119.23 -314.469
+##        18 -18.345 -53.372 -146.719
 ## ==================================================================
 ## * Useful fields
 ##     $model_par, $latent, $latent_pos, $var_par, $optim_par
@@ -612,42 +607,42 @@
 <td align="right">0</td>
 <td align="right">0.00</td>
 <td align="right">1.00</td>
-<td align="right">0</td>
+<td align="right">0.00</td>
 </tr>
 <tr class="even">
-<td align="right">0.30</td>
+<td align="right">0.06</td>
 <td align="right">0</td>
+<td align="right">0.03</td>
+<td align="right">0.90</td>
 <td align="right">0.02</td>
-<td align="right">0.69</td>
-<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="right">0.00</td>
 <td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
 <td align="right">0.99</td>
-<td align="right">0.00</td>
-<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="right">0.00</td>
 <td align="right">0</td>
-<td align="right">1.00</td>
 <td align="right">0.00</td>
-<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
 </tr>
 <tr class="odd">
 <td align="right">0.00</td>
 <td align="right">0</td>
-<td align="right">1.00</td>
 <td align="right">0.00</td>
-<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
 </tr>
 <tr class="even">
-<td align="right">0.07</td>
+<td align="right">0.15</td>
 <td align="right">0</td>
-<td align="right">0.54</td>
-<td align="right">0.39</td>
-<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">0.35</td>
+<td align="right">0.50</td>
 </tr>
 </tbody></table>
 <p>Setting <code>type = "response"</code>, we can predict the most likely cluster <span class="math inline">\(\hat{k} = \arg\max_{k = 1\dots K} \{ \hat{\pi_k}\}\)</span> instead:</p>
@@ -656,9 +651,9 @@
                            prior <span class="op">=</span> <span class="va">myMix_BIC</span><span class="op">$</span><span class="va">posteriorProb</span>,  type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span>
 <span class="va">predicted.class</span></code></pre></div>
 <pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 
-##  4  4  3  3  3  4  4  3  4  4  4  4  3  4  3  3  4  4  4  4  4  4  4  4  4  5 
+##  4  4  5  5  5  4  4  5  4  4  4  4  5  4  5  5  4  4  4  4  4  4  4  4  4  3 
 ## 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 
-##  5  4  5  2  2  1  1  1  4  4  4  4  4  3  4  4  4  4  4  4  4  4  5 
+##  3  4  3  2  2  3  3  1  4  4  4  4  4  5  4  4  4  4  4  4  4  4  3 
 ## Levels: 1 2 3 4 5</code></pre>
 <p>We can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used data set for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
 <p>Finally, we can get the coordinates of the new data on the same graph at the original ones with <code>type = "position"</code>. This is done by averaging the latent positions <span class="math inline">\(\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k\)</span> (found when the sample is assumed to come from group <span class="math inline">\(k\)</span>) and weighting them with the <span class="math inline">\(\hat{\pi}_k\)</span>. Some samples, have compositions that put them very far from their group mean.</p>
@@ -668,6 +663,9 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html">prcomp</a></span><span class="op">(</span><span class="va">predicted.position</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_ind</a></span><span class="op">(</span>col.ind <span class="op">=</span> <span class="va">predicted.class</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNmixture_files/figure-html/predicted_position-1.png" width="672"></p>
+<p>When you are done, do not forget to get back to the standard sequential plan with <em>future</em>.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="st">"sequential"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 </div>

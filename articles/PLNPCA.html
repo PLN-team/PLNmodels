@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.4-9000</span>
       </span>
     </div>
 
@@ -107,7 +107,7 @@
       <h1 data-toc-skip>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2021-03-16</h4>
+            <h4 class="date">2021-03-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNPCA.Rmd"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -129,7 +129,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/taiyun/corrplot">corrplot</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.sthda.com/english/rpkgs/factoextra">factoextra</a></span><span class="op">)</span></code></pre></div>
-<p>The main function <code>PLNPCA</code> integrates some features of the <strong>future</strong> package to perform parallel computing: we set our plan now to speed the fit by relying on 2 workers:</p>
+<p>The main function <code>PLNPCA</code> integrates some features of the <strong>future</strong> package to perform parallel computing: you can set your plan now to speed the fit by relying on 2 workers as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/HenrikBengtsson/future">future</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
@@ -190,17 +190,16 @@
 <code class="sourceCode R"><span class="va">PCA_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNPCA.html">PLNPCA</a></span><span class="op">(</span>
   <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,
   data  <span class="op">=</span> <span class="va">trichoptera</span>, 
-  ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>
+  ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>
 <span class="op">)</span></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ## 
-##  Adjusting 5 PLN models for PCA analysis.
-##   Rank approximation = 3 
-     Rank approximation = 4 
-     Rank approximation = 2 
-     Rank approximation = 5 
+##  Adjusting 4 PLN models for PCA analysis.
+##   Rank approximation = 2 
+     Rank approximation = 3 
      Rank approximation = 1 
+     Rank approximation = 4 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
@@ -213,11 +212,11 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">PCA_models</span></code></pre></div>
 <pre><code>## --------------------------------------------------------
-## COLLECTION OF 5 POISSON LOGNORMAL MODELS
+## COLLECTION OF 4 POISSON LOGNORMAL MODELS
 ## --------------------------------------------------------
 ##  Task: Principal Component Analysis
 ## ========================================================
-##  - Ranks considered: from 1 to 5
+##  - Ranks considered: from 1 to 4
 ##  - Best model (greater BIC): rank = 4
 ##  - Best model (greater ICL): rank = 3</code></pre>
 <p>One can also easily access the successive values of the criteria in the collection</p>
@@ -259,13 +258,6 @@
 <td align="right">-596.7456</td>
 <td align="right">-750.4725</td>
 <td align="right">-837.6600</td>
-</tr>
-<tr class="odd">
-<td align="right">5</td>
-<td align="right">92</td>
-<td align="right">-579.4663</td>
-<td align="right">-758.4900</td>
-<td align="right">-888.7410</td>
 </tr>
 </tbody>
 </table>
@@ -314,14 +306,6 @@
 <td align="left">3</td>
 <td align="left">ftol_rel or ftol_abs was reached</td>
 </tr>
-<tr class="odd">
-<td align="left">elt.3</td>
-<td align="right">5</td>
-<td align="left">92</td>
-<td align="left">3279</td>
-<td align="left">3</td>
-<td align="left">ftol_rel or ftol_abs was reached</td>
-</tr>
 </tbody>
 </table>
 <p>Comprehensive information about <code>PLNPCAfamily</code> is available via <code><a href="../reference/PLNPCAfamily.html">?PLNPCAfamily</a></code>.</p>
@@ -352,11 +336,6 @@
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myPCA_ICL</span>, ind_cols <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/map-1.png" width="768"></p>
-<!-- Indeed, let us visualize the first three axes of model $q=3$: -->
-<!-- ```{r map q3, fig.width=8, fig.height=8} -->
-<!-- plot(myPCA_BIC, ind_cols = trichoptera$Group) -->
-<!-- ``` -->
-<!-- We can see that the maps for axes (1,2) is slightly different for the model with $q=3$ from the one obtained for axes (1,2) in the $q=4$ model -->
 <p>Among other fields and methods (see <code><a href="../reference/PLNPCAfit.html">?PLNPCAfit</a></code> for a comprehensive view), the most interesting for the end-user in the context of PCA are</p>
 <ul>
 <li>the regression coefficient matrix</li>
@@ -601,9 +580,9 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 4 
+##   Rank approximation = 3 
+     Rank approximation = 4 
      Rank approximation = 2 
-     Rank approximation = 3 
      Rank approximation = 1 
 ##  Post-treatments
 ##  DONE!</code></pre>
@@ -637,6 +616,9 @@
 fitted value vs. observation
 </p>
 </div>
+<p>When you are done, do not forget to get back to the standard sequential plan with <em>future</em>.</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="st">"sequential"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">
