@@ -68,9 +68,12 @@ stability_selection(myPLNnets)
 plot(getBestModel(myPLNnets, "StARS", stability = .975))
 
 ## Mixture model to recover tree structure
-system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:6))
+system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5,
+                                      control_main = list(covariance = "diagonal")))
 
-myPLN <- my_mixtures %>% getModel(3)
+plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"), reverse = TRUE)
+
+myPLN <- my_mixtures %>% getBestModel("BIC")
 
 plot(myPLN, "pca", main = 'clustering memberships in individual factor map')
 myPLN$plot_clustering_data(myPLN)
@@ -89,14 +92,16 @@ data.frame(
   ggplot(aes(x = nb_components, y = value, colour = score)) + geom_line() + theme_bw() + labs(y = "clustering similarity", x = "number of components")
 
 ## Mixture model to recover tree structure - with covariates
-system.time(my_mixtures <- PLNmixture(Abundance ~ 0 + tree + distTOground + offset(log(Offset)), data = oaks, clusters = 1:5))
+system.time(my_mixtures <- PLNmixture(Abundance ~ 0 + tree + distTOground + offset(log(Offset)), data = oaks,
+                                      control_main = list(covariance = "spherical")))
 
-plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"))
+plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"), reverse = TRUE)
 
-myPLN <- my_mixtures %>% getBestModel()
+myPLN <- my_mixtures %>% getBestModel("ICL")
 
 myPLN$plot_clustering_pca(main = 'clustering memberships in individual factor map')
 p <- myPLN$plot_clustering_data()
 
 aricode::ARI(myPLN$memberships, oaks$tree)
 
+future::plan("sequential")

@@ -1,3 +1,9 @@
+# PLNmodels dev version
+
+* use future_lapply in PLNmixture_family
+* remove a NOTE due to a DESeq2 link and a failure on solaris on CRAN machines
+* faster examples and build for vignettes
+
 # PLNmodels 0.11.4
 
 * use future_lapply in PLNPCA, PLNmixture and stability_selection (plan must be set by the user)

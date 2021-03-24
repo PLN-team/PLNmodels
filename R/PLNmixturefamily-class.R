@@ -152,23 +152,18 @@ PLNmixturefamily <-
       #' @description Call to the optimizer on all models of the collection
       optimize = function(control) {
         ## go along the number of clusters (i.e the models)
-        for (m in seq_along(self$models))  {
+         self$models <- future.apply::future_lapply(self$models, function(model) {
           if (control$trace == 1) {
-            cat("\tnumber of cluster =", self$models[[m]]$k, "\r")
+            cat("\tnumber of cluster =", model$k, "\r")
             flush.console()
           }
-          if (control$trace > 1) {
-            cat("\tnumber of cluster =", self$models[[m]]$k, "- iteration:")
-          }
-
-          self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, control)
-
+          model$optimize(self$responses, self$covariates, self$offsets, control)
           if (control$trace > 1) {
             cat("\r                                                                                    \r")
             flush.console()
           }
-
-        }
+          model
+        }, future.seed = TRUE)
       },
       #' @description
       #' function to restart clustering to avoid local minima by smoothing the loglikelihood values as a function of the number of clusters
