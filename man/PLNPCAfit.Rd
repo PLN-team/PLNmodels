@@ -59,6 +59,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \item \href{#method-new}{\code{PLNPCAfit$new()}}
 \item \href{#method-update}{\code{PLNPCAfit$update()}}
 \item \href{#method-optimize}{\code{PLNPCAfit$optimize()}}
+\item \href{#method-VEstep}{\code{PLNPCAfit$VEstep()}}
 \item \href{#method-setVisualization}{\code{PLNPCAfit$setVisualization()}}
 \item \href{#method-postTreatment}{\code{PLNPCAfit$postTreatment()}}
 \item \href{#method-compute_fisher}{\code{PLNPCAfit$compute_fisher()}}
@@ -72,7 +73,6 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict">}\href{../../PLNmodels/html/PLNfit.html#method-predict}{\code{PLNmodels::PLNfit$predict()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
@@ -192,6 +192,45 @@ Call to the C++ optimizer and update of the relevant fields
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-VEstep"></a>}}
+\if{latex}{\out{\hypertarget{method-VEstep}{}}}
+\subsection{Method \code{VEstep()}}{
+Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (B, Theta). Intended to position new data in the latent space for further use with PCA.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$VEstep(
+  covariates,
+  offsets,
+  responses,
+  weights = rep(1, nrow(responses)),
+  control = list()
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list with three components:
+\itemize{
+\item the matrix \code{M} of variational means,
+\item the matrix \code{S2} of variational variances
+\item the vector \code{log.lik} of (variational) log-likelihood of each new observation
+}
 }
 }
 \if{html}{\out{<hr>}}

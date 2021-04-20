@@ -151,6 +151,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_optimize_vestep_rank
+Rcpp::List cpp_optimize_vestep_rank(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Theta, const arma::mat& B, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_cpp_optimize_vestep_rank(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP ThetaSEXP, SEXP BSEXP, SEXP configurationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type init_parameters(init_parametersSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_vestep_rank(init_parameters, Y, X, O, w, Theta, B, configuration));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_test_packing
 bool cpp_test_packing();
 RcppExport SEXP _PLNmodels_cpp_test_packing() {
@@ -172,6 +190,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_cpp_optimize_vestep_full", (DL_FUNC) &_PLNmodels_cpp_optimize_vestep_full, 8},
     {"_PLNmodels_cpp_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_cpp_optimize_vestep_diagonal, 8},
     {"_PLNmodels_cpp_optimize_vestep_spherical", (DL_FUNC) &_PLNmodels_cpp_optimize_vestep_spherical, 8},
+    {"_PLNmodels_cpp_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_cpp_optimize_vestep_rank, 8},
     {"_PLNmodels_cpp_test_packing", (DL_FUNC) &_PLNmodels_cpp_test_packing, 0},
     {NULL, NULL, 0}
 };
