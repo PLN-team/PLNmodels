@@ -109,6 +109,44 @@ PLNPCAfit <- R6Class(
         )
       },
 
+      #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (B, Theta). Intended to position new data in the latent space for further use with PCA.
+      #' @return A list with three components:
+      #'  * the matrix `M` of variational means,
+      #'  * the matrix `S2` of variational variances
+      #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
+      VEstep = function(covariates, offsets, responses, weights = rep(1, nrow(responses)), control = list()) {
+
+        # problem dimension
+        n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates); q <- self$rank
+
+        ## define default control parameters for optim and overwrite by user defined parameters
+        control$covariance <- self$vcov_model
+        control <- PLN_param(control, n, p)
+
+        VEstep_optimizer  <- cpp_optimize_vestep_rank
+
+        ## Initialize the variational parameters with the appropriate new dimension of the data
+        optim_out <- VEstep_optimizer(
+          list(M = matrix(0, n, q),
+               S = matrix(sqrt(0.1), n, q)),
+          responses,
+          covariates,
+          offsets,
+          weights,
+          Theta = self$model_par$Theta,
+          B = self$model_par$B,
+          control
+        )
+
+        Ji <- optim_out$loglik
+        attr(Ji, "weights") <- weights
+
+        ## output
+        list(M       = optim_out$M,
+             S2      = (optim_out$S)**2,
+             log.lik = setNames(Ji, rownames(responses)))
+      },
+
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Compute PCA scores in the latent space and update corresponding fields.
