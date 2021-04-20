@@ -42,6 +42,12 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_equal(dim(myPLNfit$ind$cos2), c(n, myPLNfit$rank))
   expect_equal(dim(myPLNfit$ind$contrib), c(n, myPLNfit$rank))
   expect_equal(length(myPLNfit$ind$dist), n)
+  ## VE step
+  ve_results <- myPLNfit$VEstep(covariates = X, offsets = O, responses = Y)
+  expect_equal(dim(ve_results$M), c(n, myPLNfit$rank))
+  expect_equal(dim(ve_results$S2), c(n, myPLNfit$rank))
+  expect_length(ve_results$log.lik, n)
+  expect_equal(ve_results$M, unname(myPLNfit$var_par$M), tolerance = 1e-2)
 
   ## S3 methods
   expect_equal(coefficients(myPLNfit), myPLNfit$model_par$Theta)
