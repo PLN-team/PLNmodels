@@ -119,6 +119,10 @@ PLNPCAfit <- R6Class(
         # problem dimension
         n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates); q <- self$rank
 
+        # turn offset vector to offset matrix
+        offsets <- as.matrix(offsets)
+        if (ncol(offsets) == 1) offsets <- matrix(offsets, nrow = n, ncol = p)
+
         ## define default control parameters for optim and overwrite by user defined parameters
         control$covariance <- self$vcov_model
         control <- PLN_param(control, n, p)
