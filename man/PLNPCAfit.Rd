@@ -60,6 +60,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \item \href{#method-update}{\code{PLNPCAfit$update()}}
 \item \href{#method-optimize}{\code{PLNPCAfit$optimize()}}
 \item \href{#method-VEstep}{\code{PLNPCAfit$VEstep()}}
+\item \href{#method-project}{\code{PLNPCAfit$project()}}
 \item \href{#method-setVisualization}{\code{PLNPCAfit$setVisualization()}}
 \item \href{#method-postTreatment}{\code{PLNPCAfit$postTreatment()}}
 \item \href{#method-compute_fisher}{\code{PLNPCAfit$compute_fisher()}}
@@ -230,6 +231,32 @@ A list with three components:
 \item the matrix \code{M} of variational means,
 \item the matrix \code{S2} of variational variances
 \item the vector \code{log.lik} of (variational) log-likelihood of each new observation
+}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-project"></a>}}
+\if{latex}{\out{\hypertarget{method-project}{}}}
+\subsection{Method \code{project()}}{
+Project new samples into the PCA space using one VE step
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$project(newdata, control = list(), envir = parent.frame())}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{newdata}}{A data frame in which to look for variables, offsets and counts  with which to predict.}
+
+\item{\code{control}}{a list for controlling the optimization. See \code{\link[=PLN]{PLN()}} for details.}
+
+\item{\code{envir}}{Environment in which the projection is evaluated}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\itemize{
+\item the named matrix of scores for the newdata, expressed in the same coordinate system as \code{self$scores}
 }
 }
 }

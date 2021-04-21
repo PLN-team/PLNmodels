@@ -3,7 +3,11 @@
 * use future_lapply in PLNmixture_family
 * remove a NOTE due to a DESeq2 link and a failure on solaris on CRAN machines
 * faster examples and build for vignettes
-* Additional VEStep R6 method for PLN-PCA, useful for projecting newdata in PCA space
+
+# PLNmodels 0.11.5
+
+* Additional R6 method $VEStep() for PLN-PCA, dealing with low rank matrices
+* Additional R6 method $project() for PLN-PCA, used to project newdata into PCA space
 
 # PLNmodels 0.11.4
 
