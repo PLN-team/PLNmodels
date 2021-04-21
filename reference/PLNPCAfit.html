@@ -82,7 +82,7 @@ See the documentation for the methods inherited by  PLNfit and the plot() method
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.4-9010</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.5-9010</span>
       </span>
     </div>
 
@@ -206,6 +206,8 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 <li><p><a href='#method-new'><code>PLNPCAfit$new()</code></a></p></li>
 <li><p><a href='#method-update'><code>PLNPCAfit$update()</code></a></p></li>
 <li><p><a href='#method-optimize'><code>PLNPCAfit$optimize()</code></a></p></li>
+<li><p><a href='#method-VEstep'><code>PLNPCAfit$VEstep()</code></a></p></li>
+<li><p><a href='#method-project'><code>PLNPCAfit$project()</code></a></p></li>
 <li><p><a href='#method-setVisualization'><code>PLNPCAfit$setVisualization()</code></a></p></li>
 <li><p><a href='#method-postTreatment'><code>PLNPCAfit$postTreatment()</code></a></p></li>
 <li><p><a href='#method-compute_fisher'><code>PLNPCAfit$compute_fisher()</code></a></p></li>
@@ -217,7 +219,6 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 </ul>
 <p><details open ><summary>Inherited methods</summary>
 <ul>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href='../../PLNmodels/html/PLNfit.html#method-VEstep'><code>PLNmodels::PLNfit$VEstep()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href='../../PLNmodels/html/PLNfit.html#method-compute_standard_error'><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-print'><code>PLNmodels::PLNfit$print()</code></a></span></p></li>
@@ -317,6 +318,57 @@ See the documentation for the methods inherited by  <code><a href='PLNfit.html'>
 <dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
 
 </dl><p></div></p>
+<p><hr>
+<a id="method-VEstep"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>VEstep()</code></h3>
+<p>Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (B, Theta). Intended to position new data in the latent space for further use with PCA.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>VEstep</span><span class='op'>(</span>
+  <span class='va'>covariates</span>,
+  <span class='va'>offsets</span>,
+  <span class='va'>responses</span>,
+  weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>responses</span><span class='op'>)</span><span class='op'>)</span>,
+  control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>covariates</code></dt><dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
+
+<dt><code>offsets</code></dt><dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
+
+<dt><code>responses</code></dt><dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href='PLNfamily.html'>PLNfamily</a></code></p></dd>
+
+<dt><code>weights</code></dt><dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See details.</p></dd>
+
+</dl><p></div></p>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
+<p>A list with three components:</p><ul>
+<li><p>the matrix <code>M</code> of variational means,</p></li>
+<li><p>the matrix <code>S2</code> of variational variances</p></li>
+<li><p>the vector <code>log.lik</code> of (variational) log-likelihood of each new observation</p></li>
+</ul>
+
+<p><hr>
+<a id="method-project"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>project()</code></h3>
+<p>Project new samples into the PCA space using one VE step</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>PLNPCAfit</span><span class='op'>$</span><span class='fu'>project</span><span class='op'>(</span><span class='va'>newdata</span>, control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>, envir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>newdata</code></dt><dd><p>A data frame in which to look for variables, offsets and counts  with which to predict.</p></dd>
+
+<dt><code>control</code></dt><dd><p>a list for controlling the optimization. See <code><a href='PLN.html'>PLN()</a></code> for details.</p></dd>
+
+<dt><code>envir</code></dt><dd><p>Environment in which the projection is evaluated</p></dd>
+
+</dl><p></div></p>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
+
+<ul>
+<li><p>the named matrix of scores for the newdata, expressed in the same coordinate system as <code>self$scores</code></p></li>
+</ul>
+
 <p><hr>
 <a id="method-setVisualization"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>setVisualization()</code></h3>
 <p>Compute PCA scores in the latent space and update corresponding fields.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>

@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.4-9010</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.5-9010</span>
       </span>
     </div>
 
@@ -107,7 +107,7 @@
       <h1 data-toc-skip>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2021-03-24</h4>
+            <h4 class="date">2021-04-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNPCA.Rmd"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -196,10 +196,10 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 3 
-     Rank approximation = 2 
+##   Rank approximation = 1 
+     Rank approximation = 3 
      Rank approximation = 4 
-     Rank approximation = 1 
+     Rank approximation = 2 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
@@ -564,12 +564,25 @@
 <code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/fviz_principal_plane-1.png" width="700"></p>
 </div>
+<div id="projecting-new-data-in-the-pca-space" class="section level3">
+<h3 class="hasAnchor">
+<a href="#projecting-new-data-in-the-pca-space" class="anchor"></a>Projecting new data in the PCA space</h3>
+<p>You can project new data in the PCA space although it’s slightly involved at the moment. We demonstrate that by projecting the original data on top of the original graph. As expected, the projections of the <em>new</em> data points (small red points) are superimposed to the original data points (large black points).</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Project newdata into PCA space</span>
+<span class="va">new_scores</span> <span class="op">&lt;-</span> <span class="va">myPCA_ICL</span><span class="op">$</span><span class="fu">project</span><span class="op">(</span>newdata <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span>
+<span class="co">## Overprint</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span>, geom <span class="op">=</span> <span class="st">"point"</span>, col.ind <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span>
+<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_add.html">fviz_add</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">new_scores</span>, geom <span class="op">=</span> <span class="st">"point"</span>, color <span class="op">=</span> <span class="st">"red"</span>, 
+                     addlabel <span class="op">=</span> <span class="cn">FALSE</span>, pointsize <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></code></pre></div>
+<p><img src="PLNPCA_files/figure-html/unnamed-chunk-1-1.png" width="700"></p>
+</div>
 <div id="a-model-accounting-for-meteorological-covariates" class="section level3">
 <h3 class="hasAnchor">
 <a href="#a-model-accounting-for-meteorological-covariates" class="anchor"></a>A model accounting for meteorological covariates</h3>
 <p>A contribution of PLN-PCA is to let the possibility to taking into account some covariates in the parameter space. Such a strategy often completely changes the interpretation of PCA. Indeed, the covariates are often responsible for some strong structure in the data. The effect of the covariates should be removed since they are often quite obvious for the analyst and may hide some more important and subtle effects.</p>
 <p>In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the temperature, the wind and the cloudiness. This can be done thanks to the model formula:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">PCA_models_cov</span> <span class="op">&lt;-</span> 
   <span class="fu"><a href="../reference/PLNPCA.html">PLNPCA</a></span><span class="op">(</span>
     <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="va">Temperature</span> <span class="op">+</span> <span class="va">Wind</span> <span class="op">+</span> <span class="va">Cloudiness</span>,
@@ -580,20 +593,20 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 2 
-     Rank approximation = 4 
+##   Rank approximation = 3 
+     Rank approximation = 2 
      Rank approximation = 1 
-     Rank approximation = 3 
+     Rank approximation = 4 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">PCA_models_cov</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/extraction%20cov-1.png" width="672"></p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myPCA_cov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel</a></span><span class="op">(</span><span class="va">PCA_models_cov</span>, <span class="st">"ICL"</span><span class="op">)</span></code></pre></div>
 <p>Suppose that we want to have a closer look to the first two axes. This can be done thanks to the plot method:</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html">grid.arrange</a></span><span class="op">(</span>
   <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myPCA_cov</span>, map <span class="op">=</span> <span class="st">"individual"</span>, ind_cols <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
   <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myPCA_cov</span>, map <span class="op">=</span> <span class="st">"variable"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
@@ -601,7 +614,7 @@
 <span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/maps-1.png" width="672"></p>
 <p>We can check that the fitted value of the counts – even with this low-rank covariance matrix – are close to the observed ones:</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
   fitted   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span><span class="op">)</span>,
   observed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span><span class="op">)</span>
@@ -617,7 +630,7 @@ fitted value vs. observation
 </p>
 </div>
 <p>When you are done, do not forget to get back to the standard sequential plan with <em>future</em>.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="st">"sequential"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
