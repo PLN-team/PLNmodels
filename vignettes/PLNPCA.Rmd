@@ -234,7 +234,7 @@ factoextra::fviz_pca_ind(myPCA_ICL)
 
 ### Projecting new data in the PCA space
 
-You can project new data in the PCA sapce although it's slightly involved at the moment. We demonstrate that by projecting the original data on top of the original graph. As expected, the projections of the *new* data points (small red points) are superimposed to the original data points (large black points). 
+You can project new data in the PCA space although it's slightly involved at the moment. We demonstrate that by projecting the original data on top of the original graph. As expected, the projections of the *new* data points (small red points) are superimposed to the original data points (large black points). 
 
 ```{r}
 ## Project newdata into PCA space
