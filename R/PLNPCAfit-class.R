@@ -151,6 +151,31 @@ PLNPCAfit <- R6Class(
              log.lik = setNames(Ji, rownames(responses)))
       },
 
+      #' @description Project new samples into the PCA space using one VE step
+      #' @param newdata A data frame in which to look for variables, offsets and counts  with which to predict.
+      #' @param control a list for controlling the optimization. See [PLN()] for details.
+      #' @param envir Environment in which the projection is evaluated
+      #' @return
+      #'  * the named matrix of scores for the newdata, expressed in the same coordinate system as `self$scores`
+      project = function(newdata, control = list(), envir = parent.frame()) {
+
+        ## Extract the model matrices from the new data set with initial formula
+        args <- extract_model(call("PLNPCA", formula = private$formula, data = newdata, xlev = private$xlevels), envir)
+
+        ## Compute latent positions of the new samples
+        M <- self$VEstep(covariates = args$X, offsets = args$O, responses = args$Y,
+                            weights = args$w, control = control)$M
+        latent_pos <- t(tcrossprod(self$model_par$B, M)) %>% scale(center = TRUE, scale = FALSE)
+
+        ## Compute scores in the PCA coordinate systems
+        scores <- latent_pos %*% self$rotation
+        dimnames(scores) <- list(rownames(newdata), paste0("PC", 1:ncol(scores)))
+
+        ## Output
+        scores
+      },
+
+
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Compute PCA scores in the latent space and update corresponding fields.
