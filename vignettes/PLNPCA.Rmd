@@ -234,24 +234,13 @@ factoextra::fviz_pca_ind(myPCA_ICL)
 
 ### Projecting new data in the PCA space
 
-You can project new data in the PCA sapce although it's slightly involved at the moment. We demonstrate that by projecting the original data on top of the original graph. As expected, the projections of the *new* data points (in red) are superimposed to the original data points (lightblue). 
+You can project new data in the PCA sapce although it's slightly involved at the moment. We demonstrate that by projecting the original data on top of the original graph. As expected, the projections of the *new* data points (small red points) are superimposed to the original data points (large black points). 
 
 ```{r}
-## Extract numeric matrices for model fitting
-newdata <- trichoptera
-model <- model.frame(Abundance ~ 1 + offset(log(Offset)), data = newdata)
-covariates <- model.matrix(terms(model), model)
-responses  <- model[[1L]]
-offsets    <- model.offset(model)
-## Compute latent variables (M)
-newM <- myPCA_ICL$VEstep(covariates = covariates, offsets = offsets, 
-                         responses = responses)$M
-## Compute coordinates in PCA space
-new_latent_pos <- t(myPCA_ICL$model_par$B %*% t(newM))
-new_scores <- scale(new_latent_pos, TRUE, FALSE) %*% myPCA_ICL$rotation
-dimnames(new_scores) <- list(rownames(newdata), paste0("PC", 1:ncol(new_scores)))
+## Project newdata into PCA space
+new_scores <- myPCA_ICL$project(newdata = trichoptera)
 ## Overprint
-p <- factoextra::fviz_pca_ind(myPCA_ICL, geom = "point", col.ind = "lightblue")
+p <- factoextra::fviz_pca_ind(myPCA_ICL, geom = "point", col.ind = "black")
 factoextra::fviz_add(p, new_scores, geom = "point", color = "red", 
                      addlabel = FALSE, pointsize = 0.5)
 ```
