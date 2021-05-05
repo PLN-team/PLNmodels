@@ -41,6 +41,30 @@ cpp_optimize_vestep_rank <- function(init_parameters, Y, X, O, w, Theta, B, conf
     .Call('_PLNmodels_cpp_optimize_vestep_rank', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, B, configuration)
 }
 
+cpp_optimize_zi_step_a <- function(M, X, Theta, S) {
+    .Call('_PLNmodels_cpp_optimize_zi_step_a', PACKAGE = 'PLNmodels', M, X, Theta, S)
+}
+
+cpp_optimize_zi_step_b <- function(M, X) {
+    .Call('_PLNmodels_cpp_optimize_zi_step_b', PACKAGE = 'PLNmodels', M, X)
+}
+
+cpp_optimize_zi_step_c <- function(init_Theta0, X, Pi, configuration) {
+    .Call('_PLNmodels_cpp_optimize_zi_step_c', PACKAGE = 'PLNmodels', init_Theta0, X, Pi, configuration)
+}
+
+cpp_optimize_zi_step_d <- function(Y, X, O, M, S, Theta0) {
+    .Call('_PLNmodels_cpp_optimize_zi_step_d', PACKAGE = 'PLNmodels', Y, X, O, M, S, Theta0)
+}
+
+cpp_optimize_zi_step_e <- function(init_M, Y, X, O, Pi, S2, Theta, Omega, configuration) {
+    .Call('_PLNmodels_cpp_optimize_zi_step_e', PACKAGE = 'PLNmodels', init_M, Y, X, O, Pi, S2, Theta, Omega, configuration)
+}
+
+cpp_optimize_zi_step_f <- function(init_S2, O, M, Pi, Theta, Omega, configuration) {
+    .Call('_PLNmodels_cpp_optimize_zi_step_f', PACKAGE = 'PLNmodels', init_S2, O, M, Pi, Theta, Omega, configuration)
+}
+
 cpp_test_packing <- function() {
     .Call('_PLNmodels_cpp_test_packing', PACKAGE = 'PLNmodels')
 }
