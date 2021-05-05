@@ -170,16 +170,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_optimize_zi_step_a
-arma::mat cpp_optimize_zi_step_a(const arma::mat& M, const arma::mat& X, const arma::mat& Theta, const arma::mat& S);
-RcppExport SEXP _PLNmodels_cpp_optimize_zi_step_a(SEXP MSEXP, SEXP XSEXP, SEXP ThetaSEXP, SEXP SSEXP) {
+arma::mat cpp_optimize_zi_step_a(const arma::mat& M, const arma::mat& X, const arma::mat& Theta, const arma::mat& S2);
+RcppExport SEXP _PLNmodels_cpp_optimize_zi_step_a(SEXP MSEXP, SEXP XSEXP, SEXP ThetaSEXP, SEXP S2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_zi_step_a(M, X, Theta, S));
+    Rcpp::traits::input_parameter< const arma::mat& >::type S2(S2SEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_zi_step_a(M, X, Theta, S2));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -210,8 +210,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_optimize_zi_step_d
-arma::mat cpp_optimize_zi_step_d(const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& M, const arma::mat& S, const arma::mat& Theta0);
-RcppExport SEXP _PLNmodels_cpp_optimize_zi_step_d(SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP MSEXP, SEXP SSEXP, SEXP Theta0SEXP) {
+arma::mat cpp_optimize_zi_step_d(const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& M, const arma::mat& S2, const arma::mat& Theta0);
+RcppExport SEXP _PLNmodels_cpp_optimize_zi_step_d(SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP MSEXP, SEXP S2SEXP, SEXP Theta0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -219,9 +219,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type S2(S2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Theta0(Theta0SEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_zi_step_d(Y, X, O, M, S, Theta0));
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_zi_step_d(Y, X, O, M, S2, Theta0));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -5,30 +5,34 @@
 
 // ---------------------------------------------------------------------------------------
 // Step a, returns new Omega (p,p)
+// could be R only
 
 // [[Rcpp::export]]
 arma::mat cpp_optimize_zi_step_a(
     const arma::mat & M,     // (n,p)
     const arma::mat & X,     // (n,d)
     const arma::mat & Theta, // (d,p)
-    const arma::mat & S      // (n,p)
+    const arma::mat & S2     // s_{i,j}^2 (n,p)
 ) {
     const arma::uword n = M.n_rows;
     arma::mat M_X_Theta = M - X * Theta;
     // S is sympd, and MXT^T MXT is
-    return (1. / double(n)) * inv_sympd(M_X_Theta.t() * M_X_Theta + diagmat(sum(S, 0)));
+    return (1. / double(n)) * inv_sympd(M_X_Theta.t() * M_X_Theta + diagmat(sum(S2, 0)));
 }
 
 // ---------------------------------------------------------------------------------------
 // Step b, returns new theta (d,p)
+// could be R only
 
 // [[Rcpp::export]]
 arma::mat cpp_optimize_zi_step_b(
     const arma::mat & M, // (n,p)
     const arma::mat & X  // (n,d)
 ) {
-    // X^T X is sympd
-    return inv_sympd(X.t() * X) * X.t() * M;
+    // Armadillo requires using solve(A,B) for Ax=B <=> x = A^-1 B
+    // So (X^T X)^-1 X^T M becomes solve(A,B) with A = X^T X and B = X^T M.
+    // X^T X is sympd, provide this indications to solve()
+    return solve(X.t() * X, X.t() * M, arma::solve_opts::likely_sympd);
 }
 
 // ---------------------------------------------------------------------------------------
@@ -86,15 +90,16 @@ Rcpp::List cpp_optimize_zi_step_c(
 arma::mat cpp_optimize_zi_step_d(
     const arma::mat & Y,     // responses (n,p)
     const arma::mat & X,     // covariates (n,d)
-    const arma::mat & O,     // offsets (n, p)
+    const arma::mat & O,     // offsets (n,p)
     const arma::mat & M,     // (n,p)
-    const arma::mat & S,     // (n,p)
+    const arma::mat & S2,    // s_{i,j}^2 (n,p)
     const arma::mat & Theta0 // (d,p)
 ) {
-    arma::mat A = exp(O + M + 0.5 * square(S));
+    arma::mat A = exp(O + M + 0.5 * S2);
+    // using logit^{-1}(x) = 1/(1+e^x), but wikipedia mentions 1/(1+e^-x) FIXME ?
     arma::mat Pi = 1. / (1. + exp(A + X * Theta0));
     // Zero Pi_{i,j} if Y_{i,j} > 0
-    // multiplication with f(sign(Y)) could work to zero stuff as there should not be +inf
+    // multiplication with f(sign(Y)) could work to zero stuff as there should not be any +inf
     // using a loop as it is more explicit and should have ok performance in C++
     arma::uword n = Y.n_rows;
     arma::uword p = Y.n_cols;
@@ -208,9 +213,9 @@ Rcpp::List cpp_optimize_zi_step_f(
         arma::mat A = exp(O_M + 0.5 * S2); // (n,p)
 
         // trace(1^T log(S)) == accu(log(S)).
-        // S_bar = diag(sum(S, 0)). trace(Omega * S_bar) = dot(diagvec(Omega), sum(S, 0))
+        // S_bar = diag(sum(S, 0)). trace(Omega * S_bar) = dot(diagvec(Omega), sum(S2, 0))
         double objective = trace((Pi - 1.).t() * A) - 0.5 * dot(diag_Omega, sum(S2, 0)) + 0.5 * accu(log(S2));
-        // S^\emptyset interpreted as pow(S, -1.) as that makes the most sense (gradient component for log(S))
+        // S2^\emptyset interpreted as pow(S2, -1.) as that makes the most sense (gradient component for log(S2))
         // 1_n Diag(Omega)^T is n rows of diag(omega) values
         metadata.map<S2_ID>(grad) = 0.5 * (pow(S2, -1.) + (Pi - 1.) % A - arma::repelem(diag_Omega.t(), n, 1));
         return objective;
