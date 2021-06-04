@@ -129,10 +129,20 @@ PLNPCAfit <- R6Class(
 
         VEstep_optimizer  <- cpp_optimize_vestep_rank
 
+        ## Not completely naive starting values for M: SVD on the residuals of
+        ## a linear regression on the log-counts (+1 to deal with 0s)
+        log_responses <- log(responses+1)
+        residuals <- lm.wfit(x = covariates, y = log_responses, w = weights, offset = offsets)$residuals
+        svd_residuals <- svd(residuals, nu = q, nv = p)
+        M_init <- svd_residuals$u[, 1:q, drop = FALSE] %*% diag(svd_residuals$d[1:q], nrow = q, ncol = q) %*% t(svd_residuals$v[1:q, 1:q, drop = FALSE])
+
         ## Initialize the variational parameters with the appropriate new dimension of the data
         optim_out <- VEstep_optimizer(
-          list(M = matrix(0, n, q),
-               S = matrix(sqrt(0.1), n, q)),
+          list(
+            ## M = matrix(0, n, q),
+            M = M_init,
+            S = matrix(sqrt(0.1), n, q)
+          ),
           responses,
           covariates,
           offsets,
