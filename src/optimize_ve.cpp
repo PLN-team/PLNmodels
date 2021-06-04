@@ -285,36 +285,35 @@ Rcpp::List cpp_optimize_vestep_rank(
     }
 
     // Optimize
-    auto objective_and_grad =
-        [&metadata, &O, &X, &Y, &w, &Theta, &B](const double * params, double * grad) -> double {
-            const arma::mat M = metadata.map<M_ID>(params);
-            const arma::mat S = metadata.map<S_ID>(params);
+    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &Theta, &B](const double * params, double * grad) -> double {
+        const arma::mat M = metadata.map<M_ID>(params);
+        const arma::mat S = metadata.map<S_ID>(params);
 
-            arma::mat S2 = S % S;
-            arma::mat Z = O + X * Theta.t() + M * B.t();
-            arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
-            arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2) ;
-            double objective = accu(diagmat(w) * (A - Y % Z)) + 0.5 * accu(diagmat(w) * (M % M + S2 - log(S2) - 1.));
-
-            metadata.map<M_ID>(grad) = diagmat(w) * ((A - Y) * B + M);
-            metadata.map<S_ID>(grad) = diagmat(w) * (S - 1. / S + A * (B % B) % S);
-            return objective;
-        };
-        OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
-
-        // Model and variational parameters
-        arma::mat M = metadata.copy<M_ID>(parameters.data());
-        arma::mat S = metadata.copy<S_ID>(parameters.data());
         arma::mat S2 = S % S;
-        // Element-wise log-likelihood
         arma::mat Z = O + X * Theta.t() + M * B.t();
         arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
-        arma::mat loglik = arma::sum(Y % Z - A, 1) - 0.5 * sum(M % M + S2 - log(S2) - 1., 1) + ki(Y);
+        arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2) ;
+        double objective = accu(diagmat(w) * (A - Y % Z)) + 0.5 * accu(diagmat(w) * (M % M + S2 - log(S2) - 1.));
 
-        return Rcpp::List::create(
-            Rcpp::Named("status") = (int)result.status,
-            Rcpp::Named("iterations") = result.nb_iterations,
-            Rcpp::Named("M") = M,
-            Rcpp::Named("S") = S,
-            Rcpp::Named("loglik") = loglik);
+        metadata.map<M_ID>(grad) = diagmat(w) * ((A - Y) * B + M);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S - 1. / S + A * (B % B) % S);
+        return objective;
+    };
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+
+    // Model and variational parameters
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
+    arma::mat S2 = S % S;
+    // Element-wise log-likelihood
+    arma::mat Z = O + X * Theta.t() + M * B.t();
+    arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
+    arma::mat loglik = arma::sum(Y % Z - A, 1) - 0.5 * sum(M % M + S2 - log(S2) - 1., 1) + ki(Y);
+
+    return Rcpp::List::create(
+        Rcpp::Named("status") = (int)result.status,
+        Rcpp::Named("iterations") = result.nb_iterations,
+        Rcpp::Named("M") = M,
+        Rcpp::Named("S") = S,
+        Rcpp::Named("loglik") = loglik);
 }
