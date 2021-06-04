@@ -389,14 +389,14 @@
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">memberships</span></code></pre></div>
-<pre><code>##  [1] 3 3 4 4 4 3 3 4 3 3 3 3 4 3 4 4 3 3 3 3 3 3 3 3 3 2 2 3 3 1 1 2 2 5 3 3 3 3
-## [39] 3 4 3 3 3 3 3 3 3 3 2</code></pre>
+<pre><code>##  [1] 4 4 2 2 2 4 4 2 4 4 4 4 2 4 2 2 4 4 4 4 4 4 4 4 4 3 3 4 4 1 1 3 3 5 4 4 4 4
+## [39] 4 2 4 4 4 4 4 4 4 4 3</code></pre>
 <ul>
 <li>the group proportions:</li>
 </ul>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">mixtureParam</span></code></pre></div>
-<pre><code>## [1] 0.04081633 0.10204082 0.67346939 0.16326531 0.02040816</code></pre>
+<pre><code>## [1] 0.04081633 0.16326531 0.10204082 0.67346939 0.02040816</code></pre>
 <ul>
 <li>the posterior probabilities (often close to the boundaries <span class="math inline">\(\{0,1\}\)</span>):</li>
 </ul>
@@ -406,20 +406,6 @@
 <tr class="odd">
 <td align="right">0</td>
 <td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="right">0</td>
-<td align="right">0</td>
 <td align="right">0</td>
 <td align="right">1</td>
 <td align="right">0</td>
@@ -433,16 +419,30 @@
 </tr>
 <tr class="odd">
 <td align="right">0</td>
+<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
 <td align="right">0</td>
 <td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
 <td align="right">0</td>
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 <td align="right">0</td>
 </tr>
 </tbody></table>
@@ -460,6 +460,14 @@
 ## 0.04218818 0.04218818 0.04218818 
 ## 
 ## [[2]]
+##          Che          Hyc          Hym          Hys          Psy          Aga 
+## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
+##          Glo          Ath          Cea          Ced          Set          All 
+## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
+##          Han          Hfo          Hsp          Hve          Sta 
+## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
+## 
+## [[3]]
 ##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath 
 ## 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 0.1225584 
 ##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve 
@@ -467,21 +475,13 @@
 ##       Sta 
 ## 0.1225584 
 ## 
-## [[3]]
+## [[4]]
 ##        Che        Hyc        Hym        Hys        Psy        Aga        Glo 
 ## 0.05717905 0.05717905 0.05717905 0.05717905 0.05717905 0.05717905 0.05717905 
 ##        Ath        Cea        Ced        Set        All        Han        Hfo 
 ## 0.05717905 0.05717905 0.05717905 0.05717905 0.05717905 0.05717905 0.05717905 
 ##        Hsp        Hve        Sta 
 ## 0.05717905 0.05717905 0.05717905 
-## 
-## [[4]]
-##          Che          Hyc          Hym          Hys          Psy          Aga 
-## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
-##          Glo          Ath          Cea          Ced          Set          All 
-## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
-##          Han          Hfo          Hsp          Hve          Sta 
-## 0.0003991058 0.0003991058 0.0003991058 0.0003991058 0.0003991058 
 ## 
 ## [[5]]
 ##          Che          Hyc          Hym          Hys          Psy          Aga 
@@ -517,49 +517,49 @@
 <tr class="odd">
 <td align="left">Che</td>
 <td align="right">-16.54</td>
+<td align="right">-7.08</td>
 <td align="right">-18.11</td>
 <td align="right">-6.50</td>
-<td align="right">-7.08</td>
 <td align="right">-20.28</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
 <td align="right">-8.42</td>
+<td align="right">-66.08</td>
 <td align="right">-6.01</td>
 <td align="right">-7.19</td>
-<td align="right">-66.08</td>
 <td align="right">-20.28</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
 <td align="right">-6.00</td>
+<td align="right">-4.30</td>
 <td align="right">-2.96</td>
 <td align="right">-2.37</td>
-<td align="right">-4.30</td>
 <td align="right">-3.08</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
 <td align="right">-16.54</td>
+<td align="right">-66.08</td>
 <td align="right">-18.11</td>
 <td align="right">-5.39</td>
-<td align="right">-66.08</td>
 <td align="right">-20.28</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
 <td align="right">-0.21</td>
+<td align="right">-0.16</td>
 <td align="right">-1.11</td>
 <td align="right">-0.58</td>
-<td align="right">-0.16</td>
 <td align="right">-0.40</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
 <td align="right">-7.32</td>
+<td align="right">-3.47</td>
 <td align="right">-3.62</td>
 <td align="right">-3.58</td>
-<td align="right">-3.47</td>
 <td align="right">-2.79</td>
 </tr>
 </tbody>
@@ -605,43 +605,43 @@
 <tr class="odd">
 <td align="right">0</td>
 <td align="right">0.00</td>
-<td align="right">1.00</td>
 <td align="right">0.00</td>
+<td align="right">1.00</td>
 <td align="right">0.00</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
+<td align="right">0.02</td>
 <td align="right">0.03</td>
 <td align="right">0.90</td>
-<td align="right">0.02</td>
 <td align="right">0.06</td>
 </tr>
 <tr class="odd">
 <td align="right">0</td>
-<td align="right">0.00</td>
-<td align="right">0.00</td>
 <td align="right">0.99</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
 <td align="right">0.00</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
-<td align="right">0.00</td>
-<td align="right">0.00</td>
 <td align="right">1.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
 <td align="right">0.00</td>
 </tr>
 <tr class="odd">
 <td align="right">0</td>
-<td align="right">0.00</td>
-<td align="right">0.00</td>
 <td align="right">1.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
 <td align="right">0.00</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
+<td align="right">0.50</td>
 <td align="right">0.00</td>
 <td align="right">0.35</td>
-<td align="right">0.50</td>
 <td align="right">0.15</td>
 </tr>
 </tbody></table>
@@ -651,9 +651,9 @@
                            prior <span class="op">=</span> <span class="va">myMix_BIC</span><span class="op">$</span><span class="va">posteriorProb</span>,  type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span>
 <span class="va">predicted.class</span></code></pre></div>
 <pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 
-##  3  3  4  4  4  3  3  4  3  3  3  3  4  3  4  4  3  3  3  3  3  3  3  3  3  2 
+##  4  4  2  2  2  4  4  2  4  4  4  4  2  4  2  2  4  4  4  4  4  4  4  4  4  3 
 ## 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 
-##  2  3  2  1  1  2  2  5  3  3  3  3  3  4  3  3  3  3  3  3  3  3  2 
+##  3  4  3  1  1  3  3  5  4  4  4  4  4  2  4  4  4  4  4  4  4  4  3 
 ## Levels: 1 2 3 4 5</code></pre>
 <p>We can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used data set for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
 <p>Finally, we can get the coordinates of the new data on the same graph at the original ones with <code>type = "position"</code>. This is done by averaging the latent positions <span class="math inline">\(\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k\)</span> (found when the sample is assumed to come from group <span class="math inline">\(k\)</span>) and weighting them with the <span class="math inline">\(\hat{\pi}_k\)</span>. Some samples, have compositions that put them very far from their group mean.</p>
