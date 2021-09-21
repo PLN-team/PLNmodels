@@ -68,8 +68,7 @@ stability_selection(myPLNnets)
 plot(getBestModel(myPLNnets, "StARS", stability = .975))
 
 ## Mixture model to recover tree structure
-system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5,
-                                      control_main = list(covariance = "diagonal")))
+system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5))
 
 plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"), reverse = TRUE)
 

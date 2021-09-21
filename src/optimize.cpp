@@ -1,8 +1,8 @@
+#include "RcppArmadillo.h"
+
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(nloptr)]]
 // [[Rcpp::plugins(cpp11)]]
-
-#include <RcppArmadillo.h>
 
 #include "nlopt_wrapper.h"
 #include "packing.h"
