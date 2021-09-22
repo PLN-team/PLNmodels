@@ -14,7 +14,6 @@ inline arma::vec logfact(arma::mat y) {
 
 inline arma::vec ki(arma::mat y) {
     arma::uword p = y.n_cols;
-//    return -logfact(std::move(y)) + 0.5 * (1. + (1. - double(p)) * std::log(2. * M_PI));
     return -logfact(std::move(y)) + 0.5 * double(p) ;
 }
 
