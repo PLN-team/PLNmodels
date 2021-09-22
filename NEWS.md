@@ -1,5 +1,7 @@
 # PLNmodels dev version
 
+* fixing #79 by using the same variational distribution to approximate 
+    the spherical case as in the fully parametrized and diagonal cases
 * smarter starting point for `$VEStep()` (PLN-PCA) to avoid convergence problems. 
 * use future_lapply in PLNmixture_family
 * remove a NOTE due to a DESeq2 link and a failure on solaris on CRAN machines
