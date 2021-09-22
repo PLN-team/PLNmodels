@@ -161,7 +161,7 @@ Rcpp::List cpp_optimize_spherical(
         arma::mat Z = O + X * Theta.t() + M;
         arma::mat A = exp(Z + 0.5 * S2);
         double sigma2 = accu(diagmat(w) * (pow(M, 2) + S2)) / (double(p) * w_bar) ;
-        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) - 0.5 * (double(p) * w_bar) * log(sigma2) ;
+        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * (double(p) * w_bar) * log(sigma2) ;
 
         metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
         metadata.map<M_ID>(grad) = diagmat(w) * (M / sigma2 + A - Y);
