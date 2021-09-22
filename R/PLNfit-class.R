@@ -391,7 +391,7 @@ PLNfit <- R6Class(
     #' @field BIC variational lower bound of the BIC
     BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
     #' @field entropy Entropy of the variational distribution
-    entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)) * ifelse(private$covariance == "spherical", self$q, 1))},
+    entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)))},
     #' @field ICL variational lower bound of the ICL
     ICL        = function() {self$BIC - self$entropy},
     #' @field R_squared approximated goodness-of-fit criterion
@@ -405,5 +405,4 @@ PLNfit <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 )
-
 
