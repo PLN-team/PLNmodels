@@ -32,6 +32,9 @@ plot(myLDA_tree_diagonal)
 otu.family <- factor(rep(c("fungi", "E. aphiltoides", "bacteria"), c(47, 1, 66)))
 plot(myLDA_tree, "variable", var_cols = otu.family) ## TODO: add color for arrows to check
 
+myLDA_tree_spherical <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = list(covariance = "spherical"))
+plot(myLDA_tree_spherical)
+
 ## One dimensional check of plot
 myLDA_orientation <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = orientation, data = oaks)
 plot(myLDA_orientation)
@@ -91,8 +94,7 @@ data.frame(
   ggplot(aes(x = nb_components, y = value, colour = score)) + geom_line() + theme_bw() + labs(y = "clustering similarity", x = "number of components")
 
 ## Mixture model to recover tree structure - with covariates
-system.time(my_mixtures <- PLNmixture(Abundance ~ 0 + tree + distTOground + offset(log(Offset)), data = oaks,
-                                      control_main = list(covariance = "spherical")))
+system.time(my_mixtures <- PLNmixture(Abundance ~ 0 + tree + distTOground + offset(log(Offset)), data = oaks))
 
 plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"), reverse = TRUE)
 

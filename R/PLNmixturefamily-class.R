@@ -126,11 +126,7 @@ PLNmixturefamily <-
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, xlevels, control)
         myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
 
-        if(control$covariance == 'spherical')
-          Sbar <- c(myPLN$var_par$S2) * myPLN$p
-        else
-          Sbar <- rowSums(myPLN$var_par$S2)
-
+        Sbar <- rowSums(myPLN$var_par$S2)
         D <- sqrt(as.matrix(dist(myPLN$var_par$M)^2) + outer(Sbar,rep(1,myPLN$n)) + outer(rep(1, myPLN$n), Sbar))
 
         if (is.numeric(control$init_cl)) {

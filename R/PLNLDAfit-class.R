@@ -92,7 +92,7 @@ PLNLDAfit <- R6Class(
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
       super$postTreatment(responses, covariates, offsets)
       rownames(private$B) <- colnames(private$B) <- colnames(responses)
-      if (private$covariance != "spherical") colnames(private$S2) <- 1:self$q
+      colnames(private$S2) <- 1:self$q
       self$setVisualization()
     },
 

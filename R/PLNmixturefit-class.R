@@ -46,7 +46,6 @@ PLNmixturefit <-
 
         M  <- private$comp %>%  map("var_par") %>% map("M")
         S2 <- private$comp %>%  map("var_par") %>% map("S2")
-        if(private$covariance == "spherical") S2 <- map(S2, ~outer(as.numeric(.x), rep(1, self$p) ))
 
         mu <- private$comp %>%  map(coef) %>% map(~outer(rep(1, self$n), as.numeric(.x)))
 
@@ -252,7 +251,7 @@ PLNmixturefit <-
       #' @return a [`ggplot`] graphic
       plot_clustering_data = function(main = "Expected counts reorder by clustering", plot = TRUE, log_scale = TRUE) {
         M  <- private$mix_up('var_par$M')
-        S2 <- switch(private$covariance, "spherical" = private$mix_up('var_par$S2') %*% rbind(rep(1, ncol(M))), private$mix_up('var_par$S2'))
+        S2 <- private$mix_up('var_par$S2')
         mu <- self$posteriorProb %*% t(self$group_means)
         A  <- exp(mu + M + .5 * S2)
         p <- plot_matrix(A, 'samples', 'variables', self$memberships, log_scale)
@@ -346,7 +345,7 @@ PLNmixturefit <-
       #' @field entropy_latent Entropy of the variational distribution of the latent vector (Gaussian)
       entropy_latent = function() {
         .5 * (sum(map_dbl(private$comp, function(component) {
-          sum( diag(component$weights) %*% log(component$var_par$S2) * ifelse(component$vcov_model == "spherical", self$p, 1) )
+          sum( diag(component$weights) %*% log(component$var_par$S2) )
           })) + self$n * self$p * log(2*pi*exp(1)))
       },
       #' @field entropy Full entropy of the variational distribution (latent vector + clustering)

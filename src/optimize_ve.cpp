@@ -185,7 +185,7 @@ Rcpp::List cpp_optimize_vestep_spherical(
 ) {
     // Conversion from R, prepare optimization
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
-    const auto init_S = Rcpp::as<arma::vec>(init_parameters["S"]); // (n)
+    const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]); // (n)
 
     const auto metadata = tuple_metadata(init_M, init_S);
     enum { M_ID, S_ID }; // Names for metadata indexes
@@ -214,31 +214,31 @@ Rcpp::List cpp_optimize_vestep_spherical(
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
 
-        arma::vec S2 = S % S;
+        arma::mat S2 = S % S;
         const arma::uword p = Y.n_cols;
         arma::mat Z = O + X * Theta.t() + M;
-        arma::mat A = exp(Z + 0.5 * S2 * arma::ones(p).t());
-        double n_sigma2 = dot(w, sum(pow(M, 2), 1) + double(p) * S2);
+        arma::mat A = exp(Z + 0.5 * S2);
+        double n_sigma2 = accu(diagmat(w) * (pow(M, 2) + S2)) ;
         double omega2 = Omega(0, 0);
-        double objective = accu(w.t() * (A - Y % Z)) - 0.5 * double(p) * dot(w, log(S2)) + 0.5 * n_sigma2 * omega2;
+        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * n_sigma2 * omega2;
 
-        metadata.map<M_ID>(grad) = diagmat(w) * (M * omega2 + A - Y);
-        metadata.map<S_ID>(grad) = w % (double(p) * S * omega2 + S % sum(A, 1) - double(p) * pow(S, -1));
+        metadata.map<M_ID>(grad) = diagmat(w) * (M / omega2 + A - Y);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S / omega2 + S % A - pow(S, -1));
+
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Model and variational parameters
     arma::mat M = metadata.copy<M_ID>(parameters.data());
-    arma::mat S = metadata.copy<S_ID>(parameters.data()); // vec(n) -> mat(n, 1)
-    arma::vec S2 = S % S;
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
+    arma::mat S2 = S % S;
     double omega2 = Omega(0, 0);
     // Element-wise log-likelihood
     const arma::uword p = Y.n_cols;
     arma::mat Z = O + X * Theta.t() + M;
-    arma::mat A = exp(Z + 0.5 * S2 * arma::ones(p).t());
-    arma::mat loglik = sum(Y % Z - A - 0.5 * pow(M, 2) * omega2, 1) - 0.5 * double(p) * omega2 * S2 +
-                       0.5 * double(p) * log(S2 * omega2) + ki(Y);
+    arma::mat A = exp(Z + 0.5 * S2);
+    arma::mat loglik = sum(Y % Z - A - 0.5 * (pow(M, 2) + S2 ) * omega2 + 0.5 * log(S2 * omega2), 1) + ki(Y);
 
     return Rcpp::List::create(
         Rcpp::Named("status") = (int)result.status,

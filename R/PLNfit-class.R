@@ -97,7 +97,7 @@ PLNfit <- R6Class(
         private$Theta <- do.call(rbind, lapply(LMs, coefficients))
         residuals     <- do.call(cbind, lapply(LMs, residuals))
         private$M     <- residuals
-        private$S2    <- matrix(0.1, n, ifelse(control$covariance == "spherical", 1, p))
+        private$S2    <- matrix(0.1,n,p)
         if (control$covariance == "spherical") {
           private$Sigma <- diag(sum(residuals^2)/(n*p), p, p)
         } else  if (control$covariance == "diagonal") {
@@ -173,8 +173,7 @@ PLNfit <- R6Class(
 
       ## Initialize the variational parameters with the appropriate new dimension of the data
       optim_out <- VEstep_optimizer(
-        list(M = matrix(0, n, p),
-             S = matrix(sqrt(0.1), n, ifelse(self$vcov_model == "spherical", 1, p))),
+        list(M = matrix(0, n, p), S = matrix(sqrt(0.1), n, p)),
         responses,
         covariates,
         offsets,
