@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.5-9020</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.5-9100</span>
       </span>
     </div>
 
@@ -107,7 +107,7 @@
       <h1 data-toc-skip>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2021-06-04</h4>
+            <h4 class="date">2021-09-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNPCA.Rmd"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -131,8 +131,8 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.sthda.com/english/rpkgs/factoextra">factoextra</a></span><span class="op">)</span></code></pre></div>
 <p>The main function <code>PLNPCA</code> integrates some features of the <strong>future</strong> package to perform parallel computing: you can set your plan now to speed the fit by relying on 2 workers as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/HenrikBengtsson/future">future</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org">future</a></span><span class="op">)</span>
+<span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="data-set" class="section level3">
 <h3 class="hasAnchor">
@@ -196,10 +196,10 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 3 
-     Rank approximation = 4 
-     Rank approximation = 1 
+##   Rank approximation = 4 
+     Rank approximation = 3 
      Rank approximation = 2 
+     Rank approximation = 1 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
@@ -593,9 +593,9 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 3 
+##   Rank approximation = 2 
      Rank approximation = 4 
-     Rank approximation = 2 
+     Rank approximation = 3 
      Rank approximation = 1 
 ##  Post-treatments
 ##  DONE!</code></pre>
@@ -631,7 +631,7 @@ fitted value vs. observation
 </div>
 <p>When you are done, do not forget to get back to the standard sequential plan with <em>future</em>.</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="st">"sequential"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="st">"sequential"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">

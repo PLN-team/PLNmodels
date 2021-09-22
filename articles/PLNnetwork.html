@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.5-9020</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.5-9100</span>
       </span>
     </div>
 
@@ -107,7 +107,7 @@
       <h1 data-toc-skip>Sparse structure estimation for multivariate count data with PLN-network</h1>
                         <h4 class="author">PLN team</h4>
             
-            <h4 class="date">2021-06-04</h4>
+            <h4 class="date">2021-09-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNnetwork.Rmd"><code>vignettes/PLNnetwork.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -450,8 +450,8 @@
 <p>An alternative strategy is to use StARS <span class="citation">(Liu, Roeder, and Wasserman <a href="#ref-stars" role="doc-biblioref">2010</a>)</span>, which performs resampling to evaluate the robustness of the network along the path of solutions in a similar fashion as the stability selection approach of <span class="citation">Meinshausen and Bühlmann (<a href="#ref-stabilitySelection" role="doc-biblioref">2010</a>)</span>, but in a network inference context.</p>
 <p>Resampling can be computationally demanding but is easily parallelized: the function <code>stability_selection</code> integrates some features of the <strong>future</strong> package to perform parallel computing. We set our plan to speed the process by relying on 2 workers:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/HenrikBengtsson/future">future</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org">future</a></span><span class="op">)</span>
+<span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p>We first invoke <code>stability_selection</code> explicitly for pedagogical purpose. In this case, we need to build our sub-samples manually:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span>
@@ -469,7 +469,7 @@
 <p><img src="PLNnetwork_files/figure-html/plot%20stability-1.png" width="672"></p>
 <p>When you are done, do not forget to get back to the standard sequential plan with <em>future</em>.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="st">"sequential"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="st">"sequential"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="structure-of-a-plnnetworkfit" class="section level3">
 <h3 class="hasAnchor">
@@ -496,11 +496,11 @@
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="va">my_graph</span></code></pre></div>
-<pre><code>## IGRAPH 0f6508b UNW- 17 3 -- 
+<pre><code>## IGRAPH 77a0c6e UNW- 17 3 -- 
 ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
 ## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),
 ## | width (e/n)
-## + edges from 0f6508b (vertex names):
+## + edges from 77a0c6e (vertex names):
 ## [1] Che--Hve Glo--Hfo Hfo--Hsp</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></code></pre></div>
