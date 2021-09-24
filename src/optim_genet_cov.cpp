@@ -98,8 +98,6 @@ Rcpp::List cpp_optimize_genetic_modeling(
     const arma::uword p = Y.n_cols;
     double rho = metadata.copy<RHO_ID>(parameters.data()) ;
 
-    std::cout << rho << std::endl ;
-
     arma::vec u = rho * Lambda + (1-rho) ;
     arma::mat R = V.t() * (M.t() * M + diagmat(w.t() * S2)) * V ;
     double sigma2 = accu( diagvec(R) / u ) / (double(p) * w_bar);

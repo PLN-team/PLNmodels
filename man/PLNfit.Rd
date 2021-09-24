@@ -16,9 +16,12 @@ Fields are accessed via active binding and cannot be changed by the user.
 \details{
 The parameter \code{control} is a list controlling the optimization with the following entries:
 \itemize{
-\item "covariance" character setting the model for the covariance matrix. Either "full", "diagonal" or "spherical". Default is "full".
+\item "covariance" character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "genetic". Default is "full".
+\item "corr_matrix": a symmetric positive definite correlation matrix used for the "genetic" model of covariance. Useless in other cases
 \item "trace" integer for verbosity.
-\item "inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit), which sometimes speeds up the inference.
+\item "inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on
+log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
+which sometimes speeds up the inference.
 \item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
 \item "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
 \item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4
@@ -55,6 +58,8 @@ print(myPLN)
 \item{\code{std_err}}{Variational approximation of the variance-covariance matrix of model parameters estimates.}
 
 \item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
+
+\item{\code{gen_par}}{a list with two parameters, sigma2 and rho, only used with the genetic covariance model}
 
 \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
