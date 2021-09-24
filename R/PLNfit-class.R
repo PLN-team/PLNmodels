@@ -171,7 +171,8 @@ PLNfit <- R6Class(
         switch(control$covariance,
                "spherical" = cpp_optimize_vestep_spherical,
                "diagonal"  = cpp_optimize_vestep_diagonal,
-               "full"      = cpp_optimize_vestep_full
+               "full"      = cpp_optimize_vestep_full,
+               "genetic"   = cpp_optimize_vestep_full
         )
 
       ## Initialize the variational parameters with the appropriate new dimension of the data

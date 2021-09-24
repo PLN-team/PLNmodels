@@ -123,3 +123,4 @@ Rcpp::List cpp_optimize_genetic_modeling(
         Rcpp::Named("rho", rho),
         Rcpp::Named("loglik", loglik));
 }
+
