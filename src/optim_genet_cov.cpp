@@ -6,16 +6,7 @@
 
 #include "nlopt_wrapper.h"
 #include "packing.h"
-
-inline arma::vec logfact(arma::mat y) {
-    y.replace(0., 1.);
-    return sum(y % log(y) - y + log(8 * pow(y, 3) + 4 * pow(y, 2) + y + 1. / 30.) / 6. + std::log(M_PI) / 2., 1);
-}
-
-inline arma::vec ki(arma::mat y) {
-    arma::uword p = y.n_cols;
-    return -logfact(std::move(y)) + 0.5 * double(p) ;
-}
+#include "utils.h"
 
 // ---------------------------------------------------------------------------------------
 // Covariance for heritability
@@ -32,9 +23,9 @@ Rcpp::List cpp_optimize_genetic_modeling(
 ) {
     // Conversion from R, prepare optimization
     const auto init_Theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
-    const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
-    const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,p)
-    const auto init_rho = Rcpp::as<double>(init_parameters["rho"])   ; // double
+    const auto init_M     = Rcpp::as<arma::mat>(init_parameters["M"]);     // (n,p)
+    const auto init_S     = Rcpp::as<arma::mat>(init_parameters["S"]);     // (n,p)
+    const auto init_rho   = Rcpp::as<double>(init_parameters["rho"]);      // double
 
     const auto metadata = tuple_metadata(init_Theta, init_M, init_S, init_rho);
     enum { THETA_ID, M_ID, S_ID, RHO_ID }; // Names for metadata indexes
@@ -61,7 +52,9 @@ Rcpp::List cpp_optimize_genetic_modeling(
         }
     }
 
+    // Some fixed quantities along optimization
     const double w_bar = accu(w);
+    // Diagonalization of matrix C
     arma::vec Lambda;
     arma::mat V;
     arma::eig_sym(Lambda, V, C);
