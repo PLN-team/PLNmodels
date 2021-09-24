@@ -125,7 +125,7 @@ PLNfit <- R6Class(
 
       args <- list(Y = responses, X = covariates, O = offsets, w = weights, configuration = control)
       if (self$vcov_model == "genetic") {
-        args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2), rho = .5)
+        args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2), rho = 0.25)
         args$C <- control$corr_matrix
       } else {
         args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))

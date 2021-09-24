@@ -73,11 +73,11 @@ Rcpp::List cpp_optimize_genetic_modeling(
         arma::vec u = rho * Lambda + (1-rho) ;
         arma::mat R = V.t() * (M.t() * M + diagmat(w.t() * S2)) * V ;
         double sigma2 = accu( diagvec(R) / u ) / (double(p) * w_bar);
-        arma::mat Omega = V * diagmat(1/(sigma2 * u)) * V.t() ;
+        arma::mat Omega = V * diagmat(pow(sigma2 * u, -1)) * V.t() ;
 
-        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) -
-            0.5 * trace(Omega * M.t() * (M.each_col() % w) + diagmat(w.t() * S2)) +
-            0.5 * w_bar * accu(log(u * sigma2));
+        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) +
+              0.5 * trace(Omega * (M.t() * (M.each_col() % w) + diagmat(w.t() * S2))) +
+              0.5 * w_bar * accu(log(u * sigma2));
 
         metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
         metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
@@ -96,17 +96,20 @@ Rcpp::List cpp_optimize_genetic_modeling(
     arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
     // Variance parameters
     const arma::uword p = Y.n_cols;
-    double rho = metadata.copy<RHO_ID>(parameters.data());
-    arma::vec u = pow(rho * Lambda + (1-rho),-1) ;
+    double rho = metadata.copy<RHO_ID>(parameters.data()) ;
+
+    std::cout << rho << std::endl ;
+
+    arma::vec u = rho * Lambda + (1-rho) ;
     arma::mat R = V.t() * (M.t() * M + diagmat(w.t() * S2)) * V ;
     double sigma2 = accu( diagvec(R) / u ) / (double(p) * w_bar);
-    arma::mat Omega = V * diagmat(u / sigma2) * V.t()  ;
-    arma::mat Sigma = V * diagmat(sigma2 / u) * V.t() ;
+    arma::mat Omega = V * diagmat(pow(sigma2 * u, -1)) * V.t() ;
+    arma::mat Sigma = V * diagmat(sigma2 * u) * V.t() ;
     // Element-wise log-likehood
     arma::mat Z = O + X * Theta.t() + M;
     arma::mat A = exp(Z + 0.5 * S2);
-    arma::vec loglik = sum(Y % Z - A + 0.5 * log(S2) - 0.5 * ((M * Omega) % M + S2 * diagmat(Omega)), 1) +
-                       0.5 * accu(log(sigma2/u)) + ki(Y);
+    arma::vec loglik = sum(Y % Z - A + 0.5 * log(S2) - 0.5 * ((M * Omega) % M + S2 * diagmat(Omega)), 1) -
+                       0.5 * accu(log(sigma2*u)) + ki(Y);
 
     return Rcpp::List::create(
         Rcpp::Named("status", static_cast<int>(result.status)),
