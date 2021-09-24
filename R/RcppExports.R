@@ -5,40 +5,44 @@ cpp_test_nlopt <- function() {
     .Call('_PLNmodels_cpp_test_nlopt', PACKAGE = 'PLNmodels')
 }
 
-cpp_optimize_full <- function(init_parameters, Y, X, O, w, configuration) {
-    .Call('_PLNmodels_cpp_optimize_full', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
-}
-
-cpp_optimize_spherical <- function(init_parameters, Y, X, O, w, configuration) {
-    .Call('_PLNmodels_cpp_optimize_spherical', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
-}
-
 cpp_optimize_diagonal <- function(init_parameters, Y, X, O, w, configuration) {
     .Call('_PLNmodels_cpp_optimize_diagonal', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
-}
-
-cpp_optimize_rank <- function(init_parameters, Y, X, O, w, configuration) {
-    .Call('_PLNmodels_cpp_optimize_rank', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
-}
-
-cpp_optimize_sparse <- function(init_parameters, Y, X, O, w, Omega, configuration) {
-    .Call('_PLNmodels_cpp_optimize_sparse', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Omega, configuration)
-}
-
-cpp_optimize_vestep_full <- function(init_parameters, Y, X, O, w, Theta, Omega, configuration) {
-    .Call('_PLNmodels_cpp_optimize_vestep_full', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
 }
 
 cpp_optimize_vestep_diagonal <- function(init_parameters, Y, X, O, w, Theta, Omega, configuration) {
     .Call('_PLNmodels_cpp_optimize_vestep_diagonal', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
 }
 
-cpp_optimize_vestep_spherical <- function(init_parameters, Y, X, O, w, Theta, Omega, configuration) {
-    .Call('_PLNmodels_cpp_optimize_vestep_spherical', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
+cpp_optimize_full <- function(init_parameters, Y, X, O, w, configuration) {
+    .Call('_PLNmodels_cpp_optimize_full', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
+}
+
+cpp_optimize_vestep_full <- function(init_parameters, Y, X, O, w, Theta, Omega, configuration) {
+    .Call('_PLNmodels_cpp_optimize_vestep_full', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
+}
+
+cpp_optimize_heritability <- function(init_parameters, Y, X, O, w, C, configuration) {
+    .Call('_PLNmodels_cpp_optimize_heritability', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, C, configuration)
+}
+
+cpp_optimize_rank <- function(init_parameters, Y, X, O, w, configuration) {
+    .Call('_PLNmodels_cpp_optimize_rank', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
 }
 
 cpp_optimize_vestep_rank <- function(init_parameters, Y, X, O, w, Theta, B, configuration) {
     .Call('_PLNmodels_cpp_optimize_vestep_rank', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, B, configuration)
+}
+
+cpp_optimize_sparse <- function(init_parameters, Y, X, O, w, Omega, configuration) {
+    .Call('_PLNmodels_cpp_optimize_sparse', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Omega, configuration)
+}
+
+cpp_optimize_spherical <- function(init_parameters, Y, X, O, w, configuration) {
+    .Call('_PLNmodels_cpp_optimize_spherical', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
+}
+
+cpp_optimize_vestep_spherical <- function(init_parameters, Y, X, O, w, Theta, Omega, configuration) {
+    .Call('_PLNmodels_cpp_optimize_vestep_spherical', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
 }
 
 cpp_test_packing <- function() {
