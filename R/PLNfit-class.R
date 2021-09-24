@@ -102,6 +102,8 @@ PLNfit <- R6Class(
           private$Sigma <- diag(sum(residuals^2)/(n*p), p, p)
         } else  if (control$covariance == "diagonal") {
           private$Sigma <- diag(diag(crossprod(residuals)/n), p, p)
+        } else  if (control$covariance == "heritability") {
+
         } else  {
           private$Sigma <- crossprod(residuals)/n + diag(colMeans(private$S2), nrow = p)
         }
@@ -114,24 +116,22 @@ PLNfit <- R6Class(
     optimize = function(responses, covariates, offsets, weights, control) {
 
       optimizer  <-
-        switch(control$covariance,
+        switch(self$vcov_model,
                "spherical" = cpp_optimize_spherical,
                "diagonal"  = cpp_optimize_diagonal ,
+               "genetic"   = cpp_optimize_genetic_modeling,
                "full"      = cpp_optimize_full
         )
 
-      optim_out <- optimizer(
-        list(
-          Theta = private$Theta,
-          M = private$M,
-          S = sqrt(private$S2)
-        ),
-        responses,
-        covariates,
-        offsets,
-        weights,
-        control
-      )
+      args <- list(Y = responses, X = covariates, O = offsets, w = weights, configuration = control)
+      if (self$vcov_model == "genetic") {
+        args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2), rho = .5)
+        args$C <- control$corr_matrix
+      } else {
+        args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
+      }
+
+      optim_out <- do.call(optimizer, args)
 
       Ji <- optim_out$loglik
       attr(Ji, "weights") <- weights
@@ -148,6 +148,9 @@ PLNfit <- R6Class(
           status     = optim_out$status,
           message    = statusToMessage(optim_out$status))
       )
+
+      if (self$vcov_model == "genetic")
+        private$psi <- list(sigma2 = optim_out$sigma2, rho = optim_out$rho)
     },
 
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
@@ -340,6 +343,7 @@ PLNfit <- R6Class(
     A          = NA, # the matrix of expected counts
     R2         = NA, # approximated goodness of fit criterion
     Ji         = NA, # element-wise approximated loglikelihood
+    psi        = NA, # parameters for genetic model of covariance
     FIM        = NA, # Fisher information matrix of Theta, computed using of two approximation scheme
     FIM_type   = NA, # Either "wald" or "louis". Approximation scheme used to compute FIM
     .std_err   = NA, # element-wise standard error for the elements of Theta computed
@@ -367,6 +371,8 @@ PLNfit <- R6Class(
     std_err    = function() {private$.std_err },
     #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
     var_par    = function() {list(M = private$M, S2 = private$S2)},
+    #' @field gen_par a list with two parameters, sigma2 and rho, only used with the genetic covariance model
+    gen_par    = function() {private$psi},
     #' @field latent a matrix: values of the latent vector (Z in the model)
     latent     = function() {private$Z},
     #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset

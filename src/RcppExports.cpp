@@ -89,9 +89,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cpp_optimize_heritability
-Rcpp::List cpp_optimize_heritability(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& C, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_cpp_optimize_heritability(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP CSEXP, SEXP configurationSEXP) {
+// cpp_optimize_genetic_modeling
+Rcpp::List cpp_optimize_genetic_modeling(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& C, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_cpp_optimize_genetic_modeling(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP CSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -102,7 +102,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type C(CSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_optimize_heritability(init_parameters, Y, X, O, w, C, configuration));
+    rcpp_result_gen = Rcpp::wrap(cpp_optimize_genetic_modeling(init_parameters, Y, X, O, w, C, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -208,7 +208,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_cpp_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_cpp_optimize_vestep_diagonal, 8},
     {"_PLNmodels_cpp_optimize_full", (DL_FUNC) &_PLNmodels_cpp_optimize_full, 6},
     {"_PLNmodels_cpp_optimize_vestep_full", (DL_FUNC) &_PLNmodels_cpp_optimize_vestep_full, 8},
-    {"_PLNmodels_cpp_optimize_heritability", (DL_FUNC) &_PLNmodels_cpp_optimize_heritability, 7},
+    {"_PLNmodels_cpp_optimize_genetic_modeling", (DL_FUNC) &_PLNmodels_cpp_optimize_genetic_modeling, 7},
     {"_PLNmodels_cpp_optimize_rank", (DL_FUNC) &_PLNmodels_cpp_optimize_rank, 6},
     {"_PLNmodels_cpp_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_cpp_optimize_vestep_rank, 8},
     {"_PLNmodels_cpp_optimize_sparse", (DL_FUNC) &_PLNmodels_cpp_optimize_sparse, 7},

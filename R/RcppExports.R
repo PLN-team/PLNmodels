@@ -21,8 +21,8 @@ cpp_optimize_vestep_full <- function(init_parameters, Y, X, O, w, Theta, Omega, 
     .Call('_PLNmodels_cpp_optimize_vestep_full', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
 }
 
-cpp_optimize_heritability <- function(init_parameters, Y, X, O, w, C, configuration) {
-    .Call('_PLNmodels_cpp_optimize_heritability', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, C, configuration)
+cpp_optimize_genetic_modeling <- function(init_parameters, Y, X, O, w, C, configuration) {
+    .Call('_PLNmodels_cpp_optimize_genetic_modeling', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, C, configuration)
 }
 
 cpp_optimize_rank <- function(init_parameters, Y, X, O, w, configuration) {
