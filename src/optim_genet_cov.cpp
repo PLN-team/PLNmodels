@@ -23,9 +23,9 @@ Rcpp::List cpp_optimize_heritability(
 ) {
     // Conversion from R, prepare optimization
     const auto init_Theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
-    const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
-    const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,p)
-    const auto init_rho = Rcpp::as<double>(init_parameters["rho"])   ; // double
+    const auto init_M     = Rcpp::as<arma::mat>(init_parameters["M"]);     // (n,p)
+    const auto init_S     = Rcpp::as<arma::mat>(init_parameters["S"]);     // (n,p)
+    const auto init_rho   = Rcpp::as<double>(init_parameters["rho"]);      // double
 
     const auto metadata = tuple_metadata(init_Theta, init_M, init_S, init_rho);
     enum { THETA_ID, M_ID, S_ID, RHO_ID }; // Names for metadata indexes
@@ -52,7 +52,9 @@ Rcpp::List cpp_optimize_heritability(
         }
     }
 
+    // Some fixed quantities along optimization
     const double w_bar = accu(w);
+    // Diagonalization of matrix C
     arma::vec Lambda;
     arma::mat V;
     arma::eig_sym(Lambda, V, C);
