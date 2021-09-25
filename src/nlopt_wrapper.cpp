@@ -79,6 +79,7 @@ std::unique_ptr<NloptStruct, NloptDeleter> new_nlopt_optimizer(const Rcpp::List 
             throw Rcpp::exception("nlopt_set_maxtime");
         }
     }
+
     return opt;
 }
 

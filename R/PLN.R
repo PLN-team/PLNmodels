@@ -11,9 +11,12 @@
 #' @return an R6 object with class [`PLNfit`]
 #'
 #' @details The parameter `control` is a list controlling the optimization with the following entries:
-#' * "covariance" character setting the model for the covariance matrix. Either "full", "diagonal" or "spherical". Default is "full".
+#' * "covariance" character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "genetic". Default is "full".
+#' * "corr_matrix": a symmetric positive definite correlation matrix used for the "genetic" model of covariance. Useless in other cases
 #' * "trace" integer for verbosity.
-#' * "inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit), which sometimes speeds up the inference.
+#' * "inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on
+#'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
+#'    which sometimes speeds up the inference.
 #' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
 #' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
 #' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4

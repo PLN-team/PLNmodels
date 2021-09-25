@@ -158,6 +158,7 @@ PLN_param <- function(control, n, p) {
     "xtol_abs"    = xtol_abs,
     "trace"       = 1,
     "covariance"  = covariance,
+    "corr_matrix" = diag(x = 1, nrow = p, ncol = p),
     "inception"   = NULL
   )
   ctrl[names(control)] <- control
