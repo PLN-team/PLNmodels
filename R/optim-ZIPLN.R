@@ -55,7 +55,7 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
                 stop_reason = "maxeval"
             ))
         }
-
+browser()
         # Steps
         new_Omega <- cpp_optimize_zi_Omega(
             M = parameters$M, X = X, Theta = parameters$Theta, S = parameters$S
