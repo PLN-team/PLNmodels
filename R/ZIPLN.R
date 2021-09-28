@@ -26,7 +26,7 @@
 #' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
 #'
 #' @rdname ZIPLN
-#' @include ZIPLNfit-class.R
+## #' @include ZIPLNfit-class.R
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)

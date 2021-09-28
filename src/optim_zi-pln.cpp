@@ -8,16 +8,15 @@
 // could be R only
 
 // [[Rcpp::export]]
-arma::mat cpp_optimize_zi_step_a(
+arma::mat cpp_optimize_zi_Omega(
     const arma::mat & M,     // (n,p)
     const arma::mat & X,     // (n,d)
     const arma::mat & Theta, // (d,p)
-    const arma::mat & S2     // s_{i,j}^2 (n,p)
+    const arma::mat & S     // s_{i,j}^2 (n,p)
 ) {
     const arma::uword n = M.n_rows;
     arma::mat M_X_Theta = M - X * Theta;
-    // S is sympd, and MXT^T MXT is
-    return (1. / double(n)) * inv_sympd(M_X_Theta.t() * M_X_Theta + diagmat(sum(S2, 0)));
+    return (1. / double(n)) * inv_sympd(M_X_Theta.t() * M_X_Theta + diagmat(sum(S % S, 0)));
 }
 
 // ---------------------------------------------------------------------------------------
@@ -25,7 +24,7 @@ arma::mat cpp_optimize_zi_step_a(
 // could be R only
 
 // [[Rcpp::export]]
-arma::mat cpp_optimize_zi_step_b(
+arma::mat cpp_optimize_zi_Theta(
     const arma::mat & M, // (n,p)
     const arma::mat & X  // (n,d)
 ) {
@@ -39,7 +38,7 @@ arma::mat cpp_optimize_zi_step_b(
 // Step c, optimizes theta0
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_zi_step_c(
+Rcpp::List cpp_optimize_zi_Theta0(
     const arma::mat & init_Theta0,   // (d,p)
     const arma::mat & X,             // covariates (n,d)
     const arma::mat & Pi,            // (n,p)
@@ -70,8 +69,8 @@ Rcpp::List cpp_optimize_zi_step_c(
         const arma::mat Theta0 = metadata.map<THETA0_ID>(params);
 
         arma::mat e_X_Theta0 = exp(X * Theta0);
-        double objective = trace(Xt_Pi.t() * Theta0) - accu(log(1. + e_X_Theta0));
-        metadata.map<THETA0_ID>(grad) = Xt_Pi - X.t() * pow(1. - e_X_Theta0, -1);
+        double objective = -trace(Xt_Pi.t() * Theta0) + accu(log(1. + e_X_Theta0));
+        metadata.map<THETA0_ID>(grad) = -Xt_Pi + X.t() * pow(1. + e_X_Theta0, -1);
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -87,17 +86,16 @@ Rcpp::List cpp_optimize_zi_step_c(
 // Step d, returns new Pi (n,p)
 
 // [[Rcpp::export]]
-arma::mat cpp_optimize_zi_step_d(
+arma::mat cpp_optimize_zi_Pi(
     const arma::mat & Y,     // responses (n,p)
     const arma::mat & X,     // covariates (n,d)
     const arma::mat & O,     // offsets (n,p)
     const arma::mat & M,     // (n,p)
-    const arma::mat & S2,    // s_{i,j}^2 (n,p)
+    const arma::mat & S,    // (n,p)
     const arma::mat & Theta0 // (d,p)
 ) {
-    arma::mat A = exp(O + M + 0.5 * S2);
-    // using logit^{-1}(x) = 1/(1+e^x), but wikipedia mentions 1/(1+e^-x) FIXME ?
-    arma::mat Pi = 1. / (1. + exp(- (A + X * Theta0)));
+    arma::mat A = exp(O + M + 0.5 * S % S);
+    arma::mat Pi = pow(1. + exp(- (A + X * Theta0)), -1);
     // Zero Pi_{i,j} if Y_{i,j} > 0
     // multiplication with f(sign(Y)) could work to zero stuff as there should not be any +inf
     // using a loop as it is more explicit and should have ok performance in C++
@@ -118,13 +116,13 @@ arma::mat cpp_optimize_zi_step_d(
 // Step e, optimizes M
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_zi_step_e(
+Rcpp::List cpp_optimize_zi_M(
     const arma::mat & init_M,        // (n,p)
     const arma::mat & Y,             // responses (n,p)
     const arma::mat & X,             // covariates (n,d)
     const arma::mat & O,             // offsets (n, p)
     const arma::mat & Pi,            // (n,p)
-    const arma::mat & S2,            // s_{i,j}^2 (n,p)
+    const arma::mat & S,             // (n,p)
     const arma::mat & Theta,         // (d,p)
     const arma::mat & Omega,         // (p,p)
     const Rcpp::List & configuration // List of config values ; xtol_abs is M only (double or mat)
@@ -148,7 +146,7 @@ Rcpp::List cpp_optimize_zi_step_e(
     }
 
     const arma::mat X_Theta = X * Theta; // (n,p)
-    const arma::mat O_S2 = O + 0.5 * S2; // (n,p)
+    const arma::mat O_S2 = O + 0.5 * S % S; // (n,p)
 
     // Optimize
     auto objective_and_grad =
@@ -158,8 +156,8 @@ Rcpp::List cpp_optimize_zi_step_e(
         arma::mat A = exp(O_S2 + M);                       // (n,p)
         arma::mat M_X_Theta_Omega = (M - X_Theta) * Omega; // (n,p)
 
-        double objective = trace((1. - Pi).t() * (Y % M - A)) - 0.5 * trace(M_X_Theta_Omega * (M - X_Theta).t());
-        metadata.map<M_ID>(grad) = (1. - Pi) % (Y - A) - M_X_Theta_Omega;
+        double objective = trace((Pi - 1.).t() * (Y % M - A)) + 0.5 * trace(M_X_Theta_Omega * (M - X_Theta).t());
+        metadata.map<M_ID>(grad) = (Pi - 1.) % (Y - A) + M_X_Theta_Omega;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -172,11 +170,11 @@ Rcpp::List cpp_optimize_zi_step_e(
 }
 
 // ---------------------------------------------------------------------------------------
-// Step f, optimizes S^2
+// Step f, optimizes S
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_zi_step_f(
-    const arma::mat & init_S2,       // (n,p)
+Rcpp::List cpp_optimize_zi_S(
+    const arma::mat & init_S,        // (n,p)
     const arma::mat & O,             // offsets (n, p)
     const arma::mat & M,             // (n,p)
     const arma::mat & Pi,            // (n,p)
@@ -184,11 +182,11 @@ Rcpp::List cpp_optimize_zi_step_f(
     const arma::mat & Omega,         // (p,p)
     const Rcpp::List & configuration // List of config values ; xtol_abs is S2 only (double or mat)
 ) {
-    const auto metadata = tuple_metadata(init_S2);
-    enum { S2_ID }; // Names for metadata indexes
+    const auto metadata = tuple_metadata(init_S);
+    enum { S_ID }; // Names for metadata indexes
 
     auto parameters = std::vector<double>(metadata.packed_size);
-    metadata.map<S2_ID>(parameters.data()) = init_S2;
+    metadata.map<S_ID>(parameters.data()) = init_S;
 
     auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
     if(configuration.containsElementNamed("xtol_abs")) {
@@ -197,7 +195,7 @@ Rcpp::List cpp_optimize_zi_step_f(
             set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
         } else {
             auto packed = std::vector<double>(metadata.packed_size);
-            metadata.map<S2_ID>(packed.data()) = Rcpp::as<arma::mat>(value);
+            metadata.map<S_ID>(packed.data()) = Rcpp::as<arma::mat>(value);
             set_per_value_xtol_abs(optimizer.get(), packed);
         }
     }
@@ -207,24 +205,24 @@ Rcpp::List cpp_optimize_zi_step_f(
 
     // Optimize
     auto objective_and_grad = [&metadata, &O_M, &Pi, &diag_Omega](const double * params, double * grad) -> double {
-        const arma::mat S2 = metadata.map<S2_ID>(params);
+        const arma::mat S = metadata.map<S_ID>(params);
 
-        arma::uword n = S2.n_rows;
-        arma::mat A = exp(O_M + 0.5 * S2); // (n,p)
+        arma::uword n = S.n_rows;
+        arma::mat A = exp(O_M + 0.5 * S % S); // (n,p)
 
         // trace(1^T log(S)) == accu(log(S)).
         // S_bar = diag(sum(S, 0)). trace(Omega * S_bar) = dot(diagvec(Omega), sum(S2, 0))
-        double objective = trace((Pi - 1.).t() * A) - 0.5 * dot(diag_Omega, sum(S2, 0)) + 0.5 * accu(log(S2));
+        double objective = trace((Pi - 1.).t() * A) + 0.5 * dot(diag_Omega, sum(S % S, 0)) - 0.5 * accu(log(S % S));
         // S2^\emptyset interpreted as pow(S2, -1.) as that makes the most sense (gradient component for log(S2))
         // 1_n Diag(Omega)^T is n rows of diag(omega) values
-        metadata.map<S2_ID>(grad) = 0.5 * (pow(S2, -1.) + (Pi - 1.) % A - arma::repelem(diag_Omega.t(), n, 1));
+        metadata.map<S_ID>(grad) = - pow(S, -1.) + (1. - Pi) % S % A + S * diagmat(diag_Omega);
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
-    arma::mat S2 = metadata.copy<S2_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
     return Rcpp::List::create(
         Rcpp::Named("status") = static_cast<int>(result.status),
         Rcpp::Named("iterations") = result.nb_iterations,
-        Rcpp::Named("S2") = S2);
+        Rcpp::Named("S") = S);
 }

@@ -38,11 +38,11 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
     }
     configuration_step_c <- config_for("Theta0")
     configuration_step_e <- config_for("M")
-    configuration_step_f <- config_for("S2")
+    configuration_step_f <- config_for("S")
 
     # Follow the convention of maxeval = -1 => disabled
     maxeval <- if("maxeval" %in% names(configuration)) { configuration$maxeval } else { -1 }
-    
+
     # Main loop
     nb_iter <- 0
     parameters <- init_parameters
@@ -57,35 +57,35 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
         }
 
         # Steps
-        new_Omega <- cpp_optimize_zi_step_a(
-            M = parameters$M, X = X, Theta = parameters$Theta, S2 = parameters$S2
+        new_Omega <- cpp_optimize_zi_Omega(
+            M = parameters$M, X = X, Theta = parameters$Theta, S = parameters$S
         )
-        new_Theta <- cpp_optimize_zi_step_b(
+        new_Theta <- cpp_optimize_zi_Theta(
             M = parameters$M, X = X
         )
-        new_Theta0 <- cpp_optimize_zi_step_c(
+        new_Theta0 <- cpp_optimize_zi_Theta0(
             init_Theta0 = parameters$Theta0,
             X = X, Pi = parameters$Pi,
             configuration = configuration_step_c
         )$Theta0
-        new_Pi <- cpp_optimize_zi_step_d(
-            Y = Y, X = X, O = O, M = parameters$M, S2 = parameters$S2, Theta0 = new_Theta0
+        new_Pi <- cpp_optimize_zi_Pi(
+            Y = Y, X = X, O = O, M = parameters$M, S = parameters$S, Theta0 = new_Theta0
         )
-        new_M <- cpp_optimize_zi_step_e(
+        new_M <- cpp_optimize_zi_M(
             init_M = parameters$M,
-            Y = Y, X = X, O = O, Pi = new_Pi, S2 = parameters$S2, Theta = new_Theta, Omega = new_Omega,
+            Y = Y, X = X, O = O, Pi = new_Pi, S = parameters$S, Theta = new_Theta, Omega = new_Omega,
             configuration = configuration_step_e
         )$M
-        new_S2 <- cpp_optimize_zi_step_f(
-            init_S2 = parameters$S2,
+        new_S <- cpp_optimize_zi_S(
+            init_S = parameters$S,
             O = O, M = new_M, Pi = new_Pi, Theta = new_Theta, Omega = new_Omega,
             configuration = configuration_step_f
-        )$S2
+        )$S
 
         # Check convergence
         new_parameters <- list(
             Omega = new_Omega, Theta = new_Theta, Theta0 = new_Theta0,
-            Pi = new_Pi, M = new_M, S2 = new_S2
+            Pi = new_Pi, M = new_M, S = new_S
         )
         nb_iter <- nb_iter + 1
         if(parameter_list_converged(
@@ -100,11 +100,6 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
         }
         parameters <- new_parameters
     }
-}
-
-# R step_b alternative : errors with singular matrix too
-optimize_zi_step_b <- function(M, X) {
-    solve(t(X) %*% X) %*% t(X) %*% M
 }
 
 # Test convergence for a named list of parameters
@@ -135,7 +130,7 @@ parameter_list_converged <- function(oldp, newp, xtol_abs = NULL, xtol_rel = NUL
             return(TRUE)
         }
     }
-    
+
     # Check convergence with xtol_abs as list(xtol_abs for each param_name)
     if(is.list(xtol_abs)) {
         xtol_abs <- xtol_abs[order(names(xtol_abs))]
