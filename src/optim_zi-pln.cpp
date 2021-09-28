@@ -97,7 +97,7 @@ arma::mat cpp_optimize_zi_step_d(
 ) {
     arma::mat A = exp(O + M + 0.5 * S2);
     // using logit^{-1}(x) = 1/(1+e^x), but wikipedia mentions 1/(1+e^-x) FIXME ?
-    arma::mat Pi = 1. / (1. + exp(A + X * Theta0));
+    arma::mat Pi = 1. / (1. + exp(- (A + X * Theta0)));
     // Zero Pi_{i,j} if Y_{i,j} > 0
     // multiplication with f(sign(Y)) could work to zero stuff as there should not be any +inf
     // using a loop as it is more explicit and should have ok performance in C++

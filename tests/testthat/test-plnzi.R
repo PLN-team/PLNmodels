@@ -3,17 +3,17 @@ context("test-plnzi")
 epsilon = 1e-6
 
 test_that("PLNzi: steps are dimensionally correct", {
-    # Choose different caracteristic dimensions to detect mismatches
+    # Choose different characteristic dimensions to detect mismatches
     n = 3
     p = 9
     d = 6
-    
+
     # Prepare test values
     M = S2 = Pi = Y = O = matrix(1., nrow=n, ncol=p)
     X = matrix(runif(n*d), nrow=n, ncol=d)
     Theta = Theta0 = matrix(1., nrow=d, ncol=p)
     Omega = diag(p)
-    
+
     # Steps
     expect_identical(
         dim(Omega),
@@ -24,7 +24,7 @@ test_that("PLNzi: steps are dimensionally correct", {
         dim(Theta),
         dim(cpp_optimize_zi_step_b(M = M, X = X))
     )
-    
+
     step_c = cpp_optimize_zi_step_c(
         init_Theta0 = Theta0, X = X, Pi = Pi,
         configuration = list(
@@ -110,7 +110,7 @@ test_that("PLNzi: optimize_zi is dimensionally correct", {
     n = 3
     p = 9
     d = 6
-    
+
     # Prepare test values
     M = S2 = Pi = Y = O = matrix(1., nrow=n, ncol=p)
     X = matrix(runif(n*d), nrow=n, ncol=d)
