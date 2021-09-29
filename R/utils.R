@@ -1,9 +1,13 @@
+trace <- function(x) sum(diag(x))
+
 .xlogx <- function(x) ifelse(x < .Machine$double.eps, 0, x*log(x))
 
 .softmax <- function(x) {
   b <- max(x)
   exp(x - b) / sum(exp(x - b))
 }
+
+.logit <- function (x) log(x/(1-x))
 
 .check_boundaries <- function(x, zero = .Machine$double.eps) {
   x[is.nan(x)] <- zero

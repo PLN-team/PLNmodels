@@ -52,7 +52,7 @@ ZIPLN <- function(formula, data, subset, weights, control = list()) {
 
   ## post-treatment
   if (ctrl$trace > 0) cat("\n Post-treatments...")
-  myPLN$postTreatment(args$Y, args$X, args$O, args$w)
+  myPLN$postTreatment(args$Y, args$X, args$O, args$w, type = "none")
 
   if (ctrl$trace > 0) cat("\n DONE!\n")
   myPLN

@@ -33,7 +33,7 @@
 #' print(myPLN)
 #' }
 ZIPLNfit <- R6Class(
-  classname = "PLNfit",
+  classname = "ZIPLNfit",
   inherit = PLNfit,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS
@@ -51,7 +51,7 @@ ZIPLNfit <- R6Class(
     initialize = function(responses, covariates, offsets, weights, formula, xlevels, control) {
       super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
       LOGREGs <- lapply(1:self$p, function(j) glm.fit(covariates, 1*(responses[,j] != 0), weights = weights, offset =  offsets[,j], family = binomial(link = "logit")) )
-      private$Pi <- do.call(rbind, lapply(LOGREGs, fitted))
+      private$Pi <- LOGREGs %>% map(fitted) %>% do.call(cbind, .)
       private$Theta0 <- do.call(rbind, lapply(LOGREGs, coefficients))
     },
     #' @description
@@ -68,7 +68,7 @@ ZIPLNfit <- R6Class(
     #' @param monitoring a list with optimization monitoring quantities
     #' @return Update the current [`PLNfit`] object
     update = function(Theta=NA, Theta0=NA, Sigma=NA, M=NA, S2=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
-      super$update(Theta=NA, Sigma=NA, M=NA, S2=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA)
+      super$update(Theta=Theta, Sigma=Sigma, M=M, S2=S2, Ji=Ji, R2=R2, Z=Z, A=A, monitoring=monitoring)
       if (!anyNA(Theta0)) private$Theta0 <- Theta0
     },
 
@@ -78,26 +78,38 @@ ZIPLNfit <- R6Class(
 
    optimize = function(responses, covariates, offsets, weights, control) {
 
-     init_parameters <- list(Pi = private$Pi, Theta0 = t(private$Theta0), Theta = t(private$Theta), M = private$M, S = sqrt(private$S2))
+     init_parameters <- list(Omega = NA, Pi = private$Pi, Theta0 = t(private$Theta0), Theta = t(private$Theta), M = private$M, S = sqrt(private$S2))
 
-     browser()
      optim_out <- optimize_zi(init_parameters, responses, covariates, offsets, control)
+     Z <- offsets + covariates %*% optim_out$parameters$Theta
+     A <- exp(Z + optim_out$parameters$M + .5 * optim_out$parameters$S^2)
+     Ji <- optim_out$vloglik
+     attr(Ji, "weights") <- weights
+
      self$update(
         Theta      = t(optim_out$parameters$Theta),
         Theta0     = t(optim_out$parameters$Theta0),
         Sigma      = solve(optim_out$parameters$Omega),
         M          = optim_out$parameters$M,
         S2         = (optim_out$parameters$S)**2,
-## FIXME       Z          = optim_out$Z,
-## FIXME       A          = optim_out$A,
-## FIXME       Ji         = Ji,
+        Z          = Z,
+        A          = A,
+        Ji         = Ji,
         monitoring = list(
           iterations = optim_out$nb_iter,
           status     = NA,  ## FIXME optim_out$status,
           message    = optim_out$stop_reason)
       )
 
-   }
+     invisible(optim_out)
+
+   },
+   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Post treatment functions --------------
+    #' @description Update R2 field after optimization
+    set_R2 = function(responses, covariates, offsets, weights, nullModel = NULL) {
+      private$R2 <- NA
+    }
  ),
  private = list(
     Theta0 = NA, # the model parameters for the covariable ('0'/Bernoulli part)

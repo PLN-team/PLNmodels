@@ -40,7 +40,7 @@ print(myPLN)
 }
 }
 \section{Super class}{
-\code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{PLNfit}
+\code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{ZIPLNfit}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -57,6 +57,7 @@ print(myPLN)
 \item \href{#method-new}{\code{ZIPLNfit$new()}}
 \item \href{#method-update}{\code{ZIPLNfit$update()}}
 \item \href{#method-optimize}{\code{ZIPLNfit$optimize()}}
+\item \href{#method-set_R2}{\code{ZIPLNfit$set_R2()}}
 \item \href{#method-clone}{\code{ZIPLNfit$clone()}}
 }
 }
@@ -69,7 +70,6 @@ print(myPLN)
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment">}\href{../../PLNmodels/html/PLNfit.html#method-postTreatment}{\code{PLNmodels::PLNfit$postTreatment()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict">}\href{../../PLNmodels/html/PLNfit.html#method-predict}{\code{PLNmodels::PLNfit$predict()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2">}\href{../../PLNmodels/html/PLNfit.html#method-set_R2}{\code{PLNmodels::PLNfit$set_R2()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show">}\href{../../PLNmodels/html/PLNfit.html#method-show}{\code{PLNmodels::PLNfit$show()}}\out{</span>}
 }
 \out{</details>}
@@ -181,6 +181,31 @@ Call to the C++ optimizer and update of the relevant fields
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_R2"></a>}}
+\if{latex}{\out{\hypertarget{method-set_R2}{}}}
+\subsection{Method \code{set_R2()}}{
+Update R2 field after optimization
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$set_R2(responses, covariates, offsets, weights, nullModel = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }
 \if{html}{\out{</div>}}
 }

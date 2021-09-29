@@ -46,6 +46,7 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
     # Main loop
     nb_iter <- 0
     parameters <- init_parameters
+    criterion <- vector("numeric", 100)
     repeat {
         # Check maxeval
         if(maxeval >= 0 && nb_iter >= maxeval) {
@@ -55,7 +56,7 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
                 stop_reason = "maxeval"
             ))
         }
-browser()
+
         # Steps
         new_Omega <- cpp_optimize_zi_Omega(
             M = parameters$M, X = X, Theta = parameters$Theta, S = parameters$S
@@ -82,24 +83,62 @@ browser()
             configuration = configuration_step_f
         )$S
 
+
         # Check convergence
         new_parameters <- list(
             Omega = new_Omega, Theta = new_Theta, Theta0 = new_Theta0,
             Pi = new_Pi, M = new_M, S = new_S
         )
         nb_iter <- nb_iter + 1
+
+        criterion[nb_iter] <- get_objective(Y, X, O, Pi, new_parameters)
+
         if(parameter_list_converged(
             parameters, new_parameters,
-            xtol_abs = configuration$xtol_abs, xtol_rel = configuration$xtol_rel
+            xtol_abs = 1e-3, xtol_rel = 1e-3
         )) {
             return(list(
                 parameters = parameters,
                 nb_iter = nb_iter,
-                stop_reason = "converged"
+                stop_reason = "converged",
+                criterion = criterion,
+                vloglik = get_vloglik(Y, X, O, Pi, new_parameters)
+            ))
+        }
+        if(nb_iter >= 100) {
+            return(list(
+                parameters = parameters,
+                nb_iter = nb_iter,
+                stop_reason = "maximum number of iterations reached",
+                criterion = criterion,
+                vloglik = get_vloglik(Y, X, O, Pi, new_parameters)
             ))
         }
         parameters <- new_parameters
     }
+}
+
+get_objective <- function(Y, X, O, Pi, par) {
+
+    A <- exp(O + par$M + .5 * par$S^2)
+    n <- nrow(Y)
+    res <- - trace (crossprod(1 - par$Pi,  ( Y * (O + par$M) - A - .logfactorial(Y)) ) ) -
+      trace(crossprod(par$Pi, X %*% par$Theta0 - ifelse(par$Pi == 0, 0, .logit(par$Pi))) ) -
+        .5 * n * determinant(par$Omega, logarithm = TRUE)$modulus - .5 * sum(log(par$S^2)) +
+        sum( log (1 + exp(X %*% par$Theta0) ) + log(1-par$Pi) )
+    res
+}
+
+get_vloglik <- function(Y, X, O, Pi, par) {
+
+    Z <- O + par$M
+    A <- exp(Z + .5 * par$S^2)
+    p <- ncol(Y)
+    res <- rowSums( (1 - par$Pi) * ( ( Y * Z - A  ) - .logfactorial(Y) ) ) +
+      rowSums(par$Pi * ( X %*% par$Theta0 - ifelse(par$Pi == 0, 0, .logit(par$Pi))) ) +
+        .5 * determinant(par$Omega, logarithm = TRUE)$modulus + .5 * rowSums(log(par$S^2)) -
+        rowSums( log (1 + exp(X %*% par$Theta0) ) + log(1-par$Pi) ) + p
+    res
 }
 
 # Test convergence for a named list of parameters
