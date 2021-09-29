@@ -40,7 +40,7 @@ ZIPLN <- function(formula, data, subset, weights, control = list()) {
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and eventually overwrite them by user-defined parameters
-  ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y))
+  ctrl <- ZIPLN_param(control, nrow(args$Y), ncol(args$Y))
 
   ## initialization
   if (ctrl$trace > 0) cat("\n Initialization...")

@@ -97,8 +97,9 @@ ZIPLNfit <- R6Class(
         Ji         = Ji,
         monitoring = list(
           iterations = optim_out$nb_iter,
-          status     = NA,  ## FIXME optim_out$status,
-          message    = optim_out$stop_reason)
+          status     = 0,  ## FIXME optim_out$status,
+          message    = optim_out$stop_reason,
+          objective  = optim_out$criterion)
       )
 
      invisible(optim_out)

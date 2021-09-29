@@ -47,6 +47,7 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
     nb_iter <- 0
     parameters <- init_parameters
     criterion <- vector("numeric", 100)
+    objective <- Inf
     repeat {
         # Check maxeval
         if(maxeval >= 0 && nb_iter >= maxeval) {
@@ -91,30 +92,38 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
         )
         nb_iter <- nb_iter + 1
 
-        criterion[nb_iter] <- get_objective(Y, X, O, Pi, new_parameters)
+        criterion[nb_iter] <- new_objective <- get_objective(Y, X, O, Pi, new_parameters)
 
-        if(parameter_list_converged(
+        objective_converged <-
+            abs(objective - new_objective) < configuration$ftol_out |
+            abs(objective - new_objective)/abs(new_objective) < configuration$ftol_out
+
+        parameters_converged <- parameter_list_converged(
             parameters, new_parameters,
-            xtol_abs = 1e-3, xtol_rel = 1e-3
-        )) {
+            xtol_abs = configuration$xtol_abs, xtol_rel = configuration$xtol_rel
+        )
+
+        if (parameters_converged | objective_converged)
             return(list(
                 parameters = parameters,
                 nb_iter = nb_iter,
                 stop_reason = "converged",
-                criterion = criterion,
+                criterion = criterion[1:nb_iter],
                 vloglik = get_vloglik(Y, X, O, Pi, new_parameters)
             ))
-        }
-        if(nb_iter >= 100) {
+
+        if(nb_iter >= configuration$maxit_out) {
             return(list(
                 parameters = parameters,
                 nb_iter = nb_iter,
                 stop_reason = "maximum number of iterations reached",
-                criterion = criterion,
+                criterion = criterion[1:nb_iter],
                 vloglik = get_vloglik(Y, X, O, Pi, new_parameters)
             ))
         }
+
         parameters <- new_parameters
+        objective  <- new_objective
     }
 }
 

@@ -144,6 +144,14 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
 
 available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR2")
 
+ZIPLN_param <- function(control, n, p) {
+  ctrl <- PLN_param(control, n, p)
+  ctrl$ftol_out  <- 1e-5
+  ctrl$maxit_out <- 50
+  ctrl[names(control)] <- control
+  ctrl
+}
+
 ## -----------------------------------------------------------------
 ##  Series of setter to default parameters for user's main functions
 ##

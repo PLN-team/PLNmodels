@@ -16,7 +16,7 @@ arma::mat cpp_optimize_zi_Omega(
 ) {
     const arma::uword n = M.n_rows;
     arma::mat M_X_Theta = M - X * Theta;
-    return (1. / double(n)) * inv_sympd(M_X_Theta.t() * M_X_Theta + diagmat(sum(S % S, 0)));
+    return (double(n) * inv_sympd(M_X_Theta.t() * M_X_Theta + diagmat(sum(S % S, 0))));
 }
 
 // ---------------------------------------------------------------------------------------
@@ -212,10 +212,10 @@ Rcpp::List cpp_optimize_zi_S(
 
         // trace(1^T log(S)) == accu(log(S)).
         // S_bar = diag(sum(S, 0)). trace(Omega * S_bar) = dot(diagvec(Omega), sum(S2, 0))
-        double objective = trace((Pi - 1.).t() * A) + 0.5 * dot(diag_Omega, sum(S % S, 0)) - 0.5 * accu(log(S % S));
+        double objective = trace((1. - Pi).t() * A) + 0.5 * dot(diag_Omega, sum(S % S, 0)) - 0.5 * accu(log(S % S));
         // S2^\emptyset interpreted as pow(S2, -1.) as that makes the most sense (gradient component for log(S2))
         // 1_n Diag(Omega)^T is n rows of diag(omega) values
-        metadata.map<S_ID>(grad) = - pow(S, -1.) + (1. - Pi) % S % A + S * diagmat(diag_Omega);
+        metadata.map<S_ID>(grad) = S.each_row() % diag_Omega.t() + (1. - Pi) % S % A - pow(S, -1.) ;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
