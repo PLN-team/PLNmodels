@@ -50,7 +50,8 @@ ZIPLNfit <- R6Class(
     ## See https://github.com/r-lib/roxygen2/issues/931
     initialize = function(responses, covariates, offsets, weights, formula, xlevels, control) {
       super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
-      LOGREGs <- lapply(1:self$p, function(j) glm.fit(covariates, 1*(responses[,j] != 0), weights = weights, offset =  offsets[,j], family = binomial(link = "logit")) )
+      delta <- 1* (responses == 0)
+      LOGREGs <- suppressWarnings(lapply(1:self$p, function(j) glm.fit(covariates, delta[, j], family = binomial(link = "logit")) ))
       private$Pi <- LOGREGs %>% map(fitted) %>% do.call(cbind, .)
       private$Theta0 <- do.call(rbind, lapply(LOGREGs, coefficients))
     },

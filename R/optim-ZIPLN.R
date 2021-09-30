@@ -94,8 +94,8 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
         criterion[nb_iter] <- new_objective <- get_objective(Y, X, O, new_parameters)
 
         objective_converged <-
-            abs(objective - new_objective) < configuration$ftol_out |
-            abs(objective - new_objective)/abs(new_objective) < configuration$ftol_out
+            (objective - new_objective) < configuration$ftol_out |
+            (objective - new_objective)/abs(new_objective) < configuration$ftol_out
 
         parameters_converged <- parameter_list_converged(
             parameters, new_parameters,
