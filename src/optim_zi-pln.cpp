@@ -156,8 +156,8 @@ Rcpp::List cpp_optimize_zi_M(
         arma::mat A = exp(O_S2 + M);                       // (n,p)
         arma::mat M_X_Theta_Omega = (M - X_Theta) * Omega; // (n,p)
 
-        double objective = trace((Pi - 1.).t() * (Y % M - A)) + 0.5 * trace(M_X_Theta_Omega * (M - X_Theta).t());
-        metadata.map<M_ID>(grad) = (Pi - 1.) % (Y - A) + M_X_Theta_Omega;
+        double objective = - trace((1. - Pi).t() * (Y % M - A)) + 0.5 * trace(M_X_Theta_Omega * (M - X_Theta).t());
+        metadata.map<M_ID>(grad) = M_X_Theta_Omega + (1. - Pi) % (A - Y);
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);

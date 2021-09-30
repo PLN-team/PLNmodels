@@ -57,7 +57,6 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
                 stop_reason = "maxeval"
             ))
         }
-
         # Steps
         new_Omega <- cpp_optimize_zi_Omega(
             M = parameters$M, X = X, Theta = parameters$Theta, S = parameters$S
@@ -92,7 +91,7 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
         )
         nb_iter <- nb_iter + 1
 
-        criterion[nb_iter] <- new_objective <- get_objective(Y, X, O, Pi, new_parameters)
+        criterion[nb_iter] <- new_objective <- get_objective(Y, X, O, new_parameters)
 
         objective_converged <-
             abs(objective - new_objective) < configuration$ftol_out |
@@ -103,14 +102,15 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
             xtol_abs = configuration$xtol_abs, xtol_rel = configuration$xtol_rel
         )
 
-        if (parameters_converged | objective_converged)
+        if (parameters_converged | objective_converged) {
             return(list(
                 parameters = parameters,
                 nb_iter = nb_iter,
                 stop_reason = "converged",
                 criterion = criterion[1:nb_iter],
-                vloglik = get_vloglik(Y, X, O, Pi, new_parameters)
+                vloglik = get_vloglik(Y, X, O, new_parameters)
             ))
+        }
 
         if(nb_iter >= configuration$maxit_out) {
             return(list(
@@ -118,7 +118,7 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
                 nb_iter = nb_iter,
                 stop_reason = "maximum number of iterations reached",
                 criterion = criterion[1:nb_iter],
-                vloglik = get_vloglik(Y, X, O, Pi, new_parameters)
+                vloglik = get_vloglik(Y, X, O, new_parameters)
             ))
         }
 
@@ -127,26 +127,26 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
     }
 }
 
-get_objective <- function(Y, X, O, Pi, par) {
+get_objective <- function(Y, X, O, par) {
 
     A <- exp(O + par$M + .5 * par$S^2)
     n <- nrow(Y)
-    res <- - trace (crossprod(1 - par$Pi,  ( Y * (O + par$M) - A - .logfactorial(Y)) ) ) -
-      trace(crossprod(par$Pi, X %*% par$Theta0 - ifelse(par$Pi == 0, 0, .logit(par$Pi))) ) -
-        .5 * n * determinant(par$Omega, logarithm = TRUE)$modulus - .5 * sum(log(par$S^2)) +
-        sum( log (1 + exp(X %*% par$Theta0) ) + log(1-par$Pi) )
+    logdet_Omega <-determinant(par$Omega, logarithm = TRUE)$modulus
+    res <- - sum ((1 - par$Pi) * ( Y * (O + par$M) - A - .logfactorial(Y)) ) -
+      sum(par$Pi* X %*% par$Theta0) + sum( .xlogx(par$Pi) + .xlogx(1-par$Pi) ) -
+        .5 * n * logdet_Omega - .5 * sum(log(par$S^2)) + sum(  log (1 + exp(X %*% par$Theta0) ))
     res
 }
 
-get_vloglik <- function(Y, X, O, Pi, par) {
+get_vloglik <- function(Y, X, O, par) {
 
     Z <- O + par$M
     A <- exp(Z + .5 * par$S^2)
     p <- ncol(Y)
+    logdet_Omega <- determinant(par$Omega, logarithm = TRUE)$modulus
     res <- rowSums( (1 - par$Pi) * ( ( Y * Z - A  ) - .logfactorial(Y) ) ) +
-      rowSums(par$Pi * ( X %*% par$Theta0 - ifelse(par$Pi == 0, 0, .logit(par$Pi))) ) +
-        .5 * determinant(par$Omega, logarithm = TRUE)$modulus + .5 * rowSums(log(par$S^2)) -
-        rowSums( log (1 + exp(X %*% par$Theta0) ) + log(1-par$Pi) ) + p
+      rowSums(par$Pi* X %*% par$Theta0) - rowSums( .xlogx(par$Pi) + .xlogx(1-par$Pi) ) +
+        .5 * logdet_Omega + .5 * rowSums(log(par$S^2)) - rowSums( log (1 + exp(X %*% par$Theta0) ) ) + p
     res
 }
 

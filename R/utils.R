@@ -147,7 +147,7 @@ available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR
 ZIPLN_param <- function(control, n, p) {
   ctrl <- PLN_param(control, n, p)
   ctrl$ftol_out  <- 1e-5
-  ctrl$maxit_out <- 50
+  ctrl$maxit_out <- 100
   ctrl[names(control)] <- control
   ctrl
 }
