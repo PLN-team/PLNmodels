@@ -45,8 +45,20 @@ cpp_optimize_vestep_spherical <- function(init_parameters, Y, X, O, w, Theta, Om
     .Call('_PLNmodels_cpp_optimize_vestep_spherical', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
 }
 
-cpp_optimize_zi_Omega <- function(M, X, Theta, S) {
-    .Call('_PLNmodels_cpp_optimize_zi_Omega', PACKAGE = 'PLNmodels', M, X, Theta, S)
+cpp_optimize_zi_vloglik <- function(Y, X, O, Theta0, Omega, Theta, Pi, M, S) {
+    .Call('_PLNmodels_cpp_optimize_zi_vloglik', PACKAGE = 'PLNmodels', Y, X, O, Theta0, Omega, Theta, Pi, M, S)
+}
+
+cpp_optimize_zi_Omega_full <- function(M, X, Theta, S) {
+    .Call('_PLNmodels_cpp_optimize_zi_Omega_full', PACKAGE = 'PLNmodels', M, X, Theta, S)
+}
+
+cpp_optimize_zi_Omega_spherical <- function(M, X, Theta, S) {
+    .Call('_PLNmodels_cpp_optimize_zi_Omega_spherical', PACKAGE = 'PLNmodels', M, X, Theta, S)
+}
+
+cpp_optimize_zi_Omega_diagonal <- function(M, X, Theta, S) {
+    .Call('_PLNmodels_cpp_optimize_zi_Omega_diagonal', PACKAGE = 'PLNmodels', M, X, Theta, S)
 }
 
 cpp_optimize_zi_Theta <- function(M, X) {
@@ -65,8 +77,8 @@ cpp_optimize_zi_M <- function(init_M, Y, X, O, Pi, S, Theta, Omega, configuratio
     .Call('_PLNmodels_cpp_optimize_zi_M', PACKAGE = 'PLNmodels', init_M, Y, X, O, Pi, S, Theta, Omega, configuration)
 }
 
-cpp_optimize_zi_S <- function(init_S, O, M, Pi, Theta, Omega, configuration) {
-    .Call('_PLNmodels_cpp_optimize_zi_S', PACKAGE = 'PLNmodels', init_S, O, M, Pi, Theta, Omega, configuration)
+cpp_optimize_zi_S <- function(init_S, O, M, Pi, Theta, diag_Omega, configuration) {
+    .Call('_PLNmodels_cpp_optimize_zi_S', PACKAGE = 'PLNmodels', init_S, O, M, Pi, Theta, diag_Omega, configuration)
 }
 
 cpp_test_packing <- function() {

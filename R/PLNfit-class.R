@@ -145,7 +145,6 @@ PLNfit <- R6Class(
         Ji         = Ji,
         monitoring = list(
           iterations = optim_out$iterations,
-          status     = 0,
           message    = statusToMessage(optim_out$status))
       )
 

@@ -30,7 +30,7 @@
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera)
+#' myPLN <- ZIPLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 #' @seealso The class [`PLNfit`]
 #' @importFrom stats model.frame model.matrix model.response model.offset model.weights terms
 #' @export

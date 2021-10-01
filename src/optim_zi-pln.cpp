@@ -2,21 +2,71 @@
 
 #include "nlopt_wrapper.h"
 #include "packing.h"
-
-// ---------------------------------------------------------------------------------------
-// Step a, returns new Omega (p,p)
-// could be R only
+#include "utils.h"
 
 // [[Rcpp::export]]
-arma::mat cpp_optimize_zi_Omega(
+arma::vec cpp_optimize_zi_vloglik(
+    const arma::mat & Y,      // responses (n,p)
+    const arma::mat & X,      // covariates (n,d)
+    const arma::mat & O,      // offsets (n,p)
+    const arma::mat & Theta0, // (d,p)
+    const arma::mat & Omega,  // (p,p)
+    const arma::mat & Theta,  // (d,p)
+    const arma::mat & Pi,     // (n,p)
+    const arma::mat & M,      // (n,p)
+    const arma::mat & S       // (n,p)
+) {
+    const arma::uword n = Y.n_rows;
+    const arma::uword p = Y.n_cols;
+
+    const arma::mat S2 = S % S ;
+    const arma::mat A = exp(O + M + .5 * S2) ;
+    const arma::mat M_X_Theta = M - X * Theta ;
+    return (
+        0.5 * real(log_det(Omega)) + 0.5 * double(p)
+        + sum(
+            (1 - Pi) % ( Y % (O + M) - A - logfact_mat(Y) )
+            + Pi % (X * Theta0) - log( 1 + exp( X * Theta0 ) )
+            + 0.5 * log(S2) - 0.5 * ((M_X_Theta * Omega) % M_X_Theta + S2 * diagmat(Omega))
+            - Pi % trunc_log(Pi) - (1 - Pi) % trunc_log(1-Pi), 1)
+    ) ;
+}
+
+// [[Rcpp::export]]
+arma::mat cpp_optimize_zi_Omega_full(
     const arma::mat & M,     // (n,p)
     const arma::mat & X,     // (n,d)
     const arma::mat & Theta, // (d,p)
-    const arma::mat & S     // s_{i,j}^2 (n,p)
+    const arma::mat & S      // (n,p)
 ) {
     const arma::uword n = M.n_rows;
     arma::mat M_X_Theta = M - X * Theta;
     return (double(n) * inv_sympd(M_X_Theta.t() * M_X_Theta + diagmat(sum(S % S, 0))));
+}
+
+// [[Rcpp::export]]
+arma::mat cpp_optimize_zi_Omega_spherical(
+    const arma::mat & M,     // (n,p)
+    const arma::mat & X,     // (n,d)
+    const arma::mat & Theta, // (d,p)
+    const arma::mat & S      //  (n,p)
+) {
+    const arma::uword n = M.n_rows;
+    const arma::uword p = M.n_cols;
+    double sigma2 = accu( pow(M - X * Theta, 2) + S % S ) / double(n * p) ;
+    return arma::diagmat(arma::ones(p)/sigma2) ;
+}
+
+// [[Rcpp::export]]
+arma::mat cpp_optimize_zi_Omega_diagonal(
+    const arma::mat & M,     // (n,p)
+    const arma::mat & X,     // (n,d)
+    const arma::mat & Theta, // (d,p)
+    const arma::mat & S      // (n,p)
+) {
+    const arma::uword n = M.n_rows;
+    const arma::uword p = M.n_cols;
+    return arma::diagmat(double(n) / sum( pow(M - X * Theta, 2) + S % S, 0)) ;
 }
 
 // ---------------------------------------------------------------------------------------
@@ -91,7 +141,7 @@ arma::mat cpp_optimize_zi_Pi(
     const arma::mat & X,     // covariates (n,d)
     const arma::mat & O,     // offsets (n,p)
     const arma::mat & M,     // (n,p)
-    const arma::mat & S,    // (n,p)
+    const arma::mat & S,     // (n,p)
     const arma::mat & Theta0 // (d,p)
 ) {
     arma::mat A = exp(O + M + 0.5 * S % S);
@@ -179,7 +229,7 @@ Rcpp::List cpp_optimize_zi_S(
     const arma::mat & M,             // (n,p)
     const arma::mat & Pi,            // (n,p)
     const arma::mat & Theta,         // (d,p)
-    const arma::mat & Omega,         // (p,p)
+    const arma::vec & diag_Omega,    // (p,1)
     const Rcpp::List & configuration // List of config values ; xtol_abs is S2 only (double or mat)
 ) {
     const auto metadata = tuple_metadata(init_S);
@@ -201,7 +251,6 @@ Rcpp::List cpp_optimize_zi_S(
     }
 
     const arma::mat O_M = O + M;
-    const arma::vec diag_Omega = diagvec(Omega);
 
     // Optimize
     auto objective_and_grad = [&metadata, &O_M, &Pi, &diag_Omega](const double * params, double * grad) -> double {

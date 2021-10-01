@@ -51,6 +51,7 @@ ZIPLNfit <- R6Class(
     initialize = function(responses, covariates, offsets, weights, formula, xlevels, control) {
       super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
       delta <- 1* (responses == 0)
+      private$zeros <- delta
       LOGREGs <- suppressWarnings(lapply(1:self$p, function(j) glm.fit(covariates, delta[, j], family = binomial(link = "logit")) ))
       private$Pi <- LOGREGs %>% map(fitted) %>% do.call(cbind, .)
       private$Theta0 <- do.call(rbind, lapply(LOGREGs, coefficients))
@@ -79,11 +80,13 @@ ZIPLNfit <- R6Class(
 
    optimize = function(responses, covariates, offsets, weights, control) {
 
-     init_parameters <- list(Omega = NA, Pi = private$Pi, Theta0 = t(private$Theta0), Theta = t(private$Theta), M = private$M, S = sqrt(private$S2))
+     args <- list(Y = responses, X = covariates, O = offsets, configuration = control)
+     args$init_parameters <- list(Omega = NA, Pi = private$Pi, Theta0 = t(private$Theta0), Theta = t(private$Theta), M = private$M, S = sqrt(private$S2))
+     optim_out <- do.call(optimize_zi, args)
 
-     optim_out <- optimize_zi(init_parameters, responses, covariates, offsets, control)
      Z <- offsets + covariates %*% optim_out$parameters$Theta
-     A <- exp(Z + optim_out$parameters$M + .5 * optim_out$parameters$S^2)
+     A <- exp(offsets + optim_out$parameters$M + .5 * optim_out$parameters$S^2)
+
      Ji <- optim_out$vloglik
      attr(Ji, "weights") <- weights
 
@@ -98,12 +101,9 @@ ZIPLNfit <- R6Class(
         Ji         = Ji,
         monitoring = list(
           iterations = optim_out$nb_iter,
-          status     = 0,  ## FIXME optim_out$status,
           message    = optim_out$stop_reason,
           objective  = optim_out$criterion)
       )
-
-     invisible(optim_out)
 
    },
    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -115,12 +115,17 @@ ZIPLNfit <- R6Class(
  ),
  private = list(
     Theta0 = NA, # the model parameters for the covariable ('0'/Bernoulli part)
-    Pi = NA # probabilities for being observed
+    Pi     = NA, # probabilities for being observed
+    zeros  = NA  # an indicator of the zeros
  ),
  active = list(
     #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
     model_par  = function() {list(Theta = private$Theta, Theta0 = private$Theta0, Sigma = private$Sigma)},
     #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
-    var_par    = function() {list(M = private$M, S2 = private$S2, Pi = private$Pi)}
+    var_par    = function() {list(M = private$M, S2 = private$S2, Pi = private$Pi)},
+    #' @field fitted a matrix: fitted values of the observations (A in the model)
+    fitted     = function() {private$Pi * private$zeros + (1 - private$Pi) * private$A},
+    #' @field nb_param number of parameters in the current ZIPLN model
+    nb_param   = function() {super$nb_param + self$d * self$p}
  )
 )
