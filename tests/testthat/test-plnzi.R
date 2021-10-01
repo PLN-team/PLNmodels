@@ -18,7 +18,15 @@ test_that("PLNzi: steps are dimensionally correct", {
     # Steps
     expect_identical(
         dim(Omega),
-        dim(PLNmodels:::cpp_optimize_zi_Omega(M = M, X = X, Theta = Theta, S = S))
+        dim(PLNmodels:::cpp_optimize_zi_Omega_full(M = M, X = X, Theta = Theta, S = S))
+    )
+    expect_identical(
+        dim(Omega),
+        dim(PLNmodels:::cpp_optimize_zi_Omega_spherical(M = M, X = X, Theta = Theta, S = S))
+    )
+    expect_identical(
+        dim(Omega),
+        dim(PLNmodels:::cpp_optimize_zi_Omega_diagonal(M = M, X = X, Theta = Theta, S = S))
     )
 
     expect_identical(
@@ -56,7 +64,7 @@ test_that("PLNzi: steps are dimensionally correct", {
     expect_identical(dim(M), dim(step_e$M))
 
     step_f = PLNmodels:::cpp_optimize_zi_S(
-        init_S = S, O = O, M = M, Pi = Pi, Theta = Theta, Omega = Omega,
+        init_S = S, O = O, M = M, Pi = Pi, Theta = Theta, diag_Omega = diag(Omega),
         configuration = list(
             algorithm = "CCSAQ",
             xtol_rel = epsilon, xtol_abs = epsilon,
@@ -127,13 +135,15 @@ test_that("PLNzi: optimize_zi is dimensionally correct", {
     result = PLNmodels:::optimize_zi(
         init_parameters = parameters, Y = Y, X = X, O = O,
         configuration = list(
+            covariance = "full",
+            maxit_out  = 3,
+            ftol_out = 1e-4,
             algorithm = "CCSAQ",
             xtol_rel = epsilon, xtol_abs = epsilon,
-            ftol_rel = epsilon, ftol_abs = epsilon,
-            maxeval = 3 # make it stop fast
+            ftol_rel = epsilon, ftol_abs = epsilon
         )
     )
-    expect_identical(result$stop_reason, "maxeval")
+    expect_identical(result$stop_reason, "maximum number of iterations reached")
     expect_true(setequal(names(parameters), names(result$parameters)))
     expect_identical(result$nb_iter, 3)
 })

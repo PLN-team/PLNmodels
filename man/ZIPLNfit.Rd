@@ -48,6 +48,10 @@ print(myPLN)
 \item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
 
 \item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
+
+\item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
+
+\item{\code{nb_param}}{number of parameters in the current ZIPLN model}
 }
 \if{html}{\out{</div>}}
 }
