@@ -1,6 +1,5 @@
 # PLNmodels dev version
 
-* Zero inflated PLN model diagonal, spherical and fully parametrized covariance
 * fixing #79 by using the same variational distribution to approximate 
     the spherical case as in the fully parametrized and diagonal cases
 * smarter starting point for `$VEStep()` (PLN-PCA) to avoid convergence problems. 
