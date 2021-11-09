@@ -1,4 +1,4 @@
-library(PLNmodels)
+2library(PLNmodels)
 library(factoextra)
 
 ## setting up future for parallelism
@@ -14,12 +14,19 @@ system.time(myPLN <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks
 system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = list(covariance = "diagonal")))
 system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = list(covariance = "spherical")))
 
+## Genetic model : mixture between fixed correlation matrix + I sigma^2
+C <- toeplitz(0.5^(1:ncol(oaks$Abundance) - 1))
+system.time(myPLN_genetic <-
+   PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks,
+       control = list(covariance = "genetic", corr_matrix = C)))
+
 rbind(
   myPLN$criteria,
   myPLN_diagonal$criteria,
-  myPLN_spherical$criteria
+  myPLN_spherical$criteria,
+  myPLN_genetic$criteria
 ) %>%
-  as.data.frame(row.names = c("full", "diagonal", "spherical")) %>%
+  as.data.frame(row.names = c("full", "diagonal", "spherical", "genetic")) %>%
   knitr::kable()
 
 ## Discriminant Analysis with LDA
@@ -104,5 +111,6 @@ myPLN$plot_clustering_pca(main = 'clustering memberships in individual factor ma
 p <- myPLN$plot_clustering_data()
 
 aricode::ARI(myPLN$memberships, oaks$tree)
+
 
 future::plan("sequential")

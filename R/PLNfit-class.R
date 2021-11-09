@@ -381,7 +381,7 @@ PLNfit <- R6Class(
     fitted     = function() {private$A},
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {
-      res <- self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1)
+      res <- self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1, "genetic" = 2)
       as.integer(res)
     },
     #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal" or "full")
