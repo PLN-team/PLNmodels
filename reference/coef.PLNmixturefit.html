@@ -127,38 +127,78 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,15] [,16] [,17]</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myPLN</span>, type <span class="op">=</span> <span class="st">"mixture"</span><span class="op">)</span> <span class="co">## pi</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.3265305 0.2653061 0.2040816 0.2040818</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2040816 0.2040818 0.2653061 0.3265305</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myPLN</span>, type <span class="op">=</span> <span class="st">"means"</span><span class="op">)</span> <span class="co">## mu</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         group_1     group_2    group_3     group_4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che  -7.6325281  -5.4429197 -8.4180887 -16.6082702</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc  -7.6273160 -40.3879057 -7.7333729 -16.6082702</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym  -3.0814227  -2.1838257 -4.9454846  -2.4028967</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys  -6.8772229  -5.4428965 -8.4046036  -6.2856866</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy  -0.4025289  -0.2899859 -0.7931134  -0.7628998</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga  -3.5523211  -4.0566912 -6.9945364  -3.3779093</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo  -6.1524089  -4.7497962 -6.3830932 -16.6082702</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath  -6.0345990  -4.3442970 -6.6379839  -6.2978829</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea  -7.6099314 -39.5406067 -6.6439977 -16.6082702</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced  -3.4417974  -3.3634580 -4.3493109  -3.5642447</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set  -3.6423601  -5.4427953 -3.4363622  -5.8964261</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All  -4.9934929  -3.1402678 -7.7653611  -3.9219157</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han -15.7178794 -36.2342444 -3.3038225  -2.5806676</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo  -6.1806922 -36.5961686 -3.7283034  -7.0374795</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp  -4.5420990  -5.4428781 -1.8395416  -4.9642843</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve  -5.7836250  -5.4429197 -8.1022341 -16.6082702</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta  -2.6685447 -35.8131952 -3.3251037  -2.0894305</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        group_1     group_2     group_3     group_4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che -8.4180887 -16.6082702  -5.4429197  -7.6325281</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc -7.7333729 -16.6082702 -40.3879057  -7.6273160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym -4.9454846  -2.4028967  -2.1838257  -3.0814227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys -8.4046036  -6.2856866  -5.4428965  -6.8772229</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy -0.7931134  -0.7628998  -0.2899859  -0.4025289</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga -6.9945364  -3.3779093  -4.0566912  -3.5523211</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo -6.3830932 -16.6082702  -4.7497962  -6.1524089</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath -6.6379839  -6.2978829  -4.3442970  -6.0345990</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea -6.6439977 -16.6082702 -39.5406067  -7.6099314</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced -4.3493109  -3.5642447  -3.3634580  -3.4417974</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set -3.4363622  -5.8964261  -5.4427953  -3.6423601</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All -7.7653611  -3.9219157  -3.1402678  -4.9934929</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han -3.3038225  -2.5806676 -36.2342444 -15.7178794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo -3.7283034  -7.0374795 -36.5961686  -6.1806922</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp -1.8395416  -4.9642843  -5.4428781  -4.5420990</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve -8.1022341 -16.6082702  -5.4429197  -5.7836250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta -3.3251037  -2.0894305 -35.8131952  -2.6685447</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myPLN</span>, type <span class="op">=</span> <span class="st">"covariance"</span><span class="op">)</span> <span class="co">## Sigma</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 17 x 17 sparse Matrix of class "dgCMatrix"</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>    [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che 0.3709593 .         .         .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc .         0.3709593 .         .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym .         .         0.3709593 .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys .         .         .         0.3709593 .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy .         .         .         .         0.3709593 .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga .         .         .         .         .         0.3709593 .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo .         .         .         .         .         .         0.3709593</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che 1.0591 .      .      .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc .      1.0591 .      .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym .      .      1.0591 .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys .      .      .      1.0591 .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy .      .      .      .      1.0591 .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga .      .      .      .      .      1.0591 .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo .      .      .      .      .      .      1.0591 .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath .      .      .      .      .      .      .      1.0591 .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea .      .      .      .      .      .      .      .      1.0591 .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced .      .      .      .      .      .      .      .      .      1.0591</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set .      .      .      .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All .      .      .      .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han .      .      .      .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo .      .      .      .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp .      .      .      .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve .      .      .      .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta .      .      .      .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced .      .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set 1.0591 .      .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All .      1.0591 .      .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han .      .      1.0591 .      .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo .      .      .      1.0591 .      .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp .      .      .      .      1.0591 .      .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve .      .      .      .      .      1.0591 .     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta .      .      .      .      .      .      1.0591</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 x 17 sparse Matrix of class "dgCMatrix"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>    [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che 0.4466254 .         .         .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc .         0.4466254 .         .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym .         .         0.4466254 .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys .         .         .         0.4466254 .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy .         .         .         .         0.4466254 .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga .         .         .         .         .         0.4466254 .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo .         .         .         .         .         .         0.4466254</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Ath .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Cea .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Ced .         .         .         .         .         .         .        </span>
@@ -177,13 +217,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> Psy .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aga .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Glo .         .         .         .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath 0.3709593 .         .         .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea .         0.3709593 .         .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced .         .         0.3709593 .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set .         .         .         0.3709593 .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All .         .         .         .         0.3709593 .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han .         .         .         .         .         0.3709593 .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo .         .         .         .         .         .         0.3709593</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath 0.4466254 .         .         .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea .         0.4466254 .         .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced .         .         0.4466254 .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set .         .         .         0.4466254 .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All .         .         .         .         0.4466254 .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han .         .         .         .         .         0.4466254 .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo .         .         .         .         .         .         0.4466254</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Hsp .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Hve .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sta .         .         .         .         .         .         .        </span>
@@ -202,11 +242,11 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> All .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Han .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Hfo .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp 0.3709593 .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve .         0.3709593 .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta .         .         0.3709593</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp 0.4466254 .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve .         0.4466254 .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta .         .         0.4466254</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 17 x 17 sparse Matrix of class "dgCMatrix"</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>    [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
@@ -282,57 +322,17 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> Hve 0.0008645004 .           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sta .            0.0008645004</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17 x 17 sparse Matrix of class "dgCMatrix"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>    [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che 1.0591 .      .      .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc .      1.0591 .      .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym .      .      1.0591 .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys .      .      .      1.0591 .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy .      .      .      .      1.0591 .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga .      .      .      .      .      1.0591 .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo .      .      .      .      .      .      1.0591 .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath .      .      .      .      .      .      .      1.0591 .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea .      .      .      .      .      .      .      .      1.0591 .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced .      .      .      .      .      .      .      .      .      1.0591</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set .      .      .      .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All .      .      .      .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han .      .      .      .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo .      .      .      .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp .      .      .      .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve .      .      .      .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta .      .      .      .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced .      .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set 1.0591 .      .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All .      1.0591 .      .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han .      .      1.0591 .      .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo .      .      .      1.0591 .      .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp .      .      .      .      1.0591 .      .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve .      .      .      .      .      1.0591 .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta .      .      .      .      .      .      1.0591</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 17 x 17 sparse Matrix of class "dgCMatrix"</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>    [[ suppressing 17 column names ‘Che’, ‘Hyc’, ‘Hym’ ... ]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che 0.4466254 .         .         .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc .         0.4466254 .         .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym .         .         0.4466254 .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys .         .         .         0.4466254 .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy .         .         .         .         0.4466254 .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga .         .         .         .         .         0.4466254 .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo .         .         .         .         .         .         0.4466254</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che 0.3709593 .         .         .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc .         0.3709593 .         .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym .         .         0.3709593 .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys .         .         .         0.3709593 .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy .         .         .         .         0.3709593 .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga .         .         .         .         .         0.3709593 .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo .         .         .         .         .         .         0.3709593</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Ath .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Cea .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Ced .         .         .         .         .         .         .        </span>
@@ -351,13 +351,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> Psy .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aga .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Glo .         .         .         .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath 0.4466254 .         .         .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea .         0.4466254 .         .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced .         .         0.4466254 .         .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set .         .         .         0.4466254 .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All .         .         .         .         0.4466254 .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han .         .         .         .         .         0.4466254 .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo .         .         .         .         .         .         0.4466254</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath 0.3709593 .         .         .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea .         0.3709593 .         .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced .         .         0.3709593 .         .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set .         .         .         0.3709593 .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All .         .         .         .         0.3709593 .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han .         .         .         .         .         0.3709593 .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo .         .         .         .         .         .         0.3709593</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Hsp .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Hve .         .         .         .         .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sta .         .         .         .         .         .         .        </span>
@@ -376,9 +376,9 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> All .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Han .         .         .        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Hfo .         .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp 0.4466254 .         .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve .         0.4466254 .        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta .         .         0.4466254</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp 0.3709593 .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve .         0.3709593 .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta .         .         0.3709593</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
