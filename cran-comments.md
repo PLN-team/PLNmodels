@@ -16,10 +16,14 @@ The following major changes have been made since 0.11-5
 ## Tested environments
 
 - Linux ubuntu 20.04 R-release, (local)
-- Linux ubuntu 20.04, R-devel (github-action)
+- Windows Server 2019, R-release (github action)
+- macOS 10.15, R-release (github action)
 - Linux ubuntu 20.04, R-release (github-action)
-- macOS 10.15, R-devel (github action)
-- Windows Server 2019, R-devel (github action)
+
+
+- Windows Server 2022 R-devel (R hub)
+
+- Linux ubuntu 20.04, R-devel (github-action)
 - macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
 - Windows Server 2008 R2 SP1, R-release  (R hub)
 - Windows, R-release (winbuilder)

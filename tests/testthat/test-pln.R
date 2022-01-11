@@ -174,7 +174,7 @@ test_that("PLN: Check that all univariate PLN models are equivalent with the mul
   expect_true(all.equal(
     map(univariate_spherical, sigma) %>% map_dbl(as.double),
     map(univariate_full     , sigma) %>% map_dbl(as.double),
-    map(univariate_diagonal , sigma) %>% map_dbl(as.double), tolerance = 1e-2
+    map(univariate_diagonal , sigma) %>% map_dbl(as.double), tolerance = .25
   ))
 
 })
