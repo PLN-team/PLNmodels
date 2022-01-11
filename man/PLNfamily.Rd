@@ -4,7 +4,7 @@
 \alias{PLNfamily}
 \title{An R6 Class to represent a collection of PLNfit}
 \description{
-super class for \code{\link{PLNPCAfamily}} and \code{\link{PLNnetworkfamily}}. The R6 class benefits from S3 methods such as \code{\link[=getBestModel]{getBestModel()}}, \code{\link[=getModel]{getModel()}} and \code{\link[=plot.PLNPCAfamily]{plot()}}.
+super class for \code{\link{PLNPCAfamily}} and \code{\link{PLNnetworkfamily}}.
 }
 \details{
 The parameter \code{control} is a list controlling the optimization with the following entries:

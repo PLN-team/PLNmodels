@@ -108,6 +108,7 @@ reference:
     - '`prepare_data`'
     - '`compute_offset`'
     - '`PLNfamily`'
+    - '`plot.PLNfamily`'
     - '`rPLN`'
 - title: Data sets
   desc: ~
