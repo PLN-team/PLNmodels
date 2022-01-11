@@ -158,17 +158,17 @@ test_that("PLN: Check that all univariate PLN models are equivalent with the mul
 
   expect_true(all.equal(
     map_dbl(univariate_full, "loglik") %>% sum(),
-    multivariate_diagonal$loglik, tolerance = 0.25)
+    multivariate_diagonal$loglik, tolerance = 1e-2)
   )
 
   expect_true(all.equal(
     map_dbl(univariate_diagonal, "loglik") %>% sum(),
-    multivariate_diagonal$loglik, tolerance = 0.25)
+    multivariate_diagonal$loglik, tolerance = 1e-2)
   )
 
    expect_true(all.equal(
     map_dbl(univariate_spherical, "loglik") %>% sum(),
-    multivariate_diagonal$loglik, tolerance = 0.25)
+    multivariate_diagonal$loglik, tolerance = 1e-2)
   )
 
   expect_true(all.equal(
