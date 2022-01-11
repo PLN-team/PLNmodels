@@ -197,7 +197,7 @@ PLNPCAfit <- R6Class(
       #' @description Update R2, fisher, std_err fields and set up visualization
       #' after optimization
       postTreatment = function(responses, covariates, offsets, weights, nullModel) {
-        super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
+        super$postTreatment(responses, covariates, offsets, weights, type = "none", nullModel = nullModel)
         colnames(private$B) <- colnames(private$M) <- 1:self$q
         rownames(private$B) <- colnames(responses)
         if (private$covariance != "spherical") colnames(private$S2) <- 1:self$q

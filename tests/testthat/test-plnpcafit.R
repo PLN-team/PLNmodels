@@ -50,7 +50,7 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_equal(vcov(myPLNfit, "main"), myPLNfit$fisher$mat)
   expect_equal(vcov(myPLNfit, "covariance"), myPLNfit$model_par$Sigma)
   expect_equal(vcov(myPLNfit, "covariance"), sigma(myPLNfit))
-  expect_equal(dim(standard_error(myPLNfit)), dim(coefficients(myPLNfit)))
+  # expect_equal(dim(standard_error(myPLNfit)), dim(coefficients(myPLNfit)))
 
   expect_true(inherits(plot(myPLNfit, map = "variable", plot = FALSE), "ggplot"))
   expect_true(inherits(plot(myPLNfit, map = "individual", plot = FALSE), "ggplot"))
