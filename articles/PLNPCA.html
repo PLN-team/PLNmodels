@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.11.5-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.5</span>
       </span>
     </div>
 
@@ -48,7 +50,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="https://pln-team.github.io/slideshow/slides">Slideshow on PLN</a>
+  <a href="https://pln-team.github.io/slideshow/slides" class="external-link">Slideshow on PLN</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -86,7 +88,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/pln-team/PLNmodels/">
+  <a href="https://github.com/pln-team/PLNmodels/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -105,47 +107,47 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Dimension reduction of multivariate count data with PLN-PCA</h1>
-                        <h4 class="author">PLN team</h4>
+                        <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 class="date">2021-09-24</h4>
+            <h4 data-toc-skip class="date">2022-01-11</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNPCA.Rmd"><code>vignettes/PLNPCA.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNPCA.Rmd" class="external-link"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
 
     </div>
 
     
     
-<div id="preliminaries" class="section level2">
-<h2 class="hasAnchor">
-<a href="#preliminaries" class="anchor"></a>Preliminaries</h2>
+<div class="section level2">
+<h2 id="preliminaries">Preliminaries<a class="anchor" aria-label="anchor" href="#preliminaries"></a>
+</h2>
 <p>This vignette illustrates the standard use of the <code>PLNPCA</code> function and the methods accompanying the R6 Classes <code>PLNPCAfamily</code> and <code>PLNPCAfit</code>.</p>
-<div id="requirements" class="section level3">
-<h3 class="hasAnchor">
-<a href="#requirements" class="anchor"></a>Requirements</h3>
+<div class="section level3">
+<h3 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
+</h3>
 <p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/taiyun/corrplot">corrplot</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.sthda.com/english/rpkgs/factoextra">factoextra</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/taiyun/corrplot" class="external-link">corrplot</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.sthda.com/english/rpkgs/factoextra" class="external-link">factoextra</a></span><span class="op">)</span></code></pre></div>
 <p>The main function <code>PLNPCA</code> integrates some features of the <strong>future</strong> package to perform parallel computing: you can set your plan now to speed the fit by relying on 2 workers as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org">future</a></span><span class="op">)</span>
-<span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span>
+<span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="data-set" class="section level3">
-<h3 class="hasAnchor">
-<a href="#data-set" class="anchor"></a>Data set</h3>
+<div class="section level3">
+<h3 id="data-set">Data set<a class="anchor" aria-label="anchor" href="#data-set"></a>
+</h3>
 <p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>. Data preparation is also detailed in <a href="Import_data.html">the specific vignette</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span>
 <span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></code></pre></div>
 <p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
 </div>
-<div id="mathematical-background" class="section level3">
-<h3 class="hasAnchor">
-<a href="#mathematical-background" class="anchor"></a>Mathematical background</h3>
+<div class="section level3">
+<h3 id="mathematical-background">Mathematical background<a class="anchor" aria-label="anchor" href="#mathematical-background"></a>
+</h3>
 <p>In the vein of <span class="citation">Tipping and Bishop (<a href="#ref-TiB99" role="doc-biblioref">1999</a>)</span>, we introduce in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA" role="doc-biblioref">2018</a>)</span> a probabilistic PCA model for multivariate count data which is a variant of the Poisson Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span> (see <a href="PLN.html">the PLN vignette</a> as a reminder). Indeed, it can be viewed as a PLN model with an additional rank constraint on the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> such that <span class="math inline">\(\mathrm{rank}(\boldsymbol\Sigma)= q\)</span>.</p>
 <p>This PLN-PCA model can be written in a hierarchical framework where a sample of <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> is related to some <span class="math inline">\(q\)</span>-dimensional vectors of latent variables <span class="math inline">\(\mathbf{W}_i\)</span> as follows: <span class="math display">\[\begin{equation} 
   \begin{array}{rcl}
@@ -160,35 +162,35 @@
   \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
   \end{array}
 \end{equation}\]</span> where the interpretation of PLN-PCA as a rank-constrained PLN model is more obvious.</p>
-<div id="covariates-and-offsets" class="section level4">
-<h4 class="hasAnchor">
-<a href="#covariates-and-offsets" class="anchor"></a>Covariates and offsets</h4>
+<div class="section level4">
+<h4 id="covariates-and-offsets">Covariates and offsets<a class="anchor" aria-label="anchor" href="#covariates-and-offsets"></a>
+</h4>
 <p>Just like PLN, PLN-PCA generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation} 
   \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{B}\mathbf{B}^\top,
 \end{equation}\]</span> where <span class="math inline">\(\boldsymbol\Theta\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression parameters.</p>
 </div>
-<div id="optimization-by-variational-inference" class="section level4">
-<h4 class="hasAnchor">
-<a href="#optimization-by-variational-inference" class="anchor"></a>Optimization by Variational inference</h4>
+<div class="section level4">
+<h4 id="optimization-by-variational-inference">Optimization by Variational inference<a class="anchor" aria-label="anchor" href="#optimization-by-variational-inference"></a>
+</h4>
 <p>Dimension reduction and visualization is the main objective in (PLN)-PCA. To reach this goal, we need to first estimate the model parameters. Inference in PLN-PCA focuses on the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and on the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>. Technically speaking, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library <span class="citation">(Johnson <a href="#ref-nlopt" role="doc-biblioref">2011</a>)</span>, which we link to the package. Technical details can be found in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA" role="doc-biblioref">2018</a>)</span>.</p>
 </div>
 </div>
 </div>
-<div id="analysis-of-trichoptera-data-with-a-plnpca-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#analysis-of-trichoptera-data-with-a-plnpca-model" class="anchor"></a>Analysis of trichoptera data with a PLNPCA model</h2>
+<div class="section level2">
+<h2 id="analysis-of-trichoptera-data-with-a-plnpca-model">Analysis of trichoptera data with a PLNPCA model<a class="anchor" aria-label="anchor" href="#analysis-of-trichoptera-data-with-a-plnpca-model"></a>
+</h2>
 <p>In the package, the PLNPCA model is adjusted with the function <code>PLNPCA</code>, which we review in this section. This function adjusts the model for a series of value of <span class="math inline">\(q\)</span> and provides a collection of objects <code>PLNPCAfit</code> stored in an object with class <code>PLNPCAfamily</code>.</p>
 <p>The class <code>PLNPCAfit</code> inherits from the class <code>PLNfit</code>, so we strongly recommend the reader to be comfortable with <code>PLN</code> and <code>PLNfit</code> before using <code>PLNPCA</code> (see <a href="PLN.html">the PLN vignette</a>).</p>
-<div id="a-model-with-latent-main-effects-for-the-trichoptera-data-set" class="section level3">
-<h3 class="hasAnchor">
-<a href="#a-model-with-latent-main-effects-for-the-trichoptera-data-set" class="anchor"></a>A model with latent main effects for the Trichoptera data set</h3>
-<div id="adjusting-a-collection-of-fits" class="section level4">
-<h4 class="hasAnchor">
-<a href="#adjusting-a-collection-of-fits" class="anchor"></a>Adjusting a collection of fits</h4>
+<div class="section level3">
+<h3 id="a-model-with-latent-main-effects-for-the-trichoptera-data-set">A model with latent main effects for the Trichoptera data set<a class="anchor" aria-label="anchor" href="#a-model-with-latent-main-effects-for-the-trichoptera-data-set"></a>
+</h3>
+<div class="section level4">
+<h4 id="adjusting-a-collection-of-fits">Adjusting a collection of fits<a class="anchor" aria-label="anchor" href="#adjusting-a-collection-of-fits"></a>
+</h4>
 <p>We fit a collection of <span class="math inline">\(q\)</span> models as follows:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">PCA_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNPCA.html">PLNPCA</a></span><span class="op">(</span>
-  <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,
+  <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,
   data  <span class="op">=</span> <span class="va">trichoptera</span>, 
   ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>
 <span class="op">)</span></code></pre></div>
@@ -196,32 +198,31 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 3 
+##   Rank approximation = 2 
      Rank approximation = 1 
+     Rank approximation = 3 
      Rank approximation = 4 
-     Rank approximation = 2 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
 </div>
-<div id="structure-of-plnpcafamily" class="section level4">
-<h4 class="hasAnchor">
-<a href="#structure-of-plnpcafamily" class="anchor"></a>Structure of <code>PLNPCAfamily</code>
+<div class="section level4">
+<h4 id="structure-of-plnpcafamily">Structure of <code>PLNPCAfamily</code><a class="anchor" aria-label="anchor" href="#structure-of-plnpcafamily"></a>
 </h4>
 <p>The <code>PCA_models</code> variable is an <code>R6</code> object with class <code>PLNPCAfamily</code>, which comes with a couple of methods. The most basic is the <code>show/print</code> method, which sends a brief summary of the estimation process:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">PCA_models</span></code></pre></div>
-<pre><code>## --------------------------------------------------------
-## COLLECTION OF 4 POISSON LOGNORMAL MODELS
-## --------------------------------------------------------
-##  Task: Principal Component Analysis
-## ========================================================
-##  - Ranks considered: from 1 to 4
-##  - Best model (greater BIC): rank = 4
-##  - Best model (greater ICL): rank = 3</code></pre>
+<pre><code><span class="co">## --------------------------------------------------------</span>
+<span class="co">## COLLECTION OF 4 POISSON LOGNORMAL MODELS</span>
+<span class="co">## --------------------------------------------------------</span>
+<span class="co">##  Task: Principal Component Analysis</span>
+<span class="co">## ========================================================</span>
+<span class="co">##  - Ranks considered: from 1 to 4</span>
+<span class="co">##  - Best model (greater BIC): rank = 4</span>
+<span class="co">##  - Best model (greater ICL): rank = 3</span></code></pre>
 <p>One can also easily access the successive values of the criteria in the collection</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">PCA_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">PCA_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">param</th>
@@ -263,7 +264,7 @@
 </table>
 <p>A quick diagnostic of the optimization process is available via the <code>convergence</code> field:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">PCA_models</span><span class="op">$</span><span class="va">convergence</span>  <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">PCA_models</span><span class="op">$</span><span class="va">convergence</span>  <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
@@ -310,38 +311,36 @@
 </table>
 <p>Comprehensive information about <code>PLNPCAfamily</code> is available via <code><a href="../reference/PLNPCAfamily.html">?PLNPCAfamily</a></code>.</p>
 </div>
-<div id="model-selection-of-rank-q" class="section level4">
-<h4 class="hasAnchor">
-<a href="#model-selection-of-rank-q" class="anchor"></a>Model selection of rank <span class="math inline">\(q\)</span>
+<div class="section level4">
+<h4 id="model-selection-of-rank-q">Model selection of rank <span class="math inline">\(q\)</span><a class="anchor" aria-label="anchor" href="#model-selection-of-rank-q"></a>
 </h4>
 <p>The <code>plot</code> method of <code>PLNPCAfamily</code> displays evolution of the criteria mentioned above, and is a good starting point for model selection:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">PCA_models</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">PCA_models</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/plot%20nocov-1.png" width="672"></p>
-<p>Note that we use the original definition of the BIC/ICL criterion (<span class="math inline">\(\texttt{loglik} - \frac{1}{2}\texttt{pen}\)</span>), which is on the same scale as the log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion">popular alternative</a> consists in using <span class="math inline">\(-2\texttt{loglik} + \texttt{pen}\)</span> instead. You can do so by specifying <code>reverse = TRUE</code>:</p>
+<p>Note that we use the original definition of the BIC/ICL criterion (<span class="math inline">\(\texttt{loglik} - \frac{1}{2}\texttt{pen}\)</span>), which is on the same scale as the log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular alternative</a> consists in using <span class="math inline">\(-2\texttt{loglik} + \texttt{pen}\)</span> instead. You can do so by specifying <code>reverse = TRUE</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">PCA_models</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">PCA_models</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/plot%20nocov-reverse-1.png" width="672"></p>
 <p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing (or rather decreasing if using <code>reverse = TRUE</code>) with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of <span class="math inline">\(q\)</span> (see <span class="citation">(Chiquet, Mariadassou, and Robin <a href="#ref-PLNPCA" role="doc-biblioref">2018</a>)</span> for details on its computation).</p>
-<p>From this plot, we can see that the best model in terms of BIC or ICL is obtained for a rank <span class="math inline">\(q=4\)</span> or <span class="math inline">\(q=3\)</span>. We may extract the corresponding model with the method <code><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel("ICL")</a></code>. A model with a specific rank can be extracted with the <code><a href="../reference/getModel.PLNPCAfamily.html">getModel()</a></code> method:</p>
+<p>From this plot, we can see that the best model in terms of BIC or ICL is obtained for a rank <span class="math inline">\(q=4\)</span> or <span class="math inline">\(q=3\)</span>. We may extract the corresponding model with the method <code>getBestModel("ICL")</code>. A model with a specific rank can be extracted with the <code><a href="../reference/getModel.html">getModel()</a></code> method:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myPCA_ICL</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel</a></span><span class="op">(</span><span class="va">PCA_models</span>, <span class="st">"ICL"</span><span class="op">)</span> 
-<span class="va">myPCA_BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModel.PLNPCAfamily.html">getModel</a></span><span class="op">(</span><span class="va">PCA_models</span>, <span class="fl">3</span><span class="op">)</span> <span class="co"># getBestModel(PCA_models, "BIC")  is equivalent here </span></code></pre></div>
+<code class="sourceCode R"><span class="va">myPCA_ICL</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">PCA_models</span>, <span class="st">"ICL"</span><span class="op">)</span> 
+<span class="va">myPCA_BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModel.html">getModel</a></span><span class="op">(</span><span class="va">PCA_models</span>, <span class="fl">3</span><span class="op">)</span> <span class="co"># getBestModel(PCA_models, "BIC")  is equivalent here </span></code></pre></div>
 </div>
-<div id="structure-of-plnpcafit" class="section level4">
-<h4 class="hasAnchor">
-<a href="#structure-of-plnpcafit" class="anchor"></a>Structure of <code>PLNPCAfit</code>
+<div class="section level4">
+<h4 id="structure-of-plnpcafit">Structure of <code>PLNPCAfit</code><a class="anchor" aria-label="anchor" href="#structure-of-plnpcafit"></a>
 </h4>
 <p>Objects <code>myPCA_ICL</code> and <code>myPCA_BIC</code> are <code>R6Class</code> objects of class <code>PLNPCAfit</code> which in turns own a couple of methods, some inherited from <code>PLNfit</code> and some others specific, mostly for visualization purposes. The <code>plot</code> method provides individual maps and correlation circles as in usual PCA. If an additional classification exists for the observations – which is the case here with the available classification of the trapping nights – , it can be passed as an argument to the function.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myPCA_ICL</span>, ind_cols <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">myPCA_ICL</span>, ind_cols <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/map-1.png" width="768"></p>
 <p>Among other fields and methods (see <code><a href="../reference/PLNPCAfit.html">?PLNPCAfit</a></code> for a comprehensive view), the most interesting for the end-user in the context of PCA are</p>
 <ul>
 <li>the regression coefficient matrix</li>
 </ul>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
@@ -378,13 +377,13 @@
 <li>the estimated covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> with fixed rank</li>
 </ul>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html">sigma</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span><span class="op">(</span>is.corr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a></span><span class="op">(</span>is.corr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/sigma-1.png" width="672"></p>
 <ul>
 <li>the rotation matrix (in the latent space)</li>
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">rotation</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">rotation</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
@@ -435,7 +434,7 @@
 <li>the principal components values (or scores)</li>
 </ul>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">scores</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">scores</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">PC1</th>
@@ -478,114 +477,114 @@
 <p><code>PLNPCAfit</code> also inherits from the methods of <code>PLNfit</code> (see the <a href="PLN.html">appropriate vignette</a>). Most are recalled via the show method:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myPCA_ICL</span></code></pre></div>
-<pre><code>## Poisson Lognormal with rank constrained for PCA (rank = 3)
-## ==================================================================
-##  nb_param  loglik      BIC      ICL
-##        65 -637.77 -764.254 -824.343
-## ==================================================================
-## * Useful fields
-##     $model_par, $latent, $latent_pos, $var_par, $optim_par
-##     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
-## * Useful S3 methods
-##     print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()
-## * Additional fields for PCA
-##     $percent_var, $corr_circle, $scores, $rotation, $eig, $var, $ind
-## * Additional S3 methods for PCA
-##     plot.PLNPCAfit()</code></pre>
+<pre><code><span class="co">## Poisson Lognormal with rank constrained for PCA (rank = 3)</span>
+<span class="co">## ==================================================================</span>
+<span class="co">##  nb_param  loglik      BIC      ICL</span>
+<span class="co">##        65 -637.77 -764.254 -824.343</span>
+<span class="co">## ==================================================================</span>
+<span class="co">## * Useful fields</span>
+<span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span>
+<span class="co">##     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria</span>
+<span class="co">## * Useful S3 methods</span>
+<span class="co">##     print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()</span>
+<span class="co">## * Additional fields for PCA</span>
+<span class="co">##     $percent_var, $corr_circle, $scores, $rotation, $eig, $var, $ind</span>
+<span class="co">## * Additional S3 methods for PCA</span>
+<span class="co">##     plot.PLNPCAfit()</span></code></pre>
 </div>
 </div>
-<div id="additional-visualization" class="section level3">
-<h3 class="hasAnchor">
-<a href="#additional-visualization" class="anchor"></a>Additional visualization</h3>
+<div class="section level3">
+<h3 id="additional-visualization">Additional visualization<a class="anchor" aria-label="anchor" href="#additional-visualization"></a>
+</h3>
 <p>We provide simple plotting functions but a wealth of plotting utilities are available for factorial analyses results. The following bindings allow you to use widely popular tools to make your own plots: <code>$eig</code>, <code>$var</code> and <code>$ind</code>.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## All summaries associated to the individuals</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">ind</span><span class="op">)</span></code></pre></div>
-<pre><code>## List of 4
-##  $ coord  : num [1:49, 1:3] -1.78 3.55 7.48 6.39 4.64 ...
-##   ..- attr(*, "dimnames")=List of 2
-##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
-##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
-##  $ cos2   : num [1:49, 1:3] 0.794 0.706 0.963 0.889 0.953 ...
-##   ..- attr(*, "dimnames")=List of 2
-##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
-##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
-##  $ contrib: num [1:49, 1:3] 0.638 2.529 11.226 8.187 4.313 ...
-##   ..- attr(*, "dimnames")=List of 2
-##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...
-##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"
-##  $ dist   : Named num [1:49] 2 4.23 7.63 6.78 4.75 ...
-##   ..- attr(*, "names")= chr [1:49] "1" "2" "3" "4" ...</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">ind</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## List of 4</span>
+<span class="co">##  $ coord  : num [1:49, 1:3] -1.78 3.55 7.48 6.39 4.64 ...</span>
+<span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
+<span class="co">##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...</span>
+<span class="co">##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"</span>
+<span class="co">##  $ cos2   : num [1:49, 1:3] 0.794 0.706 0.963 0.889 0.953 ...</span>
+<span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
+<span class="co">##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...</span>
+<span class="co">##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"</span>
+<span class="co">##  $ contrib: num [1:49, 1:3] 0.638 2.529 11.226 8.187 4.313 ...</span>
+<span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
+<span class="co">##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...</span>
+<span class="co">##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"</span>
+<span class="co">##  $ dist   : Named num [1:49] 2 4.23 7.63 6.78 4.75 ...</span>
+<span class="co">##   ..- attr(*, "names")= chr [1:49] "1" "2" "3" "4" ...</span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Coordinates of the individuals in the principal plane</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">ind</span><span class="op">$</span><span class="va">coord</span><span class="op">)</span></code></pre></div>
-<pre><code>##       Dim.1       Dim.2      Dim.3
-## 1 -1.784539 -0.54201920  0.7286718
-## 2  3.552078  0.93644483  2.0894982
-## 3  7.483642 -1.37264864  0.5414918
-## 4  6.390614 -1.44447329 -1.7317168
-## 5  4.638267 -0.02029232 -1.0296252
-## 6  3.994086  0.80735391  0.4706903</code></pre>
-<p>You can also use high level functions from the <a href="https://cran.r-project.org/package=factoextra">factoextra</a> package to extract relevant informations</p>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">ind</span><span class="op">$</span><span class="va">coord</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##       Dim.1       Dim.2      Dim.3</span>
+<span class="co">## 1 -1.784539 -0.54201920  0.7286718</span>
+<span class="co">## 2  3.552078  0.93644483  2.0894982</span>
+<span class="co">## 3  7.483642 -1.37264864  0.5414918</span>
+<span class="co">## 4  6.390614 -1.44447329 -1.7317168</span>
+<span class="co">## 5  4.638267 -0.02029232 -1.0296252</span>
+<span class="co">## 6  3.994086  0.80735391  0.4706903</span></code></pre>
+<p>You can also use high level functions from the <a href="https://cran.r-project.org/package=factoextra" class="external-link">factoextra</a> package to extract relevant informations</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Eigenvalues</span>
-<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/eigenvalue.html">get_eig</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
-<pre><code>##       eigenvalue variance.percent cumulative.variance.percent
-## Dim.1   498.8638         38.80293                    38.80293
-## Dim.2   314.7485         24.48196                    63.28489
-## Dim.3   219.2953         17.05736                    80.34225</code></pre>
+<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/eigenvalue.html" class="external-link">get_eig</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##       eigenvalue variance.percent cumulative.variance.percent</span>
+<span class="co">## Dim.1   498.8638         38.80293                    38.80293</span>
+<span class="co">## Dim.2   314.7485         24.48196                    63.28489</span>
+<span class="co">## Dim.3   219.2953         17.05736                    80.34225</span></code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Variables</span>
-<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html">get_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
-<pre><code>## Principal Component Analysis Results for variables
-##  ===================================================
-##   Name       Description                                    
-## 1 "$coord"   "Coordinates for the variables"                
-## 2 "$cor"     "Correlations between variables and dimensions"
-## 3 "$cos2"    "Cos2 for the variables"                       
-## 4 "$contrib" "contributions of the variables"</code></pre>
+<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html" class="external-link">get_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## Principal Component Analysis Results for variables</span>
+<span class="co">##  ===================================================</span>
+<span class="co">##   Name       Description                                    </span>
+<span class="co">## 1 "$coord"   "Coordinates for the variables"                </span>
+<span class="co">## 2 "$cor"     "Correlations between variables and dimensions"</span>
+<span class="co">## 3 "$cos2"    "Cos2 for the variables"                       </span>
+<span class="co">## 4 "$contrib" "contributions of the variables"</span></code></pre>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Individuals</span>
-<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html">get_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
-<pre><code>## Principal Component Analysis Results for individuals
-##  ===================================================
-##   Name       Description                       
-## 1 "$coord"   "Coordinates for the individuals" 
-## 2 "$cos2"    "Cos2 for the individuals"        
-## 3 "$contrib" "contributions of the individuals"</code></pre>
+<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html" class="external-link">get_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## Principal Component Analysis Results for individuals</span>
+<span class="co">##  ===================================================</span>
+<span class="co">##   Name       Description                       </span>
+<span class="co">## 1 "$coord"   "Coordinates for the individuals" </span>
+<span class="co">## 2 "$cos2"    "Cos2 for the individuals"        </span>
+<span class="co">## 3 "$contrib" "contributions of the individuals"</span></code></pre>
 <p>And some of the very nice plotting methods such as biplots, correlation circles and scatter plots of the scores.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_biplot</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_biplot</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/fviz_biplot-1.png" width="700"></p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/fviz_cor_circle-1.png" width="700"></p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/fviz_principal_plane-1.png" width="700"></p>
 </div>
-<div id="projecting-new-data-in-the-pca-space" class="section level3">
-<h3 class="hasAnchor">
-<a href="#projecting-new-data-in-the-pca-space" class="anchor"></a>Projecting new data in the PCA space</h3>
+<div class="section level3">
+<h3 id="projecting-new-data-in-the-pca-space">Projecting new data in the PCA space<a class="anchor" aria-label="anchor" href="#projecting-new-data-in-the-pca-space"></a>
+</h3>
 <p>You can project new data in the PCA space although it’s slightly involved at the moment. We demonstrate that by projecting the original data on top of the original graph. As expected, the projections of the <em>new</em> data points (small red points) are superimposed to the original data points (large black points).</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Project newdata into PCA space</span>
 <span class="va">new_scores</span> <span class="op">&lt;-</span> <span class="va">myPCA_ICL</span><span class="op">$</span><span class="fu">project</span><span class="op">(</span>newdata <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span>
 <span class="co">## Overprint</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span>, geom <span class="op">=</span> <span class="st">"point"</span>, col.ind <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span>
-<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_add.html">fviz_add</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">new_scores</span>, geom <span class="op">=</span> <span class="st">"point"</span>, color <span class="op">=</span> <span class="st">"red"</span>, 
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span>, geom <span class="op">=</span> <span class="st">"point"</span>, col.ind <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span>
+<span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_add.html" class="external-link">fviz_add</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">new_scores</span>, geom <span class="op">=</span> <span class="st">"point"</span>, color <span class="op">=</span> <span class="st">"red"</span>, 
                      addlabel <span class="op">=</span> <span class="cn">FALSE</span>, pointsize <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/unnamed-chunk-1-1.png" width="700"></p>
 </div>
-<div id="a-model-accounting-for-meteorological-covariates" class="section level3">
-<h3 class="hasAnchor">
-<a href="#a-model-accounting-for-meteorological-covariates" class="anchor"></a>A model accounting for meteorological covariates</h3>
+<div class="section level3">
+<h3 id="a-model-accounting-for-meteorological-covariates">A model accounting for meteorological covariates<a class="anchor" aria-label="anchor" href="#a-model-accounting-for-meteorological-covariates"></a>
+</h3>
 <p>A contribution of PLN-PCA is to let the possibility to taking into account some covariates in the parameter space. Such a strategy often completely changes the interpretation of PCA. Indeed, the covariates are often responsible for some strong structure in the data. The effect of the covariates should be removed since they are often quite obvious for the analyst and may hide some more important and subtle effects.</p>
 <p>In the case at hand, the covariates corresponds to the meteorological variables. Let us try to introduce some of them in our model, for instance, the temperature, the wind and the cloudiness. This can be done thanks to the model formula:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">PCA_models_cov</span> <span class="op">&lt;-</span> 
   <span class="fu"><a href="../reference/PLNPCA.html">PLNPCA</a></span><span class="op">(</span>
-    <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="va">Temperature</span> <span class="op">+</span> <span class="va">Wind</span> <span class="op">+</span> <span class="va">Cloudiness</span>,
+    <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="va">Temperature</span> <span class="op">+</span> <span class="va">Wind</span> <span class="op">+</span> <span class="va">Cloudiness</span>,
     data  <span class="op">=</span> <span class="va">trichoptera</span>,
     ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>
   <span class="op">)</span></code></pre></div>
@@ -594,36 +593,36 @@
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
 ##   Rank approximation = 3 
+     Rank approximation = 2 
      Rank approximation = 1 
      Rank approximation = 4 
-     Rank approximation = 2 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">PCA_models_cov</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">PCA_models_cov</span><span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/extraction%20cov-1.png" width="672"></p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myPCA_cov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.PLNPCAfamily.html">getBestModel</a></span><span class="op">(</span><span class="va">PCA_models_cov</span>, <span class="st">"ICL"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">myPCA_cov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">PCA_models_cov</span>, <span class="st">"ICL"</span><span class="op">)</span></code></pre></div>
 <p>Suppose that we want to have a closer look to the first two axes. This can be done thanks to the plot method:</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html">grid.arrange</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myPCA_cov</span>, map <span class="op">=</span> <span class="st">"individual"</span>, ind_cols <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
-  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myPCA_cov</span>, map <span class="op">=</span> <span class="st">"variable"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
+<code class="sourceCode R"><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">myPCA_cov</span>, map <span class="op">=</span> <span class="st">"individual"</span>, ind_cols <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
+  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">myPCA_cov</span>, map <span class="op">=</span> <span class="st">"variable"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
   ncol <span class="op">=</span> <span class="fl">2</span>
 <span class="op">)</span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/maps-1.png" width="672"></p>
 <p>We can check that the fitted value of the counts – even with this low-rank covariance matrix – are close to the observed ones:</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
-  fitted   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span><span class="op">)</span>,
-  observed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span><span class="op">)</span>
-<span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">observed</span>, y <span class="op">=</span> <span class="va">fitted</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">.5</span>, alpha <span class="op">=</span><span class="fl">.25</span> <span class="op">)</span> <span class="op">+</span> 
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_log10</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotation_logticks.html">annotation_logticks</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
+  fitted   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted</a></span><span class="op">(</span><span class="va">myPCA_cov</span><span class="op">)</span><span class="op">)</span>,
+  observed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span><span class="op">)</span>
+<span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">observed</span>, y <span class="op">=</span> <span class="va">fitted</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">.5</span>, alpha <span class="op">=</span><span class="fl">.25</span> <span class="op">)</span> <span class="op">+</span> 
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_log10</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotation_logticks.html" class="external-link">annotation_logticks</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div class="figure">
 <img src="PLNPCA_files/figure-html/fitted-1.png" alt="fitted value vs. observation" width="672"><p class="caption">
 fitted value vs. observation
@@ -631,21 +630,21 @@ fitted value vs. observation
 </div>
 <p>When you are done, do not forget to get back to the standard sequential plan with <em>future</em>.</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="st">"sequential"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="st">"sequential"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
+<div class="section level2 unnumbered">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references">
 <div id="ref-AiH89">
 <p>Aitchison, J., and C. H. Ho. 1989. “The Multivariate Poisson-Log Normal Distribution.” <em>Biometrika</em> 76 (4): 643–53.</p>
 </div>
 <div id="ref-PLNPCA">
-<p>Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018. “Variational Inference for Probabilistic Poisson Pca.” <em>The Annals of Applied Statistics</em> 12: 2674–98. <a href="https://doi.org/10.1214/18%2DAOAS1177">https://doi.org/10.1214/18%2DAOAS1177</a>.</p>
+<p>Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018. “Variational Inference for Probabilistic Poisson Pca.” <em>The Annals of Applied Statistics</em> 12: 2674–98. <a href="https://doi.org/10.1214/18%2DAOAS1177" class="external-link">https://doi.org/10.1214/18%2DAOAS1177</a>.</p>
 </div>
 <div id="ref-nlopt">
-<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/">https://nlopt.readthedocs.io/en/latest/</a>.</p>
+<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.</p>
 </div>
 <div id="ref-Svan02">
 <p>Svanberg, Krister. 2002. “A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.” <em>SIAM Journal on Optimization</em> 12 (2): 555–73.</p>
@@ -674,11 +673,13 @@ fitted value vs. observation
 
 
       <footer><div class="copyright">
-  <p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
+  <p></p>
+<p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -686,6 +687,8 @@ fitted value vs. observation
 
   
 
+
+  
 
   </body>
 </html>

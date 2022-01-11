@@ -1,7 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/404.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/articles/Import_data.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/articles/PLN.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/articles/PLNLDA.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/articles/PLNPCA.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/articles/PLNmixture.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/articles/PLNnetwork.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/articles/Trichoptera.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/authors.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/index.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/news/index.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLN.html</loc>
@@ -82,6 +118,9 @@
     <loc>https://pln-team.github.io/PLNmodels/reference/getModel.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/index.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/mollusk.html</loc>
   </url>
   <url>
@@ -146,26 +185,5 @@
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/vcov.PLNfit.html</loc>
-  </url>
-  <url>
-    <loc>https://pln-team.github.io/PLNmodels/articles/Import_data.html</loc>
-  </url>
-  <url>
-    <loc>https://pln-team.github.io/PLNmodels/articles/PLN.html</loc>
-  </url>
-  <url>
-    <loc>https://pln-team.github.io/PLNmodels/articles/PLNLDA.html</loc>
-  </url>
-  <url>
-    <loc>https://pln-team.github.io/PLNmodels/articles/PLNPCA.html</loc>
-  </url>
-  <url>
-    <loc>https://pln-team.github.io/PLNmodels/articles/PLNmixture.html</loc>
-  </url>
-  <url>
-    <loc>https://pln-team.github.io/PLNmodels/articles/PLNnetwork.html</loc>
-  </url>
-  <url>
-    <loc>https://pln-team.github.io/PLNmodels/articles/Trichoptera.html</loc>
   </url>
 </urlset>
