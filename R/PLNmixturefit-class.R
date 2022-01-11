@@ -345,7 +345,7 @@ PLNmixturefit <-
       #' @field entropy_latent Entropy of the variational distribution of the latent vector (Gaussian)
       entropy_latent = function() {
         .5 * (sum(map_dbl(private$comp, function(component) {
-          sum( diag(component$weights) %*% log(component$var_par$S2) )
+          sum( component$weights * log(component$var_par$S2) )
           })) + self$n * self$p * log(2*pi*exp(1)))
       },
       #' @field entropy Full entropy of the variational distribution (latent vector + clustering)

@@ -1,15 +1,17 @@
 
-Submitting PLNmodels version 0.11-4 to CRAN. Last version available on CRAN is 0.10-6.
+Submitting PLNmodels version 0.11-5 to CRAN. Motivated by a request from CRAN team to 
+correct a test that randomly fails on some distributions.
 
-The following major changes have been made since 0.10-6
+The following major changes have been made since 0.11-5
 
-* use future to parallelize code in  PLNmixture and stability_selection (plan must be set by the user)
+* faster examples and build for vignettes
+* use the same variational distribution to approximate the spherical case as
+  in the fully parametrized and diagonal cases
+* additional R6 method `$VEStep()` for PLN-PCA, dealing with low rank matrices
+* additional R6 method `$project()` for PLN-PCA, used to project newdata into PCA space
+* use future_lapply in PLNmixture_family
+* remove a NOTE due to a DESeq2 link and a failure on solaris on CRAN machines
 * various bug fixes
-* integration of a new series of fitting procedure via PLNmixture
-* Rewriting C++ by merging modern_cpp to dev
-* Enhanced vignettes for PLNPCA and PLNmixture
-* Add compatibility with factoextra for PLNPCA and PLNLDA
-* couple of additional dependencies
 
 ## Tested environments
 
