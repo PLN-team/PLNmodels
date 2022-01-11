@@ -19,13 +19,9 @@ The following major changes have been made since 0.11-5
 - Windows Server 2019, R-release (github action)
 - macOS 10.15, R-release (github action)
 - Linux ubuntu 20.04, R-release (github-action)
-
-
-- Windows Server 2022 R-devel (R hub)
-
 - Linux ubuntu 20.04, R-devel (github-action)
 - macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
-- Windows Server 2008 R2 SP1, R-release  (R hub)
+- Windows Server 2022, R-devel, 64 bit (R hub)
 - Windows, R-release (winbuilder)
 - Windows, R-devel  (winbuilder)
 - Windows, R-oldrelease  (winbuilder)
@@ -40,16 +36,23 @@ all status OK except for
     doc    2.1Mb
     libs   2.7Mb (platform dependent)
 
+On some Windows install,
+* checking examples ... NOTE
+Examples with CPU (user + system) or elapsed time > 5s
+                      user system elapsed
+plot.PLNmixturefamily 6.05   0.01    6.07
+PLNmixture            5.64   0.01    5.71
+
 On my computer I get (Ubuntu 20.04, Intel Xeon 3.5 GHz; 64 Go mem)
 
-── R CMD check results ─────────────────────────────────── PLNmodels 0.11.4 ────
-Duration: 2m 41.1s
+── R CMD check results ──────────── PLNmodels 0.11.5 ────
+Duration: 3m 46.7s
 
 > checking installed package size ... NOTE
-    installed size is 18.1Mb
+    installed size is 24.1Mb
     sub-directories of 1Mb or more:
       doc    2.1Mb
-      libs  14.9Mb
+      libs  20.8Mb
 
 0 errors ✓ | 0 warnings ✓ | 1 note x
 
