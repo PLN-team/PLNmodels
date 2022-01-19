@@ -109,7 +109,7 @@
       <h1 data-toc-skip>Supervized classification of multivariate count table with the Poisson discriminant Analysis</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-01-11</h4>
+            <h4 data-toc-skip class="date">2022-01-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNLDA.Rmd" class="external-link"><code>vignettes/PLNLDA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNLDA.Rmd</code></div>
@@ -287,8 +287,8 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <code class="sourceCode R"><span class="va">myLDA_nocov</span></code></pre></div>
 <pre><code><span class="co">## Linear Discriminant Analysis for Poisson Lognormal distribution</span>
 <span class="co">## ==================================================================</span>
-<span class="co">##  nb_param   loglik       BIC       ICL</span>
-<span class="co">##       391 -799.766 -1560.617 -1123.489</span>
+<span class="co">##  nb_param   loglik       BIC      ICL</span>
+<span class="co">##       391 -800.028 -1560.879 -1225.04</span>
 <span class="co">## ==================================================================</span>
 <span class="co">## * Useful fields</span>
 <span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span>
@@ -354,67 +354,67 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-27.58</td>
+<td align="right">-21.61</td>
 <td align="right">-6.82</td>
-<td align="right">-27.14</td>
-<td align="right">-25.97</td>
-<td align="right">-28.92</td>
-<td align="right">-29.50</td>
-<td align="right">-27.81</td>
-<td align="right">-26.96</td>
-<td align="right">-27.03</td>
-<td align="right">-5.65</td>
-<td align="right">-3.47</td>
-<td align="right">-25.96</td>
+<td align="right">-21.18</td>
+<td align="right">-20.00</td>
+<td align="right">-22.96</td>
+<td align="right">-23.54</td>
+<td align="right">-21.85</td>
+<td align="right">-20.99</td>
+<td align="right">-21.06</td>
+<td align="right">-5.67</td>
+<td align="right">-3.48</td>
+<td align="right">-19.99</td>
 </tr>
 <tr class="even">
-<td align="right">-27.55</td>
-<td align="right">-28.29</td>
-<td align="right">-5.66</td>
-<td align="right">-25.94</td>
-<td align="right">-7.44</td>
-<td align="right">-29.48</td>
-<td align="right">-27.79</td>
-<td align="right">-26.93</td>
-<td align="right">-27.01</td>
-<td align="right">-27.08</td>
-<td align="right">-24.91</td>
-<td align="right">-4.47</td>
+<td align="right">-21.58</td>
+<td align="right">-22.32</td>
+<td align="right">-5.68</td>
+<td align="right">-19.97</td>
+<td align="right">-7.45</td>
+<td align="right">-23.50</td>
+<td align="right">-21.81</td>
+<td align="right">-20.96</td>
+<td align="right">-21.03</td>
+<td align="right">-21.10</td>
+<td align="right">-18.94</td>
+<td align="right">-4.48</td>
 </tr>
 <tr class="odd">
 <td align="right">-2.38</td>
 <td align="right">-3.96</td>
 <td align="right">-2.36</td>
 <td align="right">-2.92</td>
-<td align="right">-6.51</td>
+<td align="right">-6.48</td>
 <td align="right">-5.54</td>
 <td align="right">-2.69</td>
 <td align="right">-2.03</td>
-<td align="right">-2.70</td>
+<td align="right">-2.71</td>
 <td align="right">-2.65</td>
-<td align="right">-25.03</td>
+<td align="right">-19.04</td>
 <td align="right">-3.85</td>
 </tr>
 <tr class="even">
-<td align="right">-27.57</td>
-<td align="right">-28.32</td>
+<td align="right">-21.59</td>
+<td align="right">-22.34</td>
 <td align="right">-5.69</td>
 <td align="right">-4.52</td>
-<td align="right">-28.86</td>
-<td align="right">-29.54</td>
-<td align="right">-27.83</td>
-<td align="right">-5.51</td>
+<td align="right">-22.86</td>
+<td align="right">-23.57</td>
+<td align="right">-21.85</td>
+<td align="right">-5.52</td>
 <td align="right">-5.59</td>
 <td align="right">-4.91</td>
-<td align="right">-24.98</td>
-<td align="right">-26.00</td>
+<td align="right">-19.00</td>
+<td align="right">-20.02</td>
 </tr>
 <tr class="odd">
 <td align="right">-0.28</td>
 <td align="right">-0.26</td>
 <td align="right">-0.62</td>
 <td align="right">-1.09</td>
-<td align="right">-0.61</td>
+<td align="right">-0.62</td>
 <td align="right">-0.11</td>
 <td align="right">-0.66</td>
 <td align="right">-0.80</td>
@@ -434,8 +434,8 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <td align="right">-3.06</td>
 <td align="right">-5.53</td>
 <td align="right">-3.99</td>
-<td align="right">-24.90</td>
-<td align="right">-25.92</td>
+<td align="right">-18.91</td>
+<td align="right">-19.93</td>
 </tr>
 </tbody>
 </table>
@@ -453,19 +453,19 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <p><code>ggplot2</code>-savvy users who want to make their own representations can extracts the <span class="math inline">\(n \times (K-1)\)</span> matrix of sample scores from the <code>PLNLDAfit</code> object …</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">myLDA_nocov</span><span class="op">$</span><span class="va">scores</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">head</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
-<table style="width:100%;" class="table">
+<table class="table">
 <colgroup>
 <col width="8%">
 <col width="10%">
-<col width="9%">
-<col width="9%">
+<col width="10%">
 <col width="10%">
 <col width="9%">
 <col width="8%">
 <col width="8%">
 <col width="7%">
-<col width="6%">
-<col width="8%">
+<col width="7%">
+<col width="7%">
+<col width="7%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">LD1</th>
@@ -482,82 +482,82 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">7102272</td>
-<td align="right">-173880.0</td>
-<td align="right">82547.64</td>
-<td align="right">114667.9</td>
-<td align="right">-33994.89</td>
-<td align="right">15849.17</td>
-<td align="right">2620.77</td>
-<td align="right">-580.60</td>
-<td align="right">174.77</td>
-<td align="right">78.79</td>
-<td align="right">-173.42</td>
+<td align="right">1141218</td>
+<td align="right">-345890.7</td>
+<td align="right">-19565.53</td>
+<td align="right">-36438.04</td>
+<td align="right">-8158.59</td>
+<td align="right">3126.82</td>
+<td align="right">3234.54</td>
+<td align="right">-8.42</td>
+<td align="right">114.38</td>
+<td align="right">-13.37</td>
+<td align="right">-82.84</td>
 </tr>
 <tr class="even">
-<td align="right">7102780</td>
-<td align="right">-180968.2</td>
-<td align="right">83034.54</td>
-<td align="right">115219.3</td>
-<td align="right">-33807.64</td>
-<td align="right">15859.59</td>
-<td align="right">2643.85</td>
-<td align="right">-622.66</td>
-<td align="right">168.68</td>
-<td align="right">81.13</td>
-<td align="right">-174.70</td>
+<td align="right">1142398</td>
+<td align="right">-344464.1</td>
+<td align="right">-19702.37</td>
+<td align="right">-36728.69</td>
+<td align="right">-8066.40</td>
+<td align="right">3125.09</td>
+<td align="right">3257.54</td>
+<td align="right">-38.22</td>
+<td align="right">110.92</td>
+<td align="right">-12.66</td>
+<td align="right">-83.62</td>
 </tr>
 <tr class="odd">
-<td align="right">7108938</td>
-<td align="right">-246042.3</td>
-<td align="right">88100.69</td>
-<td align="right">118887.9</td>
-<td align="right">-32195.24</td>
-<td align="right">15528.74</td>
-<td align="right">2299.91</td>
-<td align="right">-611.77</td>
-<td align="right">194.57</td>
-<td align="right">85.91</td>
-<td align="right">-167.15</td>
+<td align="right">1153829</td>
+<td align="right">-331104.0</td>
+<td align="right">-21401.86</td>
+<td align="right">-38662.74</td>
+<td align="right">-7349.46</td>
+<td align="right">3108.75</td>
+<td align="right">3098.77</td>
+<td align="right">-50.44</td>
+<td align="right">118.20</td>
+<td align="right">-9.40</td>
+<td align="right">-78.45</td>
 </tr>
 <tr class="even">
-<td align="right">7115635</td>
-<td align="right">-319776.0</td>
-<td align="right">93788.73</td>
-<td align="right">122832.6</td>
-<td align="right">-30406.56</td>
-<td align="right">15049.64</td>
-<td align="right">1746.90</td>
-<td align="right">-454.66</td>
-<td align="right">233.23</td>
-<td align="right">87.78</td>
-<td align="right">-157.55</td>
+<td align="right">1166545</td>
+<td align="right">-315989.7</td>
+<td align="right">-23304.10</td>
+<td align="right">-40733.95</td>
+<td align="right">-6580.43</td>
+<td align="right">3094.36</td>
+<td align="right">2825.04</td>
+<td align="right">27.46</td>
+<td align="right">129.42</td>
+<td align="right">-7.33</td>
+<td align="right">-72.07</td>
 </tr>
 <tr class="odd">
-<td align="right">7111665</td>
-<td align="right">-277208.2</td>
-<td align="right">90464.64</td>
-<td align="right">120481.8</td>
-<td align="right">-31464.54</td>
-<td align="right">15278.33</td>
-<td align="right">1999.25</td>
-<td align="right">-478.65</td>
-<td align="right">214.50</td>
-<td align="right">85.73</td>
-<td align="right">-162.66</td>
+<td align="right">1159038</td>
+<td align="right">-324807.4</td>
+<td align="right">-22173.05</td>
+<td align="right">-39485.71</td>
+<td align="right">-7052.29</td>
+<td align="right">3101.76</td>
+<td align="right">2943.85</td>
+<td align="right">22.90</td>
+<td align="right">124.19</td>
+<td align="right">-8.94</td>
+<td align="right">-75.47</td>
 </tr>
 <tr class="even">
-<td align="right">7106667</td>
-<td align="right">-223029.3</td>
-<td align="right">86276.55</td>
-<td align="right">117532.2</td>
-<td align="right">-32780.73</td>
-<td align="right">15604.65</td>
-<td align="right">2358.58</td>
-<td align="right">-558.33</td>
-<td align="right">189.04</td>
-<td align="right">82.87</td>
-<td align="right">-169.44</td>
+<td align="right">1149716</td>
+<td align="right">-335826.4</td>
+<td align="right">-20786.65</td>
+<td align="right">-37948.35</td>
+<td align="right">-7618.88</td>
+<td align="right">3115.49</td>
+<td align="right">3118.14</td>
+<td align="right">-10.14</td>
+<td align="right">116.83</td>
+<td align="right">-11.19</td>
+<td align="right">-80.07</td>
 </tr>
 </tbody>
 </table>
@@ -582,87 +582,87 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-0.29</td>
-<td align="right">0.28</td>
-<td align="right">0.41</td>
-<td align="right">-0.25</td>
-<td align="right">0.61</td>
-<td align="right">-0.30</td>
+<td align="right">-0.35</td>
+<td align="right">-0.07</td>
+<td align="right">-0.37</td>
 <td align="right">0.22</td>
-<td align="right">-0.45</td>
-<td align="right">0.85</td>
-<td align="right">-0.43</td>
-<td align="right">0.01</td>
+<td align="right">0.56</td>
+<td align="right">-0.48</td>
+<td align="right">-0.20</td>
+<td align="right">-0.53</td>
+<td align="right">0.83</td>
+<td align="right">-0.42</td>
+<td align="right">0.06</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-0.06</td>
-<td align="right">-0.45</td>
-<td align="right">0.11</td>
-<td align="right">-0.40</td>
-<td align="right">-0.02</td>
-<td align="right">-0.55</td>
-<td align="right">-0.75</td>
-<td align="right">0.75</td>
+<td align="right">0.08</td>
+<td align="right">0.62</td>
+<td align="right">-0.13</td>
+<td align="right">0.32</td>
 <td align="right">-0.11</td>
-<td align="right">-0.28</td>
-<td align="right">0.57</td>
+<td align="right">-0.05</td>
+<td align="right">-0.73</td>
+<td align="right">0.81</td>
+<td align="right">-0.22</td>
+<td align="right">-0.12</td>
+<td align="right">0.61</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">0.07</td>
-<td align="right">-0.21</td>
-<td align="right">-0.06</td>
-<td align="right">0.73</td>
-<td align="right">-0.28</td>
-<td align="right">-0.09</td>
-<td align="right">0.37</td>
-<td align="right">0.18</td>
-<td align="right">-0.31</td>
-<td align="right">0.04</td>
-<td align="right">-0.60</td>
+<td align="right">0.11</td>
+<td align="right">0.05</td>
+<td align="right">0.21</td>
+<td align="right">-0.77</td>
+<td align="right">-0.40</td>
+<td align="right">-0.36</td>
+<td align="right">0.21</td>
+<td align="right">-0.07</td>
+<td align="right">-0.26</td>
+<td align="right">-0.05</td>
+<td align="right">-0.61</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-0.49</td>
-<td align="right">0.11</td>
-<td align="right">-0.63</td>
-<td align="right">0.02</td>
-<td align="right">-0.23</td>
-<td align="right">-0.37</td>
-<td align="right">0.44</td>
-<td align="right">0.17</td>
+<td align="right">-0.41</td>
+<td align="right">0.21</td>
+<td align="right">0.68</td>
+<td align="right">0.00</td>
+<td align="right">-0.33</td>
+<td align="right">-0.61</td>
+<td align="right">-0.02</td>
+<td align="right">-0.12</td>
 <td align="right">-0.29</td>
-<td align="right">-0.08</td>
-<td align="right">0.24</td>
+<td align="right">0.01</td>
+<td align="right">0.28</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">0.25</td>
-<td align="right">0.28</td>
-<td align="right">0.20</td>
-<td align="right">0.28</td>
-<td align="right">0.41</td>
-<td align="right">0.22</td>
-<td align="right">0.10</td>
-<td align="right">-0.02</td>
-<td align="right">0.51</td>
-<td align="right">-0.53</td>
-<td align="right">-0.38</td>
+<td align="right">0.11</td>
+<td align="right">-0.50</td>
+<td align="right">-0.21</td>
+<td align="right">-0.25</td>
+<td align="right">0.47</td>
+<td align="right">-0.05</td>
+<td align="right">0.13</td>
+<td align="right">-0.01</td>
+<td align="right">0.57</td>
+<td align="right">-0.64</td>
+<td align="right">-0.32</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">0.10</td>
-<td align="right">-0.17</td>
-<td align="right">-0.13</td>
-<td align="right">0.87</td>
-<td align="right">-0.04</td>
-<td align="right">-0.17</td>
-<td align="right">0.25</td>
+<td align="right">0.13</td>
+<td align="right">0.04</td>
+<td align="right">0.18</td>
+<td align="right">-0.90</td>
 <td align="right">-0.11</td>
-<td align="right">-0.09</td>
-<td align="right">-0.17</td>
-<td align="right">-0.52</td>
+<td align="right">-0.28</td>
+<td align="right">0.01</td>
+<td align="right">-0.26</td>
+<td align="right">-0.05</td>
+<td align="right">-0.26</td>
+<td align="right">-0.50</td>
 </tr>
 </tbody>
 </table>
@@ -678,11 +678,11 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <span class="co">## equivalent to </span>
 <span class="co">## predicted.class &lt;- predict(myLDA_nocov, newdata = trichoptera,  type = "posterior")</span>
 <span class="va">predicted.class</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
-<table style="width:100%;" class="table">
+<table class="table">
 <colgroup>
-<col width="6%">
 <col width="7%">
 <col width="7%">
+<col width="8%">
 <col width="8%">
 <col width="8%">
 <col width="7%">
@@ -709,88 +709,88 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-8.55</td>
-<td align="right">4.30</td>
-<td align="right">-18.54</td>
-<td align="right">-42.51</td>
-<td align="right">-72.31</td>
-<td align="right">-23.96</td>
-<td align="right">-17.00</td>
-<td align="right">-148.27</td>
-<td align="right">-136.09</td>
-<td align="right">-79.60</td>
-<td align="right">-229.85</td>
-<td align="right">-50.54</td>
+<td align="right">-58.34</td>
+<td align="right">-81.98</td>
+<td align="right">-79.01</td>
+<td align="right">-96.96</td>
+<td align="right">-90.19</td>
+<td align="right">-73.65</td>
+<td align="right">-66.79</td>
+<td align="right">-124.62</td>
+<td align="right">-109.22</td>
+<td align="right">-61.47</td>
+<td align="right">-199.99</td>
+<td align="right">-135.64</td>
 </tr>
 <tr class="even">
-<td align="right">-0.98</td>
-<td align="right">34.12</td>
-<td align="right">-35.76</td>
-<td align="right">-38.51</td>
-<td align="right">-90.53</td>
-<td align="right">-18.64</td>
-<td align="right">-6.00</td>
-<td align="right">-74.82</td>
-<td align="right">-64.81</td>
-<td align="right">-73.95</td>
-<td align="right">-141.91</td>
-<td align="right">-42.26</td>
+<td align="right">-50.80</td>
+<td align="right">-58.18</td>
+<td align="right">-90.28</td>
+<td align="right">-93.07</td>
+<td align="right">-102.53</td>
+<td align="right">-68.42</td>
+<td align="right">-55.81</td>
+<td align="right">-68.85</td>
+<td align="right">-56.33</td>
+<td align="right">-55.83</td>
+<td align="right">-136.02</td>
+<td align="right">-127.38</td>
 </tr>
 <tr class="odd">
-<td align="right">-3.89</td>
-<td align="right">28.95</td>
-<td align="right">-91.83</td>
-<td align="right">-56.95</td>
-<td align="right">-139.22</td>
-<td align="right">-21.79</td>
-<td align="right">-13.52</td>
-<td align="right">-109.61</td>
-<td align="right">-95.11</td>
-<td align="right">-81.82</td>
-<td align="right">-169.30</td>
-<td align="right">-97.40</td>
+<td align="right">-53.71</td>
+<td align="right">-63.29</td>
+<td align="right">-134.23</td>
+<td align="right">-111.11</td>
+<td align="right">-139.37</td>
+<td align="right">-71.58</td>
+<td align="right">-63.21</td>
+<td align="right">-98.08</td>
+<td align="right">-79.75</td>
+<td align="right">-63.61</td>
+<td align="right">-157.23</td>
+<td align="right">-170.36</td>
 </tr>
 <tr class="even">
-<td align="right">-8.14</td>
-<td align="right">-20.73</td>
-<td align="right">-90.71</td>
-<td align="right">-174.01</td>
-<td align="right">-161.59</td>
-<td align="right">-43.94</td>
-<td align="right">-25.50</td>
-<td align="right">-167.88</td>
-<td align="right">-156.50</td>
-<td align="right">-59.72</td>
-<td align="right">-336.68</td>
-<td align="right">-247.45</td>
+<td align="right">-51.78</td>
+<td align="right">-64.02</td>
+<td align="right">-144.17</td>
+<td align="right">-182.65</td>
+<td align="right">-167.31</td>
+<td align="right">-93.57</td>
+<td align="right">-80.72</td>
+<td align="right">-152.03</td>
+<td align="right">-119.71</td>
+<td align="right">-77.15</td>
+<td align="right">-281.34</td>
+<td align="right">-258.64</td>
 </tr>
 <tr class="odd">
-<td align="right">-4.34</td>
-<td align="right">31.99</td>
-<td align="right">-27.18</td>
-<td align="right">-77.55</td>
-<td align="right">-89.76</td>
-<td align="right">-28.79</td>
-<td align="right">-17.41</td>
-<td align="right">-110.88</td>
-<td align="right">-96.36</td>
-<td align="right">-84.22</td>
-<td align="right">-217.51</td>
-<td align="right">-133.94</td>
+<td align="right">-54.13</td>
+<td align="right">-60.22</td>
+<td align="right">-87.34</td>
+<td align="right">-131.04</td>
+<td align="right">-107.78</td>
+<td align="right">-78.52</td>
+<td align="right">-67.02</td>
+<td align="right">-100.03</td>
+<td align="right">-79.94</td>
+<td align="right">-65.95</td>
+<td align="right">-193.25</td>
+<td align="right">-170.21</td>
 </tr>
 <tr class="even">
-<td align="right">-0.48</td>
-<td align="right">37.76</td>
-<td align="right">-12.39</td>
-<td align="right">-41.54</td>
-<td align="right">-65.86</td>
-<td align="right">-14.99</td>
-<td align="right">-5.86</td>
-<td align="right">-75.08</td>
-<td align="right">-65.00</td>
-<td align="right">-73.50</td>
-<td align="right">-120.43</td>
-<td align="right">-43.55</td>
+<td align="right">-50.31</td>
+<td align="right">-54.54</td>
+<td align="right">-72.87</td>
+<td align="right">-96.02</td>
+<td align="right">-83.94</td>
+<td align="right">-64.79</td>
+<td align="right">-55.65</td>
+<td align="right">-69.22</td>
+<td align="right">-56.32</td>
+<td align="right">-55.36</td>
+<td align="right">-120.50</td>
+<td align="right">-128.64</td>
 </tr>
 </tbody>
 </table>
@@ -815,86 +815,86 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.958</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">0.042</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.982</td>
+<td align="right">0.001</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0.007</td>
 <td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.004</td>
+<td align="right">0.006</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">1.000</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
+<td align="right">1.000</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.998</td>
+<td align="right">0.002</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.972</td>
+<td align="right">0.014</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0.005</td>
 <td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.002</td>
+<td align="right">0.006</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
@@ -905,27 +905,27 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <code class="sourceCode R"><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myLDA_nocov</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>,  type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span>
 <span class="va">predicted.class</span></code></pre></div>
 <pre><code><span class="co">##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 </span>
-<span class="co">##  2  2  2  1  2  2  2  2  2  2  2  2  2  2  2  2  2  3  2  3  2  2  3  2  3  4 </span>
+<span class="co">##  1  1  1  1  1  1  9  2  1  1  1  1  2  3  2  2  2  3  3  3  9  3  3  1  5  5 </span>
 <span class="co">## 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 </span>
-<span class="co">##  7  3  2  5  6  7  7  7  7  7  7  2  2  2  2  2  7  2  2 10  2 11 12 </span>
+<span class="co">##  5  5  5  5  6  7  7  7  7  9  9  9  9  1  9  9  9 10 10 10 10 11  5 </span>
 <span class="co">## Levels: 1 2 3 4 5 6 7 8 9 10 11 12</span></code></pre>
 <p>We can assess that the predictions are quite similar to the real group (<em>this is not a proper validation of the method as we used data set for both model fitting and prediction and are thus at risk of overfitting</em>).</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">predicted.class</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span>, dnn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"predicted"</span>, <span class="st">"true"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##          true</span>
 <span class="co">## predicted  1  2  3  4  5  6  7  8  9 10 11 12</span>
-<span class="co">##        1   1  0  0  0  0  0  0  0  0  0  0  0</span>
-<span class="co">##        2  11  5  3  1  1  0  0  1  4  3  0  0</span>
-<span class="co">##        3   0  0  2  2  1  0  0  0  0  0  0  0</span>
-<span class="co">##        4   0  0  0  1  0  0  0  0  0  0  0  0</span>
-<span class="co">##        5   0  0  0  0  1  0  0  0  0  0  0  0</span>
+<span class="co">##        1  10  0  0  1  0  0  0  0  1  0  0  0</span>
+<span class="co">##        2   1  4  0  0  0  0  0  0  0  0  0  0</span>
+<span class="co">##        3   0  1  4  1  0  0  0  0  0  0  0  0</span>
+<span class="co">##        4   0  0  0  0  0  0  0  0  0  0  0  0</span>
+<span class="co">##        5   0  0  0  2  4  0  0  0  0  0  0  1</span>
 <span class="co">##        6   0  0  0  0  0  1  0  0  0  0  0  0</span>
-<span class="co">##        7   0  0  0  0  1  0  3  3  1  0  0  0</span>
+<span class="co">##        7   0  0  0  0  0  0  3  1  0  0  0  0</span>
 <span class="co">##        8   0  0  0  0  0  0  0  0  0  0  0  0</span>
-<span class="co">##        9   0  0  0  0  0  0  0  0  0  0  0  0</span>
-<span class="co">##        10  0  0  0  0  0  0  0  0  0  1  0  0</span>
+<span class="co">##        9   1  0  1  0  0  0  0  3  4  0  0  0</span>
+<span class="co">##        10  0  0  0  0  0  0  0  0  0  4  0  0</span>
 <span class="co">##        11  0  0  0  0  0  0  0  0  0  0  1  0</span>
-<span class="co">##        12  0  0  0  0  0  0  0  0  0  0  0  1</span></code></pre>
+<span class="co">##        12  0  0  0  0  0  0  0  0  0  0  0  0</span></code></pre>
 <p>Finally, we can get the coordinates of the new data on the same graph at the original ones with <code>type = "scores"</code>. This is done by averaging the latent positions <span class="math inline">\(\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k\)</span> (found when the sample is assumed to come from group <span class="math inline">\(k\)</span>) and weighting them with the <span class="math inline">\(\hat{\pi}_k\)</span>. Some samples, have compositions that put them very far from their group mean.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
@@ -964,27 +964,27 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-0.3300889</td>
+<td align="right">-0.3343461</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">1.4072490</td>
+<td align="right">1.0408420</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-0.1927550</td>
+<td align="right">-0.1921437</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-0.4545481</td>
+<td align="right">-0.4555884</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">0.0366371</td>
+<td align="right">0.0398372</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">-0.0611432</td>
+<td align="right">-0.0614326</td>
 </tr>
 </tbody>
 </table>
@@ -1022,88 +1022,88 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-20.05</td>
-<td align="right">-10.77</td>
-<td align="right">-23.90</td>
-<td align="right">-18.85</td>
-<td align="right">-25.41</td>
-<td align="right">-43.11</td>
-<td align="right">-29.51</td>
-<td align="right">-27.89</td>
-<td align="right">-19.12</td>
-<td align="right">4.41</td>
-<td align="right">11.47</td>
-<td align="right">-23.60</td>
+<td align="right">-12.61</td>
+<td align="right">-9.13</td>
+<td align="right">-15.02</td>
+<td align="right">-11.52</td>
+<td align="right">-15.98</td>
+<td align="right">-27.62</td>
+<td align="right">-18.66</td>
+<td align="right">-17.45</td>
+<td align="right">-12.15</td>
+<td align="right">0.43</td>
+<td align="right">5.58</td>
+<td align="right">-14.39</td>
 </tr>
 <tr class="even">
-<td align="right">-23.56</td>
-<td align="right">-42.48</td>
-<td align="right">-1.44</td>
-<td align="right">-16.42</td>
-<td align="right">-10.50</td>
-<td align="right">-47.44</td>
-<td align="right">-32.82</td>
-<td align="right">-29.65</td>
-<td align="right">-15.09</td>
-<td align="right">-17.50</td>
-<td align="right">-6.52</td>
-<td align="right">1.80</td>
+<td align="right">-15.07</td>
+<td align="right">-27.87</td>
+<td align="right">-2.98</td>
+<td align="right">-9.43</td>
+<td align="right">-10.15</td>
+<td align="right">-31.11</td>
+<td align="right">-21.02</td>
+<td align="right">-18.53</td>
+<td align="right">-8.79</td>
+<td align="right">-10.55</td>
+<td align="right">-2.52</td>
+<td align="right">-0.36</td>
 </tr>
 <tr class="odd">
-<td align="right">-1.08</td>
-<td align="right">-4.47</td>
+<td align="right">-1.30</td>
+<td align="right">-4.36</td>
+<td align="right">-1.84</td>
+<td align="right">-1.92</td>
+<td align="right">-5.82</td>
+<td align="right">-6.70</td>
+<td align="right">-2.66</td>
+<td align="right">-1.86</td>
 <td align="right">-1.71</td>
-<td align="right">-1.69</td>
-<td align="right">-5.76</td>
-<td align="right">-6.98</td>
-<td align="right">-2.65</td>
-<td align="right">-1.82</td>
-<td align="right">-1.46</td>
-<td align="right">-1.46</td>
-<td align="right">-25.29</td>
-<td align="right">-3.26</td>
+<td align="right">-1.70</td>
+<td align="right">-14.63</td>
+<td align="right">-3.37</td>
 </tr>
 <tr class="even">
-<td align="right">-24.36</td>
-<td align="right">-32.59</td>
-<td align="right">-2.84</td>
-<td align="right">0.34</td>
-<td align="right">-27.03</td>
-<td align="right">-37.72</td>
-<td align="right">-29.73</td>
-<td align="right">-5.08</td>
-<td align="right">-0.34</td>
-<td align="right">0.25</td>
-<td align="right">-19.19</td>
-<td align="right">-25.72</td>
+<td align="right">-15.02</td>
+<td align="right">-20.81</td>
+<td align="right">-3.84</td>
+<td align="right">-1.39</td>
+<td align="right">-16.76</td>
+<td align="right">-24.61</td>
+<td align="right">-18.80</td>
+<td align="right">-5.33</td>
+<td align="right">-2.24</td>
+<td align="right">-1.63</td>
+<td align="right">-10.94</td>
+<td align="right">-15.56</td>
 </tr>
 <tr class="odd">
-<td align="right">-0.05</td>
+<td align="right">-0.06</td>
 <td align="right">-0.42</td>
-<td align="right">-0.47</td>
+<td align="right">-0.46</td>
 <td align="right">-0.85</td>
+<td align="right">-0.49</td>
 <td align="right">-0.44</td>
-<td align="right">-0.43</td>
-<td align="right">-0.59</td>
-<td align="right">-0.71</td>
+<td align="right">-0.61</td>
+<td align="right">-0.72</td>
 <td align="right">-0.06</td>
 <td align="right">-0.15</td>
-<td align="right">-0.19</td>
+<td align="right">-0.17</td>
 <td align="right">-1.03</td>
 </tr>
 <tr class="even">
-<td align="right">-1.75</td>
-<td align="right">-4.14</td>
-<td align="right">-1.67</td>
-<td align="right">-2.33</td>
-<td align="right">-5.46</td>
-<td align="right">-10.61</td>
-<td align="right">-2.71</td>
+<td align="right">-2.04</td>
+<td align="right">-4.00</td>
+<td align="right">-1.85</td>
+<td align="right">-2.63</td>
+<td align="right">-5.59</td>
+<td align="right">-10.25</td>
 <td align="right">-2.73</td>
-<td align="right">-3.22</td>
-<td align="right">-1.67</td>
-<td align="right">-23.67</td>
-<td align="right">-27.06</td>
+<td align="right">-2.78</td>
+<td align="right">-3.55</td>
+<td align="right">-1.99</td>
+<td align="right">-13.12</td>
+<td align="right">-16.19</td>
 </tr>
 </tbody>
 </table>
@@ -1129,18 +1129,18 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">predicted.class_cov</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Group</span>, dnn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"predicted"</span>, <span class="st">"true"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##          true</span>
 <span class="co">## predicted 1 2 3 4 5 6 7 8 9 10 11 12</span>
-<span class="co">##        1  2 0 0 0 0 0 0 0 0  0  0  0</span>
-<span class="co">##        2  0 2 0 0 0 0 0 0 0  0  0  0</span>
-<span class="co">##        3  0 0 1 0 0 0 0 0 0  0  0  0</span>
-<span class="co">##        4  0 0 0 0 0 0 0 0 0  0  0  0</span>
+<span class="co">##        1  3 0 0 0 0 0 0 0 1  0  0  0</span>
+<span class="co">##        2  1 5 0 0 0 0 0 0 0  0  0  0</span>
+<span class="co">##        3  0 0 0 0 0 0 0 0 0  0  0  0</span>
+<span class="co">##        4  0 0 0 2 0 0 0 0 0  0  0  0</span>
 <span class="co">##        5  0 0 0 0 1 0 0 0 0  0  0  0</span>
 <span class="co">##        6  0 0 0 0 0 1 0 0 0  0  0  0</span>
-<span class="co">##        7  0 0 0 0 0 0 3 0 0  0  0  0</span>
-<span class="co">##        8  0 0 1 0 0 0 0 3 0  0  0  0</span>
-<span class="co">##        9  0 0 0 0 0 0 0 0 0  0  0  0</span>
-<span class="co">##        10 1 3 0 1 0 0 0 0 0  3  0  0</span>
-<span class="co">##        11 0 0 0 0 0 0 0 0 0  0  1  0</span>
-<span class="co">##        12 9 0 3 3 3 0 0 1 5  1  0  1</span></code></pre>
+<span class="co">##        7  5 0 2 0 2 0 3 4 1  0  0  0</span>
+<span class="co">##        8  0 0 0 0 0 0 0 0 0  0  0  0</span>
+<span class="co">##        9  0 0 0 0 0 0 0 0 3  0  1  0</span>
+<span class="co">##        10 0 0 2 0 0 0 0 0 0  4  0  0</span>
+<span class="co">##        11 0 0 0 0 0 0 0 0 0  0  0  0</span>
+<span class="co">##        12 3 0 1 2 1 0 0 0 0  0  0  1</span></code></pre>
 </div>
 </div>
 </div>
@@ -1184,7 +1184,7 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

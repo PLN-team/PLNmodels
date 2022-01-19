@@ -109,7 +109,7 @@
       <h1 data-toc-skip>Clustering of multivariate count data with PLN-mixture</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-01-11</h4>
+            <h4 data-toc-skip class="date">2022-01-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNmixture.Rmd" class="external-link"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
@@ -254,37 +254,37 @@
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">18</td>
-<td align="right">-1158.486</td>
-<td align="right">-1193.512</td>
-<td align="right">-2152.905</td>
+<td align="right">-1158.732</td>
+<td align="right">-1193.759</td>
+<td align="right">-2148.841</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">37</td>
-<td align="right">-1104.233</td>
-<td align="right">-1176.232</td>
-<td align="right">-1981.688</td>
+<td align="right">-1104.473</td>
+<td align="right">-1176.472</td>
+<td align="right">-1982.747</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">56</td>
-<td align="right">-1070.280</td>
-<td align="right">-1179.251</td>
-<td align="right">-1887.244</td>
+<td align="right">-1075.281</td>
+<td align="right">-1184.252</td>
+<td align="right">-1888.644</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-1041.143</td>
-<td align="right">-1187.087</td>
-<td align="right">-1790.653</td>
+<td align="right">-1046.127</td>
+<td align="right">-1192.071</td>
+<td align="right">-1684.418</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">94</td>
-<td align="right">-1019.064</td>
-<td align="right">-1201.979</td>
-<td align="right">-1422.974</td>
+<td align="right">-1017.671</td>
+<td align="right">-1200.586</td>
+<td align="right">-1505.147</td>
 </tr>
 </tbody>
 </table>
@@ -305,40 +305,40 @@
 <td align="left">out</td>
 <td align="right">1</td>
 <td align="left">18</td>
-<td align="left">1158.485962</td>
-<td align="left">0.000000</td>
+<td align="left">1158.732397</td>
+<td align="left">0.000004</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
 <td align="right">2</td>
 <td align="left">37</td>
-<td align="left">1104.233017</td>
-<td align="left">0.000003</td>
+<td align="left">1104.472954</td>
+<td align="left">0.000007</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
 <td align="right">3</td>
 <td align="left">56</td>
-<td align="left">1070.280288</td>
-<td align="left">0.000001</td>
+<td align="left">1075.280702</td>
+<td align="left">0.000006</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">1041.143472</td>
-<td align="left">0.000000</td>
+<td align="left">1046.127346</td>
+<td align="left">0.000007</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.3</td>
 <td align="right">5</td>
 <td align="left">94</td>
-<td align="left">1019.063656</td>
-<td align="left">0.000001</td>
+<td align="left">1017.670830</td>
+<td align="left">0.000500</td>
 <td align="left">2.000000</td>
 </tr>
 </tbody>
@@ -434,20 +434,20 @@
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myMix_BIC</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">as.matrix</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [[1]]</span>
-<span class="co">##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath </span>
-<span class="co">## 0.9616815 0.9616815 0.9616815 0.9616815 0.9616815 0.9616815 0.9616815 0.9616815 </span>
-<span class="co">##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve </span>
-<span class="co">## 0.9616815 0.9616815 0.9616815 0.9616815 0.9616815 0.9616815 0.9616815 0.9616815 </span>
-<span class="co">##       Sta </span>
-<span class="co">## 0.9616815 </span>
+<span class="co">##      Che      Hyc      Hym      Hys      Psy      Aga      Glo      Ath </span>
+<span class="co">## 0.959185 0.959185 0.959185 0.959185 0.959185 0.959185 0.959185 0.959185 </span>
+<span class="co">##      Cea      Ced      Set      All      Han      Hfo      Hsp      Hve </span>
+<span class="co">## 0.959185 0.959185 0.959185 0.959185 0.959185 0.959185 0.959185 0.959185 </span>
+<span class="co">##      Sta </span>
+<span class="co">## 0.959185 </span>
 <span class="co">## </span>
 <span class="co">## [[2]]</span>
 <span class="co">##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath </span>
-<span class="co">## 0.7176059 0.7176059 0.7176059 0.7176059 0.7176059 0.7176059 0.7176059 0.7176059 </span>
+<span class="co">## 0.7206959 0.7206959 0.7206959 0.7206959 0.7206959 0.7206959 0.7206959 0.7206959 </span>
 <span class="co">##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve </span>
-<span class="co">## 0.7176059 0.7176059 0.7176059 0.7176059 0.7176059 0.7176059 0.7176059 0.7176059 </span>
+<span class="co">## 0.7206959 0.7206959 0.7206959 0.7206959 0.7206959 0.7206959 0.7206959 0.7206959 </span>
 <span class="co">##       Sta </span>
-<span class="co">## 0.7176059</span></code></pre>
+<span class="co">## 0.7206959</span></code></pre>
 <ul>
 <li>the regression coefficient matrix and other model of parameters (results not shown here, redundant with other fields)</li>
 </ul>
@@ -471,18 +471,18 @@
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-19.76</td>
+<td align="right">-14.49</td>
 <td align="right">-7.16</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
 <td align="right">-7.71</td>
-<td align="right">-8.33</td>
+<td align="right">-8.34</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
 <td align="right">-4.87</td>
-<td align="right">-2.68</td>
+<td align="right">-2.67</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
@@ -491,8 +491,8 @@
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">-0.83</td>
-<td align="right">-0.49</td>
+<td align="right">-0.81</td>
+<td align="right">-0.46</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
@@ -507,7 +507,7 @@
 <pre><code><span class="co">## A multivariate Poisson Lognormal fit with spherical covariance model.</span>
 <span class="co">## ==================================================================</span>
 <span class="co">##  nb_param   loglik      BIC      ICL</span>
-<span class="co">##        18 -252.655 -287.682 -615.324</span>
+<span class="co">##        18 -252.825 -287.851 -615.131</span>
 <span class="co">## ==================================================================</span>
 <span class="co">## * Useful fields</span>
 <span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span>
@@ -621,7 +621,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
