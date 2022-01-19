@@ -2,6 +2,8 @@
 Submitting PLNmodels version 0.11-5 to CRAN. Motivated by a request from CRAN team to 
 correct a test that randomly fails on some distributions.
 
+!!! uncertainties due to the possible archiving of nloptr R !!!
+
 The following major changes have been made since 0.11-5
 
 * faster examples and build for vignettes

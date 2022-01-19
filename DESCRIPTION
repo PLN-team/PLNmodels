@@ -34,7 +34,7 @@ Imports:
   glassoFast,
   Matrix,
   Rcpp,
-  nloptr (>= 1.2.0),
+  nloptr,
   igraph,
   grid,
   gridExtra,
@@ -45,6 +45,8 @@ Imports:
   corrplot,
   magrittr,
   rlang
+Remotes: 
+  astamm/nloptr
 Suggests: 
     knitr,
     rmarkdown,
