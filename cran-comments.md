@@ -1,29 +1,21 @@
 
-Submitting PLNmodels version 0.11-5 to CRAN. Motivated by a request from CRAN team to 
-correct a test that randomly fails on some distributions.
+Submitting PLNmodels version 0.11-6 to CRAN. Motivated by a request from CRAN team to 
+correct a wrong use of all.equal
 
 !!! uncertainties due to the possible archiving of nloptr R !!!
-
-The following major changes have been made since 0.11-5
-
-* faster examples and build for vignettes
-* use the same variational distribution to approximate the spherical case as
-  in the fully parametrized and diagonal cases
-* additional R6 method `$VEStep()` for PLN-PCA, dealing with low rank matrices
-* additional R6 method `$project()` for PLN-PCA, used to project newdata into PCA space
-* use future_lapply in PLNmixture_family
-* remove a NOTE due to a DESeq2 link and a failure on solaris on CRAN machines
-* various bug fixes
 
 ## Tested environments
 
 - Linux ubuntu 20.04 R-release, (local)
+
+- Windows Server 2022, R-devel, 64 bit
+
 - Windows Server 2019, R-release (github action)
 - macOS 10.15, R-release (github action)
 - Linux ubuntu 20.04, R-release (github-action)
 - Linux ubuntu 20.04, R-devel (github-action)
 - macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
-- Windows Server 2022, R-devel, 64 bit (R hub)
+
 - Windows, R-release (winbuilder)
 - Windows, R-devel  (winbuilder)
 - Windows, R-oldrelease  (winbuilder)

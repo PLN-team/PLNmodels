@@ -1,3 +1,7 @@
+# PLNmodels 0.11.6
+
+* fixing wrong use of all.equal
+
 # PLNmodels 0.11.5
 
 * fixing #79 by using the same variational distribution to approximate 
