@@ -152,6 +152,14 @@ test_that("PLN: Check that all univariate PLN models are equivalent with the mul
 
   expect_true(all.equal(
     map_dbl(univariate_spherical, "nb_param"),
+    map_dbl(univariate_full     , "nb_param")
+  ))
+
+  expect_true(all.equal(
+    map_dbl(univariate_spherical, "nb_param"),
+    map_dbl(univariate_diagonal , "nb_param")
+  ))
+  expect_true(all.equal(
     map_dbl(univariate_full     , "nb_param"),
     map_dbl(univariate_diagonal , "nb_param")
   ))
