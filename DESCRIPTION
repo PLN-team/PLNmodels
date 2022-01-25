@@ -45,8 +45,6 @@ Imports:
   corrplot,
   magrittr,
   rlang
-Remotes: 
-  astamm/nloptr
 Suggests: 
     knitr,
     rmarkdown,

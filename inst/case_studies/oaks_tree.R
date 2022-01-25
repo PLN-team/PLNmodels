@@ -75,7 +75,7 @@ system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data 
 
 plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"), reverse = TRUE)
 
-myPLN <- my_mixtures %>% getBestModel("BIC")
+myPLN <- my_mixtures %>% getModel(3)
 
 plot(myPLN, "pca", main = 'clustering memberships in individual factor map')
 myPLN$plot_clustering_data(myPLN)
