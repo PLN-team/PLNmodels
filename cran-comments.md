@@ -7,18 +7,17 @@ correct a wrong use of all.equal
 ## Tested environments
 
 - Linux ubuntu 20.04 R-release, (local)
-
 - Windows Server 2022, R-devel, 64 bit
-
 - Windows Server 2019, R-release (github action)
 - macOS 10.15, R-release (github action)
 - Linux ubuntu 20.04, R-release (github-action)
 - Linux ubuntu 20.04, R-devel (github-action)
-- macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
-
+- Linux ubuntu 20.04, R-orldrel (github-action)
+- Windows Server 2022, R-devel, 64 bit (R hub)
 - Windows, R-release (winbuilder)
-- Windows, R-devel  (winbuilder)
-- Windows, R-oldrelease  (winbuilder)
+- Windows, R-devel  (winbuilder) (FAILURE, no nloptr)
+- Windows, R-oldrelease  (winbuilder) (FAILURE, no nloptr)
+- macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
 
 all status OK except for
 
@@ -37,9 +36,14 @@ Examples with CPU (user + system) or elapsed time > 5s
 plot.PLNmixturefamily 6.05   0.01    6.07
 PLNmixture            5.64   0.01    5.71
 
+* FAILURE DUE TO NLOPTR Not installing correctly
+
+Windows R-devel, R-oldrel (winbuilder)
+
+
 On my computer I get (Ubuntu 20.04, Intel Xeon 3.5 GHz; 64 Go mem)
 
-── R CMD check results ──────────── PLNmodels 0.11.5 ────
+── R CMD check results ──────────── PLNmodels 0.11.6 ────
 Duration: 3m 46.7s
 
 > checking installed package size ... NOTE
