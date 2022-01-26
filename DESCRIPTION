@@ -56,7 +56,7 @@ Suggests:
     spelling,
     factoextra,
     Wrench
-LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)
+LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 2.0.0)
 VignetteBuilder: knitr
 Collate: 
     'PLNfit-class.R'

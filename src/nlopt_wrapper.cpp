@@ -1,7 +1,5 @@
 #include "nlopt_wrapper.h"
 
-#include "nloptrAPI.h"
-
 // ---------------------------------------------------------------------------------------
 // Algorithm naming
 

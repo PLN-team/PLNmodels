@@ -2,7 +2,7 @@
 Submitting PLNmodels version 0.11-6 to CRAN. Motivated by a request from CRAN team to 
 correct a wrong use of all.equal
 
-!!! uncertainties due to the possible archiving of nloptr R !!!
++ fixing linkign problem to new version of nloptr
 
 ## Tested environments
 
@@ -12,11 +12,12 @@ correct a wrong use of all.equal
 - macOS 10.15, R-release (github action)
 - Linux ubuntu 20.04, R-release (github-action)
 - Linux ubuntu 20.04, R-devel (github-action)
-- Linux ubuntu 20.04, R-orldrel (github-action)
+- Linux ubuntu 20.04, R-oldrel (github-action)
 - Windows Server 2022, R-devel, 64 bit (R hub)
-- Windows, R-release (winbuilder)
-- Windows, R-devel  (winbuilder) (FAILURE, no nloptr)
-- Windows, R-oldrelease  (winbuilder) (FAILURE, no nloptr)
+
+- Windows, R-devel  (winbuilder)
+- Windows, R-release (winbuilder)  (FAILURE, no nloptr)
+- Windows, R-oldrelease  (winbuilder)
 - macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
 
 all status OK except for
@@ -38,7 +39,7 @@ PLNmixture            5.64   0.01    5.71
 
 * FAILURE DUE TO NLOPTR Not installing correctly
 
-Windows R-devel, R-oldrel (winbuilder)
+Windows R-release (winbuilder)
 
 
 On my computer I get (Ubuntu 20.04, Intel Xeon 3.5 GHz; 64 Go mem)
