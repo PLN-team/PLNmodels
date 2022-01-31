@@ -2,7 +2,7 @@
 Submitting PLNmodels version 0.11-6 to CRAN. Motivated by a request from CRAN team to 
 correct a wrong use of all.equal
 
-+ fixing linkign problem to new version of nloptr
++ fixing linking problem to new version of nloptr
 
 ## Tested environments
 
@@ -14,7 +14,6 @@ correct a wrong use of all.equal
 - Linux ubuntu 20.04, R-devel (github-action)
 - Linux ubuntu 20.04, R-oldrel (github-action)
 - Windows Server 2022, R-devel, 64 bit (R hub)
-
 - Windows, R-devel  (winbuilder)
 - Windows, R-release (winbuilder)  (FAILURE, no nloptr)
 - Windows, R-oldrelease  (winbuilder)
