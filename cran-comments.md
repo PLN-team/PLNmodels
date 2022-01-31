@@ -15,7 +15,7 @@ correct a wrong use of all.equal
 - Linux ubuntu 20.04, R-oldrel (github-action)
 - Windows Server 2022, R-devel, 64 bit (R hub)
 - Windows, R-devel  (winbuilder)
-- Windows, R-release (winbuilder)  (FAILURE, no nloptr)
+- Windows, R-release (winbuilder)
 - Windows, R-oldrelease  (winbuilder)
 - macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
 
