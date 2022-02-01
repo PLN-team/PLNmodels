@@ -27,3 +27,4 @@
 ^inst/test/
 ^\.github$
 ^data-raw$
+^CRAN-SUBMISSION$

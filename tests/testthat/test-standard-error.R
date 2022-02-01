@@ -60,7 +60,7 @@ test_that("Check internal consistency of Fisher matrix for PLN models with no co
 
 
 test_that("Check temporal consistency of Fisher matrix for PLN models with no covariates",  {
-  tol <- 1e-3
+  tol <- 1e-2
 
   ## Consistency of the diagonal of the fisher matrix
   fim.diag <- Matrix::diag(vcov(myPLN)) / nrow(trichoptera)

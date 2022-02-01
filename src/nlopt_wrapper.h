@@ -4,7 +4,7 @@
 #pragma once
 
 #include <Rcpp.h>
-#include <nlopt.h>
+#include <nloptrAPI.h>
 
 #include <memory>      // unique_ptr
 #include <type_traits> // remove_pointer

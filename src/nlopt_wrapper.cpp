@@ -1,9 +1,5 @@
 #include "nlopt_wrapper.h"
 
-// This header DEFINES non inline functions that follow the declarations of nlopt.h
-// It must be only included once in a project, or it will generate multiple definitions.
-#include "nloptrAPI.h"
-
 // ---------------------------------------------------------------------------------------
 // Algorithm naming
 

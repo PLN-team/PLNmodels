@@ -1,16 +1,18 @@
-# PLNmodels dev version
+# PLNmodels 0.11.6
 
-* fixing #79 by using the same variational distribution to approximate 
-    the spherical case as in the fully parametrized and diagonal cases
-* smarter starting point for `$VEStep()` (PLN-PCA) to avoid convergence problems. 
-* use future_lapply in PLNmixture_family
-* remove a NOTE due to a DESeq2 link and a failure on solaris on CRAN machines
-* faster examples and build for vignettes
+* fix wrong use of all.equal
+* fix linking problem in new version of nloptr (>=2.0.0)
 
 # PLNmodels 0.11.5
 
-* Additional R6 method `$VEStep()` for PLN-PCA, dealing with low rank matrices
-* Additional R6 method `$project()` for PLN-PCA, used to project newdata into PCA space
+* fixing #79 by using the same variational distribution to approximate 
+    the spherical case as in the fully parametrized and diagonal cases
+* faster examples and build for vignettes
+* additional R6 method `$VEStep()` for PLN-PCA, dealing with low rank matrices
+* additional R6 method `$project()` for PLN-PCA, used to project newdata into PCA space
+* use future_lapply in PLNmixture_family
+* remove a NOTE due to a DESeq2 link and a failure on solaris on CRAN machines
+* some bug fixes
 
 # PLNmodels 0.11.4
 

@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 0.11.5-9500
+Version: 0.11.6-9005
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inrae.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -34,7 +34,7 @@ Imports:
   glassoFast,
   Matrix,
   Rcpp,
-  nloptr (>= 1.2.0),
+  nloptr,
   igraph,
   grid,
   gridExtra,
@@ -56,7 +56,7 @@ Suggests:
     spelling,
     factoextra,
     Wrench
-LinkingTo: Rcpp, RcppArmadillo, nloptr (>= 1.2.0)
+LinkingTo: Rcpp, RcppArmadillo, nloptr
 VignetteBuilder: knitr
 Collate: 
     'PLNfit-class.R'

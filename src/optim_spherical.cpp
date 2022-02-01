@@ -4,7 +4,6 @@
 // [[Rcpp::depends(nloptr)]]
 // [[Rcpp::plugins(cpp11)]]
 
-
 #include "nlopt_wrapper.h"
 #include "packing.h"
 #include "utils.h"
@@ -147,7 +146,6 @@ Rcpp::List cpp_optimize_vestep_spherical(
         const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
-        const arma::uword p = Y.n_cols;
         arma::mat Z = O + X * Theta.t() + M;
         arma::mat A = exp(Z + 0.5 * S2);
         double n_sigma2 = accu(diagmat(w) * (pow(M, 2) + S2)) ;
@@ -167,7 +165,6 @@ Rcpp::List cpp_optimize_vestep_spherical(
     arma::mat S2 = S % S;
     double omega2 = Omega(0, 0);
     // Element-wise log-likelihood
-    const arma::uword p = Y.n_cols;
     arma::mat Z = O + X * Theta.t() + M;
     arma::mat A = exp(Z + 0.5 * S2);
     arma::mat loglik = sum(Y % Z - A - 0.5 * (pow(M, 2) + S2 ) * omega2 + 0.5 * log(S2 * omega2), 1) + ki(Y);

@@ -152,29 +152,46 @@ test_that("PLN: Check that all univariate PLN models are equivalent with the mul
 
   expect_true(all.equal(
     map_dbl(univariate_spherical, "nb_param"),
+    map_dbl(univariate_full     , "nb_param")
+  ))
+
+  expect_true(all.equal(
+    map_dbl(univariate_spherical, "nb_param"),
+    map_dbl(univariate_diagonal , "nb_param")
+  ))
+  expect_true(all.equal(
     map_dbl(univariate_full     , "nb_param"),
     map_dbl(univariate_diagonal , "nb_param")
   ))
 
   expect_true(all.equal(
     map_dbl(univariate_full, "loglik") %>% sum(),
-    multivariate_diagonal$loglik, tolerance = 0.25)
+    multivariate_diagonal$loglik, tolerance = 1e-2)
   )
 
   expect_true(all.equal(
     map_dbl(univariate_diagonal, "loglik") %>% sum(),
-    multivariate_diagonal$loglik, tolerance = 0.25)
+    multivariate_diagonal$loglik, tolerance = 1e-2)
   )
 
    expect_true(all.equal(
     map_dbl(univariate_spherical, "loglik") %>% sum(),
-    multivariate_diagonal$loglik, tolerance = 0.25)
+    multivariate_diagonal$loglik, tolerance = 1e-2)
   )
 
   expect_true(all.equal(
     map(univariate_spherical, sigma) %>% map_dbl(as.double),
-    map(univariate_full     , sigma) %>% map_dbl(as.double),
-    map(univariate_diagonal , sigma) %>% map_dbl(as.double), tolerance = 1e-2
+    map(univariate_diagonal , sigma) %>% map_dbl(as.double), tolerance = .25
+  ))
+
+    expect_true(all.equal(
+    map(univariate_spherical, sigma) %>% map_dbl(as.double),
+    map(univariate_full , sigma) %>% map_dbl(as.double), tolerance = .25
+  ))
+
+  expect_true(all.equal(
+    map(univariate_diagonal, sigma) %>% map_dbl(as.double),
+    map(univariate_full , sigma) %>% map_dbl(as.double), tolerance = .25
   ))
 
 })
