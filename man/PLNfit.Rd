@@ -93,11 +93,13 @@ print(myPLN)
 \item \href{#method-new}{\code{PLNfit$new()}}
 \item \href{#method-optimize}{\code{PLNfit$optimize()}}
 \item \href{#method-VEstep}{\code{PLNfit$VEstep()}}
+\item \href{#method-VEstep_cond}{\code{PLNfit$VEstep_cond()}}
 \item \href{#method-set_R2}{\code{PLNfit$set_R2()}}
 \item \href{#method-compute_fisher}{\code{PLNfit$compute_fisher()}}
 \item \href{#method-compute_standard_error}{\code{PLNfit$compute_standard_error()}}
 \item \href{#method-postTreatment}{\code{PLNfit$postTreatment()}}
 \item \href{#method-predict}{\code{PLNfit$predict()}}
+\item \href{#method-predict_cond}{\code{PLNfit$predict_cond()}}
 \item \href{#method-show}{\code{PLNfit$show()}}
 \item \href{#method-print}{\code{PLNfit$print()}}
 \item \href{#method-clone}{\code{PLNfit$clone()}}
@@ -237,6 +239,48 @@ A list with three components:
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-VEstep_cond"></a>}}
+\if{latex}{\out{\hypertarget{method-VEstep_cond}{}}}
+\subsection{Method \code{VEstep_cond()}}{
+Result of one call to the VE step of the optimization procedure for a subset of species Yc: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space. The only change with respect to VEstep is that it computes p(Z1|Y1) instead of p(Z|Y).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$VEstep_cond(
+  covariates,
+  responses,
+  offsets,
+  weights,
+  Sigma = NULL,
+  control = list()
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{Sigma}}{Optional. Only needed if we use VEstep_cond to compute the likelihood of p(Y2|Y1). In this case, we need to provide responses = Y2, and Sigma is the variance of Z2|Z1.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list with three components:
+\itemize{
+\item the matrix \code{M} of variational means,
+\item the matrix \code{S2} of variational variances
+\item the vector \code{log.lik} of (variational) log-likelihood of each new observation
+}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-set_R2"></a>}}
 \if{latex}{\out{\hypertarget{method-set_R2}{}}}
 \subsection{Method \code{set_R2()}}{
@@ -352,6 +396,37 @@ Predict position, scores or observations of new data.
 }
 \subsection{Returns}{
 A matrix with predictions scores or counts.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-predict_cond"></a>}}
+\if{latex}{\out{\hypertarget{method-predict_cond}{}}}
+\subsection{Method \code{predict_cond()}}{
+Predict position, scores or observations of new data conditionally on the observation of a (set of) species
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$predict_cond(
+  newdata,
+  Yc,
+  type = c("link", "response"),
+  envir = parent.frame()
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{newdata}}{a dataframe containing the environmental covariates of the sites where to predict}
+
+\item{\code{Yc}}{a dataframe containing the abundances of the observed species (matching the names provided as data in the PLN function)}
+
+\item{\code{type}}{Scale used for the prediction. Either \code{link} (default, predicted positions in the latent space) or \code{response} (predicted counts).}
+
+\item{\code{envir}}{Environment in which the prediction is evaluated}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A matrix with predictions scores or counts and the parameters of the latent variable
 }
 }
 \if{html}{\out{<hr>}}
