@@ -192,49 +192,49 @@ PLNfit <- R6Class(
            S2      = (optim_out$S)**2,
            log.lik = setNames(Ji, rownames(responses)))
     },
-    
-    
+
+
     #' @description Result of one call to the VE step of the optimization procedure for a subset of species Yc: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space. The only change with respect to VEstep is that it computes p(Z1|Y1) instead of p(Z|Y).
     #' @param Sigma Optional. Only needed if we use VEstep_cond to compute the likelihood of p(Y2|Y1). In this case, we need to provide responses = Y2, and Sigma is the variance of Z2|Z1.
     #' @return A list with three components:
     #'  * the matrix `M` of variational means,
     #'  * the matrix `S2` of variational variances
     #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
-    
-    VEstep_cond = function(covariates, responses, offsets, weights, Sigma=NULL, control = list()) {
-      
+
+    VEstep_cond = function(covariates, offsets, responses, weights, Sigma=NULL, control = list()) {
+
       responses = as.matrix(responses)
       covariates = as.matrix(covariates)
       offsets = as.matrix(offsets)
       weights = as.vector(weights)
       if(!is.null(Sigma)){ Sigma = as.matrix(Sigma)}
-      
+
       # problem dimension
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
-      
+
       ## define default control parameters for optim and overwrite by user defined parameters
       control$covariance <- "full"
       control <- PLN_param(control, n, p)
-      
+
       VEstep_optimizer  <-
         switch(control$covariance,
                "spherical" = cpp_optimize_vestep_spherical,
                "diagonal"  = cpp_optimize_vestep_diagonal,
                "full"      = cpp_optimize_vestep_full
         )
-      
+
       # Just to control for the case where Theta is a vector (i.e. we condition on one species only)
       if(is.null(dim(self$model_par$Theta[colnames(responses),]))){
         Theta=t(as.matrix(self$model_par$Theta[colnames(responses),]))
       }else{
         Theta=self$model_par$Theta[colnames(responses),]
       }
-      
-      if(is.null(Sigma)){#if we don't specify Sigma, then it is simply the marginal covariance matrix Sigma of the species we condition on.
+
+      if(is.null(Sigma)){ #if we don't specify Sigma, then it is simply the marginal covariance matrix Sigma of the species we condition on.
         Sigma = self$model_par$Sigma[colnames(responses),colnames(responses)]
-      }#otherwise, Sigma is already specified as input (and is var(Z2|Y1))
-      
-      
+      } #otherwise, Sigma is already specified as input (and is var(Z2|Y1))
+
+
       # ordre: init_parameters, Y, X, O, w, Theta, Omega, configuration
       ## Initialize the variational parameters with the appropriate new dimension of the data
       optim_out <- VEstep_optimizer(
@@ -248,18 +248,18 @@ PLNfit <- R6Class(
         Omega = as(Matrix::solve(Matrix::Matrix(Sigma)), 'matrix'),
         control
       )
-      
+
       Ji <- optim_out$loglik
       attr(Ji, "weights") <- weights
-      
+
       ## output
       list(M       = optim_out$M,
            S2      = (optim_out$S)**2,
            log.lik = setNames(Ji, rownames(responses)))
     },
-    
-    
-    
+
+
+
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Post treatment functions --------------
@@ -353,7 +353,7 @@ PLNfit <- R6Class(
     #' @param envir Environment in which the prediction is evaluated
     #' @return A matrix with predictions scores or counts.
     predict = function(newdata, type = c("link", "response"), envir = parent.frame()) {
-      type = match.arg(type)
+      type <- match.arg(type)
 
       ## Extract the model matrices from the new data set with initial formula
       X <- model.matrix(formula(private$formula)[-2], newdata, xlev = private$xlevels)
@@ -372,74 +372,81 @@ PLNfit <- R6Class(
     },
 
     #' @description Predict position, scores or observations of new data conditionally on the observation of a (set of) species
-    #' @param Yc a dataframe containing the abundances of the observed species (matching the names provided as data in the PLN function)
-    #' @param newdata a dataframe containing the environmental covariates of the sites where to predict
+    #' @param Yc a data frame containing the abundances of the observed species (matching the names provided as data in the PLN function)
+    #' @param newdata a data frame containing the environmental covariates of the sites where to predict
     #' @param type Scale used for the prediction. Either `link` (default, predicted positions in the latent space) or `response` (predicted counts).
     #' @param envir Environment in which the prediction is evaluated
     #' @return A matrix with predictions scores or counts and the parameters of the latent variable
     predict_cond = function(newdata, Yc, type = c("link", "response"), envir = parent.frame()){
-      type = match.arg(type)
-      
+      type <- match.arg(type)
+
       # checks and dimensions
-      sp.names<- rownames(self$model_par$Theta)
-      
-      if(! any(colnames(Yc) %in%   sp.names)){stop("Yc must be a subset of the species in responses")}
-      if(! nrow(Yc) == nrow(newdata)){stop("The number of rows of Yc must match the number of rows in newdata")}
-      
+      sp_names<- rownames(self$model_par$Theta)
+
+      if (! any(colnames(Yc) %in% sp_names))
+        stop("Yc must be a subset of the species in responses")
+      if (! nrow(Yc) == nrow(newdata))
+        stop("The number of rows of Yc must match the number of rows in newdata")
+
       ## Extract the model matrices from the new data set with initial formula
       X <- model.matrix(formula(private$formula)[-2], newdata, xlev = private$xlevels)
       O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
-      
-      n.new<- nrow(Yc)
-      uncond.names<-  sp.names[!rownames(private$Theta) %in% colnames(Yc)]
-      cond.names<- colnames(Yc)
-      
-      if(is.null(O)){O=matrix(0,n.new,length(sp.names))}
-      
+
+      n_new <- nrow(Yc)
+      uncond_names <-  sp_names[!rownames(private$Theta) %in% colnames(Yc)]
+      cond_names   <- colnames(Yc)
+
+      if (is.null(O)) O <- matrix(0, n_new, length(sp_names))
+
       # Compute parameters of the law
-      vcov <- self$model_par$Sigma
-      vcov11 <- vcov[cond.names,cond.names]
-      vcov22 <- vcov[uncond.names, uncond.names]
-      vcov12 <-  vcov[cond.names, uncond.names]
-      vcov21 <-  vcov[uncond.names,cond.names]
-      
+      vcov   <- self$model_par$Sigma
+      vcov11 <- vcov[cond_names, cond_names]
+      vcov22 <- vcov[uncond_names, uncond_names]
+      vcov12 <- vcov[cond_names, uncond_names]
+      vcov21 <- vcov[uncond_names, cond_names]
+
       A <- vcov21 %*% solve(vcov11)
-      Sigma2.1 <- vcov22 - A%*% vcov12
-      
+      Sigma21 <- vcov22 - A %*% vcov12
+
       # Call to VEstep to obtain M1, S1
-      VE <- self$VEstep_cond(covariates=X, responses = Yc,
-                             offsets=O[,rownames(self$model_par$Theta) %in% colnames(Yc)],  weights = rep(1,n.new))
-      
+      VE <- self$VEstep_cond(
+              covariates = X,
+              offsets    = O[, rownames(self$model_par$Theta) %in% colnames(Yc)],
+              responses  = Yc,
+              weights = rep(1, n_new)
+          )
+
       M2 <- VE$M %*% t(A)
-      
-      S1=array(data=apply(VE$S2,1,FUN=function(x) as.matrix(diag(x,nrow=length(cond.names) ))),
-               dim=c(length(cond.names),length(cond.names),n.new))
-      
-      S2 <- array(NA, dim=c(length(uncond.names),length(uncond.names), n.new))
-      S2[]<- apply(S1, 3, function(x) A%*%x%*%t(A) + Sigma2.1)
-      
+
+      S1 <- array(
+        data = apply(VE$S2, 1, FUN=function(x) as.matrix(diag(x,nrow=length(cond_names) ))),
+               dim = c(length(cond_names), length(cond_names),n_new))
+
+      S2   <- array(NA, dim = c(length(uncond_names),length(uncond_names), n_new))
+      S2[] <- apply(S1, 3, function(x) A %*% x %*% t(A) + Sigma21)
+
       ## mean latent positions in the parameter space
-      EZ <- tcrossprod(as.matrix(X), private$Theta[uncond.names,]) + M2
+      EZ <- tcrossprod(as.matrix(X), private$Theta[uncond_names,]) + M2
       if (!is.null(O)) EZ <- EZ + O[,!rownames(self$model_par$Theta) %in% colnames(Yc)]
-      
-      colnames(EZ) <- uncond.names
-      
+
+      colnames(EZ) <- uncond_names
+
       # if type=response
       # ! For Stephane we should only add the .5*diag(S2) term only if we want the type="response"
       # But should be consistent with the predict function anyway
-      EZ_resp <- t(sapply(1:n.new,function(i) EZ[i,] + .5*diag(S2[,,i])))
-      
+      EZ_resp <- t(sapply(1:n_new, function(i) EZ[i,] + .5*diag(S2[, , i])))
+
       results <- switch(type, link = EZ, response = exp(EZ_resp))
-      
+
       attr(results, "type") <- type
-      
-      results <- list(pred=results, M=M2, S=S2)
-      
-      return(results)
-      
+
+      results <- list(pred = results, M = M2, S = S2)
+
+      results
+
     },
-    
-    
+
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Print functions -----------------------
     #' @description User friendly print method

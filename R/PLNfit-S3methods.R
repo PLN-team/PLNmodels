@@ -38,14 +38,14 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
 #' \item{M}{A matrix containing E(Z_uncond | Y_c) for each given site.}
 #' \item{S}{A matrix containing Var(Z_uncond | Y_c) for each given site (sites are the third dimension of the array)}
 #' @export
-#' @examples 
+#' @examples
 #' data(trichoptera)
 #' trichoptera_prep <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLN(Abundance ~ Temperature + Wind, trichoptera_prep)
 #' #Condition on the set of the first two species in the dataset (Hym, Hys) at the ten first sites
 #' Yc <- trichoptera$Abundance[1:10,c(1,2)]
 #' newdata <- cbind(1,trichoptera$Covariate[1:10,c("Temperature", "Wind")])
-#' pred <- predict_cond(object=myPLN,newdata=newdata,Yc=Yc,type="response")
+#' pred <- predict_cond(myPLN, newdata = newdata, Yc = Yc, type = "response")
 
 predict_cond = function(object, newdata, Yc, type = c("link", "response")){
   stopifnot(isPLNfit(object))
