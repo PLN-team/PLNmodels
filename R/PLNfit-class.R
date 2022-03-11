@@ -380,72 +380,64 @@ PLNfit <- R6Class(
     predict_cond = function(newdata, Yc, type = c("link", "response"), envir = parent.frame()){
       type <- match.arg(type)
 
-      # checks and dimensions
+      # Checks
       sp_names<- rownames(self$model_par$Theta)
-
       if (! any(colnames(Yc) %in% sp_names))
         stop("Yc must be a subset of the species in responses")
       if (! nrow(Yc) == nrow(newdata))
         stop("The number of rows of Yc must match the number of rows in newdata")
 
+      # Dimensions and subsets
+      n_new <- nrow(Yc)
+      p_new <- ncol(Yc)
+      cond <- sp_names %in% colnames(Yc)
+
       ## Extract the model matrices from the new data set with initial formula
       X <- model.matrix(formula(private$formula)[-2], newdata, xlev = private$xlevels)
       O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
-
-      n_new <- nrow(Yc)
-      uncond_names <-  sp_names[!rownames(private$Theta) %in% colnames(Yc)]
-      cond_names   <- colnames(Yc)
-
-      if (is.null(O)) O <- matrix(0, n_new, length(sp_names))
+      if (is.null(O)) O <- matrix(0, n_new, self$p)
 
       # Compute parameters of the law
-      vcov   <- self$model_par$Sigma
-      vcov11 <- vcov[cond_names, cond_names]
-      vcov22 <- vcov[uncond_names, uncond_names]
-      vcov12 <- vcov[cond_names, uncond_names]
-      vcov21 <- vcov[uncond_names, cond_names]
-
-      A <- vcov21 %*% solve(vcov11)
+      vcov11 <- private$Sigma[cond ,  cond]
+      vcov22 <- private$Sigma[!cond, !cond]
+      vcov12 <- private$Sigma[cond , !cond]
+      A <- crossprod(vcov12, solve(vcov11))
       Sigma21 <- vcov22 - A %*% vcov12
 
       # Call to VEstep to obtain M1, S1
       VE <- self$VEstep_cond(
               covariates = X,
-              offsets    = O[, rownames(self$model_par$Theta) %in% colnames(Yc)],
+              offsets    = O[, cond, drop = FALSE],
               responses  = Yc,
-              weights = rep(1, n_new)
+              weights    = rep(1, n_new)
           )
 
-      M2 <- VE$M %*% t(A)
-
-      S1 <- array(
-        data = apply(VE$S2, 1, FUN=function(x) as.matrix(diag(x,nrow=length(cond_names) ))),
-               dim = c(length(cond_names), length(cond_names),n_new))
-
-      S2   <- array(NA, dim = c(length(uncond_names),length(uncond_names), n_new))
-      S2[] <- apply(S1, 3, function(x) A %*% x %*% t(A) + Sigma21)
+      M2 <- tcrossprod(VE$M, A)
+      # S1 <- array(
+      #   data = apply(VE$S2, 1, FUN=function(x) diag(x, nrow = p_new)),
+      #          dim = c(p_new, p_new, n_new))
+      # S2   <- array(NA, dim = c(self$p - p_new, self$p - p_new, n_new))
+      # S2[] <- apply(S1, 3, function(x) A %*% x %*% t(A) + Sigma21)
+      S2 <- map(1:n_new, ~crossprod(sqrt(VE$S2[., ]) * t(A)) + Sigma21) %>%
+        simplify2array()
 
       ## mean latent positions in the parameter space
-      EZ <- tcrossprod(as.matrix(X), private$Theta[uncond_names,]) + M2
-      if (!is.null(O)) EZ <- EZ + O[,!rownames(self$model_par$Theta) %in% colnames(Yc)]
+      EZ <- tcrossprod(X, private$Theta[!cond, , drop = FALSE]) + M2
+      EZ <- EZ + O[, !cond, drop = FALSE]
+      colnames(EZ) <- setdiff(sp_names, colnames(Yc))
 
-      colnames(EZ) <- uncond_names
-
-      # if type=response
       # ! For Stephane we should only add the .5*diag(S2) term only if we want the type="response"
-      # But should be consistent with the predict function anyway
-      EZ_resp <- t(sapply(1:n_new, function(i) EZ[i,] + .5*diag(S2[, , i])))
+      if (type == "response") {
+        # EZ <- t(sapply(1:n_new, function(i) EZ[i,] + .5*diag(S2[, , i])))
+        EZ <- EZ + .5 * t(apply(S2, 3, diag))
+      }
 
-      results <- switch(type, link = EZ, response = exp(EZ_resp))
-
+      results <- switch(type, link = EZ, response = exp(EZ))
       attr(results, "type") <- type
-
+      ## Shall we really send back S2 and M from this function?
       results <- list(pred = results, M = M2, S = S2)
-
       results
-
     },
-
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Print functions -----------------------
