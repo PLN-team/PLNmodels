@@ -72,9 +72,8 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 }
 \if{html}{
-\out{<details ><summary>Inherited methods</summary>}
+\out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep_cond">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep_cond}{\code{PLNmodels::PLNfit$VEstep_cond()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict">}\href{../../PLNmodels/html/PLNfit.html#method-predict}{\code{PLNmodels::PLNfit$predict()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond">}\href{../../PLNmodels/html/PLNfit.html#method-predict_cond}{\code{PLNmodels::PLNfit$predict_cond()}}\out{</span>}

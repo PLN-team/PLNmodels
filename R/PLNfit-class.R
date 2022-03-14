@@ -391,7 +391,8 @@ PLNfit <- R6Class(
       cat("    $model_par, $latent, $latent_pos, $var_par, $optim_par\n")
       cat("    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria\n")
       cat("* Useful S3 methods\n")
-      cat("    print(), coef(), sigma(), vcov(), fitted(), predict(), predict_cond(), standard_error()\n")
+      cat("    print(), coef(), sigma(), vcov(), fitted()\n")
+      cat("    predict(), predict_cond(), standard_error()\n")
     },
 
     #' @description User friendly print method

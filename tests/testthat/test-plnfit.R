@@ -77,7 +77,8 @@ capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names 
     $model_par, $latent, $latent_pos, $var_par, $optim_par
     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
 * Useful S3 methods
-    print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()",
+    print(), coef(), sigma(), vcov(), fitted()
+    predict(), predict_cond(), standard_error()",
     sep = "\n")
 
   expect_output(model$show(),

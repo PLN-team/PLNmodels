@@ -27,9 +27,9 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
 #' Predict counts conditionally
 #'
 #' @name predict_cond
-#' @description Predict counts of a new sample conditionally on a (set of) observed species
+#' @description Predict counts of a new sample conditionally on a (set of) observed variables
 #' @param object an R6 object with class [`PLNfit`]
-#' @param Yc a dataframe containing the abundances of the observed species (matching the names provided as data in the PLN function)
+#' @param cond_responses a data frame containing the counts of the observed variables (matching the names provided as data in the PLN function)
 #' @param newdata A data frame in which to look for variables and offsets with which to predict
 #' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)
 #' @param ... additional parameters for S3 compatibility. Not used
@@ -44,12 +44,12 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
 #' myPLN <- PLN(Abundance ~ Temperature + Wind, trichoptera_prep)
 #' #Condition on the set of the first two species in the dataset (Hym, Hys) at the ten first sites
 #' Yc <- trichoptera$Abundance[1:10, c(1, 2), drop=FALSE]
-#' newdata <- cbind(1,trichoptera$Covariate[1:10, c("Temperature", "Wind")])
-#' pred <- predict_cond(myPLN, newdata = newdata, Yc = Yc, type = "response")
+#' newX <- cbind(1, trichoptera$Covariate[1:10, c("Temperature", "Wind")])
+#' pred <- predict_cond(myPLN, newX, Yc, type = "response")
 
-predict_cond = function(object, newdata, Yc, type = c("link", "response")){
+predict_cond = function(object, newdata, cond_responses, type = c("link", "response")){
   stopifnot(isPLNfit(object))
-  object$predict_cond(newdata, Yc, type, parent.frame())
+  object$predict_cond(newdata, cond_responses, type, parent.frame())
 }
 
 

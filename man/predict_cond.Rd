@@ -4,14 +4,14 @@
 \alias{predict_cond}
 \title{Predict counts conditionally}
 \usage{
-predict_cond(object, newdata, Yc, type = c("link", "response"))
+predict_cond(object, newdata, cond_responses, type = c("link", "response"))
 }
 \arguments{
 \item{object}{an R6 object with class \code{\link{PLNfit}}}
 
 \item{newdata}{A data frame in which to look for variables and offsets with which to predict}
 
-\item{Yc}{a dataframe containing the abundances of the observed species (matching the names provided as data in the PLN function)}
+\item{cond_responses}{a data frame containing the counts of the observed variables (matching the names provided as data in the PLN function)}
 
 \item{type}{The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)}
 
@@ -24,14 +24,14 @@ A list containing:
 \item{S}{A matrix containing Var(Z_uncond | Y_c) for each given site (sites are the third dimension of the array)}
 }
 \description{
-Predict counts of a new sample conditionally on a (set of) observed species
+Predict counts of a new sample conditionally on a (set of) observed variables
 }
 \examples{
 data(trichoptera)
 trichoptera_prep <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLN <- PLN(Abundance ~ Temperature + Wind, trichoptera_prep)
 #Condition on the set of the first two species in the dataset (Hym, Hys) at the ten first sites
-Yc <- trichoptera$Abundance[1:10,c(1,2)]
-newdata <- cbind(1,trichoptera$Covariate[1:10,c("Temperature", "Wind")])
-pred <- predict_cond(object=myPLN,newdata=newdata,Yc=Yc,type="response")
+Yc <- trichoptera$Abundance[1:10, c(1, 2), drop=FALSE]
+newX <- cbind(1, trichoptera$Covariate[1:10, c("Temperature", "Wind")])
+pred <- predict_cond(myPLN, newX, Yc, type = "response")
 }
