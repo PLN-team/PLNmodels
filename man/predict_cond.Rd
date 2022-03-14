@@ -14,12 +14,10 @@ predict_cond(object, newdata, cond_responses, type = c("link", "response"))
 \item{cond_responses}{a data frame containing the counts of the observed variables (matching the names provided as data in the PLN function)}
 
 \item{type}{The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)}
-
-\item{...}{additional parameters for S3 compatibility. Not used}
 }
 \value{
 A list containing:
-\item{preds}{A matrix of predicted log-counts (if \code{type = "link"}) or predicted counts (if \code{type = "response"})}
+\item{pred}{A matrix of predicted log-counts (if \code{type = "link"}) or predicted counts (if \code{type = "response"})}
 \item{M}{A matrix containing E(Z_uncond | Y_c) for each given site.}
 \item{S}{A matrix containing Var(Z_uncond | Y_c) for each given site (sites are the third dimension of the array)}
 }

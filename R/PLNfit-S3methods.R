@@ -32,9 +32,8 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
 #' @param cond_responses a data frame containing the counts of the observed variables (matching the names provided as data in the PLN function)
 #' @param newdata A data frame in which to look for variables and offsets with which to predict
 #' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)
-#' @param ... additional parameters for S3 compatibility. Not used
 #' @return A list containing:
-#' \item{preds}{A matrix of predicted log-counts (if `type = "link"`) or predicted counts (if `type = "response"`)}
+#' \item{pred}{A matrix of predicted log-counts (if `type = "link"`) or predicted counts (if `type = "response"`)}
 #' \item{M}{A matrix containing E(Z_uncond | Y_c) for each given site.}
 #' \item{S}{A matrix containing Var(Z_uncond | Y_c) for each given site (sites are the third dimension of the array)}
 #' @export
