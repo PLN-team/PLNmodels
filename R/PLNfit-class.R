@@ -151,14 +151,19 @@ PLNfit <- R6Class(
     },
 
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
+    #' @param Theta Optional fixed value of the regression parameters
+    #' @param Sigma Optional fixed value of the covariance parameters.
     #' @return A list with three components:
     #'  * the matrix `M` of variational means,
     #'  * the matrix `S2` of variational variances
     #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
-    VEstep = function(covariates, offsets, responses, weights, control = list()) {
+    VEstep = function(covariates, offsets, responses, weights,
+                      Theta = self$model_par$Theta,
+                      Sigma = self$model_par$Sigma,
+                      control = list()) {
 
       # problem dimension
-      n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
+      n <- nrow(responses); p <- ncol(responses)
 
       ## define default control parameters for optim and overwrite by user defined parameters
       control$covariance <- self$vcov_model
@@ -178,72 +183,7 @@ PLNfit <- R6Class(
         covariates,
         offsets,
         weights,
-        Theta = self$model_par$Theta,
-        ## Robust inversion using Matrix::solve instead of solve.default
-        Omega = as(Matrix::solve(Matrix::Matrix(self$model_par$Sigma)), 'matrix'),
-        control
-      )
-
-      Ji <- optim_out$loglik
-      attr(Ji, "weights") <- weights
-
-      ## output
-      list(M       = optim_out$M,
-           S2      = (optim_out$S)**2,
-           log.lik = setNames(Ji, rownames(responses)))
-    },
-
-
-    #' @description Result of one call to the VE step of the optimization procedure for a subset of species Yc: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space. The only change with respect to VEstep is that it computes p(Z1|Y1) instead of p(Z|Y).
-    #' @param Sigma Optional. Only needed if we use VEstep_cond to compute the likelihood of p(Y2|Y1). In this case, we need to provide responses = Y2, and Sigma is the variance of Z2|Z1.
-    #' @return A list with three components:
-    #'  * the matrix `M` of variational means,
-    #'  * the matrix `S2` of variational variances
-    #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
-
-    VEstep_cond = function(covariates, offsets, responses, weights, Sigma=NULL, control = list()) {
-
-      responses = as.matrix(responses)
-      covariates = as.matrix(covariates)
-      offsets = as.matrix(offsets)
-      weights = as.vector(weights)
-      if(!is.null(Sigma)){ Sigma = as.matrix(Sigma)}
-
-      # problem dimension
-      n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
-
-      ## define default control parameters for optim and overwrite by user defined parameters
-      control$covariance <- "full"
-      control <- PLN_param(control, n, p)
-
-      VEstep_optimizer  <-
-        switch(control$covariance,
-               "spherical" = cpp_optimize_vestep_spherical,
-               "diagonal"  = cpp_optimize_vestep_diagonal,
-               "full"      = cpp_optimize_vestep_full
-        )
-
-      # Just to control for the case where Theta is a vector (i.e. we condition on one species only)
-      if(is.null(dim(self$model_par$Theta[colnames(responses),]))){
-        Theta=t(as.matrix(self$model_par$Theta[colnames(responses),]))
-      }else{
-        Theta=self$model_par$Theta[colnames(responses),]
-      }
-
-      if(is.null(Sigma)){ #if we don't specify Sigma, then it is simply the marginal covariance matrix Sigma of the species we condition on.
-        Sigma = self$model_par$Sigma[colnames(responses),colnames(responses)]
-      } #otherwise, Sigma is already specified as input (and is var(Z2|Y1))
-
-
-      # ordre: init_parameters, Y, X, O, w, Theta, Omega, configuration
-      ## Initialize the variational parameters with the appropriate new dimension of the data
-      optim_out <- VEstep_optimizer(
-        list(M = matrix(0, n, p), S = matrix(sqrt(0.1), n, p)),
-        responses,
-        covariates,
-        offsets,
-        weights,
-        Theta=Theta,
+        Theta = Theta,
         ## Robust inversion using Matrix::solve instead of solve.default
         Omega = as(Matrix::solve(Matrix::Matrix(Sigma)), 'matrix'),
         control
@@ -257,9 +197,6 @@ PLNfit <- R6Class(
            S2      = (optim_out$S)**2,
            log.lik = setNames(Ji, rownames(responses)))
     },
-
-
-
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Post treatment functions --------------
@@ -371,25 +308,25 @@ PLNfit <- R6Class(
       results
     },
 
-    #' @description Predict position, scores or observations of new data conditionally on the observation of a (set of) species
-    #' @param Yc a data frame containing the abundances of the observed species (matching the names provided as data in the PLN function)
-    #' @param newdata a data frame containing the environmental covariates of the sites where to predict
+    #' @description Predict position, scores or observations of new data, conditionally on the observation of a (set of) variables
+    #' @param cond_responses a data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function)
+    #' @param newdata a data frame containing the covariates of the sites where to predict
     #' @param type Scale used for the prediction. Either `link` (default, predicted positions in the latent space) or `response` (predicted counts).
     #' @param envir Environment in which the prediction is evaluated
     #' @return A matrix with predictions scores or counts and the parameters of the latent variable
-    predict_cond = function(newdata, Yc, type = c("link", "response"), envir = parent.frame()){
+    predict_cond = function(newdata, cond_responses, type = c("link", "response"), envir = parent.frame()){
       type <- match.arg(type)
 
       # Checks
-      sp_names<- rownames(self$model_par$Theta)
-      if (! any(colnames(Yc) %in% sp_names))
+      Yc <- as.matrix(cond_responses)
+      sp_names <- rownames(self$model_par$Theta)
+      if (! any(colnames(cond_responses) %in% sp_names))
         stop("Yc must be a subset of the species in responses")
       if (! nrow(Yc) == nrow(newdata))
         stop("The number of rows of Yc must match the number of rows in newdata")
 
       # Dimensions and subsets
       n_new <- nrow(Yc)
-      p_new <- ncol(Yc)
       cond <- sp_names %in% colnames(Yc)
 
       ## Extract the model matrices from the new data set with initial formula
@@ -398,18 +335,20 @@ PLNfit <- R6Class(
       if (is.null(O)) O <- matrix(0, n_new, self$p)
 
       # Compute parameters of the law
-      vcov11 <- private$Sigma[cond ,  cond]
-      vcov22 <- private$Sigma[!cond, !cond]
-      vcov12 <- private$Sigma[cond , !cond]
+      vcov11 <- private$Sigma[cond ,  cond, drop = FALSE]
+      vcov22 <- private$Sigma[!cond, !cond, drop = FALSE]
+      vcov12 <- private$Sigma[cond , !cond, drop = FALSE]
       A <- crossprod(vcov12, solve(vcov11))
       Sigma21 <- vcov22 - A %*% vcov12
 
       # Call to VEstep to obtain M1, S1
-      VE <- self$VEstep_cond(
+      VE <- self$VEstep(
               covariates = X,
               offsets    = O[, cond, drop = FALSE],
               responses  = Yc,
-              weights    = rep(1, n_new)
+              weights    = rep(1, n_new),
+              Theta      = self$model_par$Theta[cond, , drop = FALSE],
+              Sigma      = vcov11
           )
 
       M2 <- tcrossprod(VE$M, A)
@@ -434,7 +373,7 @@ PLNfit <- R6Class(
 
       results <- switch(type, link = EZ, response = exp(EZ))
       attr(results, "type") <- type
-      ## Shall we really send back S2 and M from this function?
+### TODO: Shall we really send back S2 and M from this function?
       results <- list(pred = results, M = M2, S = S2)
       results
     },
