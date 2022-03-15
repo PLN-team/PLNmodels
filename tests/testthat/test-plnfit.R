@@ -139,33 +139,34 @@ test_that("PLN fit: Check prediction",  {
 
 
 test_that("PLN fit: Check conditional prediction",  {
-  
+
   n_cond = 10
   p_cond = 2
   p <- ncol(trichoptera$Abundance)
-  
+
   myPLN <- PLN(Abundance ~ Temperature, trichoptera)
   Yc <- trichoptera$Abundance[1:n_cond, 1:p_cond, drop=FALSE]
-  
+
   newX <- data.frame(1, Temperature = trichoptera$Temperature[1:n_cond])
-  
+
   pred <- predict_cond(myPLN, newX, Yc, type = "response")
-  
+
   # check dimensions of the predictions (#TODO: modify pred$pred if we decide not to return M,S)
-  expect_equal(dim(pred$pred), c(n_cond,p-p_cond))
-  
+  expect_equal(dim(pred), c(n_cond,p-p_cond))
+
   # check if the RMSE of conditional predictions are greater than the marginal ones
   expect_gt(
-    mean((trichoptera$Abundance[1:n_cond, (p_cond+1):p] - 
+    mean((trichoptera$Abundance[1:n_cond, (p_cond+1):p] -
             predict(myPLN, newdata = newX, type = "response")[1:n_cond, (p_cond+1):p])^2),
-    mean((trichoptera$Abundance[1:n_cond, (p_cond+1):p] - pred$pred)^2)
+    mean((trichoptera$Abundance[1:n_cond, (p_cond+1):p] - pred)^2)
   )
-  
+
+  # check the dimension of the variational parameters when sent back
+  pred <- predict_cond(myPLN, newX, Yc, type = "response", var_par = TRUE)
+  expect_equal(dim(attr(pred, "M")), dim(pred))
+  expect_equal(dim(attr(pred, "S")), c(p-p_cond, p-p_cond, n_cond))
 
 })
-
-
-
 
 test_that("PLN fit: Check number of parameters",  {
 

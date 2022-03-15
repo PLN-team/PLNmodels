@@ -31,6 +31,7 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
 #' @param object an R6 object with class [`PLNfit`]
 #' @param cond_responses a data frame containing the counts of the observed variables (matching the names provided as data in the PLN function)
 #' @param newdata A data frame in which to look for variables and offsets with which to predict
+#' @param var_par Boolean. Should new estimations of the variational parameters of mean and variance be sent back, as attributes of the matrix of predictions. Default to \code{FALSE}.
 #' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)
 #' @return A list containing:
 #' \item{pred}{A matrix of predicted log-counts (if `type = "link"`) or predicted counts (if `type = "response"`)}
@@ -46,9 +47,9 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
 #' newX <- cbind(1, trichoptera$Covariate[1:10, c("Temperature", "Wind")])
 #' pred <- predict_cond(myPLN, newX, Yc, type = "response")
 
-predict_cond = function(object, newdata, cond_responses, type = c("link", "response")){
+predict_cond = function(object, newdata, cond_responses, type = c("link", "response"), var_par = FALSE){
   stopifnot(isPLNfit(object))
-  object$predict_cond(newdata, cond_responses, type, parent.frame())
+  object$predict_cond(newdata, cond_responses, type, var_par, parent.frame())
 }
 
 

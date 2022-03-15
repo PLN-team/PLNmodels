@@ -4,7 +4,13 @@
 \alias{predict_cond}
 \title{Predict counts conditionally}
 \usage{
-predict_cond(object, newdata, cond_responses, type = c("link", "response"))
+predict_cond(
+  object,
+  newdata,
+  cond_responses,
+  type = c("link", "response"),
+  var_par = FALSE
+)
 }
 \arguments{
 \item{object}{an R6 object with class \code{\link{PLNfit}}}
@@ -14,6 +20,8 @@ predict_cond(object, newdata, cond_responses, type = c("link", "response"))
 \item{cond_responses}{a data frame containing the counts of the observed variables (matching the names provided as data in the PLN function)}
 
 \item{type}{The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)}
+
+\item{var_par}{Boolean. Should new estimations of the variational parameters of mean and variance be sent back, as attributes of the matrix of predictions. Default to \code{FALSE}.}
 }
 \value{
 A list containing:

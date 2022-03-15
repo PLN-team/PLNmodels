@@ -312,9 +312,10 @@ PLNfit <- R6Class(
     #' @param cond_responses a data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function)
     #' @param newdata a data frame containing the covariates of the sites where to predict
     #' @param type Scale used for the prediction. Either `link` (default, predicted positions in the latent space) or `response` (predicted counts).
+    #' @param var_par Boolean. Should new estimations of the variational parameters of mean and variance be sent back, as attributes of the matrix of predictions. Default to \code{FALSE}.
     #' @param envir Environment in which the prediction is evaluated
-    #' @return A matrix with predictions scores or counts and the parameters of the latent variable
-    predict_cond = function(newdata, cond_responses, type = c("link", "response"), envir = parent.frame()){
+    #' @return A matrix with predictions scores or counts.
+    predict_cond = function(newdata, cond_responses, type = c("link", "response"), var_par = FALSE, envir = parent.frame()){
       type <- match.arg(type)
 
       # Checks
@@ -351,30 +352,25 @@ PLNfit <- R6Class(
               Sigma      = vcov11
           )
 
-      M2 <- tcrossprod(VE$M, A)
-      # S1 <- array(
-      #   data = apply(VE$S2, 1, FUN=function(x) diag(x, nrow = p_new)),
-      #          dim = c(p_new, p_new, n_new))
-      # S2   <- array(NA, dim = c(self$p - p_new, self$p - p_new, n_new))
-      # S2[] <- apply(S1, 3, function(x) A %*% x %*% t(A) + Sigma21)
-      S2 <- map(1:n_new, ~crossprod(sqrt(VE$S2[., ]) * t(A)) + Sigma21) %>%
+      M <- tcrossprod(VE$M, A)
+      S <- map(1:n_new, ~crossprod(sqrt(VE$S2[., ]) * t(A)) + Sigma21) %>%
         simplify2array()
 
       ## mean latent positions in the parameter space
-      EZ <- tcrossprod(X, private$Theta[!cond, , drop = FALSE]) + M2
+      EZ <- tcrossprod(X, private$Theta[!cond, , drop = FALSE]) + M
       EZ <- EZ + O[, !cond, drop = FALSE]
       colnames(EZ) <- setdiff(sp_names, colnames(Yc))
 
       # ! For Stephane we should only add the .5*diag(S2) term only if we want the type="response"
       if (type == "response") {
-        # EZ <- t(sapply(1:n_new, function(i) EZ[i,] + .5*diag(S2[, , i])))
-        EZ <- EZ + .5 * t(apply(S2, 3, diag))
+        EZ <- EZ + .5 * t(apply(S, 3, diag))
       }
-
       results <- switch(type, link = EZ, response = exp(EZ))
       attr(results, "type") <- type
-### TODO: Shall we really send back S2 and M from this function?
-      results <- list(pred = results, M = M2, S = S2)
+      if (var_par) {
+        attr(results, "M") <- M
+        attr(results, "S") <- S
+      }
       results
     },
 

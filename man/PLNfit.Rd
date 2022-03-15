@@ -377,6 +377,7 @@ Predict position, scores or observations of new data, conditionally on the obser
   newdata,
   cond_responses,
   type = c("link", "response"),
+  var_par = FALSE,
   envir = parent.frame()
 )}\if{html}{\out{</div>}}
 }
@@ -390,12 +391,14 @@ Predict position, scores or observations of new data, conditionally on the obser
 
 \item{\code{type}}{Scale used for the prediction. Either \code{link} (default, predicted positions in the latent space) or \code{response} (predicted counts).}
 
+\item{\code{var_par}}{Boolean. Should new estimations of the variational parameters of mean and variance be sent back, as attributes of the matrix of predictions. Default to \code{FALSE}.}
+
 \item{\code{envir}}{Environment in which the prediction is evaluated}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A matrix with predictions scores or counts and the parameters of the latent variable
+A matrix with predictions scores or counts.
 }
 }
 \if{html}{\out{<hr>}}
