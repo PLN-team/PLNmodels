@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.6-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.6-9100</span>
       </span>
     </div>
 
@@ -53,7 +53,7 @@
   <a href="https://pln-team.github.io/slideshow/slides" class="external-link">Slideshow on PLN</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
      
     <span class="caret"></span>
@@ -109,7 +109,7 @@
       <h1 data-toc-skip>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-02-01</h4>
+            <h4 data-toc-skip class="date">2022-03-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNPCA.Rmd" class="external-link"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -198,10 +198,10 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 4 
-     Rank approximation = 2 
-     Rank approximation = 1 
+##   Rank approximation = 1 
      Rank approximation = 3 
+     Rank approximation = 2 
+     Rank approximation = 4 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
@@ -486,7 +486,8 @@
 <span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span>
 <span class="co">##     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria</span>
 <span class="co">## * Useful S3 methods</span>
-<span class="co">##     print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()</span>
+<span class="co">##     print(), coef(), sigma(), vcov(), fitted()</span>
+<span class="co">##     predict(), predict_cond(), standard_error()</span>
 <span class="co">## * Additional fields for PCA</span>
 <span class="co">##     $percent_var, $corr_circle, $scores, $rotation, $eig, $var, $ind</span>
 <span class="co">## * Additional S3 methods for PCA</span>
@@ -592,10 +593,10 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 3 
-     Rank approximation = 1 
-     Rank approximation = 4 
+##   Rank approximation = 4 
      Rank approximation = 2 
+     Rank approximation = 3 
+     Rank approximation = 1 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>

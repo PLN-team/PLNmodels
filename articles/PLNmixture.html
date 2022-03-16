@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.6-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.6-9100</span>
       </span>
     </div>
 
@@ -53,7 +53,7 @@
   <a href="https://pln-team.github.io/slideshow/slides" class="external-link">Slideshow on PLN</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
      
     <span class="caret"></span>
@@ -109,7 +109,7 @@
       <h1 data-toc-skip>Clustering of multivariate count data with PLN-mixture</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-02-01</h4>
+            <h4 data-toc-skip class="date">2022-03-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNmixture.Rmd" class="external-link"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
@@ -513,7 +513,8 @@
 <span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span>
 <span class="co">##     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria</span>
 <span class="co">## * Useful S3 methods</span>
-<span class="co">##     print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()</span></code></pre>
+<span class="co">##     print(), coef(), sigma(), vcov(), fitted()</span>
+<span class="co">##     predict(), predict_cond(), standard_error()</span></code></pre>
 <p>The <code>PLNmixturefit</code> class also benefits from two important methods: <code>plot</code> and <code>predict</code>.</p>
 </div>
 <div class="section level4">
