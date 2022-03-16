@@ -2,9 +2,18 @@
 % Please edit documentation in R/PLNfit-S3methods.R
 \name{predict_cond}
 \alias{predict_cond}
+\alias{predict_cond.PLNfit}
 \title{Predict counts conditionally}
 \usage{
 predict_cond(
+  object,
+  newdata,
+  cond_responses,
+  type = c("link", "response"),
+  var_par = FALSE
+)
+
+\method{predict_cond}{PLNfit}(
   object,
   newdata,
   cond_responses,
@@ -32,6 +41,11 @@ A list containing:
 \description{
 Predict counts of a new sample conditionally on a (set of) observed variables
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{PLNfit}: Predict counts of a new sample conditionally on a (set of) observed variables for a \code{\link{PLNfit}}
+}}
+
 \examples{
 data(trichoptera)
 trichoptera_prep <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)

@@ -46,8 +46,13 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
 #' Yc <- trichoptera$Abundance[1:10, c(1, 2), drop=FALSE]
 #' newX <- cbind(1, trichoptera$Covariate[1:10, c("Temperature", "Wind")])
 #' pred <- predict_cond(myPLN, newX, Yc, type = "response")
+predict_cond <- function(object, newdata, cond_responses, type = c("link", "response"), var_par = FALSE) {
+  UseMethod("predict_cond", object)
+}
 
-predict_cond = function(object, newdata, cond_responses, type = c("link", "response"), var_par = FALSE){
+#' @describeIn predict_cond Predict counts of a new sample conditionally on a (set of) observed variables for a [`PLNfit`]
+#' @export
+predict_cond.PLNfit = function(object, newdata, cond_responses, type = c("link", "response"), var_par = FALSE){
   stopifnot(isPLNfit(object))
   object$predict_cond(newdata, cond_responses, type, var_par, parent.frame())
 }
