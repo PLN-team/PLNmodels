@@ -98,6 +98,7 @@ print(myPLN)
 \item \href{#method-compute_standard_error}{\code{PLNfit$compute_standard_error()}}
 \item \href{#method-postTreatment}{\code{PLNfit$postTreatment()}}
 \item \href{#method-predict}{\code{PLNfit$predict()}}
+\item \href{#method-predict_cond}{\code{PLNfit$predict_cond()}}
 \item \href{#method-show}{\code{PLNfit$show()}}
 \item \href{#method-print}{\code{PLNfit$print()}}
 \item \href{#method-clone}{\code{PLNfit$clone()}}
@@ -209,7 +210,15 @@ Call to the C++ optimizer and update of the relevant fields
 \subsection{Method \code{VEstep()}}{
 Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$VEstep(covariates, offsets, responses, weights, control = list())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$VEstep(
+  covariates,
+  offsets,
+  responses,
+  weights,
+  Theta = self$model_par$Theta,
+  Sigma = self$model_par$Sigma,
+  control = list()
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -222,6 +231,10 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{Theta}}{Optional fixed value of the regression parameters}
+
+\item{\code{Sigma}}{Optional fixed value of the covariance parameters.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
@@ -345,6 +358,40 @@ Predict position, scores or observations of new data.
 \item{\code{newdata}}{A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.}
 
 \item{\code{type}}{Scale used for the prediction. Either \code{link} (default, predicted positions in the latent space) or \code{response} (predicted counts).}
+
+\item{\code{envir}}{Environment in which the prediction is evaluated}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A matrix with predictions scores or counts.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-predict_cond"></a>}}
+\if{latex}{\out{\hypertarget{method-predict_cond}{}}}
+\subsection{Method \code{predict_cond()}}{
+Predict position, scores or observations of new data, conditionally on the observation of a (set of) variables
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$predict_cond(
+  newdata,
+  cond_responses,
+  type = c("link", "response"),
+  var_par = FALSE,
+  envir = parent.frame()
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{newdata}}{a data frame containing the covariates of the sites where to predict}
+
+\item{\code{cond_responses}}{a data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function)}
+
+\item{\code{type}}{Scale used for the prediction. Either \code{link} (default, predicted positions in the latent space) or \code{response} (predicted counts).}
+
+\item{\code{var_par}}{Boolean. Should new estimations of the variational parameters of mean and variance be sent back, as attributes of the matrix of predictions. Default to \code{FALSE}.}
 
 \item{\code{envir}}{Environment in which the prediction is evaluated}
 }

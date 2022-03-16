@@ -151,14 +151,19 @@ PLNfit <- R6Class(
     },
 
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
+    #' @param Theta Optional fixed value of the regression parameters
+    #' @param Sigma Optional fixed value of the covariance parameters.
     #' @return A list with three components:
     #'  * the matrix `M` of variational means,
     #'  * the matrix `S2` of variational variances
     #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
-    VEstep = function(covariates, offsets, responses, weights, control = list()) {
+    VEstep = function(covariates, offsets, responses, weights,
+                      Theta = self$model_par$Theta,
+                      Sigma = self$model_par$Sigma,
+                      control = list()) {
 
       # problem dimension
-      n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
+      n <- nrow(responses); p <- ncol(responses)
 
       ## define default control parameters for optim and overwrite by user defined parameters
       control$covariance <- self$vcov_model
@@ -178,9 +183,9 @@ PLNfit <- R6Class(
         covariates,
         offsets,
         weights,
-        Theta = self$model_par$Theta,
+        Theta = Theta,
         ## Robust inversion using Matrix::solve instead of solve.default
-        Omega = as(Matrix::solve(Matrix::Matrix(self$model_par$Sigma)), 'matrix'),
+        Omega = as(Matrix::solve(Matrix::Matrix(Sigma)), 'matrix'),
         control
       )
 
@@ -285,7 +290,7 @@ PLNfit <- R6Class(
     #' @param envir Environment in which the prediction is evaluated
     #' @return A matrix with predictions scores or counts.
     predict = function(newdata, type = c("link", "response"), envir = parent.frame()) {
-      type = match.arg(type)
+      type <- match.arg(type)
 
       ## Extract the model matrices from the new data set with initial formula
       X <- model.matrix(formula(private$formula)[-2], newdata, xlev = private$xlevels)
@@ -303,6 +308,72 @@ PLNfit <- R6Class(
       results
     },
 
+    #' @description Predict position, scores or observations of new data, conditionally on the observation of a (set of) variables
+    #' @param cond_responses a data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function)
+    #' @param newdata a data frame containing the covariates of the sites where to predict
+    #' @param type Scale used for the prediction. Either `link` (default, predicted positions in the latent space) or `response` (predicted counts).
+    #' @param var_par Boolean. Should new estimations of the variational parameters of mean and variance be sent back, as attributes of the matrix of predictions. Default to \code{FALSE}.
+    #' @param envir Environment in which the prediction is evaluated
+    #' @return A matrix with predictions scores or counts.
+    predict_cond = function(newdata, cond_responses, type = c("link", "response"), var_par = FALSE, envir = parent.frame()){
+      type <- match.arg(type)
+
+      # Checks
+      Yc <- as.matrix(cond_responses)
+      sp_names <- rownames(self$model_par$Theta)
+      if (! any(colnames(cond_responses) %in% sp_names))
+        stop("Yc must be a subset of the species in responses")
+      if (! nrow(Yc) == nrow(newdata))
+        stop("The number of rows of Yc must match the number of rows in newdata")
+
+      # Dimensions and subsets
+      n_new <- nrow(Yc)
+      cond <- sp_names %in% colnames(Yc)
+
+      ## Extract the model matrices from the new data set with initial formula
+      X <- model.matrix(formula(private$formula)[-2], newdata, xlev = private$xlevels)
+      O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
+      if (is.null(O)) O <- matrix(0, n_new, self$p)
+
+      # Compute parameters of the law
+      vcov11 <- private$Sigma[cond ,  cond, drop = FALSE]
+      vcov22 <- private$Sigma[!cond, !cond, drop = FALSE]
+      vcov12 <- private$Sigma[cond , !cond, drop = FALSE]
+      A <- crossprod(vcov12, solve(vcov11))
+      Sigma21 <- vcov22 - A %*% vcov12
+
+      # Call to VEstep to obtain M1, S1
+      VE <- self$VEstep(
+              covariates = X,
+              offsets    = O[, cond, drop = FALSE],
+              responses  = Yc,
+              weights    = rep(1, n_new),
+              Theta      = self$model_par$Theta[cond, , drop = FALSE],
+              Sigma      = vcov11
+          )
+
+      M <- tcrossprod(VE$M, A)
+      S <- map(1:n_new, ~crossprod(sqrt(VE$S2[., ]) * t(A)) + Sigma21) %>%
+        simplify2array()
+
+      ## mean latent positions in the parameter space
+      EZ <- tcrossprod(X, private$Theta[!cond, , drop = FALSE]) + M
+      EZ <- EZ + O[, !cond, drop = FALSE]
+      colnames(EZ) <- setdiff(sp_names, colnames(Yc))
+
+      # ! For Stephane we should only add the .5*diag(S2) term only if we want the type="response"
+      if (type == "response") {
+        EZ <- EZ + .5 * t(apply(S, 3, diag))
+      }
+      results <- switch(type, link = EZ, response = exp(EZ))
+      attr(results, "type") <- type
+      if (var_par) {
+        attr(results, "M") <- M
+        attr(results, "S") <- S
+      }
+      results
+    },
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Print functions -----------------------
     #' @description User friendly print method
@@ -316,7 +387,8 @@ PLNfit <- R6Class(
       cat("    $model_par, $latent, $latent_pos, $var_par, $optim_par\n")
       cat("    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria\n")
       cat("* Useful S3 methods\n")
-      cat("    print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()\n")
+      cat("    print(), coef(), sigma(), vcov(), fitted()\n")
+      cat("    predict(), predict_cond(), standard_error()\n")
     },
 
     #' @description User friendly print method

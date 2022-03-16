@@ -131,7 +131,8 @@ capture_output(print(as.data.frame(round(myPLNfit$criteria, digits = 3), row.nam
     $model_par, $latent, $latent_pos, $var_par, $optim_par
     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
 * Useful S3 methods
-    print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()
+    print(), coef(), sigma(), vcov(), fitted()
+    predict(), predict_cond(), standard_error()
 * Additional fields for PCA
     $percent_var, $corr_circle, $scores, $rotation, $eig, $var, $ind
 * Additional S3 methods for PCA
