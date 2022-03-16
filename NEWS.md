@@ -1,3 +1,7 @@
+# PLNmodels dev
+
+* added an S3 method predict_cond to perform conditional predictions
+
 # PLNmodels 0.11.6
 
 * fix wrong use of all.equal
