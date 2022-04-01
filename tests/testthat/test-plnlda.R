@@ -46,4 +46,8 @@ test_that("Use or not of the intercept does not change the result.",  {
   expect_equal(vcov(lda_with), vcov(lda_wo))
 })
 
-
+test_that("Using a discrete covariate in the formula does not throw an error.", {
+  trichoptera$Precipitation_binary <- ifelse(trichoptera$Precipitation > 0, "high", "low")
+  lda_discrete <- PLNLDA(Abundance ~ Precipitation_binary + offset(log(Offset)), grouping = Group, data = trichoptera)
+  expect_is(lda_discrete, "PLNLDAfit")
+})
