@@ -22,6 +22,42 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
   object$predict(newdata, type, parent.frame())
 }
 
+
+
+#' Predict counts conditionally
+#'
+#' @name predict_cond
+#' @description Predict counts of a new sample conditionally on a (set of) observed variables
+#' @param object an R6 object with class [`PLNfit`]
+#' @param cond_responses a data frame containing the counts of the observed variables (matching the names provided as data in the PLN function)
+#' @param newdata A data frame in which to look for variables and offsets with which to predict
+#' @param var_par Boolean. Should new estimations of the variational parameters of mean and variance be sent back, as attributes of the matrix of predictions. Default to \code{FALSE}.
+#' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)
+#' @return A list containing:
+#' \item{pred}{A matrix of predicted log-counts (if `type = "link"`) or predicted counts (if `type = "response"`)}
+#' \item{M}{A matrix containing E(Z_uncond | Y_c) for each given site.}
+#' \item{S}{A matrix containing Var(Z_uncond | Y_c) for each given site (sites are the third dimension of the array)}
+#' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera_prep <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLN(Abundance ~ Temperature + Wind, trichoptera_prep)
+#' #Condition on the set of the first two species in the dataset (Hym, Hys) at the ten first sites
+#' Yc <- trichoptera$Abundance[1:10, c(1, 2), drop=FALSE]
+#' newX <- cbind(1, trichoptera$Covariate[1:10, c("Temperature", "Wind")])
+#' pred <- predict_cond(myPLN, newX, Yc, type = "response")
+predict_cond <- function(object, newdata, cond_responses, type = c("link", "response"), var_par = FALSE) {
+  UseMethod("predict_cond", object)
+}
+
+#' @describeIn predict_cond Predict counts of a new sample conditionally on a (set of) observed variables for a [`PLNfit`]
+#' @export
+predict_cond.PLNfit = function(object, newdata, cond_responses, type = c("link", "response"), var_par = FALSE){
+  stopifnot(isPLNfit(object))
+  object$predict_cond(newdata, cond_responses, type, var_par, parent.frame())
+}
+
+
 #' Extract model coefficients
 #'
 #' @description Extracts model coefficients from objects returned by [PLN()] and its variants

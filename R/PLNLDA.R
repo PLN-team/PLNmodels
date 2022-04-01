@@ -40,13 +40,13 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
   }
   grouping <- as.factor(grouping)
 
-  # remove the intercept term if any (will be used to deal with group means)
+  # force the intercept term if excluded (to prevent interferences with group means when coding discrete variables)
   the_call <- match.call(expand.dots = FALSE)
-  the_call$formula <- update.formula(formula(the_call), ~ . -1)
+  the_call$formula <- update.formula(formula(the_call), ~ . +1)
 
-  ## extract the data matrices and weights
+  ## extract the data matrices and weight and remove the intercept (cf issue https://github.com/PLN-team/PLNmodels/issues/89)
   args <- extract_model(the_call, parent.frame())
-
+  args$X <- args$X[ , colnames(args$X) != "(Intercept)", drop = FALSE]
   ## define default control parameters for optim and overwrite by user defined parameters
   ctrl <- PLN_param(control, nrow(args$Y), ncol(args$Y))
 

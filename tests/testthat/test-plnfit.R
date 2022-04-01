@@ -77,7 +77,8 @@ capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names 
     $model_par, $latent, $latent_pos, $var_par, $optim_par
     $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
 * Useful S3 methods
-    print(), coef(), sigma(), vcov(), fitted(), predict(), standard_error()",
+    print(), coef(), sigma(), vcov(), fitted()
+    predict(), predict_cond(), standard_error()",
     sep = "\n")
 
   expect_output(model$show(),
@@ -133,6 +134,38 @@ test_that("PLN fit: Check prediction",  {
   )
   model <- PLN(Abundance ~ Cov + offset(log(Offset)), data = toy_data[1:2,])
   expect_length(predict(model, newdata = toy_data[3:4, ], type = "r"), 2L)
+})
+
+
+
+test_that("PLN fit: Check conditional prediction",  {
+
+  n_cond = 10
+  p_cond = 2
+  p <- ncol(trichoptera$Abundance)
+
+  myPLN <- PLN(Abundance ~ Temperature, trichoptera)
+  Yc <- trichoptera$Abundance[1:n_cond, 1:p_cond, drop=FALSE]
+
+  newX <- data.frame(1, Temperature = trichoptera$Temperature[1:n_cond])
+
+  pred <- predict_cond(myPLN, newX, Yc, type = "response")
+
+  # check dimensions of the predictions (#TODO: modify pred$pred if we decide not to return M,S)
+  expect_equal(dim(pred), c(n_cond,p-p_cond))
+
+  # check if the RMSE of conditional predictions are greater than the marginal ones
+  expect_gt(
+    mean((trichoptera$Abundance[1:n_cond, (p_cond+1):p] -
+            predict(myPLN, newdata = newX, type = "response")[1:n_cond, (p_cond+1):p])^2),
+    mean((trichoptera$Abundance[1:n_cond, (p_cond+1):p] - pred)^2)
+  )
+
+  # check the dimension of the variational parameters when sent back
+  pred <- predict_cond(myPLN, newX, Yc, type = "response", var_par = TRUE)
+  expect_equal(dim(attr(pred, "M")), dim(pred))
+  expect_equal(dim(attr(pred, "S")), c(p-p_cond, p-p_cond, n_cond))
+
 })
 
 test_that("PLN fit: Check number of parameters",  {

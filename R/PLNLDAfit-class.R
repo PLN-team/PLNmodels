@@ -230,7 +230,9 @@ PLNLDAfit <- R6Class(
       scale <- match.arg(scale)
 
       ## Extract the model matrices from the new data set with initial formula
-      args <- extract_model(call("PLNLDA", formula = private$formula, data = newdata, xlev = private$xlevels), envir)
+      args <- extract_model(call = call("PLNLDA", formula = private$formula, data = newdata), envir = envir, xlev = private$xlevels)
+      ## Remove intercept to prevent interference with binary coding of the grouping factor
+      args$X <- args$X[ , colnames(args$X) != "(Intercept)", drop = FALSE]
 
       ## Problem dimensions
       n.new  <- nrow(args$Y)

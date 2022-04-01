@@ -54,6 +54,7 @@ reference:
     - '`vcov.PLNfit`'
     - '`sigma.PLNfit`'
     - '`predict.PLNfit`'
+    - '`predict_cond.PLNfit`'
     - '`fitted.PLNfit`'
     - '`standard_error.PLNfit`'
     - '`fisher.PLNfit`'

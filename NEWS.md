@@ -1,3 +1,8 @@
+# PLNmodels dev
+
+* added an S3 method predict_cond to perform conditional predictions
+* fix #89 bug by forcing an intercept in `PLNLDA()` and changing `extract_model()` to conform with `model.frame()`
+
 # PLNmodels 0.11.6
 
 * fix wrong use of all.equal
