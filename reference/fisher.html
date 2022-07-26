@@ -84,22 +84,27 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">fisher</span><span class="op">(</span><span class="va">object</span>, <span class="va">type</span><span class="op">)</span>
-
-<span class="co"># S3 method for PLNfit</span>
-<span class="fu">fisher</span><span class="op">(</span><span class="va">object</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"louis"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fisher</span><span class="op">(</span><span class="va">object</span>, <span class="va">type</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for PLNfit</span></span>
+<span><span class="fu">fisher</span><span class="op">(</span><span class="va">object</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"louis"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>object</dt>
 <dd><p>an R6 object with class PLNfit</p></dd>
+
+
 <dt>type</dt>
 <dd><p>Either <code>wald</code> (default) or <code>louis</code>. Approximation scheme used to compute the Fisher information matrix</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
+    
+
+<p>A block-diagonal matrix with p (number of species) blocks of size d (number of covariates), assuming
 \(\Theta\) is a matrix of size d * p.</p>
     </div>
     <div id="methods-by-class-">
@@ -124,7 +129,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

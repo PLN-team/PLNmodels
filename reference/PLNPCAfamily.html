@@ -125,16 +125,16 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize all models in the collection.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va"><a href="../reference/PLNPCAfamily.html">PLNPCAfamily</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
-  <span class="va">ranks</span>,
-  <span class="va">responses</span>,
-  <span class="va">covariates</span>,
-  <span class="va">offsets</span>,
-  <span class="va">weights</span>,
-  <span class="va">formula</span>,
-  <span class="va">xlevels</span>,
-  <span class="va">control</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/PLNPCAfamily.html">PLNPCAfamily</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  <span class="va">ranks</span>,</span>
+<span>  <span class="va">responses</span>,</span>
+<span>  <span class="va">covariates</span>,</span>
+<span>  <span class="va">offsets</span>,</span>
+<span>  <span class="va">weights</span>,</span>
+<span>  <span class="va">formula</span>,</span>
+<span>  <span class="va">xlevels</span>,</span>
+<span>  <span class="va">control</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -178,7 +178,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
 <p>Call to the C++ optimizer on all models of the collection</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">control</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -194,7 +194,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <h3 id="method-getmodel-">Method <code><a href="getModel.html">getModel()</a></code><a class="anchor" aria-label="anchor" href="#method-getmodel-"></a></h3>
 <p>Extract model from collection and add "PCA" class for compatibility with <code><a href="https://rdrr.io/pkg/factoextra/man/fviz.html" class="external-link">factoextra::fviz()</a></code></p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">getModel</span><span class="op">(</span><span class="va">var</span>, index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">getModel</span><span class="op">(</span><span class="va">var</span>, index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -218,7 +218,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <h3 id="method-getbestmodel-">Method <code><a href="getBestModel.html">getBestModel()</a></code><a class="anchor" aria-label="anchor" href="#method-getbestmodel-"></a></h3>
 <p>Extract best model in the collection</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">getBestModel</span><span class="op">(</span>crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ICL"</span>, <span class="st">"BIC"</span><span class="op">)</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">getBestModel</span><span class="op">(</span>crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ICL"</span>, <span class="st">"BIC"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -239,7 +239,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <h3 id="method-plot-">Method <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code><a class="anchor" aria-label="anchor" href="#method-plot-"></a></h3>
 <p>Lineplot of selected criteria for all models in the collection</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span>criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"loglik"</span>, <span class="st">"BIC"</span>, <span class="st">"ICL"</span><span class="op">)</span>, reverse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span>criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"loglik"</span>, <span class="st">"BIC"</span>, <span class="st">"ICL"</span><span class="op">)</span>, reverse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -265,7 +265,7 @@ the same scale as the log-likelihood.</p></dd>
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -273,7 +273,7 @@ the same scale as the log-likelihood.</p></dd>
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfamily</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -291,17 +291,17 @@ the same scale as the log-likelihood.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">myPCAs</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNPCA.html">PLNPCA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">myPCAs</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNPCA.html">PLNPCA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting 5 PLN models for PCA analysis.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 2 	 Rank approximation = 1 	 Rank approximation = 5 	 Rank approximation = 3 	 Rank approximation = 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 2 	 Rank approximation = 5 	 Rank approximation = 3 	 Rank approximation = 1 	 Rank approximation = 4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">myPCAs</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">myPCAs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "PLNPCAfamily" "PLNfamily"    "R6"          </span>
 </code></pre></div>
     </div>
@@ -317,7 +317,7 @@ the same scale as the log-likelihood.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

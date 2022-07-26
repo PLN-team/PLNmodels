@@ -142,16 +142,16 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize all models in the collection</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va"><a href="../reference/PLNnetworkfamily.html">PLNnetworkfamily</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
-  <span class="va">penalties</span>,
-  <span class="va">responses</span>,
-  <span class="va">covariates</span>,
-  <span class="va">offsets</span>,
-  <span class="va">weights</span>,
-  <span class="va">formula</span>,
-  <span class="va">xlevels</span>,
-  <span class="va">control</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/PLNnetworkfamily.html">PLNnetworkfamily</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  <span class="va">penalties</span>,</span>
+<span>  <span class="va">responses</span>,</span>
+<span>  <span class="va">covariates</span>,</span>
+<span>  <span class="va">offsets</span>,</span>
+<span>  <span class="va">weights</span>,</span>
+<span>  <span class="va">formula</span>,</span>
+<span>  <span class="va">xlevels</span>,</span>
+<span>  <span class="va">control</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -199,7 +199,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
 <p>Call to the C++ optimizer on all models of the collection</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">control</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -215,7 +215,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <h3 id="method-stability-selection-">Method <code><a href="stability_selection.html">stability_selection()</a></code><a class="anchor" aria-label="anchor" href="#method-stability-selection-"></a></h3>
 <p>Compute the stability path by stability selection</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">stability_selection</span><span class="op">(</span>subsamples <span class="op">=</span> <span class="cn">NULL</span>, control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">stability_selection</span><span class="op">(</span>subsamples <span class="op">=</span> <span class="cn">NULL</span>, control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -235,7 +235,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <h3 id="method-coefficient-path-">Method <code><a href="coefficient_path.html">coefficient_path()</a></code><a class="anchor" aria-label="anchor" href="#method-coefficient-path-"></a></h3>
 <p>Extract the regularization path of a <code>PLNnetworkfamily</code></p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">coefficient_path</span><span class="op">(</span>precision <span class="op">=</span> <span class="cn">TRUE</span>, corr <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">coefficient_path</span><span class="op">(</span>precision <span class="op">=</span> <span class="cn">TRUE</span>, corr <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -255,10 +255,10 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <h3 id="method-getbestmodel-">Method <code><a href="getBestModel.html">getBestModel()</a></code><a class="anchor" aria-label="anchor" href="#method-getbestmodel-"></a></h3>
 <p>Extract the best network in the family according to some criteria</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">getBestModel</span><span class="op">(</span>
-  crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BIC"</span>, <span class="st">"EBIC"</span>, <span class="st">"StARS"</span><span class="op">)</span>,
-  stability <span class="op">=</span> <span class="fl">0.9</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">getBestModel</span><span class="op">(</span></span>
+<span>  crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BIC"</span>, <span class="st">"EBIC"</span>, <span class="st">"StARS"</span><span class="op">)</span>,</span>
+<span>  stability <span class="op">=</span> <span class="fl">0.9</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -278,11 +278,11 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <h3 id="method-plot-">Method <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code><a class="anchor" aria-label="anchor" href="#method-plot-"></a></h3>
 <p>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code>PLNnetworkfamily</code>)</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span>
-  criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"loglik"</span>, <span class="st">"pen_loglik"</span>, <span class="st">"BIC"</span>, <span class="st">"EBIC"</span><span class="op">)</span>,
-  reverse <span class="op">=</span> <span class="cn">FALSE</span>,
-  log.x <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span></span>
+<span>  criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"loglik"</span>, <span class="st">"pen_loglik"</span>, <span class="st">"BIC"</span>, <span class="st">"EBIC"</span><span class="op">)</span>,</span>
+<span>  reverse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  log.x <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -312,7 +312,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 <h3 id="method-plot-stars-">Method <code>plot_stars()</code><a class="anchor" aria-label="anchor" href="#method-plot-stars-"></a></h3>
 <p>Plot stability path</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">plot_stars</span><span class="op">(</span>stability <span class="op">=</span> <span class="fl">0.9</span>, log.x <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">plot_stars</span><span class="op">(</span>stability <span class="op">=</span> <span class="fl">0.9</span>, log.x <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -336,7 +336,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 <h3 id="method-plot-objective-">Method <code>plot_objective()</code><a class="anchor" aria-label="anchor" href="#method-plot-objective-"></a></h3>
 <p>Plot objective value of the optimization problem along the penalty path</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">plot_objective</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">plot_objective</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -348,7 +348,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -356,7 +356,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -374,9 +374,9 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNnetwork.html">PLNnetwork</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNnetwork.html">PLNnetwork</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting 30 PLN with sparse inverse covariance estimation</span>
@@ -384,7 +384,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 	sparsifying penalty = 7.017338 	sparsifying penalty = 6.48171 	sparsifying penalty = 5.986967 	sparsifying penalty = 5.529987 	sparsifying penalty = 5.107888 	sparsifying penalty = 4.718007 	sparsifying penalty = 4.357886 	sparsifying penalty = 4.025252 	sparsifying penalty = 3.718008 	sparsifying penalty = 3.434215 	sparsifying penalty = 3.172085 	sparsifying penalty = 2.929962 	sparsifying penalty = 2.706321 	sparsifying penalty = 2.49975 	sparsifying penalty = 2.308946 	sparsifying penalty = 2.132706 	sparsifying penalty = 1.969918 	sparsifying penalty = 1.819556 	sparsifying penalty = 1.680671 	sparsifying penalty = 1.552387 	sparsifying penalty = 1.433894 	sparsifying penalty = 1.324447 	sparsifying penalty = 1.223353 	sparsifying penalty = 1.129975 	sparsifying penalty = 1.043725 	sparsifying penalty = 0.9640585 	sparsifying penalty = 0.8904728 	sparsifying penalty = 0.8225038 	sparsifying penalty = 0.7597227 	sparsifying penalty = 0.7017338 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "PLNnetworkfamily" "PLNfamily"        "R6"              </span>
 </code></pre></div>
     </div>
@@ -400,7 +400,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

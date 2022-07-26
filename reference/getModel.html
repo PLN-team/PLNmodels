@@ -84,30 +84,37 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for PLNPCAfamily</span>
-<span class="fu">getModel</span><span class="op">(</span><span class="va">Robject</span>, <span class="va">var</span>, index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">getModel</span><span class="op">(</span><span class="va">Robject</span>, <span class="va">var</span>, <span class="va">index</span><span class="op">)</span>
-
-<span class="co"># S3 method for PLNmixturefamily</span>
-<span class="fu">getModel</span><span class="op">(</span><span class="va">Robject</span>, <span class="va">var</span>, index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="co"># S3 method for PLNnetworkfamily</span>
-<span class="fu">getModel</span><span class="op">(</span><span class="va">Robject</span>, <span class="va">var</span>, index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for PLNPCAfamily</span></span>
+<span><span class="fu">getModel</span><span class="op">(</span><span class="va">Robject</span>, <span class="va">var</span>, index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getModel</span><span class="op">(</span><span class="va">Robject</span>, <span class="va">var</span>, <span class="va">index</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for PLNmixturefamily</span></span>
+<span><span class="fu">getModel</span><span class="op">(</span><span class="va">Robject</span>, <span class="va">var</span>, index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for PLNnetworkfamily</span></span>
+<span><span class="fu">getModel</span><span class="op">(</span><span class="va">Robject</span>, <span class="va">var</span>, index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>Robject</dt>
 <dd><p>an R6 object with class <code><a href="PLNPCAfamily.html">PLNPCAfamily</a></code> or <code><a href="PLNnetworkfamily.html">PLNnetworkfamily</a></code></p></dd>
+
+
 <dt>var</dt>
 <dd><p>value of the parameter (<code>rank</code> for PLNPCA, <code>sparsity</code> for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.</p></dd>
+
+
 <dt>index</dt>
 <dd><p>Integer index of the model to be returned. Only the first value is taken into account.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Sends back an object with class <code><a href="PLNPCAfit.html">PLNPCAfit</a></code> or <code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code>.</p>
+    
+
+<p>Sends back an object with class <code><a href="PLNPCAfit.html">PLNPCAfit</a></code> or <code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code>.</p>
     </div>
     <div id="methods-by-class-">
     <h2>Methods (by class)</h2>
@@ -119,12 +126,12 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNPCA.html">PLNPCA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">myModel</span> <span class="op">&lt;-</span> <span class="fu">getModel</span><span class="op">(</span><span class="va">myPCA</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNPCA.html">PLNPCA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">myModel</span> <span class="op">&lt;-</span> <span class="fu">getModel</span><span class="op">(</span><span class="va">myPCA</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -139,7 +146,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

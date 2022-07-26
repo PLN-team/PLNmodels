@@ -86,23 +86,32 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">prepare_data</span><span class="op">(</span><span class="va">counts</span>, <span class="va">covariates</span>, offset <span class="op">=</span> <span class="st">"TSS"</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">prepare_data</span><span class="op">(</span><span class="va">counts</span>, <span class="va">covariates</span>, offset <span class="op">=</span> <span class="st">"TSS"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>counts</dt>
 <dd><p>Required. An abundance count table, preferably with dimensions names and species as columns.</p></dd>
+
+
 <dt>covariates</dt>
 <dd><p>Required. A covariates data frame, preferably with row names.</p></dd>
+
+
 <dt>offset</dt>
 <dd><p>Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018), Wrench (introduced in Kumar et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional parameters passed on to <code><a href="compute_offset.html">compute_offset()</a></code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data.frame suited for use in <code><a href="PLN.html">PLN()</a></code> and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")</p>
+    
+
+<p>A data.frame suited for use in <code><a href="PLN.html">PLN()</a></code> and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")</p>
     </div>
     <div id="note">
     <h2>Note</h2>
@@ -110,10 +119,10 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
     </div>
     <div id="references">
     <h2>References</h2>
-    <p>Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 doi: <a href="https://doi.org/10.7717/peerj.4600" class="external-link">10.7717/peerj.4600</a></p>
-<p>Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 doi: <a href="https://doi.org/10.1038/nmeth.2658" class="external-link">10.1038/nmeth.2658</a></p>
-<p>Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 doi: <a href="https://doi.org/10.1186/gb-2010-11-10-r106" class="external-link">10.1186/gb-2010-11-10-r106</a></p>
-<p>Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 doi: <a href="https://doi.org/10.1186/s12864-018-5160-5" class="external-link">10.1186/s12864-018-5160-5</a></p>
+    <p>Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 <a href="https://doi.org/10.7717/peerj.4600" class="external-link">doi:10.7717/peerj.4600</a></p>
+<p>Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 <a href="https://doi.org/10.1038/nmeth.2658" class="external-link">doi:10.1038/nmeth.2658</a></p>
+<p>Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 <a href="https://doi.org/10.1186/gb-2010-11-10-r106" class="external-link">doi:10.1186/gb-2010-11-10-r106</a></p>
+<p>Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 <a href="https://doi.org/10.1186/s12864-018-5160-5" class="external-link">doi:10.1186/s12864-018-5160-5</a></p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -122,13 +131,13 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">proper_data</span> <span class="op">&lt;-</span> <span class="fu">prepare_data</span><span class="op">(</span></span>
-<span class="r-in"> counts     <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>,</span>
-<span class="r-in"> covariates <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span>,</span>
-<span class="r-in"> offset     <span class="op">=</span> <span class="st">"TSS"</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">proper_data</span><span class="op">$</span><span class="va">Abundance</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">proper_data</span> <span class="op">&lt;-</span> <span class="fu">prepare_data</span><span class="op">(</span></span></span>
+<span class="r-in"><span> counts     <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>,</span></span>
+<span class="r-in"><span> covariates <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span>,</span></span>
+<span class="r-in"><span> offset     <span class="op">=</span> <span class="st">"TSS"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">proper_data</span><span class="op">$</span><span class="va">Abundance</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Che Hyc Hym Hys  Psy Aga Glo Ath Cea Ced Set All Han Hfo Hsp Hve Sta</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    0   0   5   0   17   0   0   0   0   2   0   1   0   1   2   0   1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2    0   0   3   0    8   0   0   0   0   0   0   2   0   0   0   0   0</span>
@@ -179,7 +188,7 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
 <span class="r-out co"><span class="r-pr">#&gt;</span> 47   0   0   2   0   11   0   0   1   0   1   1   0   0   0   0   0   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 48   1   0   0   0   17   0   0   1   1   2   0   0   3   0   0   0   6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 49   0   1   2   0   27   0   0   0   0   1   4   0  36   0  11   0   4</span>
-<span class="r-in"><span class="va">proper_data</span><span class="op">$</span><span class="va">Offset</span></span>
+<span class="r-in"><span><span class="va">proper_data</span><span class="op">$</span><span class="va">Offset</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1]   29   13   38  192   79   18    8   34   12    4    4    3   49   33  600</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [16]  172   58   51   56  127   35   13   17    3   27   40   44    8    9 1599</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [31] 2980   88  135  327   66   90   63   15   14   20   70   53   95   43   62</span>
@@ -198,7 +207,7 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

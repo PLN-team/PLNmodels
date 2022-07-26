@@ -84,22 +84,29 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">standard_error</span><span class="op">(</span><span class="va">object</span>, <span class="va">type</span><span class="op">)</span>
-
-<span class="co"># S3 method for PLNfit</span>
-<span class="fu">standard_error</span><span class="op">(</span><span class="va">object</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"louis"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">standard_error</span><span class="op">(</span><span class="va">object</span>, <span class="va">type</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for PLNfit</span></span>
+<span><span class="fu">standard_error</span><span class="op">(</span><span class="va">object</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"louis"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>object</dt>
 <dd><p>an R6 object with class PLNfit</p></dd>
+
+
 <dt>type</dt>
 <dd><p>Either <code>Wald</code> (default) or <code>Louis</code>. Approximation scheme used to compute the Fisher information matrix</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A p * d positive matrix (same size as \(\Theta\)) with standard errors for the coefficients of \(\Theta\)</p>
+    
+
+<p>A p * d positive matrix (same size as \(\Theta\)) with standard errors for the coefficients of \(\Theta\)</p>
+
+
     </div>
     <div id="methods-by-class-">
     <h2>Methods (by class)</h2>
@@ -113,15 +120,15 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting a PLN model with full covariance model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
-<span class="r-in"><span class="fu">standard_error</span><span class="op">(</span><span class="va">myPLN</span>, <span class="st">"wald"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">standard_error</span><span class="op">(</span><span class="va">myPLN</span>, <span class="st">"wald"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     (Intercept)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Che  0.57741398</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Hyc  0.57706627</span>
@@ -154,7 +161,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

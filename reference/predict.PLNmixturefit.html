@@ -84,46 +84,59 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for PLNmixturefit</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span>
-  <span class="va">object</span>,
-  <span class="va">newdata</span>,
-  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"posterior"</span>, <span class="st">"response"</span>, <span class="st">"position"</span><span class="op">)</span>,
-  prior <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">object</span><span class="op">$</span><span class="va">k</span>, <span class="va">object</span><span class="op">$</span><span class="va">k</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">)</span>, <span class="va">object</span><span class="op">$</span><span class="va">k</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
-  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for PLNmixturefit</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  <span class="va">newdata</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"posterior"</span>, <span class="st">"response"</span>, <span class="st">"position"</span><span class="op">)</span>,</span>
+<span>  prior <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">object</span><span class="op">$</span><span class="va">k</span>, <span class="va">object</span><span class="op">$</span><span class="va">k</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">)</span>, <span class="va">object</span><span class="op">$</span><span class="va">k</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>object</dt>
 <dd><p>an R6 object with class <code><a href="PLNmixturefit.html">PLNmixturefit</a></code></p></dd>
+
+
 <dt>newdata</dt>
 <dd><p>A data frame in which to look for variables, offsets and counts with which to predict.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>The type of prediction required. The default <code>posterior</code> are posterior probabilities for each group ,
 <code>response</code> is the group with maximal posterior probability and <code>latent</code> is the averaged latent in the latent space,
 with weights equal to the posterior probabilities.</p></dd>
+
+
 <dt>prior</dt>
 <dd><p>User-specified prior group probabilities in the new data. The default uses a uniform prior.</p></dd>
+
+
 <dt>control</dt>
 <dd><p>a list for controlling the optimization. See <code><a href="PLN.html">PLN()</a></code> for details.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional parameters for S3 compatibility. Not used</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A matrix of posterior probabilities for each group (if type = "posterior"), a matrix of (average) position in the
+    
+
+<p>A matrix of posterior probabilities for each group (if type = "posterior"), a matrix of (average) position in the
 latent space (if type = "position") or a vector of predicted groups (if type = "response").</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNmixture.html">PLNmixture</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">           data <span class="op">=</span> <span class="va">trichoptera</span>, control_main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>iterates <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNmixture.html">PLNmixture</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>           data <span class="op">=</span> <span class="va">trichoptera</span>, control_main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>iterates <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -134,7 +147,7 @@ latent space (if type = "position") or a vector of predicted groups (if type = "
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myPLN</span>, <span class="va">trichoptera</span>, <span class="st">"posterior"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myPLN</span>, <span class="va">trichoptera</span>, <span class="st">"posterior"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            [,1]         [,2]         [,3]         [,4]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  1.576556e-04 9.998423e-01 2.220446e-16 1.470190e-10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  9.990131e-01 9.868503e-04 2.220446e-16 1.324924e-12</span>
@@ -185,7 +198,7 @@ latent space (if type = "position") or a vector of predicted groups (if type = "
 <span class="r-out co"><span class="r-pr">#&gt;</span> 47 3.513933e-05 9.999649e-01 2.220446e-16 3.490925e-09</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 48 6.358980e-08 8.469402e-16 2.220446e-16 9.999999e-01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 49 2.220446e-16 2.220446e-16 2.220446e-16 1.000000e+00</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myPLN</span>, <span class="va">trichoptera</span>, <span class="st">"position"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myPLN</span>, <span class="va">trichoptera</span>, <span class="st">"position"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,1]       [,2]      [,3]      [,4]        [,5]      [,6]       [,7]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   -7.637612  -7.632259 -2.735553 -6.885417 -0.54967761 -3.649471  -6.163548</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  -13.999792 -13.999786 -2.180961 -6.293225 -0.61643100 -3.448714 -13.998331</span>
@@ -336,7 +349,7 @@ latent space (if type = "position") or a vector of predicted groups (if type = "
 <span class="r-out co"><span class="r-pr">#&gt;</span> 47 -4.563862  -5.792117 -2.789910</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 48 -3.247319  -8.158291 -1.990615</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 49 -2.067989  -8.182728 -3.191199</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myPLN</span>, <span class="va">trichoptera</span>, <span class="st">"response"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myPLN</span>, <span class="va">trichoptera</span>, <span class="st">"response"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2  1  1  2  2  1  1  2  1  1  1  4  2  2  2  2  2  2  2  2  2  4  4  1  4  4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 </span>
@@ -356,7 +369,7 @@ latent space (if type = "position") or a vector of predicted groups (if type = "
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

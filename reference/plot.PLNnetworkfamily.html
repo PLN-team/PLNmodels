@@ -84,41 +84,56 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for PLNnetworkfamily</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criteria"</span>, <span class="st">"stability"</span>, <span class="st">"diagnostic"</span><span class="op">)</span>,
-  criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"loglik"</span>, <span class="st">"pen_loglik"</span>, <span class="st">"BIC"</span>, <span class="st">"EBIC"</span><span class="op">)</span>,
-  reverse <span class="op">=</span> <span class="cn">FALSE</span>,
-  log.x <span class="op">=</span> <span class="cn">TRUE</span>,
-  stability <span class="op">=</span> <span class="fl">0.9</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for PLNnetworkfamily</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criteria"</span>, <span class="st">"stability"</span>, <span class="st">"diagnostic"</span><span class="op">)</span>,</span>
+<span>  criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"loglik"</span>, <span class="st">"pen_loglik"</span>, <span class="st">"BIC"</span>, <span class="st">"EBIC"</span><span class="op">)</span>,</span>
+<span>  reverse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  log.x <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  stability <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an R6 object with class <code><a href="PLNnetworkfamily.html">PLNnetworkfamily</a></code></p></dd>
+
+
 <dt>type</dt>
 <dd><p>a character, either "criteria", "stability" or "diagnostic" for the type of plot.</p></dd>
+
+
 <dt>criteria</dt>
 <dd><p>vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
 Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when <code>type = "criteria"</code>.</p></dd>
+
+
 <dt>reverse</dt>
 <dd><p>A logical indicating whether to plot the value of the criteria in the "natural" direction
 (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
 natural direction, on the same scale as the log-likelihood.</p></dd>
+
+
 <dt>log.x</dt>
 <dd><p>logical: should the x-axis be represented in log-scale? Default is <code>TRUE</code>.</p></dd>
+
+
 <dt>stability</dt>
 <dd><p>scalar: the targeted level of stability in stability plot. Default is .9.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional parameters for S3 compatibility. Not used</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Produces either a diagnostic plot (with <code>type = 'diagnostic'</code>), a stability plot
+    
+
+<p>Produces either a diagnostic plot (with <code>type = 'diagnostic'</code>), a stability plot
 (with <code>type = 'stability'</code>) or the evolution of the criteria of the different models considered
 (with <code>type = 'criteria'</code>, the default).</p>
     </div>
@@ -130,9 +145,9 @@ so that they are on the same scale as the model log-likelihood. You can change t
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNnetwork.html">PLNnetwork</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNnetwork.html">PLNnetwork</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting 30 PLN with sparse inverse covariance estimation</span>
@@ -140,9 +155,9 @@ so that they are on the same scale as the model log-likelihood. You can change t
 <span class="r-out co"><span class="r-pr">#&gt;</span> 	sparsifying penalty = 7.017338 	sparsifying penalty = 6.48171 	sparsifying penalty = 5.986967 	sparsifying penalty = 5.529987 	sparsifying penalty = 5.107888 	sparsifying penalty = 4.718007 	sparsifying penalty = 4.357886 	sparsifying penalty = 4.025252 	sparsifying penalty = 3.718008 	sparsifying penalty = 3.434215 	sparsifying penalty = 3.172085 	sparsifying penalty = 2.929962 	sparsifying penalty = 2.706321 	sparsifying penalty = 2.49975 	sparsifying penalty = 2.308946 	sparsifying penalty = 2.132706 	sparsifying penalty = 1.969918 	sparsifying penalty = 1.819556 	sparsifying penalty = 1.680671 	sparsifying penalty = 1.552387 	sparsifying penalty = 1.433894 	sparsifying penalty = 1.324447 	sparsifying penalty = 1.223353 	sparsifying penalty = 1.129975 	sparsifying penalty = 1.043725 	sparsifying penalty = 0.9640585 	sparsifying penalty = 0.8904728 	sparsifying penalty = 0.8225038 	sparsifying penalty = 0.7597227 	sparsifying penalty = 0.7017338 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -157,7 +172,7 @@ so that they are on the same scale as the model log-likelihood. You can change t
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

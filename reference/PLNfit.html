@@ -229,17 +229,17 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-update-">Method <code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code><a class="anchor" aria-label="anchor" href="#method-update-"></a></h3>
 <p>Update a <code>PLNfit</code> object</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">update</span><span class="op">(</span>
-  Theta <span class="op">=</span> <span class="cn">NA</span>,
-  Sigma <span class="op">=</span> <span class="cn">NA</span>,
-  M <span class="op">=</span> <span class="cn">NA</span>,
-  S2 <span class="op">=</span> <span class="cn">NA</span>,
-  Ji <span class="op">=</span> <span class="cn">NA</span>,
-  R2 <span class="op">=</span> <span class="cn">NA</span>,
-  Z <span class="op">=</span> <span class="cn">NA</span>,
-  A <span class="op">=</span> <span class="cn">NA</span>,
-  monitoring <span class="op">=</span> <span class="cn">NA</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">update</span><span class="op">(</span></span>
+<span>  Theta <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  Sigma <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  M <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  S2 <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  Ji <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  R2 <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  Z <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  A <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  monitoring <span class="op">=</span> <span class="cn">NA</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -291,7 +291,7 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize a <code>PLNfit</code> model</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va"><a href="../reference/PLNfit.html">PLNfit</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">formula</span>, <span class="va">xlevels</span>, <span class="va">control</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/PLNfit.html">PLNfit</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">formula</span>, <span class="va">xlevels</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -331,7 +331,7 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
 <p>Call to the C++ optimizer and update of the relevant fields</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">control</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -363,15 +363,15 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-vestep-">Method <code>VEstep()</code><a class="anchor" aria-label="anchor" href="#method-vestep-"></a></h3>
 <p>Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">VEstep</span><span class="op">(</span>
-  <span class="va">covariates</span>,
-  <span class="va">offsets</span>,
-  <span class="va">responses</span>,
-  <span class="va">weights</span>,
-  Theta <span class="op">=</span> <span class="va">self</span><span class="op">$</span><span class="va">model_par</span><span class="op">$</span><span class="va">Theta</span>,
-  Sigma <span class="op">=</span> <span class="va">self</span><span class="op">$</span><span class="va">model_par</span><span class="op">$</span><span class="va">Sigma</span>,
-  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">VEstep</span><span class="op">(</span></span>
+<span>  <span class="va">covariates</span>,</span>
+<span>  <span class="va">offsets</span>,</span>
+<span>  <span class="va">responses</span>,</span>
+<span>  <span class="va">weights</span>,</span>
+<span>  Theta <span class="op">=</span> <span class="va">self</span><span class="op">$</span><span class="va">model_par</span><span class="op">$</span><span class="va">Theta</span>,</span>
+<span>  Sigma <span class="op">=</span> <span class="va">self</span><span class="op">$</span><span class="va">model_par</span><span class="op">$</span><span class="va">Sigma</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -417,7 +417,7 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-set-r-">Method <code>set_R2()</code><a class="anchor" aria-label="anchor" href="#method-set-r-"></a></h3>
 <p>Update R2 field after optimization</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">set_R2</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, nullModel <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">set_R2</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, nullModel <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -449,7 +449,7 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-compute-fisher-">Method <code>compute_fisher()</code><a class="anchor" aria-label="anchor" href="#method-compute-fisher-"></a></h3>
 <p>Safely compute the fisher information matrix (FIM)</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">compute_fisher</span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"louis"</span><span class="op">)</span>, X <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">compute_fisher</span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"louis"</span><span class="op">)</span>, X <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -473,7 +473,7 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-compute-standard-error-">Method <code>compute_standard_error()</code><a class="anchor" aria-label="anchor" href="#method-compute-standard-error-"></a></h3>
 <p>Compute univariate standard error for coefficients of Theta from the FIM</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">compute_standard_error</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">compute_standard_error</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -485,14 +485,14 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
 <p>Update R2, fisher and std_err fields after optimization</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span>
-  <span class="va">responses</span>,
-  <span class="va">covariates</span>,
-  <span class="va">offsets</span>,
-  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">responses</span><span class="op">)</span><span class="op">)</span>,
-  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"louis"</span>, <span class="st">"none"</span><span class="op">)</span>,
-  nullModel <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span></span>
+<span>  <span class="va">responses</span>,</span>
+<span>  <span class="va">covariates</span>,</span>
+<span>  <span class="va">offsets</span>,</span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">responses</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"louis"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
+<span>  nullModel <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -528,7 +528,7 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-predict-">Method <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code><a class="anchor" aria-label="anchor" href="#method-predict-"></a></h3>
 <p>Predict position, scores or observations of new data.</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">predict</span><span class="op">(</span><span class="va">newdata</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"link"</span>, <span class="st">"response"</span><span class="op">)</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">predict</span><span class="op">(</span><span class="va">newdata</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"link"</span>, <span class="st">"response"</span><span class="op">)</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -556,13 +556,13 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-predict-cond-">Method <code><a href="predict_cond.html">predict_cond()</a></code><a class="anchor" aria-label="anchor" href="#method-predict-cond-"></a></h3>
 <p>Predict position, scores or observations of new data, conditionally on the observation of a (set of) variables</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">predict_cond</span><span class="op">(</span>
-  <span class="va">newdata</span>,
-  <span class="va">cond_responses</span>,
-  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"link"</span>, <span class="st">"response"</span><span class="op">)</span>,
-  var_par <span class="op">=</span> <span class="cn">FALSE</span>,
-  envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">predict_cond</span><span class="op">(</span></span>
+<span>  <span class="va">newdata</span>,</span>
+<span>  <span class="va">cond_responses</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"link"</span>, <span class="st">"response"</span><span class="op">)</span>,</span>
+<span>  var_par <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -598,10 +598,10 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span>
-  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"A multivariate Poisson Lognormal fit with"</span>, <span class="va">private</span><span class="op">$</span><span class="va">covariance</span>,
-    <span class="st">"covariance model.\n"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"A multivariate Poisson Lognormal fit with"</span>, <span class="va">private</span><span class="op">$</span><span class="va">covariance</span>,</span>
+<span>    <span class="st">"covariance model.\n"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -617,7 +617,7 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -625,7 +625,7 @@ which sometimes speeds up the inference.</p></li>
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">PLNfit</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -643,13 +643,13 @@ which sometimes speeds up the inference.</p></li>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -664,7 +664,7 @@ which sometimes speeds up the inference.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

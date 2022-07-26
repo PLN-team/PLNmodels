@@ -84,33 +84,42 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for PLNPCAfamily</span>
-<span class="fu">getBestModel</span><span class="op">(</span><span class="va">Robject</span>, crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ICL"</span>, <span class="st">"BIC"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="fu">getBestModel</span><span class="op">(</span><span class="va">Robject</span>, <span class="va">crit</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for PLNmixturefamily</span>
-<span class="fu">getBestModel</span><span class="op">(</span><span class="va">Robject</span>, crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ICL"</span>, <span class="st">"BIC"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for PLNnetworkfamily</span>
-<span class="fu">getBestModel</span><span class="op">(</span><span class="va">Robject</span>, crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BIC"</span>, <span class="st">"EBIC"</span>, <span class="st">"StARS"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for PLNPCAfamily</span></span>
+<span><span class="fu">getBestModel</span><span class="op">(</span><span class="va">Robject</span>, crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ICL"</span>, <span class="st">"BIC"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getBestModel</span><span class="op">(</span><span class="va">Robject</span>, <span class="va">crit</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for PLNmixturefamily</span></span>
+<span><span class="fu">getBestModel</span><span class="op">(</span><span class="va">Robject</span>, crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ICL"</span>, <span class="st">"BIC"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for PLNnetworkfamily</span></span>
+<span><span class="fu">getBestModel</span><span class="op">(</span><span class="va">Robject</span>, crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BIC"</span>, <span class="st">"EBIC"</span>, <span class="st">"StARS"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>Robject</dt>
 <dd><p>an object with class PLNPCAfamilly ot PLNnetworkfamily</p></dd>
+
+
 <dt>crit</dt>
 <dd><p>a character for the criterion used to performed the selection. Either
 "BIC", "ICL", "EBIC", "StARS", "R_squared". Default is <code>ICL</code> for <code>PLNPCA</code>, and <code>BIC</code> for <code>PLNnetwork</code>.
 If StARS (Stability Approach to Regularization Selection) is chosen and stability selection
 was not yet performed, the function will call the method <code><a href="stability_selection.html">stability_selection()</a></code> with default argument.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional parameters for StARS criterion (only for <code>PLNnetwork</code>). <code>stability</code>, a scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is <code>0.9</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Send back an object with class <code><a href="PLNPCAfit.html">PLNPCAfit</a></code> or <code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code></p>
+    
+
+<p>Send back an object with class <code><a href="PLNPCAfit.html">PLNPCAfit</a></code> or <code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code></p>
+
+
     </div>
     <div id="methods-by-class-">
     <h2>Methods (by class)</h2>
@@ -122,12 +131,12 @@ was not yet performed, the function will call the method <code><a href="stabilit
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNPCA.html">PLNPCA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">myModel</span> <span class="op">&lt;-</span> <span class="fu">getBestModel</span><span class="op">(</span><span class="va">myPCA</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLNPCA.html">PLNPCA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">myModel</span> <span class="op">&lt;-</span> <span class="fu">getBestModel</span><span class="op">(</span><span class="va">myPCA</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -142,7 +151,7 @@ was not yet performed, the function will call the method <code><a href="stabilit
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
