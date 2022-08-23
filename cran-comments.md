@@ -1,8 +1,10 @@
 
-Submitting PLNmodels version 0.11-6 to CRAN. Motivated by a request from CRAN team to 
-correct a wrong use of all.equal
+Submitting PLNmodels version 0.11-7 to CRAN. Motivated by a request from CRAN tea
 
-+ fixing linking problem to new version of nloptr
+* fix expression of ELBO in VEstep, related to #91
+* typos and regeneration of documentation( HTML5) 
+* added an S3 method predict_cond to perform conditional predictions
+* fix #89 bug by forcing an intercept in `PLNLDA()` and changing `extract_model()` to conform with `model.frame()`
 
 ## Tested environments
 
@@ -41,16 +43,16 @@ PLNmixture            5.64   0.01    5.71
 Windows R-release (winbuilder)
 
 
-On my computer I get (Ubuntu 20.04, Intel Xeon 3.5 GHz; 64 Go mem)
+On my computer I get (Ubuntu 22.04)
 
-── R CMD check results ──────────── PLNmodels 0.11.6 ────
-Duration: 3m 46.7s
+── R CMD check results ──────────── PLNmodels 0.11.7 ────
+Duration: 2m 25.7s
 
 > checking installed package size ... NOTE
-    installed size is 24.1Mb
+    installed size is 14.4Mb
     sub-directories of 1Mb or more:
       doc    2.1Mb
-      libs  20.8Mb
+      libs  11.2Mb
 
 0 errors ✓ | 0 warnings ✓ | 1 note x
 
