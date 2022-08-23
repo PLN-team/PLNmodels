@@ -116,7 +116,7 @@ myPLNmixture <- PLNmixture(Abundance ~ 1, data = trichoptera)
 
 Please cite our work using the following references:
 
-- J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, bioRxiv preprint, 2020.. [link](https://doi.org/10.1101/2020.10.07.329383)
+- J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, Frontiers in Ecology and Evolution, 2021. [link](https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full)
 
 - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019. 
 [link](http://proceedings.mlr.press/v97/chiquet19a.html)

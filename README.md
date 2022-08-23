@@ -7,19 +7,20 @@
 status](https://github.com/pln-team/PLNmodels/workflows/R-CMD-check/badge.svg)](https://github.com/pln-team/PLNmodels/actions)
 [![Coverage
 status](https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/pln-team/PLNmodels?branch=master)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![](https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg)](https://github.com/pln-team/PLNmodels/commits/master)
+[![R-CMD-check](https://github.com/PLN-team/PLNmodels/workflows/R-CMD-check/badge.svg)](https://github.com/PLN-team/PLNmodels/actions)
 <!-- badges: end -->
 
-> The Poisson lognormal model and variants can be used for a variety
-> of multivariate problems when count data are at play (including PCA,
-> LDA and network inference for count data). This package implements
+> The Poisson lognormal model and variants can be used for a variety of
+> multivariate problems when count data are at play (including PCA, LDA
+> and network inference for count data). This package implements
 > efficient algorithms to fit such models accompanied with a set of
-> functions for visualization and diagnostic. See 
-> [this deck of slides](https://pln-team.github.io/slideshow/slides) 
-> for a comprehensive introduction.
+> functions for visualization and diagnostic. See [this deck of
+> slides](https://pln-team.github.io/slideshow/slides) for a
+> comprehensive introduction.
 
 ## Installation
 
@@ -30,58 +31,37 @@ version is available on [Github](https://github.com/pln-team/PLNmodels).
 ### R Package installation
 
 <!-- #### CRAN dependencies -->
-
 <!-- **PLNmodels** needs the following CRAN R packages, so check that they are are installed on your computer. -->
-
 <!-- ```{r CRAN dependencies, eval = FALSE} -->
-
 <!-- required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo", -->
-
 <!--                    "nloptr", "igraph", "grid", "gridExtra", "dplyr", -->
-
 <!--                    "tidyr", "ggplot2", "corrplot", "magrittr", "devtools") -->
-
 <!-- not_installed_CRAN <- setdiff(required_CRAN, rownames(installed.packages())) -->
-
 <!-- if (length(not_installed_CRAN) > 0) install.packages(not_installed_CRAN) -->
-
 <!-- ``` -->
-
 <!-- #### Bioconductor dependencies -->
-
 <!-- **PLNmodels** also needs two BioConductor packages -->
-
 <!-- ```{r Bioconductor dependencies, eval = FALSE} -->
-
 <!-- required_BioC <- c("phyloseq", "biomformat") -->
-
 <!-- not_installed_BioC <- setdiff(required_BioC, rownames(installed.packages())) -->
-
 <!-- if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC) -->
-
 <!-- ``` -->
 
 #### Installing PLNmodels
 
-  - For the last stable version, use the CRAN version
-
-<!-- end list -->
+-   For the last stable version, use the CRAN version
 
 ``` r
 install.packages("PLNmodels")
 ```
 
-  - For the development version, use the github install
-
-<!-- end list -->
+-   For the development version, use the github install
 
 ``` r
 remotes::install_github("pln-team/PLNmodels")
 ```
 
-  - For a specific tagged release, use
-
-<!-- end list -->
+-   For a specific tagged release, use
 
 ``` r
 remotes::install_github("pln-team/PLNmodels@tag_number")
@@ -138,16 +118,16 @@ myPLNmixture <- PLNmixture(Abundance ~ 1, data = trichoptera)
 
 Please cite our work using the following references:
 
-  - J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model
+-   J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model
     as a versatile framework for the joint analysis of species
-    abundances, bioRxiv preprint, 2020..
-    [link](https://doi.org/10.1101/2020.10.07.329383)
+    abundances, Frontiers in Ecology and Evolution, 2021.
+    [link](https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full)
 
-  - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
+-   J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
     sparse network reconstruction from count data, Proceedings of the
     36th International Conference on Machine Learning (ICML), 2019.
     [link](http://proceedings.mlr.press/v97/chiquet19a.html)
 
-  - J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
+-   J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
     probabilistic Poisson PCA, the Annals of Applied Statistics, 12:
-    2674–2698, 2018. [link](https://dx.doi.org/10.1214/18-AOAS1177)
+    2674–2698, 2018. [link](http://dx.doi.org/10.1214/18%2DAOAS1177)

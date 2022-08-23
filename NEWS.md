@@ -1,5 +1,7 @@
-# PLNmodels dev
+# PLNmodels 0.11.7
 
+* fix expression of ELBO in VEstep, related to #91
+* typos and regeneration of documentation( HTML5) 
 * added an S3 method predict_cond to perform conditional predictions
 * fix #89 bug by forcing an intercept in `PLNLDA()` and changing `extract_model()` to conform with `model.frame()`
 
