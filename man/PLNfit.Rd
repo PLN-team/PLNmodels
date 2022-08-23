@@ -94,24 +94,24 @@ print(myPLN)
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-update}{\code{PLNfit$update()}}
-\item \href{#method-new}{\code{PLNfit$new()}}
-\item \href{#method-optimize}{\code{PLNfit$optimize()}}
-\item \href{#method-VEstep}{\code{PLNfit$VEstep()}}
-\item \href{#method-set_R2}{\code{PLNfit$set_R2()}}
-\item \href{#method-compute_fisher}{\code{PLNfit$compute_fisher()}}
-\item \href{#method-compute_standard_error}{\code{PLNfit$compute_standard_error()}}
-\item \href{#method-postTreatment}{\code{PLNfit$postTreatment()}}
-\item \href{#method-predict}{\code{PLNfit$predict()}}
-\item \href{#method-predict_cond}{\code{PLNfit$predict_cond()}}
-\item \href{#method-show}{\code{PLNfit$show()}}
-\item \href{#method-print}{\code{PLNfit$print()}}
-\item \href{#method-clone}{\code{PLNfit$clone()}}
+\item \href{#method-PLNfit-update}{\code{PLNfit$update()}}
+\item \href{#method-PLNfit-new}{\code{PLNfit$new()}}
+\item \href{#method-PLNfit-optimize}{\code{PLNfit$optimize()}}
+\item \href{#method-PLNfit-VEstep}{\code{PLNfit$VEstep()}}
+\item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
+\item \href{#method-PLNfit-compute_fisher}{\code{PLNfit$compute_fisher()}}
+\item \href{#method-PLNfit-compute_standard_error}{\code{PLNfit$compute_standard_error()}}
+\item \href{#method-PLNfit-postTreatment}{\code{PLNfit$postTreatment()}}
+\item \href{#method-PLNfit-predict}{\code{PLNfit$predict()}}
+\item \href{#method-PLNfit-predict_cond}{\code{PLNfit$predict_cond()}}
+\item \href{#method-PLNfit-show}{\code{PLNfit$show()}}
+\item \href{#method-PLNfit-print}{\code{PLNfit$print()}}
+\item \href{#method-PLNfit-clone}{\code{PLNfit$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-update"></a>}}
-\if{latex}{\out{\hypertarget{method-update}{}}}
+\if{html}{\out{<a id="method-PLNfit-update"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-update}{}}}
 \subsection{Method \code{update()}}{
 Update a \code{\link{PLNfit}} object
 \subsection{Usage}{
@@ -156,8 +156,8 @@ Update the current \code{\link{PLNfit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-PLNfit-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{PLNfit}} model
 \subsection{Usage}{
@@ -185,8 +185,8 @@ Initialize a \code{\link{PLNfit}} model
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-optimize}{}}}
+\if{html}{\out{<a id="method-PLNfit-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer and update of the relevant fields
 \subsection{Usage}{
@@ -210,8 +210,8 @@ Call to the C++ optimizer and update of the relevant fields
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-VEstep"></a>}}
-\if{latex}{\out{\hypertarget{method-VEstep}{}}}
+\if{html}{\out{<a id="method-PLNfit-VEstep"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-VEstep}{}}}
 \subsection{Method \code{VEstep()}}{
 Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
 \subsection{Usage}{
@@ -255,8 +255,8 @@ A list with three components:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_R2"></a>}}
-\if{latex}{\out{\hypertarget{method-set_R2}{}}}
+\if{html}{\out{<a id="method-PLNfit-set_R2"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-set_R2}{}}}
 \subsection{Method \code{set_R2()}}{
 Update R2 field after optimization
 \subsection{Usage}{
@@ -280,8 +280,8 @@ Update R2 field after optimization
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-compute_fisher"></a>}}
-\if{latex}{\out{\hypertarget{method-compute_fisher}{}}}
+\if{html}{\out{<a id="method-PLNfit-compute_fisher"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-compute_fisher}{}}}
 \subsection{Method \code{compute_fisher()}}{
 Safely compute the fisher information matrix (FIM)
 \subsection{Usage}{
@@ -302,8 +302,8 @@ a sparse matrix with sensible dimension names
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-compute_standard_error"></a>}}
-\if{latex}{\out{\hypertarget{method-compute_standard_error}{}}}
+\if{html}{\out{<a id="method-PLNfit-compute_standard_error"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-compute_standard_error}{}}}
 \subsection{Method \code{compute_standard_error()}}{
 Compute univariate standard error for coefficients of Theta from the FIM
 \subsection{Usage}{
@@ -315,8 +315,8 @@ a matrix of standard deviations.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-postTreatment"></a>}}
-\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
+\if{html}{\out{<a id="method-PLNfit-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 Update R2, fisher and std_err fields after optimization
 \subsection{Usage}{
@@ -349,8 +349,8 @@ Update R2, fisher and std_err fields after optimization
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict"></a>}}
-\if{latex}{\out{\hypertarget{method-predict}{}}}
+\if{html}{\out{<a id="method-PLNfit-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-predict}{}}}
 \subsection{Method \code{predict()}}{
 Predict position, scores or observations of new data.
 \subsection{Usage}{
@@ -373,8 +373,8 @@ A matrix with predictions scores or counts.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict_cond"></a>}}
-\if{latex}{\out{\hypertarget{method-predict_cond}{}}}
+\if{html}{\out{<a id="method-PLNfit-predict_cond"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-predict_cond}{}}}
 \subsection{Method \code{predict_cond()}}{
 Predict position, scores or observations of new data, conditionally on the observation of a (set of) variables
 \subsection{Usage}{
@@ -407,8 +407,8 @@ A matrix with predictions scores or counts.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-show"></a>}}
-\if{latex}{\out{\hypertarget{method-show}{}}}
+\if{html}{\out{<a id="method-PLNfit-show"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-show}{}}}
 \subsection{Method \code{show()}}{
 User friendly print method
 \subsection{Usage}{
@@ -427,8 +427,8 @@ User friendly print method
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-PLNfit-print"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-print}{}}}
 \subsection{Method \code{print()}}{
 User friendly print method
 \subsection{Usage}{
@@ -437,8 +437,8 @@ User friendly print method
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-PLNfit-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

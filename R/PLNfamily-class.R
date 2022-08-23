@@ -12,8 +12,6 @@
 #'
 #' @inherit PLN details
 #'
-#' @seealso
-#'
 #' @rdname PLNfamily
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class

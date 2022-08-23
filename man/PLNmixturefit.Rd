@@ -71,20 +71,20 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{PLNmixturefit$new()}}
-\item \href{#method-optimize}{\code{PLNmixturefit$optimize()}}
-\item \href{#method-predict}{\code{PLNmixturefit$predict()}}
-\item \href{#method-plot_clustering_data}{\code{PLNmixturefit$plot_clustering_data()}}
-\item \href{#method-plot_clustering_pca}{\code{PLNmixturefit$plot_clustering_pca()}}
-\item \href{#method-postTreatment}{\code{PLNmixturefit$postTreatment()}}
-\item \href{#method-show}{\code{PLNmixturefit$show()}}
-\item \href{#method-print}{\code{PLNmixturefit$print()}}
-\item \href{#method-clone}{\code{PLNmixturefit$clone()}}
+\item \href{#method-PLNmixturefit-new}{\code{PLNmixturefit$new()}}
+\item \href{#method-PLNmixturefit-optimize}{\code{PLNmixturefit$optimize()}}
+\item \href{#method-PLNmixturefit-predict}{\code{PLNmixturefit$predict()}}
+\item \href{#method-PLNmixturefit-plot_clustering_data}{\code{PLNmixturefit$plot_clustering_data()}}
+\item \href{#method-PLNmixturefit-plot_clustering_pca}{\code{PLNmixturefit$plot_clustering_pca()}}
+\item \href{#method-PLNmixturefit-postTreatment}{\code{PLNmixturefit$postTreatment()}}
+\item \href{#method-PLNmixturefit-show}{\code{PLNmixturefit$show()}}
+\item \href{#method-PLNmixturefit-print}{\code{PLNmixturefit$print()}}
+\item \href{#method-PLNmixturefit-clone}{\code{PLNmixturefit$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-PLNmixturefit-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefit-new}{}}}
 \subsection{Method \code{new()}}{
 Optimize a the
 
@@ -125,8 +125,8 @@ Initialize a \code{\link{PLNmixturefit}} model
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-optimize}{}}}
+\if{html}{\out{<a id="method-PLNmixturefit-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefit-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 Optimize a \code{\link{PLNmixturefit}} model
 \subsection{Usage}{
@@ -150,8 +150,8 @@ Optimize a \code{\link{PLNmixturefit}} model
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict"></a>}}
-\if{latex}{\out{\hypertarget{method-predict}{}}}
+\if{html}{\out{<a id="method-PLNmixturefit-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefit-predict}{}}}
 \subsection{Method \code{predict()}}{
 Predict group of new samples
 \subsection{Usage}{
@@ -184,8 +184,8 @@ with weights equal to the posterior probabilities.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_clustering_data"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_clustering_data}{}}}
+\if{html}{\out{<a id="method-PLNmixturefit-plot_clustering_data"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefit-plot_clustering_data}{}}}
 \subsection{Method \code{plot_clustering_data()}}{
 Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering
 \subsection{Usage}{
@@ -212,8 +212,8 @@ a \code{\link{ggplot}} graphic
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_clustering_pca"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_clustering_pca}{}}}
+\if{html}{\out{<a id="method-PLNmixturefit-plot_clustering_pca"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefit-plot_clustering_pca}{}}}
 \subsection{Method \code{plot_clustering_pca()}}{
 Plot the individual map of a PCA performed on the latent coordinates, where individuals are colored according to the memberships
 \subsection{Usage}{
@@ -237,8 +237,8 @@ a \code{\link{ggplot}} graphic
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-postTreatment"></a>}}
-\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
+\if{html}{\out{<a id="method-PLNmixturefit-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefit-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 Update fields after optimization
 \subsection{Usage}{
@@ -262,8 +262,8 @@ Update fields after optimization
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-show"></a>}}
-\if{latex}{\out{\hypertarget{method-show}{}}}
+\if{html}{\out{<a id="method-PLNmixturefit-show"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefit-show}{}}}
 \subsection{Method \code{show()}}{
 User friendly print method
 \subsection{Usage}{
@@ -272,8 +272,8 @@ User friendly print method
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-PLNmixturefit-print"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefit-print}{}}}
 \subsection{Method \code{print()}}{
 User friendly print method
 \subsection{Usage}{
@@ -282,8 +282,8 @@ User friendly print method
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-PLNmixturefit-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefit-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

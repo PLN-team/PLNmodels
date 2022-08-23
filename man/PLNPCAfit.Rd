@@ -56,35 +56,35 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{PLNPCAfit$new()}}
-\item \href{#method-update}{\code{PLNPCAfit$update()}}
-\item \href{#method-optimize}{\code{PLNPCAfit$optimize()}}
-\item \href{#method-VEstep}{\code{PLNPCAfit$VEstep()}}
-\item \href{#method-project}{\code{PLNPCAfit$project()}}
-\item \href{#method-setVisualization}{\code{PLNPCAfit$setVisualization()}}
-\item \href{#method-postTreatment}{\code{PLNPCAfit$postTreatment()}}
-\item \href{#method-compute_fisher}{\code{PLNPCAfit$compute_fisher()}}
-\item \href{#method-plot_individual_map}{\code{PLNPCAfit$plot_individual_map()}}
-\item \href{#method-plot_correlation_circle}{\code{PLNPCAfit$plot_correlation_circle()}}
-\item \href{#method-plot_PCA}{\code{PLNPCAfit$plot_PCA()}}
-\item \href{#method-show}{\code{PLNPCAfit$show()}}
-\item \href{#method-clone}{\code{PLNPCAfit$clone()}}
+\item \href{#method-PLNPCAfit-new}{\code{PLNPCAfit$new()}}
+\item \href{#method-PLNPCAfit-update}{\code{PLNPCAfit$update()}}
+\item \href{#method-PLNPCAfit-optimize}{\code{PLNPCAfit$optimize()}}
+\item \href{#method-PLNPCAfit-VEstep}{\code{PLNPCAfit$VEstep()}}
+\item \href{#method-PLNPCAfit-project}{\code{PLNPCAfit$project()}}
+\item \href{#method-PLNPCAfit-setVisualization}{\code{PLNPCAfit$setVisualization()}}
+\item \href{#method-PLNPCAfit-postTreatment}{\code{PLNPCAfit$postTreatment()}}
+\item \href{#method-PLNPCAfit-compute_fisher}{\code{PLNPCAfit$compute_fisher()}}
+\item \href{#method-PLNPCAfit-plot_individual_map}{\code{PLNPCAfit$plot_individual_map()}}
+\item \href{#method-PLNPCAfit-plot_correlation_circle}{\code{PLNPCAfit$plot_correlation_circle()}}
+\item \href{#method-PLNPCAfit-plot_PCA}{\code{PLNPCAfit$plot_PCA()}}
+\item \href{#method-PLNPCAfit-show}{\code{PLNPCAfit$show()}}
+\item \href{#method-PLNPCAfit-clone}{\code{PLNPCAfit$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict">}\href{../../PLNmodels/html/PLNfit.html#method-predict}{\code{PLNmodels::PLNfit$predict()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond">}\href{../../PLNmodels/html/PLNfit.html#method-predict_cond}{\code{PLNmodels::PLNfit$predict_cond()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2">}\href{../../PLNmodels/html/PLNfit.html#method-set_R2}{\code{PLNmodels::PLNfit$set_R2()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-compute_standard_error'><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{PLNPCAfit}} object
 \subsection{Usage}{
@@ -123,8 +123,8 @@ Initialize a \code{\link{PLNPCAfit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-update"></a>}}
-\if{latex}{\out{\hypertarget{method-update}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-update"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-update}{}}}
 \subsection{Method \code{update()}}{
 Update a \code{\link{PLNPCAfit}} object
 \subsection{Usage}{
@@ -172,8 +172,8 @@ Update the current \code{\link{PLNPCAfit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-optimize}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer and update of the relevant fields
 \subsection{Usage}{
@@ -197,8 +197,8 @@ Call to the C++ optimizer and update of the relevant fields
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-VEstep"></a>}}
-\if{latex}{\out{\hypertarget{method-VEstep}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-VEstep"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-VEstep}{}}}
 \subsection{Method \code{VEstep()}}{
 Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (B, Theta). Intended to position new data in the latent space for further use with PCA.
 \subsection{Usage}{
@@ -236,8 +236,8 @@ A list with three components:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-project"></a>}}
-\if{latex}{\out{\hypertarget{method-project}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-project"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-project}{}}}
 \subsection{Method \code{project()}}{
 Project new samples into the PCA space using one VE step
 \subsection{Usage}{
@@ -262,8 +262,8 @@ Project new samples into the PCA space using one VE step
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setVisualization"></a>}}
-\if{latex}{\out{\hypertarget{method-setVisualization}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-setVisualization"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-setVisualization}{}}}
 \subsection{Method \code{setVisualization()}}{
 Compute PCA scores in the latent space and update corresponding fields.
 \subsection{Usage}{
@@ -279,8 +279,8 @@ Compute PCA scores in the latent space and update corresponding fields.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-postTreatment"></a>}}
-\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 Update R2, fisher, std_err fields and set up visualization
 after optimization
@@ -305,8 +305,8 @@ after optimization
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-compute_fisher"></a>}}
-\if{latex}{\out{\hypertarget{method-compute_fisher}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-compute_fisher"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-compute_fisher}{}}}
 \subsection{Method \code{compute_fisher()}}{
 Safely compute the fisher information matrix (FIM)
 \subsection{Usage}{
@@ -327,8 +327,8 @@ a sparse matrix with sensible dimension names
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_individual_map"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_individual_map}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-plot_individual_map"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-plot_individual_map}{}}}
 \subsection{Method \code{plot_individual_map()}}{
 Plot the factorial map of the PCA
 \subsection{Usage}{
@@ -358,8 +358,8 @@ a \code{\link{ggplot}} graphic
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_correlation_circle"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_correlation_circle}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-plot_correlation_circle"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-plot_correlation_circle}{}}}
 \subsection{Method \code{plot_correlation_circle()}}{
 Plot the correlation circle of a specified axis for a \code{\link{PLNLDAfit}} object
 \subsection{Usage}{
@@ -389,8 +389,8 @@ a \code{\link{ggplot}} graphic
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_PCA"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_PCA}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-plot_PCA"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-plot_PCA}{}}}
 \subsection{Method \code{plot_PCA()}}{
 Plot a summary of the \code{\link{PLNPCAfit}} object
 \subsection{Usage}{
@@ -420,8 +420,8 @@ a \code{\link{grob}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-show"></a>}}
-\if{latex}{\out{\hypertarget{method-show}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-show"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-show}{}}}
 \subsection{Method \code{show()}}{
 User friendly print method
 \subsection{Usage}{
@@ -430,8 +430,8 @@ User friendly print method
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-PLNPCAfit-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

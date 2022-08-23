@@ -47,34 +47,34 @@ The function \code{\link{PLNLDA}}.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{PLNLDAfit$new()}}
-\item \href{#method-optimize}{\code{PLNLDAfit$optimize()}}
-\item \href{#method-postTreatment}{\code{PLNLDAfit$postTreatment()}}
-\item \href{#method-setVisualization}{\code{PLNLDAfit$setVisualization()}}
-\item \href{#method-plot_individual_map}{\code{PLNLDAfit$plot_individual_map()}}
-\item \href{#method-plot_correlation_map}{\code{PLNLDAfit$plot_correlation_map()}}
-\item \href{#method-plot_LDA}{\code{PLNLDAfit$plot_LDA()}}
-\item \href{#method-predict}{\code{PLNLDAfit$predict()}}
-\item \href{#method-show}{\code{PLNLDAfit$show()}}
-\item \href{#method-clone}{\code{PLNLDAfit$clone()}}
+\item \href{#method-PLNLDAfit-new}{\code{PLNLDAfit$new()}}
+\item \href{#method-PLNLDAfit-optimize}{\code{PLNLDAfit$optimize()}}
+\item \href{#method-PLNLDAfit-postTreatment}{\code{PLNLDAfit$postTreatment()}}
+\item \href{#method-PLNLDAfit-setVisualization}{\code{PLNLDAfit$setVisualization()}}
+\item \href{#method-PLNLDAfit-plot_individual_map}{\code{PLNLDAfit$plot_individual_map()}}
+\item \href{#method-PLNLDAfit-plot_correlation_map}{\code{PLNLDAfit$plot_correlation_map()}}
+\item \href{#method-PLNLDAfit-plot_LDA}{\code{PLNLDAfit$plot_LDA()}}
+\item \href{#method-PLNLDAfit-predict}{\code{PLNLDAfit$predict()}}
+\item \href{#method-PLNLDAfit-show}{\code{PLNLDAfit$show()}}
+\item \href{#method-PLNLDAfit-clone}{\code{PLNLDAfit$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher">}\href{../../PLNmodels/html/PLNfit.html#method-compute_fisher}{\code{PLNmodels::PLNfit$compute_fisher()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond">}\href{../../PLNmodels/html/PLNfit.html#method-predict_cond}{\code{PLNmodels::PLNfit$predict_cond()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2">}\href{../../PLNmodels/html/PLNfit.html#method-set_R2}{\code{PLNmodels::PLNfit$set_R2()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update">}\href{../../PLNmodels/html/PLNfit.html#method-update}{\code{PLNmodels::PLNfit$update()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-VEstep'><code>PLNmodels::PLNfit$VEstep()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-compute_fisher'><code>PLNmodels::PLNfit$compute_fisher()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-compute_standard_error'><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-PLNLDAfit-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{PLNLDAfit}} object
 \subsection{Usage}{
@@ -113,8 +113,8 @@ Initialize a \code{\link{PLNLDAfit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-optimize}{}}}
+\if{html}{\out{<a id="method-PLNLDAfit-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 Compute group means and axis of the LDA (noted B in the model) in the
 latent space, update corresponding fields
@@ -137,8 +137,8 @@ latent space, update corresponding fields
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-postTreatment"></a>}}
-\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
+\if{html}{\out{<a id="method-PLNLDAfit-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 Update R2, fisher and std_err fields and visualization
 after optimization
@@ -161,8 +161,8 @@ after optimization
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setVisualization"></a>}}
-\if{latex}{\out{\hypertarget{method-setVisualization}{}}}
+\if{html}{\out{<a id="method-PLNLDAfit-setVisualization"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-setVisualization}{}}}
 \subsection{Method \code{setVisualization()}}{
 Compute LDA scores in the latent space and update corresponding fields.
 \subsection{Usage}{
@@ -178,8 +178,8 @@ Compute LDA scores in the latent space and update corresponding fields.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_individual_map"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_individual_map}{}}}
+\if{html}{\out{<a id="method-PLNLDAfit-plot_individual_map"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-plot_individual_map}{}}}
 \subsection{Method \code{plot_individual_map()}}{
 Plot the factorial map of the LDA
 \subsection{Usage}{
@@ -206,8 +206,8 @@ a \code{\link{ggplot}} graphic
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_correlation_map"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_correlation_map}{}}}
+\if{html}{\out{<a id="method-PLNLDAfit-plot_correlation_map"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-plot_correlation_map}{}}}
 \subsection{Method \code{plot_correlation_map()}}{
 Plot the correlation circle of a specified axis for a \code{\link{PLNLDAfit}} object
 \subsection{Usage}{
@@ -237,8 +237,8 @@ a \code{\link{ggplot}} graphic
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_LDA"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_LDA}{}}}
+\if{html}{\out{<a id="method-PLNLDAfit-plot_LDA"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-plot_LDA}{}}}
 \subsection{Method \code{plot_LDA()}}{
 Plot a summary of the \code{\link{PLNLDAfit}} object
 \subsection{Usage}{
@@ -265,8 +265,8 @@ a \code{\link{grob}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict"></a>}}
-\if{latex}{\out{\hypertarget{method-predict}{}}}
+\if{html}{\out{<a id="method-PLNLDAfit-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-predict}{}}}
 \subsection{Method \code{predict()}}{
 Predict group of new samples
 \subsection{Usage}{
@@ -299,8 +299,8 @@ Predict group of new samples
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-show"></a>}}
-\if{latex}{\out{\hypertarget{method-show}{}}}
+\if{html}{\out{<a id="method-PLNLDAfit-show"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-show}{}}}
 \subsection{Method \code{show()}}{
 User friendly print method
 \subsection{Usage}{
@@ -309,8 +309,8 @@ User friendly print method
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-PLNLDAfit-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -43,9 +43,9 @@ Predict counts of a new sample conditionally on a (set of) observed variables
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{PLNfit}: Predict counts of a new sample conditionally on a (set of) observed variables for a \code{\link{PLNfit}}
-}}
+\item \code{predict_cond(PLNfit)}: Predict counts of a new sample conditionally on a (set of) observed variables for a \code{\link{PLNfit}}
 
+}}
 \examples{
 data(trichoptera)
 trichoptera_prep <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)

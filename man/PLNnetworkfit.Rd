@@ -50,32 +50,32 @@ and graph density}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{PLNnetworkfit$new()}}
-\item \href{#method-update}{\code{PLNnetworkfit$update()}}
-\item \href{#method-optimize}{\code{PLNnetworkfit$optimize()}}
-\item \href{#method-postTreatment}{\code{PLNnetworkfit$postTreatment()}}
-\item \href{#method-latent_network}{\code{PLNnetworkfit$latent_network()}}
-\item \href{#method-plot_network}{\code{PLNnetworkfit$plot_network()}}
-\item \href{#method-show}{\code{PLNnetworkfit$show()}}
-\item \href{#method-clone}{\code{PLNnetworkfit$clone()}}
+\item \href{#method-PLNnetworkfit-new}{\code{PLNnetworkfit$new()}}
+\item \href{#method-PLNnetworkfit-update}{\code{PLNnetworkfit$update()}}
+\item \href{#method-PLNnetworkfit-optimize}{\code{PLNnetworkfit$optimize()}}
+\item \href{#method-PLNnetworkfit-postTreatment}{\code{PLNnetworkfit$postTreatment()}}
+\item \href{#method-PLNnetworkfit-latent_network}{\code{PLNnetworkfit$latent_network()}}
+\item \href{#method-PLNnetworkfit-plot_network}{\code{PLNnetworkfit$plot_network()}}
+\item \href{#method-PLNnetworkfit-show}{\code{PLNnetworkfit$show()}}
+\item \href{#method-PLNnetworkfit-clone}{\code{PLNnetworkfit$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep">}\href{../../PLNmodels/html/PLNfit.html#method-VEstep}{\code{PLNmodels::PLNfit$VEstep()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher">}\href{../../PLNmodels/html/PLNfit.html#method-compute_fisher}{\code{PLNmodels::PLNfit$compute_fisher()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error">}\href{../../PLNmodels/html/PLNfit.html#method-compute_standard_error}{\code{PLNmodels::PLNfit$compute_standard_error()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict">}\href{../../PLNmodels/html/PLNfit.html#method-predict}{\code{PLNmodels::PLNfit$predict()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond">}\href{../../PLNmodels/html/PLNfit.html#method-predict_cond}{\code{PLNmodels::PLNfit$predict_cond()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print">}\href{../../PLNmodels/html/PLNfit.html#method-print}{\code{PLNmodels::PLNfit$print()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2">}\href{../../PLNmodels/html/PLNfit.html#method-set_R2}{\code{PLNmodels::PLNfit$set_R2()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-VEstep'><code>PLNmodels::PLNfit$VEstep()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-compute_fisher'><code>PLNmodels::PLNfit$compute_fisher()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-compute_standard_error'><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfit-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfit-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{PLNnetworkfit}} object
 \subsection{Usage}{
@@ -114,8 +114,8 @@ Initialize a \code{\link{PLNnetworkfit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-update"></a>}}
-\if{latex}{\out{\hypertarget{method-update}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfit-update"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfit-update}{}}}
 \subsection{Method \code{update()}}{
 Update fields of a \code{\link{PLNnetworkfit}} object
 \subsection{Usage}{
@@ -163,8 +163,8 @@ Update fields of a \code{\link{PLNnetworkfit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-optimize}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfit-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfit-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer and update of the relevant fields
 \subsection{Usage}{
@@ -188,8 +188,8 @@ Call to the C++ optimizer and update of the relevant fields
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-postTreatment"></a>}}
-\if{latex}{\out{\hypertarget{method-postTreatment}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfit-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfit-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 Compute PCA scores in the latent space and update corresponding fields.
 \subsection{Usage}{
@@ -213,8 +213,8 @@ Compute PCA scores in the latent space and update corresponding fields.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-latent_network"></a>}}
-\if{latex}{\out{\hypertarget{method-latent_network}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfit-latent_network"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfit-latent_network}{}}}
 \subsection{Method \code{latent_network()}}{
 Extract interaction network in the latent space
 \subsection{Usage}{
@@ -233,8 +233,8 @@ a square matrix of size \code{PLNnetworkfit$n}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_network"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_network}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfit-plot_network"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfit-plot_network}{}}}
 \subsection{Method \code{plot_network()}}{
 plot the latent network.
 \subsection{Usage}{
@@ -270,8 +270,8 @@ plot the latent network.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-show"></a>}}
-\if{latex}{\out{\hypertarget{method-show}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfit-show"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfit-show}{}}}
 \subsection{Method \code{show()}}{
 User friendly print method
 \subsection{Usage}{
@@ -280,8 +280,8 @@ User friendly print method
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfit-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfit-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

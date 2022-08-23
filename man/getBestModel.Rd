@@ -35,13 +35,13 @@ Best model extraction from a collection of models
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{PLNPCAfamily}: Model extraction for \code{\link{PLNPCAfamily}}
+\item \code{getBestModel(PLNPCAfamily)}: Model extraction for \code{\link{PLNPCAfamily}}
 
-\item \code{PLNmixturefamily}: Model extraction for \code{\link{PLNmixturefamily}}
+\item \code{getBestModel(PLNmixturefamily)}: Model extraction for \code{\link{PLNmixturefamily}}
 
-\item \code{PLNnetworkfamily}: Model extraction for \code{\link{PLNnetworkfamily}}
+\item \code{getBestModel(PLNnetworkfamily)}: Model extraction for \code{\link{PLNnetworkfamily}}
+
 }}
-
 \examples{
 \dontrun{
 data(trichoptera)

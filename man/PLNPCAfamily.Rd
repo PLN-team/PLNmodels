@@ -32,26 +32,26 @@ The function \code{\link[=PLNPCA]{PLNPCA()}}, the class \code{\link[=PLNPCAfit]{
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{PLNPCAfamily$new()}}
-\item \href{#method-optimize}{\code{PLNPCAfamily$optimize()}}
-\item \href{#method-getModel}{\code{PLNPCAfamily$getModel()}}
-\item \href{#method-getBestModel}{\code{PLNPCAfamily$getBestModel()}}
-\item \href{#method-plot}{\code{PLNPCAfamily$plot()}}
-\item \href{#method-show}{\code{PLNPCAfamily$show()}}
-\item \href{#method-clone}{\code{PLNPCAfamily$clone()}}
+\item \href{#method-PLNPCAfamily-new}{\code{PLNPCAfamily$new()}}
+\item \href{#method-PLNPCAfamily-optimize}{\code{PLNPCAfamily$optimize()}}
+\item \href{#method-PLNPCAfamily-getModel}{\code{PLNPCAfamily$getModel()}}
+\item \href{#method-PLNPCAfamily-getBestModel}{\code{PLNPCAfamily$getBestModel()}}
+\item \href{#method-PLNPCAfamily-plot}{\code{PLNPCAfamily$plot()}}
+\item \href{#method-PLNPCAfamily-show}{\code{PLNPCAfamily$show()}}
+\item \href{#method-PLNPCAfamily-clone}{\code{PLNPCAfamily$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment">}\href{../../PLNmodels/html/PLNfamily.html#method-postTreatment}{\code{PLNmodels::PLNfamily$postTreatment()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print">}\href{../../PLNmodels/html/PLNfamily.html#method-print}{\code{PLNmodels::PLNfamily$print()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-print'><code>PLNmodels::PLNfamily$print()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-PLNPCAfamily-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfamily-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize all models in the collection.
 \subsection{Usage}{
@@ -90,8 +90,8 @@ Initialize all models in the collection.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-optimize}{}}}
+\if{html}{\out{<a id="method-PLNPCAfamily-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfamily-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer on all models of the collection
 \subsection{Usage}{
@@ -107,8 +107,8 @@ Call to the C++ optimizer on all models of the collection
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getModel"></a>}}
-\if{latex}{\out{\hypertarget{method-getModel}{}}}
+\if{html}{\out{<a id="method-PLNPCAfamily-getModel"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfamily-getModel}{}}}
 \subsection{Method \code{getModel()}}{
 Extract model from collection and add "PCA" class for compatibility with \code{\link[factoextra:fviz]{factoextra::fviz()}}
 \subsection{Usage}{
@@ -129,8 +129,8 @@ a \code{\link{PLNPCAfit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getBestModel"></a>}}
-\if{latex}{\out{\hypertarget{method-getBestModel}{}}}
+\if{html}{\out{<a id="method-PLNPCAfamily-getBestModel"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfamily-getBestModel}{}}}
 \subsection{Method \code{getBestModel()}}{
 Extract best model in the collection
 \subsection{Usage}{
@@ -150,8 +150,8 @@ a \code{\link{PLNPCAfit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot"></a>}}
-\if{latex}{\out{\hypertarget{method-plot}{}}}
+\if{html}{\out{<a id="method-PLNPCAfamily-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfamily-plot}{}}}
 \subsection{Method \code{plot()}}{
 Lineplot of selected criteria for all models in the collection
 \subsection{Usage}{
@@ -174,8 +174,8 @@ A \code{\link{ggplot2}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-show"></a>}}
-\if{latex}{\out{\hypertarget{method-show}{}}}
+\if{html}{\out{<a id="method-PLNPCAfamily-show"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfamily-show}{}}}
 \subsection{Method \code{show()}}{
 User friendly print method
 \subsection{Usage}{
@@ -184,8 +184,8 @@ User friendly print method
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-PLNPCAfamily-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfamily-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

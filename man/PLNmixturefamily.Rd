@@ -25,28 +25,28 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefit]{PLN
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{PLNmixturefamily$new()}}
-\item \href{#method-optimize}{\code{PLNmixturefamily$optimize()}}
-\item \href{#method-smooth}{\code{PLNmixturefamily$smooth()}}
-\item \href{#method-plot}{\code{PLNmixturefamily$plot()}}
-\item \href{#method-plot_objective}{\code{PLNmixturefamily$plot_objective()}}
-\item \href{#method-getBestModel}{\code{PLNmixturefamily$getBestModel()}}
-\item \href{#method-show}{\code{PLNmixturefamily$show()}}
-\item \href{#method-print}{\code{PLNmixturefamily$print()}}
-\item \href{#method-clone}{\code{PLNmixturefamily$clone()}}
+\item \href{#method-PLNmixturefamily-new}{\code{PLNmixturefamily$new()}}
+\item \href{#method-PLNmixturefamily-optimize}{\code{PLNmixturefamily$optimize()}}
+\item \href{#method-PLNmixturefamily-smooth}{\code{PLNmixturefamily$smooth()}}
+\item \href{#method-PLNmixturefamily-plot}{\code{PLNmixturefamily$plot()}}
+\item \href{#method-PLNmixturefamily-plot_objective}{\code{PLNmixturefamily$plot_objective()}}
+\item \href{#method-PLNmixturefamily-getBestModel}{\code{PLNmixturefamily$getBestModel()}}
+\item \href{#method-PLNmixturefamily-show}{\code{PLNmixturefamily$show()}}
+\item \href{#method-PLNmixturefamily-print}{\code{PLNmixturefamily$print()}}
+\item \href{#method-PLNmixturefamily-clone}{\code{PLNmixturefamily$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel">}\href{../../PLNmodels/html/PLNfamily.html#method-getModel}{\code{PLNmodels::PLNfamily$getModel()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment">}\href{../../PLNmodels/html/PLNfamily.html#method-postTreatment}{\code{PLNmodels::PLNfamily$postTreatment()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-getModel'><code>PLNmodels::PLNfamily$getModel()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-PLNmixturefamily-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefamily-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize all models in the collection.
 \subsection{Usage}{
@@ -84,8 +84,8 @@ Initialize all models in the collection.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-optimize}{}}}
+\if{html}{\out{<a id="method-PLNmixturefamily-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefamily-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 Call to the optimizer on all models of the collection
 \subsection{Usage}{
@@ -103,8 +103,8 @@ Call to the optimizer on all models of the collection
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-smooth"></a>}}
-\if{latex}{\out{\hypertarget{method-smooth}{}}}
+\if{html}{\out{<a id="method-PLNmixturefamily-smooth"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefamily-smooth}{}}}
 \subsection{Method \code{smooth()}}{
 function to restart clustering to avoid local minima by smoothing the loglikelihood values as a function of the number of clusters
 \subsection{Usage}{
@@ -120,8 +120,8 @@ function to restart clustering to avoid local minima by smoothing the loglikelih
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot"></a>}}
-\if{latex}{\out{\hypertarget{method-plot}{}}}
+\if{html}{\out{<a id="method-PLNmixturefamily-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefamily-plot}{}}}
 \subsection{Method \code{plot()}}{
 Lineplot of selected criteria for all models in the collection
 \subsection{Usage}{
@@ -144,8 +144,8 @@ A \code{\link{ggplot2}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_objective"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_objective}{}}}
+\if{html}{\out{<a id="method-PLNmixturefamily-plot_objective"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefamily-plot_objective}{}}}
 \subsection{Method \code{plot_objective()}}{
 Plot objective value of the optimization problem along the penalty path
 \subsection{Usage}{
@@ -157,8 +157,8 @@ a \code{\link{ggplot}} graph
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getBestModel"></a>}}
-\if{latex}{\out{\hypertarget{method-getBestModel}{}}}
+\if{html}{\out{<a id="method-PLNmixturefamily-getBestModel"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefamily-getBestModel}{}}}
 \subsection{Method \code{getBestModel()}}{
 Extract best model in the collection
 \subsection{Usage}{
@@ -178,8 +178,8 @@ a \code{\link{PLNmixturefit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-show"></a>}}
-\if{latex}{\out{\hypertarget{method-show}{}}}
+\if{html}{\out{<a id="method-PLNmixturefamily-show"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefamily-show}{}}}
 \subsection{Method \code{show()}}{
 User friendly print method
 \subsection{Usage}{
@@ -188,8 +188,8 @@ User friendly print method
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-PLNmixturefamily-print"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefamily-print}{}}}
 \subsection{Method \code{print()}}{
 User friendly print method
 \subsection{Usage}{
@@ -198,8 +198,8 @@ User friendly print method
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-PLNmixturefamily-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefamily-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -23,9 +23,9 @@ Extracts Fisher information matrix of \eqn{\Theta} from objects returned by \cod
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{PLNfit}: Fisher information matrix for PLNfit
-}}
+\item \code{fisher(PLNfit)}: Fisher information matrix for PLNfit
 
+}}
 \seealso{
 \code{\link[=standard_error.PLNfit]{standard_error}} for standard errors
 }

@@ -34,9 +34,9 @@
 PLNLDA <- function(formula, data, subset, weights, grouping, control = list()) {
 
   ## look for grouping in the data or the parent frame
-  if (class(try(eval(grouping), silent = TRUE)) == "try-error") {
+  if (inherits(try(eval(grouping), silent = TRUE), "try-error")) {
     grouping <- try(eval(substitute(grouping), data), silent = TRUE)
-    if (class(grouping) == "try-error") stop("invalid grouping")
+    if (inherits(grouping, "try-error")) stop("invalid grouping")
   }
   grouping <- as.factor(grouping)
 

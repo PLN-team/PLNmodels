@@ -22,7 +22,7 @@ test_that("Check that fisher and standard_error return objects with proper dimen
   expect_equal(colnames(sem), colnames(coef(myPLN_cov)))
 
   ## Fisher is block diagonal
-  expect_equal(inherits(fim, "dgCMatrix"), TRUE)
+  expect_equal(inherits(fim, "dsCMatrix"), TRUE)
 
   ## Standard errors are all positive
   for (i in 1:(p*d)) {
@@ -53,7 +53,7 @@ test_that("Check internal consistency of Fisher matrix for PLN models with no co
   manual.sem <- 1/colSums(myPLN$fitted) %>% sqrt()
 
   ## Internal consistency
-  expect_equal(fim.diag        , manual.fim.diag  , tolerance = tol)
+  expect_equivalent(fim.diag        , manual.fim.diag  , tolerance = tol)
   expect_equal(sem             , manual.sem       , tolerance = tol)
 
 })
@@ -81,7 +81,7 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
                     0.058620515251328)
 
   ## Temporal consistency (with previous fits of the PLN model, here fitted on the 2018/12/11 with PLNmodels version 0.5.9601)
-  expect_equal(fim.diag        , expected.fim.diag, tolerance = tol)
+  expect_equivalent(fim.diag        , expected.fim.diag, tolerance = tol)
   expect_equal(sem             , expected.sem     , tolerance = tol)
 
 })

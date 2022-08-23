@@ -39,30 +39,30 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{PLNnetworkfamily$new()}}
-\item \href{#method-optimize}{\code{PLNnetworkfamily$optimize()}}
-\item \href{#method-stability_selection}{\code{PLNnetworkfamily$stability_selection()}}
-\item \href{#method-coefficient_path}{\code{PLNnetworkfamily$coefficient_path()}}
-\item \href{#method-getBestModel}{\code{PLNnetworkfamily$getBestModel()}}
-\item \href{#method-plot}{\code{PLNnetworkfamily$plot()}}
-\item \href{#method-plot_stars}{\code{PLNnetworkfamily$plot_stars()}}
-\item \href{#method-plot_objective}{\code{PLNnetworkfamily$plot_objective()}}
-\item \href{#method-show}{\code{PLNnetworkfamily$show()}}
-\item \href{#method-clone}{\code{PLNnetworkfamily$clone()}}
+\item \href{#method-PLNnetworkfamily-new}{\code{PLNnetworkfamily$new()}}
+\item \href{#method-PLNnetworkfamily-optimize}{\code{PLNnetworkfamily$optimize()}}
+\item \href{#method-PLNnetworkfamily-stability_selection}{\code{PLNnetworkfamily$stability_selection()}}
+\item \href{#method-PLNnetworkfamily-coefficient_path}{\code{PLNnetworkfamily$coefficient_path()}}
+\item \href{#method-PLNnetworkfamily-getBestModel}{\code{PLNnetworkfamily$getBestModel()}}
+\item \href{#method-PLNnetworkfamily-plot}{\code{PLNnetworkfamily$plot()}}
+\item \href{#method-PLNnetworkfamily-plot_stars}{\code{PLNnetworkfamily$plot_stars()}}
+\item \href{#method-PLNnetworkfamily-plot_objective}{\code{PLNnetworkfamily$plot_objective()}}
+\item \href{#method-PLNnetworkfamily-show}{\code{PLNnetworkfamily$show()}}
+\item \href{#method-PLNnetworkfamily-clone}{\code{PLNnetworkfamily$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel">}\href{../../PLNmodels/html/PLNfamily.html#method-getModel}{\code{PLNmodels::PLNfamily$getModel()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment">}\href{../../PLNmodels/html/PLNfamily.html#method-postTreatment}{\code{PLNmodels::PLNfamily$postTreatment()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print">}\href{../../PLNmodels/html/PLNfamily.html#method-print}{\code{PLNmodels::PLNfamily$print()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-getModel'><code>PLNmodels::PLNfamily$getModel()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-print'><code>PLNmodels::PLNfamily$print()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize all models in the collection
 \subsection{Usage}{
@@ -104,8 +104,8 @@ Update current \code{\link{PLNnetworkfit}} with smart starting values
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-optimize}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer on all models of the collection
 \subsection{Usage}{
@@ -121,8 +121,8 @@ Call to the C++ optimizer on all models of the collection
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-stability_selection"></a>}}
-\if{latex}{\out{\hypertarget{method-stability_selection}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-stability_selection"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-stability_selection}{}}}
 \subsection{Method \code{stability_selection()}}{
 Compute the stability path by stability selection
 \subsection{Usage}{
@@ -140,8 +140,8 @@ Compute the stability path by stability selection
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-coefficient_path"></a>}}
-\if{latex}{\out{\hypertarget{method-coefficient_path}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-coefficient_path"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-coefficient_path}{}}}
 \subsection{Method \code{coefficient_path()}}{
 Extract the regularization path of a \code{\link{PLNnetworkfamily}}
 \subsection{Usage}{
@@ -159,8 +159,8 @@ Extract the regularization path of a \code{\link{PLNnetworkfamily}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getBestModel"></a>}}
-\if{latex}{\out{\hypertarget{method-getBestModel}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-getBestModel"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-getBestModel}{}}}
 \subsection{Method \code{getBestModel()}}{
 Extract the best network in the family according to some criteria
 \subsection{Usage}{
@@ -181,8 +181,8 @@ Extract the best network in the family according to some criteria
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot"></a>}}
-\if{latex}{\out{\hypertarget{method-plot}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-plot}{}}}
 \subsection{Method \code{plot()}}{
 Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a \code{\link{PLNnetworkfamily}})
 \subsection{Usage}{
@@ -211,8 +211,8 @@ a \code{\link{ggplot}} graph
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_stars"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_stars}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-plot_stars"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-plot_stars}{}}}
 \subsection{Method \code{plot_stars()}}{
 Plot stability path
 \subsection{Usage}{
@@ -233,8 +233,8 @@ a \code{\link{ggplot}} graph
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_objective"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_objective}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-plot_objective"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-plot_objective}{}}}
 \subsection{Method \code{plot_objective()}}{
 Plot objective value of the optimization problem along the penalty path
 \subsection{Usage}{
@@ -246,8 +246,8 @@ a \code{\link{ggplot}} graph
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-show"></a>}}
-\if{latex}{\out{\hypertarget{method-show}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-show"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-show}{}}}
 \subsection{Method \code{show()}}{
 User friendly print method
 \subsection{Usage}{
@@ -256,8 +256,8 @@ User friendly print method
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
