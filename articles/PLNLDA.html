@@ -103,13 +103,13 @@
 
       
 
-      </header><script src="PLNLDA_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Supervized classification of multivariate count table with the Poisson discriminant Analysis</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-08-09</h4>
+            <h4 data-toc-skip class="date">2022-08-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNLDA.Rmd" class="external-link"><code>vignettes/PLNLDA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNLDA.Rmd</code></div>
@@ -258,7 +258,7 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 <div class="section level4">
 <h4 id="optimization-by-variational-inference">Optimization by Variational inference<a class="anchor" aria-label="anchor" href="#optimization-by-variational-inference"></a>
 </h4>
-<p>Classification and prediction are the main objectives in (PLN-)LDA. To reach this goal, we first need to estimate the model parameters. Inference in PLN-LDA focuses on the group-specific main effects <span class="math inline">\(\mathbf{M}\)</span>, the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>. Technically speaking, we can treat <span class="math inline">\(\mathbf{g}_i\)</span> as a discrete covariate and estimate <span class="math inline">\([\mathbf{M}, \boldsymbol{\Theta}]\)</span> using the same strategy as for the standard <strong>PLN</strong> model. Briefly, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library <span class="citation">(Johnson <a href="#ref-nlopt" role="doc-biblioref">2011</a>)</span>, which we link to the package.</p>
+<p>Classification and prediction are the main objectives in (PLN-)LDA. To reach this goal, we first need to estimate the model parameters. Inference in PLN-LDA focuses on the group-specific main effects <span class="math inline">\(\mathbf{M}\)</span>, the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>. Technically speaking, we can treat <span class="math inline">\(\mathbf{g}_i\)</span> as a discrete covariate and estimate <span class="math inline">\([\mathbf{M}, \boldsymbol{\Theta}]\)</span> using the same strategy as for the standard <strong>PLN</strong> model. Briefly, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library <span class="citation">(<a href="#ref-nlopt" role="doc-biblioref">Johnson 2011</a>)</span>, which we link to the package.</p>
 </div>
 </div>
 </div>
@@ -1146,23 +1146,23 @@ p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}
 </div>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-AiH89">
-<p>Aitchison, J., and C. H. Ho. 1989. “The Multivariate Poisson-Log Normal Distribution.” <em>Biometrika</em> 76 (4): 643–53.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-AiH89" class="csl-entry">
+Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.
 </div>
-<div id="ref-Fi36">
-<p>Fisher, R. A. 1936. “The Use of Multiple Measurements in Taxonomic Problems.” <em>Annals of Eugenics</em> 7 (2): 179–88.</p>
+<div id="ref-Fi36" class="csl-entry">
+Fisher, R. A. 1936. <span>“The Use of Multiple Measurements in Taxonomic Problems.”</span> <em>Annals of Eugenics</em> 7 (2): 179–88.
 </div>
-<div id="ref-nlopt">
-<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.</p>
+<div id="ref-nlopt" class="csl-entry">
+Johnson, Steven G. 2011. <em>The NLopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.
 </div>
-<div id="ref-Rao48">
-<p>Rao, C. Radhakrishna. 1948. “The Utilization of Multiple Measurements in Problems of Biological Classification.” <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 10 (2): 159–203.</p>
+<div id="ref-Rao48" class="csl-entry">
+Rao, C. Radhakrishna. 1948. <span>“The Utilization of Multiple Measurements in Problems of Biological Classification.”</span> <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 10 (2): 159–203.
 </div>
-<div id="ref-Svan02">
-<p>Svanberg, Krister. 2002. “A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.” <em>SIAM Journal on Optimization</em> 12 (2): 555–73.</p>
+<div id="ref-Svan02" class="csl-entry">
+Svanberg, Krister. 2002. <span>“A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2): 555–73.
 </div>
 </div>
 </div>

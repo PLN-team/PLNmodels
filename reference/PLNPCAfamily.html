@@ -112,16 +112,16 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
-<ul><li><p><a href="#method-new"><code>PLNPCAfamily$new()</code></a></p></li>
-<li><p><a href="#method-optimize"><code>PLNPCAfamily$optimize()</code></a></p></li>
-<li><p><a href="#method-getModel"><code>PLNPCAfamily$getModel()</code></a></p></li>
-<li><p><a href="#method-getBestModel"><code>PLNPCAfamily$getBestModel()</code></a></p></li>
-<li><p><a href="#method-plot"><code>PLNPCAfamily$plot()</code></a></p></li>
-<li><p><a href="#method-show"><code>PLNPCAfamily$show()</code></a></p></li>
-<li><p><a href="#method-clone"><code>PLNPCAfamily$clone()</code></a></p></li>
-</ul></div><p><details open><summary>Inherited methods</summary><ul><li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href="PLNfamily.html#method-postTreatment"><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href="PLNfamily.html#method-print"><code>PLNmodels::PLNfamily$print()</code></a></span></p></li>
-</ul></details></p><hr><a id="method-new"></a><div class="section">
+<ul><li><p><a href="#method-PLNPCAfamily-new"><code>PLNPCAfamily$new()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfamily-optimize"><code>PLNPCAfamily$optimize()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfamily-getModel"><code>PLNPCAfamily$getModel()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfamily-getBestModel"><code>PLNPCAfamily$getBestModel()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfamily-plot"><code>PLNPCAfamily$plot()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfamily-show"><code>PLNPCAfamily$show()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfamily-clone"><code>PLNPCAfamily$clone()</code></a></p></li>
+</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href="PLNfamily.html#method-postTreatment"><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href="PLNfamily.html#method-print"><code>PLNmodels::PLNfamily$print()</code></a></span></li>
+</ul></details></p><hr><a id="method-PLNPCAfamily-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize all models in the collection.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
@@ -174,7 +174,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-optimize"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfamily-optimize"></a><div class="section">
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
 <p>Call to the C++ optimizer on all models of the collection</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
@@ -190,7 +190,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-getModel"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfamily-getModel"></a><div class="section">
 <h3 id="method-getmodel-">Method <code><a href="getModel.html">getModel()</a></code><a class="anchor" aria-label="anchor" href="#method-getmodel-"></a></h3>
 <p>Extract model from collection and add "PCA" class for compatibility with <code><a href="https://rdrr.io/pkg/factoextra/man/fviz.html" class="external-link">factoextra::fviz()</a></code></p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
@@ -214,7 +214,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <p>a <code><a href="PLNPCAfit.html">PLNPCAfit</a></code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-getBestModel"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfamily-getBestModel"></a><div class="section">
 <h3 id="method-getbestmodel-">Method <code><a href="getBestModel.html">getBestModel()</a></code><a class="anchor" aria-label="anchor" href="#method-getbestmodel-"></a></h3>
 <p>Extract best model in the collection</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
@@ -235,7 +235,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <p>a <code><a href="PLNPCAfit.html">PLNPCAfit</a></code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-plot"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfamily-plot"></a><div class="section">
 <h3 id="method-plot-">Method <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code><a class="anchor" aria-label="anchor" href="#method-plot-"></a></h3>
 <p>Lineplot of selected criteria for all models in the collection</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
@@ -261,7 +261,7 @@ the same scale as the log-likelihood.</p></dd>
 <p>A <code>ggplot2</code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-show"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfamily-show"></a><div class="section">
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
@@ -269,7 +269,7 @@ the same scale as the log-likelihood.</p></dd>
 </div>
 
 
-</div><p></p><hr><a id="method-clone"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfamily-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
@@ -298,7 +298,7 @@ the same scale as the log-likelihood.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting 5 PLN models for PCA analysis.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 5 	 Rank approximation = 3 	 Rank approximation = 1 	 Rank approximation = 4 	 Rank approximation = 2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 3 	 Rank approximation = 2 	 Rank approximation = 5 	 Rank approximation = 1 	 Rank approximation = 4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">myPCAs</span><span class="op">)</span></span></span>

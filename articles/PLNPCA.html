@@ -103,13 +103,13 @@
 
       
 
-      </header><script src="PLNPCA_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-08-09</h4>
+            <h4 data-toc-skip class="date">2022-08-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNPCA.Rmd" class="external-link"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -172,7 +172,7 @@
 <div class="section level4">
 <h4 id="optimization-by-variational-inference">Optimization by Variational inference<a class="anchor" aria-label="anchor" href="#optimization-by-variational-inference"></a>
 </h4>
-<p>Dimension reduction and visualization is the main objective in (PLN)-PCA. To reach this goal, we need to first estimate the model parameters. Inference in PLN-PCA focuses on the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and on the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>. Technically speaking, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library <span class="citation">(Johnson <a href="#ref-nlopt" role="doc-biblioref">2011</a>)</span>, which we link to the package. Technical details can be found in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA" role="doc-biblioref">2018</a>)</span>.</p>
+<p>Dimension reduction and visualization is the main objective in (PLN)-PCA. To reach this goal, we need to first estimate the model parameters. Inference in PLN-PCA focuses on the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and on the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>. Technically speaking, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library <span class="citation">(<a href="#ref-nlopt" role="doc-biblioref">Johnson 2011</a>)</span>, which we link to the package. Technical details can be found in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA" role="doc-biblioref">2018</a>)</span>.</p>
 </div>
 </div>
 </div>
@@ -198,10 +198,10 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 3 
-     Rank approximation = 2 
-     Rank approximation = 1 
+##   Rank approximation = 1 
      Rank approximation = 4 
+     Rank approximation = 2 
+     Rank approximation = 3 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
@@ -322,7 +322,7 @@
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">PCA_models</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/plot%20nocov-reverse-1.png" width="672"></p>
-<p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing (or rather decreasing if using <code>reverse = TRUE</code>) with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of <span class="math inline">\(q\)</span> (see <span class="citation">(Chiquet, Mariadassou, and Robin <a href="#ref-PLNPCA" role="doc-biblioref">2018</a>)</span> for details on its computation).</p>
+<p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing (or rather decreasing if using <code>reverse = TRUE</code>) with the number of axes (or subspace dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of <span class="math inline">\(q\)</span> (see <span class="citation">(<a href="#ref-PLNPCA" role="doc-biblioref">Chiquet, Mariadassou, and Robin 2018</a>)</span> for details on its computation).</p>
 <p>From this plot, we can see that the best model in terms of BIC or ICL is obtained for a rank <span class="math inline">\(q=4\)</span> or <span class="math inline">\(q=3\)</span>. We may extract the corresponding model with the method <code>getBestModel("ICL")</code>. A model with a specific rank can be extracted with the <code><a href="../reference/getModel.html">getModel()</a></code> method:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPCA_ICL</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">PCA_models</span>, <span class="st">"ICL"</span><span class="op">)</span> </span>
@@ -593,10 +593,10 @@
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 1 
-     Rank approximation = 2 
-     Rank approximation = 4 
+##   Rank approximation = 4 
      Rank approximation = 3 
+     Rank approximation = 2 
+     Rank approximation = 1 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>
@@ -635,23 +635,23 @@ fitted value vs. observation
 </div>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-AiH89">
-<p>Aitchison, J., and C. H. Ho. 1989. “The Multivariate Poisson-Log Normal Distribution.” <em>Biometrika</em> 76 (4): 643–53.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-AiH89" class="csl-entry">
+Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.
 </div>
-<div id="ref-PLNPCA">
-<p>Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018. “Variational Inference for Probabilistic Poisson Pca.” <em>The Annals of Applied Statistics</em> 12: 2674–98. <a href="https://doi.org/10.1214/18%2DAOAS1177" class="external-link">https://doi.org/10.1214/18%2DAOAS1177</a>.</p>
+<div id="ref-PLNPCA" class="csl-entry">
+Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018. <span>“Variational Inference for Probabilistic Poisson PCA.”</span> <em>The Annals of Applied Statistics</em> 12: 2674–98. <a href="https://doi.org/10.1214/18%2DAOAS1177" class="external-link">https://doi.org/10.1214/18%2DAOAS1177</a>.
 </div>
-<div id="ref-nlopt">
-<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.</p>
+<div id="ref-nlopt" class="csl-entry">
+Johnson, Steven G. 2011. <em>The NLopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.
 </div>
-<div id="ref-Svan02">
-<p>Svanberg, Krister. 2002. “A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.” <em>SIAM Journal on Optimization</em> 12 (2): 555–73.</p>
+<div id="ref-Svan02" class="csl-entry">
+Svanberg, Krister. 2002. <span>“A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2): 555–73.
 </div>
-<div id="ref-TiB99">
-<p>Tipping, M. E, and C. M Bishop. 1999. “Probabilistic Principal Component Analysis.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 61 (3): 611–22.</p>
+<div id="ref-TiB99" class="csl-entry">
+Tipping, M. E, and C. M Bishop. 1999. <span>“Probabilistic Principal Component Analysis.”</span> <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 61 (3): 611–22.
 </div>
 </div>
 </div>

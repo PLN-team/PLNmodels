@@ -103,13 +103,13 @@
 
       
 
-      </header><script src="PLN_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Analyzing multivariate count data with the Poisson log-normal model</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-08-09</h4>
+            <h4 data-toc-skip class="date">2022-08-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLN.Rmd" class="external-link"><code>vignettes/PLN.Rmd</code></a></small>
       <div class="hidden name"><code>PLN.Rmd</code></div>
@@ -180,7 +180,7 @@ PLN: geometrical view
 <div class="section level4">
 <h4 id="optimization-by-variational-inference">Optimization by Variational inference<a class="anchor" aria-label="anchor" href="#optimization-by-variational-inference"></a>
 </h4>
-<p>Technically speaking, we adopt in <strong>PLNmodels</strong> a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library <span class="citation">(Johnson <a href="#ref-nlopt" role="doc-biblioref">2011</a>)</span>, which we link to the package.</p>
+<p>Technically speaking, we adopt in <strong>PLNmodels</strong> a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library <span class="citation">(<a href="#ref-nlopt" role="doc-biblioref">Johnson 2011</a>)</span>, which we link to the package.</p>
 </div>
 </div>
 </div>
@@ -520,17 +520,17 @@ fitted value vs. observation
 </div>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-AiH89">
-<p>Aitchison, J., and C. H. Ho. 1989. “The Multivariate Poisson-Log Normal Distribution.” <em>Biometrika</em> 76 (4): 643–53.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-AiH89" class="csl-entry">
+Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.
 </div>
-<div id="ref-nlopt">
-<p>Johnson, Steven G. 2011. <em>The Nlopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.</p>
+<div id="ref-nlopt" class="csl-entry">
+Johnson, Steven G. 2011. <em>The NLopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.
 </div>
-<div id="ref-Svan02">
-<p>Svanberg, Krister. 2002. “A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.” <em>SIAM Journal on Optimization</em> 12 (2): 555–73.</p>
+<div id="ref-Svan02" class="csl-entry">
+Svanberg, Krister. 2002. <span>“A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2): 555–73.
 </div>
 </div>
 </div>

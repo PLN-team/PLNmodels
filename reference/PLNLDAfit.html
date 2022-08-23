@@ -136,24 +136,24 @@ LDA visualization and <code><a href="https://rdrr.io/r/stats/predict.html" class
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
-<ul><li><p><a href="#method-new"><code>PLNLDAfit$new()</code></a></p></li>
-<li><p><a href="#method-optimize"><code>PLNLDAfit$optimize()</code></a></p></li>
-<li><p><a href="#method-postTreatment"><code>PLNLDAfit$postTreatment()</code></a></p></li>
-<li><p><a href="#method-setVisualization"><code>PLNLDAfit$setVisualization()</code></a></p></li>
-<li><p><a href="#method-plot_individual_map"><code>PLNLDAfit$plot_individual_map()</code></a></p></li>
-<li><p><a href="#method-plot_correlation_map"><code>PLNLDAfit$plot_correlation_map()</code></a></p></li>
-<li><p><a href="#method-plot_LDA"><code>PLNLDAfit$plot_LDA()</code></a></p></li>
-<li><p><a href="#method-predict"><code>PLNLDAfit$predict()</code></a></p></li>
-<li><p><a href="#method-show"><code>PLNLDAfit$show()</code></a></p></li>
-<li><p><a href="#method-clone"><code>PLNLDAfit$clone()</code></a></p></li>
-</ul></div><p><details><summary>Inherited methods</summary><ul><li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href="PLNfit.html#method-VEstep"><code>PLNmodels::PLNfit$VEstep()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher"><a href="PLNfit.html#method-compute_fisher"><code>PLNmodels::PLNfit$compute_fisher()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href="PLNfit.html#method-compute_standard_error"><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href="PLNfit.html#method-set_R2"><code>PLNmodels::PLNfit$set_R2()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href="PLNfit.html#method-update"><code>PLNmodels::PLNfit$update()</code></a></span></p></li>
-</ul></details></p><hr><a id="method-new"></a><div class="section">
+<ul><li><p><a href="#method-PLNLDAfit-new"><code>PLNLDAfit$new()</code></a></p></li>
+<li><p><a href="#method-PLNLDAfit-optimize"><code>PLNLDAfit$optimize()</code></a></p></li>
+<li><p><a href="#method-PLNLDAfit-postTreatment"><code>PLNLDAfit$postTreatment()</code></a></p></li>
+<li><p><a href="#method-PLNLDAfit-setVisualization"><code>PLNLDAfit$setVisualization()</code></a></p></li>
+<li><p><a href="#method-PLNLDAfit-plot_individual_map"><code>PLNLDAfit$plot_individual_map()</code></a></p></li>
+<li><p><a href="#method-PLNLDAfit-plot_correlation_map"><code>PLNLDAfit$plot_correlation_map()</code></a></p></li>
+<li><p><a href="#method-PLNLDAfit-plot_LDA"><code>PLNLDAfit$plot_LDA()</code></a></p></li>
+<li><p><a href="#method-PLNLDAfit-predict"><code>PLNLDAfit$predict()</code></a></p></li>
+<li><p><a href="#method-PLNLDAfit-show"><code>PLNLDAfit$show()</code></a></p></li>
+<li><p><a href="#method-PLNLDAfit-clone"><code>PLNLDAfit$clone()</code></a></p></li>
+</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href="PLNfit.html#method-VEstep"><code>PLNmodels::PLNfit$VEstep()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher"><a href="PLNfit.html#method-compute_fisher"><code>PLNmodels::PLNfit$compute_fisher()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href="PLNfit.html#method-compute_standard_error"><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href="PLNfit.html#method-set_R2"><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href="PLNfit.html#method-update"><code>PLNmodels::PLNfit$update()</code></a></span></li>
+</ul></details></p><hr><a id="method-PLNLDAfit-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize a <code>PLNLDAfit</code> object</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
@@ -206,7 +206,7 @@ LDA visualization and <code><a href="https://rdrr.io/r/stats/predict.html" class
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-optimize"></a><div class="section">
+</div><p></p><hr><a id="method-PLNLDAfit-optimize"></a><div class="section">
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
 <p>Compute group means and axis of the LDA (noted B in the model) in the
 latent space, update corresponding fields</p><div class="section">
@@ -235,7 +235,7 @@ latent space, update corresponding fields</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-postTreatment"></a><div class="section">
+</div><p></p><hr><a id="method-PLNLDAfit-postTreatment"></a><div class="section">
 <h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
 <p>Update R2, fisher and std_err fields and visualization
 after optimization</p><div class="section">
@@ -264,7 +264,7 @@ after optimization</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-setVisualization"></a><div class="section">
+</div><p></p><hr><a id="method-PLNLDAfit-setVisualization"></a><div class="section">
 <h3 id="method-setvisualization-">Method <code>setVisualization()</code><a class="anchor" aria-label="anchor" href="#method-setvisualization-"></a></h3>
 <p>Compute LDA scores in the latent space and update corresponding fields.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
@@ -280,7 +280,7 @@ after optimization</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-plot_individual_map"></a><div class="section">
+</div><p></p><hr><a id="method-PLNLDAfit-plot_individual_map"></a><div class="section">
 <h3 id="method-plot-individual-map-">Method <code>plot_individual_map()</code><a class="anchor" aria-label="anchor" href="#method-plot-individual-map-"></a></h3>
 <p>Plot the factorial map of the LDA</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
@@ -312,7 +312,7 @@ after optimization</p><div class="section">
 <p>a <code>ggplot</code> graphic</p>
 </div>
 
-</div><p></p><hr><a id="method-plot_correlation_map"></a><div class="section">
+</div><p></p><hr><a id="method-PLNLDAfit-plot_correlation_map"></a><div class="section">
 <h3 id="method-plot-correlation-map-">Method <code>plot_correlation_map()</code><a class="anchor" aria-label="anchor" href="#method-plot-correlation-map-"></a></h3>
 <p>Plot the correlation circle of a specified axis for a <code>PLNLDAfit</code> object</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
@@ -349,7 +349,7 @@ after optimization</p><div class="section">
 <p>a <code>ggplot</code> graphic</p>
 </div>
 
-</div><p></p><hr><a id="method-plot_LDA"></a><div class="section">
+</div><p></p><hr><a id="method-PLNLDAfit-plot_LDA"></a><div class="section">
 <h3 id="method-plot-lda-">Method <code>plot_LDA()</code><a class="anchor" aria-label="anchor" href="#method-plot-lda-"></a></h3>
 <p>Plot a summary of the <code>PLNLDAfit</code> object</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
@@ -381,7 +381,7 @@ after optimization</p><div class="section">
 <p>a <code>grob</code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-predict"></a><div class="section">
+</div><p></p><hr><a id="method-PLNLDAfit-predict"></a><div class="section">
 <h3 id="method-predict-">Method <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code><a class="anchor" aria-label="anchor" href="#method-predict-"></a></h3>
 <p>Predict group of new samples</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
@@ -424,7 +424,7 @@ after optimization</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-show"></a><div class="section">
+</div><p></p><hr><a id="method-PLNLDAfit-show"></a><div class="section">
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
@@ -432,7 +432,7 @@ after optimization</p><div class="section">
 </div>
 
 
-</div><p></p><hr><a id="method-clone"></a><div class="section">
+</div><p></p><hr><a id="method-PLNLDAfit-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>

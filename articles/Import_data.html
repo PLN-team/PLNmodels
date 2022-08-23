@@ -103,13 +103,13 @@
 
       
 
-      </header><script src="Import_data_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Data importation in PLNmodels</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-08-09</h4>
+            <h4 data-toc-skip class="date">2022-08-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/Import_data.Rmd" class="external-link"><code>vignettes/Import_data.Rmd</code></a></small>
       <div class="hidden name"><code>Import_data.Rmd</code></div>
@@ -178,10 +178,10 @@
 <p>It is common practice when modeling count data to introduce an offset term to control for different sampling efforts, exposures, baselines, etc. The <em>proper way</em> to compute sample-specific offsets in still debated and may vary depending on the field. There are nevertheless a few popular methods:</p>
 <ul>
 <li>Total Sum Scaling (TSS), where the offset of a sample is the total count in that sample</li>
-<li>Cumulative Sum Scaling (CSS), introduced in <span class="citation">(Paulson et al. <a href="#ref-CSS" role="doc-biblioref">2013</a>)</span>, where the offset of a sample if the cumulative sum of counts in that sample, up to a quantile determined in a data driven way.</li>
-<li>Relative Log-Expression (RLE), implemented in <span class="citation">(Anders and Huber <a href="#ref-DESeq2" role="doc-biblioref">2010</a>)</span>, where all samples are used to compute a reference sample, each sample is compared to the reference sample using log-ratios and the offset is the median log-ratio.</li>
-<li>Geometric Mean of Pairwise Ratio (GMPR), introduced in <span class="citation">(Chen et al. <a href="#ref-GMPR" role="doc-biblioref">2018</a>)</span> where each sample is compared to each other to compute a median log-ratio and the offset of a sample is the geometric means of those pairwise ratios.</li>
-<li>Wrench, introduced in <span class="citation">(Kumar et al. <a href="#ref-Kumar2018" role="doc-biblioref">2018</a>)</span> and fully implemented in the <a href="http://bioconductor.org/packages/release/bioc/html/Wrench.html" class="external-link">Wrench package</a>, where all samples are used to compute reference proportions and each sample is compared to the reference using ratios (and <strong>not log-ratios</strong>) of proportions to compute compositional correction factors. In that case, the offset is the product of (geometrically centered) compositional factors and (geometrically centered) depths.</li>
+<li>Cumulative Sum Scaling (CSS), introduced in <span class="citation">(<a href="#ref-CSS" role="doc-biblioref">Paulson et al. 2013</a>)</span>, where the offset of a sample if the cumulative sum of counts in that sample, up to a quantile determined in a data driven way.</li>
+<li>Relative Log-Expression (RLE), implemented in <span class="citation">(<a href="#ref-DESeq2" role="doc-biblioref">Anders and Huber 2010</a>)</span>, where all samples are used to compute a reference sample, each sample is compared to the reference sample using log-ratios and the offset is the median log-ratio.</li>
+<li>Geometric Mean of Pairwise Ratio (GMPR), introduced in <span class="citation">(<a href="#ref-GMPR" role="doc-biblioref">Chen et al. 2018</a>)</span> where each sample is compared to each other to compute a median log-ratio and the offset of a sample is the geometric means of those pairwise ratios.</li>
+<li>Wrench, introduced in <span class="citation">(<a href="#ref-Kumar2018" role="doc-biblioref">Kumar et al. 2018</a>)</span> and fully implemented in the <a href="http://bioconductor.org/packages/release/bioc/html/Wrench.html" class="external-link">Wrench package</a>, where all samples are used to compute reference proportions and each sample is compared to the reference using ratios (and <strong>not log-ratios</strong>) of proportions to compute compositional correction factors. In that case, the offset is the product of (geometrically centered) compositional factors and (geometrically centered) depths.</li>
 </ul>
 <p>Each of these offset be computed from a counts matrix using the <code>compute_offset</code> function and changing its <code>offset</code> argument:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -286,7 +286,7 @@
 <div class="section level2">
 <h2 id="importing-data-from-biom-and-phyloseq-objects-using-prepare_data_from_phyloseqbiom">Importing data from biom and phyloseq objects using <code>prepare_data_from_[phyloseq|biom]</code><a class="anchor" aria-label="anchor" href="#importing-data-from-biom-and-phyloseq-objects-using-prepare_data_from_phyloseqbiom"></a>
 </h2>
-<p>Community composition data are quite popular in microbial ecology and usually stored in flat files using the <a href="http://biom-format.org/" class="external-link">biom format</a> and/or imported in R as phyloseq-class objects <span class="citation">(McMurdie <a href="#ref-phyloseq" role="doc-biblioref">2013</a>)</span> using the Bioconductor <a href="https://joey711.github.io/phyloseq/" class="external-link">phyloseq</a> package.</p>
+<p>Community composition data are quite popular in microbial ecology and usually stored in flat files using the <a href="http://biom-format.org/" class="external-link">biom format</a> and/or imported in R as phyloseq-class objects <span class="citation">(<a href="#ref-phyloseq" role="doc-biblioref">McMurdie 2013</a>)</span> using the Bioconductor <a href="https://joey711.github.io/phyloseq/" class="external-link">phyloseq</a> package.</p>
 <!-- We provide helper functions to directly import data from a biom file (or biom-class object) and a phyloseq-class object.  -->
 <p>We show here how to import data from a biom file (or biom-class object) and form a phyloseq-class object.</p>
 <div class="section level3">
@@ -454,23 +454,23 @@ O_i = \frac{\hat{\Lambda}_i}{(\prod_{i = 1}^n \hat{\Lambda}_i)^{1/n}} \times \fr
 </div>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-DESeq2">
-<p>Anders, Simon, and Wolfgang Huber. 2010. “Differential Expression Analysis for Sequence Count Data.” <em>Genome Biology</em> 11 (10): R106. <a href="https://doi.org/10.1186/gb-2010-11-10-r106" class="external-link">https://doi.org/10.1186/gb-2010-11-10-r106</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-DESeq2" class="csl-entry">
+Anders, Simon, and Wolfgang Huber. 2010. <span>“Differential Expression Analysis for Sequence Count Data.”</span> <em>Genome Biology</em> 11 (10): R106. <a href="https://doi.org/10.1186/gb-2010-11-10-r106" class="external-link">https://doi.org/10.1186/gb-2010-11-10-r106</a>.
 </div>
-<div id="ref-GMPR">
-<p>Chen, Li, James Reeve, Lujun Zhang, Shengbing Huang, Xuefeng Wang, and Jun Chen. 2018. “GMPR: A Robust Normalization Method for Zero-Inflated Count Data with Application to Microbiome Sequencing Data.” <em>PeerJ</em> 6 (April): e4600. <a href="https://doi.org/10.7717/peerj.4600" class="external-link">https://doi.org/10.7717/peerj.4600</a>.</p>
+<div id="ref-GMPR" class="csl-entry">
+Chen, Li, James Reeve, Lujun Zhang, Shengbing Huang, Xuefeng Wang, and Jun Chen. 2018. <span>“GMPR: A Robust Normalization Method for Zero-Inflated Count Data with Application to Microbiome Sequencing Data.”</span> <em>PeerJ</em> 6 (April): e4600. <a href="https://doi.org/10.7717/peerj.4600" class="external-link">https://doi.org/10.7717/peerj.4600</a>.
 </div>
-<div id="ref-Kumar2018">
-<p>Kumar, M. Senthil, Eric V. Slud, Kwame Okrah, Stephanie C. Hicks, Sridhar Hannenhalli, and Héctor Corrada Bravo. 2018. “Analysis and Correction of Compositional Bias in Sparse Sequencing Count Data.” <em>BMC Genomics</em> 19 (1). <a href="https://doi.org/10.1186/s12864-018-5160-5" class="external-link">https://doi.org/10.1186/s12864-018-5160-5</a>.</p>
+<div id="ref-Kumar2018" class="csl-entry">
+Kumar, M. Senthil, Eric V. Slud, Kwame Okrah, Stephanie C. Hicks, Sridhar Hannenhalli, and Héctor Corrada Bravo. 2018. <span>“Analysis and Correction of Compositional Bias in Sparse Sequencing Count Data.”</span> <em><span>BMC</span> Genomics</em> 19 (1). <a href="https://doi.org/10.1186/s12864-018-5160-5" class="external-link">https://doi.org/10.1186/s12864-018-5160-5</a>.
 </div>
-<div id="ref-phyloseq">
-<p>McMurdie, Paul J. AND Holmes. 2013. “Phyloseq: An R Package for Reproducible Interactive Analysis and Graphics of Microbiome Census Data.” <em>PLoS ONE</em> 8 (4): e61217. <a href="https://doi.org/10.1371/journal.pone.0061217" class="external-link">https://doi.org/10.1371/journal.pone.0061217</a>.</p>
+<div id="ref-phyloseq" class="csl-entry">
+McMurdie, Paul J. AND Holmes. 2013. <span>“Phyloseq: An r Package for Reproducible Interactive Analysis and Graphics of Microbiome Census Data.”</span> <em>PLoS ONE</em> 8 (4): e61217. <a href="https://doi.org/10.1371/journal.pone.0061217" class="external-link">https://doi.org/10.1371/journal.pone.0061217</a>.
 </div>
-<div id="ref-CSS">
-<p>Paulson, Joseph N, O. Colin Stine, Héctor Corrada Bravo, and Mihai Pop. 2013. “Differential Abundance Analysis for Microbial Marker-Gene Surveys.” <em>Nat Methods</em> 10 (September): 1200–1202. <a href="https://doi.org/10.1038/nmeth.2658" class="external-link">https://doi.org/10.1038/nmeth.2658</a>.</p>
+<div id="ref-CSS" class="csl-entry">
+Paulson, Joseph N, O. Colin Stine, Héctor Corrada Bravo, and Mihai Pop. 2013. <span>“Differential Abundance Analysis for Microbial Marker-Gene Surveys.”</span> <em>Nat Methods</em> 10 (September): 1200–1202. <a href="https://doi.org/10.1038/nmeth.2658" class="external-link">https://doi.org/10.1038/nmeth.2658</a>.
 </div>
 </div>
 </div>

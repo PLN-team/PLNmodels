@@ -125,20 +125,20 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
-<ul><li><p><a href="#method-new"><code>PLNnetworkfamily$new()</code></a></p></li>
-<li><p><a href="#method-optimize"><code>PLNnetworkfamily$optimize()</code></a></p></li>
-<li><p><a href="#method-stability_selection"><code>PLNnetworkfamily$stability_selection()</code></a></p></li>
-<li><p><a href="#method-coefficient_path"><code>PLNnetworkfamily$coefficient_path()</code></a></p></li>
-<li><p><a href="#method-getBestModel"><code>PLNnetworkfamily$getBestModel()</code></a></p></li>
-<li><p><a href="#method-plot"><code>PLNnetworkfamily$plot()</code></a></p></li>
-<li><p><a href="#method-plot_stars"><code>PLNnetworkfamily$plot_stars()</code></a></p></li>
-<li><p><a href="#method-plot_objective"><code>PLNnetworkfamily$plot_objective()</code></a></p></li>
-<li><p><a href="#method-show"><code>PLNnetworkfamily$show()</code></a></p></li>
-<li><p><a href="#method-clone"><code>PLNnetworkfamily$clone()</code></a></p></li>
-</ul></div><p><details open><summary>Inherited methods</summary><ul><li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href="PLNfamily.html#method-getModel"><code>PLNmodels::PLNfamily$getModel()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href="PLNfamily.html#method-postTreatment"><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href="PLNfamily.html#method-print"><code>PLNmodels::PLNfamily$print()</code></a></span></p></li>
-</ul></details></p><hr><a id="method-new"></a><div class="section">
+<ul><li><p><a href="#method-PLNnetworkfamily-new"><code>PLNnetworkfamily$new()</code></a></p></li>
+<li><p><a href="#method-PLNnetworkfamily-optimize"><code>PLNnetworkfamily$optimize()</code></a></p></li>
+<li><p><a href="#method-PLNnetworkfamily-stability_selection"><code>PLNnetworkfamily$stability_selection()</code></a></p></li>
+<li><p><a href="#method-PLNnetworkfamily-coefficient_path"><code>PLNnetworkfamily$coefficient_path()</code></a></p></li>
+<li><p><a href="#method-PLNnetworkfamily-getBestModel"><code>PLNnetworkfamily$getBestModel()</code></a></p></li>
+<li><p><a href="#method-PLNnetworkfamily-plot"><code>PLNnetworkfamily$plot()</code></a></p></li>
+<li><p><a href="#method-PLNnetworkfamily-plot_stars"><code>PLNnetworkfamily$plot_stars()</code></a></p></li>
+<li><p><a href="#method-PLNnetworkfamily-plot_objective"><code>PLNnetworkfamily$plot_objective()</code></a></p></li>
+<li><p><a href="#method-PLNnetworkfamily-show"><code>PLNnetworkfamily$show()</code></a></p></li>
+<li><p><a href="#method-PLNnetworkfamily-clone"><code>PLNnetworkfamily$clone()</code></a></p></li>
+</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href="PLNfamily.html#method-getModel"><code>PLNmodels::PLNfamily$getModel()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href="PLNfamily.html#method-postTreatment"><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href="PLNfamily.html#method-print"><code>PLNmodels::PLNfamily$print()</code></a></span></li>
+</ul></details></p><hr><a id="method-PLNnetworkfamily-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize all models in the collection</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
@@ -195,7 +195,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <p>Update current <code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code> with smart starting values</p>
 </div>
 
-</div><p></p><hr><a id="method-optimize"></a><div class="section">
+</div><p></p><hr><a id="method-PLNnetworkfamily-optimize"></a><div class="section">
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
 <p>Call to the C++ optimizer on all models of the collection</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
@@ -211,7 +211,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-stability_selection"></a><div class="section">
+</div><p></p><hr><a id="method-PLNnetworkfamily-stability_selection"></a><div class="section">
 <h3 id="method-stability-selection-">Method <code><a href="stability_selection.html">stability_selection()</a></code><a class="anchor" aria-label="anchor" href="#method-stability-selection-"></a></h3>
 <p>Compute the stability path by stability selection</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
@@ -231,7 +231,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-coefficient_path"></a><div class="section">
+</div><p></p><hr><a id="method-PLNnetworkfamily-coefficient_path"></a><div class="section">
 <h3 id="method-coefficient-path-">Method <code><a href="coefficient_path.html">coefficient_path()</a></code><a class="anchor" aria-label="anchor" href="#method-coefficient-path-"></a></h3>
 <p>Extract the regularization path of a <code>PLNnetworkfamily</code></p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
@@ -251,7 +251,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-getBestModel"></a><div class="section">
+</div><p></p><hr><a id="method-PLNnetworkfamily-getBestModel"></a><div class="section">
 <h3 id="method-getbestmodel-">Method <code><a href="getBestModel.html">getBestModel()</a></code><a class="anchor" aria-label="anchor" href="#method-getbestmodel-"></a></h3>
 <p>Extract the best network in the family according to some criteria</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
@@ -274,7 +274,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-plot"></a><div class="section">
+</div><p></p><hr><a id="method-PLNnetworkfamily-plot"></a><div class="section">
 <h3 id="method-plot-">Method <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code><a class="anchor" aria-label="anchor" href="#method-plot-"></a></h3>
 <p>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code>PLNnetworkfamily</code>)</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
@@ -308,7 +308,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 <p>a <code>ggplot</code> graph</p>
 </div>
 
-</div><p></p><hr><a id="method-plot_stars"></a><div class="section">
+</div><p></p><hr><a id="method-PLNnetworkfamily-plot_stars"></a><div class="section">
 <h3 id="method-plot-stars-">Method <code>plot_stars()</code><a class="anchor" aria-label="anchor" href="#method-plot-stars-"></a></h3>
 <p>Plot stability path</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
@@ -332,7 +332,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 <p>a <code>ggplot</code> graph</p>
 </div>
 
-</div><p></p><hr><a id="method-plot_objective"></a><div class="section">
+</div><p></p><hr><a id="method-PLNnetworkfamily-plot_objective"></a><div class="section">
 <h3 id="method-plot-objective-">Method <code>plot_objective()</code><a class="anchor" aria-label="anchor" href="#method-plot-objective-"></a></h3>
 <p>Plot objective value of the optimization problem along the penalty path</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
@@ -344,7 +344,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 <p>a <code>ggplot</code> graph</p>
 </div>
 
-</div><p></p><hr><a id="method-show"></a><div class="section">
+</div><p></p><hr><a id="method-PLNnetworkfamily-show"></a><div class="section">
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
@@ -352,7 +352,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 </div>
 
 
-</div><p></p><hr><a id="method-clone"></a><div class="section">
+</div><p></p><hr><a id="method-PLNnetworkfamily-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>

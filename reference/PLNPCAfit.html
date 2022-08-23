@@ -158,25 +158,25 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
-<ul><li><p><a href="#method-new"><code>PLNPCAfit$new()</code></a></p></li>
-<li><p><a href="#method-update"><code>PLNPCAfit$update()</code></a></p></li>
-<li><p><a href="#method-optimize"><code>PLNPCAfit$optimize()</code></a></p></li>
-<li><p><a href="#method-VEstep"><code>PLNPCAfit$VEstep()</code></a></p></li>
-<li><p><a href="#method-project"><code>PLNPCAfit$project()</code></a></p></li>
-<li><p><a href="#method-setVisualization"><code>PLNPCAfit$setVisualization()</code></a></p></li>
-<li><p><a href="#method-postTreatment"><code>PLNPCAfit$postTreatment()</code></a></p></li>
-<li><p><a href="#method-compute_fisher"><code>PLNPCAfit$compute_fisher()</code></a></p></li>
-<li><p><a href="#method-plot_individual_map"><code>PLNPCAfit$plot_individual_map()</code></a></p></li>
-<li><p><a href="#method-plot_correlation_circle"><code>PLNPCAfit$plot_correlation_circle()</code></a></p></li>
-<li><p><a href="#method-plot_PCA"><code>PLNPCAfit$plot_PCA()</code></a></p></li>
-<li><p><a href="#method-show"><code>PLNPCAfit$show()</code></a></p></li>
-<li><p><a href="#method-clone"><code>PLNPCAfit$clone()</code></a></p></li>
-</ul></div><p><details open><summary>Inherited methods</summary><ul><li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href="PLNfit.html#method-compute_standard_error"><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href="PLNfit.html#method-predict"><code>PLNmodels::PLNfit$predict()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href="PLNfit.html#method-set_R2"><code>PLNmodels::PLNfit$set_R2()</code></a></span></p></li>
-</ul></details></p><hr><a id="method-new"></a><div class="section">
+<ul><li><p><a href="#method-PLNPCAfit-new"><code>PLNPCAfit$new()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-update"><code>PLNPCAfit$update()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-optimize"><code>PLNPCAfit$optimize()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-VEstep"><code>PLNPCAfit$VEstep()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-project"><code>PLNPCAfit$project()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-setVisualization"><code>PLNPCAfit$setVisualization()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-postTreatment"><code>PLNPCAfit$postTreatment()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-compute_fisher"><code>PLNPCAfit$compute_fisher()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-plot_individual_map"><code>PLNPCAfit$plot_individual_map()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-plot_correlation_circle"><code>PLNPCAfit$plot_correlation_circle()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-plot_PCA"><code>PLNPCAfit$plot_PCA()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-show"><code>PLNPCAfit$show()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-clone"><code>PLNPCAfit$clone()</code></a></p></li>
+</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href="PLNfit.html#method-compute_standard_error"><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href="PLNfit.html#method-predict"><code>PLNmodels::PLNfit$predict()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href="PLNfit.html#method-set_R2"><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
+</ul></details></p><hr><a id="method-PLNPCAfit-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize a <code>PLNPCAfit</code> object</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
@@ -229,7 +229,7 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-update"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-update"></a><div class="section">
 <h3 id="method-update-">Method <code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code><a class="anchor" aria-label="anchor" href="#method-update-"></a></h3>
 <p>Update a <code>PLNPCAfit</code> object</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
@@ -296,7 +296,7 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 <p>Update the current <code>PLNPCAfit</code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-optimize"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-optimize"></a><div class="section">
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
 <p>Call to the C++ optimizer and update of the relevant fields</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
@@ -328,7 +328,7 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-VEstep"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-VEstep"></a><div class="section">
 <h3 id="method-vestep-">Method <code>VEstep()</code><a class="anchor" aria-label="anchor" href="#method-vestep-"></a></h3>
 <p>Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (B, Theta). Intended to position new data in the latent space for further use with PCA.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
@@ -372,7 +372,7 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 <li><p>the vector <code>log.lik</code> of (variational) log-likelihood of each new observation</p></li>
 </ul></div>
 
-</div><p></p><hr><a id="method-project"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-project"></a><div class="section">
 <h3 id="method-project-">Method <code>project()</code><a class="anchor" aria-label="anchor" href="#method-project-"></a></h3>
 <p>Project new samples into the PCA space using one VE step</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
@@ -401,7 +401,7 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 <ul><li><p>the named matrix of scores for the newdata, expressed in the same coordinate system as <code>self$scores</code></p></li>
 </ul></div>
 
-</div><p></p><hr><a id="method-setVisualization"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-setVisualization"></a><div class="section">
 <h3 id="method-setvisualization-">Method <code>setVisualization()</code><a class="anchor" aria-label="anchor" href="#method-setvisualization-"></a></h3>
 <p>Compute PCA scores in the latent space and update corresponding fields.</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
@@ -417,7 +417,7 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-postTreatment"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-postTreatment"></a><div class="section">
 <h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
 <p>Update R2, fisher, std_err fields and set up visualization
 after optimization</p><div class="section">
@@ -450,7 +450,7 @@ after optimization</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-compute_fisher"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-compute_fisher"></a><div class="section">
 <h3 id="method-compute-fisher-">Method <code>compute_fisher()</code><a class="anchor" aria-label="anchor" href="#method-compute-fisher-"></a></h3>
 <p>Safely compute the fisher information matrix (FIM)</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
@@ -474,7 +474,7 @@ after optimization</p><div class="section">
 <p>a sparse matrix with sensible dimension names</p>
 </div>
 
-</div><p></p><hr><a id="method-plot_individual_map"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-plot_individual_map"></a><div class="section">
 <h3 id="method-plot-individual-map-">Method <code>plot_individual_map()</code><a class="anchor" aria-label="anchor" href="#method-plot-individual-map-"></a></h3>
 <p>Plot the factorial map of the PCA</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
@@ -511,7 +511,7 @@ after optimization</p><div class="section">
 <p>a <code>ggplot</code> graphic</p>
 </div>
 
-</div><p></p><hr><a id="method-plot_correlation_circle"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-plot_correlation_circle"></a><div class="section">
 <h3 id="method-plot-correlation-circle-">Method <code>plot_correlation_circle()</code><a class="anchor" aria-label="anchor" href="#method-plot-correlation-circle-"></a></h3>
 <p>Plot the correlation circle of a specified axis for a <code><a href="PLNLDAfit.html">PLNLDAfit</a></code> object</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
@@ -548,7 +548,7 @@ after optimization</p><div class="section">
 <p>a <code>ggplot</code> graphic</p>
 </div>
 
-</div><p></p><hr><a id="method-plot_PCA"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-plot_PCA"></a><div class="section">
 <h3 id="method-plot-pca-">Method <code>plot_PCA()</code><a class="anchor" aria-label="anchor" href="#method-plot-pca-"></a></h3>
 <p>Plot a summary of the <code>PLNPCAfit</code> object</p><div class="section">
 <h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
@@ -585,7 +585,7 @@ after optimization</p><div class="section">
 <p>a <code>grob</code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-show"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-show"></a><div class="section">
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
@@ -593,7 +593,7 @@ after optimization</p><div class="section">
 </div>
 
 
-</div><p></p><hr><a id="method-clone"></a><div class="section">
+</div><p></p><hr><a id="method-PLNPCAfit-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
@@ -622,7 +622,7 @@ after optimization</p><div class="section">
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting 5 PLN models for PCA analysis.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 3 	 Rank approximation = 4 	 Rank approximation = 1 	 Rank approximation = 5 	 Rank approximation = 2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 3 	 Rank approximation = 4 	 Rank approximation = 2 	 Rank approximation = 5 	 Rank approximation = 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="va">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">myPCAs</span><span class="op">)</span></span></span>

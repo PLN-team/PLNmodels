@@ -212,20 +212,20 @@ which sometimes speeds up the inference.</p></li>
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
-<ul><li><p><a href="#method-update"><code>PLNfit$update()</code></a></p></li>
-<li><p><a href="#method-new"><code>PLNfit$new()</code></a></p></li>
-<li><p><a href="#method-optimize"><code>PLNfit$optimize()</code></a></p></li>
-<li><p><a href="#method-VEstep"><code>PLNfit$VEstep()</code></a></p></li>
-<li><p><a href="#method-set_R2"><code>PLNfit$set_R2()</code></a></p></li>
-<li><p><a href="#method-compute_fisher"><code>PLNfit$compute_fisher()</code></a></p></li>
-<li><p><a href="#method-compute_standard_error"><code>PLNfit$compute_standard_error()</code></a></p></li>
-<li><p><a href="#method-postTreatment"><code>PLNfit$postTreatment()</code></a></p></li>
-<li><p><a href="#method-predict"><code>PLNfit$predict()</code></a></p></li>
-<li><p><a href="#method-predict_cond"><code>PLNfit$predict_cond()</code></a></p></li>
-<li><p><a href="#method-show"><code>PLNfit$show()</code></a></p></li>
-<li><p><a href="#method-print"><code>PLNfit$print()</code></a></p></li>
-<li><p><a href="#method-clone"><code>PLNfit$clone()</code></a></p></li>
-</ul></div><p></p><hr><a id="method-update"></a><div class="section">
+<ul><li><p><a href="#method-PLNfit-update"><code>PLNfit$update()</code></a></p></li>
+<li><p><a href="#method-PLNfit-new"><code>PLNfit$new()</code></a></p></li>
+<li><p><a href="#method-PLNfit-optimize"><code>PLNfit$optimize()</code></a></p></li>
+<li><p><a href="#method-PLNfit-VEstep"><code>PLNfit$VEstep()</code></a></p></li>
+<li><p><a href="#method-PLNfit-set_R2"><code>PLNfit$set_R2()</code></a></p></li>
+<li><p><a href="#method-PLNfit-compute_fisher"><code>PLNfit$compute_fisher()</code></a></p></li>
+<li><p><a href="#method-PLNfit-compute_standard_error"><code>PLNfit$compute_standard_error()</code></a></p></li>
+<li><p><a href="#method-PLNfit-postTreatment"><code>PLNfit$postTreatment()</code></a></p></li>
+<li><p><a href="#method-PLNfit-predict"><code>PLNfit$predict()</code></a></p></li>
+<li><p><a href="#method-PLNfit-predict_cond"><code>PLNfit$predict_cond()</code></a></p></li>
+<li><p><a href="#method-PLNfit-show"><code>PLNfit$show()</code></a></p></li>
+<li><p><a href="#method-PLNfit-print"><code>PLNfit$print()</code></a></p></li>
+<li><p><a href="#method-PLNfit-clone"><code>PLNfit$clone()</code></a></p></li>
+</ul></div><p></p><hr><a id="method-PLNfit-update"></a><div class="section">
 <h3 id="method-update-">Method <code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code><a class="anchor" aria-label="anchor" href="#method-update-"></a></h3>
 <p>Update a <code>PLNfit</code> object</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
@@ -287,7 +287,7 @@ which sometimes speeds up the inference.</p></li>
 <p>Update the current <code>PLNfit</code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-new"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize a <code>PLNfit</code> model</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
@@ -327,7 +327,7 @@ which sometimes speeds up the inference.</p></li>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-optimize"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-optimize"></a><div class="section">
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
 <p>Call to the C++ optimizer and update of the relevant fields</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
@@ -359,7 +359,7 @@ which sometimes speeds up the inference.</p></li>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-VEstep"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-VEstep"></a><div class="section">
 <h3 id="method-vestep-">Method <code>VEstep()</code><a class="anchor" aria-label="anchor" href="#method-vestep-"></a></h3>
 <p>Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
@@ -413,7 +413,7 @@ which sometimes speeds up the inference.</p></li>
 <li><p>the vector <code>log.lik</code> of (variational) log-likelihood of each new observation</p></li>
 </ul></div>
 
-</div><p></p><hr><a id="method-set_R2"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-set_R2"></a><div class="section">
 <h3 id="method-set-r-">Method <code>set_R2()</code><a class="anchor" aria-label="anchor" href="#method-set-r-"></a></h3>
 <p>Update R2 field after optimization</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
@@ -445,7 +445,7 @@ which sometimes speeds up the inference.</p></li>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-compute_fisher"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-compute_fisher"></a><div class="section">
 <h3 id="method-compute-fisher-">Method <code>compute_fisher()</code><a class="anchor" aria-label="anchor" href="#method-compute-fisher-"></a></h3>
 <p>Safely compute the fisher information matrix (FIM)</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
@@ -469,7 +469,7 @@ which sometimes speeds up the inference.</p></li>
 <p>a sparse matrix with sensible dimension names</p>
 </div>
 
-</div><p></p><hr><a id="method-compute_standard_error"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-compute_standard_error"></a><div class="section">
 <h3 id="method-compute-standard-error-">Method <code>compute_standard_error()</code><a class="anchor" aria-label="anchor" href="#method-compute-standard-error-"></a></h3>
 <p>Compute univariate standard error for coefficients of Theta from the FIM</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
@@ -481,7 +481,7 @@ which sometimes speeds up the inference.</p></li>
 <p>a matrix of standard deviations.</p>
 </div>
 
-</div><p></p><hr><a id="method-postTreatment"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-postTreatment"></a><div class="section">
 <h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
 <p>Update R2, fisher and std_err fields after optimization</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
@@ -524,7 +524,7 @@ which sometimes speeds up the inference.</p></li>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-predict"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-predict"></a><div class="section">
 <h3 id="method-predict-">Method <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code><a class="anchor" aria-label="anchor" href="#method-predict-"></a></h3>
 <p>Predict position, scores or observations of new data.</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
@@ -552,7 +552,7 @@ which sometimes speeds up the inference.</p></li>
 <p>A matrix with predictions scores or counts.</p>
 </div>
 
-</div><p></p><hr><a id="method-predict_cond"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-predict_cond"></a><div class="section">
 <h3 id="method-predict-cond-">Method <code><a href="predict_cond.html">predict_cond()</a></code><a class="anchor" aria-label="anchor" href="#method-predict-cond-"></a></h3>
 <p>Predict position, scores or observations of new data, conditionally on the observation of a (set of) variables</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
@@ -594,7 +594,7 @@ which sometimes speeds up the inference.</p></li>
 <p>A matrix with predictions scores or counts.</p>
 </div>
 
-</div><p></p><hr><a id="method-show"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-show"></a><div class="section">
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
@@ -613,7 +613,7 @@ which sometimes speeds up the inference.</p></li>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-print"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-print"></a><div class="section">
 <h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
@@ -621,7 +621,7 @@ which sometimes speeds up the inference.</p></li>
 </div>
 
 
-</div><p></p><hr><a id="method-clone"></a><div class="section">
+</div><p></p><hr><a id="method-PLNfit-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
