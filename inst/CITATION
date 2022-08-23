@@ -4,11 +4,11 @@ citEntry(entry = "article",
   key = "PLNmodels",
   author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
   title = "The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances",
-  journal = "bioRxiv preprint",
-  year = "2020",
-  doi = "10.1101/2020.10.07.329383",
-  url = "https://dx.doi.org/10.1101/2020.10.07.329383",
-  textVersion = "J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, bioRxiv preprint, 2020."
+  journal = "Frontiers in Ecology and Evolution",
+  year = "2021",
+  doi = "10.3389/fevo.2021.588292",
+  url = "https://www.frontiersin.org/articles/10.3389/fevo.2021.588292",
+  textVersion = "J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, Frontiers in Ecology and Evolution, 2021."
 )
 
 citEntry(entry = "inproceedings",

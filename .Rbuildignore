@@ -23,6 +23,7 @@
 ^vignettes/*_cache/
 ^vignettes/cache/
 ^inst/sticker$
+^inst/torch_for_r$
 ^inst/case_studies$
 ^inst/test/
 ^\.github$
