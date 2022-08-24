@@ -11,7 +11,6 @@ status](https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg)]
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![](https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg)](https://github.com/pln-team/PLNmodels/commits/master)
-[![R-CMD-check](https://github.com/PLN-team/PLNmodels/workflows/R-CMD-check/badge.svg)](https://github.com/PLN-team/PLNmodels/actions)
 <!-- badges: end -->
 
 > The Poisson lognormal model and variants can be used for a variety of
