@@ -1,5 +1,5 @@
 
-Submitting PLNmodels version 0.11-7 to CRAN. Motivated by a request from CRAN tea
+Submitting PLNmodels version 0.11-7 to CRAN, motivated by a request from CRAN team (HTML5)
 
 * fix expression of ELBO in VEstep, related to #91
 * typos and regeneration of documentation( HTML5) 
@@ -8,18 +8,22 @@ Submitting PLNmodels version 0.11-7 to CRAN. Motivated by a request from CRAN te
 
 ## Tested environments
 
-- Linux ubuntu 20.04 R-release, (local)
-- Windows Server 2022, R-devel, 64 bit
-- Windows Server 2019, R-release (github action)
-- macOS 10.15, R-release (github action)
-- Linux ubuntu 20.04, R-release (github-action)
-- Linux ubuntu 20.04, R-devel (github-action)
-- Linux ubuntu 20.04, R-oldrel (github-action)
-- Windows Server 2022, R-devel, 64 bit (R hub)
-- Windows, R-devel  (winbuilder)
-- Windows, R-release (winbuilder)
-- Windows, R-oldrelease  (winbuilder)
-- macOS 10.13.6 High Sierra, R-release, CRAN's setup (R hub)
+* tested locally on Ubuntu Linux 20.04.1 LTS, R-release, GCC
+
+* tested remotely with win-builder 
+  - Windows Server 2022, R-devel, 64 bit
+
+* tested remotely with R-hub 
+  - Windows Server 2022, R-devel, 64 bit
+  - Fedora Linux, R-devel, clang, gfortran
+	- Ubuntu Linux 20.04.1 LTS, R-release, GCC
+
+* tested remotely with github-action
+  - Linux ubuntu 20.04, R-release
+  - Linux ubuntu 20.04, R-oldrel 
+  - Linux ubuntu 20.04, R-devel 
+  - Windows Server 2022, R-release, 64 bit
+  - macOS Big Sur 11, R-release 
 
 all status OK except for
 
@@ -30,18 +34,6 @@ all status OK except for
   sub-directories of 1Mb or more:
     doc    2.1Mb
     libs   2.7Mb (platform dependent)
-
-On some Windows install,
-* checking examples ... NOTE
-Examples with CPU (user + system) or elapsed time > 5s
-                      user system elapsed
-plot.PLNmixturefamily 6.05   0.01    6.07
-PLNmixture            5.64   0.01    5.71
-
-* FAILURE DUE TO NLOPTR Not installing correctly
-
-Windows R-release (winbuilder)
-
 
 On my computer I get (Ubuntu 22.04)
 
