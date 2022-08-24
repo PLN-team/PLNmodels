@@ -364,7 +364,7 @@ PLNfit <- R6Class(
       EZ <- EZ + O[, !cond, drop = FALSE]
       colnames(EZ) <- setdiff(sp_names, colnames(Yc))
 
-      # ! For Stephane we should only add the .5*diag(S2) term only if we want the type="response"
+      # ! We should only add the .5*diag(S2) term only if we want the type="response"
       if (type == "response"){
         if(ncol(EZ)==1){
           EZ <- EZ + .5 *S
