@@ -1,4 +1,6 @@
 
+Resubmission trying fixing doi in CITATION by removing it, do not understand why it is not working....
+
 Submitting PLNmodels version 0.11-7 to CRAN, motivated by a request from CRAN team (HTML5)
 
 * fix expression of ELBO in VEstep, related to #91
