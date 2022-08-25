@@ -128,25 +128,25 @@ the different species.</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## 10 samples of 5 species with equal abundances, no covariance and target depths of 10,000</span></span></span>
 <span class="r-in"><span><span class="fu">rPLN</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        Y1   Y2   Y3   Y4   Y5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S1   4695  111 1364  842 2626</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S2    568 1255  824 2556  617</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S3    464  566 3110 2196  505</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S4  11145  944  865 1476  412</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S5    299  267  196 3079 1133</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S6   1109 1863  521 1658 3082</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S7   2454 1601  868  375 1005</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S8   1309 2149  503 1153  522</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S9    375  319 3160 2346 2827</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S10   780 1064 2616 4265 1498</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Y1   Y2   Y3   Y4   Y5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S1  4545 4499 1282 1192 2178</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S2   100 6026  681  233  871</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S3   442 6555  438 1371 2594</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S4  2150 1629  250 6112  421</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S5   592  291  438  396 3208</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S6  2365 2961 1796  752  734</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S7   915 2956 6930 2402 1483</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S8   984 1228   63 1401  612</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S9   584 1270 3218 2913 2405</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S10  985  297 2469  129  569</span>
 <span class="r-in"><span><span class="co">## 2 samples of 10 highly correlated species with target depths 1,000 and 100,000</span></span></span>
 <span class="r-in"><span><span class="co">## very different abundances</span></span></span>
 <span class="r-in"><span><span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">Sigma</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">Sigma</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="fu">rPLN</span><span class="op">(</span>n<span class="op">=</span><span class="fl">2</span>, mu <span class="op">=</span> <span class="va">mu</span>, Sigma <span class="op">=</span> <span class="va">Sigma</span>, depths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e3</span>, <span class="fl">1e5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Y1   Y2   Y3   Y4   Y5  Y6  Y7  Y8  Y9  Y10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S1    5   10   14    6   18   1   2   1   0    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S2 5122 3346 4122 2629 7506 355 638 330 507 1525</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Y1   Y2   Y3   Y4    Y5   Y6   Y7   Y8  Y9  Y10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S1    17   24   26   27    18    1    8    7   5    0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S2 11685 9130 4177 3396 12248 1503 1317 1630 787 1090</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
