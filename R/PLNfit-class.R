@@ -163,6 +163,101 @@ PLNfit <- R6Class(
         private$psi <- list(sigma2 = optim_out$sigma2, rho = optim_out$rho)
     },
 
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Optimizers ----------------------------
+    #' @description Call to the C++ optimizer and update of the relevant fields
+    #' @import torch
+    optimize_torch = function(responses, covariates, offsets, weights, control) {
+
+      get_elbo <-
+        switch(self$vcov_model,
+               "spherical" = function(B, M, S, Omega){
+                 NULL
+               },
+               "diagonal"  = function(B, M, S, Omega){
+                 NULL
+               },
+               "full"      = function(B, M, S, Omega){
+                 S2 <- torch_multiply(S, S)
+                 XB <- torch_matmul(self$X, B)
+                 A  <- torch_exp(self$O + M + XB + S2/2)
+                 elbo <- self$n/2 * torch_logdet(Omega) +
+                   torch_sum(- A + torch_multiply(self$Y, self$O + M + XB) + .5 * torch_log(S2)) -
+                   .5 * torch_trace(torch_matmul(torch_matmul(torch_transpose(M, 2, 1), M) + torch_diag(torch_sum(S2, dim = 1)), Omega)) +
+                   .5 * self$n * self$p - torch_sum(log_stirling(self$Y))
+                 elbo
+               }
+        )
+
+      Sigma_update <-
+        switch(self$vcov_model,
+               "spherical" = function(M, S) {
+                 NULL
+               },
+               "diagonal" = function(M, S) {
+                 NULL
+               },
+               "full" = function(M, S){
+                 1/self$n * (torch_matmul(torch_transpose(M,2,1),M) + torch_diag(torch_sum(torch_multiply(S,S), dim = 1)))
+               }
+        )
+
+      Theta <- torch_tensor(private$Theta   , requires_grad = TRUE)
+      M     <- torch_tensor(private$M       , requires_grad = TRUE)
+      S     <- torch_tensor(sqrt(private$S2), requires_grad = TRUE)
+      Sigma <- torch_tensor(private$Sigma)
+
+      elbo <- double(length = control$maxeval)
+      optimizer <- optim_rprop(c(self$B, self$M, self$S), lr = control$learning_rate)
+      objective0 <- Inf
+      for (i in 1:control$maxeval){
+        ## reinitialize gradients
+        optimizer$zero_grad()
+
+        ## compute current ELBO
+        loss <- - get_elbo(B, M, S, Omega)
+
+        ## backward propagation and optimization
+        loss$backward()
+        optimizer$step()
+
+        ## update parameters with close form
+        Sigma <- Sigma_update(M, S)
+        Omega <- torch_inverse(Sigma)
+
+        objective <- -loss$item()
+        if(control$trace >  0 && (i %% 50 == 0)){
+          pr('i : ', i )
+          pr('ELBO', objective)
+        }
+        elbo[i] <- objective
+        if (abs(objective0 - objective)/abs(objective) < control$ftol_rel) {
+          elbo <- elbo[1:i]
+          break
+        } else {
+          objective0 <- objective
+        }
+      }
+
+      # Ji <- optim_out$loglik
+      # attr(Ji, "weights") <- weights
+      # self$update(
+      #   Theta      = optim_out$Theta,
+      #   Sigma      = optim_out$Sigma,
+      #   M          = optim_out$M,
+      #   S2         = (optim_out$S)**2,
+      #   Z          = optim_out$Z,
+      #   A          = optim_out$A,
+      #   Ji         = Ji,
+      #   monitoring = list(
+      #     iterations = optim_out$iterations,
+      #     message    = statusToMessage(optim_out$status))
+      # )
+      #
+      # if (self$vcov_model == "genetic")
+      #   private$psi <- list(sigma2 = optim_out$sigma2, rho = optim_out$rho)
+    },
+
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
     #' @param Theta Optional fixed value of the regression parameters
     #' @param Sigma Optional fixed value of the covariance parameters.

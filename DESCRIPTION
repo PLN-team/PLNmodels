@@ -45,6 +45,7 @@ Imports:
   ggplot2,
   corrplot,
   magrittr,
+  torch,
   rlang
 Suggests: 
     knitr,

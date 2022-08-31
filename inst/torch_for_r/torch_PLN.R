@@ -50,11 +50,10 @@ PLN <-
               S2 <- torch_multiply(S, S)
               XB <- torch_matmul(self$X, B)
               A  <- torch_exp(self$O + M + XB + S2/2)
-
-              elbo <- n/2 * torch_logdet(Omega)
-              elbo <- torch_add(elbo, torch_sum(- A + torch_multiply(self$Y, self$O + M + XB) + .5 * torch_log(S2)))
-              elbo <- torch_sub(elbo, .5 * torch_trace(torch_matmul(torch_matmul(torch_transpose(M, 2, 1), M) + torch_diag(torch_sum(S2, dim = 1)), Omega)))
-              elbo <- torch_add(elbo, .5 * self$n * self$p - torch_sum(log_stirling(self$Y)))
+              elbo <- self$n/2 * torch_logdet(Omega) +
+                torch_sum(- A + torch_multiply(self$Y, self$O + M + XB) + .5 * torch_log(S2)) -
+                .5 * torch_trace(torch_matmul(torch_matmul(torch_transpose(M, 2, 1), M) + torch_diag(torch_sum(S2, dim = 1)), Omega)) +
+                .5 * self$n * self$p - torch_sum(log_stirling(self$Y))
               elbo
             },
 
