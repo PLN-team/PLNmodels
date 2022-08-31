@@ -160,6 +160,7 @@ PLN_param <- function(control, n, p) {
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-4,
     "xtol_abs"    = xtol_abs,
+    "backend"     = "nlopt",
     "trace"       = 1,
     "covariance"  = covariance,
     "corr_matrix" = diag(x = 1, nrow = p, ncol = p),

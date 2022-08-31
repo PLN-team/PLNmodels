@@ -79,6 +79,8 @@ PLNfit <- R6Class(
       private$xlevels    <- xlevels
       ## initialize the covariance model
       private$covariance <- control$covariance
+      ## initialize the optimization backend
+      private$backend <- control$backend
 
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -109,11 +111,20 @@ PLNfit <- R6Class(
         }
       }
     },
-
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
+      if (private$backend == "nlopt")
+        self$optimize_nlopt(responses, covariates, offsets, weights, control)
+      else
+        self$optimize_torch(responses, covariates, offsets, weights, control)
+
+    },
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Optimizers ----------------------------
+    #' @description Call to the C++ optimizer and update of the relevant fields
+    optimize_nlopt = function(responses, covariates, offsets, weights, control) {
 
       optimizer  <-
         switch(self$vcov_model,
@@ -424,6 +435,7 @@ PLNfit <- R6Class(
     FIM_type   = NA, # Either "wald" or "louis". Approximation scheme used to compute FIM
     .std_err   = NA, # element-wise standard error for the elements of Theta computed
     # from the Fisher information matrix
+    backend    = NA, # Either "nlopt" or "torch"
     covariance = NA, # a string describing the covariance model
     monitoring = NA  # a list with optimization monitoring quantities
   ),
@@ -464,6 +476,8 @@ PLNfit <- R6Class(
     vcov_model = function() {private$covariance},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par  = function() {private$monitoring},
+    #' @field optim_backend the backend (either torch or nlopt) used for fitting the model
+    optim_backend  = function() {private$backend},
     #' @field weights observational weights
     weights     = function() {attr(private$Ji, "weights")},
     #' @field loglik (weighted) variational lower bound of the loglikelihood

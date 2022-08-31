@@ -161,7 +161,7 @@ sigma.PLNfit <- function(object, ...) {
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
-#' standard_error(myPLN, "sandwich")
+#' standard_error(myPLN, "wald")
 #' @export
 standard_error <- function(object, type) {
   UseMethod("standard_error", object)
@@ -169,7 +169,7 @@ standard_error <- function(object, type) {
 
 #' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit`]
 #' @export
-standard_error.PLNfit <- function(object, type = c("sandwich", "wald", "louis")) {
+standard_error.PLNfit <- function(object, type = c("wald", "louis")) {
   stopifnot(isPLNfit(object))
   type <- match.arg(type)
   if (type != object$fisher$type) {
