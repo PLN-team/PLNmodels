@@ -22,8 +22,6 @@ predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
   object$predict(newdata, type, parent.frame())
 }
 
-
-
 #' Predict counts conditionally
 #'
 #' @name predict_cond
@@ -56,7 +54,6 @@ predict_cond.PLNfit = function(object, newdata, cond_responses, type = c("link",
   stopifnot(isPLNfit(object))
   object$predict_cond(newdata, cond_responses, type, var_par, parent.frame())
 }
-
 
 #' Extract model coefficients
 #'
@@ -155,7 +152,7 @@ sigma.PLNfit <- function(object, ...) {
 #' @description Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate) Fisher information matrix. See [fisher.PLNfit()] for more details on the approximations.
 #'
 #' @param object an R6 object with class PLNfit
-#' @param type Either `Wald` (default) or `Louis`. Approximation scheme used to compute the Fisher information matrix
+#' @param type Either `sandwich` (default),  `Wald` or `Louis`. Approximation scheme used to compute the Fisher information matrix
 #'
 #' @seealso [vcov.PLNfit()] for the complete Fisher information matrix
 #'
@@ -164,7 +161,7 @@ sigma.PLNfit <- function(object, ...) {
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
-#' standard_error(myPLN, "wald")
+#' standard_error(myPLN, "sandwich")
 #' @export
 standard_error <- function(object, type) {
   UseMethod("standard_error", object)
@@ -172,7 +169,7 @@ standard_error <- function(object, type) {
 
 #' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit`]
 #' @export
-standard_error.PLNfit <- function(object, type = c("wald", "louis")) {
+standard_error.PLNfit <- function(object, type = c("sandwich", "wald", "louis")) {
   stopifnot(isPLNfit(object))
   type <- match.arg(type)
   if (type != object$fisher$type) {
