@@ -187,6 +187,8 @@ PLNmixture_param <- function(control, n, p) {
     "ftol_abs"    = 0,
     "xtol_rel"    = 1e-6,
     "xtol_abs"    = xtol_abs,
+    "backend"     = "nlopt",
+    "learning_rate" = 0.1,
     "trace"       = 1,
     "covariance"  = covariance,
     "iterates"    = 2,
