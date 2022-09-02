@@ -65,7 +65,7 @@ PLNmixturefit <-
                "gradient"  = Reduce('+', purrr::map2(Tk, Ak, ~ as.numeric(t(diag(.x) %*% X) %*% (.y - Y)))))
         }
 
-        opts <- list("algorithm"="NLOPT_LD_CCSAQ", "xtol_rel"=1.0e-4)
+        opts <- list("algorithm"="NLOPT_LD_CCSAQ", "xtol_rel"=1.0e-6)
         out_optim <- nloptr::nloptr(c(private$Theta), objective_and_gradient,
                                     opts = opts)
         private$Theta <- matrix(out_optim$solution, ncol(X), self$p)

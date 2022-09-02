@@ -41,7 +41,7 @@ The list of parameters \code{control_main} controls the optimization of the main
 \itemize{
 \item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
 \item "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
-\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter. Default is 1e-4
+\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter. Default is 1e-6
 \item "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0
 \item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 \item "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",

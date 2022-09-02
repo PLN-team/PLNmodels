@@ -24,7 +24,7 @@ log-transformed data, and with the same formula as the one provided by the user.
 which sometimes speeds up the inference.
 \item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
 \item "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
-\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4
+\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
 \item "xtol_abs" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0
 \item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 \item "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)
@@ -217,7 +217,7 @@ Call to the C++ optimizer and update of the relevant fields
 \if{html}{\out{<a id="method-PLNfit-optimize_nlopt"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-optimize_nlopt}{}}}
 \subsection{Method \code{optimize_nlopt()}}{
-Call to the C++ optimizer and update of the relevant fields
+Call to the nlopt backend and update of the relevant fields
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize_nlopt(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }
@@ -242,7 +242,7 @@ Call to the C++ optimizer and update of the relevant fields
 \if{html}{\out{<a id="method-PLNfit-optimize_torch"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-optimize_torch}{}}}
 \subsection{Method \code{optimize_torch()}}{
-Call to the C++ optimizer and update of the relevant fields
+Call to the torch backend and update of the relevant fields
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize_torch(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }

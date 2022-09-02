@@ -16,7 +16,7 @@
 #' @details The list of parameters `control_main` controls the optimization of the main process, with the following entries:
 #' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
 #' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
-#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter. Default is 1e-4
+#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol_rel multiplied by the absolute value of the parameter. Default is 1e-6
 #' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0
 #' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 #' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",

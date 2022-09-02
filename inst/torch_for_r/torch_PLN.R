@@ -113,3 +113,16 @@ plot(myPLN_torch$model_par$Sigma,
 myPLN_torch$loglik
 myPLN_nlopt$loglik
 
+
+
+
+load("../BarentsFish.Rdata")
+myPLN_nlopt <- PLN(count ~ -1 + covariates, data = Data)
+myPLN_torch <- PLN(count ~ -1 + covariates, data = Data, control = list(backend = "torch"))
+
+plot(myPLN_torch$model_par$Theta,
+     myPLN_nlopt$model_par$Theta); abline(0, 1)
+plot(myPLN_torch$model_par$Sigma,
+     myPLN_nlopt$model_par$Sigma); abline(0, 1)
+myPLN_torch$loglik
+myPLN_nlopt$loglik
