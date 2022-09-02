@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9000</span>
       </span>
     </div>
 
@@ -109,7 +109,7 @@
       <h1 data-toc-skip>Analyzing multivariate count data with the Poisson log-normal model</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-08-25</h4>
+            <h4 data-toc-skip class="date">2022-09-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLN.Rmd" class="external-link"><code>vignettes/PLN.Rmd</code></a></small>
       <div class="hidden name"><code>PLN.Rmd</code></div>
@@ -213,7 +213,7 @@ PLN: geometrical view
 <pre><code><span><span class="co">## A multivariate Poisson Lognormal fit with full covariance model.</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">##  nb_param    loglik       BIC       ICL</span></span>
-<span><span class="co">##       170 -1129.992 -1460.797 -2262.864</span></span>
+<span><span class="co">##       170 -1129.724 -1460.528 -2284.227</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -229,11 +229,11 @@ PLN: geometrical view
 <p>Accessing public fields of a <code>PLNfit</code> object can be done just like with a traditional list, <em>e.g.</em>,</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">$</span><span class="va">loglik</span>, <span class="va">myPLN</span><span class="op">$</span><span class="va">BIC</span>, <span class="va">myPLN</span><span class="op">$</span><span class="va">ICL</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] -1129.992 -1460.797 -2262.864</span></span></code></pre>
+<pre><code><span><span class="co">## [1] -1129.724 -1460.528 -2284.227</span></span></code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN</span><span class="op">$</span><span class="va">criteria</span></span></code></pre></div>
 <pre><code><span><span class="co">##   nb_param    loglik       BIC       ICL</span></span>
-<span><span class="co">## 1      170 -1129.992 -1460.797 -2262.864</span></span></code></pre>
+<span><span class="co">## 1      170 -1129.724 -1460.528 -2284.227</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="glm-like-interface">GLM-like interface<a class="anchor" aria-label="anchor" href="#glm-like-interface"></a>
@@ -273,19 +273,19 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="left">effect</td>
-<td align="right">-2.9200679</td>
-<td align="right">-4.0080140</td>
-<td align="right">1.0491417</td>
-<td align="right">-2.2315406</td>
-<td align="right">3.272746</td>
+<td align="right">-2.9881048</td>
+<td align="right">-4.0682558</td>
+<td align="right">1.0488723</td>
+<td align="right">-2.2685722</td>
+<td align="right">3.2711673</td>
 </tr>
 <tr class="even">
 <td align="left">stderr</td>
-<td align="right">0.5773213</td>
-<td align="right">0.5771192</td>
-<td align="right">0.0739224</td>
-<td align="right">0.4080231</td>
-<td align="right">0.012923</td>
+<td align="right">0.5771208</td>
+<td align="right">0.5772503</td>
+<td align="right">0.0739227</td>
+<td align="right">0.4082369</td>
+<td align="right">0.0129221</td>
 </tr>
 </tbody>
 </table>
@@ -354,15 +354,15 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1129.992</td>
-<td align="right">-1460.797</td>
-<td align="right">-2262.864</td>
+<td align="right">-1129.724</td>
+<td align="right">-1460.528</td>
+<td align="right">-2284.227</td>
 </tr>
 <tr class="even">
 <td align="right">170</td>
-<td align="right">-1052.332</td>
-<td align="right">-1383.137</td>
-<td align="right">-2221.394</td>
+<td align="right">-1051.754</td>
+<td align="right">-1382.558</td>
+<td align="right">-2208.139</td>
 </tr>
 </tbody>
 </table>
@@ -390,15 +390,15 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1052.332</td>
-<td align="right">-1383.137</td>
-<td align="right">-2221.394</td>
+<td align="right">-1051.754</td>
+<td align="right">-1382.558</td>
+<td align="right">-2208.139</td>
 </tr>
 <tr class="even">
 <td align="right">187</td>
-<td align="right">-1028.674</td>
-<td align="right">-1392.559</td>
-<td align="right">-2113.696</td>
+<td align="right">-1028.085</td>
+<td align="right">-1391.970</td>
+<td align="right">-2087.008</td>
 </tr>
 </tbody>
 </table>
@@ -457,23 +457,23 @@ fitted value vs. observation
 <tr class="odd">
 <td align="left">full</td>
 <td align="right">170</td>
-<td align="right">-1052.332</td>
-<td align="right">-1383.137</td>
-<td align="right">-2221.394</td>
+<td align="right">-1051.754</td>
+<td align="right">-1382.558</td>
+<td align="right">-2208.139</td>
 </tr>
 <tr class="even">
 <td align="left">diagonal</td>
 <td align="right">34</td>
-<td align="right">-1110.282</td>
-<td align="right">-1176.443</td>
-<td align="right">-2102.677</td>
+<td align="right">-1109.691</td>
+<td align="right">-1175.852</td>
+<td align="right">-2080.825</td>
 </tr>
 <tr class="odd">
 <td align="left">spherical</td>
 <td align="right">18</td>
-<td align="right">-1158.871</td>
-<td align="right">-1193.898</td>
-<td align="right">-2144.225</td>
+<td align="right">-1158.488</td>
+<td align="right">-1193.514</td>
+<td align="right">-2153.073</td>
 </tr>
 </tbody>
 </table>
@@ -499,21 +499,21 @@ fitted value vs. observation
 <tbody>
 <tr class="odd">
 <td align="right">187</td>
-<td align="right">-1028.674</td>
-<td align="right">-1392.559</td>
-<td align="right">-2113.696</td>
+<td align="right">-1028.085</td>
+<td align="right">-1391.970</td>
+<td align="right">-2087.008</td>
 </tr>
 <tr class="even">
 <td align="right">34</td>
-<td align="right">-1110.282</td>
-<td align="right">-1176.443</td>
-<td align="right">-2102.677</td>
+<td align="right">-1109.691</td>
+<td align="right">-1175.852</td>
+<td align="right">-2080.825</td>
 </tr>
 <tr class="odd">
 <td align="right">51</td>
-<td align="right">-1074.021</td>
-<td align="right">-1173.262</td>
-<td align="right">-1838.669</td>
+<td align="right">-1073.053</td>
+<td align="right">-1172.295</td>
+<td align="right">-1750.145</td>
 </tr>
 </tbody>
 </table>

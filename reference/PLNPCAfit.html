@@ -19,7 +19,7 @@ See the documentation for the methods inherited by  PLNfit and the plot() method
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9000</span>
       </span>
     </div>
 
@@ -171,7 +171,9 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 <li><p><a href="#method-PLNPCAfit-plot_PCA"><code>PLNPCAfit$plot_PCA()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-show"><code>PLNPCAfit$show()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-clone"><code>PLNPCAfit$clone()</code></a></p></li>
-</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href="PLNfit.html#method-compute_standard_error"><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></li>
+</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href="PLNfit.html#method-compute_standard_error"><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_nlopt"><a href="PLNfit.html#method-optimize_nlopt"><code>PLNmodels::PLNfit$optimize_nlopt()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_torch"><a href="PLNfit.html#method-optimize_torch"><code>PLNmodels::PLNfit$optimize_torch()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href="PLNfit.html#method-predict"><code>PLNmodels::PLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></li>
@@ -622,7 +624,7 @@ after optimization</p><div class="section">
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting 5 PLN models for PCA analysis.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 5 	 Rank approximation = 3 	 Rank approximation = 2 	 Rank approximation = 1 	 Rank approximation = 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 2 	 Rank approximation = 5 	 Rank approximation = 4 	 Rank approximation = 3 	 Rank approximation = 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="va">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">myPCAs</span><span class="op">)</span></span></span>
@@ -632,7 +634,7 @@ after optimization</p><div class="section">
 <span class="r-out co"><span class="r-pr">#&gt;</span> Poisson Lognormal with rank constrained for PCA (rank = 3)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ==================================================================</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  nb_param   loglik      BIC      ICL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        65 -637.935 -764.419 -824.343</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        65 -637.742 -764.226 -824.153</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ==================================================================</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Useful fields</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     $model_par, $latent, $latent_pos, $var_par, $optim_par</span>

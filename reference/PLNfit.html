@@ -22,7 +22,7 @@ Fields are accessed via active binding and cannot be changed by the user."><meta
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9000</span>
       </span>
     </div>
 
@@ -104,7 +104,7 @@ log-transformed data, and with the same formula as the one provided by the user.
 which sometimes speeds up the inference.</p></li>
 <li><p>"ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n &lt; p, 1e-8 otherwise.</p></li>
 <li><p>"ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0</p></li>
-<li><p>"xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4</p></li>
+<li><p>"xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6</p></li>
 <li><p>"xtol_abs" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0</p></li>
 <li><p>"maxeval" stop when the number of iteration exceeds maxeval. Default is 10000</p></li>
 <li><p>"maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)</p></li>
@@ -172,6 +172,10 @@ which sometimes speeds up the inference.</p></li>
 <dd><p>a list with parameters useful for monitoring the optimization</p></dd>
 
 
+<dt><code>optim_backend</code></dt>
+<dd><p>the backend (either torch or nlopt) used for fitting the model</p></dd>
+
+
 <dt><code>weights</code></dt>
 <dd><p>observational weights</p></dd>
 
@@ -215,6 +219,8 @@ which sometimes speeds up the inference.</p></li>
 <ul><li><p><a href="#method-PLNfit-update"><code>PLNfit$update()</code></a></p></li>
 <li><p><a href="#method-PLNfit-new"><code>PLNfit$new()</code></a></p></li>
 <li><p><a href="#method-PLNfit-optimize"><code>PLNfit$optimize()</code></a></p></li>
+<li><p><a href="#method-PLNfit-optimize_nlopt"><code>PLNfit$optimize_nlopt()</code></a></p></li>
+<li><p><a href="#method-PLNfit-optimize_torch"><code>PLNfit$optimize_torch()</code></a></p></li>
 <li><p><a href="#method-PLNfit-VEstep"><code>PLNfit$VEstep()</code></a></p></li>
 <li><p><a href="#method-PLNfit-set_R2"><code>PLNfit$set_R2()</code></a></p></li>
 <li><p><a href="#method-PLNfit-compute_fisher"><code>PLNfit$compute_fisher()</code></a></p></li>
@@ -359,10 +365,74 @@ which sometimes speeds up the inference.</p></li>
 </dl><p></p></div>
 </div>
 
+</div><p></p><hr><a id="method-PLNfit-optimize_nlopt"></a><div class="section">
+<h3 id="method-optimize-nlopt-">Method <code>optimize_nlopt()</code><a class="anchor" aria-label="anchor" href="#method-optimize-nlopt-"></a></h3>
+<p>Call to the nlopt backend and update of the relevant fields</p><div class="section">
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">optimize_nlopt</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>responses</code></dt>
+<dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
+
+
+<dt><code>covariates</code></dt>
+<dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
+
+
+<dt><code>offsets</code></dt>
+<dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
+
+
+<dt><code>weights</code></dt>
+<dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
+
+
+<dt><code>control</code></dt>
+<dd><p>a list for controlling the optimization. See details.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div><p></p><hr><a id="method-PLNfit-optimize_torch"></a><div class="section">
+<h3 id="method-optimize-torch-">Method <code>optimize_torch()</code><a class="anchor" aria-label="anchor" href="#method-optimize-torch-"></a></h3>
+<p>Call to the torch backend and update of the relevant fields</p><div class="section">
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">optimize_torch</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>responses</code></dt>
+<dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
+
+
+<dt><code>covariates</code></dt>
+<dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
+
+
+<dt><code>offsets</code></dt>
+<dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
+
+
+<dt><code>weights</code></dt>
+<dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
+
+
+<dt><code>control</code></dt>
+<dd><p>a list for controlling the optimization. See details.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
 </div><p></p><hr><a id="method-PLNfit-VEstep"></a><div class="section">
 <h3 id="method-vestep-">Method <code>VEstep()</code><a class="anchor" aria-label="anchor" href="#method-vestep-"></a></h3>
 <p>Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.</p><div class="section">
-<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">VEstep</span><span class="op">(</span></span>
 <span>  <span class="va">covariates</span>,</span>
 <span>  <span class="va">offsets</span>,</span>
@@ -375,7 +445,7 @@ which sometimes speeds up the inference.</p></li>
 </div>
 
 <div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>covariates</code></dt>
 <dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
 
@@ -416,12 +486,12 @@ which sometimes speeds up the inference.</p></li>
 </div><p></p><hr><a id="method-PLNfit-set_R2"></a><div class="section">
 <h3 id="method-set-r-">Method <code>set_R2()</code><a class="anchor" aria-label="anchor" href="#method-set-r-"></a></h3>
 <p>Update R2 field after optimization</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">set_R2</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, nullModel <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>responses</code></dt>
 <dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
 
@@ -448,12 +518,12 @@ which sometimes speeds up the inference.</p></li>
 </div><p></p><hr><a id="method-PLNfit-compute_fisher"></a><div class="section">
 <h3 id="method-compute-fisher-">Method <code>compute_fisher()</code><a class="anchor" aria-label="anchor" href="#method-compute-fisher-"></a></h3>
 <p>Safely compute the fisher information matrix (FIM)</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">compute_fisher</span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"louis"</span><span class="op">)</span>, X <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>type</code></dt>
 <dd><p>approximation scheme to compute the fisher information matrix. Either <code>wald</code> (default) or <code>louis</code>. <code>type = "louis"</code> results in smaller confidence intervals.</p></dd>
 
@@ -472,7 +542,7 @@ which sometimes speeds up the inference.</p></li>
 </div><p></p><hr><a id="method-PLNfit-compute_standard_error"></a><div class="section">
 <h3 id="method-compute-standard-error-">Method <code>compute_standard_error()</code><a class="anchor" aria-label="anchor" href="#method-compute-standard-error-"></a></h3>
 <p>Compute univariate standard error for coefficients of Theta from the FIM</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">compute_standard_error</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -484,7 +554,7 @@ which sometimes speeds up the inference.</p></li>
 </div><p></p><hr><a id="method-PLNfit-postTreatment"></a><div class="section">
 <h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
 <p>Update R2, fisher and std_err fields after optimization</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span></span>
 <span>  <span class="va">responses</span>,</span>
 <span>  <span class="va">covariates</span>,</span>
@@ -496,7 +566,7 @@ which sometimes speeds up the inference.</p></li>
 </div>
 
 <div class="section">
-<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>responses</code></dt>
 <dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
 
@@ -527,12 +597,12 @@ which sometimes speeds up the inference.</p></li>
 </div><p></p><hr><a id="method-PLNfit-predict"></a><div class="section">
 <h3 id="method-predict-">Method <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code><a class="anchor" aria-label="anchor" href="#method-predict-"></a></h3>
 <p>Predict position, scores or observations of new data.</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">predict</span><span class="op">(</span><span class="va">newdata</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"link"</span>, <span class="st">"response"</span><span class="op">)</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>newdata</code></dt>
 <dd><p>A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.</p></dd>
 
@@ -555,7 +625,7 @@ which sometimes speeds up the inference.</p></li>
 </div><p></p><hr><a id="method-PLNfit-predict_cond"></a><div class="section">
 <h3 id="method-predict-cond-">Method <code><a href="predict_cond.html">predict_cond()</a></code><a class="anchor" aria-label="anchor" href="#method-predict-cond-"></a></h3>
 <p>Predict position, scores or observations of new data, conditionally on the observation of a (set of) variables</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">predict_cond</span><span class="op">(</span></span>
 <span>  <span class="va">newdata</span>,</span>
 <span>  <span class="va">cond_responses</span>,</span>
@@ -566,7 +636,7 @@ which sometimes speeds up the inference.</p></li>
 </div>
 
 <div class="section">
-<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>newdata</code></dt>
 <dd><p>a data frame containing the covariates of the sites where to predict</p></dd>
 
@@ -597,7 +667,7 @@ which sometimes speeds up the inference.</p></li>
 </div><p></p><hr><a id="method-PLNfit-show"></a><div class="section">
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"A multivariate Poisson Lognormal fit with"</span>, <span class="va">private</span><span class="op">$</span><span class="va">covariance</span>,</span>
 <span>    <span class="st">"covariance model.\n"</span><span class="op">)</span></span>
@@ -605,7 +675,7 @@ which sometimes speeds up the inference.</p></li>
 </div>
 
 <div class="section">
-<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
+<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>model</code></dt>
 <dd><p>First line of the print output</p></dd>
 
@@ -616,7 +686,7 @@ which sometimes speeds up the inference.</p></li>
 </div><p></p><hr><a id="method-PLNfit-print"></a><div class="section">
 <h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
 <p>User friendly print method</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -624,12 +694,12 @@ which sometimes speeds up the inference.</p></li>
 </div><p></p><hr><a id="method-PLNfit-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
+<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
