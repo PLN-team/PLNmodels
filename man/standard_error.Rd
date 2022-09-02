@@ -12,7 +12,7 @@ standard_error(object, type)
 \arguments{
 \item{object}{an R6 object with class PLNfit}
 
-\item{type}{Either \code{Wald} (default) or \code{Louis}. Approximation scheme used to compute the Fisher information matrix}
+\item{type}{Either \code{sandwich} (default),  \code{Wald} or \code{Louis}. Approximation scheme used to compute the Fisher information matrix}
 }
 \value{
 A p * d positive matrix (same size as \eqn{\Theta}) with standard errors for the coefficients of \eqn{\Theta}

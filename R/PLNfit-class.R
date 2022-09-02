@@ -123,7 +123,7 @@ PLNfit <- R6Class(
     },
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
-    #' @description Call to the C++ optimizer and update of the relevant fields
+    #' @description Call to the nlopt backend and update of the relevant fields
     optimize_nlopt = function(responses, covariates, offsets, weights, control) {
 
       optimizer  <-
@@ -165,97 +165,107 @@ PLNfit <- R6Class(
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
-    #' @description Call to the C++ optimizer and update of the relevant fields
+    #' @description Call to the torch backend and update of the relevant fields
     #' @import torch
     optimize_torch = function(responses, covariates, offsets, weights, control) {
 
-      get_elbo <-
+      self$optimize_nlopt(responses, covariates, offsets, weights, control)
+
+      X   <- torch_tensor(covariates)
+      Y   <- torch_tensor(responses)
+      O   <- torch_tensor(offsets)
+      w   <- torch_tensor(weights)
+      W   <- torch_diag(w)
+      w_bar <- sum(w)
+
+      get_objective <-
         switch(self$vcov_model,
-               "spherical" = function(B, M, S, Omega){
-                 NULL
-               },
-               "diagonal"  = function(B, M, S, Omega){
-                 NULL
-               },
-               "full"      = function(B, M, S, Omega){
-                 S2 <- torch_multiply(S, S)
-                 XB <- torch_matmul(self$X, B)
-                 A  <- torch_exp(self$O + M + XB + S2/2)
-                 elbo <- self$n/2 * torch_logdet(Omega) +
-                   torch_sum(- A + torch_multiply(self$Y, self$O + M + XB) + .5 * torch_log(S2)) -
-                   .5 * torch_trace(torch_matmul(torch_matmul(torch_transpose(M, 2, 1), M) + torch_diag(torch_sum(S2, dim = 1)), Omega)) +
-                   .5 * self$n * self$p - torch_sum(log_stirling(self$Y))
-                 elbo
-               }
+           "spherical" = function(Theta, M, S) {
+             S2 <- S*S
+             Z <- O + M + torch_matmul(X, Theta)
+             sigma2 <- sum(torch_matmul(w, M * M + S2)) / (w_bar * self$p)
+             .5 * self$p * w_bar * log(sigma2) - sum(torch_matmul(w , Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+           },
+           "diagonal"  = function(Theta, M, S) {
+             S2 <- S*S
+             Z <- O + M + torch_matmul(X, Theta)
+             D <-  torch_matmul(w, M * M + S2) / w_bar;
+             .5 * w_bar * sum(torch_log(D)) - sum(torch_matmul(w , Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+           },
+           "full"      = function(Theta, M, S) {
+             S2 <- S*S
+             Z <- O + M + torch_matmul(X, Theta)
+             Mw <- torch_matmul(torch_diag(torch_sqrt(w)), M)
+             Sigma <- (torch_matmul(torch_transpose(Mw, 2, 1), Mw) + torch_diag(torch_matmul(w, S2))) / w_bar
+             .5 * w_bar * torch_logdet(Sigma) - sum(torch_matmul(w, Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+           }
         )
 
-      Sigma_update <-
+      get_Sigma <- function(M, S) {
         switch(self$vcov_model,
-               "spherical" = function(M, S) {
-                 NULL
-               },
-               "diagonal" = function(M, S) {
-                 NULL
-               },
-               "full" = function(M, S){
-                 1/self$n * (torch_matmul(torch_transpose(M,2,1),M) + torch_diag(torch_sum(torch_multiply(S,S), dim = 1)))
+               "spherical" = torch_eye(self$p) * sum(torch_matmul(w, M * M + S*S)) / (w_bar * self$p),
+               "diagonal"  = torch_diag(torch_matmul(w, M * M + S*S) / w_bar),
+               "full"      = {
+                 Mw <- torch_matmul(torch_diag(torch_sqrt(w)), M)
+                 (torch_matmul(torch_transpose(Mw, 2, 1), Mw) + torch_diag(torch_matmul(w, S*S))) / w_bar
                }
         )
+      }
 
-      Theta <- torch_tensor(private$Theta   , requires_grad = TRUE)
-      M     <- torch_tensor(private$M       , requires_grad = TRUE)
-      S     <- torch_tensor(sqrt(private$S2), requires_grad = TRUE)
-      Sigma <- torch_tensor(private$Sigma)
+      ## Initialization
+      Theta <- torch::torch_tensor(t(private$Theta), requires_grad = TRUE)
+      M     <- torch::torch_tensor(private$M       , requires_grad = TRUE)
+      S     <- torch::torch_tensor(sqrt(private$S2), requires_grad = TRUE)
+      objective <- double(length = control$maxeval + 1)
+      optimizer <- torch::optim_rprop(c(Theta, M, S), lr = control$learning_rate)
+      message <- "failure"
 
-      elbo <- double(length = control$maxeval)
-      optimizer <- optim_rprop(c(self$B, self$M, self$S), lr = control$learning_rate)
-      objective0 <- Inf
-      for (i in 1:control$maxeval){
-        ## reinitialize gradients
-        optimizer$zero_grad()
-
-        ## compute current ELBO
-        loss <- - get_elbo(B, M, S, Omega)
-
-        ## backward propagation and optimization
-        loss$backward()
+      ## Optimization loop
+      for (iterate in seq.int(control$maxeval)) {
+        ## Optimization
+        optimizer$zero_grad()                # reinitialize gradients
+        loss <- get_objective(Theta, M, S)   # compute current ELBO
+        loss$backward()                      # backward propagation and optimization
         optimizer$step()
-
-        ## update parameters with close form
-        Sigma <- Sigma_update(M, S)
-        Omega <- torch_inverse(Sigma)
-
-        objective <- -loss$item()
-        if(control$trace >  0 && (i %% 50 == 0)){
-          pr('i : ', i )
-          pr('ELBO', objective)
-        }
-        elbo[i] <- objective
-        if (abs(objective0 - objective)/abs(objective) < control$ftol_rel) {
-          elbo <- elbo[1:i]
+        ## Display progress
+        objective[iterate + 1] <- loss$item()
+        if(control$trace >  1 && (iterate %% 50 == 0))
+          cat(' \n iteration : ', iterate, 'Objective', objective[iterate + 1])
+        ## Check for convergence
+        if (abs(objective[iterate] - objective[iterate + 1]) / abs(objective[iterate+1]) < control$ftol_rel) {
+          objective <- objective[1:iterate + 1]
+          message <- "converged"
           break
-        } else {
-          objective0 <- objective
         }
       }
 
-      # Ji <- optim_out$loglik
-      # attr(Ji, "weights") <- weights
-      # self$update(
-      #   Theta      = optim_out$Theta,
-      #   Sigma      = optim_out$Sigma,
-      #   M          = optim_out$M,
-      #   S2         = (optim_out$S)**2,
-      #   Z          = optim_out$Z,
-      #   A          = optim_out$A,
-      #   Ji         = Ji,
-      #   monitoring = list(
-      #     iterations = optim_out$iterations,
-      #     message    = statusToMessage(optim_out$status))
-      # )
-      #
-      # if (self$vcov_model == "genetic")
-      #   private$psi <- list(sigma2 = optim_out$sigma2, rho = optim_out$rho)
+      Sigma <- get_Sigma(M, S)
+      Omega <- torch::torch_inverse(Sigma)
+      S2 <- torch::torch_multiply(S,S)
+      Z  <- O + M + torch::torch_matmul(X, Theta)
+      A  <- torch::torch_exp(Z + S2/2)
+      KY <- rowSums(.logfactorial(responses))
+
+      Ji <- as.numeric(
+        .5 * torch_logdet(Omega) +
+        torch_sum(Y * Z - A + .5 * torch_log(S2), dim = 2) -
+        .5 * torch_sum(torch_matmul(M, Omega) * M + S2 * torch_diag(Omega), dim = 2) +
+        .5 * self$p - KY
+      )
+      attr(Ji, "weights") <- weights
+      self$update(
+        Theta      = t(as.matrix(Theta)),
+        Sigma      = as.matrix(Sigma),
+        M          = as.matrix(M),
+        S2         = as.matrix(S2),
+        Z          = as.matrix(Z),
+        A          = as.matrix(A),
+        Ji         = Ji,
+        monitoring = list(
+          objective  = objective,
+          iterations = iterate,
+          message    = message)
+      )
     },
 
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.

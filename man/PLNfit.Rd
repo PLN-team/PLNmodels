@@ -73,6 +73,8 @@ print(myPLN)
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
+\item{\code{optim_backend}}{the backend (either torch or nlopt) used for fitting the model}
+
 \item{\code{weights}}{observational weights}
 
 \item{\code{loglik}}{(weighted) variational lower bound of the loglikelihood}
@@ -97,6 +99,8 @@ print(myPLN)
 \item \href{#method-PLNfit-update}{\code{PLNfit$update()}}
 \item \href{#method-PLNfit-new}{\code{PLNfit$new()}}
 \item \href{#method-PLNfit-optimize}{\code{PLNfit$optimize()}}
+\item \href{#method-PLNfit-optimize_nlopt}{\code{PLNfit$optimize_nlopt()}}
+\item \href{#method-PLNfit-optimize_torch}{\code{PLNfit$optimize_torch()}}
 \item \href{#method-PLNfit-VEstep}{\code{PLNfit$VEstep()}}
 \item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
 \item \href{#method-PLNfit-compute_fisher}{\code{PLNfit$compute_fisher()}}
@@ -191,6 +195,56 @@ Initialize a \code{\link{PLNfit}} model
 Call to the C++ optimizer and update of the relevant fields
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-optimize_nlopt"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-optimize_nlopt}{}}}
+\subsection{Method \code{optimize_nlopt()}}{
+Call to the C++ optimizer and update of the relevant fields
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize_nlopt(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-optimize_torch"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-optimize_torch}{}}}
+\subsection{Method \code{optimize_torch()}}{
+Call to the C++ optimizer and update of the relevant fields
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize_torch(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
