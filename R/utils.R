@@ -218,7 +218,7 @@ PLNPCA_param <- function(control) {
 }
 
 PLNnetwork_param <- function(control, n, p) {
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
+  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0, control$xtol_abs)
   ctrl <-  list(
     "ftol_out"  = 1e-5,
     "maxit_out" = 20,

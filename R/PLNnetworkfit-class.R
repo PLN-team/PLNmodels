@@ -42,6 +42,7 @@ PLNnetworkfit <- R6Class(
     initialize = function(penalty, responses, covariates, offsets, weights, formula, xlevels, control) {
       super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
       private$lambda <- penalty
+      private$rho    <- control$penalty_weights
     },
     #' @description Update fields of a [`PLNnetworkfit`] object
     #' @param Theta matrix of regression matrix
@@ -66,7 +67,7 @@ PLNnetworkfit <- R6Class(
     optimize = function(responses, covariates, offsets, weights, control) {
 
       ## shall we penalize the diagonal? in glassoFast
-      rho <- self$penalty * control$penalty_weights
+      rho <- self$penalty * self$penalty_weights
       if (!control$penalize_diagonal) diag(rho) <- 0
 
       cond <- FALSE; iter <- 0
@@ -233,15 +234,18 @@ PLNnetworkfit <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
     Omega  = NA, # the p x p precision matrix
-    lambda = NA  # the sparsity tuning parameter
+    lambda = NA, # the sparsity tuning parameter
+    rho    = NA  # the p x p penalty weight
   ),
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## ACTIVE BINDINGS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   active = list(
-    #' @field penalty the level of sparsity in the current model
-    penalty    = function() {private$lambda},
+    #' @field penalty the global level of sparsity in the current model
+    penalty   = function() {private$lambda},
+    #' @field penalty_weights a matrix of weights controlling the amount of penalty element-wise.
+    mask      = function() {private$rho},
     #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
     n_edges    = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param number of parameters in the current PLN model
