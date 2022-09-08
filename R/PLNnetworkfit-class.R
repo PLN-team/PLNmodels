@@ -39,10 +39,12 @@ PLNnetworkfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
-    initialize = function(penalty, responses, covariates, offsets, weights, formula, xlevels, control) {
+    initialize = function(penalty, penalty_weight, responses, covariates, offsets, weights, formula, xlevels, control) {
       super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
       private$lambda <- penalty
-      private$rho    <- control$penalty_weights
+      stopifnot(isSymmetric(penalty_weights), all(penalty_weights > 0))
+      private$rho    <- penalty_weights
+      if (!control$penalize_diagonal) diag(private$rho) <- 0
     },
     #' @description Update fields of a [`PLNnetworkfit`] object
     #' @param Theta matrix of regression matrix
@@ -66,10 +68,6 @@ PLNnetworkfit <- R6Class(
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
 
-      ## shall we penalize the diagonal? in glassoFast
-      rho <- self$penalty * self$penalty_weights
-      if (!control$penalize_diagonal) diag(rho) <- 0
-
       cond <- FALSE; iter <- 0
       objective   <- numeric(control$maxit_out)
       convergence <- numeric(control$maxit_out)
@@ -82,7 +80,7 @@ PLNnetworkfit <- R6Class(
         if (control$trace > 1) cat("", iter)
 
         ## CALL TO GLASSO TO UPDATE Omega/Sigma
-        glasso_out <- glassoFast::glassoFast(Sigma, rho = rho)
+        glasso_out <- glassoFast::glassoFast(Sigma, rho = self$penalty * self$penalty_weights)
         if (anyNA(glasso_out$wi)) break
         Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 

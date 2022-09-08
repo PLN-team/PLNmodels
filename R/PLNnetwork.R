@@ -25,11 +25,11 @@
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
 #' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
 #'
-#' The list of parameters `control_init` controls the optimization process in the initialization and in the function [PLN()], plus two additional parameters:
+#' The list of parameters `control_init` controls the optimization process in the initialization and in the function [PLN()], plus some additional parameters:
 #' * "nPenalties" an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`
 #' * "min.ratio" the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by `min.ratio`. Default is 0.1.
 #' * "penalize_diagonal" boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is TRUE
-#' * "penalty_weights" p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
+#' * "penalty_weights" either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 #'
 #'
 #' @rdname PLNnetwork
@@ -45,17 +45,18 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
-  ## define default control parameters for optim and overwrite by user defined parameters
+  ## define default control parameters for optim and overwrite them with the user-defined parameters
   ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y))
   if (is.null(control_init$trace)) control_init$trace <- 0
   ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y))
 
-  if (is.null(ctrl_init$nPenalties)) ctrl_init$nPenalties <- 30
-
-
   if (is.null(ctrl_init$min.ratio)) ctrl_init$min.ratio   <- .1
-  # ctrl_init$penalty_weights   <- ctrl_main$penalty_weights
-  # ctrl_init$penalize_diagonal <- ctrl_main$penalize_diagonal
+  if (is.null(ctrl_init$penalize_diagonal)) ctrl_init$penalize_diagonal <- TRUE
+  if (is.null(ctrl_init$penalty_weights))  ctrl_init$penalty_weights <- matrix(1, ncol(args$Y), ncol(args$Y))
+  if (is.list(ctrl_init$penalty_weights))
+    ctrl_init$nPenalties <- length(ctrl_init$penalty_weights)
+  else
+    if (is.null(ctrl_init$nPenalties)) ctrl_init$nPenalties <- 30
 
   ## Instantiate the collection of models
   if (ctrl_main$trace > 0) cat("\n Initialization...")

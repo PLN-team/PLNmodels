@@ -58,9 +58,16 @@ PLNnetworkfamily <- R6Class(
       }
 
       ## instantiate as many models as penalties
-      private$params <- sort(penalties, decreasing = TRUE)
-      self$models <- lapply(private$params, function(penalty) {
-        PLNnetworkfit$new(penalty, responses, covariates, offsets, weights, formula, xlevels, control)
+
+      o <- order(penalties, decreasing = TRUE)
+      private$params <- penalties[o]
+      if (is.list(control$penalty_weights))
+        list_penalty_weights <- control$penalty_weights[o]
+      else
+        list_penalty_weights <- rep(list(control$penalty_weights), length(private$params))
+
+      self$models <- map2(private$params, list_penalty_weights, function(penalty, penalty_weights) {
+        PLNnetworkfit$new(penalty, penalty_weights, penalty_weight, responses, covariates, offsets, weights, formula, xlevels, control)
       })
 
     },
