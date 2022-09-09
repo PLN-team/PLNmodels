@@ -28,7 +28,9 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{penalty}}{the level of sparsity in the current model}
+\item{\code{penalty}}{the global level of sparsity in the current model}
+
+\item{\code{penalty_weights}}{a matrix of weights controlling the amount of penalty element-wise.}
 
 \item{\code{n_edges}}{number of edges if the network (non null coefficient of the sparse precision matrix)}
 
@@ -83,6 +85,7 @@ Initialize a \code{\link{PLNnetworkfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$new(
   penalty,
+  penalty_weights,
   responses,
   covariates,
   offsets,

@@ -49,14 +49,14 @@ The list of parameters \code{control_main} controls the optimization of the main
 \item "trace" integer for verbosity. Useless when \code{cores > 1}
 \item "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
 \item "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
-\item "penalize_diagonal" boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is TRUE
-\item "penalty_weights" p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 }
 
-The list of parameters \code{control_init} controls the optimization process in the initialization and in the function \code{\link[=PLN]{PLN()}}, plus two additional parameters:
+The list of parameters \code{control_init} controls the optimization process in the initialization and in the function \code{\link[=PLN]{PLN()}}, plus some additional parameters:
 \itemize{
 \item "nPenalties" an integer that specified the number of values for the penalty grid when internally generated. Ignored when penalties is non \code{NULL}
 \item "min.ratio" the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min.ratio}. Default is 0.1.
+\item "penalize_diagonal" boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is TRUE
+\item "penalty_weights" either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 }
 }
 \examples{

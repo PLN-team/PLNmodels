@@ -46,28 +46,42 @@ PLNnetworkfamily <- R6Class(
       myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, xlevels, control)
       myPLN$optimize(responses, covariates, offsets, weights, control)
       control$inception <- myPLN
+
+      ## Get the number of penalty
+      if (is.null(penalties)) {
+        if (!is.list(control$penalty_weights))
+          nPenalties <- control$nPenalties
+        else
+          nPenalties <- length(control$penalty_weights)
+      } else {
+        nPenalties <- length(penalties)
+      }
+      ## Define a matrix of weights for each penalty
+      if (!is.list(control$penalty_weights))
+        list_penalty_weights <- rep(list(control$penalty_weights), nPenalties)
+      else
+        list_penalty_weights <- control$penalty_weights
+
       ## Get an appropriate grid of penalties
       if (is.null(penalties)) {
         if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
-        Sigma_hat <- myPLN$model_par$Sigma / control$penalty_weights
-        max_pen <- max(abs(Sigma_hat[upper.tri(Sigma_hat, diag = control$penalize_diagonal)]))
+        max_pen <- list_penalty_weights %>%
+          map(~ myPLN$model_par$Sigma / .x) %>%
+          map_dbl(~ max(abs(.x[upper.tri(.x, diag = control$penalize_diagonal)]))) %>%
+          max()
         penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min.ratio), len = control$nPenalties)
       } else {
         if (control$trace > 1) cat("\nPenalties already set by the user")
         stopifnot(all(penalties > 0))
       }
-
-      ## instantiate as many models as penalties
-
+      ## Sort eh penalty in decreasing order
       o <- order(penalties, decreasing = TRUE)
       private$params <- penalties[o]
-      if (is.list(control$penalty_weights))
-        list_penalty_weights <- control$penalty_weights[o]
-      else
-        list_penalty_weights <- rep(list(control$penalty_weights), length(private$params))
+      list_penalty_weights <- list_penalty_weights[o]
 
+      ## instantiate as many models as penalties
       self$models <- map2(private$params, list_penalty_weights, function(penalty, penalty_weights) {
-        PLNnetworkfit$new(penalty, penalty_weights, penalty_weight, responses, covariates, offsets, weights, formula, xlevels, control)
+        PLNnetworkfit$new(penalty, penalty_weights, responses, covariates, offsets, weights, formula, xlevels, control)
       })
 
     },
@@ -133,6 +147,9 @@ PLNnetworkfamily <- R6Class(
         ctrl_init <- PLN_param(list(), inception_$n, inception_$p)
         ctrl_init$trace <- 0
         ctrl_init$inception <- inception_
+        ctrl_init$penalty_weights <- map(self$models, "penalty_weights")
+        ctrl_init$penalize_diagonal <- (sum(diag(inception_$penalty_weights)) != 0)
+
         myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
                                       responses  = self$responses [subsample, , drop = FALSE],
                                       covariates = self$covariates[subsample, , drop = FALSE],

@@ -1,3 +1,8 @@
+# PLNmodels dev version
+
+* first support for torch optimizers (for PLN and PLNLDA)
+* handle list of penalty weights in PLNnetwork
+
 # PLNmodels 0.11.7
 
 * fix expression of ELBO in VEstep, related to #91

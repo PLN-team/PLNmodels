@@ -39,7 +39,7 @@ PLNnetworkfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
-    initialize = function(penalty, penalty_weight, responses, covariates, offsets, weights, formula, xlevels, control) {
+    initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, xlevels, control) {
       super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
       private$lambda <- penalty
       stopifnot(isSymmetric(penalty_weights), all(penalty_weights > 0))
@@ -67,7 +67,6 @@ PLNnetworkfit <- R6Class(
     ## Optimization ----------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
-
       cond <- FALSE; iter <- 0
       objective   <- numeric(control$maxit_out)
       convergence <- numeric(control$maxit_out)
@@ -241,17 +240,17 @@ PLNnetworkfit <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   active = list(
     #' @field penalty the global level of sparsity in the current model
-    penalty   = function() {private$lambda},
+    penalty         = function() {private$lambda},
     #' @field penalty_weights a matrix of weights controlling the amount of penalty element-wise.
-    mask      = function() {private$rho},
+    penalty_weights = function() {private$rho},
     #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
-    n_edges    = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
+    n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param number of parameters in the current PLN model
-    nb_param   = function() {self$p * self$d + self$n_edges},
+    nb_param        = function() {self$p * self$d + self$n_edges},
     #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood
-    pen_loglik = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
+    pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
     #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.
-    model_par  = function() {
+    model_par       = function() {
       par <- super$model_par
       par$Omega <- private$Omega
       par
