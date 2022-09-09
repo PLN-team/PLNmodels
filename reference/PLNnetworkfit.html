@@ -99,7 +99,11 @@ See the documentation for <code><a href="plot.PLNnetworkfit.html">plot()</a></co
     <div id="active-bindings">
     <h2>Active bindings</h2>
     <p></p><div class="r6-active-bindings"><dl><dt><code>penalty</code></dt>
-<dd><p>the level of sparsity in the current model</p></dd>
+<dd><p>the global level of sparsity in the current model</p></dd>
+
+
+<dt><code>penalty_weights</code></dt>
+<dd><p>a matrix of weights controlling the amount of penalty element-wise.</p></dd>
 
 
 <dt><code>n_edges</code></dt>
@@ -162,6 +166,7 @@ and graph density</p></dd>
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/PLNnetworkfit.html">PLNnetworkfit</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>  <span class="va">penalty</span>,</span>
+<span>  <span class="va">penalty_weights</span>,</span>
 <span>  <span class="va">responses</span>,</span>
 <span>  <span class="va">covariates</span>,</span>
 <span>  <span class="va">offsets</span>,</span>
