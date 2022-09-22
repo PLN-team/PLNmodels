@@ -11,6 +11,7 @@
 #' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param penalty a positive real number controlling the level of sparsity of the underlying network.
+#' @param penalty_weights either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 #' @param control a list for controlling the optimization of the PLN model used at initialization. See [PLNnetwork()] for details.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param xlevels named listed of factor levels included in the models, extracted from the formula in [PLNnetwork()] call

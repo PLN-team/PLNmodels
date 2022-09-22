@@ -101,6 +101,8 @@ Initialize a \code{\link{PLNnetworkfit}} object
 \describe{
 \item{\code{penalty}}{a positive real number controlling the level of sparsity of the underlying network.}
 
+\item{\code{penalty_weights}}{either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
+
 \item{\code{responses}}{the matrix of responses common to every models}
 
 \item{\code{covariates}}{the matrix of covariates common to every models}
