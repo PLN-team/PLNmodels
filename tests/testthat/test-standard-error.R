@@ -21,9 +21,6 @@ test_that("Check that fisher and standard_error return objects with proper dimen
   expect_equal(rownames(sem), rownames(coef(myPLN_cov)))
   expect_equal(colnames(sem), colnames(coef(myPLN_cov)))
 
-  ## Fisher is block diagonal
-  # expect_equal(inherits(fim, "dsCMatrix"), TRUE)
-
   ## Standard errors are all positive
   for (i in 1:(p*d)) {
     expect_gte(sem[i], 0)

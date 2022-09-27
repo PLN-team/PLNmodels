@@ -47,12 +47,12 @@ PLN <- function(formula, data, subset, weights, control = list()) {
   myPLN <- PLNfit$new(args$Y, args$X, args$O, args$w, args$formula, args$xlevels, ctrl)
 
   ## optimization
-  if (ctrl$trace > 0) cat("\n Adjusting a PLN model with", ctrl$covariance,"covariance model")
+  if (ctrl$trace > 0) cat("\n Adjusting a PLN model with", ctrl$covariance, "covariance model")
   myPLN$optimize(args$Y, args$X, args$O, args$w, ctrl)
 
   ## post-treatment
   if (ctrl$trace > 0) cat("\n Post-treatments...")
-  myPLN$postTreatment(args$Y, args$X, args$O, args$w)
+  myPLN$postTreatment(args$Y, args$X, args$O, args$w, ctrl$vcov_est)
 
   if (ctrl$trace > 0) cat("\n DONE!\n")
   myPLN

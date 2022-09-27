@@ -163,6 +163,7 @@ PLN_param <- function(control, n, p) {
     "backend"     = "nlopt",
     "learning_rate" = 0.1,
     "trace"       = 1,
+    "vcov_est"    = "wald",
     "covariance"  = covariance,
     "corr_matrix" = diag(x = 1, nrow = p, ncol = p),
     "inception"   = NULL

@@ -118,7 +118,7 @@ fitted.PLNfit <- function(object, ...) {
 vcov.PLNfit <- function(object, type = c("main", "covariance"), ...) {
   stopifnot(isPLNfit(object))
   switch(match.arg(type),
-         main       = object$fisher$mat,
+         main       = object$vcov_coef,
          covariance = object$model_par$Sigma)
 }
 
@@ -169,11 +169,7 @@ standard_error <- function(object, type) {
 
 #' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit`]
 #' @export
-standard_error.PLNfit <- function(object, type = c("wald", "louis")) {
+standard_error.PLNfit <- function(object) {
   stopifnot(isPLNfit(object))
-  type <- match.arg(type)
-  if (type != object$fisher$type) {
-    stop(paste("Standard errors were not computed using the", type, "approximation. Try another approximation scheme."))
-  }
   object$std_err
 }

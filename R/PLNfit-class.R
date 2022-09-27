@@ -328,35 +328,90 @@ PLNfit <- R6Class(
       private$R2 <- (loglik - lmin) / (lmax - lmin)
     },
 
+    getMat_iCnTheta_R = function(i) {
+      a_i   <- as.numeric(private$A[i, ])
+      s2_i  <- as.numeric(private$S2[i, ])
+      omega <- as.numeric(1/diag(private$Sigma))
+      diag_mat_i <- diag(1/a_i + s2_i^2 / (rep(1, self$p) + s2_i * (a_i + omega)))
+      solve(private$Sigma + diag_mat_i)
+    },
+
+    #' @description Safely compute the  information matrix (FIM)
+    #' @param Y matrix of responses used to compute the FIM
+    #' @param X design matrix used to compute the FIM
+    #' @return a sparse matrix with sensible dimension names
+    vcov_sandwich = function(Y, X) {
+      YmA <- Y - private$A
+      Dn <- matrix(0, self$d*self$p, self$d*self$p)
+      Cn <- matrix(0, self$d*self$p, self$d*self$p)
+      for (i in 1:self$n){
+        Cn <- Cn + kronecker(self$getMat_iCnTheta_R(i), tcrossprod(X[i , ]))
+        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), tcrossprod(X[i,]))
+      }
+      Dn <- Dn / self$n
+      Cn_inv <- solve(- Cn / self$n)
+      Cn_inv %*% Dn %*% Cn_inv
+    },
+
+    #' @description Safely compute the Wald Fisher information matrix
+    #' @param X design matrix used to compute the FIM
+    #' @return a sparse matrix with sensible dimension names
+    vcov_wald = function(X = NULL) {
+      A <- private$A
+      fisher <- bdiag(lapply(1:self$p, function(i) {
+        # t(X) %*% diag(A[, i]) %*% X
+        crossprod(X, A[, i] * X)
+      }))
+      res <- tryCatch(Matrix::solve(fisher), error = function(e) {e})
+      if (is(res, "error")) {
+        warning(paste("Inversion of the Fisher information matrix failed with following error message:",
+                      res$message,
+                      "Returning NA",
+                      sep = "\n"))
+        res <- matrix(NA, nrow = self$p, ncol = self$d)
+      }
+      res
+    },
+
     #' @description Safely compute the fisher information matrix (FIM)
     #' @param X design matrix used to compute the FIM
     #' @return a sparse matrix with sensible dimension names
-    compute_fisher = function(type = c("wald", "louis"), X = NULL) {
-      type <- match.arg(type)
+    vcov_louis = function(X = NULL) {
       A <- private$A
-      if (type == "louis") {
-        ## TODO check how to adapt for PLNPCA
-        ## A = A + A \odot A \odot (exp(S) - 1_{n \times p})
-        A <- A + A * A * (exp(self$var_par$S) - 1)
+      ## TODO check how to adapt for PLNPCA
+      A <- A + A * A * (exp(self$var_par$S) - 1)
+      fisher <- bdiag(lapply(1:self$p, function(i) {
+        # t(X) %*% diag(A[, i]) %*% X
+        crossprod(X, A[, i] * X)
+      }))
+      res <- tryCatch(Matrix::solve(fisher), error = function(e) {e})
+      if (is(res, "error")) {
+        warning(paste("Inversion of the Fisher information matrix failed with following error message:",
+                      res$message,
+                      "Returning NA",
+                      sep = "\n"))
+        res <- matrix(NA, nrow = self$p, ncol = self$d)
       }
-      if (anyNA(A)) {
-        warning("Something went wrong during model fitting!!\nMatrix A has missing values.")
-        result <- bdiag(lapply(1:self$p, function(i) {diag(NA, nrow = self$d)}))
-      } else {
-        result <- bdiag(lapply(1:self$p, function(i) {
-          ## t(X) %*% diag(A[, i]) %*% X
-          crossprod(X, A[, i] * X)
-        }))
-      }
-      ## set proper names, use sensible defaults if some names are missing
-      element.names <- expand.grid(covariates = colnames(private$Theta),
-                                   species    = rownames(private$Theta)) %>% rev() %>%
-        ## Hack to make sure that species is first and varies slowest
-        apply(1, paste0, collapse = "_")
-      rownames(result) <- element.names
-      result
+      res
     },
 
+    get_vcov_hat = function(type, responses, covariates) {
+      ## compute and store the estimated covariance of the estiamtor of the parameter Theta
+      vcov_hat <-
+        switch(type,
+               "wald"     = self$vcov_wald(X = covariates),
+               "louis"    = self$vcov_louis(X = covariates),
+               "sandwich" = self$vcov_sandwich(Y = responses, X = covariates),
+               "none"     = NULL)
+
+      ## set proper names, use sensible defaults if some names are missing
+      rownames(vcov_hat) <- expand.grid(covariates = colnames(covariates),
+                                   responses  = colnames(responses)) %>% rev() %>%
+        ## Hack to make sure that species is first and varies slowest
+        apply(1, paste0, collapse = "_")
+      attr(vcov_hat, "name") <- type
+      private$vcov_hat <- vcov_hat
+    },
     #' @description Compute univariate standard error for coefficients of Theta from the FIM
     #' @return a matrix of standard deviations.
     #' @importFrom Matrix diag solve
@@ -364,17 +419,7 @@ PLNfit <- R6Class(
       if (self$d > 0) {
         ## self$fisher$mat : Fisher Information matrix I_n(\Theta) = n * I(\Theta)
         ## safe inversion using Matrix::solve and Matrix::diag and error handling
-        out <- tryCatch(Matrix::diag(Matrix::solve(self$fisher$mat)),
-                        error = function(e) {e})
-        if (is(out, "error")) {
-          warning(paste("Inversion of the Fisher information matrix failed with following error message:",
-                        out$message,
-                        "Returning NA",
-                        sep = "\n"))
-          stderr <- matrix(NA, nrow = self$p, ncol = self$d)
-        } else {
-          stderr <- out %>% sqrt %>% matrix(nrow = self$d) %>% t()
-        }
+        stderr <- diag(private$vcov_hat) %>% sqrt %>% matrix(nrow = self$d) %>% t()
         dimnames(stderr) <- dimnames(self$model_par$Theta)
       } else {
         stderr <- NULL
@@ -383,7 +428,7 @@ PLNfit <- R6Class(
     },
 
     #' @description Update R2, fisher and std_err fields after optimization
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis", "none"), nullModel = NULL) {
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis", "sandwich", "none"), nullModel = NULL) {
       ## compute R2
       self$set_R2(responses, covariates, offsets, weights, nullModel)
       ## Set the name of the matrices according to those of the data matrices,
@@ -393,14 +438,9 @@ PLNfit <- R6Class(
       colnames(private$Theta) <- colnames(covariates)
       rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
       rownames(private$M) <- rownames(private$S2) <- rownames(responses)
-      ## compute and store Fisher Information matrix
-      type <- match.arg(type)
-      if (type != "none") {
-        private$FIM <- self$compute_fisher(type, X = covariates)
-        private$FIM_type <- type
-        ## compute and store matrix of standard errors
-        private$.std_err <- self$compute_standard_error()
-      }
+      ## compute and store matrix of standard errors
+      self$get_vcov_hat(match.arg(type), responses, covariates)
+      private$.std_err <- self$compute_standard_error()
     },
 
     #' @description Predict position, scores or observations of new data.
@@ -536,8 +576,7 @@ PLNfit <- R6Class(
     R2         = NA, # approximated goodness of fit criterion
     Ji         = NA, # element-wise approximated loglikelihood
     psi        = NA, # parameters for genetic model of covariance
-    FIM        = NA, # Fisher information matrix of Theta, computed using of two approximation scheme
-    FIM_type   = NA, # Either "wald" or "louis". Approximation scheme used to compute FIM
+    vcov_hat   = NA, # Variance of Theta, computed using of three possible approximation scheme
     .std_err   = NA, # element-wise standard error for the elements of Theta computed
     # from the Fisher information matrix
     backend    = NA, # Either "nlopt" or "torch"
@@ -558,10 +597,10 @@ PLNfit <- R6Class(
     d = function() {ncol(private$Theta)},
     #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
     model_par  = function() {list(Theta = private$Theta, Sigma = private$Sigma)},
-    #' @field fisher Variational approximation of the Fisher Information matrix
-    fisher     = function() {list(mat = private$FIM, type = private$FIM_type) },
-    #' @field std_err Variational approximation of the variance-covariance matrix of model parameters estimates.
-    std_err    = function() {private$.std_err },
+    #' @field vcov_coef Approximation of the Variance-Covariance of Theta
+    vcov_coef  = function() {private$vcov_hat},
+    #' @field std_err Approximation of the variance-covariance matrix of model parameters estimates.
+    std_err    = function() {private$.std_err},
     #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
     var_par    = function() {list(M = private$M, S2 = private$S2)},
     #' @field gen_par a list with two parameters, sigma2 and rho, only used with the genetic covariance model
