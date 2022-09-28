@@ -424,7 +424,6 @@ PLNfit <- R6Class(
     #' @importFrom Matrix diag solve
     compute_standard_error = function() {
       if (self$d > 0) {
-        ## self$fisher$mat : Fisher Information matrix I_n(\Theta) = n * I(\Theta)
         ## safe inversion using Matrix::solve and Matrix::diag and error handling
         stderr <- diag(private$vcov_hat) %>% sqrt %>% matrix(nrow = self$d) %>% t()
         dimnames(stderr) <- dimnames(self$model_par$Theta)
@@ -436,6 +435,7 @@ PLNfit <- R6Class(
 
     #' @description Update R2, fisher and std_err fields after optimization
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis", "sandwich", "none"), nullModel = NULL) {
+      type <- match.arg(type)
       ## compute R2
       self$set_R2(responses, covariates, offsets, weights, nullModel)
       ## Set the name of the matrices according to those of the data matrices,
@@ -445,9 +445,11 @@ PLNfit <- R6Class(
       colnames(private$Theta) <- colnames(covariates)
       rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
       rownames(private$M) <- rownames(private$S2) <- rownames(responses)
-      ## compute and store matrix of standard errors
-      self$get_vcov_hat(match.arg(type), responses, covariates)
-      private$.std_err <- self$compute_standard_error()
+      if (type != 'none') {
+        ## compute and store matrix of standard errors
+        self$get_vcov_hat(type, responses, covariates)
+        private$.std_err <- self$compute_standard_error()
+      }
     },
 
     #' @description Predict position, scores or observations of new data.

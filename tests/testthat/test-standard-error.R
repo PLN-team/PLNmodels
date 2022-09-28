@@ -31,19 +31,12 @@ test_that("Check that fisher and standard_error return objects with proper dimen
 ## Fit model without covariates
 myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 
-test_that("Fisher is deprecated", {
-
-  expect_warning(fisher(myPLN),
-                 "Deprecated: please use `vcov()` instead",
-                 fixed = TRUE)
-})
-
 ## Consistency -----------------------
 test_that("Check internal consistency of Fisher matrix for PLN models with no covariates",  {
   tol <- 1e-8
 
   ## Consistency of the diagonal of the fisher matrix
-  fim.diag <- Matrix::diag(vcov(myPLN))
+  fim.diag <- Matrix::diag(solve(vcov(myPLN)))
   manual.fim.diag <- colSums(myPLN$fitted)
   ## Consistency of the standard error matrix
   sem <- standard_error(myPLN) %>% as.numeric()
@@ -60,7 +53,7 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
   tol <- 1e-2
 
   ## Consistency of the diagonal of the fisher matrix
-  fim.diag <- Matrix::diag(vcov(myPLN)) / nrow(trichoptera)
+  fim.diag <- Matrix::diag(solve(vcov(myPLN))) / nrow(trichoptera)
   ## Values computed on the 2018/12/11 with PLNmodels version 0.5.9601)
   expected.fim.diag <- c(0.0612123698810698, 0.0612384161054906, 3.73462487824109, 0.122467107738817,
                          122.19280897578, 2.2230572191967, 0.285741065637069, 0.285687659219944,

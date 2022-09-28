@@ -47,7 +47,7 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_equal(coefficients(myPLNfit), myPLNfit$model_par$Theta)
   expect_equal(dim(fitted(myPLNfit)), dim(Y))
   expect_equal(sigma(myPLNfit), myPLNfit$model_par$Sigma)
-  expect_equal(vcov(myPLNfit, "main"), myPLNfit$fisher$mat)
+  expect_equal(vcov(myPLNfit, "main"), myPLNfit$vcov_coef)
   expect_equal(vcov(myPLNfit, "covariance"), myPLNfit$model_par$Sigma)
   expect_equal(vcov(myPLNfit, "covariance"), sigma(myPLNfit))
   # expect_equal(dim(standard_error(myPLNfit)), dim(coefficients(myPLNfit)))
