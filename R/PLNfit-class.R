@@ -346,12 +346,12 @@ PLNfit <- R6Class(
       YmA <- Y - private$A
       Dn <- matrix(0, self$d*self$p, self$d*self$p)
       Cn <- matrix(0, self$d*self$p, self$d*self$p)
-      for (i in 1:self$n){
-        Cn <- Cn + kronecker(getMat_iCnTheta(i), tcrossprod(X[i , ]))
+      for (i in 1:self$n) {
+        Cn <- Cn + kronecker(getMat_iCnTheta(i) , tcrossprod(X[i,]))
         Dn <- Dn + kronecker(tcrossprod(YmA[i,]), tcrossprod(X[i,]))
       }
-      Dn <- Dn / self$n
-      Cn_inv <- solve(- Cn / self$n)
+      # Dn <- Dn / self$n
+      Cn_inv <- -solve(Cn)
       Cn_inv %*% Dn %*% Cn_inv
     },
 
@@ -365,7 +365,7 @@ PLNfit <- R6Class(
         # t(X) %*% diag(A[, i]) %*% X
         crossprod(X, A[, i] * X)
       }))
-      res <- tryCatch(Matrix::solve(fisher), error = function(e) {e})
+      res <- tryCatch(self$n*Matrix::solve(fisher), error = function(e) {e})
       if (is(res, "error")) {
         warning(paste("Inversion of the Fisher information matrix failed with following error message:",
                       res$message,
@@ -383,12 +383,12 @@ PLNfit <- R6Class(
     vcov_louis = function(X = NULL) {
       A <- private$A
       ## TODO check how to adapt for PLNPCA
-      A <- A + A * A * (exp(self$var_par$S) - 1)
+      A <- A + A * A * (exp(self$var_par$S2) - 1)
       fisher <- bdiag(lapply(1:self$p, function(i) {
         # t(X) %*% diag(A[, i]) %*% X
         crossprod(X, A[, i] * X)
       }))
-      res <- tryCatch(Matrix::solve(fisher), error = function(e) {e})
+      res <- tryCatch(self$n*Matrix::solve(fisher), error = function(e) {e})
       if (is(res, "error")) {
         warning(paste("Inversion of the Fisher information matrix failed with following error message:",
                       res$message,
