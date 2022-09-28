@@ -402,6 +402,7 @@ PLNfit <- R6Class(
     #' @description Safely compute the Wald Fisher information matrix
     #' @param X design matrix used to compute the FIM
     #' @return a sparse matrix with sensible dimension names
+    #' @importFrom Matrix diag solve
     get_vcov_hat = function(type, responses, covariates) {
       ## compute and store the estimated covariance of the estiamtor of the parameter Theta
       vcov_hat <-
@@ -419,20 +420,6 @@ PLNfit <- R6Class(
       attr(vcov_hat, "name") <- type
       private$vcov_hat <- vcov_hat
     },
-    #' @description Compute univariate standard error for coefficients of Theta from the FIM
-    #' @return a matrix of standard deviations.
-    #' @importFrom Matrix diag solve
-    compute_standard_error = function() {
-      if (self$d > 0) {
-        ## safe inversion using Matrix::solve and Matrix::diag and error handling
-        stderr <- diag(private$vcov_hat) %>% sqrt %>% matrix(nrow = self$d) %>% t()
-        dimnames(stderr) <- dimnames(self$model_par$Theta)
-      } else {
-        stderr <- NULL
-      }
-      stderr
-    },
-
     #' @description Update R2, fisher and std_err fields after optimization
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis", "sandwich", "none"), nullModel = NULL) {
       type <- match.arg(type)
@@ -448,7 +435,6 @@ PLNfit <- R6Class(
       if (type != 'none') {
         ## compute and store matrix of standard errors
         self$get_vcov_hat(type, responses, covariates)
-        private$.std_err <- self$compute_standard_error()
       }
     },
 
@@ -609,7 +595,16 @@ PLNfit <- R6Class(
     #' @field vcov_coef Approximation of the Variance-Covariance of Theta
     vcov_coef  = function() {private$vcov_hat},
     #' @field std_err Approximation of the variance-covariance matrix of model parameters estimates.
-    std_err    = function() {private$.std_err},
+    std_err    = function() {
+      if (self$d > 0) {
+        ## safe inversion using Matrix::solve and Matrix::diag and error handling
+        stderr <- diag(private$vcov_hat) %>% sqrt %>% matrix(nrow = self$d) %>% t()
+        dimnames(stderr) <- dimnames(self$model_par$Theta)
+      } else {
+        stderr <- NULL
+      }
+      stderr
+    },
     #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
     var_par    = function() {list(M = private$M, S2 = private$S2)},
     #' @field gen_par a list with two parameters, sigma2 and rho, only used with the genetic covariance model

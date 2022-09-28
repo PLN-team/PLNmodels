@@ -107,7 +107,6 @@ print(myPLN)
 \item \href{#method-PLNfit-vcov_wald}{\code{PLNfit$vcov_wald()}}
 \item \href{#method-PLNfit-vcov_louis}{\code{PLNfit$vcov_louis()}}
 \item \href{#method-PLNfit-get_vcov_hat}{\code{PLNfit$get_vcov_hat()}}
-\item \href{#method-PLNfit-compute_standard_error}{\code{PLNfit$compute_standard_error()}}
 \item \href{#method-PLNfit-postTreatment}{\code{PLNfit$postTreatment()}}
 \item \href{#method-PLNfit-predict}{\code{PLNfit$predict()}}
 \item \href{#method-PLNfit-predict_cond}{\code{PLNfit$predict_cond()}}
@@ -425,19 +424,6 @@ Safely compute the Wald Fisher information matrix
 }
 \subsection{Returns}{
 a sparse matrix with sensible dimension names
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-compute_standard_error"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-compute_standard_error}{}}}
-\subsection{Method \code{compute_standard_error()}}{
-Compute univariate standard error for coefficients of Theta from the FIM
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$compute_standard_error()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-a matrix of standard deviations.
 }
 }
 \if{html}{\out{<hr>}}
