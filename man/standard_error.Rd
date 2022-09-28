@@ -7,7 +7,7 @@
 \usage{
 standard_error(object, type)
 
-\method{standard_error}{PLNfit}(object, type = c("wald", "louis"))
+\method{standard_error}{PLNfit}(object)
 }
 \arguments{
 \item{object}{an R6 object with class PLNfit}

@@ -328,24 +328,26 @@ PLNfit <- R6Class(
       private$R2 <- (loglik - lmin) / (lmax - lmin)
     },
 
-    getMat_iCnTheta_R = function(i) {
-      a_i   <- as.numeric(private$A[i, ])
-      s2_i  <- as.numeric(private$S2[i, ])
-      omega <- as.numeric(1/diag(private$Sigma))
-      diag_mat_i <- diag(1/a_i + s2_i^2 / (rep(1, self$p) + s2_i * (a_i + omega)))
-      solve(private$Sigma + diag_mat_i)
-    },
-
-    #' @description Safely compute the  information matrix (FIM)
-    #' @param Y matrix of responses used to compute the FIM
-    #' @param X design matrix used to compute the FIM
+    #' @description Compute the estimated variance of the coefficient Theta by
+    #' M-estimation and sandwich correction
+    #' @param Y matrix of responses used to compute the sandwich correction
+    #' @param X design matrix used to compute the sandwich correction
     #' @return a sparse matrix with sensible dimension names
     vcov_sandwich = function(Y, X) {
+
+      getMat_iCnTheta <- function(i) {
+        a_i   <- as.numeric(private$A[i, ])
+        s2_i  <- as.numeric(private$S2[i, ])
+        omega <- as.numeric(1/diag(private$Sigma))
+        diag_mat_i <- diag(1/a_i + s2_i^2 / (rep(1, self$p) + s2_i * (a_i + omega)))
+        solve(private$Sigma + diag_mat_i)
+      }
+
       YmA <- Y - private$A
       Dn <- matrix(0, self$d*self$p, self$d*self$p)
       Cn <- matrix(0, self$d*self$p, self$d*self$p)
       for (i in 1:self$n){
-        Cn <- Cn + kronecker(self$getMat_iCnTheta_R(i), tcrossprod(X[i , ]))
+        Cn <- Cn + kronecker(getMat_iCnTheta(i), tcrossprod(X[i , ]))
         Dn <- Dn + kronecker(tcrossprod(YmA[i,]), tcrossprod(X[i,]))
       }
       Dn <- Dn / self$n
@@ -353,7 +355,8 @@ PLNfit <- R6Class(
       Cn_inv %*% Dn %*% Cn_inv
     },
 
-    #' @description Safely compute the Wald Fisher information matrix
+    #' @description Compute the estimated variance of the coefficient Theta by
+    #' safely inverting the Wald variant of the variational Fisher information matrix (FIM)
     #' @param X design matrix used to compute the FIM
     #' @return a sparse matrix with sensible dimension names
     vcov_wald = function(X = NULL) {
@@ -373,7 +376,8 @@ PLNfit <- R6Class(
       res
     },
 
-    #' @description Safely compute the fisher information matrix (FIM)
+    #' @description Compute the estimated variance of the coefficient Theta by
+    #' safely inverting the Louis variant of the variational Fisher information matrix (FIM)
     #' @param X design matrix used to compute the FIM
     #' @return a sparse matrix with sensible dimension names
     vcov_louis = function(X = NULL) {
@@ -395,6 +399,9 @@ PLNfit <- R6Class(
       res
     },
 
+    #' @description Safely compute the Wald Fisher information matrix
+    #' @param X design matrix used to compute the FIM
+    #' @return a sparse matrix with sensible dimension names
     get_vcov_hat = function(type, responses, covariates) {
       ## compute and store the estimated covariance of the estiamtor of the parameter Theta
       vcov_hat <-

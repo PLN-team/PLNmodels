@@ -53,9 +53,9 @@ print(myPLN)
 
 \item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
 
-\item{\code{fisher}}{Variational approximation of the Fisher Information matrix}
+\item{\code{vcov_coef}}{Approximation of the Variance-Covariance of Theta}
 
-\item{\code{std_err}}{Variational approximation of the variance-covariance matrix of model parameters estimates.}
+\item{\code{std_err}}{Approximation of the variance-covariance matrix of model parameters estimates.}
 
 \item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
 
@@ -103,7 +103,10 @@ print(myPLN)
 \item \href{#method-PLNfit-optimize_torch}{\code{PLNfit$optimize_torch()}}
 \item \href{#method-PLNfit-VEstep}{\code{PLNfit$VEstep()}}
 \item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
-\item \href{#method-PLNfit-compute_fisher}{\code{PLNfit$compute_fisher()}}
+\item \href{#method-PLNfit-vcov_sandwich}{\code{PLNfit$vcov_sandwich()}}
+\item \href{#method-PLNfit-vcov_wald}{\code{PLNfit$vcov_wald()}}
+\item \href{#method-PLNfit-vcov_louis}{\code{PLNfit$vcov_louis()}}
+\item \href{#method-PLNfit-get_vcov_hat}{\code{PLNfit$get_vcov_hat()}}
 \item \href{#method-PLNfit-compute_standard_error}{\code{PLNfit$compute_standard_error()}}
 \item \href{#method-PLNfit-postTreatment}{\code{PLNfit$postTreatment()}}
 \item \href{#method-PLNfit-predict}{\code{PLNfit$predict()}}
@@ -334,18 +337,87 @@ Update R2 field after optimization
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-compute_fisher"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-compute_fisher}{}}}
-\subsection{Method \code{compute_fisher()}}{
-Safely compute the fisher information matrix (FIM)
+\if{html}{\out{<a id="method-PLNfit-vcov_sandwich"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-vcov_sandwich}{}}}
+\subsection{Method \code{vcov_sandwich()}}{
+Compute the estimated variance of the coefficient Theta by
+M-estimation and sandwich correction
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$compute_fisher(type = c("wald", "louis"), X = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$vcov_sandwich(Y, X)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{Y}}{matrix of responses used to compute the sandwich correction}
+
+\item{\code{X}}{design matrix used to compute the sandwich correction}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a sparse matrix with sensible dimension names
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-vcov_wald"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-vcov_wald}{}}}
+\subsection{Method \code{vcov_wald()}}{
+Compute the estimated variance of the coefficient Theta by
+safely inverting the Wald variant of the variational Fisher information matrix (FIM)
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$vcov_wald(X = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{X}}{design matrix used to compute the FIM}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a sparse matrix with sensible dimension names
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-vcov_louis"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-vcov_louis}{}}}
+\subsection{Method \code{vcov_louis()}}{
+Compute the estimated variance of the coefficient Theta by
+safely inverting the Louis variant of the variational Fisher information matrix (FIM)
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$vcov_louis(X = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{X}}{design matrix used to compute the FIM}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a sparse matrix with sensible dimension names
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-get_vcov_hat"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-get_vcov_hat}{}}}
+\subsection{Method \code{get_vcov_hat()}}{
+Safely compute the Wald Fisher information matrix
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$get_vcov_hat(type, responses, covariates)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{type}}{approximation scheme to compute the fisher information matrix. Either \code{wald} (default) or \code{louis}. \code{type = "louis"} results in smaller confidence intervals.}
+
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{X}}{design matrix used to compute the FIM}
 }
@@ -379,7 +451,7 @@ Update R2, fisher and std_err fields after optimization
   covariates,
   offsets,
   weights = rep(1, nrow(responses)),
-  type = c("wald", "louis", "none"),
+  type = c("wald", "louis", "sandwich", "none"),
   nullModel = NULL
 )}\if{html}{\out{</div>}}
 }
