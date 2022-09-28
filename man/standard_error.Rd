@@ -5,20 +5,18 @@
 \alias{standard_error.PLNfit}
 \title{Component-wise standard errors of Theta}
 \usage{
-standard_error(object, type)
+standard_error(object)
 
 \method{standard_error}{PLNfit}(object)
 }
 \arguments{
 \item{object}{an R6 object with class PLNfit}
-
-\item{type}{Either \code{sandwich} (default),  \code{Wald} or \code{Louis}. Approximation scheme used to compute the Fisher information matrix}
 }
 \value{
 A p * d positive matrix (same size as \eqn{\Theta}) with standard errors for the coefficients of \eqn{\Theta}
 }
 \description{
-Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate) Fisher information matrix. See \code{\link[=fisher.PLNfit]{fisher.PLNfit()}} for more details on the approximations.
+Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate) Fisher information matrix.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -29,8 +27,8 @@ Extracts univariate standard errors for the estimated coefficient of Theta. Stan
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
-standard_error(myPLN, "wald")
+standard_error(myPLN)
 }
 \seealso{
-\code{\link[=vcov.PLNfit]{vcov.PLNfit()}} for the complete Fisher information matrix
+\code{\link[=vcov.PLNfit]{vcov.PLNfit()}} for the complete variance covariance estimation of the coefficient
 }

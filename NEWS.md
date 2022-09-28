@@ -1,5 +1,6 @@
 # PLNmodels dev version
 
+* integration of sandwich estimator fo the variance of Theta
 * first support for torch optimizers (for PLN and PLNLDA)
 * handle list of penalty weights in PLNnetwork
 
