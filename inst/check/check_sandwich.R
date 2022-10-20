@@ -1,9 +1,9 @@
 library(tidyverse)
 
 create_parameters <- function(
-    n = 500,
-    p = 100,
-    d = 4,
+    n = 100,
+    p = 2,
+    d = 2,
     rho = 0.2,
     # snr = 3,
     sigma = 1,
@@ -44,10 +44,14 @@ Theta_se_louis <- standard_error(model)
 model$get_vcov_hat("sandwich", Y, X)
 Theta_se_sandwich <- standard_error(model)
 
-data.frame(Theta = c(Theta), Theta_hat = c(Theta_hat), se = c(Theta_se_sandwich)) %>%
+data.frame(
+  Theta = rep(c(Theta), 3),
+  Theta_hat = rep(c(Theta_hat), 3),
+  se = c(Theta_se_wald, Theta_se_louis, Theta_se_sandwich),
+  method = rep(c("wald", "louis", "sandwich"), each = length(c(Theta))) ) %>%
   ggplot(aes(x = Theta, y = Theta_hat)) +
   geom_errorbar(aes(ymin = Theta_hat - 2 * se,
-                    ymax = Theta_hat + 2 * se),
-                color = "blue") +
-  geom_abline(slope = 1, intercept = 0) +
-  labs(x = "True value", y = "Mean estimate")
+                    ymax = Theta_hat + 2 * se), color = "blue") + facet_wrap(~ method) +
+  geom_abline(slope = 1, intercept = 0) + labs(x = "True value", y = "Mean estimate") + theme_bw() -> p
+
+print(p)

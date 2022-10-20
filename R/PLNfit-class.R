@@ -339,21 +339,20 @@ PLNfit <- R6Class(
         a_i   <- as.numeric(private$A[i, ])
         s2_i  <- as.numeric(private$S2[i, ])
         omega <- as.numeric(1/diag(private$Sigma))
-        # omega <- as.numeric(diag(solve(private$Sigma)))
-        diag_mat_i <- diag(1/a_i + s2_i^4 / (1 + s2_i * (a_i^2 + omega)))
+        diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
         solve(private$Sigma + diag_mat_i)
       }
 
       YmA <- Y - private$A
       Dn <- matrix(0, self$d*self$p, self$d*self$p)
       Cn <- matrix(0, self$d*self$p, self$d*self$p)
+      XXt <- X %o% X
       for (i in 1:self$n) {
-        Cn <- Cn + kronecker(getMat_iCnTheta(i) , tcrossprod(X[i,]))
-        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), tcrossprod(X[i,]))
+        Cn <- Cn - kronecker(getMat_iCnTheta(i) , XXt[i, , i, ]) / (self$n)
+        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), XXt[i, , i, ]) / (self$n)
       }
-      Dn <- Dn / self$n
-      Cn <- -Cn / self$n
-      (Cn %*% solve(Dn) %*% Cn) / self$n
+      Cn_inv <- solve(Cn)
+      (Cn_inv %*% Dn %*% Cn_inv) / self$n
     },
 
     #' @description Compute the estimated variance of the coefficient Theta by
