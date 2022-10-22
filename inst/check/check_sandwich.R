@@ -1,9 +1,10 @@
 library(tidyverse)
+library(PLNmodels)
 
 create_parameters <- function(
-    n = 100,
-    p = 2,
-    d = 2,
+    n = 200,
+    p = 50,
+    d = 4,
     rho = 0.2,
     # snr = 3,
     sigma = 1,
