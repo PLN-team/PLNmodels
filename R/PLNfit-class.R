@@ -341,7 +341,8 @@ PLNfit <- R6Class(
         # omega <- as.numeric(1/diag(private$Sigma))
         # diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
         # diag_mat_i <- diag(1/a_i + s2_i/2)
-        solve(private$Sigma + diag(1/a_i + s2_i/2))
+        solve(private$Sigma + diag(1/a_i + s2_i^2/2))
+        # private$Sigma + diag(1/a_i + s2_i^2/2)
       }
 
       YmA <- Y - private$A
@@ -598,7 +599,6 @@ PLNfit <- R6Class(
     #' @field std_err Approximation of the variance-covariance matrix of model parameters estimates.
     std_err    = function() {
       if (self$d > 0) {
-        ## safe inversion using Matrix::solve and Matrix::diag and error handling
         stderr <- diag(private$vcov_hat) %>% sqrt %>% matrix(nrow = self$d) %>% t()
         dimnames(stderr) <- dimnames(self$model_par$Theta)
       } else {
