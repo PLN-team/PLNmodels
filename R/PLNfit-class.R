@@ -349,7 +349,7 @@ PLNfit <- R6Class(
       Dn <- matrix(0, self$d*self$p, self$d*self$p)
       Cn <- matrix(0, self$d*self$p, self$d*self$p)
       for (i in 1:self$n) {
-        xxt_i <- tcrossprod(x[i, ])
+        xxt_i <- tcrossprod(X[i, ])
         Cn <- Cn - kronecker(getMat_iCnTheta(i) , xxt_i) / (self$n) ## Overall, the divisions by n cancel each other.
         Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
       }
