@@ -341,17 +341,17 @@ PLNfit <- R6Class(
         # omega <- as.numeric(1/diag(private$Sigma))
         # diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
         # diag_mat_i <- diag(1/a_i + s2_i/2)
-        solve(private$Sigma + diag(1/a_i + s2_i^2/2))
+        solve(private$Sigma + diag(1/a_i + 2 / (a_i * s2_i)^2))
         # private$Sigma + diag(1/a_i + s2_i^2/2)
       }
 
       YmA <- Y - private$A
       Dn <- matrix(0, self$d*self$p, self$d*self$p)
       Cn <- matrix(0, self$d*self$p, self$d*self$p)
-      XXt <- X %o% X
       for (i in 1:self$n) {
-        Cn <- Cn - kronecker(getMat_iCnTheta(i) , XXt[i, , i, ]) / (self$n)
-        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), XXt[i, , i, ]) / (self$n)
+        xxt_i <- tcrossprod(x[i, ])
+        Cn <- Cn - kronecker(getMat_iCnTheta(i) , xxt_i) / (self$n) ## Overall, the divisions by n cancel each other.
+        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
       }
       Cn_inv <- solve(Cn)
       (Cn_inv %*% Dn %*% Cn_inv) / (self$n)
@@ -406,7 +406,7 @@ PLNfit <- R6Class(
     #' @return a sparse matrix with sensible dimension names
     #' @importFrom Matrix diag solve
     get_vcov_hat = function(type, responses, covariates) {
-      ## compute and store the estimated covariance of the estiamtor of the parameter Theta
+      ## compute and store the estimated covariance of the estimator of the parameter Theta
       vcov_hat <-
         switch(type,
                "wald"     = self$vcov_wald(X = covariates),
