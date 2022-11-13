@@ -204,17 +204,6 @@ PLNPCAfit <- R6Class(
         self$setVisualization()
       },
 
-      #' @description Safely compute the fisher information matrix (FIM)
-      #' @param X design matrix used to compute the FIM
-      #' @return a sparse matrix with sensible dimension names
-      compute_fisher = function(type = c("wald", "louis"), X = NULL) {
-        type = match.arg(type)
-        if (type == "louis") {
-          stop("Louis approximation scheme not available yet for object of class PLNPLCA, use type = \"wald\" instead.")
-        }
-        super$compute_fisher(type = "wald", X = X)
-      },
-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -----------------
 
