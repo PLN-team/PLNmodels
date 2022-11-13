@@ -191,7 +191,7 @@ PLNPCAfit <- R6Class(
       #' @description Compute PCA scores in the latent space and update corresponding fields.
       #' @param scale.unit Logical. Should PCA scores be rescaled to have unit variance
       setVisualization = function(scale.unit=FALSE) {
-        private$svdBM <- svd(scale(self$latent_pos,TRUE, scale.unit), nv = self$rank)
+        private$svdBM <- svd(scale(self$latent_pos, TRUE, scale.unit), nv = self$rank)
       },
 
       #' @description Update R2, fisher, std_err fields and set up visualization
@@ -355,7 +355,7 @@ PLNPCAfit <- R6Class(
       #' @field entropy entropy of the variational distribution
       entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)))},
       #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
-      latent_pos = function() {t(tcrossprod(private$B, private$M))},
+      latent_pos = function() {tcrossprod(private$M, private$B)},
       #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
       model_par = function() {
         par <- super$model_par
