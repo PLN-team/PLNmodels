@@ -166,6 +166,7 @@ PLN_param <- function(control, n, p) {
     "vcov_est"    = "wald",
     "covariance"  = covariance,
     "corr_matrix" = diag(x = 1, nrow = p, ncol = p),
+    "prec_matrix" = diag(x = 1, nrow = p, ncol = p),
     "inception"   = NULL
   )
   ctrl[names(control)] <- control

@@ -100,8 +100,11 @@ PLNfit <- R6Class(
         residuals     <- do.call(cbind, lapply(LMs, residuals))
         private$M     <- residuals
         private$S2    <- matrix(0.1,n,p)
+        ## do we need to initialiaze Sigma ???
         if (control$covariance == "spherical") {
           private$Sigma <- diag(sum(residuals^2)/(n*p), p, p)
+        } else  if (control$covariance == "fixed") {
+
         } else  if (control$covariance == "diagonal") {
           private$Sigma <- diag(diag(crossprod(residuals)/n), p, p)
         } else  if (control$covariance == "heritability") {
@@ -131,13 +134,16 @@ PLNfit <- R6Class(
                "spherical" = cpp_optimize_spherical,
                "diagonal"  = cpp_optimize_diagonal ,
                "genetic"   = cpp_optimize_genetic_modeling,
+               "fixed"     = cpp_optimize_sparse,
                "full"      = cpp_optimize_full
         )
-
       args <- list(Y = responses, X = covariates, O = offsets, w = weights, configuration = control)
       if (self$vcov_model == "genetic") {
         args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2), rho = 0.25)
         args$C <- control$corr_matrix
+      } else if (self$vcov_model == "fixed") {
+        args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
+        args$Omega <- control$prec_matrix
       } else {
         args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
       }
@@ -161,6 +167,8 @@ PLNfit <- R6Class(
 
       if (self$vcov_model == "genetic")
         private$psi <- list(sigma2 = optim_out$sigma2, rho = optim_out$rho)
+      if (self$vcov_model == "fixed")
+        private$Sigma <- solve(control$prec_matrix)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -333,16 +341,15 @@ PLNfit <- R6Class(
     #' @param Y matrix of responses used to compute the sandwich correction
     #' @param X design matrix used to compute the sandwich correction
     #' @return a sparse matrix with sensible dimension names
-    vcov_sandwich = function(Y, X) {
-
+    vcov_sandwich = function(Y, X, Sigma) {
+      if (is.null(Sigma)) Sigma <- private$Sigma
       getMat_iCnTheta <- function(i) {
         a_i   <- as.numeric(private$A[i, ])
         s2_i  <- as.numeric(private$S2[i, ])
-        # omega <- as.numeric(1/diag(private$Sigma))
+        omega <- as.numeric(1/diag(private$Sigma))
         # diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
-        # diag_mat_i <- diag(1/a_i + s2_i/2)
-        solve(private$Sigma + diag(1/a_i + 2 / (a_i * s2_i)^2))
-        # private$Sigma + diag(1/a_i + s2_i^2/2)
+        diag_mat_i <- diag(1/a_i + .5 * s2_i^2)
+        solve(Sigma + diag_mat_i)
       }
 
       YmA <- Y - private$A
@@ -405,13 +412,13 @@ PLNfit <- R6Class(
     #' @param X design matrix used to compute the FIM
     #' @return a sparse matrix with sensible dimension names
     #' @importFrom Matrix diag solve
-    get_vcov_hat = function(type, responses, covariates) {
+    get_vcov_hat = function(type, responses, covariates, Sigma = NULL) {
       ## compute and store the estimated covariance of the estimator of the parameter Theta
       vcov_hat <-
         switch(type,
                "wald"     = self$vcov_wald(X = covariates),
                "louis"    = self$vcov_louis(X = covariates),
-               "sandwich" = self$vcov_sandwich(Y = responses, X = covariates),
+               "sandwich" = self$vcov_sandwich(Y = responses, X = covariates, Sigma = Sigma),
                "none"     = NULL)
 
       ## set proper names, use sensible defaults if some names are missing
