@@ -52,6 +52,7 @@ PLNPCAfit <- R6Class(
         } else {
           svdM <- svd(private$M, nu = rank, nv = self$p)
         }
+        ### TODO: check that it is really better than initializing with zeros...
         private$M  <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
         private$S2 <- matrix(0.1, self$n, rank)
         private$B  <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
@@ -190,7 +191,7 @@ PLNPCAfit <- R6Class(
       ## Post treatment --------------------
       #' @description Compute PCA scores in the latent space and update corresponding fields.
       #' @param scale.unit Logical. Should PCA scores be rescaled to have unit variance
-      setVisualization = function(scale.unit=FALSE) {
+      setVisualization = function(scale.unit = FALSE) {
         private$svdBM <- svd(scale(self$latent_pos, TRUE, scale.unit), nv = self$rank)
       },
 
