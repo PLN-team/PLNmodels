@@ -114,7 +114,10 @@
 <div class="page-header"><h1 id="plnmodels-poisson-lognormal-models-">PLNmodels: Poisson lognormal models <img src="reference/figures/logo.png" align="right" width="155" height="180"><a class="anchor" aria-label="anchor" href="#plnmodels-poisson-lognormal-models-"></a>
 </h1></div>
 <!-- badges: start -->
-<blockquote><p>The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA, LDA and network inference for count data). This package implements efficient algorithms to fit such models accompanied with a set of functions for visualization and diagnostic. See <a href="https://pln-team.github.io/slideshow/slides" class="external-link">this deck of slides</a> for a comprehensive introduction.</p></blockquote>
+
+<blockquote>
+<p>The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA, LDA and network inference for count data). This package implements efficient algorithms to fit such models accompanied with a set of functions for visualization and diagnostic. See <a href="https://pln-team.github.io/slideshow/slides" class="external-link">this deck of slides</a> for a comprehensive introduction.</p>
+</blockquote>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -122,16 +125,38 @@
 <div class="section level3">
 <h3 id="r-package-installation">R Package installation<a class="anchor" aria-label="anchor" href="#r-package-installation"></a>
 </h3>
-<!-- #### CRAN dependencies --><!-- **PLNmodels** needs the following CRAN R packages, so check that they are are installed on your computer. --><!-- ```{r CRAN dependencies, eval = FALSE} --><!-- required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo", --><!--                    "nloptr", "igraph", "grid", "gridExtra", "dplyr", --><!--                    "tidyr", "ggplot2", "corrplot", "magrittr", "devtools") --><!-- not_installed_CRAN <- setdiff(required_CRAN, rownames(installed.packages())) --><!-- if (length(not_installed_CRAN) > 0) install.packages(not_installed_CRAN) --><!-- ``` --><!-- #### Bioconductor dependencies --><!-- **PLNmodels** also needs two BioConductor packages --><!-- ```{r Bioconductor dependencies, eval = FALSE} --><!-- required_BioC <- c("phyloseq", "biomformat") --><!-- not_installed_BioC <- setdiff(required_BioC, rownames(installed.packages())) --><!-- if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC) --><!-- ``` --><div class="section level4">
+<!-- #### CRAN dependencies -->
+<!-- **PLNmodels** needs the following CRAN R packages, so check that they are are installed on your computer. -->
+<!-- ```{r CRAN dependencies, eval = FALSE} -->
+<!-- required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo", -->
+<!--                    "nloptr", "igraph", "grid", "gridExtra", "dplyr", -->
+<!--                    "tidyr", "ggplot2", "corrplot", "magrittr", "devtools") -->
+<!-- not_installed_CRAN <- setdiff(required_CRAN, rownames(installed.packages())) -->
+<!-- if (length(not_installed_CRAN) > 0) install.packages(not_installed_CRAN) -->
+<!-- ``` -->
+<!-- #### Bioconductor dependencies -->
+<!-- **PLNmodels** also needs two BioConductor packages -->
+<!-- ```{r Bioconductor dependencies, eval = FALSE} -->
+<!-- required_BioC <- c("phyloseq", "biomformat") -->
+<!-- not_installed_BioC <- setdiff(required_BioC, rownames(installed.packages())) -->
+<!-- if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC) -->
+<!-- ``` -->
+<div class="section level4">
 <h4 id="installing-plnmodels">Installing PLNmodels<a class="anchor" aria-label="anchor" href="#installing-plnmodels"></a>
 </h4>
-<ul><li>For the last stable version, use the CRAN version</li></ul>
+<ul>
+<li>For the last stable version, use the CRAN version</li>
+</ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"PLNmodels"</span><span class="op">)</span></span></code></pre></div>
-<ul><li>For the development version, use the github install</li></ul>
+<ul>
+<li>For the development version, use the github install</li>
+</ul>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"pln-team/PLNmodels"</span><span class="op">)</span></span></code></pre></div>
-<ul><li>For a specific tagged release, use</li></ul>
+<ul>
+<li>For a specific tagged release, use</li>
+</ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"pln-team/PLNmodels@tag_number"</span><span class="op">)</span></span></code></pre></div>
 </div>

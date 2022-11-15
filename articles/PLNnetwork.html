@@ -106,10 +106,11 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Sparse structure estimation for multivariate count data with PLN-network</h1>
+      <h1 data-toc-skip>Sparse structure estimation for multivariate
+count data with PLN-network</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-09-09</h4>
+            <h4 data-toc-skip class="date">2022-11-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNnetwork.Rmd" class="external-link"><code>vignettes/PLNnetwork.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -121,11 +122,15 @@
 <div class="section level2">
 <h2 id="preliminaries">Preliminaries<a class="anchor" aria-label="anchor" href="#preliminaries"></a>
 </h2>
-<p>This vignette illustrates the standard use of the <code>PLNnetwork</code> function and the methods accompanying the R6 Classes <code>PLNnetworkfamily</code> and <code>PLNnetworkfit</code>.</p>
+<p>This vignette illustrates the standard use of the
+<code>PLNnetwork</code> function and the methods accompanying the R6
+Classes <code>PLNnetworkfamily</code> and
+<code>PLNnetworkfit</code>.</p>
 <div class="section level3">
 <h3 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
 </h3>
-<p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
+<p>The packages required for the analysis are <strong>PLNmodels</strong>
+plus some others for data manipulation and representation:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
@@ -133,37 +138,86 @@
 <div class="section level3">
 <h3 id="data-set">Data set<a class="anchor" aria-label="anchor" href="#data-set"></a>
 </h3>
-<p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>. Data preparation is also detailed in <a href="Import_data.html">the specific vignette</a>.</p>
+<p>We illustrate our point with the trichoptera data set, a full
+description of which can be found in <a href="Trichoptera.html">the
+corresponding vignette</a>. Data preparation is also detailed in <a href="Import_data.html">the specific vignette</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
 <span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></code></pre></div>
-<p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
+<p>The <code>trichoptera</code> data frame stores a matrix of counts
+(<code>trichoptera$Abundance</code>), a matrix of offsets
+(<code>trichoptera$Offset</code>) and some vectors of covariates
+(<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>,
+etc.)</p>
 </div>
 <div class="section level3">
 <h3 id="mathematical-background">Mathematical background<a class="anchor" aria-label="anchor" href="#mathematical-background"></a>
 </h3>
-<p>The network model for multivariate count data that we introduce in <span class="citation">Chiquet, Robin, and Mariadassou (<a href="#ref-PLNnetwork" role="doc-biblioref">2019</a>)</span> is a variant of the Poisson Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span>, see <a href="PLN.html">the PLN vignette</a> as a reminder. Compare to the standard PLN model we add a sparsity constraint on the inverse covariance matrix <span class="math inline">\({\boldsymbol\Sigma}^{-1}\triangleq \boldsymbol\Omega\)</span> by means of the <span class="math inline">\(\ell_1\)</span>-norm, such that <span class="math inline">\(\|\boldsymbol\Omega\|_1 &lt; c\)</span>. PLN-network is the equivalent of the sparse multivariate Gaussian model <span class="citation">(<a href="#ref-banerjee2008" role="doc-biblioref">Banerjee, Ghaoui, and d’Aspremont 2008</a>)</span> in the PLN framework. It relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> as follows <span class="math display">\[\begin{equation} 
+<p>The network model for multivariate count data that we introduce in
+<span class="citation">Chiquet, Robin, and Mariadassou (<a href="#ref-PLNnetwork" role="doc-biblioref">2019</a>)</span> is a
+variant of the Poisson Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span>, see <a href="PLN.html">the PLN
+vignette</a> as a reminder. Compare to the standard PLN model we add a
+sparsity constraint on the inverse covariance matrix <span class="math inline">\({\boldsymbol\Sigma}^{-1}\triangleq
+\boldsymbol\Omega\)</span> by means of the <span class="math inline">\(\ell_1\)</span>-norm, such that <span class="math inline">\(\|\boldsymbol\Omega\|_1 &lt; c\)</span>.
+PLN-network is the equivalent of the sparse multivariate Gaussian model
+<span class="citation">(<a href="#ref-banerjee2008" role="doc-biblioref">Banerjee, Ghaoui, and d’Aspremont 2008</a>)</span>
+in the PLN framework. It relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent
+variables <span class="math inline">\(\mathbf{Z}_i\)</span> as follows
+<span class="math display">\[\begin{equation}
   \begin{array}{rcl}
-  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}\left({\boldsymbol\mu},\boldsymbol\Omega^{-1}\right) &amp;  \|\boldsymbol\Omega\|_1 &lt; c \\
-  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
+  \text{latent space } &amp;   \mathbf{Z}_i \sim
+\mathcal{N}\left({\boldsymbol\mu},\boldsymbol\Omega^{-1}\right)
+&amp;  \|\boldsymbol\Omega\|_1 &lt; c \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.}
+&amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
 \end{equation}\]</span></p>
-<p>The parameter <span class="math inline">\({\boldsymbol\mu}\)</span> corresponds to the main effects and the latent covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> describes the underlying structure of dependence between the <span class="math inline">\(p\)</span> variables.</p>
-<p>The <span class="math inline">\(\ell_1\)</span>-penalty on <span class="math inline">\(\boldsymbol\Omega\)</span> induces sparsity and selection of important direct relationships between entities. Hence, the support of <span class="math inline">\(\boldsymbol\Omega\)</span> correspond to a network of underlying interactions. The sparsity level (<span class="math inline">\(c\)</span> in the above mathematical model), which corresponds to the number of edges in the network, is controlled by a penalty parameter in the optimization process sometimes referred to as <span class="math inline">\(\lambda\)</span>. All mathematical details can be found in <span class="citation">Chiquet, Robin, and Mariadassou (<a href="#ref-PLNnetwork" role="doc-biblioref">2019</a>)</span>.</p>
+<p>The parameter <span class="math inline">\({\boldsymbol\mu}\)</span>
+corresponds to the main effects and the latent covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> describes the
+underlying structure of dependence between the <span class="math inline">\(p\)</span> variables.</p>
+<p>The <span class="math inline">\(\ell_1\)</span>-penalty on <span class="math inline">\(\boldsymbol\Omega\)</span> induces sparsity and
+selection of important direct relationships between entities. Hence, the
+support of <span class="math inline">\(\boldsymbol\Omega\)</span>
+correspond to a network of underlying interactions. The sparsity level
+(<span class="math inline">\(c\)</span> in the above mathematical
+model), which corresponds to the number of edges in the network, is
+controlled by a penalty parameter in the optimization process sometimes
+referred to as <span class="math inline">\(\lambda\)</span>. All
+mathematical details can be found in <span class="citation">Chiquet,
+Robin, and Mariadassou (<a href="#ref-PLNnetwork" role="doc-biblioref">2019</a>)</span>.</p>
 <div class="section level4">
 <h4 id="covariates-and-offsets">Covariates and offsets<a class="anchor" aria-label="anchor" href="#covariates-and-offsets"></a>
 </h4>
-<p>Just like PLN, PLN-network generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation} 
-  \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Omega^{-1}\right), \qquad \|\boldsymbol\Omega\|_1 &lt; c ,
-\end{equation}\]</span> where <span class="math inline">\(\boldsymbol\Theta\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression parameters.</p>
+<p>Just like PLN, PLN-network generalizes to a formulation close to a
+multivariate generalized linear model where the main effect is due to a
+linear combination of <span class="math inline">\(d\)</span> covariates
+<span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation}
+  \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i +
+\mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Omega^{-1}\right),
+\qquad \|\boldsymbol\Omega\|_1 &lt; c ,
+\end{equation}\]</span> where <span class="math inline">\(\boldsymbol\Theta\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression
+parameters.</p>
 </div>
 <div class="section level4">
 <h4 id="alternating-optimization">Alternating optimization<a class="anchor" aria-label="anchor" href="#alternating-optimization"></a>
 </h4>
-<p>Regularization via sparsification of <span class="math inline">\(\boldsymbol\Omega\)</span> and visualization of the consecutive network is the main objective in PLN-network. To reach this goal, we need to first estimate the model parameters. Inference in PLN-network focuses on the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and the inverse covariance <span class="math inline">\(\boldsymbol\Omega\)</span>. Technically speaking, we adopt a variational strategy to approximate the <span class="math inline">\(\ell_1\)</span>-penalized log-likelihood function and optimize the consecutive sparse variational surrogate with an optimization scheme that alternates between two step</p>
+<p>Regularization via sparsification of <span class="math inline">\(\boldsymbol\Omega\)</span> and visualization of
+the consecutive network is the main objective in PLN-network. To reach
+this goal, we need to first estimate the model parameters. Inference in
+PLN-network focuses on the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and the inverse
+covariance <span class="math inline">\(\boldsymbol\Omega\)</span>.
+Technically speaking, we adopt a variational strategy to approximate the
+<span class="math inline">\(\ell_1\)</span>-penalized log-likelihood
+function and optimize the consecutive sparse variational surrogate with
+an optimization scheme that alternates between two step</p>
 <ol style="list-style-type: decimal">
-<li>a gradient-ascent-step, performed with the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library <span class="citation">(<a href="#ref-nlopt" role="doc-biblioref">Johnson 2011</a>)</span>, which we link to the package.</li>
-<li>a penalized log-likelihood step, performed with the graphical-Lasso of <span class="citation">Friedman, Hastie, and Tibshirani (<a href="#ref-FHT08" role="doc-biblioref">2008</a>)</span>, implemented in the package <strong>fastglasso</strong> <span class="citation">(<a href="#ref-glassofast" role="doc-biblioref">Sustik and Calderhead 2012</a>)</span>.</li>
+<li>a gradient-ascent-step, performed with the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library
+<span class="citation">(<a href="#ref-nlopt" role="doc-biblioref">Johnson 2011</a>)</span>, which we link to the
+package.</li>
+<li>a penalized log-likelihood step, performed with the graphical-Lasso
+of <span class="citation">Friedman, Hastie, and Tibshirani (<a href="#ref-FHT08" role="doc-biblioref">2008</a>)</span>, implemented in
+the package <strong>fastglasso</strong> <span class="citation">(<a href="#ref-glassofast" role="doc-biblioref">Sustik and Calderhead
+2012</a>)</span>.</li>
 </ol>
 <p>More technical details can be found in <span class="citation">Chiquet, Robin, and Mariadassou (<a href="#ref-PLNnetwork" role="doc-biblioref">2019</a>)</span></p>
 </div>
@@ -172,11 +226,21 @@
 <div class="section level2">
 <h2 id="analysis-of-trichoptera-data-with-a-plnnetwork-model">Analysis of trichoptera data with a PLNnetwork model<a class="anchor" aria-label="anchor" href="#analysis-of-trichoptera-data-with-a-plnnetwork-model"></a>
 </h2>
-<p>In the package, the sparse PLN-network model is adjusted with the function <code>PLNnetwork</code>, which we review in this section. This function adjusts the model for a series of value of the penalty parameter controlling the number of edges in the network. It then provides a collection of objects with class <code>PLNnetworkfit</code>, corresponding to networks with different levels of density, all stored in an object with class <code>PLNnetworkfamily</code>.</p>
+<p>In the package, the sparse PLN-network model is adjusted with the
+function <code>PLNnetwork</code>, which we review in this section. This
+function adjusts the model for a series of value of the penalty
+parameter controlling the number of edges in the network. It then
+provides a collection of objects with class <code>PLNnetworkfit</code>,
+corresponding to networks with different levels of density, all stored
+in an object with class <code>PLNnetworkfamily</code>.</p>
 <div class="section level3">
-<h3 id="adjusting-a-collection-of-network---a-k-a--a-regularization-path">Adjusting a collection of network - a.k.a. a regularization path<a class="anchor" aria-label="anchor" href="#adjusting-a-collection-of-network---a-k-a--a-regularization-path"></a>
+<h3 id="adjusting-a-collection-of-network---a-k-a--a-regularization-path">Adjusting a collection of network - a.k.a. a regularization
+path<a class="anchor" aria-label="anchor" href="#adjusting-a-collection-of-network---a-k-a--a-regularization-path"></a>
 </h3>
-<p><code>PLNnetwork</code> finds an hopefully appropriate set of penalties on its own. This set can be controlled by the user, but use it with care and check details in <code><a href="../reference/PLNnetwork.html">?PLNnetwork</a></code>. The collection of models is fitted as follows:</p>
+<p><code>PLNnetwork</code> finds an hopefully appropriate set of
+penalties on its own. This set can be controlled by the user, but use it
+with care and check details in <code><a href="../reference/PLNnetwork.html">?PLNnetwork</a></code>. The collection
+of models is fitted as follows:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">network_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNnetwork.html">PLNnetwork</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
@@ -215,12 +279,16 @@
     sparsifying penalty = 0.3641811 
 ##  Post-treatments
 ##  DONE!</code></pre>
-<p>Note the use of the <code>formula</code> object to specify the model, similar to the one used in the function <code>PLN</code>.</p>
+<p>Note the use of the <code>formula</code> object to specify the model,
+similar to the one used in the function <code>PLN</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="structure-of-plnnetworkfamily">Structure of <code>PLNnetworkfamily</code><a class="anchor" aria-label="anchor" href="#structure-of-plnnetworkfamily"></a>
 </h3>
-<p>The <code>network_models</code> variable is an <code>R6</code> object with class <code>PLNnetworkfamily</code>, which comes with a couple of methods. The most basic is the <code>show/print</code> method, which sends a very basic summary of the estimation process:</p>
+<p>The <code>network_models</code> variable is an <code>R6</code> object
+with class <code>PLNnetworkfamily</code>, which comes with a couple of
+methods. The most basic is the <code>show/print</code> method, which
+sends a very basic summary of the estimation process:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">network_models</span></span></code></pre></div>
 <pre><code><span><span class="co">## --------------------------------------------------------</span></span>
@@ -231,10 +299,23 @@
 <span><span class="co">##  - 30 penalties considered: from 0.3641811 to 3.641811 </span></span>
 <span><span class="co">##  - Best model (greater BIC): lambda = 1.4 </span></span>
 <span><span class="co">##  - Best model (greater EBIC): lambda = 1.4</span></span></code></pre>
-<p>One can also easily access the successive values of the criteria in the collection</p>
+<p>One can also easily access the successive values of the criteria in
+the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">network_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="9%">
+<col width="9%">
+<col width="10%">
+<col width="10%">
+<col width="10%">
+<col width="8%">
+<col width="10%">
+<col width="11%">
+<col width="10%">
+<col width="10%">
+</colgroup>
 <thead><tr class="header">
 <th align="right">param</th>
 <th align="right">nb_param</th>
@@ -322,7 +403,8 @@
 </tr>
 </tbody>
 </table>
-<p>A diagnostic of the optimization process is available via the <code>convergence</code> field:</p>
+<p>A diagnostic of the optimization process is available via the
+<code>convergence</code> field:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">network_models</span><span class="op">$</span><span class="va">convergence</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -417,7 +499,8 @@
 </tr>
 </tbody>
 </table>
-<p>An nicer view of this output comes with the option “diagnostic” in the <code>plot</code> method:</p>
+<p>An nicer view of this output comes with the option “diagnostic” in
+the <code>plot</code> method:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network_models</span>, <span class="st">"diagnostic"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/diagnostic-1.png" width="672"></p>
@@ -425,16 +508,39 @@
 <div class="section level3">
 <h3 id="exploring-the-path-of-networks">Exploring the path of networks<a class="anchor" aria-label="anchor" href="#exploring-the-path-of-networks"></a>
 </h3>
-<p>By default, the <code>plot</code> method of <code>PLNnetworkfamily</code> displays evolution of the criteria mentioned above, and is a good starting point for model selection:</p>
+<p>By default, the <code>plot</code> method of
+<code>PLNnetworkfamily</code> displays evolution of the criteria
+mentioned above, and is a good starting point for model selection:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network_models</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot-1.png" width="672"></p>
-<p>Note that we use the original definition of the BIC/ICL criterion (<span class="math inline">\(\texttt{loglik} - \frac{1}{2}\texttt{pen}\)</span>), which is on the same scale as the log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular alternative</a> consists in using <span class="math inline">\(-2\texttt{loglik} + \texttt{pen}\)</span> instead. You can do so by specifying <code>reverse = TRUE</code>:</p>
+<p>Note that we use the original definition of the BIC/ICL criterion
+(<span class="math inline">\(\texttt{loglik} -
+\frac{1}{2}\texttt{pen}\)</span>), which is on the same scale as the
+log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular
+alternative</a> consists in using <span class="math inline">\(-2\texttt{loglik} + \texttt{pen}\)</span> instead.
+You can do so by specifying <code>reverse = TRUE</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network_models</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot-reverse-1.png" width="672"></p>
-<p>In this case, the variational lower bound of the log-likelihood is hopefully strictly increasing (or rather decreasing if using <code>reverse = TRUE</code>) with a lower level of penalty (meaning more edges in the network). The same holds true for the penalized counterpart of the variational surrogate. Generally, smoothness of these criteria is a good sanity check of optimization process. BIC and its extended-version high-dimensional version EBIC are classically used for selecting the correct amount of penalization with sparse estimator like the one used by PLN-network. However, we will consider later a more robust albeit more computationally intensive strategy to chose the appropriate number of edges in the network.</p>
-<p>To pursue the analysis, we can represent the coefficient path (i.e., value of the edges in the network according to the penalty level) to see if some edges clearly come off. An alternative and more intuitive view consists in plotting the values of the partial correlations along the path, which can be obtained with the options <code>corr = TRUE</code>. To this end, we provide the S3 function <code>coefficient_path</code>:</p>
+<p>In this case, the variational lower bound of the log-likelihood is
+hopefully strictly increasing (or rather decreasing if using
+<code>reverse = TRUE</code>) with a lower level of penalty (meaning more
+edges in the network). The same holds true for the penalized counterpart
+of the variational surrogate. Generally, smoothness of these criteria is
+a good sanity check of optimization process. BIC and its
+extended-version high-dimensional version EBIC are classically used for
+selecting the correct amount of penalization with sparse estimator like
+the one used by PLN-network. However, we will consider later a more
+robust albeit more computationally intensive strategy to chose the
+appropriate number of edges in the network.</p>
+<p>To pursue the analysis, we can represent the coefficient path (i.e.,
+value of the edges in the network according to the penalty level) to see
+if some edges clearly come off. An alternative and more intuitive view
+consists in plotting the values of the partial correlations along the
+path, which can be obtained with the options <code>corr = TRUE</code>.
+To this end, we provide the S3 function
+<code>coefficient_path</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/coefficient_path.html">coefficient_path</a></span><span class="op">(</span><span class="va">network_models</span>, corr <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Penalty</span>, y <span class="op">=</span> <span class="va">Coeff</span>, group <span class="op">=</span> <span class="va">Edge</span>, colour <span class="op">=</span> <span class="va">Edge</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -444,16 +550,30 @@
 <div class="section level3">
 <h3 id="model-selection-issue-choosing-a-network">Model selection issue: choosing a network<a class="anchor" aria-label="anchor" href="#model-selection-issue-choosing-a-network"></a>
 </h3>
-<p>To select a network with a specific level of penalty, one uses the <code>getModel(lambda)</code> S3 method. We can also extract the best model according to the BIC or EBIC with the method <code><a href="../reference/getBestModel.html">getBestModel()</a></code>.</p>
+<p>To select a network with a specific level of penalty, one uses the
+<code>getModel(lambda)</code> S3 method. We can also extract the best
+model according to the BIC or EBIC with the method
+<code><a href="../reference/getBestModel.html">getBestModel()</a></code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_pen</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModel.html">getModel</a></span><span class="op">(</span><span class="va">network_models</span>, <span class="va">network_models</span><span class="op">$</span><span class="va">penalties</span><span class="op">[</span><span class="fl">20</span><span class="op">]</span><span class="op">)</span> <span class="co"># give some sparsity</span></span>
 <span><span class="va">model_BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">network_models</span>, <span class="st">"BIC"</span><span class="op">)</span>   <span class="co"># if no criteria is specified, the best BIC is used</span></span></code></pre></div>
-<p>An alternative strategy is to use StARS <span class="citation">(<a href="#ref-stars" role="doc-biblioref">Liu, Roeder, and Wasserman 2010</a>)</span>, which performs resampling to evaluate the robustness of the network along the path of solutions in a similar fashion as the stability selection approach of <span class="citation">Meinshausen and Bühlmann (<a href="#ref-stabilitySelection" role="doc-biblioref">2010</a>)</span>, but in a network inference context.</p>
-<p>Resampling can be computationally demanding but is easily parallelized: the function <code>stability_selection</code> integrates some features of the <strong>future</strong> package to perform parallel computing. We set our plan to speed the process by relying on 2 workers:</p>
+<p>An alternative strategy is to use StARS <span class="citation">(<a href="#ref-stars" role="doc-biblioref">Liu, Roeder, and Wasserman
+2010</a>)</span>, which performs resampling to evaluate the robustness
+of the network along the path of solutions in a similar fashion as the
+stability selection approach of <span class="citation">Meinshausen and
+Bühlmann (<a href="#ref-stabilitySelection" role="doc-biblioref">2010</a>)</span>, but in a network inference
+context.</p>
+<p>Resampling can be computationally demanding but is easily
+parallelized: the function <code>stability_selection</code> integrates
+some features of the <strong>future</strong> package to perform parallel
+computing. We set our plan to speed the process by relying on 2
+workers:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p>We first invoke <code>stability_selection</code> explicitly for pedagogical purpose. In this case, we need to build our sub-samples manually:</p>
+<p>We first invoke <code>stability_selection</code> explicitly for
+pedagogical purpose. In this case, we need to build our sub-samples
+manually:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
 <span><span class="va">subs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample.int</a></span><span class="op">(</span><span class="va">n</span>, size <span class="op">=</span> <span class="va">n</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -461,21 +581,33 @@
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Stability Selection for PLNnetwork: </span></span>
 <span><span class="co">## subsampling: ++++++++++</span></span></code></pre>
-<p>Requesting ‘StARS’ in <code>gestBestmodel</code> automatically invokes <code>stability_selection</code> with 20 sub-samples, if it has not yet been run.</p>
+<p>Requesting ‘StARS’ in <code>gestBestmodel</code> automatically
+invokes <code>stability_selection</code> with 20 sub-samples, if it has
+not yet been run.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_StARS</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">network_models</span>, <span class="st">"StARS"</span><span class="op">)</span></span></code></pre></div>
-<p>When “StARS” is requested for the first time, <code>getBestModel</code> automatically calls the method <code>stability_selection</code> with the default parameters. After the first call, the stability path is available from the <code>plot</code> function:</p>
+<p>When “StARS” is requested for the first time,
+<code>getBestModel</code> automatically calls the method
+<code>stability_selection</code> with the default parameters. After the
+first call, the stability path is available from the <code>plot</code>
+function:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network_models</span>, <span class="st">"stability"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot%20stability-1.png" width="672"></p>
-<p>When you are done, do not forget to get back to the standard sequential plan with <em>future</em>.</p>
+<p>When you are done, do not forget to get back to the standard
+sequential plan with <em>future</em>.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="st">"sequential"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="structure-of-a-plnnetworkfit">Structure of a <code>PLNnetworkfit</code><a class="anchor" aria-label="anchor" href="#structure-of-a-plnnetworkfit"></a>
 </h3>
-<p>The variables <code>model_BIC</code>, <code>model_StARS</code> and <code>model_pen</code> are other <code>R6Class</code> objects with class <code>PLNnetworkfit</code>. They all inherits from the class <code>PLNfit</code> and thus own all its methods, with a couple of specific one, mostly for network visualization purposes. Most fields and methods are recalled when such an object is printed:</p>
+<p>The variables <code>model_BIC</code>, <code>model_StARS</code> and
+<code>model_pen</code> are other <code>R6Class</code> objects with class
+<code>PLNnetworkfit</code>. They all inherits from the class
+<code>PLNfit</code> and thus own all its methods, with a couple of
+specific one, mostly for network visualization purposes. Most fields and
+methods are recalled when such an object is printed:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_StARS</span></span></code></pre></div>
 <pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 1.52)</span></span>
@@ -493,15 +625,18 @@
 <span><span class="co">##     $EBIC, $density, $penalty </span></span>
 <span><span class="co">## * Additional S3 methods for network</span></span>
 <span><span class="co">##     plot.PLNnetworkfit()</span></span></code></pre>
-<p>The <code>plot</code> method provides a quick representation of the inferred network, with various options (either as a matrix, a graph, and always send back the plotted object invisibly if users needs to perform additional analyses).</p>
+<p>The <code>plot</code> method provides a quick representation of the
+inferred network, with various options (either as a matrix, a graph, and
+always send back the plotted object invisibly if users needs to perform
+additional analyses).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">my_graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH 710ec1a UNW- 17 3 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH 7ed8c86 UNW- 17 3 -- </span></span>
 <span><span class="co">## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),</span></span>
 <span><span class="co">## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),</span></span>
 <span><span class="co">## | width (e/n)</span></span>
-<span><span class="co">## + edges from 710ec1a (vertex names):</span></span>
+<span><span class="co">## + edges from 7ed8c86 (vertex names):</span></span>
 <span><span class="co">## [1] Che--Hve Glo--Hfo Hfo--Hsp</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></span></code></pre></div>
@@ -509,7 +644,9 @@
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, type <span class="op">=</span> <span class="st">"support"</span>, output <span class="op">=</span> <span class="st">"corrplot"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/stars_network-2.png" width="672"></p>
-<p>We can finally check that the fitted value of the counts – even with sparse regularization of the covariance matrix – are close to the observed ones:</p>
+<p>We can finally check that the fitted value of the counts – even with
+sparse regularization of the covariance matrix – are close to the
+observed ones:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  fitted   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -532,31 +669,54 @@ fitted value vs. observation
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-AiH89" class="csl-entry">
-Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.
+Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log
+Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.
 </div>
 <div id="ref-banerjee2008" class="csl-entry">
-Banerjee, Onureena, Laurent El Ghaoui, and Alexandre d’Aspremont. 2008. <span>“Model Selection Through Sparse Maximum Likelihood Estimation for Multivariate Gaussian or Binary Data.”</span> <em>Journal of Machine Learning Research</em> 9 (Mar): 485–516.
+Banerjee, Onureena, Laurent El Ghaoui, and Alexandre d’Aspremont. 2008.
+<span>“Model Selection Through Sparse Maximum Likelihood Estimation for
+Multivariate Gaussian or Binary Data.”</span> <em>Journal of Machine
+Learning Research</em> 9 (Mar): 485–516.
 </div>
 <div id="ref-PLNnetwork" class="csl-entry">
-Chiquet, Julien, Stephane Robin, and Mahendra Mariadassou. 2019. <span>“Variational Inference for Sparse Network Reconstruction from Count Data.”</span> In <em>Proceedings of the 36th International Conference on Machine Learning</em>, edited by Kamalika Chaudhuri and Ruslan Salakhutdinov, 97:1162–71. Proceedings of Machine Learning Research. Long Beach, California, USA: PMLR. <a href="http://proceedings.mlr.press/v97/chiquet19a.html" class="external-link">http://proceedings.mlr.press/v97/chiquet19a.html</a>.
+Chiquet, Julien, Stephane Robin, and Mahendra Mariadassou. 2019.
+<span>“Variational Inference for Sparse Network Reconstruction from
+Count Data.”</span> In <em>Proceedings of the 36th International
+Conference on Machine Learning</em>, edited by Kamalika Chaudhuri and
+Ruslan Salakhutdinov, 97:1162–71. Proceedings of Machine Learning
+Research. Long Beach, California, USA: PMLR. <a href="http://proceedings.mlr.press/v97/chiquet19a.html" class="external-link">http://proceedings.mlr.press/v97/chiquet19a.html</a>.
 </div>
 <div id="ref-FHT08" class="csl-entry">
-Friedman, J., T. Hastie, and R. Tibshirani. 2008. <span>“Sparse Inverse Covariance Estimation with the Graphical Lasso.”</span> <em>Biostatistics</em> 9 (3): 432–41.
+Friedman, J., T. Hastie, and R. Tibshirani. 2008. <span>“Sparse Inverse
+Covariance Estimation with the Graphical Lasso.”</span>
+<em>Biostatistics</em> 9 (3): 432–41.
 </div>
 <div id="ref-nlopt" class="csl-entry">
-Johnson, Steven G. 2011. <em>The NLopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.
+Johnson, Steven G. 2011. <em>The NLopt Nonlinear-Optimization
+Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.
 </div>
 <div id="ref-stars" class="csl-entry">
-Liu, Han, Kathryn Roeder, and Larry Wasserman. 2010. <span>“Stability Approach to Regularization Selection (StARS) for High Dimensional Graphical Models.”</span> In <em>Proceedings of the 23rd International Conference on Neural Information Processing Systems - Volume 2</em>, 1432–40. USA.
+Liu, Han, Kathryn Roeder, and Larry Wasserman. 2010. <span>“Stability
+Approach to Regularization Selection (StARS) for High Dimensional
+Graphical Models.”</span> In <em>Proceedings of the 23rd International
+Conference on Neural Information Processing Systems - Volume 2</em>,
+1432–40. USA.
 </div>
 <div id="ref-stabilitySelection" class="csl-entry">
-Meinshausen, Nicolai, and Peter Bühlmann. 2010. <span>“Stability Selection.”</span> <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 72 (4): 417–73.
+Meinshausen, Nicolai, and Peter Bühlmann. 2010. <span>“Stability
+Selection.”</span> <em>Journal of the Royal Statistical Society: Series
+B (Statistical Methodology)</em> 72 (4): 417–73.
 </div>
 <div id="ref-glassofast" class="csl-entry">
-Sustik, Mátyás A, and Ben Calderhead. 2012. <span>“GLASSOFAST: An Efficient GLASSO Implementation.”</span> <em>UTCS Technical Report TR-12-29 2012</em>.
+Sustik, Mátyás A, and Ben Calderhead. 2012. <span>“GLASSOFAST: An
+Efficient GLASSO Implementation.”</span> <em>UTCS Technical Report
+TR-12-29 2012</em>.
 </div>
 <div id="ref-Svan02" class="csl-entry">
-Svanberg, Krister. 2002. <span>“A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2): 555–73.
+Svanberg, Krister. 2002. <span>“A Class of Globally Convergent
+Optimization Methods Based on Conservative Convex Separable
+Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2):
+555–73.
 </div>
 </div>
 </div>

@@ -106,10 +106,11 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Analyzing multivariate count data with the Poisson log-normal model</h1>
+      <h1 data-toc-skip>Analyzing multivariate count data with the
+Poisson log-normal model</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-09-09</h4>
+            <h4 data-toc-skip class="date">2022-11-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLN.Rmd" class="external-link"><code>vignettes/PLN.Rmd</code></a></small>
       <div class="hidden name"><code>PLN.Rmd</code></div>
@@ -121,12 +122,20 @@
 <div class="section level2">
 <h2 id="preliminaries">Preliminaries<a class="anchor" aria-label="anchor" href="#preliminaries"></a>
 </h2>
-<p>This vignette illustrates the use of the <code>PLN</code> function and the methods accompanying the R6 class <code>PLNfit</code>.</p>
-<p>From the statistical point of view, the function <code>PLN</code> adjusts a multivariate Poisson lognormal model to a table of counts, possibly after correcting for effects of offsets and covariates. <code>PLN</code> is the building block for all the multivariate models found in the <code>PLNmodels</code> package: having a basic understanding of both the mathematical background and the associated set of <code>R</code> functions is a good place to start.</p>
+<p>This vignette illustrates the use of the <code>PLN</code> function
+and the methods accompanying the R6 class <code>PLNfit</code>.</p>
+<p>From the statistical point of view, the function <code>PLN</code>
+adjusts a multivariate Poisson lognormal model to a table of counts,
+possibly after correcting for effects of offsets and covariates.
+<code>PLN</code> is the building block for all the multivariate models
+found in the <code>PLNmodels</code> package: having a basic
+understanding of both the mathematical background and the associated set
+of <code>R</code> functions is a good place to start.</p>
 <div class="section level3">
 <h3 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
 </h3>
-<p>The packages required for the analysis are <strong>PLNmodels</strong> plus some others for data manipulation and representation:</p>
+<p>The packages required for the analysis are <strong>PLNmodels</strong>
+plus some others for data manipulation and representation:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -135,23 +144,37 @@
 <div class="section level3">
 <h3 id="data-set">Data set<a class="anchor" aria-label="anchor" href="#data-set"></a>
 </h3>
-<p>We illustrate our point with the trichoptera data set, a full description of which can be found in <a href="Trichoptera.html">the corresponding vignette</a>. Data preparation is also detailed in <a href="Import_data.html">the specific vignette</a>.</p>
+<p>We illustrate our point with the trichoptera data set, a full
+description of which can be found in <a href="Trichoptera.html">the
+corresponding vignette</a>. Data preparation is also detailed in <a href="Import_data.html">the specific vignette</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
 <span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></code></pre></div>
-<p>The <code>trichoptera</code> data frame stores a matrix of counts (<code>trichoptera$Abundance</code>), a matrix of offsets (<code>trichoptera$Offset</code>) and some vectors of covariates (<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>, etc.)</p>
+<p>The <code>trichoptera</code> data frame stores a matrix of counts
+(<code>trichoptera$Abundance</code>), a matrix of offsets
+(<code>trichoptera$Offset</code>) and some vectors of covariates
+(<code>trichoptera$Wind</code>, <code>trichoptera$Temperature</code>,
+etc.)</p>
 </div>
 <div class="section level3">
 <h3 id="mathematical-background">Mathematical background<a class="anchor" aria-label="anchor" href="#mathematical-background"></a>
 </h3>
-<p>The multivariate Poisson lognormal model (in short PLN, see <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span>) relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> as follows</p>
+<p>The multivariate Poisson lognormal model (in short PLN, see <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span>) relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent
+variables <span class="math inline">\(\mathbf{Z}_i\)</span> as
+follows</p>
 <p><span class="math display">\[\begin{equation}
   \begin{array}{rcl}
-  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \\
-  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp;   \mathbf{Y}_i | \mathbf{Z}_i\sim\mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right).
+  \text{latent space } &amp;   \mathbf{Z}_i \sim
+\mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.}
+&amp;   \mathbf{Y}_i |
+\mathbf{Z}_i\sim\mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right).
   \end{array}
 \end{equation}\]</span></p>
-<p>The parameter <span class="math inline">\({\boldsymbol\mu}\)</span> corresponds to the main effects and the latent covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> describes the underlying residual structure of dependence between the <span class="math inline">\(p\)</span> variables. The following figure provides insights about the role played by the different layers</p>
+<p>The parameter <span class="math inline">\({\boldsymbol\mu}\)</span>
+corresponds to the main effects and the latent covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> describes the
+underlying residual structure of dependence between the <span class="math inline">\(p\)</span> variables. The following figure
+provides insights about the role played by the different layers</p>
 <!-- ```{r geometricalInsight, echo = FALSE, fig.cap = "PLN: geometrical view", fig.width=7, fig.height=7, fig.align='center'} -->
 <!-- knitr::include_graphics("figures/PLN_geometry.jpg") -->
 <!-- ``` -->
@@ -163,38 +186,64 @@ PLN: geometrical view
 <div class="section level4">
 <h4 id="covariates-and-offsets">Covariates and offsets<a class="anchor" aria-label="anchor" href="#covariates-and-offsets"></a>
 </h4>
-<p>This model generalizes naturally to a formulation closer to a multivariate generalized linear model, where the main effect is due to a linear combination of <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> (including a vector of intercepts). We also let the possibility to add some offsets for the <span class="math inline">\(p\)</span> variables in in each sample, that is <span class="math inline">\(\mathbf{o}_i\)</span>. Hence, the previous model generalizes to</p>
+<p>This model generalizes naturally to a formulation closer to a
+multivariate generalized linear model, where the main effect is due to a
+linear combination of <span class="math inline">\(d\)</span> covariates
+<span class="math inline">\(\mathbf{x}_i\)</span> (including a vector of
+intercepts). We also let the possibility to add some offsets for the
+<span class="math inline">\(p\)</span> variables in in each sample, that
+is <span class="math inline">\(\mathbf{o}_i\)</span>. Hence, the
+previous model generalizes to</p>
 <p><span class="math display">\[\begin{equation}
-  \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
-\end{equation}\]</span> where <span class="math inline">\(\boldsymbol\Theta\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression parameters. When all individuals <span class="math inline">\(i=1,\dots,n\)</span> are stacked together, the data matrices available to feed the model are</p>
+  \mathbf{Y}_i | \mathbf{Z}_i \sim
+\mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim
+\mathcal{N}({\mathbf{o}_i +
+\mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
+\end{equation}\]</span> where <span class="math inline">\(\boldsymbol\Theta\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression
+parameters. When all individuals <span class="math inline">\(i=1,\dots,n\)</span> are stacked together, the
+data matrices available to feed the model are</p>
 <ul>
-<li>the <span class="math inline">\(n\times p\)</span> matrix of counts <span class="math inline">\(\mathbf{Y}\)</span>
+<li>the <span class="math inline">\(n\times p\)</span> matrix of counts
+<span class="math inline">\(\mathbf{Y}\)</span>
 </li>
-<li>the <span class="math inline">\(n\times d\)</span> matrix of design <span class="math inline">\(\mathbf{X}\)</span>
+<li>the <span class="math inline">\(n\times d\)</span> matrix of design
+<span class="math inline">\(\mathbf{X}\)</span>
 </li>
-<li>the <span class="math inline">\(n\times p\)</span> matrix of offsets <span class="math inline">\(\mathbf{O}\)</span>
+<li>the <span class="math inline">\(n\times p\)</span> matrix of offsets
+<span class="math inline">\(\mathbf{O}\)</span>
 </li>
 </ul>
-<p>Inference in PLN then focuses on the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and on the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>.</p>
+<p>Inference in PLN then focuses on the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and on the covariance
+matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>.</p>
 </div>
 <div class="section level4">
 <h4 id="optimization-by-variational-inference">Optimization by Variational inference<a class="anchor" aria-label="anchor" href="#optimization-by-variational-inference"></a>
 </h4>
-<p>Technically speaking, we adopt in <strong>PLNmodels</strong> a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library <span class="citation">(<a href="#ref-nlopt" role="doc-biblioref">Johnson 2011</a>)</span>, which we link to the package.</p>
+<p>Technically speaking, we adopt in <strong>PLNmodels</strong> a
+variational strategy to approximate the log-likelihood function and
+optimize the consecutive variational surrogate of the log-likelihood
+with a gradient-ascent-based approach. To this end, we rely on the CCSA
+algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library
+<span class="citation">(<a href="#ref-nlopt" role="doc-biblioref">Johnson 2011</a>)</span>, which we link to the
+package.</p>
 </div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="analysis-of-trichoptera-data-with-a-pln-model">Analysis of trichoptera data with a PLN model<a class="anchor" aria-label="anchor" href="#analysis-of-trichoptera-data-with-a-pln-model"></a>
 </h2>
-<p>The standard PLN model described above is adjusted with the function <code>PLN</code>. We now review its usage on a the trichoptera data set.</p>
+<p>The standard PLN model described above is adjusted with the function
+<code>PLN</code>. We now review its usage on a the trichoptera data
+set.</p>
 <div class="section level3">
 <h3 id="a-pln-model-with-latent-main-effects">A PLN model with latent main effects<a class="anchor" aria-label="anchor" href="#a-pln-model-with-latent-main-effects"></a>
 </h3>
 <div class="section level4">
 <h4 id="adjusting-a-fit">Adjusting a fit<a class="anchor" aria-label="anchor" href="#adjusting-a-fit"></a>
 </h4>
-<p>In order to become familiar with the function <code>PLN</code> and its outputs, let us first fit a simple PLN model with just an intercept for each species:</p>
+<p>In order to become familiar with the function <code>PLN</code> and
+its outputs, let us first fit a simple PLN model with just an intercept
+for each species:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, <span class="va">trichoptera</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
@@ -202,12 +251,21 @@ PLN: geometrical view
 <span><span class="co">##  Adjusting a PLN model with full covariance model</span></span>
 <span><span class="co">##  Post-treatments...</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
-<p>Note the use of the <code>formula</code> object to specify the model: the vector <span class="math inline">\(\boldsymbol\mu\)</span> of main effects in the mathematical formulation (one per column species) is specified in the call with the term <code>~ 1</code> in the right-hand-side of the formula. <code>Abundance</code> is a variable in the data frame <code>trichoptera</code> corresponding to a matrix of 17 columns and the <em>response</em> in the model, occurring on the left-hand-side of the formula.</p>
+<p>Note the use of the <code>formula</code> object to specify the model:
+the vector <span class="math inline">\(\boldsymbol\mu\)</span> of main
+effects in the mathematical formulation (one per column species) is
+specified in the call with the term <code>~ 1</code> in the
+right-hand-side of the formula. <code>Abundance</code> is a variable in
+the data frame <code>trichoptera</code> corresponding to a matrix of 17
+columns and the <em>response</em> in the model, occurring on the
+left-hand-side of the formula.</p>
 </div>
 <div class="section level4">
 <h4 id="the-plnfit-object">The <code>PLNfit</code> object<a class="anchor" aria-label="anchor" href="#the-plnfit-object"></a>
 </h4>
-<p><code>myPLN</code> is an <code>R6</code> object with class <code>PLNfit</code>, which comes with a couple of methods, as recalled when printing/showing such an object in the <code>R</code> console:</p>
+<p><code>myPLN</code> is an <code>R6</code> object with class
+<code>PLNfit</code>, which comes with a couple of methods, as recalled
+when printing/showing such an object in the <code>R</code> console:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN</span></span></code></pre></div>
 <pre><code><span><span class="co">## A multivariate Poisson Lognormal fit with full covariance model.</span></span>
@@ -226,7 +284,8 @@ PLN: geometrical view
 <div class="section level4">
 <h4 id="field-access">Field access<a class="anchor" aria-label="anchor" href="#field-access"></a>
 </h4>
-<p>Accessing public fields of a <code>PLNfit</code> object can be done just like with a traditional list, <em>e.g.</em>,</p>
+<p>Accessing public fields of a <code>PLNfit</code> object can be done
+just like with a traditional list, <em>e.g.</em>,</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">$</span><span class="va">loglik</span>, <span class="va">myPLN</span><span class="op">$</span><span class="va">BIC</span>, <span class="va">myPLN</span><span class="op">$</span><span class="va">ICL</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] -1129.724 -1460.528 -2284.227</span></span></code></pre>
@@ -238,8 +297,12 @@ PLN: geometrical view
 <div class="section level4">
 <h4 id="glm-like-interface">GLM-like interface<a class="anchor" aria-label="anchor" href="#glm-like-interface"></a>
 </h4>
-<p>We provide a set of S3-methods for <code>PLNfit</code> that mimic the standard (G)LM-like interface of <code>R::stats</code>, which we present now.</p>
-<p>One can access the fitted value of the counts (<code>Abundance</code> – <span class="math inline">\(\hat{\mathbf{Y}}\)</span>) and check that the algorithm basically learned correctly from the data<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>:</p>
+<p>We provide a set of S3-methods for <code>PLNfit</code> that mimic the
+standard (G)LM-like interface of <code>R::stats</code>, which we present
+now.</p>
+<p>One can access the fitted value of the counts (<code>Abundance</code>
+– <span class="math inline">\(\hat{\mathbf{Y}}\)</span>) and check that
+the algorithm basically learned correctly from the data<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  fitted   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -255,7 +318,13 @@ PLN: geometrical view
 fitted value vs. observation
 </p>
 </div>
-<p>We can also reach the matrix of regression parameters <span class="math inline">\(\mathbf{\Theta}\)</span> and the residual variance/covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span> of the latent variable with the traditional functions found in <code>R</code> for (G)LM manipulation: for the regression coefficients, we can use the <code>coef</code> (or <code>coefficients</code>) method. Approximated standard errors of the coefficients are also accessible via <code>standard_error</code>:</p>
+<p>We can also reach the matrix of regression parameters <span class="math inline">\(\mathbf{\Theta}\)</span> and the residual
+variance/covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span> of the latent
+variable with the traditional functions found in <code>R</code> for
+(G)LM manipulation: for the regression coefficients, we can use the
+<code>coef</code> (or <code>coefficients</code>) method. Approximated
+standard errors of the coefficients are also accessible via
+<code>standard_error</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="../reference/standard_error.html">standard_error</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, </span>
@@ -289,7 +358,8 @@ fitted value vs. observation
 </tr>
 </tbody>
 </table>
-<!-- rmarkdown::paged_table() causes re-building of vignette to fail on CRAN for OS X and Solaris flavor (probably due to a too old version of pandoc) --><p>The residual covariance matrix better displays as an image matrix:</p>
+<!-- rmarkdown::paged_table() causes re-building of vignette to fail on CRAN for OS X and Solaris flavor (probably due to a too old version of pandoc) --><p>The residual covariance matrix better displays as an image
+matrix:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span>, is.corr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLN_files/figure-html/plot%20covariance-1.png" width="672"></p>
@@ -297,7 +367,8 @@ fitted value vs. observation
 <div class="section level4">
 <h4 id="observation-weights">Observation weights<a class="anchor" aria-label="anchor" href="#observation-weights"></a>
 </h4>
-<p>It is also possible to use observation weights like in standard (G)LMs:</p>
+<p>It is also possible to use observation weights like in standard
+(G)LMs:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN_weighted</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span></span>
@@ -333,12 +404,17 @@ fitted value vs. observation
 <div class="section level3">
 <h3 id="accounting-for-covariates-and-offsets">Accounting for covariates and offsets<a class="anchor" aria-label="anchor" href="#accounting-for-covariates-and-offsets"></a>
 </h3>
-<p>For ecological count data, it is generally a good advice to include the sampling effort via an offset term whenever available, otherwise samples are not necessarily comparable:</p>
+<p>For ecological count data, it is generally a good advice to include
+the sampling effort via an offset term whenever available, otherwise
+samples are not necessarily comparable:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN_offsets</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>      data <span class="op">=</span> <span class="va">trichoptera</span>, control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>trace <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Note that we use the function <code>offset</code> with a log-transform of the total counts since it acts in the latent layer of the model. Obviously the model with offsets is better since the log-likelihood is higher with the same number of parameters<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>:</p>
+<p>Note that we use the function <code>offset</code> with a
+log-transform of the total counts since it acts in the latent layer of
+the model. Obviously the model with offsets is better since the
+log-likelihood is higher with the same number of parameters<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
 <span>  <span class="va">myPLN</span><span class="op">$</span><span class="va">criteria</span>,</span>
@@ -374,7 +450,9 @@ fitted value vs. observation
 <span><span class="co">##  Adjusting a PLN model with full covariance model</span></span>
 <span><span class="co">##  Post-treatments...</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
-<p>When we compare the models, the gain is clear in terms of log-likelihood. However, the BIC chooses not to include this variable:</p>
+<p>When we compare the models, the gain is clear in terms of
+log-likelihood. However, the BIC chooses not to include this
+variable:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
 <span>  <span class="va">myPLN_offsets</span><span class="op">$</span><span class="va">criteria</span>,</span>
@@ -406,7 +484,19 @@ fitted value vs. observation
 <div class="section level3">
 <h3 id="covariance-models-full-diagonal-spherical">Covariance models (full, diagonal, spherical)<a class="anchor" aria-label="anchor" href="#covariance-models-full-diagonal-spherical"></a>
 </h3>
-<p>It is possible to change a bit the parametrization used for modeling the residual covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>, and thus reduce the total number of parameters used in the model. By default, the residual covariance is fully parameterized (hence <span class="math inline">\(p \times (p+1)/2\)</span> parameters). However, we can chose to only model the variances of the species and not the covariances, by means of a diagonal matrix <span class="math inline">\(\boldsymbol\Sigma_D\)</span> with only <span class="math inline">\(p\)</span> parameters. In an extreme situation, we may also chose a single variance parameter for the whole matrix <span class="math inline">\(\boldsymbol\Sigma = \sigma \mathbf{I}_p\)</span>. This can be tuned in <code>PLN</code> with the <code>control</code> argument, a list controlling various aspects of the underlying optimization process:</p>
+<p>It is possible to change a bit the parametrization used for modeling
+the residual covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>, and thus reduce the
+total number of parameters used in the model. By default, the residual
+covariance is fully parameterized (hence <span class="math inline">\(p
+\times (p+1)/2\)</span> parameters). However, we can chose to only model
+the variances of the species and not the covariances, by means of a
+diagonal matrix <span class="math inline">\(\boldsymbol\Sigma_D\)</span>
+with only <span class="math inline">\(p\)</span> parameters. In an
+extreme situation, we may also chose a single variance parameter for the
+whole matrix <span class="math inline">\(\boldsymbol\Sigma = \sigma
+\mathbf{I}_p\)</span>. This can be tuned in <code>PLN</code> with the
+<code>control</code> argument, a list controlling various aspects of the
+underlying optimization process:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN_spherical</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span></span>
@@ -419,7 +509,9 @@ fitted value vs. observation
 <span>    <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    data <span class="op">=</span> <span class="va">trichoptera</span>, control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>covariance <span class="op">=</span> <span class="st">"diagonal"</span>, trace <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p>Note that, by default, the model chosen is <code>covariance = "spherical"</code>, so that the two following calls are equivalents:</p>
+<p>Note that, by default, the model chosen is
+<code>covariance = "spherical"</code>, so that the two following calls
+are equivalents:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN_default</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, <span class="op">)</span></span></code></pre></div>
@@ -436,7 +528,10 @@ fitted value vs. observation
 <span><span class="co">##  Adjusting a PLN model with full covariance model</span></span>
 <span><span class="co">##  Post-treatments...</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
-<p>Different covariance models can then be compared with the usual criteria: it seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:</p>
+<p>Different covariance models can then be compared with the usual
+criteria: it seems that the gain brought by passing from a diagonal
+matrix to a fully parameterized covariance is not worth having so many
+additional parameters:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
 <span>  <span class="va">myPLN_offsets</span><span class="op">$</span><span class="va">criteria</span>,</span>
@@ -477,7 +572,8 @@ fitted value vs. observation
 </tr>
 </tbody>
 </table>
-<p>A final model that we can try is the diagonal one with the wind as a covariate, which gives a slight improvement.</p>
+<p>A final model that we can try is the diagonal one with the wind as a
+covariate, which gives a slight improvement.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN_final</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span></span>
@@ -524,21 +620,29 @@ fitted value vs. observation
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-AiH89" class="csl-entry">
-Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.
+Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log
+Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.
 </div>
 <div id="ref-nlopt" class="csl-entry">
-Johnson, Steven G. 2011. <em>The NLopt Nonlinear-Optimization Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.
+Johnson, Steven G. 2011. <em>The NLopt Nonlinear-Optimization
+Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-link">https://nlopt.readthedocs.io/en/latest/</a>.
 </div>
 <div id="ref-Svan02" class="csl-entry">
-Svanberg, Krister. 2002. <span>“A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2): 555–73.
+Svanberg, Krister. 2002. <span>“A Class of Globally Convergent
+Optimization Methods Based on Conservative Convex Separable
+Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2):
+555–73.
 </div>
 </div>
 </div>
-<div class="footnotes">
+<div class="footnotes footnotes-end-of-document">
 <hr>
 <ol>
-<li id="fn1"><p>We use a log-log scale in our plot in order not to give an excessive importance to the higher counts in the fit<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>In <strong>PLNmodels</strong> the R-squared is a pseudo-R-squared that can only be trusted between model where the same offsets term was used<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>We use a log-log scale in our plot in order not to give
+an excessive importance to the higher counts in the fit<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>In <strong>PLNmodels</strong> the R-squared is a
+pseudo-R-squared that can only be trusted between model where the same
+offsets term was used<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>
