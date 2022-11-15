@@ -104,7 +104,7 @@ PLNnetworkfit <- R6Class(
       self$update(
         Theta = optim_out$Theta,
         Omega = Omega,
-        Sigma = optim_out$Sigma,
+        Sigma = Sigma,
         M  = optim_out$M,
         S2 = (optim_out$S)**2,
         Z  = optim_out$Z,
@@ -126,6 +126,8 @@ PLNnetworkfit <- R6Class(
       super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
       dimnames(private$Omega) <- dimnames(private$Sigma)
       colnames(private$S2) <- 1:self$p
+      ## set Sigma to its sparse version (variational is kept during optimization for covenience)
+      private$Sigma <- solve(private$Omega)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
