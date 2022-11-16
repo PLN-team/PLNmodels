@@ -63,7 +63,6 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \item \href{#method-PLNPCAfit-project}{\code{PLNPCAfit$project()}}
 \item \href{#method-PLNPCAfit-setVisualization}{\code{PLNPCAfit$setVisualization()}}
 \item \href{#method-PLNPCAfit-postTreatment}{\code{PLNPCAfit$postTreatment()}}
-\item \href{#method-PLNPCAfit-compute_fisher}{\code{PLNPCAfit$compute_fisher()}}
 \item \href{#method-PLNPCAfit-plot_individual_map}{\code{PLNPCAfit$plot_individual_map()}}
 \item \href{#method-PLNPCAfit-plot_correlation_circle}{\code{PLNPCAfit$plot_correlation_circle()}}
 \item \href{#method-PLNPCAfit-plot_PCA}{\code{PLNPCAfit$plot_PCA()}}
@@ -81,7 +80,6 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_louis"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_louis'><code>PLNmodels::PLNfit$vcov_louis()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_sandwich"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_sandwich'><code>PLNmodels::PLNfit$vcov_sandwich()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_wald"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_wald'><code>PLNmodels::PLNfit$vcov_wald()</code></a></span></li>
 </ul>
@@ -307,28 +305,6 @@ after optimization
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }
 \if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNPCAfit-compute_fisher"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNPCAfit-compute_fisher}{}}}
-\subsection{Method \code{compute_fisher()}}{
-Safely compute the fisher information matrix (FIM)
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$compute_fisher(type = c("wald", "louis"), X = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{type}}{approximation scheme to compute the fisher information matrix. Either \code{wald} (default) or \code{louis}. \code{type = "louis"} results in smaller confidence intervals.}
-
-\item{\code{X}}{design matrix used to compute the FIM}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a sparse matrix with sensible dimension names
 }
 }
 \if{html}{\out{<hr>}}

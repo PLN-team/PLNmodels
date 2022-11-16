@@ -116,7 +116,7 @@ PLNfamily <-
       plot = function(criteria, reverse) {
         stopifnot(!anyNA(self$criteria[criteria]))
         dplot <- self$criteria %>%
-          dplyr::select(c("param", criteria)) %>%
+          dplyr::select(dplyr::all_of(c("param", criteria))) %>%
           tidyr::gather(key = "criterion", value = "value", -param) %>%
           {if (reverse)
             dplyr::mutate(

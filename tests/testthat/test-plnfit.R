@@ -51,17 +51,13 @@ test_that("PLN fit: check classes, getters and field access",  {
   expect_true(is.numeric(model$latent))
   expect_equal(dim(model$latent), c(model$n, model$p))
 
-  ## Fisher
-  Y <- trichoptera$Abundance
-  X <- model.matrix(Abundance ~ 1, data = trichoptera)
-  vcov_louis <- model$vcov_louis(X = X)
-  vcov_wald  <- model$vcov_wald(X = X)
-  vcov_sandwich <- model$vcov_sandwich(Y = Y, X = X)
-  ## Louis fisher matrix is (component-wise) larger than its wald counterpart
-  expect_gte(min(solve(vcov_louis) - solve(vcov_wald)), 0)
-  ## Sandwich underestimate less the variance of the variational estimators
-  expect_gte(min(diag(vcov_sandwich) - diag(as.numeric(vcov_wald))), 0)
-  expect_gte(min(diag(vcov_sandwich) - diag(as.numeric(vcov_louis))), 0)
+  # ## Variational Fisher
+  # Y <- trichoptera$Abundance
+  # X <- model.matrix(Abundance ~ 1, data = trichoptera)
+  # vcov_wald  <- model$vcov_wald(X = X)
+  # vcov_sandwich <- model$vcov_sandwich(Y = Y, X = X)
+  # ## Sandwich underestimate less the variance of the variational estimators
+  # expect_gte(min(diag(vcov_sandwich) - diag(as.numeric(vcov_wald))), 0)
 
 })
 

@@ -42,6 +42,7 @@ PLNnetworkfit <- R6Class(
     #' @description Initialize a [`PLNnetworkfit`] object
     initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, xlevels, control) {
       super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
+      private$Sigma  <- crossprod(private$M)/self$n + diag(colMeans(private$S2), nrow = self$p)
       private$lambda <- penalty
       stopifnot(isSymmetric(penalty_weights), all(penalty_weights > 0))
       private$rho    <- penalty_weights
