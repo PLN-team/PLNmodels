@@ -12,7 +12,6 @@
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param rank rank of the PCA (or equivalently, dimension of the latent space)
-#' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param type approximation scheme to compute the fisher information matrix. Either `wald` (default) or `louis`. `type = "louis"` results in smaller confidence intervals.
 ## Parameters common to many PLNLDAfit graphical methods
@@ -45,8 +44,8 @@ PLNPCAfit <- R6Class(
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Creation functions ----------------
       #' @description Initialize a [`PLNPCAfit`] object
-      initialize = function(rank, responses, covariates, offsets, weights, formula, xlevels, control) {
-        super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
+      initialize = function(rank, responses, covariates, offsets, weights, formula, control) {
+        super$initialize(responses, covariates, offsets, weights, formula, control)
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {
@@ -171,7 +170,7 @@ PLNPCAfit <- R6Class(
       project = function(newdata, control = list(), envir = parent.frame()) {
 
         ## Extract the model matrices from the new data set with initial formula
-        args <- extract_model(call("PLNPCA", formula = private$formula, data = newdata, xlev = private$xlevels), envir)
+        args <- extract_model(call("PLNPCA", formula = private$formula, data = newdata), envir)
 
         ## Compute latent positions of the new samples
         M <- self$VEstep(covariates = args$X, offsets = args$O, responses = args$Y,

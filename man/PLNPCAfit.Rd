@@ -91,16 +91,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{PLNPCAfit}} object
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$new(
-  rank,
-  responses,
-  covariates,
-  offsets,
-  weights,
-  formula,
-  xlevels,
-  control
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$new(rank, responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -117,8 +108,6 @@ Initialize a \code{\link{PLNPCAfit}} object
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }

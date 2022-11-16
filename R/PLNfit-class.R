@@ -14,7 +14,6 @@
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
-#' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param type approximation scheme used, either `wald` (default, variational) or `sandwich` (based on MLE theory).
 #' @param Sigma variance-covariance matrix of the latent variables
@@ -69,12 +68,11 @@ PLNfit <- R6Class(
     ## TODO: Once "set" is supported by Roxygen go back to external definition using
     ## PLNfit$set("public", "initialize", { ... })
     ## See https://github.com/r-lib/roxygen2/issues/931
-    initialize = function(responses, covariates, offsets, weights, formula, xlevels, control) {
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
       ## problem dimensions
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
       ## save various quantities
       private$formula <- formula               # user formula call
-      private$xlevels <- xlevels               # factor levels included in the model
       private$covariance <- control$covariance # covariance model
       private$backend <- control$backend       # optimization backend
 
@@ -438,7 +436,7 @@ PLNfit <- R6Class(
       type <- match.arg(type)
 
       ## Extract the model matrices from the new data set with initial formula
-      X <- model.matrix(formula(private$formula)[-2], newdata, xlev = private$xlevels)
+      X <- model.matrix(formula(private$formula)[-2], newdata, xlev = attr(private$formula, "xlevels"))
       O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
 
       ## mean latent positions in the parameter space
@@ -476,7 +474,7 @@ PLNfit <- R6Class(
       cond <- sp_names %in% colnames(Yc)
 
       ## Extract the model matrices from the new data set with initial formula
-      X <- model.matrix(formula(private$formula)[-2], newdata, xlev = private$xlevels)
+      X <- model.matrix(formula(private$formula)[-2], newdata, xlev = attr(private$formula, "xlevels"))
       O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
       if (is.null(O)) O <- matrix(0, n_new, self$p)
 
@@ -552,7 +550,6 @@ PLNfit <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
     formula    = NA, # the formula call for the model as specified by the user
-    xlevels    = NA, # factor levels present in the original data, useful for predict() methods.
     Theta      = NA, # regression parameters of the latent layer
     Sigma      = NA, # covariance matrix of the latent layer
     S2         = NA, # variational parameters for the variances

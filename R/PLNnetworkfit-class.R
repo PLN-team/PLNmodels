@@ -14,7 +14,6 @@
 #' @param penalty_weights either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 #' @param control a list for controlling the optimization of the PLN model used at initialization. See [PLNnetwork()] for details.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
-#' @param xlevels named listed of factor levels included in the models, extracted from the formula in [PLNnetwork()] call
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #'
 #'
@@ -40,8 +39,8 @@ PLNnetworkfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
-    initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, xlevels, control) {
-      super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
+    initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control) {
+      super$initialize(responses, covariates, offsets, weights, formula, control)
       private$Sigma  <- crossprod(private$M)/self$n + diag(colMeans(private$S2), nrow = self$p)
       private$lambda <- penalty
       stopifnot(isSymmetric(penalty_weights), all(penalty_weights > 0))

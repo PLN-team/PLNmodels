@@ -18,7 +18,7 @@ trace <- function(x) sum(diag(x))
 
 .logfactorial <- function(n) { # Ramanujan's formula
   n[n == 0] <- 1 ## 0! = 1!
-  return(n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2)
+  n*log(n) - n + log(8*n^3 + 4*n^2 + n + 1/30)/6 + log(pi)/2
 }
 
 as_indicator <- function(clustering) {
@@ -50,11 +50,11 @@ fullModelPoisson <- function(responses, weights = rep(1, nrow(responses))) {
 }
 
 #' @importFrom stats .getXlevels
-extract_model <- function(call, envir, xlev = NULL) {
+extract_model <- function(call, envir) {
 
   ## extract relevant arguments from the high level call for the model frame
   call_args <- call[match(c("formula", "data", "subset", "weights"), names(call), 0L)]
-  call_args <- c(as.list(call_args), list(xlev = xlev))
+  call_args <- c(as.list(call_args), list(xlev = attr(call$formula, "xlevels")))
 
   ## eval the call in the parent environment
   frame <- do.call(stats::model.frame, call_args, envir = envir)
@@ -71,9 +71,9 @@ extract_model <- function(call, envir, xlev = NULL) {
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-  ## Save encoutered levels for predict methods
-  xlevels <- .getXlevels(terms(frame), frame)
-  list(Y = Y, X = X, O = O, w = w, formula = call$formula, xlevels = xlevels)
+  ## Save encountered levels for predict methods as attribute of the formula
+  attr(call$formula, "xlevels") <- .getXlevels(terms(frame), frame)
+  list(Y = Y, X = X, O = O, w = w, formula = call$formula)
 }
 
 edge_to_node <- function(x, n = max(x)) {
