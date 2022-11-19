@@ -78,21 +78,21 @@ PLNnetworkfit <- R6Class(
         if (control$trace > 1) cat("", iter)
 
         ## CALL TO GLASSO TO UPDATE Omega/Sigma
-        S <- crossprod(par0$M)/self$n + diag(colMeans(par0$S**2), nrow = self$p)
-        glasso_out <- glassoFast::glassoFast(S, rho = self$penalty * self$penalty_weights)
+        Sigma_var <- crossprod(par0$M)/self$n + diag(colMeans(par0$S**2), nrow = self$p)
+        glasso_out <- glassoFast::glassoFast(Sigma_var, rho = self$penalty * self$penalty_weights)
         if (anyNA(glasso_out$wi)) break
         Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
         ## CALL TO NLOPT OPTIMIZATION
         optim_out <- cpp_optimize_fixed(par0, responses, covariates, offsets, weights, Omega, control)
+
         ## Check convergence
         objective[iter]   <- -sum(weights * optim_out$loglik) + self$penalty * sum(abs(Omega))
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
-
         if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate
-        par0  <- list(Theta = optim_out$Theta, M = optim_out$M, S = optim_out$S)
+        par0 <- list(Theta = optim_out$Theta, M = optim_out$M, S = optim_out$S)
         objective.old <- objective[iter]
       }
 
