@@ -11,9 +11,9 @@
 #' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param penalty a positive real number controlling the level of sparsity of the underlying network.
+#' @param penalty_weights either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 #' @param control a list for controlling the optimization of the PLN model used at initialization. See [PLNnetwork()] for details.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
-#' @param xlevels named listed of factor levels included in the models, extracted from the formula in [PLNnetwork()] call
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #'
 #'
@@ -39,8 +39,8 @@ PLNnetworkfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
-    initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, xlevels, control) {
-      super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
+    initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control) {
+      super$initialize(responses, covariates, offsets, weights, formula, control)
       private$lambda <- penalty
       stopifnot(isSymmetric(penalty_weights), all(penalty_weights > 0))
       private$rho    <- penalty_weights
@@ -72,33 +72,33 @@ PLNnetworkfit <- R6Class(
       convergence <- numeric(control$maxit_out)
       ## start from the standard PLN at initialization
       par0  <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
-      Sigma <- private$Sigma
       objective.old <- -self$loglik
       while (!cond) {
         iter <- iter + 1
         if (control$trace > 1) cat("", iter)
 
         ## CALL TO GLASSO TO UPDATE Omega/Sigma
-        glasso_out <- glassoFast::glassoFast(Sigma, rho = self$penalty * self$penalty_weights)
+        Sigma_var <- crossprod(par0$M)/self$n + diag(colMeans(par0$S**2), nrow = self$p)
+        glasso_out <- glassoFast::glassoFast(Sigma_var, rho = self$penalty * self$penalty_weights)
         if (anyNA(glasso_out$wi)) break
         Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
-        ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-        optim_out <- cpp_optimize_sparse(par0, responses, covariates, offsets, weights, Omega, control)
+        ## CALL TO NLOPT OPTIMIZATION
+        optim_out <- cpp_optimize_fixed(par0, responses, covariates, offsets, weights, Omega, control)
+
         ## Check convergence
         objective[iter]   <- -sum(weights * optim_out$loglik) + self$penalty * sum(abs(Omega))
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
-
         if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate
-        Sigma <- optim_out$Sigma
-        par0  <- list(Theta = optim_out$Theta, M = optim_out$M, S = optim_out$S)
+        par0 <- list(Theta = optim_out$Theta, M = optim_out$M, S = optim_out$S)
         objective.old <- objective[iter]
       }
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## OUTPUT
+      Sigma <- glasso_out$w ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
       Ji <- optim_out$loglik
       attr(Ji, "weights") <- weights
       self$update(

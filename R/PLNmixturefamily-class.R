@@ -12,7 +12,6 @@
 #' @param clusters the dimensions of the successively fitted models
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
-#' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call #'
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom purrr map map_dbl map_int
@@ -27,7 +26,6 @@ PLNmixturefamily <-
     ),
     private = list(
       formula = NULL,
-      xlevels = NULL,
 
       smooth_forward = function(control) {
 
@@ -57,12 +55,12 @@ PLNmixturefamily <-
           }) %>% map(as_indicator)
 
           loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
-            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, private$xlevels, control_fast)
+            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control_fast)
             model$optimize(self$responses, self$covariates, self$offsets, control_fast)
             model$loglik
           }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
 
-          best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, private$xlevels, control)
+          best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
           best_one$optimize(self$responses, self$covariates, self$offsets, control)
 
           if (best_one$loglik > self$models[[k + 1]]$loglik) {
@@ -90,12 +88,12 @@ PLNmixturefamily <-
           })
 
           loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
-            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, private$xlevels, control_fast)
+            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control_fast)
             model$optimize(self$responses, self$covariates, self$offsets, control_fast)
             model$loglik
           }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
 
-          best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, private$xlevels, control)
+          best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
           best_one$optimize(self$responses, self$covariates, self$offsets, control)
 
           if (best_one$loglik > self$models[[k - 1]]$loglik) {
@@ -115,15 +113,14 @@ PLNmixturefamily <-
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation -----------------------
     #' @description Initialize all models in the collection.
-      initialize = function(clusters, responses, covariates, offsets, formula, xlevels, control) {
+      initialize = function(clusters, responses, covariates, offsets, formula, control) {
 
         ## initialize the required fields
         super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
         private$params  <- clusters
         private$formula <- formula
-        private$xlevels <- xlevels
 
-        myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, xlevels, control)
+        myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control)
         myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
 
         Sbar <- rowSums(myPLN$var_par$S2)
@@ -141,7 +138,7 @@ PLNmixturefamily <-
           clusterings %>%
             map(as_indicator) %>%
             map(.check_boundaries) %>%
-            map(function(Z) PLNmixturefit$new(responses, covariates, offsets, Z, formula, xlevels, control))
+            map(function(Z) PLNmixturefit$new(responses, covariates, offsets, Z, formula, control))
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Optimization ----------------------

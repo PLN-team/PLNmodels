@@ -8,8 +8,7 @@ The function \code{\link[=PLN]{PLN()}} fit a model which is an instance of a obj
 Objects produced by the functions \code{\link[=PLNnetwork]{PLNnetwork()}}, \code{\link[=PLNPCA]{PLNPCA()}}, \code{\link[=PLNmixture]{PLNmixture()}} and \code{\link[=PLNLDA]{PLNLDA()}} also enjoy the methods of \code{\link[=PLNfit]{PLNfit()}} by inheritance.
 
 This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-See the documentation for \code{\link[=coef]{coef()}}, \code{\link[=sigma]{sigma()}},
-\code{\link[=predict]{predict()}}, \code{\link[=vcov]{vcov()}} and \code{\link[=standard_error]{standard_error()}}.
+See the documentation for \code{\link[=coef]{coef()}}, \code{\link[=sigma]{sigma()}}, \code{\link[=predict]{predict()}}, \code{\link[=vcov]{vcov()}} and \code{\link[=standard_error]{standard_error()}}.
 
 Fields are accessed via active binding and cannot be changed by the user.
 }
@@ -53,9 +52,9 @@ print(myPLN)
 
 \item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
 
-\item{\code{fisher}}{Variational approximation of the Fisher Information matrix}
+\item{\code{vcov_coef}}{Approximation of the Variance-Covariance of Theta}
 
-\item{\code{std_err}}{Variational approximation of the variance-covariance matrix of model parameters estimates.}
+\item{\code{std_err}}{Approximation of the variance-covariance matrix of model parameters estimates.}
 
 \item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
 
@@ -69,7 +68,7 @@ print(myPLN)
 
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
+\item{\code{vcov_model}}{character: the model used for the covariance (either "full", "diagonal", spherical", "fixed" or "genetic")}
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
@@ -103,8 +102,9 @@ print(myPLN)
 \item \href{#method-PLNfit-optimize_torch}{\code{PLNfit$optimize_torch()}}
 \item \href{#method-PLNfit-VEstep}{\code{PLNfit$VEstep()}}
 \item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
-\item \href{#method-PLNfit-compute_fisher}{\code{PLNfit$compute_fisher()}}
-\item \href{#method-PLNfit-compute_standard_error}{\code{PLNfit$compute_standard_error()}}
+\item \href{#method-PLNfit-vcov_sandwich}{\code{PLNfit$vcov_sandwich()}}
+\item \href{#method-PLNfit-vcov_wald}{\code{PLNfit$vcov_wald()}}
+\item \href{#method-PLNfit-get_vcov_hat}{\code{PLNfit$get_vcov_hat()}}
 \item \href{#method-PLNfit-postTreatment}{\code{PLNfit$postTreatment()}}
 \item \href{#method-PLNfit-predict}{\code{PLNfit$predict()}}
 \item \href{#method-PLNfit-predict_cond}{\code{PLNfit$predict_cond()}}
@@ -165,7 +165,7 @@ Update the current \code{\link{PLNfit}} object
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{PLNfit}} model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$new(responses, covariates, offsets, weights, formula, xlevels, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -180,8 +180,6 @@ Initialize a \code{\link{PLNfit}} model
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
@@ -293,7 +291,7 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 
 \item{\code{Theta}}{Optional fixed value of the regression parameters}
 
-\item{\code{Sigma}}{Optional fixed value of the covariance parameters.}
+\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
@@ -334,19 +332,43 @@ Update R2 field after optimization
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-compute_fisher"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-compute_fisher}{}}}
-\subsection{Method \code{compute_fisher()}}{
-Safely compute the fisher information matrix (FIM)
+\if{html}{\out{<a id="method-PLNfit-vcov_sandwich"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-vcov_sandwich}{}}}
+\subsection{Method \code{vcov_sandwich()}}{
+Compute the estimated variance of the coefficient Theta by
+M-estimation and sandwich correction
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$compute_fisher(type = c("wald", "louis"), X = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$vcov_sandwich(Y, X, Sigma = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{type}}{approximation scheme to compute the fisher information matrix. Either \code{wald} (default) or \code{louis}. \code{type = "louis"} results in smaller confidence intervals.}
+\item{\code{Y}}{matrix of responses used to compute the sandwich correction}
 
+\item{\code{X}}{design matrix used to compute the sandwich correction}
+
+\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a sparse matrix with sensible dimension names
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-vcov_wald"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-vcov_wald}{}}}
+\subsection{Method \code{vcov_wald()}}{
+Compute the estimated variance of the coefficient Theta by
+safely inverting the Wald variant of the variational Fisher information matrix (FIM)
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$vcov_wald(X = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
 \item{\code{X}}{design matrix used to compute the FIM}
 }
 \if{html}{\out{</div>}}
@@ -356,16 +378,30 @@ a sparse matrix with sensible dimension names
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-compute_standard_error"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-compute_standard_error}{}}}
-\subsection{Method \code{compute_standard_error()}}{
-Compute univariate standard error for coefficients of Theta from the FIM
+\if{html}{\out{<a id="method-PLNfit-get_vcov_hat"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-get_vcov_hat}{}}}
+\subsection{Method \code{get_vcov_hat()}}{
+Experimental: Compute the estimated variance of the coefficient Theta
+the true matrix Sigmamust be profided for sandwich estimation at the moment
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$compute_standard_error()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$get_vcov_hat(type, responses, covariates, Sigma = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{approximation scheme used, either \code{wald} (default, variational) or \code{sandwich} (based on MLE theory).}
+
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
-a matrix of standard deviations.
+a sparse matrix with sensible dimension names
 }
 }
 \if{html}{\out{<hr>}}
@@ -379,7 +415,7 @@ Update R2, fisher and std_err fields after optimization
   covariates,
   offsets,
   weights = rep(1, nrow(responses)),
-  type = c("wald", "louis", "none"),
+  type = c("wald", "sandwich", "none"),
   nullModel = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -395,7 +431,7 @@ Update R2, fisher and std_err fields after optimization
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{type}}{approximation scheme to compute the fisher information matrix. Either \code{wald} (default) or \code{louis}. \code{type = "louis"} results in smaller confidence intervals.}
+\item{\code{type}}{approximation scheme used, either \code{wald} (default, variational) or \code{sandwich} (based on MLE theory).}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }

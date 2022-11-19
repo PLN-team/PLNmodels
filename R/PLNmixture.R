@@ -65,7 +65,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control_init = li
   ## Instantiate the collection of PLN models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
   if (ctrl_main$trace > 0) cat("\n\n Adjusting", length(clusters), "PLN mixture models.\n")
-  myPLN <- PLNmixturefamily$new(clusters, args$Y, args$X, args$O, args$formula, args$xlevels, ctrl_init)
+  myPLN <- PLNmixturefamily$new(clusters, args$Y, args$X, args$O, args$formula, ctrl_init)
 
   ## Now adjust the PLN models
   myPLN$optimize(ctrl_main)

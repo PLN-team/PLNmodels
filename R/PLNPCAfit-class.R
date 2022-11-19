@@ -12,7 +12,6 @@
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param rank rank of the PCA (or equivalently, dimension of the latent space)
-#' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param type approximation scheme to compute the fisher information matrix. Either `wald` (default) or `louis`. `type = "louis"` results in smaller confidence intervals.
 ## Parameters common to many PLNLDAfit graphical methods
@@ -45,13 +44,14 @@ PLNPCAfit <- R6Class(
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Creation functions ----------------
       #' @description Initialize a [`PLNPCAfit`] object
-      initialize = function(rank, responses, covariates, offsets, weights, formula, xlevels, control) {
-        super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
+      initialize = function(rank, responses, covariates, offsets, weights, formula, control) {
+        super$initialize(responses, covariates, offsets, weights, formula, control)
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {
           svdM <- svd(private$M, nu = rank, nv = self$p)
         }
+        ### TODO: check that it is really better than initializing with zeros...
         private$M  <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
         private$S2 <- matrix(0.1, self$n, rank)
         private$B  <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
@@ -170,7 +170,7 @@ PLNPCAfit <- R6Class(
       project = function(newdata, control = list(), envir = parent.frame()) {
 
         ## Extract the model matrices from the new data set with initial formula
-        args <- extract_model(call("PLNPCA", formula = private$formula, data = newdata, xlev = private$xlevels), envir)
+        args <- extract_model(call("PLNPCA", formula = private$formula, data = newdata), envir)
 
         ## Compute latent positions of the new samples
         M <- self$VEstep(covariates = args$X, offsets = args$O, responses = args$Y,
@@ -190,8 +190,8 @@ PLNPCAfit <- R6Class(
       ## Post treatment --------------------
       #' @description Compute PCA scores in the latent space and update corresponding fields.
       #' @param scale.unit Logical. Should PCA scores be rescaled to have unit variance
-      setVisualization = function(scale.unit=FALSE) {
-        private$svdBM <- svd(scale(self$latent_pos,TRUE, scale.unit), nv = self$rank)
+      setVisualization = function(scale.unit = FALSE) {
+        private$svdBM <- svd(scale(self$latent_pos, TRUE, scale.unit), nv = self$rank)
       },
 
       #' @description Update R2, fisher, std_err fields and set up visualization
@@ -202,17 +202,6 @@ PLNPCAfit <- R6Class(
         rownames(private$B) <- colnames(responses)
         if (private$covariance != "spherical") colnames(private$S2) <- 1:self$q
         self$setVisualization()
-      },
-
-      #' @description Safely compute the fisher information matrix (FIM)
-      #' @param X design matrix used to compute the FIM
-      #' @return a sparse matrix with sensible dimension names
-      compute_fisher = function(type = c("wald", "louis"), X = NULL) {
-        type = match.arg(type)
-        if (type == "louis") {
-          stop("Louis approximation scheme not available yet for object of class PLNPLCA, use type = \"wald\" instead.")
-        }
-        super$compute_fisher(type = "wald", X = X)
       },
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -355,7 +344,7 @@ PLNPCAfit <- R6Class(
       #' @field entropy entropy of the variational distribution
       entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)))},
       #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
-      latent_pos = function() {t(tcrossprod(private$B, private$M))},
+      latent_pos = function() {tcrossprod(private$M, private$B)},
       #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
       model_par = function() {
         par <- super$model_par

@@ -63,7 +63,6 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \item \href{#method-PLNPCAfit-project}{\code{PLNPCAfit$project()}}
 \item \href{#method-PLNPCAfit-setVisualization}{\code{PLNPCAfit$setVisualization()}}
 \item \href{#method-PLNPCAfit-postTreatment}{\code{PLNPCAfit$postTreatment()}}
-\item \href{#method-PLNPCAfit-compute_fisher}{\code{PLNPCAfit$compute_fisher()}}
 \item \href{#method-PLNPCAfit-plot_individual_map}{\code{PLNPCAfit$plot_individual_map()}}
 \item \href{#method-PLNPCAfit-plot_correlation_circle}{\code{PLNPCAfit$plot_correlation_circle()}}
 \item \href{#method-PLNPCAfit-plot_PCA}{\code{PLNPCAfit$plot_PCA()}}
@@ -74,13 +73,15 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-compute_standard_error'><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-get_vcov_hat'><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_nlopt"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_nlopt'><code>PLNmodels::PLNfit$optimize_nlopt()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_torch"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_torch'><code>PLNmodels::PLNfit$optimize_torch()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_sandwich"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_sandwich'><code>PLNmodels::PLNfit$vcov_sandwich()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_wald"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_wald'><code>PLNmodels::PLNfit$vcov_wald()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -90,16 +91,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{PLNPCAfit}} object
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$new(
-  rank,
-  responses,
-  covariates,
-  offsets,
-  weights,
-  formula,
-  xlevels,
-  control
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$new(rank, responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -116,8 +108,6 @@ Initialize a \code{\link{PLNPCAfit}} object
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
@@ -304,28 +294,6 @@ after optimization
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }
 \if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNPCAfit-compute_fisher"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNPCAfit-compute_fisher}{}}}
-\subsection{Method \code{compute_fisher()}}{
-Safely compute the fisher information matrix (FIM)
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$compute_fisher(type = c("wald", "louis"), X = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{type}}{approximation scheme to compute the fisher information matrix. Either \code{wald} (default) or \code{louis}. \code{type = "louis"} results in smaller confidence intervals.}
-
-\item{\code{X}}{design matrix used to compute the FIM}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a sparse matrix with sensible dimension names
 }
 }
 \if{html}{\out{<hr>}}

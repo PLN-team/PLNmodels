@@ -21,9 +21,6 @@ test_that("Check that fisher and standard_error return objects with proper dimen
   expect_equal(rownames(sem), rownames(coef(myPLN_cov)))
   expect_equal(colnames(sem), colnames(coef(myPLN_cov)))
 
-  ## Fisher is block diagonal
-  # expect_equal(inherits(fim, "dsCMatrix"), TRUE)
-
   ## Standard errors are all positive
   for (i in 1:(p*d)) {
     expect_gte(sem[i], 0)
@@ -34,27 +31,20 @@ test_that("Check that fisher and standard_error return objects with proper dimen
 ## Fit model without covariates
 myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 
-test_that("Fisher is deprecated", {
-
-  expect_warning(fisher(myPLN),
-                 "Deprecated: please use `vcov()` instead",
-                 fixed = TRUE)
-})
-
 ## Consistency -----------------------
 test_that("Check internal consistency of Fisher matrix for PLN models with no covariates",  {
   tol <- 1e-8
 
   ## Consistency of the diagonal of the fisher matrix
-  fim.diag <- Matrix::diag(vcov(myPLN))
-  manual.fim.diag <- colSums(myPLN$fitted)
+  fim.diag <- Matrix::diag(solve(vcov(myPLN)))
+  manual.fim.diag <- colMeans(myPLN$fitted)
   ## Consistency of the standard error matrix
   sem <- standard_error(myPLN) %>% as.numeric()
-  manual.sem <- 1/colSums(myPLN$fitted) %>% sqrt()
+  manual.sem <- 1/colMeans(myPLN$fitted) %>% sqrt()
 
   ## Internal consistency
-  expect_equivalent(fim.diag        , manual.fim.diag  , tolerance = tol)
-  expect_equal(sem             , manual.sem       , tolerance = tol)
+  expect_equivalent(fim.diag, manual.fim.diag  , tolerance = tol)
+  expect_equal(sem          , manual.sem       , tolerance = tol)
 
 })
 
@@ -63,7 +53,7 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
   tol <- 1e-2
 
   ## Consistency of the diagonal of the fisher matrix
-  fim.diag <- Matrix::diag(vcov(myPLN)) / nrow(trichoptera)
+  fim.diag <- Matrix::diag(solve(vcov(myPLN)))
   ## Values computed on the 2018/12/11 with PLNmodels version 0.5.9601)
   expected.fim.diag <- c(0.0612123698810698, 0.0612384161054906, 3.73462487824109, 0.122467107738817,
                          122.19280897578, 2.2230572191967, 0.285741065637069, 0.285687659219944,
@@ -74,14 +64,15 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
   ## Consistency of the standard error matrix
   sem <- standard_error(myPLN) %>% as.numeric()
   ## Values computed on the 2018/12/11 with PLNmodels version 0.5.9601)
-  expected.sem <- c(0.577407423403546, 0.577284617461014, 0.0739228099688871, 0.40821807394677,
+  expected.sem <- sqrt(nrow(trichoptera$Abundance)) *
+    c(0.577407423403546, 0.577284617461014, 0.0739228099688871, 0.40821807394677,
                     0.0129234699024801, 0.0958134855472534, 0.267248717630853, 0.267273696185322,
                     0.378113801869815, 0.0928473302527288, 0.072725644559697, 0.138682400064212,
                     0.0723054848787022, 0.0866042221012381, 0.0461136022101119, 0.333358395876535,
                     0.058620515251328)
 
   ## Temporal consistency (with previous fits of the PLN model, here fitted on the 2018/12/11 with PLNmodels version 0.5.9601)
-  expect_equivalent(fim.diag        , expected.fim.diag, tolerance = tol)
+  expect_equivalent(fim.diag   , expected.fim.diag, tolerance = tol)
   expect_equal(sem             , expected.sem     , tolerance = tol)
 
 })

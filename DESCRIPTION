@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 0.11.7-9000
+Version: 0.11.7-9600
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inrae.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -21,7 +21,7 @@ BugReports: https://github.com/pln-team/PLNmodels/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 Depends: R (>= 3.4)
 LazyData: true
 biocViews:
@@ -90,6 +90,7 @@ Collate:
     'import_utils.R'
     'mollusk.R'
     'oaks.R'
+    'optim_torch_PLN.R'
     'plot_utils.R'
     'trichoptera.R'
     'utils-pipe.R'

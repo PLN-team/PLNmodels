@@ -56,7 +56,6 @@ Initialize all models in the collection.
   covariates,
   offsets,
   formula,
-  xlevels,
   control
 )}\if{html}{\out{</div>}}
 }
@@ -73,8 +72,6 @@ Initialize all models in the collection.
 \item{\code{offsets}}{the matrix of offsets common to every models}
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call #'}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 

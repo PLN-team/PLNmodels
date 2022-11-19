@@ -97,7 +97,6 @@ Initialize a \code{\link{PLNmixturefit}} model
   offsets,
   posteriorProb,
   formula,
-  xlevels,
   control
 )}\if{html}{\out{</div>}}
 }
@@ -114,8 +113,6 @@ Initialize a \code{\link{PLNmixturefit}} model
 \item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call #'}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 

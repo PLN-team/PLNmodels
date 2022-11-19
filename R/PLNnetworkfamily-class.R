@@ -14,7 +14,6 @@
 #' @param weights the vector of observation weights
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
-#' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
 #' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
 #' @param index Integer index of the model to be returned. Only the first value is taken into account
 #'
@@ -38,12 +37,12 @@ PLNnetworkfamily <- R6Class(
     ## Creation functions ----------------
     #' @description Initialize all models in the collection
     #' @return Update current [`PLNnetworkfit`] with smart starting values
-    initialize = function(penalties, responses, covariates, offsets, weights, formula, xlevels, control) {
+    initialize = function(penalties, responses, covariates, offsets, weights, formula, control) {
 
       ## initialize fields shared by the super class
       super$initialize(responses, covariates, offsets, weights, control)
       ## A basic model for inception
-      myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, xlevels, control)
+      myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, control)
       myPLN$optimize(responses, covariates, offsets, weights, control)
       control$inception <- myPLN
 
@@ -81,7 +80,7 @@ PLNnetworkfamily <- R6Class(
 
       ## instantiate as many models as penalties
       self$models <- map2(private$params, list_penalty_weights, function(penalty, penalty_weights) {
-        PLNnetworkfit$new(penalty, penalty_weights, responses, covariates, offsets, weights, formula, xlevels, control)
+        PLNnetworkfit$new(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control)
       })
 
     },
@@ -101,11 +100,10 @@ PLNnetworkfamily <- R6Class(
           cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
         }
         self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
-        ## Save time by starting the optimization of model m+1  with optimal parameters of model m
+        ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
         if (m < length(self$penalties))
           self$models[[m + 1]]$update(
             Theta = self$models[[m]]$model_par$Theta,
-            Sigma = self$models[[m]]$model_par$Sigma,
             M     = self$models[[m]]$var_par$M,
             S2    = self$models[[m]]$var_par$S2
           )
@@ -155,7 +153,6 @@ PLNnetworkfamily <- R6Class(
                                       covariates = self$covariates[subsample, , drop = FALSE],
                                       offsets    = self$offsets   [subsample, , drop = FALSE],
                                       formula    = private$formula,
-                                      xlevels    = private$xlevels,
                                       weights    = self$weights   [subsample], control = ctrl_init)
 
         ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p)

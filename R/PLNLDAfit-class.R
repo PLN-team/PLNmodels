@@ -19,7 +19,6 @@
 #' @param grouping a factor specifying the class of each observation used for discriminant analysis.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
-#' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 ## Parameters common to many PLNLDAfit graphical methods
 #' @param map the type of output for the PCA visualization: either "individual", "variable" or "both". Default is "both".
@@ -52,9 +51,9 @@ PLNLDAfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNLDAfit`] object
-    initialize = function(grouping, responses, covariates, offsets, weights, formula, xlevels, control) {
+    initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
-      super$initialize(responses, covariates, offsets, weights, formula, xlevels, control)
+      super$initialize(responses, covariates, offsets, weights, formula, control)
       private$grouping <- grouping
       super$optimize(responses, covariates, offsets, weights, control)
     },
@@ -230,7 +229,7 @@ PLNLDAfit <- R6Class(
       scale <- match.arg(scale)
 
       ## Extract the model matrices from the new data set with initial formula
-      args <- extract_model(call = call("PLNLDA", formula = private$formula, data = newdata), envir = envir, xlev = private$xlevels)
+      args <- extract_model(call = call("PLNLDA", formula = private$formula, data = newdata), envir = envir)
       ## Remove intercept to prevent interference with binary coding of the grouping factor
       args$X <- args$X[ , colnames(args$X) != "(Intercept)", drop = FALSE]
 

@@ -60,8 +60,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 
   ## Instantiate the collection of models
   if (ctrl_main$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNnetworkfamily$new(penalties, args$Y, args$X, args$O, args$w,
-                                args$formula, args$xlevels, ctrl_init)
+  myPLN <- PLNnetworkfamily$new(penalties, args$Y, args$X, args$O, args$w, args$formula, ctrl_init)
 
   ## Optimization
   if (ctrl_main$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")

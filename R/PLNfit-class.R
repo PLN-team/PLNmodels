@@ -4,8 +4,7 @@
 #' Objects produced by the functions [PLNnetwork()], [PLNPCA()], [PLNmixture()] and [PLNLDA()] also enjoy the methods of [PLNfit()] by inheritance.
 #'
 #' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-#' See the documentation for [coef()], [sigma()],
-#' [predict()], [vcov()] and [standard_error()].
+#' See the documentation for [coef()], [sigma()], [predict()], [vcov()] and [standard_error()].
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'
@@ -15,9 +14,9 @@
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
-#' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
-#' @param type approximation scheme to compute the fisher information matrix. Either `wald` (default) or `louis`. \code{type = "louis"} results in smaller confidence intervals.
+#' @param type approximation scheme used, either `wald` (default, variational) or `sandwich` (based on MLE theory).
+#' @param Sigma variance-covariance matrix of the latent variables
 #'
 #' @inherit PLN details
 #'
@@ -44,7 +43,6 @@ PLNfit <- R6Class(
     #' @description
     #' Update a [`PLNfit`] object
     #' @param Theta matrix of regression matrix
-    #' @param Sigma variance-covariance matrix of the latent variables
     #' @param M     matrix of mean vectors for the variational approximation
     #' @param S2    matrix of variance vectors for the variational approximation
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
@@ -70,17 +68,13 @@ PLNfit <- R6Class(
     ## TODO: Once "set" is supported by Roxygen go back to external definition using
     ## PLNfit$set("public", "initialize", { ... })
     ## See https://github.com/r-lib/roxygen2/issues/931
-    initialize = function(responses, covariates, offsets, weights, formula, xlevels, control) {
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
       ## problem dimensions
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
-
-      ## save the formula call as specified by the user
-      private$formula    <- formula
-      private$xlevels    <- xlevels
-      ## initialize the covariance model
-      private$covariance <- control$covariance
-      ## initialize the optimization backend
-      private$backend <- control$backend
+      ## save various quantities
+      private$formula <- formula               # user formula call
+      private$covariance <- control$covariance # covariance model
+      private$backend <- control$backend       # optimization backend
 
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -92,23 +86,12 @@ PLNfit <- R6Class(
         private$Sigma <- control$inception$model_par$Sigma
         private$Ji    <- control$inception$loglik_vec
       } else {
-        # if (control$trace > 1) cat("\n Use GLM Poisson to define the inceptive model")
-        # LMs   <- lapply(1:p, function(j) glm.fit(covariates, responses[,j], weights, offset =  offsets[,j], family = poisson(), intercept = FALSE))
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
         LMs   <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset =  offsets[,j]) )
         private$Theta <- do.call(rbind, lapply(LMs, coefficients))
         residuals     <- do.call(cbind, lapply(LMs, residuals))
         private$M     <- residuals
         private$S2    <- matrix(0.1,n,p)
-        if (control$covariance == "spherical") {
-          private$Sigma <- diag(sum(residuals^2)/(n*p), p, p)
-        } else  if (control$covariance == "diagonal") {
-          private$Sigma <- diag(diag(crossprod(residuals)/n), p, p)
-        } else  if (control$covariance == "heritability") {
-
-        } else  {
-          private$Sigma <- crossprod(residuals)/n + diag(colMeans(private$S2), nrow = p)
-        }
       }
     },
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,7 +102,6 @@ PLNfit <- R6Class(
         self$optimize_nlopt(responses, covariates, offsets, weights, control)
       else
         self$optimize_torch(responses, covariates, offsets, weights, control)
-
     },
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
@@ -127,19 +109,22 @@ PLNfit <- R6Class(
     optimize_nlopt = function(responses, covariates, offsets, weights, control) {
 
       optimizer  <-
-        switch(self$vcov_model,
+        switch(control$covariance,
                "spherical" = cpp_optimize_spherical,
                "diagonal"  = cpp_optimize_diagonal ,
                "genetic"   = cpp_optimize_genetic_modeling,
+               "fixed"     = cpp_optimize_fixed,
                "full"      = cpp_optimize_full
         )
 
       args <- list(Y = responses, X = covariates, O = offsets, w = weights, configuration = control)
+      args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
       if (self$vcov_model == "genetic") {
-        args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2), rho = 0.25)
+        args$init_parameters$rho = 0.25
         args$C <- control$corr_matrix
-      } else {
-        args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
+      }
+      if (self$vcov_model == "fixed") {
+        args$Omega <- control$prec_matrix
       }
 
       optim_out <- do.call(optimizer, args)
@@ -161,116 +146,38 @@ PLNfit <- R6Class(
 
       if (self$vcov_model == "genetic")
         private$psi <- list(sigma2 = optim_out$sigma2, rho = optim_out$rho)
+      if (self$vcov_model == "fixed")
+        private$Sigma <- solve(control$prec_matrix)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
     #' @description Call to the torch backend and update of the relevant fields
-    #' @import torch
     optimize_torch = function(responses, covariates, offsets, weights, control) {
 
+      ## Initialize with NLOPT solution
       self$optimize_nlopt(responses, covariates, offsets, weights, control)
 
-      X   <- torch_tensor(covariates)
-      Y   <- torch_tensor(responses)
-      O   <- torch_tensor(offsets)
-      w   <- torch_tensor(weights)
-      W   <- torch_diag(w)
-      w_bar <- sum(w)
+      ## Call to external function for readability
+      init_parameters <- list(Theta = t(private$Theta), M = private$M, S = sqrt(private$S2))
+      optim_out <- optimize_torch_PLN(responses, covariates, offsets, weights, init_parameters, control)
 
-      get_objective <-
-        switch(self$vcov_model,
-           "spherical" = function(Theta, M, S) {
-             S2 <- S*S
-             Z <- O + M + torch_matmul(X, Theta)
-             sigma2 <- sum(torch_matmul(w, M * M + S2)) / (w_bar * self$p)
-             .5 * self$p * w_bar * log(sigma2) - sum(torch_matmul(w , Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
-           },
-           "diagonal"  = function(Theta, M, S) {
-             S2 <- S*S
-             Z <- O + M + torch_matmul(X, Theta)
-             D <-  torch_matmul(w, M * M + S2) / w_bar;
-             .5 * w_bar * sum(torch_log(D)) - sum(torch_matmul(w , Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
-           },
-           "full"      = function(Theta, M, S) {
-             S2 <- S*S
-             Z <- O + M + torch_matmul(X, Theta)
-             Mw <- torch_matmul(torch_diag(torch_sqrt(w)), M)
-             Sigma <- (torch_matmul(torch_transpose(Mw, 2, 1), Mw) + torch_diag(torch_matmul(w, S2))) / w_bar
-             .5 * w_bar * torch_logdet(Sigma) - sum(torch_matmul(w, Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
-           }
-        )
-
-      get_Sigma <- function(M, S) {
-        switch(self$vcov_model,
-               "spherical" = torch_eye(self$p) * sum(torch_matmul(w, M * M + S*S)) / (w_bar * self$p),
-               "diagonal"  = torch_diag(torch_matmul(w, M * M + S*S) / w_bar),
-               "full"      = {
-                 Mw <- torch_matmul(torch_diag(torch_sqrt(w)), M)
-                 (torch_matmul(torch_transpose(Mw, 2, 1), Mw) + torch_diag(torch_matmul(w, S*S))) / w_bar
-               }
-        )
-      }
-
-      ## Initialization
-      Theta <- torch::torch_tensor(t(private$Theta), requires_grad = TRUE)
-      M     <- torch::torch_tensor(private$M       , requires_grad = TRUE)
-      S     <- torch::torch_tensor(sqrt(private$S2), requires_grad = TRUE)
-      objective <- double(length = control$maxeval + 1)
-      optimizer <- torch::optim_rprop(c(Theta, M, S), lr = control$learning_rate)
-      message <- "failure"
-
-      ## Optimization loop
-      for (iterate in seq.int(control$maxeval)) {
-        ## Optimization
-        optimizer$zero_grad()                # reinitialize gradients
-        loss <- get_objective(Theta, M, S)   # compute current ELBO
-        loss$backward()                      # backward propagation and optimization
-        optimizer$step()
-        ## Display progress
-        objective[iterate + 1] <- loss$item()
-        if(control$trace >  1 && (iterate %% 50 == 0))
-          cat(' \n iteration : ', iterate, 'Objective', objective[iterate + 1])
-        ## Check for convergence
-        if (abs(objective[iterate] - objective[iterate + 1]) / abs(objective[iterate+1]) < control$ftol_rel) {
-          objective <- objective[1:iterate + 1]
-          message <- "converged"
-          break
-        }
-      }
-
-      Sigma <- get_Sigma(M, S)
-      Omega <- torch::torch_inverse(Sigma)
-      S2 <- torch::torch_multiply(S,S)
-      Z  <- O + M + torch::torch_matmul(X, Theta)
-      A  <- torch::torch_exp(Z + S2/2)
-      KY <- rowSums(.logfactorial(responses))
-
-      Ji <- as.numeric(
-        .5 * torch_logdet(Omega) +
-        torch_sum(Y * Z - A + .5 * torch_log(S2), dim = 2) -
-        .5 * torch_sum(torch_matmul(M, Omega) * M + S2 * torch_diag(Omega), dim = 2) +
-        .5 * self$p - KY
-      )
-      attr(Ji, "weights") <- weights
+      ## Saving output
       self$update(
-        Theta      = t(as.matrix(Theta)),
-        Sigma      = as.matrix(Sigma),
-        M          = as.matrix(M),
-        S2         = as.matrix(S2),
-        Z          = as.matrix(Z),
-        A          = as.matrix(A),
-        Ji         = Ji,
-        monitoring = list(
-          objective  = objective,
-          iterations = iterate,
-          message    = message)
+        Theta      = t(as.matrix(optim_out$Theta)),
+        Sigma      = as.matrix(optim_out$Sigma),
+        M          = as.matrix(optim_out$M),
+        S2         = as.matrix(optim_out$S2),
+        Z          = as.matrix(optim_out$Z),
+        A          = as.matrix(optim_out$A),
+        Ji         = optim_out$Ji,
+        monitoring = optim_out$monitoring
       )
     },
 
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
     #' @param Theta Optional fixed value of the regression parameters
-    #' @param Sigma Optional fixed value of the covariance parameters.
+    #' @param Sigma variance-covariance matrix of the latent variables
     #' @return A list with three components:
     #'  * the matrix `M` of variational means,
     #'  * the matrix `S2` of variational variances
@@ -328,62 +235,99 @@ PLNfit <- R6Class(
       private$R2 <- (loglik - lmin) / (lmax - lmin)
     },
 
-    #' @description Safely compute the fisher information matrix (FIM)
-    #' @param X design matrix used to compute the FIM
+    #' @description Compute the estimated variance of the coefficient Theta by
+    #' M-estimation and sandwich correction
+    #' @param Y matrix of responses used to compute the sandwich correction
+    #' @param X design matrix used to compute the sandwich correction
     #' @return a sparse matrix with sensible dimension names
-    compute_fisher = function(type = c("wald", "louis"), X = NULL) {
-      type <- match.arg(type)
+    vcov_sandwich = function(Y, X, Sigma = NULL) {
+      if (is.null(Sigma)) Sigma <- private$Sigma
+      getMat_iCnTheta <- function(i) {
+        a_i   <- as.numeric(private$A[i, ])
+        s2_i  <- as.numeric(private$S2[i, ])
+        # omega <- as.numeric(1/diag(private$Sigma))
+        # diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
+        diag_mat_i <- diag(1/a_i + .5 * s2_i^2)
+        solve(Sigma + diag_mat_i)
+      }
+
+      YmA <- Y - private$A
+      Dn <- matrix(0, self$d*self$p, self$d*self$p)
+      Cn <- matrix(0, self$d*self$p, self$d*self$p)
+      for (i in 1:self$n) {
+        xxt_i <- tcrossprod(X[i, ])
+        Cn <- Cn - kronecker(getMat_iCnTheta(i) , xxt_i) / (self$n) ## Overall, the divisions by n cancel each other.
+        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
+      }
+      Cn_inv <- solve(Cn)
+      (Cn_inv %*% Dn %*% Cn_inv) / (self$n)
+    },
+
+    #' @description Compute the estimated variance of the coefficient Theta by
+    #' safely inverting the Wald variant of the variational Fisher information matrix (FIM)
+    #' @param X design matrix used to compute the FIM
+    #' @importFrom Matrix bdiag solve
+    #' @return a sparse matrix with sensible dimension names
+    vcov_wald = function(X = NULL) {
       A <- private$A
-      if (type == "louis") {
-        ## TODO check how to adapt for PLNPCA
-        ## A = A + A \odot A \odot (exp(S) - 1_{n \times p})
-        A <- A + A * A * (exp(self$var_par$S) - 1)
+      fisher <- bdiag(lapply(1:self$p, function(i) {
+        crossprod(X, A[, i] * X) # t(X) %*% diag(A[, i]) %*% X
+      }))
+      res <- tryCatch(self$n*Matrix::solve(fisher), error = function(e) {e})
+      if (is(res, "error")) {
+        warning(paste("Inversion of the Fisher information matrix failed with following error message:",
+                      res$message, "Returning NA", sep = "\n"))
+        res <- matrix(NA, nrow = self$p, ncol = self$d)
       }
-      if (anyNA(A)) {
-        warning("Something went wrong during model fitting!!\nMatrix A has missing values.")
-        result <- bdiag(lapply(1:self$p, function(i) {diag(NA, nrow = self$d)}))
-      } else {
-        result <- bdiag(lapply(1:self$p, function(i) {
-          ## t(X) %*% diag(A[, i]) %*% X
-          crossprod(X, A[, i] * X)
-        }))
-      }
+      res
+    },
+
+    ## UNCORRECT
+    # #' @description Compute the estimated variance of the coefficient Theta by
+    # #' safely inverting the Louis variant of the variational Fisher information matrix (FIM)
+    # #' @param X design matrix used to compute the FIM
+    # #' @return a sparse matrix with sensible dimension names
+    # vcov_louis = function(X = NULL) {
+    #   A <- private$A
+    #   ## TODO check how to adapt for PLNPCA
+    #   A <- A + A * A * (exp(self$var_par$S2) - 1)
+    #   fisher <- bdiag(lapply(1:self$p, function(i) {
+    #     # t(X) %*% diag(A[, i]) %*% X
+    #     crossprod(X, A[, i] * X)
+    #   }))
+    #   res <- tryCatch(self$n*Matrix::solve(fisher), error = function(e) {e})
+    #   if (is(res, "error")) {
+    #     warning(paste("Inversion of the Fisher information matrix failed with following error message:",
+    #                   res$message,
+    #                   "Returning NA",
+    #                   sep = "\n"))
+    #     res <- matrix(NA, nrow = self$p, ncol = self$d)
+    #   }
+    #   res
+    # },
+
+    #' @description Experimental: Compute the estimated variance of the coefficient Theta
+    #' the true matrix Sigmamust be profided for sandwich estimation at the moment
+    #' @return a sparse matrix with sensible dimension names
+    get_vcov_hat = function(type, responses, covariates, Sigma = NULL) {
+      ## compute and store the estimated covariance of the estimator of the parameter Theta
+      vcov_hat <-
+        switch(type,
+               "wald"     = self$vcov_wald(X = covariates),
+               "sandwich" = self$vcov_sandwich(Y = responses, X = covariates, Sigma = Sigma),
+               "none"     = NULL)
+
       ## set proper names, use sensible defaults if some names are missing
-      element.names <- expand.grid(covariates = colnames(private$Theta),
-                                   species    = rownames(private$Theta)) %>% rev() %>%
+      rownames(vcov_hat) <- expand.grid(covariates = colnames(covariates),
+                                   responses  = colnames(responses)) %>% rev() %>%
         ## Hack to make sure that species is first and varies slowest
         apply(1, paste0, collapse = "_")
-      rownames(result) <- element.names
-      result
+      attr(vcov_hat, "name") <- type
+      private$vcov_hat <- vcov_hat
     },
-
-    #' @description Compute univariate standard error for coefficients of Theta from the FIM
-    #' @return a matrix of standard deviations.
-    #' @importFrom Matrix diag solve
-    compute_standard_error = function() {
-      if (self$d > 0) {
-        ## self$fisher$mat : Fisher Information matrix I_n(\Theta) = n * I(\Theta)
-        ## safe inversion using Matrix::solve and Matrix::diag and error handling
-        out <- tryCatch(Matrix::diag(Matrix::solve(self$fisher$mat)),
-                        error = function(e) {e})
-        if (is(out, "error")) {
-          warning(paste("Inversion of the Fisher information matrix failed with following error message:",
-                        out$message,
-                        "Returning NA",
-                        sep = "\n"))
-          stderr <- matrix(NA, nrow = self$p, ncol = self$d)
-        } else {
-          stderr <- out %>% sqrt %>% matrix(nrow = self$d) %>% t()
-        }
-        dimnames(stderr) <- dimnames(self$model_par$Theta)
-      } else {
-        stderr <- NULL
-      }
-      stderr
-    },
-
     #' @description Update R2, fisher and std_err fields after optimization
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "louis", "none"), nullModel = NULL) {
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "sandwich", "none"), nullModel = NULL) {
+      type <- match.arg(type)
       ## compute R2
       self$set_R2(responses, covariates, offsets, weights, nullModel)
       ## Set the name of the matrices according to those of the data matrices,
@@ -393,13 +337,9 @@ PLNfit <- R6Class(
       colnames(private$Theta) <- colnames(covariates)
       rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
       rownames(private$M) <- rownames(private$S2) <- rownames(responses)
-      ## compute and store Fisher Information matrix
-      type <- match.arg(type)
-      if (type != "none") {
-        private$FIM <- self$compute_fisher(type, X = covariates)
-        private$FIM_type <- type
+      if (type != 'none') {
         ## compute and store matrix of standard errors
-        private$.std_err <- self$compute_standard_error()
+        self$get_vcov_hat(type, responses, covariates)
       }
     },
 
@@ -412,7 +352,7 @@ PLNfit <- R6Class(
       type <- match.arg(type)
 
       ## Extract the model matrices from the new data set with initial formula
-      X <- model.matrix(formula(private$formula)[-2], newdata, xlev = private$xlevels)
+      X <- model.matrix(formula(private$formula)[-2], newdata, xlev = attr(private$formula, "xlevels"))
       O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
 
       ## mean latent positions in the parameter space
@@ -450,7 +390,7 @@ PLNfit <- R6Class(
       cond <- sp_names %in% colnames(Yc)
 
       ## Extract the model matrices from the new data set with initial formula
-      X <- model.matrix(formula(private$formula)[-2], newdata, xlev = private$xlevels)
+      X <- model.matrix(formula(private$formula)[-2], newdata, xlev = attr(private$formula, "xlevels"))
       O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
       if (is.null(O)) O <- matrix(0, n_new, self$p)
 
@@ -481,10 +421,10 @@ PLNfit <- R6Class(
       colnames(EZ) <- setdiff(sp_names, colnames(Yc))
 
       # ! We should only add the .5*diag(S2) term only if we want the type="response"
-      if (type == "response"){
-        if(ncol(EZ)==1){
-          EZ <- EZ + .5 *S
-        }else{
+      if (type == "response") {
+        if (ncol(EZ) == 1) {
+          EZ <- EZ + .5 * S
+        } else {
           EZ <- EZ + .5 * t(apply(S, 3, diag))
         }
       }
@@ -526,22 +466,18 @@ PLNfit <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
     formula    = NA, # the formula call for the model as specified by the user
-    xlevels    = NA, # factor levels present in the original data, useful for predict() methods.
-    Theta      = NA, # the model parameters for the covariable
-    Sigma      = NA, # the covariance matrix
-    S2         = NA, # the variational parameters for the variances
-    M          = NA, # the variational parameters for the means
-    Z          = NA, # the matrix of latent variable
-    A          = NA, # the matrix of expected counts
+    Theta      = NA, # regression parameters of the latent layer
+    Sigma      = NA, # covariance matrix of the latent layer
+    S2         = NA, # variational parameters for the variances
+    M          = NA, # variational parameters for the means
+    psi        = NA, # parameters for genetic model of covariance
+    Z          = NA, # matrix of latent variable
+    A          = NA, # matrix of expected counts (under variational approximation)
     R2         = NA, # approximated goodness of fit criterion
     Ji         = NA, # element-wise approximated loglikelihood
-    psi        = NA, # parameters for genetic model of covariance
-    FIM        = NA, # Fisher information matrix of Theta, computed using of two approximation scheme
-    FIM_type   = NA, # Either "wald" or "louis". Approximation scheme used to compute FIM
-    .std_err   = NA, # element-wise standard error for the elements of Theta computed
-    # from the Fisher information matrix
-    backend    = NA, # Either "nlopt" or "torch"
-    covariance = NA, # a string describing the covariance model
+    vcov_hat   = NA, # estimated variance of Theta
+    backend    = NA, # either "nlopt" or "torch"
+    covariance = NA, # a string describing the residual covariance model
     monitoring = NA  # a list with optimization monitoring quantities
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -558,10 +494,18 @@ PLNfit <- R6Class(
     d = function() {ncol(private$Theta)},
     #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
     model_par  = function() {list(Theta = private$Theta, Sigma = private$Sigma)},
-    #' @field fisher Variational approximation of the Fisher Information matrix
-    fisher     = function() {list(mat = private$FIM, type = private$FIM_type) },
-    #' @field std_err Variational approximation of the variance-covariance matrix of model parameters estimates.
-    std_err    = function() {private$.std_err },
+    #' @field vcov_coef Approximation of the Variance-Covariance of Theta
+    vcov_coef  = function() {private$vcov_hat},
+    #' @field std_err Approximation of the variance-covariance matrix of model parameters estimates.
+    std_err    = function() {
+      if (self$d > 0) {
+        stderr <- diag(private$vcov_hat) %>% sqrt %>% matrix(nrow = self$d) %>% t()
+        dimnames(stderr) <- dimnames(self$model_par$Theta)
+      } else {
+        stderr <- NULL
+      }
+      stderr
+    },
     #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
     var_par    = function() {list(M = private$M, S2 = private$S2)},
     #' @field gen_par a list with two parameters, sigma2 and rho, only used with the genetic covariance model
@@ -574,10 +518,10 @@ PLNfit <- R6Class(
     fitted     = function() {private$A},
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {
-      res <- self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1, "genetic" = 2)
+      res <- self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1, "genetic" = 2, "fixed" = 0)
       as.integer(res)
     },
-    #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal" or "full")
+    #' @field vcov_model character: the model used for the covariance (either "full", "diagonal", spherical", "fixed" or "genetic")
     vcov_model = function() {private$covariance},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par  = function() {private$monitoring},

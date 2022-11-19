@@ -62,7 +62,6 @@ Initialize all models in the collection.
   offsets,
   weights,
   formula,
-  xlevels,
   control
 )}\if{html}{\out{</div>}}
 }
@@ -81,8 +80,6 @@ Initialize all models in the collection.
 \item{\code{weights}}{the vector of observation weights}
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
