@@ -41,7 +41,6 @@ PLNnetworkfit <- R6Class(
     #' @description Initialize a [`PLNnetworkfit`] object
     initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$Sigma  <- crossprod(private$M)/self$n + diag(colMeans(private$S2), nrow = self$p)
       private$lambda <- penalty
       stopifnot(isSymmetric(penalty_weights), all(penalty_weights > 0))
       private$rho    <- penalty_weights
@@ -73,18 +72,18 @@ PLNnetworkfit <- R6Class(
       convergence <- numeric(control$maxit_out)
       ## start from the standard PLN at initialization
       par0  <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
-      Sigma <- private$Sigma
       objective.old <- -self$loglik
       while (!cond) {
         iter <- iter + 1
         if (control$trace > 1) cat("", iter)
 
         ## CALL TO GLASSO TO UPDATE Omega/Sigma
-        glasso_out <- glassoFast::glassoFast(Sigma, rho = self$penalty * self$penalty_weights)
+        S <- crossprod(par0$M)/self$n + diag(colMeans(par0$S**2), nrow = self$p)
+        glasso_out <- glassoFast::glassoFast(S, rho = self$penalty * self$penalty_weights)
         if (anyNA(glasso_out$wi)) break
         Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
-        ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
+        ## CALL TO NLOPT OPTIMIZATION
         optim_out <- cpp_optimize_fixed(par0, responses, covariates, offsets, weights, Omega, control)
         ## Check convergence
         objective[iter]   <- -sum(weights * optim_out$loglik) + self$penalty * sum(abs(Omega))
@@ -93,19 +92,19 @@ PLNnetworkfit <- R6Class(
         if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate
-        Sigma <- optim_out$Sigma
         par0  <- list(Theta = optim_out$Theta, M = optim_out$M, S = optim_out$S)
         objective.old <- objective[iter]
       }
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## OUTPUT
+      Sigma <- glasso_out$w ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
       Ji <- optim_out$loglik
       attr(Ji, "weights") <- weights
       self$update(
         Theta = optim_out$Theta,
         Omega = Omega,
-        Sigma = optim_out$Sigma,
+        Sigma = Sigma,
         M  = optim_out$M,
         S2 = (optim_out$S)**2,
         Z  = optim_out$Z,

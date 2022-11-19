@@ -100,11 +100,10 @@ PLNnetworkfamily <- R6Class(
           cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
         }
         self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
-        ## Save time by starting the optimization of model m+1  with optimal parameters of model m
+        ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
         if (m < length(self$penalties))
           self$models[[m + 1]]$update(
             Theta = self$models[[m]]$model_par$Theta,
-            Sigma = self$models[[m]]$model_par$Sigma,
             M     = self$models[[m]]$var_par$M,
             S2    = self$models[[m]]$var_par$S2
           )

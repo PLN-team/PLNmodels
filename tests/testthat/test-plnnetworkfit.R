@@ -13,7 +13,6 @@ test_that("PLNnetwork fit: check classes, getters and field access", {
   O <- matrix(0, n, p)
   w <- rep(1, n)
 
-
   ## PLNnetworkfit
   myPLNfit <- getBestModel(models)
 

@@ -109,13 +109,14 @@ PLNfit <- R6Class(
     optimize_nlopt = function(responses, covariates, offsets, weights, control) {
 
       optimizer  <-
-        switch(self$vcov_model,
+        switch(control$covariance,
                "spherical" = cpp_optimize_spherical,
                "diagonal"  = cpp_optimize_diagonal ,
                "genetic"   = cpp_optimize_genetic_modeling,
                "fixed"     = cpp_optimize_fixed,
                "full"      = cpp_optimize_full
         )
+
       args <- list(Y = responses, X = covariates, O = offsets, w = weights, configuration = control)
       args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
       if (self$vcov_model == "genetic") {
