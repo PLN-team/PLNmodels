@@ -9,10 +9,10 @@
 #include "utils.h"
 
 // ---------------------------------------------------------------------------------------
-// Sparse inverse covariance
+// Fixed inverse covariance (Omega)
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_sparse(
+Rcpp::List cpp_optimize_fixed(
     const Rcpp::List & init_parameters, // List(Theta, M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)

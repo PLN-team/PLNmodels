@@ -68,7 +68,7 @@ print(myPLN)
 
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
+\item{\code{vcov_model}}{character: the model used for the covariance (either "full", "diagonal", spherical", "fixed" or "genetic")}
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
@@ -415,7 +415,7 @@ Update R2, fisher and std_err fields after optimization
   covariates,
   offsets,
   weights = rep(1, nrow(responses)),
-  type = c("wald", "louis", "sandwich", "none"),
+  type = c("wald", "sandwich", "none"),
   nullModel = NULL
 )}\if{html}{\out{</div>}}
 }
