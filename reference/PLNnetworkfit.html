@@ -19,7 +19,7 @@ See the documentation for plot() and methods inherited from PLNfit."><meta prope
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
       </span>
     </div>
 
@@ -152,14 +152,15 @@ and graph density</p></dd>
 <li><p><a href="#method-PLNnetworkfit-show"><code>PLNnetworkfit$show()</code></a></p></li>
 <li><p><a href="#method-PLNnetworkfit-clone"><code>PLNnetworkfit$clone()</code></a></p></li>
 </ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href="PLNfit.html#method-VEstep"><code>PLNmodels::PLNfit$VEstep()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_fisher"><a href="PLNfit.html#method-compute_fisher"><code>PLNmodels::PLNfit$compute_fisher()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href="PLNfit.html#method-compute_standard_error"><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href="PLNfit.html#method-get_vcov_hat"><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_nlopt"><a href="PLNfit.html#method-optimize_nlopt"><code>PLNmodels::PLNfit$optimize_nlopt()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_torch"><a href="PLNfit.html#method-optimize_torch"><code>PLNmodels::PLNfit$optimize_torch()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href="PLNfit.html#method-predict"><code>PLNmodels::PLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href="PLNfit.html#method-set_R2"><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_sandwich"><a href="PLNfit.html#method-vcov_sandwich"><code>PLNmodels::PLNfit$vcov_sandwich()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_wald"><a href="PLNfit.html#method-vcov_wald"><code>PLNmodels::PLNfit$vcov_wald()</code></a></span></li>
 </ul></details></p><hr><a id="method-PLNnetworkfit-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize a <code>PLNnetworkfit</code> object</p><div class="section">
@@ -172,7 +173,6 @@ and graph density</p></dd>
 <span>  <span class="va">offsets</span>,</span>
 <span>  <span class="va">weights</span>,</span>
 <span>  <span class="va">formula</span>,</span>
-<span>  <span class="va">xlevels</span>,</span>
 <span>  <span class="va">control</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -181,6 +181,10 @@ and graph density</p></dd>
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>penalty</code></dt>
 <dd><p>a positive real number controlling the level of sparsity of the underlying network.</p></dd>
+
+
+<dt><code>penalty_weights</code></dt>
+<dd><p>either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.</p></dd>
 
 
 <dt><code>responses</code></dt>
@@ -201,10 +205,6 @@ and graph density</p></dd>
 
 <dt><code>formula</code></dt>
 <dd><p>model formula used for fitting, extracted from the formula in the upper-level call</p></dd>
-
-
-<dt><code>xlevels</code></dt>
-<dd><p>named listed of factor levels included in the models, extracted from the formula in <code><a href="PLNnetwork.html">PLNnetwork()</a></code> call</p></dd>
 
 
 <dt><code>control</code></dt>

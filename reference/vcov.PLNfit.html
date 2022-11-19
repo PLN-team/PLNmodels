@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
       </span>
     </div>
 
@@ -125,62 +125,61 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span> <span class="co">## variance-covariance of Theta</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17 x 17 sparse Matrix of class "dsCMatrix"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>    [[ suppressing 17 column names ‘Che_(Intercept)’, ‘Hyc_(Intercept)’, ‘Hym_(Intercept)’ ... ]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che_(Intercept) 2.999268 .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc_(Intercept) .        3.000817   .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym_(Intercept) .        .        183.0016 .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys_(Intercept) .        .          .      6.00044    .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy_(Intercept) .        .          .      .       5987.458   .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga_(Intercept) .        .          .      .          .     108.9713  .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo_(Intercept) .        .          .      .          .       .      14.00189</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath_(Intercept) .        .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea_(Intercept) .        .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced_(Intercept) .        .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set_(Intercept) .        .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All_(Intercept) .        .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han_(Intercept) .        .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo_(Intercept) .        .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp_(Intercept) .        .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve_(Intercept) .        .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta_(Intercept) .        .          .      .          .       .       .      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che_(Intercept)  .       .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc_(Intercept)  .       .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym_(Intercept)  .       .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys_(Intercept)  .       .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy_(Intercept)  .       .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga_(Intercept)  .       .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo_(Intercept)  .       .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath_(Intercept) 13.99933 .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea_(Intercept)  .       6.997555   .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced_(Intercept)  .       .        116.0079   .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set_(Intercept)  .       .          .      189.0048  .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All_(Intercept)  .       .          .        .      51.98511   .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han_(Intercept)  .       .          .        .       .       191.2087   .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo_(Intercept)  .       .          .        .       .         .      133.1335</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp_(Intercept)  .       .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve_(Intercept)  .       .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta_(Intercept)  .       .          .        .       .         .        .     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo_(Intercept)   .     .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp_(Intercept) 470.101 .          .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve_(Intercept)   .     8.999257   .    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta_(Intercept)   .     .        291.006</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 x 17 sparse Matrix of class "dgCMatrix"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che_(Intercept) 16.33732  .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc_(Intercept)  .       16.32889 .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym_(Intercept)  .        .       0.2677572 .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys_(Intercept)  .        .       .         8.166068 .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy_(Intercept)  .        .       .         .        0.008183774 .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga_(Intercept)  .        .       .         .        .           0.4496599</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta_(Intercept)  .        .       .         .        .           .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo_(Intercept) 3.499527 .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath_(Intercept) .        3.500167 .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea_(Intercept) .        .        7.002446 .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced_(Intercept) .        .        .        0.4223848 .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set_(Intercept) .        .        .        .         0.2592526 .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All_(Intercept) .        .        .        .         .         0.9425776</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta_(Intercept) .        .        .        .         .         .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All_(Intercept) .         .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han_(Intercept) 0.2562645 .         .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo_(Intercept) .         0.3680516 .         .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp_(Intercept) .         .         0.1042329 .        .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve_(Intercept) .         .         .         5.444894 .        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta_(Intercept) .         .         .         .        0.1683814</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">myPLN</span>, type <span class="op">=</span> <span class="st">"covariance"</span><span class="op">)</span> <span class="co">## Sigma</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             Che          Hyc         Hym        Hys           Psy          Aga</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Che  2.52780188 -0.011027396  0.35966861  0.4441121 -0.0171850148  0.309318973</span>

@@ -19,7 +19,7 @@ See the documentation for the methods inherited by  PLNfit and the plot() method
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
       </span>
     </div>
 
@@ -165,33 +165,25 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 <li><p><a href="#method-PLNPCAfit-project"><code>PLNPCAfit$project()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-setVisualization"><code>PLNPCAfit$setVisualization()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-postTreatment"><code>PLNPCAfit$postTreatment()</code></a></p></li>
-<li><p><a href="#method-PLNPCAfit-compute_fisher"><code>PLNPCAfit$compute_fisher()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-plot_individual_map"><code>PLNPCAfit$plot_individual_map()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-plot_correlation_circle"><code>PLNPCAfit$plot_correlation_circle()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-plot_PCA"><code>PLNPCAfit$plot_PCA()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-show"><code>PLNPCAfit$show()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-clone"><code>PLNPCAfit$clone()</code></a></p></li>
-</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="compute_standard_error"><a href="PLNfit.html#method-compute_standard_error"><code>PLNmodels::PLNfit$compute_standard_error()</code></a></span></li>
+</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href="PLNfit.html#method-get_vcov_hat"><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_nlopt"><a href="PLNfit.html#method-optimize_nlopt"><code>PLNmodels::PLNfit$optimize_nlopt()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_torch"><a href="PLNfit.html#method-optimize_torch"><code>PLNmodels::PLNfit$optimize_torch()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href="PLNfit.html#method-predict"><code>PLNmodels::PLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href="PLNfit.html#method-set_R2"><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_sandwich"><a href="PLNfit.html#method-vcov_sandwich"><code>PLNmodels::PLNfit$vcov_sandwich()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_wald"><a href="PLNfit.html#method-vcov_wald"><code>PLNmodels::PLNfit$vcov_wald()</code></a></span></li>
 </ul></details></p><hr><a id="method-PLNPCAfit-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize a <code>PLNPCAfit</code> object</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/PLNPCAfit.html">PLNPCAfit</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
-<span>  <span class="va">rank</span>,</span>
-<span>  <span class="va">responses</span>,</span>
-<span>  <span class="va">covariates</span>,</span>
-<span>  <span class="va">offsets</span>,</span>
-<span>  <span class="va">weights</span>,</span>
-<span>  <span class="va">formula</span>,</span>
-<span>  <span class="va">xlevels</span>,</span>
-<span>  <span class="va">control</span></span>
-<span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/PLNPCAfit.html">PLNPCAfit</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">rank</span>, <span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">formula</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -218,10 +210,6 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 
 <dt><code>formula</code></dt>
 <dd><p>model formula used for fitting, extracted from the formula in the upper-level call</p></dd>
-
-
-<dt><code>xlevels</code></dt>
-<dd><p>named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.</p></dd>
 
 
 <dt><code>control</code></dt>
@@ -452,34 +440,10 @@ after optimization</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNPCAfit-compute_fisher"></a><div class="section">
-<h3 id="method-compute-fisher-">Method <code>compute_fisher()</code><a class="anchor" aria-label="anchor" href="#method-compute-fisher-"></a></h3>
-<p>Safely compute the fisher information matrix (FIM)</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">compute_fisher</span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"louis"</span><span class="op">)</span>, X <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>type</code></dt>
-<dd><p>approximation scheme to compute the fisher information matrix. Either <code>wald</code> (default) or <code>louis</code>. <code>type = "louis"</code> results in smaller confidence intervals.</p></dd>
-
-
-<dt><code>X</code></dt>
-<dd><p>design matrix used to compute the FIM</p></dd>
-
-
-</dl><p></p></div>
-</div>
-<div class="section">
-<h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
-<p>a sparse matrix with sensible dimension names</p>
-</div>
-
 </div><p></p><hr><a id="method-PLNPCAfit-plot_individual_map"></a><div class="section">
 <h3 id="method-plot-individual-map-">Method <code>plot_individual_map()</code><a class="anchor" aria-label="anchor" href="#method-plot-individual-map-"></a></h3>
 <p>Plot the factorial map of the PCA</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">plot_individual_map</span><span class="op">(</span></span>
 <span>  axes <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">2</span>, <span class="va">self</span><span class="op">$</span><span class="va">rank</span><span class="op">)</span>,</span>
 <span>  main <span class="op">=</span> <span class="st">"Individual Factor Map"</span>,</span>
@@ -489,7 +453,7 @@ after optimization</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>axes</code></dt>
 <dd><p>numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))</p></dd>
 
@@ -509,14 +473,14 @@ after optimization</p><div class="section">
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
+<h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
 <p>a <code>ggplot</code> graphic</p>
 </div>
 
 </div><p></p><hr><a id="method-PLNPCAfit-plot_correlation_circle"></a><div class="section">
 <h3 id="method-plot-correlation-circle-">Method <code>plot_correlation_circle()</code><a class="anchor" aria-label="anchor" href="#method-plot-correlation-circle-"></a></h3>
 <p>Plot the correlation circle of a specified axis for a <code><a href="PLNLDAfit.html">PLNLDAfit</a></code> object</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">plot_correlation_circle</span><span class="op">(</span></span>
 <span>  axes <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">2</span>, <span class="va">self</span><span class="op">$</span><span class="va">rank</span><span class="op">)</span>,</span>
 <span>  main <span class="op">=</span> <span class="st">"Variable Factor Map"</span>,</span>
@@ -526,7 +490,7 @@ after optimization</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
+<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>axes</code></dt>
 <dd><p>numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))</p></dd>
 
@@ -546,14 +510,14 @@ after optimization</p><div class="section">
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
+<h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
 <p>a <code>ggplot</code> graphic</p>
 </div>
 
 </div><p></p><hr><a id="method-PLNPCAfit-plot_PCA"></a><div class="section">
 <h3 id="method-plot-pca-">Method <code>plot_PCA()</code><a class="anchor" aria-label="anchor" href="#method-plot-pca-"></a></h3>
 <p>Plot a summary of the <code>PLNPCAfit</code> object</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">plot_PCA</span><span class="op">(</span></span>
 <span>  nb_axes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">3</span>, <span class="va">self</span><span class="op">$</span><span class="va">rank</span><span class="op">)</span>,</span>
 <span>  ind_cols <span class="op">=</span> <span class="st">"ind_cols"</span>,</span>
@@ -563,7 +527,7 @@ after optimization</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
+<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>nb_axes</code></dt>
 <dd><p>scalar: the number of axes to be considered when map = "both". The default is min(3,rank).</p></dd>
 
@@ -583,14 +547,14 @@ after optimization</p><div class="section">
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
+<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
 <p>a <code>grob</code> object</p>
 </div>
 
 </div><p></p><hr><a id="method-PLNPCAfit-show"></a><div class="section">
 <h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -598,12 +562,12 @@ after optimization</p><div class="section">
 </div><p></p><hr><a id="method-PLNPCAfit-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
+<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -624,7 +588,7 @@ after optimization</p><div class="section">
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting 5 PLN models for PCA analysis.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 1 	 Rank approximation = 5 	 Rank approximation = 2 	 Rank approximation = 3 	 Rank approximation = 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 2 	 Rank approximation = 5 	 Rank approximation = 1 	 Rank approximation = 3 	 Rank approximation = 4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="va">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">myPCAs</span><span class="op">)</span></span></span>
