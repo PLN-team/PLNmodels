@@ -79,6 +79,21 @@ std::unique_ptr<NloptStruct, NloptDeleter> new_nlopt_optimizer(const Rcpp::List 
     return opt;
 }
 
+// void set_uniform_x_weights(NloptStruct * opt, double value) {
+//   if(nlopt_set_x_weights1(opt, value) != NLOPT_SUCCESS) {
+//     throw Rcpp::exception("nlopt_set_x_weights1");
+//   }
+// }
+//
+// void set_per_value_x_weights(NloptStruct * opt, const std::vector<double> & x_weights) {
+//   if(x_weights.size() != nlopt_get_dimension(opt)) {
+//     throw Rcpp::exception("set_per_value_xtol_weights: parameter size mismatch");
+//   }
+//   if(nlopt_set_x_weights(opt, x_weights.data()) != NLOPT_SUCCESS) {
+//     throw Rcpp::exception("nlopt_set_x_weights");
+//   }
+// }
+
 void set_uniform_xtol_abs(NloptStruct * opt, double value) {
     if(nlopt_set_xtol_abs1(opt, value) != NLOPT_SUCCESS) {
         throw Rcpp::exception("nlopt_set_xtol_abs1");
@@ -105,38 +120,55 @@ bool cpp_test_nlopt() {
             success = false;
         }
     };
-    const double epsilon = 1e-6;
 
     // min_x x^2 -> should be 0. Does not uses packer due to only 1 variable.
     auto config = Rcpp::List::create(
         Rcpp::Named("algorithm", "LBFGS"),
-        Rcpp::Named("xtol_rel", epsilon),
-        Rcpp::Named("ftol_abs", epsilon),
-        Rcpp::Named("ftol_rel", epsilon),
-        Rcpp::Named("maxeval", 100),
-        Rcpp::Named("maxtime", 100.));
+        Rcpp::Named("xtol_rel", 1e-12),
+        Rcpp::Named("ftol_abs", 0.0),
+        Rcpp::Named("ftol_rel", 0.0),
+        Rcpp::Named("xtol_abs", 0.0),
+        Rcpp::Named("maxeval",  200),
+        Rcpp::Named("maxtime",  100.));
 
     check(config.containsElementNamed("xtol_rel"), "config parsing using containsElementNamed");
 
-    auto x = std::vector<double>{42.};
+    auto x = std::vector<double>{1.5, -2};
 
     auto optimizer = new_nlopt_optimizer(config, x.size());
-    set_uniform_xtol_abs(optimizer.get(), epsilon);
+
+    set_uniform_xtol_abs(optimizer.get(), 0);
+    set_uniform_x_weights(optimizer.get(), 1.);
 
     check(nlopt_get_algorithm(optimizer.get()) == NLOPT_LD_LBFGS, "optim algorithm");
-    check(nlopt_get_ftol_abs(optimizer.get()) == epsilon, "optim ftol_abs");
-    check(nlopt_get_ftol_rel(optimizer.get()) == epsilon, "optim ftol_rel");
-    check(nlopt_get_xtol_rel(optimizer.get()) == epsilon, "optim xtol_rel");
+    check(nlopt_get_ftol_abs(optimizer.get()) == 0.0, "optim ftol_abs");
+    check(nlopt_get_ftol_rel(optimizer.get()) == 0.0, "optim ftol_rel");
+    check(nlopt_get_xtol_rel(optimizer.get()) == 1e-12, "optim xtol_rel");
 
     auto f_and_grad = [check](const double * x, double * grad) -> double {
-        double v = x[0];
-        grad[0] = 2. * v;
-        return v * v;
+        // double v = x[0];
+        // grad[0] = 2. * v;
+        // return v * v;
+        double x1sq = x[0] * x[0] ;
+        double obj = 100*std::pow(x[1] - x1sq,2) + std::pow(1-x[0],2);
+
+        grad[0] = -400*(x[1] - x1sq)*x[0] - 2*(1-x[0]);
+        grad[1] = 200*(x[1] - x1sq);
+        return obj ;
+
     };
     OptimizerResult r = minimize_objective_on_parameters(optimizer.get(), f_and_grad, x);
 
-    check(std::abs(x[0]) < epsilon, "optim convergence");
+    check(std::abs(x[0]-1) < 1e-8, "optim convergence");
     check(r.status != NLOPT_FAILURE, "optim status");
+    std::cout << "\n objective:" << r.objective << std::endl ;
+    std::cout << "\n nb iterations:" << r.nb_iterations << std::endl ;
+
+    x = std::vector<double>{1.5, -2};
+    set_uniform_x_weights(optimizer.get(), 1.0);
+    r = minimize_objective_on_parameters(optimizer.get(), f_and_grad, x);
+    std::cout << "\n objective:" << r.objective << std::endl ;
+    std::cout << "\n nb iterations:" << r.nb_iterations << std::endl ;
 
     return success;
 }
