@@ -17,10 +17,10 @@
 #' * "inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on
 #'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 #'    which sometimes speeds up the inference.
-#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
-#' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
+#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default 1e-8 otherwise.
 #' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
-#' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0
+#' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol. Default is -1
+#' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol. Default is -1
 #' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 #' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)
 #' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
@@ -52,7 +52,7 @@ PLN <- function(formula, data, subset, weights, control = list()) {
 
   ## post-treatment
   if (ctrl$trace > 0) cat("\n Post-treatments...")
-  myPLN$postTreatment(args$Y, args$X, args$O, args$w, ctrl$vcov_est)
+  myPLN$postTreatment(args$Y, args$X, args$O, args$w)
 
   if (ctrl$trace > 0) cat("\n DONE!\n")
   myPLN
