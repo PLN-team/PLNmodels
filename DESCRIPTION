@@ -91,6 +91,7 @@ Collate:
     'mollusk.R'
     'oaks.R'
     'optim_torch_PLN.R'
+    'optimizer_config.R'
     'plot_utils.R'
     'trichoptera.R'
     'utils-pipe.R'
