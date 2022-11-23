@@ -105,7 +105,7 @@ PLNnetworkfamily <- R6Class(
           self$models[[m + 1]]$update(
             Theta = self$models[[m]]$model_par$Theta,
             M     = self$models[[m]]$var_par$M,
-            S2    = self$models[[m]]$var_par$S2
+            S     = sqrt(self$models[[m]]$var_par$S2)
           )
 
         if (control$trace > 1) {
@@ -139,7 +139,7 @@ PLNnetworkfamily <- R6Class(
         inception_ <- self$getModel(self$penalties[1])
         inception_$update(
           M  = inception_$var_par$M[subsample, ],
-          S2 = inception_$var_par$S2[subsample, ]
+          S  = sqrt(inception_$var_par$S2[subsample, ])
         )
 
         ctrl_init <- PLN_param(list(), inception_$n, inception_$p)

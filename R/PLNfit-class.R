@@ -43,19 +43,19 @@ PLNfit <- R6Class(
     #' @description
     #' Update a [`PLNfit`] object
     #' @param Theta matrix of regression matrix
-    #' @param M     matrix of mean vectors for the variational approximation
-    #' @param S2    matrix of variance vectors for the variational approximation
+    #' @param M     matrix of variational parameters for the mean
+    #' @param S     matrix of variational parameters for the variance
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
     #' @param R2    approximate R^2 goodness-of-fit criterion
     #' @param Z     matrix of latent vectors (includes covariates and offset effects)
     #' @param A     matrix of fitted values
     #' @param monitoring a list with optimization monitoring quantities
     #' @return Update the current [`PLNfit`] object
-    update = function(Theta=NA, Sigma=NA, M=NA, S2=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
+    update = function(Theta=NA, Sigma=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
       if (!anyNA(Theta))      private$Theta  <- Theta
       if (!anyNA(Sigma))      private$Sigma  <- Sigma
       if (!anyNA(M))          private$M      <- M
-      if (!anyNA(S2))         private$S2     <- S2
+      if (!anyNA(S))          private$S      <- S
       if (!anyNA(Z))          private$Z      <- Z
       if (!anyNA(A))          private$A      <- A
       if (!anyNA(Ji))         private$Ji     <- Ji
@@ -82,7 +82,7 @@ PLNfit <- R6Class(
         stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
         private$Theta <- control$inception$model_par$Theta
         private$M     <- control$inception$var_par$M
-        private$S2    <- control$inception$var_par$S2
+        private$S     <- sqrt(control$inception$var_par$S2)
         private$Sigma <- control$inception$model_par$Sigma
         private$Ji    <- control$inception$loglik_vec
       } else {
@@ -91,7 +91,7 @@ PLNfit <- R6Class(
         private$Theta <- do.call(rbind, lapply(LMs, coefficients))
         residuals     <- do.call(cbind, lapply(LMs, residuals))
         private$M     <- residuals
-        private$S2    <- matrix(0.1,n,p)
+        private$S     <- matrix(0.1,n,p)
       }
     },
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -118,7 +118,7 @@ PLNfit <- R6Class(
         )
 
       args <- list(Y = responses, X = covariates, O = offsets, w = weights, configuration = control)
-      args$init_parameters <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
+      args$init_parameters <- list(Theta = private$Theta, M = private$M, S = private$S)
       if (self$vcov_model == "genetic") {
         args$init_parameters$rho = 0.25
         args$C <- control$corr_matrix
@@ -135,13 +135,13 @@ PLNfit <- R6Class(
         Theta      = optim_out$Theta,
         Sigma      = optim_out$Sigma,
         M          = optim_out$M,
-        S2         = (optim_out$S)**2,
+        S          = optim_out$S,
         Z          = optim_out$Z,
         A          = optim_out$A,
         Ji         = Ji,
         monitoring = list(
           iterations = optim_out$iterations,
-          message    = statusToMessage(optim_out$status))
+          message    = status_to_message_nlopt(optim_out$status))
       )
 
       if (self$vcov_model == "genetic")
@@ -159,7 +159,7 @@ PLNfit <- R6Class(
       self$optimize_nlopt(responses, covariates, offsets, weights, control)
 
       ## Call to external function for readability
-      init_parameters <- list(Theta = t(private$Theta), M = private$M, S = sqrt(private$S2))
+      init_parameters <- list(Theta = t(private$Theta), M = private$M, S = private$S)
       optim_out <- optimize_torch_PLN(responses, covariates, offsets, weights, init_parameters, control)
 
       ## Saving output
@@ -167,7 +167,7 @@ PLNfit <- R6Class(
         Theta      = t(as.matrix(optim_out$Theta)),
         Sigma      = as.matrix(optim_out$Sigma),
         M          = as.matrix(optim_out$M),
-        S2         = as.matrix(optim_out$S2),
+        S          = as.matrix(optim_out$S),
         Z          = as.matrix(optim_out$Z),
         A          = as.matrix(optim_out$A),
         Ji         = optim_out$Ji,
@@ -244,7 +244,7 @@ PLNfit <- R6Class(
       if (is.null(Sigma)) Sigma <- private$Sigma
       getMat_iCnTheta <- function(i) {
         a_i   <- as.numeric(private$A[i, ])
-        s2_i  <- as.numeric(private$S2[i, ])
+        s2_i  <- as.numeric(private$S[i, ]**2)
         # omega <- as.numeric(1/diag(private$Sigma))
         # diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
         diag_mat_i <- diag(1/a_i + .5 * s2_i^2)
@@ -336,7 +336,7 @@ PLNfit <- R6Class(
       rownames(private$Theta) <- colnames(responses)
       colnames(private$Theta) <- colnames(covariates)
       rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
-      rownames(private$M) <- rownames(private$S2) <- rownames(responses)
+      rownames(private$M) <- rownames(private$S) <- rownames(responses)
       if (type != 'none') {
         ## compute and store matrix of standard errors
         self$get_vcov_hat(type, responses, covariates)
@@ -468,7 +468,7 @@ PLNfit <- R6Class(
     formula    = NA, # the formula call for the model as specified by the user
     Theta      = NA, # regression parameters of the latent layer
     Sigma      = NA, # covariance matrix of the latent layer
-    S2         = NA, # variational parameters for the variances
+    S          = NA, # variational parameters for the variances
     M          = NA, # variational parameters for the means
     psi        = NA, # parameters for genetic model of covariance
     Z          = NA, # matrix of latent variable
@@ -507,7 +507,7 @@ PLNfit <- R6Class(
       stderr
     },
     #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
-    var_par    = function() {list(M = private$M, S2 = private$S2)},
+    var_par    = function() {list(M = private$M, S2 = private$S**2)},
     #' @field gen_par a list with two parameters, sigma2 and rho, only used with the genetic covariance model
     gen_par    = function() {private$psi},
     #' @field latent a matrix: values of the latent vector (Z in the model)
@@ -536,7 +536,7 @@ PLNfit <- R6Class(
     #' @field BIC variational lower bound of the BIC
     BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
     #' @field entropy Entropy of the variational distribution
-    entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)))},
+    entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2)))},
     #' @field ICL variational lower bound of the ICL
     ICL        = function() {self$BIC - self$entropy},
     #' @field R_squared approximated goodness-of-fit criterion

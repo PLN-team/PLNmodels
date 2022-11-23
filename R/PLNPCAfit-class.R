@@ -53,7 +53,7 @@ PLNPCAfit <- R6Class(
         }
         ### TODO: check that it is really better than initializing with zeros...
         private$M  <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
-        private$S2 <- matrix(0.1, self$n, rank)
+        private$S  <- matrix(0.1, self$n, rank)
         private$B  <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
         private$covariance <- "rank"
       },
@@ -62,15 +62,15 @@ PLNPCAfit <- R6Class(
       #' @param Sigma variance-covariance matrix of the latent variables
       #' @param M     matrix of mean vectors for the variational approximation
       #' @param B     matrix of PCA loadings (in the latent space)
-      #' @param S2    matrix of variance vectors for the variational approximation
+      #' @param S     matrix of variance vectors for the variational approximation
       #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
       #' @param R2    approximate R^2 goodness-of-fit criterion
       #' @param Z     matrix of latent vectors (includes covariates and offset effects)
       #' @param A     matrix of fitted values
       #' @param monitoring a list with optimization monitoring quantities
       #' @return Update the current [`PLNPCAfit`] object
-      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S2=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M = M, S2 = S2, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, M = M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(B)) private$B <- B
       },
 
@@ -86,7 +86,7 @@ PLNPCAfit <- R6Class(
             Theta = private$Theta,
             B = private$B,
             M = private$M,
-            S = sqrt(private$S2)
+            S = private$S
           ),
           responses, covariates, offsets, weights, opts
         )
@@ -98,14 +98,14 @@ PLNPCAfit <- R6Class(
           Theta = optim_out$Theta,
           Sigma = optim_out$Sigma,
           M     = optim_out$M,
-          S2    = (optim_out$S)**2,
+          S     = optim_out$S,
           A     = optim_out$A,
           Z     = optim_out$Z,
           Ji    = Ji,
           monitoring = list(
             iterations = optim_out$iterations,
             status     = optim_out$status,
-            message    = statusToMessage(optim_out$status))
+            message    = status_to_message_nlopt(optim_out$status))
         )
       },
 
@@ -200,7 +200,7 @@ PLNPCAfit <- R6Class(
         super$postTreatment(responses, covariates, offsets, weights, type = "none", nullModel = nullModel)
         colnames(private$B) <- colnames(private$M) <- 1:self$q
         rownames(private$B) <- colnames(responses)
-        if (private$covariance != "spherical") colnames(private$S2) <- 1:self$q
+        if (private$covariance != "spherical") colnames(private$S) <- 1:self$q
         self$setVisualization()
       },
 
@@ -342,7 +342,7 @@ PLNPCAfit <- R6Class(
       #' @field nb_param number of parameters in the current PLN model
       nb_param = function() {self$p * (self$d + self$q) - self$q * (self$q - 1)/2},
       #' @field entropy entropy of the variational distribution
-      entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(private$S2)))},
+      entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2)))},
       #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
       latent_pos = function() {tcrossprod(private$M, private$B)},
       #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)

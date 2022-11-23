@@ -51,14 +51,14 @@ PLNnetworkfit <- R6Class(
     #' @param Sigma variance-covariance matrix of the latent variables
     #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
     #' @param M     matrix of mean vectors for the variational approximation
-    #' @param S2    matrix of variance vectors for the variational approximation
+    #' @param S     matrix of variance vectors for the variational approximation
     #' @param Z     matrix of latent vectors (includes covariates and offset effects)
     #' @param A     matrix of fitted values
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
     #' @param R2    approximate R^2 goodness-of-fit criterion
     #' @param monitoring a list with optimization monitoring quantities
-    update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S2=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-      super$update(Theta = Theta, Sigma = Sigma, M, S2 = S2, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+    update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+      super$update(Theta = Theta, Sigma = Sigma, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
       if (!anyNA(penalty)) private$lambda <- penalty
       if (!anyNA(Omega))   private$Omega  <- Omega
     },
@@ -71,7 +71,7 @@ PLNnetworkfit <- R6Class(
       objective   <- numeric(control$maxit_out)
       convergence <- numeric(control$maxit_out)
       ## start from the standard PLN at initialization
-      par0  <- list(Theta = private$Theta, M = private$M, S = sqrt(private$S2))
+      par0  <- list(Theta = private$Theta, M = private$M, S = private$S)
       objective.old <- -self$loglik
       while (!cond) {
         iter <- iter + 1
@@ -106,7 +106,7 @@ PLNnetworkfit <- R6Class(
         Omega = Omega,
         Sigma = Sigma,
         M  = optim_out$M,
-        S2 = (optim_out$S)**2,
+        S  = optim_out$S,
         Z  = optim_out$Z,
         A  = optim_out$A,
         Ji = Ji,
@@ -115,7 +115,7 @@ PLNnetworkfit <- R6Class(
                           outer_iterations = iter,
                           inner_iterations = optim_out$iterations,
                           inner_status     = optim_out$status,
-                          inner_message    = statusToMessage(optim_out$status)))
+                          inner_message    = status_to_message_nlopt(optim_out$status)))
 
     },
 
@@ -125,7 +125,7 @@ PLNnetworkfit <- R6Class(
     postTreatment = function(responses, covariates, offsets, weights, nullModel) {
       super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
       dimnames(private$Omega) <- dimnames(private$Sigma)
-      colnames(private$S2) <- 1:self$p
+      colnames(private$S) <- 1:self$p
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
