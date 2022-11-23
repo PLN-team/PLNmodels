@@ -7,7 +7,7 @@ trace <- function(x) sum(diag(x))
   exp(x - b) / sum(exp(x - b))
 }
 
-.logit <- function (x) log(x/(1-x))
+.logit <- function(x) log(x/(1 - x))
 
 .check_boundaries <- function(x, zero = .Machine$double.eps) {
   x[is.nan(x)] <- zero
@@ -45,7 +45,6 @@ nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nr
 
 fullModelPoisson <- function(responses, weights = rep(1, nrow(responses))) {
   lambda <- log(responses)
-  # lambda <- log(sweep(responses, 1, weights, "*"))
   lambda
 }
 
@@ -142,118 +141,3 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
   Y
 }
 
-available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR2")
-
-## -----------------------------------------------------------------
-##  Series of setter to default parameters for user's main functions
-##
-## should be ready to pass to nlopt optimizer
-PLN_param <- function(control, n, p) {
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
-  covariance  <- ifelse(is.null(control$covariance) , "full"    , control$covariance)
-  covariance  <- ifelse(is.null(control$inception)  , covariance, control$inception$vcov_model)
-  ctrl <- list(
-    "algorithm"   = "CCSAQ",
-    "maxeval"     = 10000  ,
-    "maxtime"     = -1     ,
-    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
-    "ftol_abs"    = 0,
-    "xtol_rel"    = 1e-6,
-    "xtol_abs"    = xtol_abs,
-    "backend"     = "nlopt",
-    "learning_rate" = 0.1,
-    "trace"       = 1,
-    "vcov_est"    = "wald",
-    "covariance"  = covariance,
-    "corr_matrix" = diag(x = 1, nrow = p, ncol = p),
-    "prec_matrix" = diag(x = 1, nrow = p, ncol = p),
-    "inception"   = NULL
-  )
-  ctrl[names(control)] <- control
-  stopifnot(ctrl$algorithm %in% available_algorithms)
-  ctrl
-}
-
-## should be ready to pass to nlopt optimizer
-PLNmixture_param <- function(control, n, p) {
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0         , control$xtol_abs)
-  covariance  <- ifelse(is.null(control$covariance) , "spherical", control$covariance)
-  covariance  <- ifelse(is.null(control$inception), covariance  , control$inception$model)
-  ctrl <- list(
-    "ftol_out"    = 1e-3,
-    "maxit_out"   = 50,
-    "algorithm"   = "CCSAQ",
-    "maxeval"     = 10000  ,
-    "maxtime"     = -1     ,
-    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
-    "ftol_abs"    = 0,
-    "xtol_rel"    = 1e-6,
-    "xtol_abs"    = xtol_abs,
-    "backend"     = "nlopt",
-    "learning_rate" = 0.1,
-    "trace"       = 1,
-    "covariance"  = covariance,
-    "iterates"    = 2,
-    "smoothing"   = 'both',
-    "inception"   = NULL,
-    "init_cl"     = 'kmeans'
-  )
-  ctrl[names(control)] <- control
-  ctrl
-}
-
-PLNPCA_param <- function(control) {
-  ctrl <- list(
-      "algorithm"   = "CCSAQ" ,
-      "ftol_rel"    = 1e-8    ,
-      "ftol_abs"    = 0       ,
-      "xtol_rel"    = 1e-6    ,
-      "xtol_abs"    = 0       ,
-      "maxeval"     = 10000   ,
-      "maxtime"     = -1      ,
-      "trace"       = 1       ,
-      "covariance"  = "rank"
-    )
-  ctrl[names(control)] <- control
-  stopifnot(ctrl$algorithm %in% available_algorithms)
-  ctrl
-}
-
-PLNnetwork_param <- function(control, n, p) {
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0, control$xtol_abs)
-  ctrl <-  list(
-    "ftol_out"  = 1e-5,
-    "maxit_out" = 20,
-    "warm"        = FALSE,
-    "algorithm"   = "CCSAQ",
-    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
-    "ftol_abs"    = 0       ,
-    "xtol_rel"    = 1e-6    ,
-    "xtol_abs"    = xtol_abs,
-    "maxeval"     = 10000   ,
-    "maxtime"     = -1      ,
-    "trace"       = 1       ,
-    "covariance"  = "sparse"
-  )
-  ctrl[names(control)] <- control
-  stopifnot(ctrl$algorithm %in% available_algorithms)
-  ctrl
-}
-
-statusToMessage <- function(status) {
-    message <- switch(as.character(status),
-        "1"  = "success",
-        "2"  = "stopval was reached",
-        "3"  = "ftol_rel or ftol_abs was reached",
-        "4"  = "xtol_rel or xtol_abs was reached",
-        "5"  = "maxeval was reached",
-        "6"  = "maxtime was reached",
-        "-1" = "failure",
-        "-2" = "invalid arguments",
-        "-3" = "out of memory.",
-        "-4" = "roundoff errors led to a breakdown of the optimization algorithm",
-        "-5" = "forced termination:",
-        "Return status not recognized"
-    )
-    message
-}
