@@ -138,7 +138,7 @@ bool cpp_test_nlopt() {
     auto optimizer = new_nlopt_optimizer(config, x.size());
 
     set_uniform_xtol_abs(optimizer.get(), 0);
-    set_uniform_x_weights(optimizer.get(), 1.);
+    // set_uniform_x_weights(optimizer.get(), 1.);
 
     check(nlopt_get_algorithm(optimizer.get()) == NLOPT_LD_LBFGS, "optim algorithm");
     check(nlopt_get_ftol_abs(optimizer.get()) == 0.0, "optim ftol_abs");
@@ -165,7 +165,7 @@ bool cpp_test_nlopt() {
     std::cout << "\n nb iterations:" << r.nb_iterations << std::endl ;
 
     x = std::vector<double>{1.5, -2};
-    set_uniform_x_weights(optimizer.get(), 1.0);
+    // set_uniform_x_weights(optimizer.get(), 1.0);
     r = minimize_objective_on_parameters(optimizer.get(), f_and_grad, x);
     std::cout << "\n objective:" << r.objective << std::endl ;
     std::cout << "\n nb iterations:" << r.nb_iterations << std::endl ;

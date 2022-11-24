@@ -130,7 +130,7 @@ Update fields of a \code{\link{PLNnetworkfit}} object
   Sigma = NA,
   Omega = NA,
   M = NA,
-  S2 = NA,
+  S = NA,
   Z = NA,
   A = NA,
   Ji = NA,
@@ -152,7 +152,7 @@ Update fields of a \code{\link{PLNnetworkfit}} object
 
 \item{\code{M}}{matrix of mean vectors for the variational approximation}
 
-\item{\code{S2}}{matrix of variance vectors for the variational approximation}
+\item{\code{S}}{matrix of variance vectors for the variational approximation}
 
 \item{\code{Z}}{matrix of latent vectors (includes covariates and offset effects)}
 
