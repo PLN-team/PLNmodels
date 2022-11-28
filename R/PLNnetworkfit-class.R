@@ -1,22 +1,24 @@
 #' An R6 Class to represent a PLNfit in a sparse inverse covariance framework
 #'
 #' @description The function [PLNnetwork()] produces a collection of models which are instances of object with class [`PLNnetworkfit`].
-#'
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for [`plot()`][plot.PLNnetworkfit()] and methods inherited from [`PLNfit`].
 #'
-#' @param responses the matrix of responses common to every models
-#' @param covariates the matrix of covariates common to every models
-#' @param offsets the matrix of offsets common to every models
-#' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
+## Parameters common to all PLN-xx-fit methods (shared with PLNfit but inheritance does not work)
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
+#' @param Theta matrix of regression matrix
+#' @param Sigma variance-covariance matrix of the latent variables
+#' @param Omega precision matrix of the latent variables. Inverse of Sigma.
+#'
+## Parameters specific to PLNnetwork-fit methods
 #' @param penalty a positive real number controlling the level of sparsity of the underlying network.
 #' @param penalty_weights either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
-#' @param control a list for controlling the optimization of the PLN model used at initialization. See [PLNnetwork()] for details.
-#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
-#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
-#'
-#'
 #'
 #' @include PLNnetworkfit-class.R
 #' @examples
@@ -58,9 +60,8 @@ PLNnetworkfit <- R6Class(
     #' @param R2    approximate R^2 goodness-of-fit criterion
     #' @param monitoring a list with optimization monitoring quantities
     update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-      super$update(Theta = Theta, Sigma = Sigma, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+      super$update(Theta = Theta, Sigma = Sigma, Omega = Omega, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
       if (!anyNA(penalty)) private$lambda <- penalty
-      if (!anyNA(Omega))   private$Omega  <- Omega
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,14 +120,12 @@ PLNnetworkfit <- R6Class(
 
     },
 
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## Post treatment --------------------
-    #' @description Compute PCA scores in the latent space and update corresponding fields.
-    postTreatment = function(responses, covariates, offsets, weights, nullModel) {
-      super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
-      dimnames(private$Omega) <- dimnames(private$Sigma)
-      colnames(private$S) <- 1:self$p
-    },
+    #' ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #' ## Post treatment --------------------
+    #' #' @description Compute PCA scores in the latent space and update corresponding fields.
+    #' postTreatment = function(responses, covariates, offsets, weights, nullModel) {
+    #'   super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
+    #' },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Extractors ------------------------
@@ -230,7 +229,6 @@ PLNnetworkfit <- R6Class(
   ## PRIVATE MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
-    Omega  = NA, # the p x p precision matrix
     lambda = NA, # the sparsity tuning parameter
     rho    = NA  # the p x p penalty weight
   ),
@@ -249,12 +247,6 @@ PLNnetworkfit <- R6Class(
     nb_param        = function() {self$p * self$d + self$n_edges},
     #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood
     pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
-    #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.
-    model_par       = function() {
-      par <- super$model_par
-      par$Omega <- private$Omega
-      par
-    },
     #' @field EBIC variational lower bound of the EBIC
     EBIC      = function() {
       self$BIC - .5 * ifelse(self$n_edges > 0, self$n_edges * log(.5 * self$p*(self$p - 1)/self$n_edges), 0)

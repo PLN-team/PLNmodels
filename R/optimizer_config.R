@@ -4,12 +4,12 @@ available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1"
 ##  Series of setter to default parameters for user's main functions
 ##
 ## should be ready to pass to either nlopt or torch optimizer
+
 PLN_param <- function(control, n, p) {
   covariance  <- ifelse(is.null(control$covariance) , "full"    , control$covariance)
   covariance  <- ifelse(is.null(control$inception)  , covariance, control$inception$vcov_model)
-  backend     <- ifelse(is.null(control$backend), "nlopt", control$backend)
   ctrl <- list(
-    "backend"     = backend  ,
+    "backend"     = "nlopt"  ,
     "algorithm"   = "CCSAQ"  , # relevant for nlopt
     "maxeval"     = 10000    , # common to nlopt and torch
     "ftol_rel"    = 1e-8     , # common to nlopt and torch
@@ -23,6 +23,25 @@ PLN_param <- function(control, n, p) {
     # "corr_matrix" = diag(x = 1, nrow = p, ncol = p),
     # "prec_matrix" = diag(x = 1, nrow = p, ncol = p),
     "inception"   = NULL
+  )
+  ctrl[names(control)] <- control
+  stopifnot(ctrl$algorithm %in% available_algorithms_nlopt)
+  ctrl
+}
+
+PLNPCA_param <- function(control) {
+  ctrl <- list(
+    "backend"       = "nlopt"  ,
+    "algorithm"     = "CCSAQ"  , # relevant for nlopt
+    "maxeval"       = 10000    , # common to nlopt and torch
+    "ftol_rel"      = 1e-8     , # common to nlopt and torch
+    "xtol_rel"      = 1e-6     , # common to nlopt and torch
+    "maxtime"       = -1       , # relevant for nlopt (disabled)
+    "ftol_abs"      = 0.0      , # relevant for nlopt (disabled)
+    "xtol_abs"      = 0.0      , # relevant for nlopt (disabled)
+    "learning_rate" = 0.1      , # relevant for torch
+    "trace"         = 1        ,
+    "covariance"    = "rank"
   )
   ctrl[names(control)] <- control
   stopifnot(ctrl$algorithm %in% available_algorithms_nlopt)
@@ -53,23 +72,6 @@ PLNmixture_param <- function(control, n, p) {
     "init_cl"     = 'kmeans'
   )
   ctrl[names(control)] <- control
-  ctrl
-}
-
-PLNPCA_param <- function(control) {
-  ctrl <- list(
-    "algorithm"   = "CCSAQ" ,
-    "maxtime"     = -1      ,
-    "xtol_abs"    = -1       ,
-    "ftol_abs"    = -1       ,
-    "ftol_rel"    = 1e-8    ,
-    "xtol_rel"    = 1e-6    ,
-    "maxeval"     = 10000   ,
-    "trace"       = 1       ,
-    "covariance"  = "rank"
-  )
-  ctrl[names(control)] <- control
-  stopifnot(ctrl$algorithm %in% available_algorithms_nlopt)
   ctrl
 }
 

@@ -5,7 +5,6 @@
 \title{An R6 Class to represent a PLNfit in a sparse inverse covariance framework}
 \description{
 The function \code{\link[=PLNnetwork]{PLNnetwork()}} produces a collection of models which are instances of object with class \code{\link{PLNnetworkfit}}.
-
 This class comes with a set of methods, some of them being useful for the user:
 See the documentation for \code{\link[=plot.PLNnetworkfit]{plot()}} and methods inherited from \code{\link{PLNfit}}.
 }
@@ -38,8 +37,6 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 
 \item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and Theta (latent precision matrix). Note Omega and Sigma are inverse of each other.}
-
 \item{\code{EBIC}}{variational lower bound of the EBIC}
 
 \item{\code{density}}{proportion of non-null edges in the network}
@@ -55,7 +52,6 @@ and graph density}
 \item \href{#method-PLNnetworkfit-new}{\code{PLNnetworkfit$new()}}
 \item \href{#method-PLNnetworkfit-update}{\code{PLNnetworkfit$update()}}
 \item \href{#method-PLNnetworkfit-optimize}{\code{PLNnetworkfit$optimize()}}
-\item \href{#method-PLNnetworkfit-postTreatment}{\code{PLNnetworkfit$postTreatment()}}
 \item \href{#method-PLNnetworkfit-latent_network}{\code{PLNnetworkfit$latent_network()}}
 \item \href{#method-PLNnetworkfit-plot_network}{\code{PLNnetworkfit$plot_network()}}
 \item \href{#method-PLNnetworkfit-show}{\code{PLNnetworkfit$show()}}
@@ -69,6 +65,7 @@ and graph density}
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-get_vcov_hat'><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_nlopt"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_nlopt'><code>PLNmodels::PLNfit$optimize_nlopt()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_torch"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_torch'><code>PLNmodels::PLNfit$optimize_torch()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-postTreatment'><code>PLNmodels::PLNfit$postTreatment()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
@@ -103,17 +100,17 @@ Initialize a \code{\link{PLNnetworkfit}} object
 
 \item{\code{penalty_weights}}{either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
 
-\item{\code{responses}}{the matrix of responses common to every models}
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{covariates}}{the matrix of covariates common to every models}
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{offsets}}{the matrix of offsets common to every models}
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
-\item{\code{control}}{a list for controlling the optimization of the PLN model used at initialization. See \code{\link[=PLNnetwork]{PLNnetwork()}} for details.}
+\item{\code{control}}{a list for controlling the optimization. See details.}
 }
 \if{html}{\out{</div>}}
 }
@@ -172,6 +169,16 @@ Update fields of a \code{\link{PLNnetworkfit}} object
 \if{latex}{\out{\hypertarget{method-PLNnetworkfit-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer and update of the relevant fields
+\subsection{\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%}{
+}
+
+\subsection{Post treatment --------------------}{
+
+#' @description Compute PCA scores in the latent space and update corresponding fields.
+postTreatment = function(responses, covariates, offsets, weights, nullModel) {
+super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
+},
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }
@@ -179,40 +186,15 @@ Call to the C++ optimizer and update of the relevant fields
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{responses}}{the matrix of responses common to every models}
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{covariates}}{the matrix of covariates common to every models}
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{control}}{a list for controlling the optimization of the PLN model used at initialization. See \code{\link[=PLNnetwork]{PLNnetwork()}} for details.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNnetworkfit-postTreatment"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNnetworkfit-postTreatment}{}}}
-\subsection{Method \code{postTreatment()}}{
-Compute PCA scores in the latent space and update corresponding fields.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$postTreatment(responses, covariates, offsets, weights, nullModel)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
+\item{\code{control}}{a list for controlling the optimization. See details.}
 }
 \if{html}{\out{</div>}}
 }

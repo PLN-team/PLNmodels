@@ -50,7 +50,8 @@ print(myPLN)
 
 \item{\code{d}}{number of covariates}
 
-\item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)}
+\item{\code{model_par}}{a list with the matrices of parameters found in the model: Theta (covariates),
+Sigma (latent covariance), Omega (latent precision matrix), plus some others depending on the variant)}
 
 \item{\code{vcov_coef}}{Approximation of the Variance-Covariance of Theta}
 
@@ -68,7 +69,7 @@ print(myPLN)
 
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{vcov_model}}{character: the model used for the covariance (either "full", "diagonal", spherical", "fixed" or "genetic")}
+\item{\code{vcov_model}}{character: the model used for the residual covariance (either "full", "diagonal", spherical", "fixed" or "genetic")}
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
@@ -122,6 +123,7 @@ Update a \code{\link{PLNfit}} object
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$update(
   Theta = NA,
   Sigma = NA,
+  Omega = NA,
   M = NA,
   S = NA,
   Ji = NA,
@@ -138,6 +140,8 @@ Update a \code{\link{PLNfit}} object
 \item{\code{Theta}}{matrix of regression matrix}
 
 \item{\code{Sigma}}{variance-covariance matrix of the latent variables}
+
+\item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
 
 \item{\code{M}}{matrix of variational parameters for the mean}
 
@@ -390,7 +394,7 @@ the true matrix Sigmamust be profided for sandwich estimation at the moment
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{type}}{approximation scheme used, either \code{wald} (default, variational) or \code{sandwich} (based on MLE theory).}
+\item{\code{type}}{approximation scheme used, either \code{wald} (default, variational), \code{sandwich} (based on MLE theory) or \code{none}.}
 
 \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
@@ -431,7 +435,7 @@ Update R2, fisher and std_err fields after optimization
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{type}}{approximation scheme used, either \code{wald} (default, variational) or \code{sandwich} (based on MLE theory).}
+\item{\code{type}}{approximation scheme used, either \code{wald} (default, variational), \code{sandwich} (based on MLE theory) or \code{none}.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }

@@ -80,6 +80,7 @@ Rcpp::List cpp_optimize_rank(
     arma::mat S = metadata.copy<S_ID>(parameters.data());
     arma::mat S2 = S % S;
     arma::mat Sigma = B * (M.t() * (M.each_col() % w) + diagmat(sum(S2.each_col() % w, 0))) * B.t() / accu(w);
+    arma::mat Omega = B * inv_sympd((M.t() * (M.each_col() % w) + diagmat(sum(S2.each_col() % w, 0)))/accu(w))  * B.t() ;
     // Element-wise log-likelihood
     arma::mat Z = O + X * Theta.t() + M * B.t();
     arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
@@ -95,6 +96,7 @@ Rcpp::List cpp_optimize_rank(
         Rcpp::Named("Z", Z),
         Rcpp::Named("A", A),
         Rcpp::Named("Sigma", Sigma),
+        Rcpp::Named("Omega", Sigma),
         Rcpp::Named("loglik", loglik));
 }
 

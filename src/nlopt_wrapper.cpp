@@ -161,14 +161,10 @@ bool cpp_test_nlopt() {
 
     check(std::abs(x[0]-1) < 1e-8, "optim convergence");
     check(r.status != NLOPT_FAILURE, "optim status");
-    std::cout << "\n objective:" << r.objective << std::endl ;
-    std::cout << "\n nb iterations:" << r.nb_iterations << std::endl ;
 
     x = std::vector<double>{1.5, -2};
     // set_uniform_x_weights(optimizer.get(), 1.0);
     r = minimize_objective_on_parameters(optimizer.get(), f_and_grad, x);
-    std::cout << "\n objective:" << r.objective << std::endl ;
-    std::cout << "\n nb iterations:" << r.nb_iterations << std::endl ;
 
     return success;
 }

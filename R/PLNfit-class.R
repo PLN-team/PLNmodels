@@ -8,6 +8,7 @@
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
 #'
+## Parameters common to all PLN-xx-fit methods (shared with PLNfit but inheritance does not work)
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
@@ -15,8 +16,9 @@
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
-#' @param type approximation scheme used, either `wald` (default, variational) or `sandwich` (based on MLE theory).
+#' @param Theta matrix of regression matrix
 #' @param Sigma variance-covariance matrix of the latent variables
+#' @param Omega precision matrix of the latent variables. Inverse of Sigma.
 #'
 #' @inherit PLN details
 #'
@@ -42,7 +44,6 @@ PLNfit <- R6Class(
     ## Creation functions ----------------
     #' @description
     #' Update a [`PLNfit`] object
-    #' @param Theta matrix of regression matrix
     #' @param M     matrix of variational parameters for the mean
     #' @param S     matrix of variational parameters for the variance
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
@@ -51,9 +52,10 @@ PLNfit <- R6Class(
     #' @param A     matrix of fitted values
     #' @param monitoring a list with optimization monitoring quantities
     #' @return Update the current [`PLNfit`] object
-    update = function(Theta=NA, Sigma=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
+    update = function(Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
       if (!anyNA(Theta))      private$Theta  <- Theta
       if (!anyNA(Sigma))      private$Sigma  <- Sigma
+      if (!anyNA(Omega))      private$Omega  <- Omega
       if (!anyNA(M))          private$M      <- M
       if (!anyNA(S))          private$S      <- S
       if (!anyNA(Z))          private$Z      <- Z
@@ -84,6 +86,7 @@ PLNfit <- R6Class(
         private$M     <- control$inception$var_par$M
         private$S     <- sqrt(control$inception$var_par$S2)
         private$Sigma <- control$inception$model_par$Sigma
+        private$Omega <- control$inception$model_par$Omega
         private$Ji    <- control$inception$loglik_vec
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
@@ -134,6 +137,7 @@ PLNfit <- R6Class(
       self$update(
         Theta      = optim_out$Theta,
         Sigma      = optim_out$Sigma,
+        Omega      = optim_out$Omega,
         M          = optim_out$M,
         S          = optim_out$S,
         Z          = optim_out$Z,
@@ -166,6 +170,7 @@ PLNfit <- R6Class(
       self$update(
         Theta      = t(as.matrix(optim_out$Theta)),
         Sigma      = as.matrix(optim_out$Sigma),
+        Omega      = as.matrix(optim_out$Omega),
         M          = as.matrix(optim_out$M),
         S          = as.matrix(optim_out$S),
         Z          = as.matrix(optim_out$Z),
@@ -308,6 +313,7 @@ PLNfit <- R6Class(
 
     #' @description Experimental: Compute the estimated variance of the coefficient Theta
     #' the true matrix Sigmamust be profided for sandwich estimation at the moment
+    #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
     #' @return a sparse matrix with sensible dimension names
     get_vcov_hat = function(type, responses, covariates, Sigma = NULL) {
       ## compute and store the estimated covariance of the estimator of the parameter Theta
@@ -326,6 +332,7 @@ PLNfit <- R6Class(
       private$vcov_hat <- vcov_hat
     },
     #' @description Update R2, fisher and std_err fields after optimization
+    #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "sandwich", "none"), nullModel = NULL) {
       type <- match.arg(type)
       ## compute R2
@@ -336,7 +343,9 @@ PLNfit <- R6Class(
       rownames(private$Theta) <- colnames(responses)
       colnames(private$Theta) <- colnames(covariates)
       rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
+      rownames(private$Omega) <- colnames(private$Omega) <- colnames(responses)
       rownames(private$M) <- rownames(private$S) <- rownames(responses)
+      colnames(private$S) <- 1:self$q
       if (type != 'none') {
         ## compute and store matrix of standard errors
         self$get_vcov_hat(type, responses, covariates)
@@ -468,6 +477,7 @@ PLNfit <- R6Class(
     formula    = NA, # the formula call for the model as specified by the user
     Theta      = NA, # regression parameters of the latent layer
     Sigma      = NA, # covariance matrix of the latent layer
+    Omega      = NA, # precision matrix of the latent layer. Inverse of Sigma
     S          = NA, # variational parameters for the variances
     M          = NA, # variational parameters for the means
     psi        = NA, # parameters for genetic model of covariance
@@ -492,8 +502,9 @@ PLNfit <- R6Class(
     p = function() {nrow(private$Theta)},
     #' @field d number of covariates
     d = function() {ncol(private$Theta)},
-    #' @field model_par a list with the matrices of parameters found in the model (Theta, Sigma, plus some others depending on the variant)
-    model_par  = function() {list(Theta = private$Theta, Sigma = private$Sigma)},
+    #' @field model_par a list with the matrices of parameters found in the model: Theta (covariates),
+    #' Sigma (latent covariance), Omega (latent precision matrix), plus some others depending on the variant)
+    model_par  = function() {list(Theta = private$Theta, Sigma = private$Sigma, Omega = private$Omega)},
     #' @field vcov_coef Approximation of the Variance-Covariance of Theta
     vcov_coef  = function() {private$vcov_hat},
     #' @field std_err Approximation of the variance-covariance matrix of model parameters estimates.
@@ -521,7 +532,7 @@ PLNfit <- R6Class(
       res <- self$p * self$d + switch(private$covariance, "full" = self$p * (self$p + 1)/2, "diagonal" = self$p, "spherical" = 1, "genetic" = 2, "fixed" = 0)
       as.integer(res)
     },
-    #' @field vcov_model character: the model used for the covariance (either "full", "diagonal", spherical", "fixed" or "genetic")
+    #' @field vcov_model character: the model used for the residual covariance (either "full", "diagonal", spherical", "fixed" or "genetic")
     vcov_model = function() {private$covariance},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par  = function() {private$monitoring},

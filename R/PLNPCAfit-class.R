@@ -4,17 +4,22 @@
 #' This class comes with a set of methods, some of them being useful for the user:
 #' See the documentation for the methods inherited by  [`PLNfit`] and the [plot()] methods for PCA visualization
 #'
-## Parameters common to many PLNPCAfit methods (shared with PLNfit but inheritance does not work)
+## Parameters common to all PLN-xx-fit methods (shared with PLNfit but inheritance does not work)
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in [`PLNfamily`]
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
-#' @param rank rank of the PCA (or equivalently, dimension of the latent space)
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
-#' @param type approximation scheme to compute the fisher information matrix. Either `wald` (default) or `louis`. `type = "louis"` results in smaller confidence intervals.
-## Parameters common to many PLNLDAfit graphical methods
+#' @param Theta matrix of regression matrix
+#' @param Sigma variance-covariance matrix of the latent variables
+#' @param Omega precision matrix of the latent variables. Inverse of Sigma.
+#'
+## Parameters specific to PLNPCA-fit methods
+#' @param rank rank of the PCA (or equivalently, dimension of the latent space)
+#'
+## Parameters common to many graphical methods
 #' @param map the type of output for the PCA visualization: either "individual", "variable" or "both". Default is "both".
 #' @param nb_axes scalar: the number of axes to be considered when map = "both". The default is min(3,rank).
 #' @param axes numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))
@@ -22,7 +27,6 @@
 #' @param var_cols a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.
 #' @param plot logical. Should the plot be displayed or sent back as ggplot object
 #' @param main character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.
-#'
 #'
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
@@ -58,8 +62,6 @@ PLNPCAfit <- R6Class(
         private$covariance <- "rank"
       },
       #' @description Update a [`PLNPCAfit`] object
-      #' @param Theta matrix of regression matrix
-      #' @param Sigma variance-covariance matrix of the latent variables
       #' @param M     matrix of mean vectors for the variational approximation
       #' @param B     matrix of PCA loadings (in the latent space)
       #' @param S     matrix of variance vectors for the variational approximation
@@ -69,8 +71,8 @@ PLNPCAfit <- R6Class(
       #' @param A     matrix of fitted values
       #' @param monitoring a list with optimization monitoring quantities
       #' @return Update the current [`PLNPCAfit`] object
-      update = function(Theta=NA, Sigma=NA, B=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, M = M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+      update = function(Theta=NA, Sigma=NA, Omega=NA, B=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(Theta = Theta, Sigma = Sigma, Omega = Omega, M = M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(B)) private$B <- B
       },
 
@@ -97,6 +99,7 @@ PLNPCAfit <- R6Class(
           B     = optim_out$B,
           Theta = optim_out$Theta,
           Sigma = optim_out$Sigma,
+          Omega = optim_out$Omega,
           M     = optim_out$M,
           S     = optim_out$S,
           A     = optim_out$A,
@@ -195,12 +198,12 @@ PLNPCAfit <- R6Class(
       },
 
       #' @description Update R2, fisher, std_err fields and set up visualization
+      #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
       #' after optimization
       postTreatment = function(responses, covariates, offsets, weights, nullModel) {
         super$postTreatment(responses, covariates, offsets, weights, type = "none", nullModel = nullModel)
         colnames(private$B) <- colnames(private$M) <- 1:self$q
         rownames(private$B) <- colnames(responses)
-        if (private$covariance != "spherical") colnames(private$S) <- 1:self$q
         self$setVisualization()
       },
 
@@ -345,7 +348,7 @@ PLNPCAfit <- R6Class(
       entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2)))},
       #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
       latent_pos = function() {tcrossprod(private$M, private$B)},
-      #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (latent covariance) and B (latent loadings)
+      #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (covariance), Omega (precision) and B (loadings)
       model_par = function() {
         par <- super$model_par
         par$B <- private$B

@@ -20,10 +20,8 @@
 #' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0
 #' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 #' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)
-#' * "algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS",
-#'     "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
+#' * "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
 #' * "trace" integer for verbosity.
-#'
 #'
 #' @rdname PLNPCA
 #' @examples

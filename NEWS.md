@@ -1,6 +1,9 @@
 # PLNmodels dev version
 
-* integration of sandwich estimator fo the variance of Theta
+* various smalls changes in the interface
+* support for PLN when (inverse) covariance is known/fixed
+* added Barents fish data set
+* integration of sandwich estimator fo the variance of Theta when Sigma is known
 * first support for torch optimizers (for PLN and PLNLDA)
 * handle list of penalty weights in PLNnetwork
 
