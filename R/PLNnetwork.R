@@ -48,7 +48,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
   ## define default control parameters for optim and overwrite them with the user-defined parameters
   ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y))
   if (is.null(control_init$trace)) control_init$trace <- 0
-  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y))
+  ctrl_init <- PLN_param(control_init)
 
   if (is.null(ctrl_init$min.ratio)) ctrl_init$min.ratio   <- .1
   if (is.null(ctrl_init$penalize_diagonal)) ctrl_init$penalize_diagonal <- TRUE

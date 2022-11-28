@@ -1,11 +1,11 @@
 data("oaks")
 system.time(myPLN_torch <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "torch"))
+                  data = oaks, control = PLN_param(backend = "torch"))
 )
 system.time(myPLN_nlopt <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "nlopt"))
+                  data = oaks, control = PLN_param(backend = "nlopt"))
 )
 
 x11()

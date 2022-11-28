@@ -47,7 +47,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control_init = l
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and overwrite by user defined parameters
-  ctrl_init <- PLN_param(control_init, nrow(args$Y), ncol(args$Y))
+  ctrl_init <- PLN_param(control_init)
   ctrl_main <- PLNPCA_param(control_main)
 
   ## Instantiate the collection of PLN models, initialized by PLN with full rank

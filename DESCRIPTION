@@ -91,7 +91,7 @@ Collate:
     'import_utils.R'
     'mollusk.R'
     'oaks.R'
-    'optim_torch_PLN.R'
+    'optim_torch.R'
     'optimizer_config.R'
     'plot_utils.R'
     'trichoptera.R'

@@ -169,16 +169,6 @@ Update fields of a \code{\link{PLNnetworkfit}} object
 \if{latex}{\out{\hypertarget{method-PLNnetworkfit-optimize}{}}}
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer and update of the relevant fields
-\subsection{\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%}{
-}
-
-\subsection{Post treatment --------------------}{
-
-#' @description Compute PCA scores in the latent space and update corresponding fields.
-postTreatment = function(responses, covariates, offsets, weights, nullModel) {
-super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
-},
-}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }

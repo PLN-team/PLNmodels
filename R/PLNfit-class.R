@@ -76,7 +76,6 @@ PLNfit <- R6Class(
       ## save various quantities
       private$formula <- formula               # user formula call
       private$covariance <- control$covariance # covariance model
-      private$backend <- control$backend       # optimization backend
 
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -85,9 +84,9 @@ PLNfit <- R6Class(
         private$Theta <- control$inception$model_par$Theta
         private$M     <- control$inception$var_par$M
         private$S     <- sqrt(control$inception$var_par$S2)
-        private$Sigma <- control$inception$model_par$Sigma
+        # private$Sigma <- control$inception$model_par$Sigma
         private$Omega <- control$inception$model_par$Omega
-        private$Ji    <- control$inception$loglik_vec
+        # private$Ji    <- control$inception$loglik_vec
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
         LMs   <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset =  offsets[,j]) )
@@ -95,16 +94,20 @@ PLNfit <- R6Class(
         residuals     <- do.call(cbind, lapply(LMs, residuals))
         private$M     <- residuals
         private$S     <- matrix(0.1,n,p)
+        if (control$covariance == "fixed") private$Omega <- control$Omega
       }
     },
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
-      if (private$backend == "nlopt")
-        self$optimize_nlopt(responses, covariates, offsets, weights, control)
-      else
-        self$optimize_torch(responses, covariates, offsets, weights, control)
+      if (control$backend == "nlopt")
+        self$optimize_nlopt(responses, covariates, offsets, weights, control$options_nlopt)
+      else {
+        ## initialize torch with nlopt
+        self$optimize_nlopt(responses, covariates, offsets, weights, control$options_nlopt)
+        self$optimize_torch(responses, covariates, offsets, weights, c(control$options_torch, covariance = self$vcov_model))
+      }
     },
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
@@ -112,7 +115,7 @@ PLNfit <- R6Class(
     optimize_nlopt = function(responses, covariates, offsets, weights, control) {
 
       optimizer  <-
-        switch(control$covariance,
+        switch(self$vcov_model,
                "spherical" = cpp_optimize_spherical,
                "diagonal"  = cpp_optimize_diagonal ,
                "genetic"   = cpp_optimize_genetic_modeling,
@@ -127,7 +130,7 @@ PLNfit <- R6Class(
         args$C <- control$corr_matrix
       }
       if (self$vcov_model == "fixed") {
-        args$Omega <- control$prec_matrix
+        args$Omega <- private$Omega
       }
 
       optim_out <- do.call(optimizer, args)
@@ -158,9 +161,6 @@ PLNfit <- R6Class(
     ## Optimizers ----------------------------
     #' @description Call to the torch backend and update of the relevant fields
     optimize_torch = function(responses, covariates, offsets, weights, control) {
-
-      ## Initialize with NLOPT solution
-      self$optimize_nlopt(responses, covariates, offsets, weights, control)
 
       ## Call to external function for readability
       init_parameters <- list(Theta = t(private$Theta), M = private$M, S = private$S)
@@ -197,7 +197,7 @@ PLNfit <- R6Class(
 
       ## define default control parameters for optim and overwrite by user defined parameters
       control$covariance <- self$vcov_model
-      control <- PLN_param(control, n, p)
+      control <- config_default_nlopt
 
       VEstep_optimizer  <-
         switch(control$covariance,
@@ -261,7 +261,7 @@ PLNfit <- R6Class(
       Cn <- matrix(0, self$d*self$p, self$d*self$p)
       for (i in 1:self$n) {
         xxt_i <- tcrossprod(X[i, ])
-        Cn <- Cn - kronecker(getMat_iCnTheta(i) , xxt_i) / (self$n) ## Overall, the divisions by n cancel each other.
+        Cn <- Cn - kronecker(getMat_iCnTheta(i) , xxt_i) / (self$n)
         Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
       }
       Cn_inv <- solve(Cn)
@@ -329,8 +329,9 @@ PLNfit <- R6Class(
         ## Hack to make sure that species is first and varies slowest
         apply(1, paste0, collapse = "_")
       attr(vcov_hat, "name") <- type
-      private$vcov_hat <- vcov_hat
+      attr(private$Theta, "vcov") <- vcov_hat
     },
+
     #' @description Update R2, fisher and std_err fields after optimization
     #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "sandwich", "none"), nullModel = NULL) {
@@ -485,9 +486,8 @@ PLNfit <- R6Class(
     A          = NA, # matrix of expected counts (under variational approximation)
     R2         = NA, # approximated goodness of fit criterion
     Ji         = NA, # element-wise approximated loglikelihood
-    vcov_hat   = NA, # estimated variance of Theta
-    backend    = NA, # either "nlopt" or "torch"
     covariance = NA, # a string describing the residual covariance model
+    backend    = NA, # either "nlopt" or "torch"
     monitoring = NA  # a list with optimization monitoring quantities
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -506,11 +506,11 @@ PLNfit <- R6Class(
     #' Sigma (latent covariance), Omega (latent precision matrix), plus some others depending on the variant)
     model_par  = function() {list(Theta = private$Theta, Sigma = private$Sigma, Omega = private$Omega)},
     #' @field vcov_coef Approximation of the Variance-Covariance of Theta
-    vcov_coef  = function() {private$vcov_hat},
+    vcov_coef  = function() {attr(private$Theta, "vcov")},
     #' @field std_err Approximation of the variance-covariance matrix of model parameters estimates.
     std_err    = function() {
       if (self$d > 0) {
-        stderr <- diag(private$vcov_hat) %>% sqrt %>% matrix(nrow = self$d) %>% t()
+        stderr <- diag(attr(private$Theta, "vcov")) %>% sqrt %>% matrix(nrow = self$d) %>% t()
         dimnames(stderr) <- dimnames(self$model_par$Theta)
       } else {
         stderr <- NULL

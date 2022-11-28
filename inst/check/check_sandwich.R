@@ -36,21 +36,21 @@ Y <- rPLN(n = nrow(X), mu = tcrossprod(X, Theta), Sigma = params$Sigma, depths =
 
 data <- prepare_data(Y, X, offset = "none")
 O <- rowSums(Y)
-model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data,
-             control = list(trace = 0, covariance = "fixed", prec_matrix = solve(params$Sigma)))
+# model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data,
+#              control = list(trace = 0, covariance = "fixed", prec_matrix = solve(params$Sigma)))
+
+model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data)
 Theta_hat <- coef(model)
 model$get_vcov_hat("wald", Y, X)
 Theta_se_wald <- standard_error(model)
-model$get_vcov_hat("louis", Y, X)
-Theta_se_louis <- standard_error(model)
 model$get_vcov_hat("sandwich", Y, X)
 Theta_se_sandwich <- standard_error(model)
 
 data.frame(
-  Theta = rep(c(Theta), 3),
-  Theta_hat = rep(c(Theta_hat), 3),
-  se = c(Theta_se_wald, Theta_se_louis, Theta_se_sandwich),
-  method = rep(c("wald", "louis", "sandwich"), each = length(c(Theta))) ) %>%
+  Theta = rep(c(Theta), 2),
+  Theta_hat = rep(c(Theta_hat), 2),
+  se = c(Theta_se_wald, Theta_se_sandwich),
+  method = rep(c("wald", "sandwich"), each = length(c(Theta))) ) %>%
   ggplot(aes(x = Theta, y = Theta_hat)) +
   geom_errorbar(aes(ymin = Theta_hat - 2 * se,
                     ymax = Theta_hat + 2 * se), color = "blue") + facet_wrap(~ method) +
