@@ -101,18 +101,33 @@ PLNfit <- R6Class(
     ## Optimizers ----------------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
+
+      args <- list(Y = responses,
+                   X = covariates,
+                   O = offsets,
+                   w = weights,
+                   init_parameters = list(Theta = private$Theta, M = private$M, S = private$S))
+
+      if (self$vcov_model == "genetic") {
+        args$init_parameters$rho = 0.25
+        args$C <- control$corr_matrix
+      }
+      if (self$vcov_model == "fixed") {
+        args$Omega <- private$Omega
+      }
+
       if (control$backend == "nlopt")
-        self$optimize_nlopt(responses, covariates, offsets, weights, control$options_nlopt)
+        self$optimize_nlopt(c(args, list(configuration = control$options_nlopt)))
       else {
         ## initialize torch with nlopt
-        self$optimize_nlopt(responses, covariates, offsets, weights, control$options_nlopt)
-        self$optimize_torch(responses, covariates, offsets, weights, c(control$options_torch, covariance = self$vcov_model))
+        self$optimize_nlopt(c(args, list(configuration = control$options_nlopt)))
+        self$optimize_torch(c(args, list(configuration = control$options_torch)))
       }
     },
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
     #' @description Call to the nlopt backend and update of the relevant fields
-    optimize_nlopt = function(responses, covariates, offsets, weights, control) {
+    optimize_nlopt = function(args) {
 
       optimizer  <-
         switch(self$vcov_model,
@@ -122,16 +137,6 @@ PLNfit <- R6Class(
                "fixed"     = cpp_optimize_fixed,
                "full"      = cpp_optimize_full
         )
-
-      args <- list(Y = responses, X = covariates, O = offsets, w = weights, configuration = control)
-      args$init_parameters <- list(Theta = private$Theta, M = private$M, S = private$S)
-      if (self$vcov_model == "genetic") {
-        args$init_parameters$rho = 0.25
-        args$C <- control$corr_matrix
-      }
-      if (self$vcov_model == "fixed") {
-        args$Omega <- private$Omega
-      }
 
       optim_out <- do.call(optimizer, args)
 
@@ -160,11 +165,10 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
     #' @description Call to the torch backend and update of the relevant fields
-    optimize_torch = function(responses, covariates, offsets, weights, control) {
+    optimize_torch = function(args) {
 
-      ## Call to external function for readability
-      init_parameters <- list(Theta = t(private$Theta), M = private$M, S = private$S)
-      optim_out <- optimize_torch_PLN(responses, covariates, offsets, weights, init_parameters, control)
+      args$configuration$covariance <- self$vcov_model
+      optim_out <- do.call(optimize_torch_PLN, args)
 
       ## Saving output
       self$update(

@@ -21,6 +21,12 @@
 #' @export
 PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 
+  ## Temporary test for deprecated se of list()
+  if (!inherits(control, "PLN_param"))
+    stop("We now use the function PLN_param() to generate the list of parameters
+         that control the fit just replace 'list(my_arg = xx)' by
+         PLN_param(my_arg = xx) and see the documentation of PLN_param().")
+
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 

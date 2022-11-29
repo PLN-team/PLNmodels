@@ -23,11 +23,11 @@ myPLN_nlopt$loglik
 
 system.time(myPLN_torch <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "torch", covariance = "spherical"))
+                  data = oaks, control = PLN_param(backend = "torch", covariance = "spherical"))
 )
 system.time(myPLN_nlopt <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "nlopt", covariance = "spherical"))
+                  data = oaks, control = PLN_param(backend = "nlopt", covariance = "spherical"))
 )
 plot(myPLN_torch$model_par$Theta,
      myPLN_nlopt$model_par$Theta); abline(0, 1)
@@ -38,11 +38,11 @@ myPLN_nlopt$loglik
 
 system.time(myPLN_torch <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "torch", covariance = "diagonal"))
+                  data = oaks, control = PLN_param(backend = "torch", covariance = "diagonal"))
 )
 system.time(myPLN_nlopt <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "nlopt", covariance = "diagonal"))
+                  data = oaks, control = PLN_param(backend = "nlopt", covariance = "diagonal"))
 )
 plot(myPLN_torch$model_par$Theta,
      myPLN_nlopt$model_par$Theta); abline(0, 1)
