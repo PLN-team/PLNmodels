@@ -97,11 +97,40 @@ PLNfit <- R6Class(
         if (control$covariance == "fixed") private$Omega <- control$Omega
       }
     },
+
+    update_Sigma = function(weights) {
+      w_bar <- sum(weights)
+      private$Sigma <- switch(self$vcov_model,
+          "spherical" = Matrix::Diagonal(self$p, sum(crossprod(weights, private$M^2 + private$S^2)) / (self$p * w_bar)),
+          "diagonal"  = Matrix::Diagonal(self$p, crossprod(weights, private$M^2 + private$S^2)/ w_bar),
+          "full"      = (crossprod(private$M, weights * private$M) + diag(as.numeric(crossprod(weights, private$S^2)))) / w_bar,
+          "fixed"     = solve(private$Omega)
+      )
+      private$Omega <- switch(self$vcov_model,
+          "fixed"     = private$Omega, solve(private$Sigma)
+          # "genetic    = private$Omega, solve(private$Sigma)
+      )
+
+      # if (self$vcov_model == "genetic")
+      #   private$psi <- list(sigma2 = optim_out$sigma2, rho = optim_out$rho)
+
+    },
+
+    update_loglik = function(weights, Y) {
+      KY  <- .5 * self$p - rowSums(.logfactorial(Y))
+      S2 <- private$S**2
+      Ji <- as.numeric(
+        .5 * determinant(private$Omega, logarithm = TRUE)$modulus + KY +
+          rowSums(Y * private$Z - private$A + .5 * log(private$S^2) -
+                  .5 * ( (private$M %*% private$Omega) * private$M + sweep(private$S^2, 2, diag(private$Omega), '*')))
+      )
+      attr(Ji, "weights") <- weights
+      private$Ji <- Ji
+    },
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
-
       args <- list(Y = responses,
                    X = covariates,
                    O = offsets,
@@ -117,18 +146,27 @@ PLNfit <- R6Class(
       }
 
       if (control$backend == "nlopt")
-        self$optimize_nlopt(c(args, list(configuration = control$options_nlopt)))
+        optim_out <- self$optimize_nlopt(c(args, list(configuration = control$options_nlopt)))
       else {
         ## initialize torch with nlopt
-        self$optimize_nlopt(c(args, list(configuration = control$options_nlopt)))
-        self$optimize_torch(c(args, list(configuration = control$options_torch)))
+        optim_out <- self$optimize_nlopt(c(args, list(configuration = control$options_nlopt)))
+        args$init_parameters = list(Theta = optim_out$Theta, M = optim_out$M, S = optim_out$S)
+        optim_out <- self$optimize_torch(c(args, list(configuration = control$options_torch)))
       }
+
+      private$Theta <- optim_out$Theta
+      private$M     <- optim_out$M
+      private$S     <- optim_out$S
+      private$Z     <- optim_out$Z
+      private$A     <- optim_out$A
+      private$monitoring <- list(iterations = optim_out$iterations, message = status_to_message(optim_out$status))
+      self$update_Sigma(args$w)
+      self$update_loglik(args$w, args$Y)
     },
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
     #' @description Call to the nlopt backend and update of the relevant fields
     optimize_nlopt = function(args) {
-
       optimizer  <-
         switch(self$vcov_model,
                "spherical" = cpp_optimize_spherical,
@@ -137,51 +175,17 @@ PLNfit <- R6Class(
                "fixed"     = cpp_optimize_fixed,
                "full"      = cpp_optimize_full
         )
-
       optim_out <- do.call(optimizer, args)
-
-      Ji <- optim_out$loglik
-      attr(Ji, "weights") <- weights
-      self$update(
-        Theta      = optim_out$Theta,
-        Sigma      = optim_out$Sigma,
-        Omega      = optim_out$Omega,
-        M          = optim_out$M,
-        S          = optim_out$S,
-        Z          = optim_out$Z,
-        A          = optim_out$A,
-        Ji         = Ji,
-        monitoring = list(
-          iterations = optim_out$iterations,
-          message    = status_to_message_nlopt(optim_out$status))
-      )
-
-      if (self$vcov_model == "genetic")
-        private$psi <- list(sigma2 = optim_out$sigma2, rho = optim_out$rho)
-      if (self$vcov_model == "fixed")
-        private$Sigma <- solve(control$prec_matrix)
+      optim_out
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimizers ----------------------------
     #' @description Call to the torch backend and update of the relevant fields
     optimize_torch = function(args) {
-
       args$configuration$covariance <- self$vcov_model
       optim_out <- do.call(optimize_torch_PLN, args)
-
-      ## Saving output
-      self$update(
-        Theta      = t(as.matrix(optim_out$Theta)),
-        Sigma      = as.matrix(optim_out$Sigma),
-        Omega      = as.matrix(optim_out$Omega),
-        M          = as.matrix(optim_out$M),
-        S          = as.matrix(optim_out$S),
-        Z          = as.matrix(optim_out$Z),
-        A          = as.matrix(optim_out$A),
-        Ji         = optim_out$Ji,
-        monitoring = optim_out$monitoring
-      )
+      optim_out
     },
 
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.

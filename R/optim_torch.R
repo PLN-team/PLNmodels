@@ -28,17 +28,6 @@ optimize_torch_PLN <- function(Y, X, O, w, init_parameters, configuration) {
     neg_ELBO
   }
 
-  get_Sigma <- function(M, S) {
-    switch(configuration$covariance,
-           "spherical" = torch_eye(p) * sum(torch_matmul(w, M * M + S*S)) / (w_bar * p),
-           "diagonal"  = torch_diag(torch_matmul(w, M * M + S*S) / w_bar),
-           "full"      = {
-             Mw <- torch_matmul(torch_diag(torch_sqrt(w)), M)
-             (torch_matmul(torch_transpose(Mw, 2, 1), Mw) + torch_diag(torch_matmul(w, S*S))) / w_bar
-           }
-    )
-  }
-
   ## Initialization
   Theta <- torch_tensor(t(init_parameters$Theta), requires_grad = TRUE)
   M     <- torch_tensor(init_parameters$M       , requires_grad = TRUE)
@@ -47,10 +36,10 @@ optimize_torch_PLN <- function(Y, X, O, w, init_parameters, configuration) {
   Theta_old <- as.numeric(optimizer$param_groups[[1]]$params$Theta)
 
   ## Optimization loop
-  message <- "failure"
+  status <- 5
   objective <- double(length = configuration$maxeval + 1)
   for (iterate in seq.int(configuration$maxeval)) {
-    browser()
+
     ## Optimization
     optimizer$zero_grad()   # reinitialize gradients
     loss <- get_objective() # compute current ELBO
@@ -72,38 +61,24 @@ optimize_torch_PLN <- function(Y, X, O, w, init_parameters, configuration) {
     ## Check for convergence
     if (delta_f < configuration$ftol_rel | delta_x < configuration$xtol_rel) {
       objective <- objective[1:iterate + 1]
-      message <- "converged"
+      if (delta_f < configuration$ftol_rel) status <- 3
+      if (delta_x < configuration$xtol_rel) status <- 4
       break
     }
   }
 
-  Sigma <- get_Sigma(M, S)
-  Omega <- torch::torch_inverse(Sigma)
-  S2 <- torch::torch_multiply(S,S)
   Z  <- O + M + torch::torch_matmul(X, Theta)
-  A  <- torch::torch_exp(Z + S2/2)
-
-  Ji <- as.numeric(
-    .5 * torch_logdet(Omega) +
-      torch_sum(Y * Z - A + .5 * torch_log(S2), dim = 2) -
-      .5 * torch_sum(torch_matmul(M, Omega) * M + S2 * torch_diag(Omega), dim = 2) +
-      .5 * p - KY
-  )
-  attr(Ji, "weights") <- weights
+  A  <- torch::torch_exp(Z + S*S/2)
 
   out <- list(
-    Theta      = Theta,
-    Sigma      = Sigma,
-    Omega      = Omega,
-    M          = M,
-    S          = S,
-    Z          = Z,
-    A          = A,
-    Ji         = Ji,
-    monitoring = list(
-      objective  = objective,
-      iterations = iterate,
-      message    = message)
+    Theta      = t(as.matrix(Theta)),
+    M          = as.matrix(M),
+    S          = as.matrix(S),
+    Z          = as.matrix(Z),
+    A          = as.matrix(A),
+    objective  = objective,
+    iterations = iterate,
+    status     = status
   )
   out
 }
@@ -186,20 +161,20 @@ optimize_PLNPCA <- function(responses, covariates, offsets, weights, init_parame
     }
   }
 
-  Sigma <- get_Sigma(M, S)
-  Omega <- torch::torch_inverse(Sigma)
-  S2 <- torch::torch_multiply(S,S)
-  Z  <- O + M + torch::torch_matmul(X, Theta)
-  A  <- torch::torch_exp(Z + S2/2)
-  KY <- rowSums(.logfactorial(responses))
-
-  Ji <- as.numeric(
-    .5 * torch_logdet(Omega) +
-      torch_sum(Y * Z - A + .5 * torch_log(S2), dim = 2) -
-      .5 * torch_sum(torch_matmul(M, Omega) * M + S2 * torch_diag(Omega), dim = 2) +
-      .5 * p - KY
-  )
-  attr(Ji, "weights") <- weights
+  # Sigma <- get_Sigma(M, S)
+  # Omega <- torch::torch_inverse(Sigma)
+  # S2 <- torch::torch_multiply(S,S)
+  # Z  <- O + M + torch::torch_matmul(X, Theta)
+  # A  <- torch::torch_exp(Z + S2/2)
+  # KY <- rowSums(.logfactorial(responses))
+  #
+  # Ji <- as.numeric(
+  #   .5 * torch_logdet(Omega) +
+  #     torch_sum(Y * Z - A + .5 * torch_log(S2), dim = 2) -
+  #     .5 * torch_sum(torch_matmul(M, Omega) * M + S2 * torch_diag(Omega), dim = 2) +
+  #     .5 * p - KY
+  # )
+  # attr(Ji, "weights") <- w
 
   out <- list(
     Theta      = Theta,

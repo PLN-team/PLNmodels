@@ -108,7 +108,7 @@ PLNPCAfit <- R6Class(
           monitoring = list(
             iterations = optim_out$iterations,
             status     = optim_out$status,
-            message    = status_to_message_nlopt(optim_out$status))
+            message    = status_to_message(optim_out$status))
         )
       },
 

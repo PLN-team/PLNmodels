@@ -150,6 +150,24 @@ PLNnetwork_param <- function(control, n, p) {
   ctrl
 }
 
+status_to_message <- function(status) {
+  message <- switch(as.character(status),
+        "1"  = "success",
+        "2"  = "success, stopval was reached",
+        "3"  = "success, ftol_rel or ftol_abs was reached",
+        "4"  = "success, xtol_rel or xtol_abs was reached",
+        "5"  = "success, maxeval was reached",
+        "6"  = "success, maxtime was reached",
+        "-1" = "failure",
+        "-2" = "invalid arguments",
+        "-3" = "out of memory.",
+        "-4" = "roundoff errors led to a breakdown of the optimization algorithm",
+        "-5" = "forced termination:",
+        "Return status not recognized"
+  )
+  message
+}
+
 status_to_message_nlopt <- function(status) {
   message <- switch(as.character(status),
                     "1"  = "success",

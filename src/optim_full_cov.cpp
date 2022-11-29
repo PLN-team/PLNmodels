@@ -108,7 +108,8 @@ Rcpp::List cpp_optimize_full(
         Rcpp::Named("A", A),
         Rcpp::Named("Sigma", Sigma),
         Rcpp::Named("Omega", Omega),
-        Rcpp::Named("loglik", loglik));
+        Rcpp::Named("loglik", loglik)
+      );
 }
 
 // ---------------------------------------------------------------------------------------
