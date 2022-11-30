@@ -12,7 +12,7 @@
 // Fully parametrized covariance
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_full(
+Rcpp::List nlopt_optimize_full(
     const Rcpp::List & init_parameters, // List(Theta, M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)
@@ -98,9 +98,9 @@ Rcpp::List cpp_optimize_full(
     arma::vec loglik = sum(Y % Z - A + 0.5 * log(S2) - 0.5 * ((M * Omega) % M + S2 * diagmat(Omega)), 1) +
                        0.5 * real(log_det(Omega)) + ki(Y);
 
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
     return Rcpp::List::create(
-        Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("Theta", Theta),
         Rcpp::Named("M", M),
         Rcpp::Named("S", S),
@@ -108,7 +108,12 @@ Rcpp::List cpp_optimize_full(
         Rcpp::Named("A", A),
         Rcpp::Named("Sigma", Sigma),
         Rcpp::Named("Omega", Omega),
-        Rcpp::Named("loglik", loglik)
+        Rcpp::Named("Ji", Ji),
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status", static_cast<int>(result.status)),
+            Rcpp::Named("backend", "nlopt"),
+            Rcpp::Named("iterations", result.nb_iterations)
+        ))
       );
 }
 
@@ -116,7 +121,7 @@ Rcpp::List cpp_optimize_full(
 // VE full
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_vestep_full(
+Rcpp::List nlopt_optimize_vestep_full(
     const Rcpp::List & init_parameters, // List(M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)

@@ -12,7 +12,7 @@
 // Spherical covariance
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_spherical(
+Rcpp::List nlopt_optimize_spherical(
     const Rcpp::List & init_parameters, // List(Theta, M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)
@@ -87,24 +87,30 @@ Rcpp::List cpp_optimize_spherical(
     arma::mat A = exp(Z + 0.5 * S2);
     arma::mat loglik = sum(Y % Z - A - 0.5 * (pow(M, 2) + S2 ) / sigma2 + 0.5 * log(S2 / sigma2), 1) + ki(Y);
 
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
     return Rcpp::List::create(
-        Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("Theta", Theta),
+        Rcpp::Named("Sigma", Sigma),
+        Rcpp::Named("Omega", Omega),
         Rcpp::Named("M", M),
         Rcpp::Named("S", S),
         Rcpp::Named("Z", Z),
         Rcpp::Named("A", A),
-        Rcpp::Named("Sigma", Sigma),
-        Rcpp::Named("Omega", Omega),
-        Rcpp::Named("loglik", loglik));
+        Rcpp::Named("Ji", Ji),
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status", static_cast<int>(result.status)),
+            Rcpp::Named("backend", "nlopt"),
+            Rcpp::Named("iterations", result.nb_iterations)
+        ))
+      );
 }
 
 // ---------------------------------------------------------------------------------------
 // VE spherical
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_vestep_spherical(
+Rcpp::List nlopt_optimize_vestep_spherical(
     const Rcpp::List & init_parameters, // List(M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)

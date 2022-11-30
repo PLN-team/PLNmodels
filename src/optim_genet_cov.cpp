@@ -12,7 +12,7 @@
 // Covariance for heritability
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_genetic_modeling(
+Rcpp::List nlopt_optimize_genetic_modeling(
     const Rcpp::List & init_parameters, // List(Theta, M, S, rho)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)

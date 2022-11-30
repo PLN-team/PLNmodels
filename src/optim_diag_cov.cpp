@@ -12,7 +12,7 @@
 // Diagonal covariance
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_diagonal(
+Rcpp::List nlopt_optimize_diagonal(
     const Rcpp::List & init_parameters, // List(Theta, M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)
@@ -88,24 +88,30 @@ Rcpp::List cpp_optimize_diagonal(
     arma::mat loglik =
         sum(Y % Z - A + 0.5 * log(S2), 1) - 0.5 * (pow(M, 2) + S2) * omega2 + 0.5 * sum(log(omega2)) + ki(Y);
 
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
     return Rcpp::List::create(
-        Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("Theta", Theta),
+        Rcpp::Named("Sigma", Sigma),
+        Rcpp::Named("Omega", Omega),
         Rcpp::Named("M", M),
         Rcpp::Named("S", S),
         Rcpp::Named("Z", Z),
         Rcpp::Named("A", A),
-        Rcpp::Named("Sigma", Sigma),
-        Rcpp::Named("Omega", Omega),
-        Rcpp::Named("loglik", loglik));
+        Rcpp::Named("Ji", Ji),
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status", static_cast<int>(result.status)),
+            Rcpp::Named("backend", "nlopt"),
+            Rcpp::Named("iterations", result.nb_iterations)
+        ))
+    );
 }
 
 // ---------------------------------------------------------------------------------------
 // VE diagonal
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_vestep_diagonal(
+Rcpp::List nlopt_optimize_vestep_diagonal(
     const Rcpp::List & init_parameters, // List(M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)

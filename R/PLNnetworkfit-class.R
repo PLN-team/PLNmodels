@@ -85,7 +85,7 @@ PLNnetworkfit <- R6Class(
         Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
         ## CALL TO NLOPT OPTIMIZATION
-        optim_out <- cpp_optimize_fixed(par0, responses, covariates, offsets, weights, Omega, control)
+        optim_out <- nlopt_optimize_fixed(par0, responses, covariates, offsets, weights, Omega, control)
 
         ## Check convergence
         objective[iter]   <- -sum(weights * optim_out$loglik) + self$penalty * sum(abs(Omega))

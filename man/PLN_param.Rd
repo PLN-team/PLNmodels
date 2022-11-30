@@ -9,8 +9,7 @@ PLN_param(
   trace = 1,
   covariance = "full",
   Omega = NULL,
-  options_nlopt = list(),
-  options_torch = list(),
+  config_optim = list(),
   inception = NULL
 )
 }
@@ -23,9 +22,7 @@ PLN_param(
 
 \item{Omega}{precision matrix of the latent variables. Inverse of Sigma. Must be specified if \code{covariance} is "fixed"}
 
-\item{options_nlopt}{a list for controlling the optimizer when the "nlopt" backend is chosen. See details}
-
-\item{options_torch}{a list for controlling the optimizer when the "torch" backend is chosen. See details}
+\item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
@@ -35,7 +32,7 @@ which sometimes speeds up the inference.}
 Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 }
 \details{
-The list of parameters \code{options_nlopt} controls the nlopt optimizer when thos backend is used, with the following entries:
+The list of parameters \code{config_optim} controls the optimizers. When "nlopt" is chosen the following entries are relevant
 \itemize{
 \item "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
 \item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
@@ -46,7 +43,7 @@ The list of parameters \code{options_nlopt} controls the nlopt optimizer when th
 \item "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
 }
 
-The list of parameters \code{options_torch} controls the torch optimizer when thos backend is used, with the following entries:
+When "torch" backend is used, with the following entries are relevant:
 \itemize{
 \item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 \item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8

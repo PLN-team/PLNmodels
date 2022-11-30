@@ -32,16 +32,13 @@ print(myPLN)
 
 \item{\code{d}}{number of covariates}
 
-\item{\code{model_par}}{a list with the matrices of parameters found in the model: Theta (covariates),
-Sigma (latent covariance), Omega (latent precision matrix), plus some others depending on the variant)}
+\item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{vcov_coef}}{Approximation of the Variance-Covariance of Theta}
+\item{\code{model_par}}{a list with the matrices of the model parameters: Theta (covariates), Sigma (covariance), Omega (precision matrix), plus some others depending on the variant)}
 
-\item{\code{std_err}}{Approximation of the variance-covariance matrix of model parameters estimates.}
+\item{\code{var_par}}{a list with the matrices of the variational parameters: M (means) and S2 (variances)}
 
-\item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
-
-\item{\code{gen_par}}{a list with two parameters, sigma2 and rho, only used with the genetic covariance model}
+\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
 \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
@@ -49,13 +46,7 @@ Sigma (latent covariance), Omega (latent precision matrix), plus some others dep
 
 \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 
-\item{\code{nb_param}}{number of parameters in the current PLN model}
-
-\item{\code{vcov_model}}{character: the model used for the residual covariance (either "full", "diagonal", spherical", "fixed" or "genetic")}
-
-\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
-
-\item{\code{optim_backend}}{the backend (either torch or nlopt) used for fitting the model}
+\item{\code{vcov_model}}{character: the model used for the residual covariance}
 
 \item{\code{weights}}{observational weights}
 
@@ -72,6 +63,10 @@ Sigma (latent covariance), Omega (latent precision matrix), plus some others dep
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
 \item{\code{criteria}}{a vector with loglik, BIC, ICL and number of parameters}
+
+\item{\code{vcov_coef}}{Approximation of the Variance-Covariance of Theta (experimental)}
+
+\item{\code{std_err}}{Approximation of the variance-covariance matrix of model parameters estimates (experimental)}
 }
 \if{html}{\out{</div>}}
 }
@@ -81,8 +76,10 @@ Sigma (latent covariance), Omega (latent precision matrix), plus some others dep
 \item \href{#method-PLNfit-update}{\code{PLNfit$update()}}
 \item \href{#method-PLNfit-new}{\code{PLNfit$new()}}
 \item \href{#method-PLNfit-optimize}{\code{PLNfit$optimize()}}
-\item \href{#method-PLNfit-optimize_nlopt}{\code{PLNfit$optimize_nlopt()}}
-\item \href{#method-PLNfit-optimize_torch}{\code{PLNfit$optimize_torch()}}
+\item \href{#method-PLNfit-torch_elbo}{\code{PLNfit$torch_elbo()}}
+\item \href{#method-PLNfit-torch_Sigma}{\code{PLNfit$torch_Sigma()}}
+\item \href{#method-PLNfit-torch_vloglik}{\code{PLNfit$torch_vloglik()}}
+\item \href{#method-PLNfit-torch_optimize}{\code{PLNfit$torch_optimize()}}
 \item \href{#method-PLNfit-VEstep}{\code{PLNfit$VEstep()}}
 \item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
 \item \href{#method-PLNfit-vcov_sandwich}{\code{PLNfit$vcov_sandwich()}}
@@ -176,7 +173,7 @@ Initialize a \code{\link{PLNfit}} model
 \if{html}{\out{<a id="method-PLNfit-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-optimize}{}}}
 \subsection{Method \code{optimize()}}{
-Call to the C++ optimizer and update of the relevant fields
+Call to the NLopt or TORCH optimizer and update of the relevant fields
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }
@@ -198,54 +195,40 @@ Call to the C++ optimizer and update of the relevant fields
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-optimize_nlopt"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-optimize_nlopt}{}}}
-\subsection{Method \code{optimize_nlopt()}}{
-Call to the nlopt backend and update of the relevant fields
+\if{html}{\out{<a id="method-PLNfit-torch_elbo"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-torch_elbo}{}}}
+\subsection{Method \code{torch_elbo()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize_nlopt(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$torch_elbo(data, params)}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-optimize_torch"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-optimize_torch}{}}}
-\subsection{Method \code{optimize_torch()}}{
-Call to the torch backend and update of the relevant fields
+\if{html}{\out{<a id="method-PLNfit-torch_Sigma"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-torch_Sigma}{}}}
+\subsection{Method \code{torch_Sigma()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize_torch(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$torch_Sigma(data, params)}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
 }
-\if{html}{\out{</div>}}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-torch_vloglik"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-torch_vloglik}{}}}
+\subsection{Method \code{torch_vloglik()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$torch_vloglik(data, params)}\if{html}{\out{</div>}}
 }
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-torch_optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-torch_optimize}{}}}
+\subsection{Method \code{torch_optimize()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$torch_optimize(args)}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit-VEstep"></a>}}

@@ -32,14 +32,15 @@ config_default_torch <-
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "genetic". Default is "full".
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma. Must be specified if `covariance` is "fixed"
-#' @param options_nlopt a list for controlling the optimizer when the "nlopt" backend is chosen. See details
-#' @param options_torch a list for controlling the optimizer when the "torch" backend is chosen. See details
+#' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
 #' @param trace a integer for verbosity.
 #' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 #'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 #'    which sometimes speeds up the inference.
 #'
-#' @details The list of parameters `options_nlopt` controls the nlopt optimizer when thos backend is used, with the following entries:
+#' @returna list of parameters configuring the fit.
+#'
+#' @details The list of parameters `config_optim` controls the optimizers. When "nlopt" is chosen the following entries are relevant
 #' * "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
 #' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 #' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
@@ -48,7 +49,7 @@ config_default_torch <-
 #' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)
 #' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
 #'
-#' The list of parameters `options_torch` controls the torch optimizer when thos backend is used, with the following entries:
+#' When "torch" backend is used, with the following entries are relevant:
 #' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 #' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
 #' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
@@ -59,27 +60,28 @@ PLN_param <- function(
     trace         = 1      ,
     covariance    = "full" ,
     Omega         = NULL   ,
-    options_nlopt = list() , # relevant for nlopt
-    options_torch = list() , # relevant for torch
+    config_optim  = list() ,
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
-  stopifnot(backend   %in% c("nlopt", "torch"))
-  stopifnot(options_nlopt$algorithm %in% available_algorithms_nlopt)
+  stopifnot(backend %in% c("nlopt", "torch"))
+  stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
   if (covariance == "fixed") stopifnot(inherits(Omega, "matrix"))
-  opts_nlopt <- config_default_nlopt
-  opts_torch <- config_default_torch
-  opts_nlopt[names(options_nlopt)] <- options_nlopt
-  opts_torch[names(options_torch)] <- options_torch
+  if (backend == "nlopt") {
+    config <- config_default_nlopt
+    config[names(config_optim)] <- config_optim
+  }
+  if (backend == "torch") {
+    config <- config_default_torch
+    config[names(config_optim)] <- config_optim
+  }
   if(!is.null(inception)) stopifnot(isPLNfit(inception))
-
   structure(list(
     backend       = backend   ,
     trace         = trace     ,
     covariance    = covariance,
     Omega         = Omega     ,
-    options_nlopt = opts_nlopt,
-    options_torch = opts_torch,
-    covariance    = covariance   ,
+    config_optim  = config    ,
+    covariance    = covariance,
     inception     = inception   ), class = "PLN_param")
 }
 

@@ -83,7 +83,7 @@ PLNPCAfit <- R6Class(
         ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
         opts <- control
         opts$xtol_abs <- list(Theta = 0, B = 0, M = 0, S = control$xtol_abs)
-        optim_out <- cpp_optimize_rank(
+        optim_out <- nlopt_optimize_rank(
           list(
             Theta = private$Theta,
             B = private$B,
@@ -130,7 +130,7 @@ PLNPCAfit <- R6Class(
         control$covariance <- self$vcov_model
         control <- PLN_param(control, n, p)
 
-        VEstep_optimizer  <- cpp_optimize_vestep_rank
+        VEstep_optimizer  <- nlopt_optimize_vestep_rank
 
         ## Not completely naive starting values for M: SVD on the residuals of
         ## a linear regression on the log-counts (+1 to deal with 0s)

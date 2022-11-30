@@ -14,7 +14,7 @@
 // Rank (q) is already determined by param dimensions ; not passed anywhere
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_rank(
+Rcpp::List nlopt_optimize_rank(
     const Rcpp::List & init_parameters, // List(Theta, B, M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)
@@ -105,7 +105,7 @@ Rcpp::List cpp_optimize_rank(
 // Rank-constrained covariance (for prediction in the PCA space)
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_vestep_rank(
+Rcpp::List nlopt_optimize_vestep_rank(
         const Rcpp::List & init_parameters, // List(M, S)
         const arma::mat & Y,                // responses (n,p)
         const arma::mat & X,                // covariates (n,d)
