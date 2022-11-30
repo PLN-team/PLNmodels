@@ -28,6 +28,9 @@ PLN_param(
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.}
 }
+\value{
+list of parameters configuring the fit.
+}
 \description{
 Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 }

@@ -51,7 +51,116 @@ PLNfit <- R6Class(
     R2         = NA, # approximated goodness of fit criterion
     Ji         = NA, # element-wise approximated loglikelihood
     optimizer  = NA, # link to the function doing the optimization
-    monitoring = NA  # a list with optimization monitoring quantities
+    monitoring = NA,  # a list with optimization monitoring quantities
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    torch_elbo = function(data, params) {
+      S2 <- torch_multiply(params$S, params$S)
+      Z <- data$O + params$M + torch_matmul(data$X, params$Theta)
+      res <- .5 * sum(data$w) * torch_logdet(private$torch_Sigma(data, params)) -
+        sum(torch_matmul(data$w , data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+      res
+    },
+
+    torch_Sigma = function(data, params) {
+      S2 <- torch_multiply(params$S, params$S)
+      Mw <- torch_matmul(torch_diag(torch_sqrt(data$w)), params$M)
+      Sigma <- (torch_matmul(torch_transpose(Mw, 2, 1), Mw) + torch_diag(torch_matmul(data$w, S2))) / sum(data$w)
+      Sigma
+    },
+
+    torch_vloglik = function(data, params) {
+      S2    <- torch_multiply(params$S, params$S)
+      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
+        .5 * torch_logdet(params$Omega) +
+          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
+          .5 * torch_sum(torch_matmul(params$M, params$Omega) * params$M + S2 * torch_diag(params$Omega), dim = 2)
+      )
+      attr(Ji, "weights") <- as.numeric(data$w)
+      Ji
+    },
+
+    #' @import torch
+    torch_optimize = function(Y, X, O, w, init_parameters, configuration) {
+
+      ## Initialization and conversion to torch tensors
+      data <- list(
+        X = torch_tensor(X),
+        Y = torch_tensor(Y),
+        O = torch_tensor(O),
+        w = torch_tensor(w)
+      )
+
+      params <- list(
+        Theta = torch_tensor(t(init_parameters$Theta), requires_grad = TRUE),
+        M     = torch_tensor(init_parameters$M       , requires_grad = TRUE),
+        S     = torch_tensor(init_parameters$S       , requires_grad = TRUE)
+      )
+
+      optimizer <- optim_rprop(params, lr = configuration$learning_rate)
+      Theta_old <- as.numeric(optimizer$param_groups[[1]]$params$Theta)
+
+      ## Optimization loop
+      status <- 5
+      objective <- double(length = configuration$maxeval + 1)
+      for (iterate in seq.int(configuration$maxeval)) {
+
+        ## Optimization
+        optimizer$zero_grad() # reinitialize gradients
+        loss <- private$torch_elbo(data, params) # compute current ELBO
+        loss$backward()                   # backward propagation
+        optimizer$step()                  # optimization
+
+        ## assess convergence
+        objective[iterate + 1] <- loss$item()
+        Theta_new <- as.numeric(optimizer$param_groups[[1]]$params$Theta)
+        delta_f   <- abs(objective[iterate] - objective[iterate + 1]) / abs(objective[iterate + 1])
+        delta_x   <- sum(abs(Theta_old - Theta_new))/sum(abs(Theta_new))
+        Theta_old <- Theta_new
+
+        ## display progress
+        if (configuration$trace >  1 && (iterate %% 50 == 0))
+          cat('\niteration: ', iterate, 'objective', objective[iterate + 1],
+              'delta_f'  , round(delta_f, 6), 'delta_x', round(delta_x, 6))
+
+        ## Check for convergence
+        if (delta_f < configuration$ftol_rel) status <- 3
+        if (delta_x < configuration$xtol_rel) status <- 4
+        if (status %in% c(3,4)) {
+          objective <- objective[1:iterate + 1]
+          break
+        }
+      }
+
+      params$Sigma <- private$torch_Sigma(data, params)
+      params$Omega <- torch::torch_inverse(params$Sigma)
+      params$Z     <- data$O + params$M + torch_matmul(data$X, params$Theta)
+      params$A     <- torch_exp(params$Z + torch_multiply(params$S, params$S)/2)
+
+      out <- list(
+        Theta      = t(as.matrix(params$Theta)),
+        Sigma      = as.matrix(params$Sigma),
+        Omega      = as.matrix(params$Omega),
+        M          = as.matrix(params$M),
+        S          = as.matrix(params$S),
+        Z          = as.matrix(params$Z),
+        A          = as.matrix(params$A),
+        Ji         = private$torch_vloglik(data, params),
+        monitoring = list(
+          objective  = objective,
+          iterations = iterate,
+          status     = status,
+          backend = "torch"
+        )
+      )
+      out
+    }
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## END OF TORCH METHODS
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS
@@ -89,7 +198,7 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
       ## set up various quantities
       private$formula <- formula # user formula call
-      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_full, self$torch_optimize)
+      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_full, private$torch_optimize)
       ## initialize variational parameters
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -121,108 +230,6 @@ PLNfit <- R6Class(
                    configuration = control$config_optim)
       optim_out <- do.call(private$optimizer, args)
       do.call(self$update, optim_out)
-    },
-
-    torch_elbo = function(data, params) {
-      S2 <- torch_multiply(params$S, params$S)
-      Z <- data$O + params$M + torch_matmul(data$X, params$Theta)
-      res <- .5 * sum(data$w) * torch_logdet(self$torch_Sigma(data, params)) -
-        sum(torch_matmul(data$w , data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
-      res
-    },
-
-    torch_Sigma = function(data, params) {
-      S2 <- torch_multiply(params$S, params$S)
-      Mw <- torch_matmul(torch_diag(torch_sqrt(data$w)), params$M)
-      Sigma <- (torch_matmul(torch_transpose(Mw, 2, 1), Mw) + torch_diag(torch_matmul(data$w, S2))) / sum(data$w)
-      Sigma
-    },
-
-    torch_vloglik = function(data, params) {
-      S2    <- torch_multiply(params$S, params$S)
-      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
-        .5 * torch_logdet(params$Omega) +
-          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
-          .5 * torch_sum(torch_matmul(params$M, params$Omega) * params$M + S2 * torch_diag(params$Omega), dim = 2)
-        )
-      attr(Ji, "weights") <- as.numeric(data$w)
-      Ji
-    },
-
-    #' @import torch
-    torch_optimize = function(Y, X, O, w, init_parameters, configuration) {
-
-      ## Initialization and conversion to torch tensors
-      data <- list(
-        X = torch_tensor(X),
-        Y = torch_tensor(Y),
-        O = torch_tensor(O),
-        w = torch_tensor(w)
-      )
-
-      params <- list(
-        Theta = torch_tensor(t(init_parameters$Theta), requires_grad = TRUE),
-        M     = torch_tensor(init_parameters$M       , requires_grad = TRUE),
-        S     = torch_tensor(init_parameters$S       , requires_grad = TRUE)
-      )
-
-      optimizer <- optim_rprop(params, lr = configuration$learning_rate)
-        Theta_old <- as.numeric(optimizer$param_groups[[1]]$params$Theta)
-
-        ## Optimization loop
-        status <- 5
-        objective <- double(length = configuration$maxeval + 1)
-        for (iterate in seq.int(configuration$maxeval)) {
-
-          ## Optimization
-          optimizer$zero_grad() # reinitialize gradients
-          loss <- self$torch_elbo(data, params) # compute current ELBO
-          loss$backward()                   # backward propagation
-          optimizer$step()                  # optimization
-
-          ## assess convergence
-          objective[iterate + 1] <- loss$item()
-          Theta_new <- as.numeric(optimizer$param_groups[[1]]$params$Theta)
-          delta_f   <- abs(objective[iterate] - objective[iterate + 1]) / abs(objective[iterate + 1])
-          delta_x   <- sum(abs(Theta_old - Theta_new))/sum(abs(Theta_new))
-          Theta_old <- Theta_new
-
-          ## display progress
-          if (configuration$trace >  1 && (iterate %% 50 == 0))
-            cat('\niteration: ', iterate, 'objective', objective[iterate + 1],
-                'delta_f'  , round(delta_f, 6), 'delta_x', round(delta_x, 6))
-
-          ## Check for convergence
-          if (delta_f < configuration$ftol_rel) status <- 3
-          if (delta_x < configuration$xtol_rel) status <- 4
-          if (status %in% c(3,4)) {
-            objective <- objective[1:iterate + 1]
-            break
-          }
-        }
-
-        params$Sigma <- self$torch_Sigma(data, params)
-        params$Omega <- torch::torch_inverse(params$Sigma)
-        params$Z     <- data$O + params$M + torch_matmul(data$X, params$Theta)
-        params$A     <- torch_exp(params$Z + torch_multiply(params$S, params$S)/2)
-
-        out <- list(
-          Theta      = t(as.matrix(params$Theta)),
-          Sigma      = as.matrix(params$Sigma),
-          Omega      = as.matrix(params$Omega),
-          M          = as.matrix(params$M),
-          S          = as.matrix(params$S),
-          Z          = as.matrix(params$Z),
-          A          = as.matrix(params$A),
-          Ji         = self$torch_vloglik(data, params),
-          monitoring = list(
-            objective  = objective,
-            iterations = iterate,
-            status     = status,
-            backend = "torch"
-          )
-        )
-        out
     },
 
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
@@ -560,7 +567,13 @@ PLNfit <- R6Class(
 
 #' An R6 Class to represent a PLNfit in a standard, general framework, with diagonal residual covariance
 #'
-#' @inherit PLNfit
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#'
 #' @rdname PLNfit_diagonal
 #' @importFrom R6 R6Class
 #'
@@ -575,20 +588,22 @@ PLNfit <- R6Class(
 PLNfit_diagonal <- R6Class(
   classname = "PLNfit_diagonal",
   inherit = PLNfit,
-  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  ## PUBLIC MEMBERS ----
-  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
-
+    #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_diagonal, self$torch_optimize)
-    },
+      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_diagonal, private$torch_optimize)
+    }
+  ),
+  private = list(
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     torch_elbo = function(data, params) {
       S2 <- torch_pow(params$S, 2)
       Z <- data$O + params$M + torch_matmul(data$X, params$Theta)
-      res <- .5 * sum(data$w) * sum(torch_log(self$torch_sigma_diag(data, params))) -
+      res <- .5 * sum(data$w) * sum(torch_log(private$torch_sigma_diag(data, params))) -
         sum(torch_matmul(data$w , data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
       res
     },
@@ -598,12 +613,12 @@ PLNfit_diagonal <- R6Class(
     },
 
     torch_Sigma = function(data, params) {
-      torch_diag(self$torch_sigma_diag(data, params))
+      torch_diag(private$torch_sigma_diag(data, params))
     },
 
     torch_vloglik = function(data, params) {
       S2 <- torch_pow(params$S, 2)
-      omega_diag <- torch_pow(self$torch_sigma_diag(data, params), -1)
+      omega_diag <- torch_pow(private$torch_sigma_diag(data, params), -1)
 
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
         .5 * sum(torch_log(omega_diag)) +
@@ -613,7 +628,9 @@ PLNfit_diagonal <- R6Class(
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
-
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## END OF TORCH METHODS
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ),
   active = list(
     #' @field nb_param number of parameters in the current PLN model
@@ -632,7 +649,13 @@ PLNfit_diagonal <- R6Class(
 
 #' An R6 Class to represent a PLNfit in a standard, general framework, with spherical residual covariance
 #'
-#' @inherit PLNfit
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#'
 #' @rdname PLNfit_spherical
 #' @importFrom R6 R6Class
 #'
@@ -647,20 +670,22 @@ PLNfit_diagonal <- R6Class(
 PLNfit_spherical <- R6Class(
   classname = "PLNfit_spherical",
   inherit = PLNfit,
-  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  ## PUBLIC MEMBERS ----
-  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
-
+    #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_spherical, self$torch_optimize)
-    },
+      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_spherical, private$torch_optimize)
+    }
+  ),
+  private = list(
 
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     torch_elbo = function(data, params) {
       S2 <- torch_pow(params$S, 2)
       Z <- data$O + params$M + torch_matmul(data$X, params$Theta)
-      res <- .5 * sum(data$w) * self$p * torch_log(self$torch_sigma2(data, params)) -
+      res <- .5 * sum(data$w) * self$p * torch_log(private$torch_sigma2(data, params)) -
         sum(torch_matmul(data$w , data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
       res
     },
@@ -670,19 +695,21 @@ PLNfit_spherical <- R6Class(
     },
 
     torch_Sigma = function(data, params) {
-      torch_eye(self$p) * self$torch_sigma2(data, params)
+      torch_eye(self$p) * private$torch_sigma2(data, params)
     },
 
     torch_vloglik = function(data, params) {
       S2 <- torch_pow(params$S, 2)
-      sigma2 <- self$torch_sigma2(data, params)
+      sigma2 <- private$torch_sigma2(data, params)
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
-          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2/sigma2) - .5 * (torch_pow(params$M, 2) + S2)/sigma2, dim = 2)
+        torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2/sigma2) - .5 * (torch_pow(params$M, 2) + S2)/sigma2, dim = 2)
       )
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
-
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## END OF TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ),
   active = list(
     #' @field nb_param number of parameters in the current PLN model
@@ -701,7 +728,13 @@ PLNfit_spherical <- R6Class(
 
 #' An R6 Class to represent a PLNfit in a standard, general framework, with fixed (inverse) residual covariance
 #'
-#' @inherit PLNfit
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#'
 #' @rdname PLNfit_fixedcov
 #' @importFrom R6 R6Class
 #'
@@ -720,8 +753,10 @@ PLNfit_fixedcov <- R6Class(
   ## PUBLIC MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
+    #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
+      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_fixed, private$torch_optimize)
       private$Omega <- control$Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
@@ -731,57 +766,38 @@ PLNfit_fixedcov <- R6Class(
                    O = offsets,
                    w = weights,
                    Omega = private$Omega,
-                   init_parameters = list(Theta = private$Theta, M = private$M, S = private$S))
-
-      if (control$backend == "nlopt")
-        optim_out <- do.call(nlopt_optimize_fixed, c(args, list(configuration = control$options_nlopt)))
-      else {
-        ## initialize torch with nlopt
-        optim_out <- self$optimize_nlopt(c(args, list(configuration = control$options_nlopt)))
-        args$init_parameters = list(Theta = optim_out$Theta, M = optim_out$M, S = optim_out$S)
-        optim_out <- self$optimize_torch(c(args, list(configuration = control$options_torch)))
-      }
-
-      private$Theta <- optim_out$Theta
-      private$M     <- optim_out$M
-      private$S     <- optim_out$S
-      private$Z     <- optim_out$Z
-      private$A     <- optim_out$A
-      private$monitoring <- list(iterations = optim_out$iterations, message = status_to_message(optim_out$status))
-      self$update_Sigma(args$w)
-      self$update_loglik(args$w, args$Y)
-    },
-    update_Sigma = function(weights) {
-      w_bar <- sum(weights)
-      private$Sigma <- solve(private$Omega)
-    },
-    update_loglik = function(weights, Y) {
-      KY  <- .5 * self$p - rowSums(.logfactorial(Y))
-      S2 <- private$S**2
-      Ji <- as.numeric(
-        .5 * determinant(private$Omega, logarithm = TRUE)$modulus + KY +
-          rowSums(Y * private$Z - private$A + .5 * log(private$S^2) -
-                    .5 * ( (private$M %*% private$Omega) * private$M + sweep(private$S^2, 2, diag(private$Omega), '*')))
-      )
-      attr(Ji, "weights") <- weights
-      private$Ji <- Ji
-    },
-
-    get_objective = function() {
-      S2 <- S * S
-      Z <- O + M + torch_matmul(X, Theta)
-      log_det_Sigma <- switch(configuration$covariance,
-                              "spherical" = p * log(sum(torch_matmul(w, M * M + S2)) / (w_bar * p)),
-                              "diagonal"  = sum(torch_log(torch_matmul(w, M * M + S2) / w_bar)),
-                              { # default value
-                                Mw <- torch_matmul(torch_diag(torch_sqrt(w)), M)
-                                Sigma <- (torch_matmul(torch_transpose(Mw, 2, 1), Mw) + torch_diag(torch_matmul(w, S2))) / w_bar
-                                torch_logdet(Sigma)
-                              })
-      neg_ELBO <- .5 * w_bar * log_det_Sigma -
-        sum(torch_matmul(w , Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
-      neg_ELBO
+                   init_parameters = list(Theta = private$Theta, M = private$M, S = private$S),
+                   configuration = control$config_optim)
+      optim_out <- do.call(private$optimizer, args)
+      do.call(self$update, optim_out)
     }
+    # update_loglik = function(weights, Y) {
+    #   KY  <- .5 * self$p - rowSums(.logfactorial(Y))
+    #   S2 <- private$S**2
+    #   Ji <- as.numeric(
+    #     .5 * determinant(private$Omega, logarithm = TRUE)$modulus + KY +
+    #       rowSums(Y * private$Z - private$A + .5 * log(private$S^2) -
+    #                 .5 * ( (private$M %*% private$Omega) * private$M + sweep(private$S^2, 2, diag(private$Omega), '*')))
+    #   )
+    #   attr(Ji, "weights") <- weights
+    #   private$Ji <- Ji
+    # },
+    #
+    # get_objective = function() {
+    #   S2 <- S * S
+    #   Z <- O + M + torch_matmul(X, Theta)
+    #   log_det_Sigma <- switch(configuration$covariance,
+    #                           "spherical" = p * log(sum(torch_matmul(w, M * M + S2)) / (w_bar * p)),
+    #                           "diagonal"  = sum(torch_log(torch_matmul(w, M * M + S2) / w_bar)),
+    #                           { # default value
+    #                             Mw <- torch_matmul(torch_diag(torch_sqrt(w)), M)
+    #                             Sigma <- (torch_matmul(torch_transpose(Mw, 2, 1), Mw) + torch_diag(torch_matmul(w, S2))) / w_bar
+    #                             torch_logdet(Sigma)
+    #                           })
+    #   neg_ELBO <- .5 * w_bar * log_det_Sigma -
+    #     sum(torch_matmul(w , Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+    #   neg_ELBO
+    # }
   ),
   active = list(
     #' @field nb_param number of parameters in the current PLN model

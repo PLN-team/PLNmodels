@@ -4,13 +4,9 @@
 \alias{PLNfit_spherical}
 \title{An R6 Class to represent a PLNfit in a standard, general framework, with spherical residual covariance}
 \description{
-The function \code{\link[=PLN]{PLN()}} fit a model which is an instance of a object with class \code{\link{PLNfit}}.
-Objects produced by the functions \code{\link[=PLNnetwork]{PLNnetwork()}}, \code{\link[=PLNPCA]{PLNPCA()}}, \code{\link[=PLNmixture]{PLNmixture()}} and \code{\link[=PLNLDA]{PLNLDA()}} also enjoy the methods of \code{\link[=PLNfit]{PLNfit()}} by inheritance.
+An R6 Class to represent a PLNfit in a standard, general framework, with spherical residual covariance
 
-This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-See the documentation for \code{\link[=coef]{coef()}}, \code{\link[=sigma]{sigma()}}, \code{\link[=predict]{predict()}}, \code{\link[=vcov]{vcov()}} and \code{\link[=standard_error]{standard_error()}}.
-
-Fields are accessed via active binding and cannot be changed by the user.
+An R6 Class to represent a PLNfit in a standard, general framework, with spherical residual covariance
 }
 \examples{
 \dontrun{
@@ -36,11 +32,7 @@ print(myPLN)
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-PLNfit_spherical-optimize}{\code{PLNfit_spherical$optimize()}}
-\item \href{#method-PLNfit_spherical-torch_elbo}{\code{PLNfit_spherical$torch_elbo()}}
-\item \href{#method-PLNfit_spherical-torch_sigma2}{\code{PLNfit_spherical$torch_sigma2()}}
-\item \href{#method-PLNfit_spherical-torch_Sigma}{\code{PLNfit_spherical$torch_Sigma()}}
-\item \href{#method-PLNfit_spherical-torch_vloglik}{\code{PLNfit_spherical$torch_vloglik()}}
+\item \href{#method-PLNfit_spherical-new}{\code{PLNfit_spherical$new()}}
 \item \href{#method-PLNfit_spherical-clone}{\code{PLNfit_spherical$clone()}}
 }
 }
@@ -49,14 +41,13 @@ print(myPLN)
 <ul>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-VEstep'><code>PLNmodels::PLNfit$VEstep()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-get_vcov_hat'><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="initialize"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-initialize'><code>PLNmodels::PLNfit$initialize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize'><code>PLNmodels::PLNfit$optimize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-postTreatment'><code>PLNmodels::PLNfit$postTreatment()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-show'><code>PLNmodels::PLNfit$show()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="torch_optimize"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-torch_optimize'><code>PLNmodels::PLNfit$torch_optimize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_sandwich"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_sandwich'><code>PLNmodels::PLNfit$vcov_sandwich()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_wald"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_wald'><code>PLNmodels::PLNfit$vcov_wald()</code></a></span></li>
@@ -64,50 +55,31 @@ print(myPLN)
 </details>
 }}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit_spherical-optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit_spherical-optimize}{}}}
-\subsection{Method \code{optimize()}}{
-Call to the NLopt or TORCH optimizer and update of the relevant fields
+\if{html}{\out{<a id="method-PLNfit_spherical-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit_spherical-new}{}}}
+\subsection{Method \code{new()}}{
+Initialize a \code{\link{PLNfit}} model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_spherical$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit_spherical-torch_elbo"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit_spherical-torch_elbo}{}}}
-\subsection{Method \code{torch_elbo()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_spherical$torch_elbo(data, params)}\if{html}{\out{</div>}}
-}
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit_spherical-torch_sigma2"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit_spherical-torch_sigma2}{}}}
-\subsection{Method \code{torch_sigma2()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_spherical$torch_sigma2(data, params)}\if{html}{\out{</div>}}
-}
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit_spherical-torch_Sigma"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit_spherical-torch_Sigma}{}}}
-\subsection{Method \code{torch_Sigma()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_spherical$torch_Sigma(data, params)}\if{html}{\out{</div>}}
-}
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit_spherical-torch_vloglik"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit_spherical-torch_vloglik}{}}}
-\subsection{Method \code{torch_vloglik()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_spherical$torch_vloglik(data, params)}\if{html}{\out{</div>}}
-}
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
+\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit_spherical-clone"></a>}}

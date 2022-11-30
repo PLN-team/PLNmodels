@@ -38,7 +38,7 @@ config_default_torch <-
 #'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 #'    which sometimes speeds up the inference.
 #'
-#' @returna list of parameters configuring the fit.
+#' @return list of parameters configuring the fit.
 #'
 #' @details The list of parameters `config_optim` controls the optimizers. When "nlopt" is chosen the following entries are relevant
 #' * "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".

@@ -76,10 +76,6 @@ print(myPLN)
 \item \href{#method-PLNfit-update}{\code{PLNfit$update()}}
 \item \href{#method-PLNfit-new}{\code{PLNfit$new()}}
 \item \href{#method-PLNfit-optimize}{\code{PLNfit$optimize()}}
-\item \href{#method-PLNfit-torch_elbo}{\code{PLNfit$torch_elbo()}}
-\item \href{#method-PLNfit-torch_Sigma}{\code{PLNfit$torch_Sigma()}}
-\item \href{#method-PLNfit-torch_vloglik}{\code{PLNfit$torch_vloglik()}}
-\item \href{#method-PLNfit-torch_optimize}{\code{PLNfit$torch_optimize()}}
 \item \href{#method-PLNfit-VEstep}{\code{PLNfit$VEstep()}}
 \item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
 \item \href{#method-PLNfit-vcov_sandwich}{\code{PLNfit$vcov_sandwich()}}
@@ -193,42 +189,6 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 }
 \if{html}{\out{</div>}}
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-torch_elbo"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-torch_elbo}{}}}
-\subsection{Method \code{torch_elbo()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$torch_elbo(data, params)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-torch_Sigma"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-torch_Sigma}{}}}
-\subsection{Method \code{torch_Sigma()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$torch_Sigma(data, params)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-torch_vloglik"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-torch_vloglik}{}}}
-\subsection{Method \code{torch_vloglik()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$torch_vloglik(data, params)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-torch_optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-torch_optimize}{}}}
-\subsection{Method \code{torch_optimize()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$torch_optimize(args)}\if{html}{\out{</div>}}
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit-VEstep"></a>}}

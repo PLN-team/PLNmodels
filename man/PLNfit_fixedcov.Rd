@@ -4,13 +4,9 @@
 \alias{PLNfit_fixedcov}
 \title{An R6 Class to represent a PLNfit in a standard, general framework, with fixed (inverse) residual covariance}
 \description{
-The function \code{\link[=PLN]{PLN()}} fit a model which is an instance of a object with class \code{\link{PLNfit}}.
-Objects produced by the functions \code{\link[=PLNnetwork]{PLNnetwork()}}, \code{\link[=PLNPCA]{PLNPCA()}}, \code{\link[=PLNmixture]{PLNmixture()}} and \code{\link[=PLNLDA]{PLNLDA()}} also enjoy the methods of \code{\link[=PLNfit]{PLNfit()}} by inheritance.
+An R6 Class to represent a PLNfit in a standard, general framework, with fixed (inverse) residual covariance
 
-This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
-See the documentation for \code{\link[=coef]{coef()}}, \code{\link[=sigma]{sigma()}}, \code{\link[=predict]{predict()}}, \code{\link[=vcov]{vcov()}} and \code{\link[=standard_error]{standard_error()}}.
-
-Fields are accessed via active binding and cannot be changed by the user.
+An R6 Class to represent a PLNfit in a standard, general framework, with fixed (inverse) residual covariance
 }
 \examples{
 \dontrun{
@@ -38,9 +34,6 @@ print(myPLN)
 \itemize{
 \item \href{#method-PLNfit_fixedcov-new}{\code{PLNfit_fixedcov$new()}}
 \item \href{#method-PLNfit_fixedcov-optimize}{\code{PLNfit_fixedcov$optimize()}}
-\item \href{#method-PLNfit_fixedcov-update_Sigma}{\code{PLNfit_fixedcov$update_Sigma()}}
-\item \href{#method-PLNfit_fixedcov-update_loglik}{\code{PLNfit_fixedcov$update_loglik()}}
-\item \href{#method-PLNfit_fixedcov-get_objective}{\code{PLNfit_fixedcov$get_objective()}}
 \item \href{#method-PLNfit_fixedcov-clone}{\code{PLNfit_fixedcov$clone()}}
 }
 }
@@ -55,10 +48,6 @@ print(myPLN)
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-show'><code>PLNmodels::PLNfit$show()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="torch_Sigma"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-torch_Sigma'><code>PLNmodels::PLNfit$torch_Sigma()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="torch_elbo"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-torch_elbo'><code>PLNmodels::PLNfit$torch_elbo()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="torch_optimize"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-torch_optimize'><code>PLNmodels::PLNfit$torch_optimize()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="torch_vloglik"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-torch_vloglik'><code>PLNmodels::PLNfit$torch_vloglik()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_sandwich"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_sandwich'><code>PLNmodels::PLNfit$vcov_sandwich()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_wald"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_wald'><code>PLNmodels::PLNfit$vcov_wald()</code></a></span></li>
@@ -69,10 +58,28 @@ print(myPLN)
 \if{html}{\out{<a id="method-PLNfit_fixedcov-new"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit_fixedcov-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize a \code{\link{PLNfit}} model
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit_fixedcov-optimize"></a>}}
@@ -83,33 +90,21 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit_fixedcov-update_Sigma"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit_fixedcov-update_Sigma}{}}}
-\subsection{Method \code{update_Sigma()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$update_Sigma(weights)}\if{html}{\out{</div>}}
-}
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit_fixedcov-update_loglik"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit_fixedcov-update_loglik}{}}}
-\subsection{Method \code{update_loglik()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$update_loglik(weights, Y)}\if{html}{\out{</div>}}
-}
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit_fixedcov-get_objective"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit_fixedcov-get_objective}{}}}
-\subsection{Method \code{get_objective()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$get_objective()}\if{html}{\out{</div>}}
-}
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit_fixedcov-clone"></a>}}
