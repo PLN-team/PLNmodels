@@ -49,8 +49,6 @@ print(myPLN)
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-show'><code>PLNmodels::PLNfit$show()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_sandwich"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_sandwich'><code>PLNmodels::PLNfit$vcov_sandwich()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_wald"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_wald'><code>PLNmodels::PLNfit$vcov_wald()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -60,7 +58,15 @@ print(myPLN)
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{PLNfit}} model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$new(
+  responses,
+  covariates,
+  offsets,
+  weights,
+  Omega,
+  formula,
+  control
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

@@ -35,12 +35,12 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
   myPLN <- switch(control$covariance,
       "diagonal"  = PLNfit_diagonal$new(args$Y, args$X, args$O, args$w, args$formula, control),
       "spherical" = PLNfit_spherical$new(args$Y, args$X, args$O, args$w, args$formula, control),
-      "fixed"     = PLNfit_fixedcov$new(args$Y, args$X, args$O, args$w, args$formula, control),
+      "fixed"     = PLNfit_fixedcov$new(args$Y, args$X, args$O, args$w, args$formula, control$Omega, control),
       # "genet"     = PLNfit_$new(args$Y, args$X, args$O, args$w, args$formula, control),
                     PLNfit$new(args$Y, args$X, args$O, args$w, args$formula, control)) # default: full covariance
 
   ## optimization
-  if (control$trace > 0) cat("\n Adjusting a", myPLN$vcov_model, "covariance PLN model with", control$backend, "optimizer.")
+  if (control$trace > 0) cat("\n Adjusting a", myPLN$vcov_model, "covariance PLN model with", control$backend, "optimizer")
   myPLN$optimize(args$Y, args$X, args$O, args$w, control)
 
   ## post-treatment

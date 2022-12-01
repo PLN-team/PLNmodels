@@ -40,6 +40,7 @@ PLNfit <- R6Class(
   ## PRIVATE MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
+    ## PRIVATE INTERNAL FIELDS
     formula    = NA, # the formula call for the model as specified by the user
     Theta      = NA, # regression parameters of the latent layer
     Sigma      = NA, # covariance matrix of the latent layer
@@ -48,8 +49,8 @@ PLNfit <- R6Class(
     M          = NA, # variational parameters for the means
     Z          = NA, # matrix of latent variable
     A          = NA, # matrix of expected counts (under variational approximation)
-    R2         = NA, # approximated goodness of fit criterion
     Ji         = NA, # element-wise approximated loglikelihood
+    R2         = NA, # approximated goodness of fit criterion
     optimizer  = NA, # link to the function doing the optimization
     monitoring = NA,  # a list with optimization monitoring quantities
 
@@ -156,18 +157,91 @@ PLNfit <- R6Class(
         )
       )
       out
+    },
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE METHODS FOR VARIANCE OF THE ESTIMATORS
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    vcov_sandwich = function(Y, X, Sigma) {
+      getMat_iCnTheta <- function(i) {
+        a_i   <- as.numeric(private$A[i, ])
+        s2_i  <- as.numeric(private$S[i, ]**2)
+        # omega <- as.numeric(1/diag(private$Sigma))
+        # diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
+        diag_mat_i <- diag(1/a_i + .5 * s2_i^2)
+        solve(Sigma + diag_mat_i)
+      }
+      YmA <- Y - private$A
+      Dn <- matrix(0, self$d*self$p, self$d*self$p)
+      Cn <- matrix(0, self$d*self$p, self$d*self$p)
+      for (i in 1:self$n) {
+        xxt_i <- tcrossprod(X[i, ])
+        Cn <- Cn - kronecker(getMat_iCnTheta(i) , xxt_i) / (self$n)
+        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
+      }
+      Cn_inv <- solve(Cn)
+      (Cn_inv %*% Dn %*% Cn_inv) / (self$n)
+    },
+
+    vcov_wald = function(X) {
+      A <- private$A
+      fisher <- bdiag(lapply(1:self$p, function(i) {
+        crossprod(X, A[, i] * X) # t(X) %*% diag(A[, i]) %*% X
+      }))
+      res <- tryCatch(self$n*Matrix::solve(fisher), error = function(e) {e})
+      if (is(res, "error")) {
+        warning(paste("Inversion of the Fisher information matrix failed with following error message:",
+                      res$message, "Returning NA", sep = "\n"))
+        res <- matrix(NA, nrow = self$p, ncol = self$d)
+      }
+      res
     }
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## END OF TORCH METHODS
+    ## END OF PRIVATE METHODS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public = list(
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## Creation functions ----------------
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## CONSTRUCTOR
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    #' @description Initialize a [`PLNfit`] model
+    #' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
+      ## problem dimensions
+      n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
+      ## set up various quantities
+      private$formula <- formula # user formula call
+      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_full, private$torch_optimize)
+      ## initialize the variational parameters
+      if (isPLNfit(control$inception)) {
+        if (control$trace > 1) cat("\n User defined inceptive PLN model")
+        stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))))
+        stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
+        private$Theta <- control$inception$model_par$Theta
+        private$M     <- control$inception$var_par$M
+        private$S     <- sqrt(control$inception$var_par$S2)
+      } else {
+        if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
+        GLMs <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset = log(1 + exp(offsets[,j]))))
+        private$Theta <- do.call(rbind, lapply(GLMs, coefficients))
+        private$M     <- do.call(cbind, lapply(GLMs, residuals))
+        private$S     <- matrix(1,n,p)
+      }
+    },
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## SETTER METHOD
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     #' @description
     #' Update a [`PLNfit`] object
     #' @param M     matrix of variational parameters for the mean
@@ -191,35 +265,10 @@ PLNfit <- R6Class(
       if (!anyNA(monitoring)) private$monitoring <- monitoring
     },
 
-    #' @description Initialize a [`PLNfit`] model
-    #' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
-    initialize = function(responses, covariates, offsets, weights, formula, control) {
-      ## problem dimensions
-      n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
-      ## set up various quantities
-      private$formula <- formula # user formula call
-      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_full, private$torch_optimize)
-      ## initialize variational parameters
-      if (isPLNfit(control$inception)) {
-        if (control$trace > 1) cat("\n User defined inceptive PLN model")
-        stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))))
-        stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
-        private$Theta <- control$inception$model_par$Theta
-        private$M     <- control$inception$var_par$M
-        private$S     <- sqrt(control$inception$var_par$S2)
-        # private$Sigma <- control$inception$model_par$Sigma
-        # private$Omega <- control$inception$model_par$Omega
-        # private$Ji    <- control$inception$loglik_vec
-      } else {
-        if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-        GLMs <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset = log(1 + exp(offsets[,j]))))
-        private$Theta <- do.call(rbind, lapply(GLMs, coefficients))
-        private$M     <- do.call(cbind, lapply(GLMs, residuals))
-        private$S     <- matrix(1,n,p)
-      }
-    },
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## Optimizers ----------------------------
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## GENERIC OPTIMIZER
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
       args <- list(Y = responses,
@@ -251,7 +300,7 @@ PLNfit <- R6Class(
       control$covariance <- self$vcov_model
       control <- config_default_nlopt
 
-      VEstep_optimizer  <-
+      VEstep_optimizer <-
         switch(control$covariance,
                "spherical" = nlopt_optimize_vestep_spherical,
                "diagonal"  = nlopt_optimize_vestep_diagonal,
@@ -292,63 +341,16 @@ PLNfit <- R6Class(
       private$R2 <- (loglik - lmin) / (lmax - lmin)
     },
 
-    #' @description Compute the estimated variance of the coefficient Theta by
-    #' M-estimation and sandwich correction
-    #' @param Y matrix of responses used to compute the sandwich correction
-    #' @param X design matrix used to compute the sandwich correction
-    #' @return a sparse matrix with sensible dimension names
-    vcov_sandwich = function(Y, X, Sigma = NULL) {
-      if (is.null(Sigma)) Sigma <- private$Sigma
-      getMat_iCnTheta <- function(i) {
-        a_i   <- as.numeric(private$A[i, ])
-        s2_i  <- as.numeric(private$S[i, ]**2)
-        # omega <- as.numeric(1/diag(private$Sigma))
-        # diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
-        diag_mat_i <- diag(1/a_i + .5 * s2_i^2)
-        solve(Sigma + diag_mat_i)
-      }
-
-      YmA <- Y - private$A
-      Dn <- matrix(0, self$d*self$p, self$d*self$p)
-      Cn <- matrix(0, self$d*self$p, self$d*self$p)
-      for (i in 1:self$n) {
-        xxt_i <- tcrossprod(X[i, ])
-        Cn <- Cn - kronecker(getMat_iCnTheta(i) , xxt_i) / (self$n)
-        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
-      }
-      Cn_inv <- solve(Cn)
-      (Cn_inv %*% Dn %*% Cn_inv) / (self$n)
-    },
-
-    #' @description Compute the estimated variance of the coefficient Theta by
-    #' safely inverting the Wald variant of the variational Fisher information matrix (FIM)
-    #' @param X design matrix used to compute the FIM
-    #' @importFrom Matrix bdiag solve
-    #' @return a sparse matrix with sensible dimension names
-    vcov_wald = function(X = NULL) {
-      A <- private$A
-      fisher <- bdiag(lapply(1:self$p, function(i) {
-        crossprod(X, A[, i] * X) # t(X) %*% diag(A[, i]) %*% X
-      }))
-      res <- tryCatch(self$n*Matrix::solve(fisher), error = function(e) {e})
-      if (is(res, "error")) {
-        warning(paste("Inversion of the Fisher information matrix failed with following error message:",
-                      res$message, "Returning NA", sep = "\n"))
-        res <- matrix(NA, nrow = self$p, ncol = self$d)
-      }
-      res
-    },
-
     #' @description Experimental: Compute the estimated variance of the coefficient Theta
     #' the true matrix Sigmamust be profided for sandwich estimation at the moment
     #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
     #' @return a sparse matrix with sensible dimension names
-    get_vcov_hat = function(type, responses, covariates, Sigma = NULL) {
+    get_vcov_hat = function(type, responses, covariates, Sigma = self$model_par$Sigma) {
       ## compute and store the estimated covariance of the estimator of the parameter Theta
       vcov_hat <-
         switch(type,
-               "wald"     = self$vcov_wald(X = covariates),
-               "sandwich" = self$vcov_sandwich(Y = responses, X = covariates, Sigma = Sigma),
+               "wald"     = private$vcov_wald(X = covariates),
+               "sandwich" = private$vcov_sandwich(Y = responses, X = covariates, Sigma = Sigma),
                "none"     = NULL)
 
       ## set proper names, use sensible defaults if some names are missing
@@ -479,7 +481,7 @@ PLNfit <- R6Class(
     ## Print functions -----------------------
     #' @description User friendly print method
     #' @param model First line of the print output
-    show = function(model = paste("A multivariate Poisson Lognormal fit with", private$covariance, "covariance model.\n")) {
+    show = function(model = paste("A multivariate Poisson Lognormal fit with", self$vcov_model, "covariance model.\n")) {
       cat(model)
       cat("==================================================================\n")
       print(as.data.frame(round(self$criteria, digits = 3), row.names = ""))
@@ -754,10 +756,10 @@ PLNfit_fixedcov <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
     #' @description Initialize a [`PLNfit`] model
-    initialize = function(responses, covariates, offsets, weights, formula, control) {
+    initialize = function(responses, covariates, offsets, weights, Omega, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_fixed, private$torch_optimize)
-      private$Omega <- control$Omega
+      private$Omega <- Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
@@ -771,6 +773,7 @@ PLNfit_fixedcov <- R6Class(
       optim_out <- do.call(private$optimizer, args)
       do.call(self$update, optim_out)
     }
+
     # update_loglik = function(weights, Y) {
     #   KY  <- .5 * self$p - rowSums(.logfactorial(Y))
     #   S2 <- private$S**2

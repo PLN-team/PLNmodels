@@ -73,13 +73,11 @@ print(myPLN)
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-PLNfit-update}{\code{PLNfit$update()}}
 \item \href{#method-PLNfit-new}{\code{PLNfit$new()}}
+\item \href{#method-PLNfit-update}{\code{PLNfit$update()}}
 \item \href{#method-PLNfit-optimize}{\code{PLNfit$optimize()}}
 \item \href{#method-PLNfit-VEstep}{\code{PLNfit$VEstep()}}
 \item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
-\item \href{#method-PLNfit-vcov_sandwich}{\code{PLNfit$vcov_sandwich()}}
-\item \href{#method-PLNfit-vcov_wald}{\code{PLNfit$vcov_wald()}}
 \item \href{#method-PLNfit-get_vcov_hat}{\code{PLNfit$get_vcov_hat()}}
 \item \href{#method-PLNfit-postTreatment}{\code{PLNfit$postTreatment()}}
 \item \href{#method-PLNfit-predict}{\code{PLNfit$predict()}}
@@ -87,6 +85,33 @@ print(myPLN)
 \item \href{#method-PLNfit-show}{\code{PLNfit$show()}}
 \item \href{#method-PLNfit-print}{\code{PLNfit$print()}}
 \item \href{#method-PLNfit-clone}{\code{PLNfit$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-new}{}}}
+\subsection{Method \code{new()}}{
+Initialize a \code{\link{PLNfit}} model
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -136,33 +161,6 @@ Update a \code{\link{PLNfit}} object
 }
 \subsection{Returns}{
 Update the current \code{\link{PLNfit}} object
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-new"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-new}{}}}
-\subsection{Method \code{new()}}{
-Initialize a \code{\link{PLNfit}} model
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
-}
-\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -261,59 +259,13 @@ Update R2 field after optimization
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-vcov_sandwich"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-vcov_sandwich}{}}}
-\subsection{Method \code{vcov_sandwich()}}{
-Compute the estimated variance of the coefficient Theta by
-M-estimation and sandwich correction
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$vcov_sandwich(Y, X, Sigma = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{Y}}{matrix of responses used to compute the sandwich correction}
-
-\item{\code{X}}{design matrix used to compute the sandwich correction}
-
-\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a sparse matrix with sensible dimension names
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-vcov_wald"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-vcov_wald}{}}}
-\subsection{Method \code{vcov_wald()}}{
-Compute the estimated variance of the coefficient Theta by
-safely inverting the Wald variant of the variational Fisher information matrix (FIM)
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$vcov_wald(X = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{X}}{design matrix used to compute the FIM}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a sparse matrix with sensible dimension names
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit-get_vcov_hat"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-get_vcov_hat}{}}}
 \subsection{Method \code{get_vcov_hat()}}{
 Experimental: Compute the estimated variance of the coefficient Theta
 the true matrix Sigmamust be profided for sandwich estimation at the moment
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$get_vcov_hat(type, responses, covariates, Sigma = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$get_vcov_hat(type, responses, covariates, Sigma = self$model_par$Sigma)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
