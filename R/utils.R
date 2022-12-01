@@ -141,3 +141,22 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
   Y
 }
 
+# Internal function
+create_parameters <- function(
+    n = 200,
+    p = 50,
+    d = 2,
+    rho = 0.2,
+    sigma = 1,
+    depths = 100000,
+    ...
+) {
+  ## Sigma chosen to achieve a given snr
+  list(n      = n,
+       p      = p,
+       X      = matrix(rnorm(n*d), nrow = n, ncol = d,
+                       dimnames = list(paste0("S", 1:n), paste0("Var_", 1:d))),
+       Theta  = matrix(rnorm(n = p*d, sd = 1/sqrt(d)), nrow = p, ncol = d),
+       Sigma  = sigma * toeplitz(x = rho^seq(0, p-1)),
+       depths = depths)
+}

@@ -178,10 +178,16 @@ test_that("PLN fit: Check number of parameters",  {
   model <- PLN(Abundance ~ Group + 0 , data = trichoptera)
   expect_equal(model$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
 
-  model <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "diagonal"))
-  expect_equal(model$nb_param, p + p * 1)
+  modelS <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "spherical"))
+  expect_equal(modelS$nb_param, 1 + p * 1)
+  expect_equal(modelS$vcov_model, "spherical")
 
-  model <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "spherical"))
-  expect_equal(model$nb_param, 1 + p * 1)
+  modelD <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "diagonal"))
+  expect_equal(modelD$nb_param, p + p * 1)
+  expect_equal(modelD$vcov_model, "diagonal")
+
+  model <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "fixed", Omega = as.matrix(modelD$model_par$Omega)))
+  expect_equal(model$nb_param, 0 + p * 1)
+  expect_equal(model$vcov_model, "fixed")
 
 })

@@ -384,7 +384,7 @@ A matrix with predictions scores or counts.
 User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$show(
-  model = paste("A multivariate Poisson Lognormal fit with", private$covariance,
+  model = paste("A multivariate Poisson Lognormal fit with", self$vcov_model,
     "covariance model.\\n")
 )}\if{html}{\out{</div>}}
 }

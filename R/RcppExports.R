@@ -13,8 +13,8 @@ nlopt_optimize_vestep_diagonal <- function(init_parameters, Y, X, O, w, Theta, O
     .Call('_PLNmodels_nlopt_optimize_vestep_diagonal', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
 }
 
-nlopt_optimize_fixed <- function(init_parameters, Y, X, O, w, Omega, configuration) {
-    .Call('_PLNmodels_nlopt_optimize_fixed', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Omega, configuration)
+nlopt_optimize_fixed <- function(init_parameters, Y, X, O, w, configuration) {
+    .Call('_PLNmodels_nlopt_optimize_fixed', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
 }
 
 nlopt_optimize_full <- function(init_parameters, Y, X, O, w, configuration) {

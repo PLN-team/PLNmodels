@@ -56,8 +56,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // nlopt_optimize_fixed
-Rcpp::List nlopt_optimize_fixed(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Omega, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_nlopt_optimize_fixed(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
+Rcpp::List nlopt_optimize_fixed(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_nlopt_optimize_fixed(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -66,9 +66,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_fixed(init_parameters, Y, X, O, w, Omega, configuration));
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_fixed(init_parameters, Y, X, O, w, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -206,7 +205,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_cpp_test_nlopt", (DL_FUNC) &_PLNmodels_cpp_test_nlopt, 0},
     {"_PLNmodels_nlopt_optimize_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_diagonal, 6},
     {"_PLNmodels_nlopt_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_diagonal, 8},
-    {"_PLNmodels_nlopt_optimize_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_fixed, 7},
+    {"_PLNmodels_nlopt_optimize_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_fixed, 6},
     {"_PLNmodels_nlopt_optimize_full", (DL_FUNC) &_PLNmodels_nlopt_optimize_full, 6},
     {"_PLNmodels_nlopt_optimize_vestep_full", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_full, 8},
     {"_PLNmodels_nlopt_optimize_genetic_modeling", (DL_FUNC) &_PLNmodels_nlopt_optimize_genetic_modeling, 7},

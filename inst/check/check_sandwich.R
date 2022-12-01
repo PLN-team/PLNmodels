@@ -36,10 +36,9 @@ Y <- rPLN(n = nrow(X), mu = tcrossprod(X, Theta), Sigma = params$Sigma, depths =
 
 data <- prepare_data(Y, X, offset = "none")
 O <- rowSums(Y)
-# model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data,
-#              control = list(trace = 0, covariance = "fixed", prec_matrix = solve(params$Sigma)))
+model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data,
+             control = PLN_param(trace = 0, covariance = "fixed", Omega = solve(params$Sigma)))
 
-model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data)
 Theta_hat <- coef(model)
 model$get_vcov_hat("wald", Y, X)
 Theta_se_wald <- standard_error(model)

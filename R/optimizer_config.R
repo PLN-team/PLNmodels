@@ -65,7 +65,7 @@ PLN_param <- function(
 ) {
   stopifnot(backend %in% c("nlopt", "torch"))
   stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-  if (covariance == "fixed") stopifnot(inherits(Omega, "matrix"))
+  if (covariance == "fixed") stopifnot(inherits(Omega, "matrix") | inherits(Omega, "Matrix"))
   if (backend == "nlopt") {
     config <- config_default_nlopt
     config[names(config_optim)] <- config_optim

@@ -72,6 +72,10 @@ PLNfit <- R6Class(
       Sigma
     },
 
+    torch_Omega = function(data, params) {
+      torch::torch_inverse(params$Sigma)
+    },
+
     torch_vloglik = function(data, params) {
       S2    <- torch_multiply(params$S, params$S)
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
@@ -136,7 +140,7 @@ PLNfit <- R6Class(
       }
 
       params$Sigma <- private$torch_Sigma(data, params)
-      params$Omega <- torch::torch_inverse(params$Sigma)
+      params$Omega <- private$torch_Omega(data, params)
       params$Z     <- data$O + params$M + torch_matmul(data$X, params$Theta)
       params$A     <- torch_exp(params$Z + torch_multiply(params$S, params$S)/2)
 
@@ -756,10 +760,10 @@ PLNfit_fixedcov <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
     #' @description Initialize a [`PLNfit`] model
-    initialize = function(responses, covariates, offsets, weights, Omega, formula, control) {
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_fixed, private$torch_optimize)
-      private$Omega <- Omega
+      private$Omega <- control$Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
@@ -767,12 +771,33 @@ PLNfit_fixedcov <- R6Class(
                    X = covariates,
                    O = offsets,
                    w = weights,
-                   Omega = private$Omega,
-                   init_parameters = list(Theta = private$Theta, M = private$M, S = private$S),
+                   init_parameters = list(Theta = private$Theta, M = private$M, S = private$S, Omega = private$Omega),
                    configuration = control$config_optim)
       optim_out <- do.call(private$optimizer, args)
       do.call(self$update, optim_out)
+      private$Sigma <- solve(optim_out$Omega)
     }
+  ),
+  private = list(
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    torch_elbo = function(data, params) {
+      S2 <- torch_pow(params$S, 2)
+      Z <- data$O + params$M + torch_matmul(data$X, params$Theta)
+      res <- sum(data$w) * torch_trace(torch_matmul(private$torch_Sigma(data, params), private$Omega)) -
+        sum(torch_matmul(data$w , data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+      res
+    },
+
+    torch_Omega = function(data, params) {
+      params$Omega <- private$Omega
+    }
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## END OF TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     # update_loglik = function(weights, Y) {
     #   KY  <- .5 * self$p - rowSums(.logfactorial(Y))
