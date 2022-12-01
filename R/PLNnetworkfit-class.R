@@ -120,13 +120,6 @@ PLNnetworkfit <- R6Class(
 
     },
 
-    #' ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #' ## Post treatment --------------------
-    #' #' @description Compute PCA scores in the latent space and update corresponding fields.
-    #' postTreatment = function(responses, covariates, offsets, weights, nullModel) {
-    #'   super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
-    #' },
-
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Extractors ------------------------
     #' @description Extract interaction network in the latent space
