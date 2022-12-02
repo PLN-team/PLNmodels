@@ -59,7 +59,7 @@ Rcpp::List cpp_optimize_fixed(
         arma::mat Z = O + X * Theta.t() + M;
         arma::mat A = exp(Z + 0.5 * S2);
         arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2);
-        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) - trace(Omega * nSigma);
+        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) - 0.5 * trace(Omega * nSigma);
 
         metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
         metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
