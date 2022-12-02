@@ -43,19 +43,6 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
-  # ## define default control parameters for optim and overwrite them with the user-defined parameters
-  # ctrl_main <- PLNnetwork_param(control_main, nrow(args$Y), ncol(args$Y))
-  # if (is.null(control_init$trace)) control_init$trace <- 0
-  # ctrl_init <- PLN_param(control_init)
-
-  # if (is.null(ctrl_init$min.ratio)) ctrl_init$min.ratio   <- .1
-  # if (is.null(ctrl_init$penalize_diagonal)) ctrl_init$penalize_diagonal <- TRUE
-  # if (is.null(ctrl_init$penalty_weights))  ctrl_init$penalty_weights <- matrix(1, ncol(args$Y), ncol(args$Y))
-  # if (is.list(ctrl_init$penalty_weights))
-  #   ctrl_init$nPenalties <- length(ctrl_init$penalty_weights)
-  # else
-  #   if (is.null(ctrl_init$nPenalties)) ctrl_init$nPenalties <- 30
-
   ## Instantiate the collection of models
   if (control$trace > 0) cat("\n Initialization...")
   myPLN <- PLNnetworkfamily$new(penalties, args$Y, args$X, args$O, args$w, args$formula, control)

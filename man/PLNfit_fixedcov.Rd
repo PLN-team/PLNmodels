@@ -85,7 +85,7 @@ Initialize a \code{\link{PLNfit}} model
 \subsection{Method \code{optimize()}}{
 Call to the NLopt or TORCH optimizer and update of the relevant fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$optimize(responses, covariates, offsets, weights, config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -98,8 +98,6 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
 }
 \if{html}{\out{</div>}}
 }

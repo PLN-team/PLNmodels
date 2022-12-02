@@ -230,6 +230,7 @@ PLNfit <- R6Class(
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
         stopifnot(isTRUE(all.equal(dim(control$inception$model_par$Theta), c(p,d))))
         stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
+        private$Sigma <- control$inception$model_par$Sigma
         private$Theta <- control$inception$model_par$Theta
         private$M     <- control$inception$var_par$M
         private$S     <- sqrt(control$inception$var_par$S2)
@@ -768,13 +769,13 @@ PLNfit_fixedcov <- R6Class(
     torch_elbo = function(data, params) {
       S2 <- torch_pow(params$S, 2)
       Z <- data$O + params$M + torch_matmul(data$X, params$Theta)
-      res <- sum(data$w) * torch_trace(torch_matmul(private$torch_Sigma(data, params), private$Omega)) -
+      res <- sum(data$w) * torch_trace(torch_matmul(private$torch_Sigma(data, params), private$torch_Omega(data, params))) -
         sum(torch_matmul(data$w , data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
       res
     },
 
     torch_Omega = function(data, params) {
-      params$Omega <- private$Omega
+      params$Omega <- torch_tensor(private$Omega)
     }
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

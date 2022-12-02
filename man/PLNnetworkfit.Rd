@@ -21,8 +21,8 @@ print(myPLNnet)
 \seealso{
 The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNnetworkfamily}}
 }
-\section{Super class}{
-\code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{PLNnetworkfit}
+\section{Super classes}{
+\code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{\link[PLNmodels:PLNfit_fixedcov]{PLNmodels::PLNfit_fixedcov}} -> \code{PLNnetworkfit}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
