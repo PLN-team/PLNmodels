@@ -39,25 +39,29 @@ PLNnetworkfamily <- R6Class(
     #' @return Update current [`PLNnetworkfit`] with smart starting values
     initialize = function(penalties, responses, covariates, offsets, weights, formula, control) {
 
-      ## initialize fields shared by the super class
+      ## Initialize fields shared by the super class
       super$initialize(responses, covariates, offsets, weights, control)
-      ## A basic model for inception
-      myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, control)
-      myPLN$optimize(responses, covariates, offsets, weights, control)
-      control$inception <- myPLN
 
+      ## A basic model for inception, useless one is defined by the user
+### TODO check if it is useful
+      if (is.null(control$inception)) {
+        myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, control)
+        myPLN$optimize(responses, covariates, offsets, weights, control$config_optim)
+        control$inception <- myPLN
+      }
+
+      if (is.null(control$penalty_weights))
+        control$penalty_weights <- matrix(1, ncol(responses), ncol(responses))
       ## Get the number of penalty
       if (is.null(penalties)) {
-        if (!is.list(control$penalty_weights))
-          nPenalties <- control$nPenalties
-        else
-          nPenalties <- length(control$penalty_weights)
+        if (is.list(control$penalty_weights))
+          control$n_penalties <- length(control$penalty_weights)
       } else {
-        nPenalties <- length(penalties)
+        control$n_penalties <- length(penalties)
       }
       ## Define a matrix of weights for each penalty
       if (!is.list(control$penalty_weights))
-        list_penalty_weights <- rep(list(control$penalty_weights), nPenalties)
+        list_penalty_weights <- rep(list(control$penalty_weights), control$n_penalties)
       else
         list_penalty_weights <- control$penalty_weights
 
@@ -68,7 +72,7 @@ PLNnetworkfamily <- R6Class(
           map(~ myPLN$model_par$Sigma / .x) %>%
           map_dbl(~ max(abs(.x[upper.tri(.x, diag = control$penalize_diagonal)]))) %>%
           max()
-        penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min.ratio), len = control$nPenalties)
+        penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min_ratio), len = control$n_penalties)
       } else {
         if (control$trace > 1) cat("\nPenalties already set by the user")
         stopifnot(all(penalties > 0))
@@ -105,7 +109,7 @@ PLNnetworkfamily <- R6Class(
           self$models[[m + 1]]$update(
             Theta = self$models[[m]]$model_par$Theta,
             M     = self$models[[m]]$var_par$M,
-            S     = sqrt(self$models[[m]]$var_par$S2)
+            S     = self$models[[m]]$var_par$S
           )
 
         if (control$trace > 1) {
@@ -139,7 +143,7 @@ PLNnetworkfamily <- R6Class(
         inception_ <- self$getModel(self$penalties[1])
         inception_$update(
           M  = inception_$var_par$M[subsample, ],
-          S  = sqrt(inception_$var_par$S2[subsample, ])
+          S  = inception_$var_par$S[subsample, ]
         )
 
         ctrl_init <- PLN_param(list(), inception_$n, inception_$p)

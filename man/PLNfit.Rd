@@ -76,7 +76,7 @@ print(myPLN)
 \item \href{#method-PLNfit-new}{\code{PLNfit$new()}}
 \item \href{#method-PLNfit-update}{\code{PLNfit$update()}}
 \item \href{#method-PLNfit-optimize}{\code{PLNfit$optimize()}}
-\item \href{#method-PLNfit-VEstep}{\code{PLNfit$VEstep()}}
+\item \href{#method-PLNfit-optimize_vestep}{\code{PLNfit$optimize_vestep()}}
 \item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
 \item \href{#method-PLNfit-get_vcov_hat}{\code{PLNfit$get_vcov_hat()}}
 \item \href{#method-PLNfit-postTreatment}{\code{PLNfit$postTreatment()}}
@@ -169,7 +169,7 @@ Update the current \code{\link{PLNfit}} object
 \subsection{Method \code{optimize()}}{
 Call to the NLopt or TORCH optimizer and update of the relevant fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize(responses, covariates, offsets, weights, config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -182,19 +182,17 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-VEstep"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-VEstep}{}}}
-\subsection{Method \code{VEstep()}}{
+\if{html}{\out{<a id="method-PLNfit-optimize_vestep"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-optimize_vestep}{}}}
+\subsection{Method \code{optimize_vestep()}}{
 Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$VEstep(
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize_vestep(
   covariates,
   offsets,
   responses,

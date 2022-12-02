@@ -54,7 +54,7 @@ PLNLDAfit <- R6Class(
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$grouping <- grouping
-      super$optimize(responses, covariates, offsets, weights, control)
+      super$optimize(responses, covariates, offsets, weights, control$config_optim)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

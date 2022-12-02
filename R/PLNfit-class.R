@@ -274,13 +274,13 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
-    optimize = function(responses, covariates, offsets, weights, control) {
+    optimize = function(responses, covariates, offsets, weights, config) {
       args <- list(Y = responses,
                    X = covariates,
                    O = offsets,
                    w = weights,
                    init_parameters = list(Theta = private$Theta, M = private$M, S = private$S),
-                   configuration = control$config_optim)
+                   configuration = config)
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
     },
@@ -501,7 +501,7 @@ PLNfit <- R6Class(
     #' @field model_par a list with the matrices of the model parameters: Theta (covariates), Sigma (covariance), Omega (precision matrix), plus some others depending on the variant)
     model_par  = function() {list(Theta = private$Theta, Sigma = private$Sigma, Omega = private$Omega)},
     #' @field var_par a list with the matrices of the variational parameters: M (means) and S2 (variances)
-    var_par    = function() {list(M = private$M, S2 = private$S**2)},
+    var_par    = function() {list(M = private$M, S2 = private$S**2, S = private$S)},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par  = function() {c(private$monitoring, backend = private$backend)},
     #' @field latent a matrix: values of the latent vector (Z in the model)
@@ -748,13 +748,13 @@ PLNfit_fixedcov <- R6Class(
       private$Omega <- control$Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
-    optimize = function(responses, covariates, offsets, weights, control) {
+    optimize = function(responses, covariates, offsets, weights, config) {
       args <- list(Y = responses,
                    X = covariates,
                    O = offsets,
                    w = weights,
                    init_parameters = list(Theta = private$Theta, M = private$M, S = private$S, Omega = private$Omega),
-                   configuration = control$config_optim)
+                   configuration = config)
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
       private$Sigma <- solve(optim_out$Omega)

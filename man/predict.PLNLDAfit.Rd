@@ -10,7 +10,7 @@
   type = c("posterior", "response", "scores"),
   scale = c("log", "prob"),
   prior = NULL,
-  control = list(),
+  control = PLN_param(backend = "nlopt"),
   ...
 )
 }

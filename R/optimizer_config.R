@@ -66,15 +66,10 @@ PLN_param <- function(
   stopifnot(backend %in% c("nlopt", "torch"))
   stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
   if (covariance == "fixed") stopifnot(inherits(Omega, "matrix") | inherits(Omega, "Matrix"))
-  if (backend == "nlopt") {
-    config <- config_default_nlopt
-    config[names(config_optim)] <- config_optim
-  }
-  if (backend == "torch") {
-    config <- config_default_torch
-    config[names(config_optim)] <- config_optim
-  }
-  if(!is.null(inception)) stopifnot(isPLNfit(inception))
+  if (backend == "nlopt") config <- config_default_nlopt
+  if (backend == "torch") config <- config_default_torch
+  config[names(config_optim)] <- config_optim
+  if (!is.null(inception)) stopifnot(isPLNfit(inception))
   structure(list(
     backend       = backend   ,
     trace         = trace     ,
@@ -82,7 +77,75 @@ PLN_param <- function(
     Omega         = Omega     ,
     config_optim  = config    ,
     covariance    = covariance,
-    inception     = inception   ), class = "PLN_param")
+    inception     = inception   ), class = "PLNmodels_param")
+}
+
+## -----------------------------------------------------------------
+
+#' Control of PLNnetwork fit
+#'
+#' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
+#'
+#' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
+#' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
+#' @param trace a integer for verbosity.
+#' @param n_penalties an integer that specifies the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`
+#' @param min_ratio the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by `min_ratio`. Default is 0.1.
+#' @param penalize_diagonal boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{TRUE}
+#' @param penalty_weights either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
+#' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
+#'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
+#'    which sometimes speeds up the inference.
+#'
+#' @return list of parameters configuring the fit.
+#'
+#' @details The list of parameters `config_optim` controls the optimizers. When "nlopt" is chosen the following entries are relevant
+#' * "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
+#' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
+#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
+#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
+#' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
+#' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol_abs. Default is 0.0 (disabled)
+#' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)
+#' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
+#'
+#' When "torch" backend is used, with the following entries are relevant:
+#' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
+#' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
+#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
+#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
+#'
+#' @export
+PLNnetwork_param <- function(
+    backend           = "nlopt",
+    trace             = 1      ,
+    n_penalties       = 30     ,
+    min_ratio         = 0.1    ,
+    penalize_diagonal = TRUE   ,
+    penalty_weights   = NULL   ,
+    config_optim      = list() ,
+    inception         = NULL
+) {
+  stopifnot(backend %in% c("nlopt", "torch"))
+  stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
+  if (backend == "nlopt") config <- config_default_nlopt
+  if (backend == "torch") config <- config_default_torch
+  config$ftol_out  <- 1e-5
+  config$maxit_out <- 20
+  config[names(config_optim)] <- config_optim
+  if (!is.null(inception)) stopifnot(isPLNfit(inception))
+  structure(list(
+    backend           = backend          ,
+    trace             = trace            ,
+    config_optim      = config           ,
+    n_penalties       = n_penalties      ,
+    min_ratio         = min_ratio        ,
+    penalize_diagonal = penalize_diagonal,
+    penalty_weights   = penalty_weights  ,
+    config_optim      = config_optim     ,
+    inception         = inception       ), class = "PLNmodels_param")
 }
 
 PLNPCA_param <- function(control) {
@@ -131,26 +194,26 @@ PLNmixture_param <- function(control, n, p) {
   ctrl
 }
 
-PLNnetwork_param <- function(control, n, p) {
-  xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0, control$xtol_abs)
-  ctrl <-  list(
-    "ftol_out"  = 1e-5,
-    "maxit_out" = 20,
-    "warm"        = FALSE,
-    "algorithm"   = "CCSAQ",
-    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
-    "ftol_abs"    = 0       ,
-    "xtol_rel"    = 1e-6    ,
-    "xtol_abs"    = xtol_abs,
-    "maxeval"     = 10000   ,
-    "maxtime"     = -1      ,
-    "trace"       = 1       ,
-    "covariance"  = "sparse"
-  )
-  ctrl[names(control)] <- control
-  stopifnot(ctrl$algorithm %in% available_algorithms_nlopt)
-  ctrl
-}
+# PLNnetwork_param <- function(control, n, p) {
+#   xtol_abs    <- ifelse(is.null(control$xtol_abs)   , 0, control$xtol_abs)
+#   ctrl <-  list(
+#     "ftol_out"  = 1e-5,
+#     "maxit_out" = 20,
+#     "warm"        = FALSE,
+#     "algorithm"   = "CCSAQ",
+#     "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
+#     "ftol_abs"    = 0       ,
+#     "xtol_rel"    = 1e-6    ,
+#     "xtol_abs"    = xtol_abs,
+#     "maxeval"     = 10000   ,
+#     "maxtime"     = -1      ,
+#     "trace"       = 1       ,
+#     "covariance"  = "sparse"
+#   )
+#   ctrl[names(control)] <- control
+#   stopifnot(ctrl$algorithm %in% available_algorithms_nlopt)
+#   ctrl
+# }
 
 status_to_message <- function(status) {
   message <- switch(as.character(status),

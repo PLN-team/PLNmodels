@@ -33,7 +33,7 @@
 #' @seealso The function [PLNnetwork()], the class [`PLNnetworkfamily`]
 PLNnetworkfit <- R6Class(
   classname = "PLNnetworkfit",
-  inherit = PLNfit,
+  inherit = PLNfit_fixedcov,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -69,15 +69,14 @@ PLNnetworkfit <- R6Class(
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
       cond <- FALSE; iter <- 0
-      objective   <- numeric(control$maxit_out)
-      convergence <- numeric(control$maxit_out)
+      objective   <- numeric(control$config$maxit_out)
+      convergence <- numeric(control$config$maxit_out)
       ## start from the standard PLN at initialization
       par0  <- list(Theta = private$Theta, M = private$M, S = private$S)
       objective.old <- -self$loglik
       while (!cond) {
         iter <- iter + 1
         if (control$trace > 1) cat("", iter)
-
         ## CALL TO GLASSO TO UPDATE Omega/Sigma
         Sigma_var <- crossprod(par0$M)/self$n + diag(colMeans(par0$S**2), nrow = self$p)
         glasso_out <- glassoFast::glassoFast(Sigma_var, rho = self$penalty * self$penalty_weights)
@@ -85,12 +84,12 @@ PLNnetworkfit <- R6Class(
         Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
 
         ## CALL TO NLOPT OPTIMIZATION
-        optim_out <- nlopt_optimize_fixed(par0, responses, covariates, offsets, weights, Omega, control)
+        optim_out <- nlopt_optimize_fixed(par0, responses, covariates, offsets, weights, Omega, control$config)
 
         ## Check convergence
         objective[iter]   <- -sum(weights * optim_out$loglik) + self$penalty * sum(abs(Omega))
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
-        if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+        if ((convergence[iter] < control$config$ftol_out) | (iter >= control$config$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate
         par0 <- list(Theta = optim_out$Theta, M = optim_out$M, S = optim_out$S)
@@ -116,7 +115,7 @@ PLNnetworkfit <- R6Class(
                           outer_iterations = iter,
                           inner_iterations = optim_out$iterations,
                           inner_status     = optim_out$status,
-                          inner_message    = status_to_message_nlopt(optim_out$status)))
+                          inner_message    = status_to_message(optim_out$status)))
 
     },
 

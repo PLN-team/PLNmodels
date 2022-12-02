@@ -4,7 +4,7 @@
 \alias{PLNLDA}
 \title{Poisson lognormal model towards Linear Discriminant Analysis}
 \usage{
-PLNLDA(formula, data, subset, weights, grouping, control = list())
+PLNLDA(formula, data, subset, weights, grouping, control = PLN_param())
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}

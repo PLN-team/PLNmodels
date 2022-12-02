@@ -106,16 +106,9 @@ Update current \code{\link{PLNnetworkfit}} with smart starting values
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer on all models of the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$optimize(control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$optimize(config_optim)}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{control}}{a list for controlling the optimization. See details.}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNnetworkfamily-stability_selection"></a>}}
