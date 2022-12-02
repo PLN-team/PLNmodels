@@ -1,4 +1,5 @@
 context("test-pln")
+require(purrr)
 
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance[1:20, 1:5], trichoptera$Covariate[1:20, ])

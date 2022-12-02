@@ -147,8 +147,7 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     }
 
     // Optimize
-    auto objective_and_grad =
-        [&metadata, &O, &X, &Y, &w, &Theta, &Omega](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &Theta, &Omega](const double * params, double * grad) -> double {
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
 
@@ -174,12 +173,12 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     arma::mat Z = O + X * Theta.t() + M;
     arma::mat A = exp(Z + 0.5 * S2);
     arma::mat loglik =
-        sum(Y % Z - A + 0.5 * log(S2), 1) - 0.5 * (pow(M, 2) + S2) * omega2 + 0.5 * sum(log(omega2)) + ki(Y);
+      sum(Y % Z - A + 0.5 * log(S2), 1) - 0.5 * (pow(M, 2) + S2) * omega2 + 0.5 * sum(log(omega2)) + ki(Y);
 
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
     return Rcpp::List::create(
-        Rcpp::Named("status") = (int)result.status,
-        Rcpp::Named("iterations") = result.nb_iterations,
-        Rcpp::Named("M") = M,
-        Rcpp::Named("S") = S,
-        Rcpp::Named("loglik") = loglik);
+      Rcpp::Named("M") = M,
+      Rcpp::Named("S") = S,
+      Rcpp::Named("Ji") = Ji);
 }

@@ -41,18 +41,18 @@ PLNfit <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
     ## PRIVATE INTERNAL FIELDS
-    formula    = NA, # the formula call for the model as specified by the user
-    Theta      = NA, # regression parameters of the latent layer
-    Sigma      = NA, # covariance matrix of the latent layer
-    Omega      = NA, # precision matrix of the latent layer. Inverse of Sigma
-    S          = NA, # variational parameters for the variances
-    M          = NA, # variational parameters for the means
-    Z          = NA, # matrix of latent variable
-    A          = NA, # matrix of expected counts (under variational approximation)
-    Ji         = NA, # element-wise approximated loglikelihood
-    R2         = NA, # approximated goodness of fit criterion
-    optimizer  = NA, # link to the function doing the optimization
-    monitoring = NA,  # a list with optimization monitoring quantities
+    formula    = NA    , # the formula call for the model as specified by the user
+    Theta      = NA    , # regression parameters of the latent layer
+    Sigma      = NA    , # covariance matrix of the latent layer
+    Omega      = NA    , # precision matrix of the latent layer. Inverse of Sigma
+    S          = NA    , # variational parameters for the variances
+    M          = NA    , # variational parameters for the means
+    Z          = NA    , # matrix of latent variable
+    A          = NA    , # matrix of expected counts (under variational approximation)
+    Ji         = NA    , # element-wise approximated loglikelihood
+    R2         = NA    , # approximated goodness of fit criterion
+    optimizer  = list(), # list of links to the functions doing the optimization
+    monitoring = list(), # list with optimization monitoring quantities
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
@@ -142,7 +142,7 @@ PLNfit <- R6Class(
       params$Sigma <- private$torch_Sigma(data, params)
       params$Omega <- private$torch_Omega(data, params)
       params$Z     <- data$O + params$M + torch_matmul(data$X, params$Theta)
-      params$A     <- torch_exp(params$Z + torch_multiply(params$S, params$S)/2)
+      params$A     <- torch_exp(params$Z + torch_pow(params$S, 2)/2)
 
       out <- list(
         Theta      = t(as.matrix(params$Theta)),
@@ -189,9 +189,8 @@ PLNfit <- R6Class(
     },
 
     vcov_wald = function(X) {
-      A <- private$A
       fisher <- bdiag(lapply(1:self$p, function(i) {
-        crossprod(X, A[, i] * X) # t(X) %*% diag(A[, i]) %*% X
+        crossprod(X, private$A[, i] * X) # t(X) %*% diag(A[, i]) %*% X
       }))
       res <- tryCatch(self$n*Matrix::solve(fisher), error = function(e) {e})
       if (is(res, "error")) {
@@ -224,7 +223,8 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
       ## set up various quantities
       private$formula <- formula # user formula call
-      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_full, private$torch_optimize)
+      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
+      private$optimizer$vestep <- nlopt_optimize_vestep
       ## initialize the variational parameters
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -281,7 +281,7 @@ PLNfit <- R6Class(
                    w = weights,
                    init_parameters = list(Theta = private$Theta, M = private$M, S = private$S),
                    configuration = control$config_optim)
-      optim_out <- do.call(private$optimizer, args)
+      optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
     },
 
@@ -292,46 +292,23 @@ PLNfit <- R6Class(
     #'  * the matrix `M` of variational means,
     #'  * the matrix `S2` of variational variances
     #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
-    VEstep = function(covariates, offsets, responses, weights,
+    optimize_vestep = function(covariates, offsets, responses, weights,
                       Theta = self$model_par$Theta,
-                      Sigma = self$model_par$Sigma,
-                      control = list()) {
+                      Omega = self$model_par$Omega,
+                      control = PLN_param(backend = "nlopt")) {
 
-      # problem dimension
       n <- nrow(responses); p <- ncol(responses)
-
-      ## define default control parameters for optim and overwrite by user defined parameters
-      control$covariance <- self$vcov_model
-      control <- config_default_nlopt
-
-      VEstep_optimizer <-
-        switch(control$covariance,
-               "spherical" = nlopt_optimize_vestep_spherical,
-               "diagonal"  = nlopt_optimize_vestep_diagonal,
-               "full"      = nlopt_optimize_vestep_full,
-               "genetic"   = nlopt_optimize_vestep_full
-        )
-
-      ## Initialize the variational parameters with the appropriate new dimension of the data
-      optim_out <- VEstep_optimizer(
-        list(M = matrix(0, n, p), S = matrix(sqrt(0.1), n, p)),
-        responses,
-        covariates,
-        offsets,
-        weights,
-        Theta = Theta,
-        ## Robust inversion using Matrix::solve instead of solve.default
-        Omega = as(Matrix::solve(Matrix::Matrix(Sigma)), 'matrix'),
-        control
-      )
-
-      Ji <- optim_out$loglik
-      attr(Ji, "weights") <- weights
-
-      ## output
-      list(M       = optim_out$M,
-           S2      = (optim_out$S)**2,
-           log.lik = setNames(Ji, rownames(responses)))
+      args <- list(Y = responses,
+                   X = covariates,
+                   O = offsets,
+                   w = weights,
+                   ## Initialize the variational parameters with the new dimension of the data
+                   init_parameters = list(M = matrix(0, n, p), S = matrix(1, n, p)),
+                   Theta = Theta,
+                   Omega = Omega,
+                   configuration = control$config_optim)
+      optim_out <- do.call(private$optimizer$vestep, args)
+      optim_out
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -442,22 +419,24 @@ PLNfit <- R6Class(
       vcov11 <- private$Sigma[cond ,  cond, drop = FALSE]
       vcov22 <- private$Sigma[!cond, !cond, drop = FALSE]
       vcov12 <- private$Sigma[cond , !cond, drop = FALSE]
-      A <- crossprod(vcov12, solve(vcov11))
+      prec11 <- solve(vcov11)
+      A <- crossprod(vcov12, prec11)
       Sigma21 <- vcov22 - A %*% vcov12
 
       # Call to VEstep to obtain M1, S1
-      VE <- self$VEstep(
+      VE <- self$optimize_vestep(
               covariates = X,
               offsets    = O[, cond, drop = FALSE],
               responses  = Yc,
               weights    = rep(1, n_new),
               Theta      = self$model_par$Theta[cond, , drop = FALSE],
-              Sigma      = vcov11
+              Omega      = prec11
           )
 
       M <- tcrossprod(VE$M, A)
-      S <- map(1:n_new, ~crossprod(sqrt(VE$S2[., ]) * t(A)) + Sigma21) %>%
-        simplify2array()
+      # S <- map(1:n_new, ~crossprod(sqrt(VE$S[., ]) * t(A)) + Sigma21) %>%
+      #   simplify2array()
+      S <- map(1:n_new, ~crossprod(VE$S[., ] * t(A)) + Sigma21) %>% simplify2array()
 
       ## mean latent positions in the parameter space
       EZ <- tcrossprod(X, private$Theta[!cond, , drop = FALSE]) + M
@@ -598,7 +577,8 @@ PLNfit_diagonal <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_diagonal, private$torch_optimize)
+      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_diagonal, private$torch_optimize)
+      private$optimizer$vestep <- nlopt_optimize_vestep_diagonal
     }
   ),
   private = list(
@@ -680,7 +660,8 @@ PLNfit_spherical <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_spherical, private$torch_optimize)
+      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_spherical, private$torch_optimize)
+      private$optimizer$vestep <- nlopt_optimize_vestep_diagonal
     }
   ),
   private = list(
@@ -762,7 +743,8 @@ PLNfit_fixedcov <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer <- ifelse(control$backend == "nlopt", nlopt_optimize_fixed, private$torch_optimize)
+      private$optimizer$main <- ifelse(control$backend == "nlopt", nlopt_optimize_fixed, private$torch_optimize)
+      ## ve step is the same as in the fullly parameterized covariance
       private$Omega <- control$Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
@@ -773,7 +755,7 @@ PLNfit_fixedcov <- R6Class(
                    w = weights,
                    init_parameters = list(Theta = private$Theta, M = private$M, S = private$S, Omega = private$Omega),
                    configuration = control$config_optim)
-      optim_out <- do.call(private$optimizer, args)
+      optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
       private$Sigma <- solve(optim_out$Omega)
     }
@@ -881,7 +863,7 @@ PLNfit_fixedcov <- R6Class(
 #   }
 #
 #   if (control$backend == "nlopt")
-#     optim_out <- do.call(nlopt_optimize_full, c(args, list(configuration = control$options_nlopt)))
+#     optim_out <- do.call(nlopt_optimizexxx, c(args, list(configuration = control$options_nlopt)))
 #   else {
 #     ## initialize torch with nlopt
 #     optim_out <- self$optimize_nlopt(c(args, list(configuration = control$options_nlopt)))

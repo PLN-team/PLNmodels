@@ -200,8 +200,8 @@ Result of one call to the VE step of the optimization procedure: optimal variati
   responses,
   weights,
   Theta = self$model_par$Theta,
-  Sigma = self$model_par$Sigma,
-  control = list()
+  Omega = self$model_par$Omega,
+  control = PLN_param(backend = "nlopt")
 )}\if{html}{\out{</div>}}
 }
 
@@ -218,9 +218,11 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 
 \item{\code{Theta}}{Optional fixed value of the regression parameters}
 
-\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
+\item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
+
+\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
 }
 \if{html}{\out{</div>}}
 }

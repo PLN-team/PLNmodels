@@ -17,12 +17,12 @@ nlopt_optimize_fixed <- function(init_parameters, Y, X, O, w, configuration) {
     .Call('_PLNmodels_nlopt_optimize_fixed', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
 }
 
-nlopt_optimize_full <- function(init_parameters, Y, X, O, w, configuration) {
-    .Call('_PLNmodels_nlopt_optimize_full', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
+nlopt_optimize <- function(init_parameters, Y, X, O, w, configuration) {
+    .Call('_PLNmodels_nlopt_optimize', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
 }
 
-nlopt_optimize_vestep_full <- function(init_parameters, Y, X, O, w, Theta, Omega, configuration) {
-    .Call('_PLNmodels_nlopt_optimize_vestep_full', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
+nlopt_optimize_vestep <- function(init_parameters, Y, X, O, w, Theta, Omega, configuration) {
+    .Call('_PLNmodels_nlopt_optimize_vestep', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, Omega, configuration)
 }
 
 nlopt_optimize_genetic_modeling <- function(init_parameters, Y, X, O, w, C, configuration) {
