@@ -126,7 +126,7 @@ PLNnetworkfamily <- R6Class(
     #' @description Compute the stability path by stability selection
     #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
     #' @param control a list controlling the main optimization process in each call to PLNnetwork. See [PLNnetwork()] for details.
-    stability_selection = function(subsamples = NULL, control = list()) {
+    stability_selection = function(subsamples = NULL, control = PLNnetwork_param()) {
 
       ## select default subsamples according
       if (is.null(subsamples)) {
@@ -146,22 +146,19 @@ PLNnetworkfamily <- R6Class(
           S  = inception_$var_par$S[subsample, ]
         )
 
-        ctrl_init <- PLN_param(list(), inception_$n, inception_$p)
-        ctrl_init$trace <- 0
-        ctrl_init$inception <- inception_
-        ctrl_init$penalty_weights <- map(self$models, "penalty_weights")
-        ctrl_init$penalize_diagonal <- (sum(diag(inception_$penalty_weights)) != 0)
+        ## force some control parameters
+        control$inception = inception_
+        control$penalty_weights = map(self$models, "penalty_weights")
+        control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
 
         myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
                                       responses  = self$responses [subsample, , drop = FALSE],
                                       covariates = self$covariates[subsample, , drop = FALSE],
                                       offsets    = self$offsets   [subsample, , drop = FALSE],
                                       formula    = private$formula,
-                                      weights    = self$weights   [subsample], control = ctrl_init)
+                                      weights    = self$weights   [subsample], control = control)
 
-        ctrl_main <- PLNnetwork_param(control, inception_$n, inception_$p)
-        ctrl_main$trace <- 0
-        myPLN$optimize(ctrl_main)
+        myPLN$optimize(control)
         nets <- do.call(cbind, lapply(myPLN$models, function(model) {
           as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
         }))

@@ -16,17 +16,13 @@ test_that("PLNnetwork: main function, fields access and methods", {
   w <- rep(1, nrow(Y))
 
   ## extract the data matrices and weights
-  ctrl_main <- PLNmodels:::PLNnetwork_param(list(), nrow(Y), ncol(Y))
-  ctrl_init <- PLNmodels:::PLN_param(list(), nrow(Y), ncol(Y))
-  ctrl_init$trace <- 0; ctrl_init$nPenalties <- 30; ctrl_init$min.ratio   <- .1
-  ctrl_init$penalty_weights   <- matrix(1, ncol(Y), ncol(Y))
-  ctrl_init$penalize_diagonal <- TRUE
+  ctrl <- PLNmodels:::PLNnetwork_param(trace = 0)
 
   ## instantiate
-  myPLN <- PLNmodels:::PLNnetworkfamily$new(NULL, Y, X, O, w, Abundance ~ 1, ctrl_init)
+  myPLN <- PLNmodels:::PLNnetworkfamily$new(NULL, Y, X, O, w, Abundance ~ 1, ctrl)
 
   ## optimize
-  myPLN$optimize(ctrl_main)
+  myPLN$optimize(ctrl)
 
   ## post-treatment
   myPLN$postTreatment()
@@ -89,7 +85,7 @@ test_that("PLNnetwork: matrix of penalties work", {
   W <- diag(1, p, p)
   W[upper.tri(W)] <- runif(p*(p-1)/2, min = 1, max = 5)
   W[lower.tri(W)] <- t(W)[lower.tri(W)]
-  myPLN <- PLNnetwork(Abundance ~ 1, data = trichoptera, control_init = list(penalty_weights = W))
+  myPLN <- PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = W))
 
   ## S3 methods
   expect_true(PLNmodels:::isPLNnetworkfamily(myPLN))
@@ -109,7 +105,7 @@ test_that("PLNnetwork: matrix of penalties work", {
   subs <- replicate(2,
                     sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
                     simplify = FALSE)
-  myPLN$stability_selection(subsamples = subs, control = list(penalty_weights = W))
+  myPLN$stability_selection(subsamples = subs, control = PLNnetwork_param(penalty_weights = W))
   expect_is(plot(myPLN, type = "stability"), "ggplot")
   expect_true(!is.null(myPLN$stability_path))
   expect_true(inherits(myPLN$plot(), "ggplot"))
@@ -120,15 +116,15 @@ test_that("PLNnetwork: matrix of penalties work", {
   ## not symmetric
   W <- diag(1, p, p)
   W[upper.tri(W)] <- runif(p*(p-1)/2, min = 1, max = 5)
-  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control_init = list(penalty_weights = W)))
+  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = W)))
 
   ## not square
   W <- matrix(1, p + 1, p)
-  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control_init = list(penalty_weights = W)))
+  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = W)))
 
   ## not-positive entries
   W <- matrix(0, p, p)
-  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control_init = list(penalty_weights = W)))
+  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = W)))
 
 })
 
@@ -140,7 +136,7 @@ test_that("PLNnetwork: list of matrices of penalties work", {
   W[lower.tri(W)] <- t(W)[lower.tri(W)]
   list_W <- lapply(seq(1, 1e-2, len = 30), function(rho) rho * W)
 
-  myPLN <- PLNnetwork(Abundance ~ 1, data = trichoptera, control_init = list(penalty_weights = list_W))
+  myPLN <- PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = list_W))
 
   ## S3 methods
   expect_true(PLNmodels:::isPLNnetworkfamily(myPLN))
@@ -160,7 +156,7 @@ test_that("PLNnetwork: list of matrices of penalties work", {
   subs <- replicate(2,
                     sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
                     simplify = FALSE)
-  myPLN$stability_selection(subsamples = subs, control = list(penalty_weights = W))
+  myPLN$stability_selection(subsamples = subs, control = PLNnetwork_param(penalty_weights = W))
   expect_is(plot(myPLN, type = "stability"), "ggplot")
   expect_true(!is.null(myPLN$stability_path))
   expect_true(inherits(myPLN$plot(), "ggplot"))
