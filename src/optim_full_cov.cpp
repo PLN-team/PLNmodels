@@ -165,7 +165,7 @@ Rcpp::List nlopt_optimize_vestep(
         arma::mat Z = O + X * Theta.t() + M;
         arma::mat A = exp(Z + 0.5 * S2);
         arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2) ;
-        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * trace(Omega * nSigma);
+        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) - 0.5 * trace(Omega * nSigma);
 
         metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
         metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));

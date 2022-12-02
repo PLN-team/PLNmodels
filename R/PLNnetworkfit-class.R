@@ -100,7 +100,7 @@ PLNnetworkfit <- R6Class(
         args$init_parameters <- list(Theta = private$Theta, M = private$M, S = private$S)
         objective.old <- objective[iter]
       }
-      browser()
+
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## OUTPUT
       private$Sigma <- Matrix::symmpart(glasso_out$w)
