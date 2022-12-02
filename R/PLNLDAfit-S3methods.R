@@ -89,7 +89,7 @@ predict.PLNLDAfit <- function(object, newdata,
                               type = c("posterior", "response", "scores"),
                               scale = c("log", "prob"),
                               prior = NULL,
-                              control = list(), ...) {
+                              control = PLN_param(backend="nlopt"), ...) {
   stopifnot(isPLNLDAfit(object))
   object$predict(newdata, type, scale, prior, control, parent.frame())
 }
