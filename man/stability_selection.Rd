@@ -7,7 +7,7 @@
 stability_selection(
   Robject,
   subsamples = NULL,
-  control = list(),
+  control = PLNnetwork_param(),
   force = FALSE
 )
 }

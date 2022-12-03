@@ -30,5 +30,5 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 }
 \seealso{
-The class \code{\link{PLNfit}} and the function \code{\link[=PLN_param]{PLN_param()}}
+The class \code{\link{PLNfit}} and the configuration function \code{\link[=PLN_param]{PLN_param()}}
 }

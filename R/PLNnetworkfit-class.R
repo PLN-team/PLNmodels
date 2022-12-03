@@ -82,12 +82,12 @@ PLNnetworkfit <- R6Class(
       while (!cond) {
         iter <- iter + 1
         if (control$trace > 1) cat("", iter)
-        ## CALL TO GLASSO TO UPDATE Omega/Sigma
+        ## CALL TO GLASSO TO UPDATE Omega
         glasso_out <- glassoFast::glassoFast(private$Sigma, rho = self$penalty * self$penalty_weights)
         if (anyNA(glasso_out$wi)) break
         private$Omega <- args$init_parameters$Omega <- Matrix::symmpart(glasso_out$wi)
 
-        ## CALL TO NLOPT OPTIMIZATION
+        ## CALL TO NLOPT OPTIMIZATION TO UPDATE OTHER PARMAETERS
         optim_out <- do.call(private$optimizer$main, args)
         do.call(self$update, optim_out)
 
@@ -219,6 +219,8 @@ PLNnetworkfit <- R6Class(
   ## ACTIVE BINDINGS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   active = list(
+    #' @field vcov_model character: the model used for the residual covariance
+    vcov_model = function() {"sparse"},
     #' @field penalty the global level of sparsity in the current model
     penalty         = function() {private$lambda},
     #' @field penalty_weights a matrix of weights controlling the amount of penalty element-wise.

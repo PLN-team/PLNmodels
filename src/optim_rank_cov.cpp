@@ -86,9 +86,9 @@ Rcpp::List nlopt_optimize_rank(
     arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
     arma::mat loglik = arma::sum(Y % Z - A, 1) - 0.5 * sum(M % M + S2 - log(S2) - 1., 1) + ki(Y);
 
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
     return Rcpp::List::create(
-        Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("Theta", Theta),
         Rcpp::Named("B", B),
         Rcpp::Named("M", M),
@@ -97,7 +97,13 @@ Rcpp::List nlopt_optimize_rank(
         Rcpp::Named("A", A),
         Rcpp::Named("Sigma", Sigma),
         Rcpp::Named("Omega", Sigma),
-        Rcpp::Named("loglik", loglik));
+        Rcpp::Named("Ji", Ji),
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status", static_cast<int>(result.status)),
+            Rcpp::Named("backend", "nlopt"),
+            Rcpp::Named("iterations", result.nb_iterations)
+        ))
+    );
 }
 
 // ---------------------------------------------------------------------------------------
@@ -166,10 +172,10 @@ Rcpp::List nlopt_optimize_vestep_rank(
     arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
     arma::mat loglik = arma::sum(Y % Z - A, 1) - 0.5 * sum(M % M + S2 - log(S2) - 1., 1) + ki(Y);
 
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
     return Rcpp::List::create(
-        Rcpp::Named("status") = (int)result.status,
-        Rcpp::Named("iterations") = result.nb_iterations,
         Rcpp::Named("M") = M,
         Rcpp::Named("S") = S,
-        Rcpp::Named("loglik") = loglik);
+        Rcpp::Named("Ji") = Ji);
 }

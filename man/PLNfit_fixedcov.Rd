@@ -98,6 +98,8 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{config}}{part of the \code{control} argument which configures the optimizer}
 }
 \if{html}{\out{</div>}}
 }

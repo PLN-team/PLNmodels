@@ -109,7 +109,7 @@ Initialize a \code{\link{PLNfit}} model
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{control}}{a list-like structure for controlling the fit, see \link{'PLN_param()'}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -182,6 +182,8 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{config}}{part of the \code{control} argument which configures the optimizer}
 }
 \if{html}{\out{</div>}}
 }
@@ -218,7 +220,7 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 
 \item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{control}}{a list-like structure for controlling the fit, see \link{'PLN_param()'}.}
 
 \item{\code{Sigma}}{variance-covariance matrix of the latent variables}
 }

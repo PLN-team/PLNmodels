@@ -27,6 +27,8 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
+\item{\code{vcov_model}}{character: the model used for the residual covariance}
+
 \item{\code{penalty}}{the global level of sparsity in the current model}
 
 \item{\code{penalty_weights}}{a matrix of weights controlling the amount of penalty element-wise.}

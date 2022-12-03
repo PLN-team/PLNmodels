@@ -27,6 +27,8 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \describe{
 \item{\code{rank}}{the dimension of the current model}
 
+\item{\code{vcov_model}}{character: the model used for the residual covariance}
+
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
 \item{\code{entropy}}{entropy of the variational distribution}
@@ -59,7 +61,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \item \href{#method-PLNPCAfit-new}{\code{PLNPCAfit$new()}}
 \item \href{#method-PLNPCAfit-update}{\code{PLNPCAfit$update()}}
 \item \href{#method-PLNPCAfit-optimize}{\code{PLNPCAfit$optimize()}}
-\item \href{#method-PLNPCAfit-VEstep}{\code{PLNPCAfit$VEstep()}}
+\item \href{#method-PLNPCAfit-optimize_vestep}{\code{PLNPCAfit$optimize_vestep()}}
 \item \href{#method-PLNPCAfit-project}{\code{PLNPCAfit$project()}}
 \item \href{#method-PLNPCAfit-setVisualization}{\code{PLNPCAfit$setVisualization()}}
 \item \href{#method-PLNPCAfit-postTreatment}{\code{PLNPCAfit$postTreatment()}}
@@ -71,10 +73,9 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 }
 }
 \if{html}{\out{
-<details><summary>Inherited methods</summary>
+<details open><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-get_vcov_hat'><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
@@ -169,7 +170,7 @@ Update the current \code{\link{PLNPCAfit}} object
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer and update of the relevant fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$optimize(responses, covariates, offsets, weights, config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -183,23 +184,23 @@ Call to the C++ optimizer and update of the relevant fields
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{config}}{part of the \code{control} argument which configures the optimizer}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNPCAfit-VEstep"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNPCAfit-VEstep}{}}}
-\subsection{Method \code{VEstep()}}{
+\if{html}{\out{<a id="method-PLNPCAfit-optimize_vestep"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-optimize_vestep}{}}}
+\subsection{Method \code{optimize_vestep()}}{
 Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (B, Theta). Intended to position new data in the latent space for further use with PCA.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$VEstep(
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$optimize_vestep(
   covariates,
   offsets,
   responses,
-  weights = rep(1, nrow(responses)),
-  control = list()
+  weights = rep(1, self$n),
+  control = PLNPCA_param(backend = "nlopt")
 )}\if{html}{\out{</div>}}
 }
 
@@ -233,7 +234,7 @@ A list with three components:
 \subsection{Method \code{project()}}{
 Project new samples into the PCA space using one VE step
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$project(newdata, control = list(), envir = parent.frame())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$project(newdata, control = PLNPCA_param(), envir = parent.frame())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

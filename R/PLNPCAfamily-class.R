@@ -69,7 +69,7 @@ PLNPCAfamily <- R6Class(
           cat(" Rank approximation =",model$rank)
           cat("\n\t conservative convex separable approximation for gradient descent")
         }
-        model$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
+        model$optimize(self$responses, self$covariates, self$offsets, self$weights, control$config_optim)
         model
       }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
     },
