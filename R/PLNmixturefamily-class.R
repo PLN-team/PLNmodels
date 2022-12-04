@@ -120,7 +120,10 @@ PLNmixturefamily <-
         private$params  <- clusters
         private$formula <- formula
 
-        myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control)
+        myPLN <- switch(control$covariance,
+                        "diagonal" = PLNfit_diagonal$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control),
+                        "full"     = PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control),
+                        PLNfit_spherical$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control)) # default: spherical
         myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
 
         Sbar <- rowSums(myPLN$var_par$S2)
@@ -138,7 +141,9 @@ PLNmixturefamily <-
           clusterings %>%
             map(as_indicator) %>%
             map(.check_boundaries) %>%
-            map(function(Z) PLNmixturefit$new(responses, covariates, offsets, Z, formula, control))
+            map(function(Z) {
+              PLNmixturefit$new(responses, covariates, offsets, Z, formula, control)}
+            )
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Optimization ----------------------

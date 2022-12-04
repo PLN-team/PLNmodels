@@ -43,9 +43,9 @@ PLNmixture_param <- function(control, n, p) {
     "learning_rate" = 0.1,
     "trace"       = 1,
     "covariance"  = covariance,
+    "inception"   = NULL,
     "iterates"    = 2,
     "smoothing"   = 'both',
-    "inception"   = NULL,
     "init_cl"     = 'kmeans'
   )
   ctrl[names(control)] <- control

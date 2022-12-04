@@ -99,7 +99,6 @@ PLNnetwork_param <- function(
   structure(list(
     backend           = backend          ,
     trace             = trace            ,
-    config_optim      = config           ,
     n_penalties       = n_penalties      ,
     min_ratio         = min_ratio        ,
     penalize_diagonal = penalize_diagonal,
