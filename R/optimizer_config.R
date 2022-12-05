@@ -25,33 +25,6 @@ config_default_torch <-
 ##
 ## should be ready to pass to either nlopt or torch optimizer
 
-## should be ready to pass to nlopt optimizer
-PLNmixture_param <- function(control, n, p) {
-  covariance  <- ifelse(is.null(control$covariance) , "spherical", control$covariance)
-  covariance  <- ifelse(is.null(control$inception), covariance  , control$inception$model)
-  ctrl <- list(
-    "ftol_out"    = 1e-3,
-    "maxit_out"   = 50,
-    "algorithm"   = "CCSAQ",
-    "maxeval"     = 10000  ,
-    "maxtime"     = -1     ,
-    "ftol_rel"    = ifelse(n < 1.5*p, 1e-6, 1e-8),
-    "ftol_abs"    = 0,
-    "xtol_rel"    = 1e-6,
-    "xtol_abs"    = 0.0,
-    "backend"     = "nlopt",
-    "learning_rate" = 0.1,
-    "trace"       = 1,
-    "covariance"  = covariance,
-    "inception"   = NULL,
-    "iterates"    = 2,
-    "smoothing"   = 'both',
-    "init_cl"     = 'kmeans'
-  )
-  ctrl[names(control)] <- control
-  ctrl
-}
-
 status_to_message <- function(status) {
   message <- switch(as.character(status),
         "1"  = "success",

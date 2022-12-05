@@ -59,7 +59,7 @@ plot.PLNmixturefit <-
 #'  `response` is the group with maximal posterior probability and `latent` is the averaged latent in the latent space,
 #'  with weights equal to the posterior probabilities.
 #' @param prior User-specified prior group probabilities in the new data. The default uses a uniform prior.
-#' @param control a list for controlling the optimization. See [PLN()] for details.
+#' @param control a list-like structure for controlling the fit. See [PLNmixture_param()] for details.
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of posterior probabilities for each group (if type = "posterior"), a matrix of (average) position in the
 #' latent space (if type = "position") or a vector of predicted groups (if type = "response").
@@ -76,7 +76,7 @@ predict.PLNmixturefit <-
   function(object, newdata,
            type = c("posterior", "response", "position"),
            prior = matrix(rep(1/object$k, object$k), nrow(newdata), object$k, byrow = TRUE),
-           control = list(), ...) {
+           control = PLNmixture_param(), ...) {
 
   stopifnot(isPLNmixturefit(object))
   object$predict(newdata, type, prior, control, parent.frame())

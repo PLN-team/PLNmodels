@@ -86,7 +86,10 @@ PLNmixturefit <-
         ## Initializing the mixture components (only intercept of group mean)
         mu_k  <- setNames(matrix(1, self$n, ncol = 1), 'Intercept')
         for (k_ in seq.int(ncol(posteriorProb)))
-          private$comp[[k_]] <- PLNfit$new(responses, mu_k, offsets, posteriorProb[, k_], NULL, control)
+          private$comp[[k_]] <- switch(control$covariance,
+                 "diagonal" = PLNfit_diagonal$new(responses, mu_k, offsets, posteriorProb[, k_], NULL, control),
+                 "full"     = PLNfit$new(responses, mu_k, offsets, posteriorProb[, k_], NULL, control),
+                              PLNfit_spherical$new(responses, mu_k, offsets, posteriorProb[, k_], NULL, control)) # default: spherical
 
       },
       #' @description Optimize a [`PLNmixturefit`] model
@@ -101,8 +104,8 @@ PLNmixturefit <-
         ## ===========================================
         ## INITIALISATION
         cond <- FALSE; iter <- 1
-        objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
-        convergence <- numeric(control$maxit_out); convergence[iter] <- NA
+        objective   <- numeric(control$config_optim$maxit_out); objective[iter]   <- Inf
+        convergence <- numeric(control$config_optim$maxit_out); convergence[iter] <- NA
         ## ===========================================
         ## OPTIMISATION
         while (!cond) {
@@ -118,7 +121,7 @@ PLNmixturefit <-
           }
           ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
           for (k in seq.int(self$k))
-            self$components[[k]]$optimize(responses, intercept, offsets, private$tau[, k], control)
+            self$components[[k]]$optimize(responses, intercept, offsets, private$tau[, k], control$config_optim)
 
           ## ---------------------------------------------------
           ## E - STEP
@@ -134,7 +137,7 @@ PLNmixturefit <-
           ## Assess convergence
           objective[iter]   <- -self$loglik
           convergence[iter] <- abs(objective[iter-1] - objective[iter]) /abs(objective[iter])
-          if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+          if ((convergence[iter] < control$config_optim$ftol_out) | (iter >= control$config_optim$maxit_out)) cond <- TRUE
 
         }
 
@@ -155,12 +158,12 @@ PLNmixturefit <-
       #'  offset and nor covariate effects),
       #'  with weights equal to the posterior probabilities.
       #' @param prior User-specified prior group probabilities in the new data. The default uses a uniform prior.
-      #' @param control a list for controlling the optimization. See [PLN()] for details.
+      #' @param control a list-like structure for controlling the fit. See [PLNmixture_param()] for details.
       #' @param envir Environment in which the prediction is evaluated
       predict = function(newdata,
                          type = c("posterior", "response", "position"),
                          prior = matrix(rep(1/self$k, self$k), nrow(newdata), self$k, byrow = TRUE),
-                         control = list(), envir = parent.frame()) {
+                         control = PLNmixture_param(), envir = parent.frame()) {
 
         type  <- match.arg(type)
 
@@ -180,16 +183,13 @@ PLNmixturefit <-
         tau <- prior
         ## We make a copy of the offset, for accounting for fixed
         ## covariates effects during the alternative algorithm
-        if (ncol(args$X) > 1) {
-          args$O <- args$O + args$X %*% private$Theta
-        }
+        if (ncol(args$X) > 1) args$O <- args$O + args$X %*% private$Theta
 
         ## ===========================================
         ## INITIALISATION
         cond <- FALSE; iter <- 1
-        control <- PLNmixture_param(control, n_new, self$p)
-        objective   <- numeric(control$maxit_out); objective[iter]   <- Inf
-        convergence <- numeric(control$maxit_out); convergence[iter] <- NA
+        objective   <- numeric(control$config_optim$maxit_out); objective[iter]   <- Inf
+        convergence <- numeric(control$config_optim$maxit_out); convergence[iter] <- NA
 
         ## ===========================================
         ## OPTIMISATION
@@ -201,26 +201,26 @@ PLNmixturefit <-
           ## VE step of each component
           ve_step <- list(self$k)
           for (k in seq.int(self$k)) {
-            ve_step[[k]] <- self$components[[k]]$VEstep(intercept, args$O, args$Y, tau[, k], control = control)
+            ve_step[[k]] <- self$components[[k]]$optimize_vestep(intercept, args$O, args$Y, tau[, k])
           }
 
           ## E - STEP
           ## UPDATE THE POSTERIOR PROBABILITIES
           if (self$k > 1) { # only needed when at least 2 components!
             tau <-
-              sapply(ve_step, function(comp) comp$log.lik) %>% # Jik
+              sapply(ve_step, function(comp) comp$Ji) %>% # Jik
               sweep(2, log(colMeans(tau)), "+") %>% # computation in log space
               apply(1, .softmax) %>%        # exponentiation + normalization with soft-max
               t() %>% .check_boundaries()   # bound away probabilities from 0/1
           }
 
           ## Assess convergence
-          J_ik <- sapply(ve_step, function(comp) comp$log.lik)
+          J_ik <- sapply(ve_step, function(comp) comp$Ji)
           J_ik[tau <= .Machine$double.eps] <- 0
           rowSums(tau * J_ik) - rowSums(.xlogx(tau)) + tau %*% log(colMeans(tau))
           objective[iter]   <- -sum(J_ik)
           convergence[iter] <- abs(objective[iter-1] - objective[iter]) /abs(objective[iter])
-          if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+          if ((convergence[iter] < control$config_optim$ftol_out) | (iter >= control$config_optim$maxit_out)) cond <- TRUE
 
         }
 

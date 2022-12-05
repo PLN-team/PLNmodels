@@ -9,7 +9,7 @@
   newdata,
   type = c("posterior", "response", "position"),
   prior = matrix(rep(1/object$k, object$k), nrow(newdata), object$k, byrow = TRUE),
-  control = list(),
+  control = PLNmixture_param(),
   ...
 )
 }
@@ -24,7 +24,7 @@ with weights equal to the posterior probabilities.}
 
 \item{prior}{User-specified prior group probabilities in the new data. The default uses a uniform prior.}
 
-\item{control}{a list for controlling the optimization. See \code{\link[=PLN]{PLN()}} for details.}
+\item{control}{a list-like structure for controlling the fit. See \code{\link[=PLNmixture_param]{PLNmixture_param()}} for details.}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }

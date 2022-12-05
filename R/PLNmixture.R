@@ -21,8 +21,7 @@
 #'
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
-#'                control_main = list(smoothing = "forward", iterates = 1))
+#' myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:4, data = trichoptera)
 #'
 #' # Shut down parallel workers
 #' \dontrun{
@@ -31,7 +30,7 @@
 #' @seealso The classes [`PLNmixturefamily`], [`PLNmixturefit`] and ['PLNmixture_param()']
 #' @importFrom stats model.frame model.matrix model.response model.offset update.formula
 #' @export
-PLNmixture <- function(formula, data, subset, clusters = 1:5,  control=PLNmixture_param()) {
+PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixture_param()) {
 
   # remove the intercept term if any (will be used to deal with group means)
   the_call <- match.call(expand.dots = FALSE)
@@ -49,8 +48,8 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control=PLNmixtur
   myPLN$optimize(control)
 
   ## Smoothing to avoid local minima
-  if (control$trace > 0) cat("\n\n Smoothing PLN mixture models.\n")
-  myPLN$smooth(control)
+  if (control$smoothing != "none" & control$trace > 0) cat("\n\n Smoothing PLN mixture models.\n")
+    myPLN$smooth(control)
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
   if (control$trace > 0) cat("\n Post-treatments")
@@ -66,6 +65,8 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control=PLNmixtur
 #'
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
 #' @param covariance character setting the model for the covariance matrices of the mixture components. Either "full", "diagonal" or "spherical". Default is "spherical".
+#' @param smoothing The smoothing to apply. Either, 'none', forward', 'backward' or 'both'. Default is 'both'.
+#' @param init_cl The initial clustering to apply. Either, 'kmeans', CAH' or a user defined clustering given as a list of  clusterings, the size of which is equal to the number of clusters considered. Default is 'kmeans'.
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
 #' @param trace a integer for verbosity.
 #' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
@@ -75,8 +76,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control=PLNmixtur
 #' @return list of parameters configuring the fit.
 #'
 #' @details The list of parameters `config_optim` controls the optimizers. When "nlopt" is chosen the following entries are relevant
-#' * "smoothing" The smoothing to apply. Either, 'forward', 'backward' or 'both'. Default is 'both'.
-#' * "iterates" number of forward/backward iteration of smoothing. Default is 2.
+#' * "it_smooth" number of forward/backward iteration of smoothing. Default is 2.
 #' * "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
 #' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 #' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
@@ -88,8 +88,6 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control=PLNmixtur
 #' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
 #'
 #' When "torch" backend is used, with the following entries are relevant:
-#' * "smoothing" The smoothing to apply. Either, 'forward', 'backward' or 'both'. Default is 'both'.
-#' * "iterates" number of forward/backward iteration of smoothing. Default is 2.
 #' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 #' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
 #' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
@@ -101,6 +99,8 @@ PLNmixture_param <- function(
     backend       = "nlopt"    ,
     trace         = 1          ,
     covariance    = "spherical",
+    init_cl       = "kmeans"   ,
+    smoothing     = "both"     ,
     config_optim  = list()     ,
     inception     = NULL # pretrained PLNfit used as initialization
 ) {
@@ -111,14 +111,15 @@ PLNmixture_param <- function(
   if (backend == "torch") config <- config_default_torch
   config$ftol_out  <- 1e-3
   config$maxit_out <- 50
-  config$smoothing <- "both"
-  config$init_cl   <- "kmeans"
+  config$it_smooth <- 1
   config[names(config_optim)] <- config_optim
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
   structure(list(
-    backend       = backend   ,
-    trace         = trace     ,
-    covariance    = covariance,
-    config_optim  = config    ,
+    backend       = backend    ,
+    trace         = trace      ,
+    covariance    = covariance ,
+    init_cl       = init_cl    ,
+    smoothing     = smoothing  ,
+    config_optim  = config     ,
     inception     = inception   ), class = "PLNmodels_param")
 }

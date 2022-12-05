@@ -4,16 +4,28 @@
 \alias{PLNmixture_param}
 \title{Control of a PLNmixture fit}
 \usage{
-PLNmixture_param(control, n, p)
+PLNmixture_param(
+  backend = "nlopt",
+  trace = 1,
+  covariance = "spherical",
+  init_cl = "kmeans",
+  smoothing = "both",
+  config_optim = list(),
+  inception = NULL
+)
 }
 \arguments{
 \item{backend}{optimization back used, either "nlopt" or "torch". Default is "nlopt"}
 
+\item{trace}{a integer for verbosity.}
+
 \item{covariance}{character setting the model for the covariance matrices of the mixture components. Either "full", "diagonal" or "spherical". Default is "spherical".}
 
-\item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
+\item{init_cl}{The initial clustering to apply. Either, 'kmeans', CAH' or a user defined clustering given as a list of  clusterings, the size of which is equal to the number of clusters considered. Default is 'kmeans'.}
 
-\item{trace}{a integer for verbosity.}
+\item{smoothing}{The smoothing to apply. Either, 'none', forward', 'backward' or 'both'. Default is 'both'.}
+
+\item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
@@ -28,8 +40,7 @@ Helper to define list of parameters to control the PLNmixture fit. All arguments
 \details{
 The list of parameters \code{config_optim} controls the optimizers. When "nlopt" is chosen the following entries are relevant
 \itemize{
-\item "smoothing" The smoothing to apply. Either, 'forward', 'backward' or 'both'. Default is 'both'.
-\item "iterates" number of forward/backward iteration of smoothing. Default is 2.
+\item "it_smooth" number of forward/backward iteration of smoothing. Default is 2.
 \item "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
 \item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 \item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
@@ -43,8 +54,6 @@ The list of parameters \code{config_optim} controls the optimizers. When "nlopt"
 
 When "torch" backend is used, with the following entries are relevant:
 \itemize{
-\item "smoothing" The smoothing to apply. Either, 'forward', 'backward' or 'both'. Default is 'both'.
-\item "iterates" number of forward/backward iteration of smoothing. Default is 2.
 \item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 \item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
 \item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6

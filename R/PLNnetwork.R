@@ -103,6 +103,6 @@ PLNnetwork_param <- function(
     min_ratio         = min_ratio        ,
     penalize_diagonal = penalize_diagonal,
     penalty_weights   = penalty_weights  ,
-    config_optim      = config_optim     ,
+    config_optim      = config           ,
     inception         = inception       ), class = "PLNmodels_param")
 }

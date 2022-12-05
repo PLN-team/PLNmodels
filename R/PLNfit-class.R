@@ -298,7 +298,6 @@ PLNfit <- R6Class(
                       Theta = self$model_par$Theta,
                       Omega = self$model_par$Omega,
                       control = PLN_param(backend = "nlopt")) {
-
       n <- nrow(responses); p <- ncol(responses)
       args <- list(Y = responses,
                    X = covariates,
@@ -306,8 +305,8 @@ PLNfit <- R6Class(
                    w = weights,
                    ## Initialize the variational parameters with the new dimension of the data
                    init_parameters = list(M = matrix(0, n, p), S = matrix(1, n, p)),
-                   Theta = Theta,
-                   Omega = Omega,
+                   Theta = as.matrix(Theta),
+                   Omega = as.matrix(Omega),
                    configuration = control$config_optim)
       optim_out <- do.call(private$optimizer$vestep, args)
       optim_out
@@ -515,7 +514,7 @@ PLNfit <- R6Class(
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"full"},
     #' @field weights observational weights
-    weights     = function() {attr(private$Ji, "weights")},
+    weights     = function() {as.numeric(attr(private$Ji, "weights"))},
     #' @field loglik (weighted) variational lower bound of the loglikelihood
     loglik     = function() {sum(self$weights[self$weights > .Machine$double.eps] * private$Ji[self$weights > .Machine$double.eps]) },
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
