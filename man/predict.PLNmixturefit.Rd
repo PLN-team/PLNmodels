@@ -39,7 +39,7 @@ Predict either posterior probabilities for each group or latent positions based 
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-           data = trichoptera, control_main = list(iterates = 0))  \%>\% getBestModel()
+           data = trichoptera, control = PLNmixture_param(smoothing = "none"))  \%>\% getBestModel()
 predict(myPLN, trichoptera, "posterior")
 predict(myPLN, trichoptera, "position")
 predict(myPLN, trichoptera, "response")

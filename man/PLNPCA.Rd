@@ -43,5 +43,5 @@ future::plan("sequential")
 }
 }
 \seealso{
-The classes \code{\link{PLNPCAfamily}} and \code{\link{PLNPCAfit}}, and the configuration function \link{'PLNPCA_param()'}.
+The classes \code{\link{PLNPCAfamily}} and \code{\link{PLNPCAfit}}, and the configuration function \code{\link[=PLNPCA_param]{PLNPCA_param()}}.
 }

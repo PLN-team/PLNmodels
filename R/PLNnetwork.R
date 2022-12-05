@@ -17,7 +17,7 @@
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
-#' @seealso The classes [`PLNnetworkfamily`] and [`PLNnetworkfit`], and the and the configuration function ['PLNnetwork_param()'].
+#' @seealso The classes [`PLNnetworkfamily`] and [`PLNnetworkfit`], and the and the configuration function [PLNnetwork_param()].
 #' @importFrom stats model.frame model.matrix model.response model.offset
 #' @export
 PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control = PLNnetwork_param()) {

@@ -25,7 +25,7 @@ isPLNmixturefit <- function(Robject) {inherits(Robject, "PLNmixturefit")}
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#'            data = trichoptera, control = PLNmixture_param(smoothing = "none"))  %>% getBestModel()
 #' \dontrun{
 #' plot(myPLN, "pca")
 #' plot(myPLN, "matrix")
@@ -68,7 +68,7 @@ plot.PLNmixturefit <-
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#'            data = trichoptera, control = PLNmixture_param(smoothing = "none"))  %>% getBestModel()
 #' predict(myPLN, trichoptera, "posterior")
 #' predict(myPLN, trichoptera, "position")
 #' predict(myPLN, trichoptera, "response")
@@ -102,7 +102,7 @@ predict.PLNmixturefit <-
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#'            data = trichoptera, control = PLNmixture_param(smoothing = "none"))  %>% getBestModel()
 #' coef(myPLN) ## Theta - empty here
 #' coef(myPLN, type = "mixture") ## pi
 #' coef(myPLN, type = "means") ## mu
@@ -148,7 +148,7 @@ fitted.PLNmixturefit <- function(object, ...) {
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#'            data = trichoptera, control = PLNmixture_param(smoothing = "none"))  %>% getBestModel()
 #' sigma(myPLN) ## Sigma
 sigma.PLNmixturefit <- function(object, ...) {
   stopifnot(isPLNmixturefit(object))

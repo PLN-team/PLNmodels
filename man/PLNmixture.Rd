@@ -19,8 +19,8 @@ PLNmixture(formula, data, subset, clusters = 1:5, control = PLNmixture_param())
 for details.}
 }
 \value{
-an R6 object with class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}, which contains
-a collection of models with class \code{\link[=PLNmixturefit]{PLNmixturefit}}
+an R6 object with class \code{\link{PLNmixturefamily}}, which contains
+a collection of models with class \code{\link{PLNmixturefit}}
 }
 \description{
 Fit the mixture variants of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
@@ -41,5 +41,5 @@ future::plan("sequential")
 }
 }
 \seealso{
-The classes \code{\link{PLNmixturefamily}}, \code{\link{PLNmixturefit}} and \link{'PLNmixture_param()'}
+The classes \code{\link{PLNmixturefamily}}, \code{\link{PLNmixturefit}} and \code{\link[=PLNmixture_param]{PLNmixture_param()}}
 }

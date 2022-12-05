@@ -28,7 +28,7 @@ or by representing the expected matrix  of count reorder according to the cluste
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-           data = trichoptera, control_main = list(iterates = 0))  \%>\% getBestModel()
+           data = trichoptera, control = PLNmixture_param(smoothing = "none"))  \%>\% getBestModel()
 \dontrun{
 plot(myPLN, "pca")
 plot(myPLN, "matrix")

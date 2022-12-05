@@ -28,7 +28,7 @@
 #' \dontrun{
 #' future::plan("sequential")
 #' }
-#' @seealso The classes [`PLNPCAfamily`] and [`PLNPCAfit`], and the configuration function ['PLNPCA_param()'].
+#' @seealso The classes [`PLNPCAfamily`] and [`PLNPCAfit`], and the configuration function [PLNPCA_param()].
 #' @importFrom stats model.frame model.matrix model.response model.offset
 #' @export
 PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA_param()) {

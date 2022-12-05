@@ -39,5 +39,5 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
 }
 \seealso{
-The classes \code{\link{PLNnetworkfamily}} and \code{\link{PLNnetworkfit}}, and the and the configuration function \link{'PLNnetwork_param()'}.
+The classes \code{\link{PLNnetworkfamily}} and \code{\link{PLNnetworkfit}}, and the and the configuration function \code{\link[=PLNnetwork_param]{PLNnetwork_param()}}.
 }
