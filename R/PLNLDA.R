@@ -48,12 +48,15 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = PLN_param
   args <- extract_model(the_call, parent.frame())
   args$X <- args$X[ , colnames(args$X) != "(Intercept)", drop = FALSE]
 
-  ## Initialize LDA by adjusting a PLN
-  myLDA <- PLNLDAfit$new(grouping, args$Y, args$X, args$O, args$w, args$formula, control)
+  ## Initialize LDA with appropriate covariance model
+  myLDA <- switch(control$covariance,
+    "spherical" = PLNLDAfit_spherical$new(grouping, args$Y, args$X, args$O, args$w, args$formula, control),
+    "diagonal"  = PLNLDAfit_diagonal$new(grouping, args$Y, args$X, args$O, args$w, args$formula, control),
+    PLNLDAfit$new(grouping, args$Y, args$X, args$O, args$w, args$formula, control))
 
   ## Compute the group means
   if (control$trace > 0) cat("\n Performing discriminant Analysis...")
-  myLDA$fit(grouping, args$X)
+  myLDA$optimize(grouping, args$Y, args$X, args$O, args$w, control)
 
   ## Post-treatment: prepare LDA visualization
   myLDA$postTreatment(grouping, args$Y, args$X, args$O)

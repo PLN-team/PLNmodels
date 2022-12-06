@@ -782,34 +782,6 @@ PLNfit_fixedcov <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## END OF TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    # update_loglik = function(weights, Y) {
-    #   KY  <- .5 * self$p - rowSums(.logfactorial(Y))
-    #   S2 <- private$S**2
-    #   Ji <- as.numeric(
-    #     .5 * determinant(private$Omega, logarithm = TRUE)$modulus + KY +
-    #       rowSums(Y * private$Z - private$A + .5 * log(private$S^2) -
-    #                 .5 * ( (private$M %*% private$Omega) * private$M + sweep(private$S^2, 2, diag(private$Omega), '*')))
-    #   )
-    #   attr(Ji, "weights") <- weights
-    #   private$Ji <- Ji
-    # },
-    #
-    # get_objective = function() {
-    #   S2 <- S * S
-    #   Z <- O + M + torch_matmul(X, Theta)
-    #   log_det_Sigma <- switch(configuration$covariance,
-    #                           "spherical" = p * log(sum(torch_matmul(w, M * M + S2)) / (w_bar * p)),
-    #                           "diagonal"  = sum(torch_log(torch_matmul(w, M * M + S2) / w_bar)),
-    #                           { # default value
-    #                             Mw <- torch_matmul(torch_diag(torch_sqrt(w)), M)
-    #                             Sigma <- (torch_matmul(torch_transpose(Mw, 2, 1), Mw) + torch_diag(torch_matmul(w, S2))) / w_bar
-    #                             torch_logdet(Sigma)
-    #                           })
-    #   neg_ELBO <- .5 * w_bar * log_det_Sigma -
-    #     sum(torch_matmul(w , Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
-    #   neg_ELBO
-    # }
   ),
   active = list(
     #' @field nb_param number of parameters in the current PLN model

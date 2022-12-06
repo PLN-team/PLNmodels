@@ -51,10 +51,8 @@ PLNLDAfit <- R6Class(
     ## Creation functions ----------------
     #' @description Initialize a [`PLNLDAfit`] object
     initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
-      covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
-      super$initialize(responses, covariates, offsets, weights, formula, control)
       private$grouping <- grouping
-      super$optimize(responses, covariates, offsets, weights, control$config_optim)
+      super$initialize(responses, cbind(covariates, model.matrix( ~ grouping + 0)), offsets, weights, formula, control)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -63,8 +61,8 @@ PLNLDAfit <- R6Class(
     #' latent space, update corresponding fields
     #' @param X Abundance matrix.
     #' @param covariates design matrix. Automatically built from the covariates and the formula from the call
-    #' @param grouping design matrix for the grouping variable
-    fit = function(grouping, covariates) {
+    optimize = function(grouping, responses, covariates, offsets, weights, control) {
+      super$optimize(responses, cbind(covariates, model.matrix( ~ grouping + 0)), offsets, weights, control$config_optim)
       design_group <- model.matrix( ~ grouping + 0)
       ## extract group means
       if (ncol(covariates) > 0) {
@@ -365,4 +363,177 @@ PLNLDAfit <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  END OF THE CLASS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+)
+
+
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS PLNLDAfit_diagonal
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' An R6 Class to represent a PLNfit in a LDA framework with diagonal covariance
+#'
+#' @description The function [PLNLDA()] produces an instance of an object with class [`PLNLDAfit`].
+#'
+#' This class comes with a set of methods, some of them being useful for the user:
+#' See the documentation for the methods inherited by [PLNfit()], the [plot()] method for
+#' LDA visualization and [predict()] method for prediction
+#'
+#' @param grouping a factor specifying the class of each observation used for discriminant analysis.
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#'
+#' @importFrom R6 R6Class
+#'
+#' @examples
+#' \dontrun{
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLNLDA <- PLNLDA(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "diagonal"))
+#' class(myPLNLDA)
+#' print(myPLNLDA)
+#' }
+PLNLDAfit_diagonal <- R6Class(
+  classname = "PLNLDAfit_diagonal",
+  inherit = PLNLDAfit,
+  public  = list(
+    #' @description Initialize a [`PLNfit`] model
+    initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
+      super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
+      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_diagonal, private$torch_optimize)
+      private$optimizer$vestep <- nlopt_optimize_vestep_diagonal
+    }
+  ),
+  private = list(
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    torch_elbo = function(data, params) {
+      S2 <- torch_pow(params$S, 2)
+      Z <- data$O + params$M + torch_matmul(data$X, params$Theta)
+      res <- .5 * sum(data$w) * sum(torch_log(private$torch_sigma_diag(data, params))) -
+        sum(torch_matmul(data$w , data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+      res
+    },
+
+    torch_sigma_diag = function(data, params) {
+      torch_matmul(data$w, torch_pow(params$M, 2) + torch_pow(params$S,2)) / sum(data$w)
+    },
+
+    torch_Sigma = function(data, params) {
+      torch_diag(private$torch_sigma_diag(data, params))
+    },
+
+    torch_vloglik = function(data, params) {
+      S2 <- torch_pow(params$S, 2)
+      omega_diag <- torch_pow(private$torch_sigma_diag(data, params), -1)
+
+      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
+        .5 * sum(torch_log(omega_diag)) +
+          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
+          .5 * torch_matmul(torch_pow(params$M, 2) + S2, omega_diag)
+      )
+      attr(Ji, "weights") <- as.numeric(data$w)
+      Ji
+    }
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## END OF TORCH METHODS
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ),
+  active = list(
+    #' @field vcov_model character: the model used for the residual covariance
+    vcov_model = function() {"diagonal"}
+  )
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  END OF THE CLASS PLNLDAfit_diagonal
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+)
+
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS PLNLDAfit_spherical
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' An R6 Class to represent a PLNfit in a LDA framework with spherical covariance
+#'
+#' @description The function [PLNLDA()] produces an instance of an object with class [`PLNLDAfit`].
+#'
+#' This class comes with a set of methods, some of them being useful for the user:
+#' See the documentation for the methods inherited by [PLNfit()], the [plot()] method for
+#' LDA visualization and [predict()] method for prediction
+#'
+#' @param grouping a factor specifying the class of each observation used for discriminant analysis.
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#'
+#' @rdname PLNfit_diagonal
+#' @importFrom R6 R6Class
+#'
+#' @examples
+#' \dontrun{
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLNLDA <- PLNLDA(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "spherical"))
+#' class(myPLNLDA)
+#' print(myPLNLDA)
+#' }
+PLNLDAfit_spherical <- R6Class(
+  classname = "PLNLDAfit_spherical",
+  inherit = PLNLDAfit,
+  public  = list(
+    #' @description Initialize a [`PLNfit`] model
+    initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
+      super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
+      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_spherical, private$torch_optimize)
+      private$optimizer$vestep <- nlopt_optimize_vestep_diagonal
+    }
+  ),
+  private = list(
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    torch_elbo = function(data, params) {
+      S2 <- torch_pow(params$S, 2)
+      Z <- data$O + params$M + torch_matmul(data$X, params$Theta)
+      res <- .5 * sum(data$w) * self$p * torch_log(private$torch_sigma2(data, params)) -
+        sum(torch_matmul(data$w , data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+      res
+    },
+
+    torch_sigma2 = function(data, params) {
+      sum(torch_matmul(data$w, torch_pow(params$M, 2) + torch_pow(params$S, 2))) / (sum(data$w) * self$p)
+    },
+
+    torch_Sigma = function(data, params) {
+      torch_eye(self$p) * private$torch_sigma2(data, params)
+    },
+
+    torch_vloglik = function(data, params) {
+      S2 <- torch_pow(params$S, 2)
+      sigma2 <- private$torch_sigma2(data, params)
+      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
+        torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2/sigma2) - .5 * (torch_pow(params$M, 2) + S2)/sigma2, dim = 2)
+      )
+      attr(Ji, "weights") <- as.numeric(data$w)
+      Ji
+    }
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## END OF TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ),
+  active = list(
+    #' @field vcov_model character: the model used for the residual covariance
+    vcov_model = function() {"spherical"}
+  )
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  END OF THE CLASS PLNLDAfit_spherical
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 )
