@@ -48,7 +48,7 @@ The function \code{\link{PLNLDA}}.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-PLNLDAfit-new}{\code{PLNLDAfit$new()}}
-\item \href{#method-PLNLDAfit-fit}{\code{PLNLDAfit$fit()}}
+\item \href{#method-PLNLDAfit-optimize}{\code{PLNLDAfit$optimize()}}
 \item \href{#method-PLNLDAfit-postTreatment}{\code{PLNLDAfit$postTreatment()}}
 \item \href{#method-PLNLDAfit-setVisualization}{\code{PLNLDAfit$setVisualization()}}
 \item \href{#method-PLNLDAfit-plot_individual_map}{\code{PLNLDAfit$plot_individual_map()}}
@@ -63,7 +63,6 @@ The function \code{\link{PLNLDA}}.
 <details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-get_vcov_hat'><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize'><code>PLNmodels::PLNfit$optimize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
@@ -110,21 +109,29 @@ Initialize a \code{\link{PLNLDAfit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNLDAfit-fit"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNLDAfit-fit}{}}}
-\subsection{Method \code{fit()}}{
+\if{html}{\out{<a id="method-PLNLDAfit-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-optimize}{}}}
+\subsection{Method \code{optimize()}}{
 Compute group means and axis of the LDA (noted B in the model) in the
 latent space, update corresponding fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$fit(grouping, covariates)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$optimize(grouping, responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{grouping}}{design matrix for the grouping variable}
+\item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
+
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{covariates}}{design matrix. Automatically built from the covariates and the formula from the call}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
 
 \item{\code{X}}{Abundance matrix.}
 }
