@@ -11,22 +11,22 @@ data(oaks)
 
 ## simple PLN
 system.time(myPLN <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks))
-system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = list(covariance = "diagonal")))
-system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = list(covariance = "spherical")))
+system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
 
 ## Genetic model : mixture between fixed correlation matrix + I sigma^2
-C <- toeplitz(0.5^(1:ncol(oaks$Abundance) - 1))
-system.time(myPLN_genetic <-
-   PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks,
-       control = list(covariance = "genetic", corr_matrix = C)))
+# C <- toeplitz(0.5^(1:ncol(oaks$Abundance) - 1))
+# system.time(myPLN_genetic <-
+#    PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks,
+#        control = list(covariance = "genetic", corr_matrix = C)))
 
 rbind(
   myPLN$criteria,
   myPLN_diagonal$criteria,
-  myPLN_spherical$criteria,
-  myPLN_genetic$criteria
+  myPLN_spherical$criteria
+  # myPLN_genetic$criteria
 ) %>%
-  as.data.frame(row.names = c("full", "diagonal", "spherical", "genetic")) %>%
+  as.data.frame(row.names = c("full", "diagonal", "spherical")) %>%
   knitr::kable()
 
 ## Discriminant Analysis with LDA
@@ -34,12 +34,12 @@ myLDA_tree <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data 
 plot(myLDA_tree)
 plot(myLDA_tree, "individual")
 
-myLDA_tree_diagonal <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = list(covariance = "diagonal"))
+myLDA_tree_diagonal <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "diagonal"))
 plot(myLDA_tree_diagonal)
 otu.family <- factor(rep(c("fungi", "E. aphiltoides", "bacteria"), c(47, 1, 66)))
 plot(myLDA_tree, "variable", var_cols = otu.family) ## TODO: add color for arrows to check
 
-myLDA_tree_spherical <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = list(covariance = "spherical"))
+myLDA_tree_spherical <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "spherical"))
 plot(myLDA_tree_spherical)
 
 ## One dimensional check of plot
@@ -73,9 +73,10 @@ factoextra::fviz_pca_ind(myPLNPCA_tree, axes = c(1,2), col.ind = oaks$distTOgrou
 factoextra::fviz_pca_var(myPLNPCA_tree, axes = c(1,2), select.var = list(contrib = 10))
 
 ## Network inference with sparce covariance estimation
-system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control_main = list(trace = 2)))
-stability_selection(myPLNnets)
-plot(getBestModel(myPLNnets, "StARS", stability = .975))
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(trace = 2)))
+plot(myPLNnets)
+# stability_selection(myPLNnets)
+# plot(getBestModel(myPLNnets, "StARS", stability = .975))
 
 ## Mixture model to recover tree structure
 system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5))
