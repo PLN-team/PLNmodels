@@ -182,6 +182,7 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
 }
 
 # Internal function
+#' @importFrom stats rnorm
 create_parameters <- function(
     n = 200,
     p = 50,

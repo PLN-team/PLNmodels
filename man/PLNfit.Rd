@@ -109,7 +109,7 @@ Initialize a \code{\link{PLNfit}} model
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
-\item{\code{control}}{a list-like structure for controlling the fit, see \link{'PLN_param()'}.}
+\item{\code{control}}{a list-like structure for controlling the fit, see \code{\link[=PLN_param]{PLN_param()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -220,7 +220,7 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 
 \item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
 
-\item{\code{control}}{a list-like structure for controlling the fit, see \link{'PLN_param()'}.}
+\item{\code{control}}{a list-like structure for controlling the fit, see \code{\link[=PLN_param]{PLN_param()}}.}
 
 \item{\code{Sigma}}{variance-covariance matrix of the latent variables}
 }

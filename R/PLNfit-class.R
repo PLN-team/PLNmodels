@@ -14,7 +14,7 @@
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
-#' @param control a list-like structure for controlling the fit, see ['PLN_param()'].
+#' @param control a list-like structure for controlling the fit, see [PLN_param()].
 #' @param config part of the \code{control} argument which configures the optimizer
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param Theta matrix of regression matrix

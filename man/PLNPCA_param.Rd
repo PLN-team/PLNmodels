@@ -21,10 +21,6 @@ PLNPCA_param(
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.}
-
-\item{covariance}{character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "genetic". Default is "full".}
-
-\item{Omega}{precision matrix of the latent variables. Inverse of Sigma. Must be specified if \code{covariance} is "fixed"}
 }
 \value{
 list of parameters configuring the fit.
