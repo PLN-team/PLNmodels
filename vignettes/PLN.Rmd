@@ -213,7 +213,7 @@ myPLN_weighted <-
     Abundance ~ 1,
     data    = trichoptera,
     weights = runif(nrow(trichoptera)),
-    control = list(trace = 0)
+    control = PLN_param(trace = 0)
   )
 data.frame(
   unweighted = as.vector(fitted(myPLN)),
@@ -251,7 +251,7 @@ For ecological count data, it is generally a good advice to include the sampling
 ```{r PLN offset}
 myPLN_offsets <- 
   PLN(Abundance ~ 1 + offset(log(Offset)), 
-      data = trichoptera, control = list(trace = 0))
+      data = trichoptera, control = PLN_param(trace = 0))
 ```
 
 Note that we use the function `offset` with a log-transform of the total counts since it acts in the latent layer of the model. Obviously the model with offsets is better since the log-likelihood is higher with the same number of parameters^[In **PLNmodels** the R-squared is a pseudo-R-squared that can only be trusted between model where the same offsets term was used]:
@@ -285,7 +285,7 @@ It is possible to change a bit the parametrization used for modeling the residua
 myPLN_spherical <-
   PLN(
     Abundance ~ 1 + offset(log(Offset)),
-    data = trichoptera, control = list(covariance = "spherical", trace = 0)
+    data = trichoptera, control = PLN_param(covariance = "spherical", trace = 0)
   )
 ```
 
@@ -294,7 +294,7 @@ myPLN_spherical <-
 myPLN_diagonal <-
   PLN(
     Abundance ~ 1 + offset(log(Offset)),
-    data = trichoptera, control = list(covariance = "diagonal", trace = 0)
+    data = trichoptera, control = PLN_param(covariance = "diagonal", trace = 0)
   )
 ```
 
@@ -303,7 +303,7 @@ Note that, by default, the model chosen is `covariance = "spherical"`, so that t
 myPLN_default <-
   PLN(Abundance ~ 1, data = trichoptera, )
 myPLN_full <-
-  PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "full"))
+  PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "full"))
 ```
 
 Different covariance models can then be compared with the usual criteria: it seems that the gain brought by passing from a diagonal matrix to a fully parameterized covariance is not worth having so many additional parameters:
@@ -324,7 +324,7 @@ A final model that we can try is the diagonal one with the wind as a covariate, 
 myPLN_final <-
   PLN(
     Abundance ~ 1 + Wind + offset(log(Offset)),
-    data    = trichoptera, control = list(covariance = "diagonal", trace = 0)
+    data    = trichoptera, control = PLN_param(covariance = "diagonal", trace = 0)
   )
 rbind(
   myPLN_wind$criteria,

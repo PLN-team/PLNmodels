@@ -11,6 +11,7 @@
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
+#' @param config part of the \code{control} argument which configures the optimizer
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param Theta matrix of regression matrix
 #' @param Sigma variance-covariance matrix of the latent variables
@@ -42,6 +43,13 @@ PLNPCAfit <- R6Class(
     classname = "PLNPCAfit",
     inherit = PLNfit,
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE MEMBERS ----
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    private = list(
+      B     = NULL,
+      svdBM = NULL
+    ),
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PUBLIC MEMBERS ----
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     public  = list(
@@ -50,6 +58,8 @@ PLNPCAfit <- R6Class(
       #' @description Initialize a [`PLNPCAfit`] object
       initialize = function(rank, responses, covariates, offsets, weights, formula, control) {
         super$initialize(responses, covariates, offsets, weights, formula, control)
+        private$optimizer$main   <- nlopt_optimize_rank
+        private$optimizer$vestep <- nlopt_optimize_vestep_rank
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {
@@ -59,7 +69,6 @@ PLNPCAfit <- R6Class(
         private$M  <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
         private$S  <- matrix(0.1, self$n, rank)
         private$B  <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
-        private$covariance <- "rank"
       },
       #' @description Update a [`PLNPCAfit`] object
       #' @param M     matrix of mean vectors for the variational approximation
@@ -79,37 +88,16 @@ PLNPCAfit <- R6Class(
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Optimization ----------------------
       #' @description Call to the C++ optimizer and update of the relevant fields
-      optimize = function(responses, covariates, offsets, weights, control) {
-        ## CALL TO NLOPT OPTIMIZATION WITH BOX CONSTRAINT
-        opts <- control
-        opts$xtol_abs <- list(Theta = 0, B = 0, M = 0, S = control$xtol_abs)
-        optim_out <- cpp_optimize_rank(
-          list(
-            Theta = private$Theta,
-            B = private$B,
-            M = private$M,
-            S = private$S
-          ),
-          responses, covariates, offsets, weights, opts
-        )
-
-        Ji <- optim_out$loglik
-        attr(Ji, "weights") <- weights
-        self$update(
-          B     = optim_out$B,
-          Theta = optim_out$Theta,
-          Sigma = optim_out$Sigma,
-          Omega = optim_out$Omega,
-          M     = optim_out$M,
-          S     = optim_out$S,
-          A     = optim_out$A,
-          Z     = optim_out$Z,
-          Ji    = Ji,
-          monitoring = list(
-            iterations = optim_out$iterations,
-            status     = optim_out$status,
-            message    = status_to_message_nlopt(optim_out$status))
-        )
+      optimize = function(responses, covariates, offsets, weights, config) {
+        args <- list(Y = responses,
+                     X = covariates,
+                     O = offsets,
+                     w = weights,
+                     init_parameters = list(Theta = private$Theta, B = private$B,
+                                            M = private$M, S = private$S),
+                     configuration = config)
+        optim_out <- do.call(private$optimizer$main, args)
+        do.call(self$update, optim_out)
       },
 
       #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (B, Theta). Intended to position new data in the latent space for further use with PCA.
@@ -117,20 +105,15 @@ PLNPCAfit <- R6Class(
       #'  * the matrix `M` of variational means,
       #'  * the matrix `S2` of variational variances
       #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
-      VEstep = function(covariates, offsets, responses, weights = rep(1, nrow(responses)), control = list()) {
+      optimize_vestep = function(covariates, offsets, responses, weights = rep(1, self$n),
+                                 control = PLNPCA_param(backend = "nlopt")) {
 
         # problem dimension
-        n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates); q <- self$rank
+        n <- nrow(responses); p <- ncol(responses); q <- self$rank
 
         # turn offset vector to offset matrix
         offsets <- as.matrix(offsets)
         if (ncol(offsets) == 1) offsets <- matrix(offsets, nrow = n, ncol = p)
-
-        ## define default control parameters for optim and overwrite by user defined parameters
-        control$covariance <- self$vcov_model
-        control <- PLN_param(control, n, p)
-
-        VEstep_optimizer  <- cpp_optimize_vestep_rank
 
         ## Not completely naive starting values for M: SVD on the residuals of
         ## a linear regression on the log-counts (+1 to deal with 0s)
@@ -140,28 +123,17 @@ PLNPCAfit <- R6Class(
         M_init <- svd_residuals$u[, 1:q, drop = FALSE] %*% diag(svd_residuals$d[1:q], nrow = q, ncol = q) %*% t(svd_residuals$v[1:q, 1:q, drop = FALSE])
 
         ## Initialize the variational parameters with the appropriate new dimension of the data
-        optim_out <- VEstep_optimizer(
-          list(
-            ## M = matrix(0, n, q),
-            M = M_init,
-            S = matrix(sqrt(0.1), n, q)
-          ),
-          responses,
-          covariates,
-          offsets,
-          weights,
-          Theta = self$model_par$Theta,
-          B = self$model_par$B,
-          control
-        )
-
-        Ji <- optim_out$loglik
-        attr(Ji, "weights") <- weights
-
-        ## output
-        list(M       = optim_out$M,
-             S2      = (optim_out$S)**2,
-             log.lik = setNames(Ji, rownames(responses)))
+        args <- list(Y = responses,
+                     X = covariates,
+                     O = offsets,
+                     w = weights,
+                     ## Initialize the variational parameters with the new dimension of the data
+                     init_parameters = list(M = M_init, S = matrix(1, n, q)),
+                     Theta = private$Theta,
+                     B     = private$B,
+                     configuration = control$config_optim)
+        optim_out <- do.call(private$optimizer$vestep, args)
+        optim_out
       },
 
       #' @description Project new samples into the PCA space using one VE step
@@ -170,13 +142,13 @@ PLNPCAfit <- R6Class(
       #' @param envir Environment in which the projection is evaluated
       #' @return
       #'  * the named matrix of scores for the newdata, expressed in the same coordinate system as `self$scores`
-      project = function(newdata, control = list(), envir = parent.frame()) {
+      project = function(newdata, control = PLNPCA_param(), envir = parent.frame()) {
 
         ## Extract the model matrices from the new data set with initial formula
         args <- extract_model(call("PLNPCA", formula = private$formula, data = newdata), envir)
 
         ## Compute latent positions of the new samples
-        M <- self$VEstep(covariates = args$X, offsets = args$O, responses = args$Y,
+        M <- self$optimize_vestep(covariates = args$X, offsets = args$O, responses = args$Y,
                             weights = args$w, control = control)$M
         latent_pos <- t(tcrossprod(self$model_par$B, M)) %>% scale(center = TRUE, scale = FALSE)
 
@@ -329,19 +301,13 @@ PLNPCAfit <- R6Class(
     ),
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## PRIVATE MEMBERS ----
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    private = list(
-      B     = NULL,
-      svdBM = NULL
-    ),
-
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ##  ACTIVE BINDINGS ----
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     active = list(
       #' @field rank the dimension of the current model
       rank = function() {self$q},
+      #' @field vcov_model character: the model used for the residual covariance
+      vcov_model = function() {"rank"},
       #' @field nb_param number of parameters in the current PLN model
       nb_param = function() {self$p * (self$d + self$q) - self$q * (self$q - 1)/2},
       #' @field entropy entropy of the variational distribution

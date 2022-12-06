@@ -48,7 +48,7 @@ The function \code{\link{PLNLDA}}.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-PLNLDAfit-new}{\code{PLNLDAfit$new()}}
-\item \href{#method-PLNLDAfit-optimize}{\code{PLNLDAfit$optimize()}}
+\item \href{#method-PLNLDAfit-fit}{\code{PLNLDAfit$fit()}}
 \item \href{#method-PLNLDAfit-postTreatment}{\code{PLNLDAfit$postTreatment()}}
 \item \href{#method-PLNLDAfit-setVisualization}{\code{PLNLDAfit$setVisualization()}}
 \item \href{#method-PLNLDAfit-plot_individual_map}{\code{PLNLDAfit$plot_individual_map()}}
@@ -62,16 +62,13 @@ The function \code{\link{PLNLDA}}.
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-VEstep'><code>PLNmodels::PLNfit$VEstep()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-get_vcov_hat'><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_nlopt"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_nlopt'><code>PLNmodels::PLNfit$optimize_nlopt()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_torch"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_torch'><code>PLNmodels::PLNfit$optimize_torch()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize'><code>PLNmodels::PLNfit$optimize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_sandwich"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_sandwich'><code>PLNmodels::PLNfit$vcov_sandwich()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_wald"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-vcov_wald'><code>PLNmodels::PLNfit$vcov_wald()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -113,13 +110,13 @@ Initialize a \code{\link{PLNLDAfit}} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNLDAfit-optimize"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNLDAfit-optimize}{}}}
-\subsection{Method \code{optimize()}}{
+\if{html}{\out{<a id="method-PLNLDAfit-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-fit}{}}}
+\subsection{Method \code{fit()}}{
 Compute group means and axis of the LDA (noted B in the model) in the
 latent space, update corresponding fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$optimize(grouping, covariates, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$fit(grouping, covariates)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -128,8 +125,6 @@ latent space, update corresponding fields
 \item{\code{grouping}}{design matrix for the grouping variable}
 
 \item{\code{covariates}}{design matrix. Automatically built from the covariates and the formula from the call}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
 
 \item{\code{X}}{Abundance matrix.}
 }
@@ -275,7 +270,7 @@ Predict group of new samples
   type = c("posterior", "response", "scores"),
   scale = c("log", "prob"),
   prior = NULL,
-  control = list(),
+  control = PLN_param(backend = "nlopt"),
   envir = parent.frame()
 )}\if{html}{\out{</div>}}
 }

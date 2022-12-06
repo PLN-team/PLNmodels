@@ -172,8 +172,7 @@ We fit a collection of $K=5$ models with one iteration of forward smoothing of t
 mixture_models <- PLNmixture(
   Abundance ~ 1 + offset(log(Offset)),
   data  = trichoptera,
-  clusters = 1:5,
-  control_main = list(smoothing = "forward", iterates = 1)
+  clusters = 1:4
 )
 ```
 

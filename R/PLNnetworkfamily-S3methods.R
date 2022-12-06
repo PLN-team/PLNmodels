@@ -111,7 +111,7 @@ coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
 #' stability_selection(nets, subsamples = subs)
 #' }
 #' @export
-stability_selection <- function(Robject, subsamples = NULL, control = list(), force = FALSE) {
+stability_selection <- function(Robject, subsamples = NULL, control = PLNnetwork_param(), force = FALSE) {
   stopifnot(isPLNnetworkfamily(Robject))
   if (force || anyNA(Robject$stability)) {
     Robject$stability_selection(subsamples, control)

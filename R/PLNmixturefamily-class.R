@@ -120,15 +120,14 @@ PLNmixturefamily <-
         private$params  <- clusters
         private$formula <- formula
 
-        myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control)
-        myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control)
-
-        Sbar <- rowSums(myPLN$var_par$S2)
-        D <- sqrt(as.matrix(dist(myPLN$var_par$M)^2) + outer(Sbar,rep(1,myPLN$n)) + outer(rep(1, myPLN$n), Sbar))
-
-        if (is.numeric(control$init_cl)) {
+        ## Default clustering is obtained by performing kmeans or CAH on the variational parameters of the means of a fully parametrized PLN
+        if (is.numeric(control$config_optim$init_cl)) {
           clusterings <- control$init_cl
         } else if (is.character(control$init_cl)) {
+          myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control)
+          myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control$config_optim)
+          Sbar <- rowSums(myPLN$var_par$S2)
+          D <- sqrt(as.matrix(dist(myPLN$var_par$M)^2) + outer(Sbar,rep(1,myPLN$n)) + outer(rep(1, myPLN$n), Sbar))
           clusterings <-switch(control$init_cl,
             "kmeans"  = lapply(clusters, function(k) kmeans(D, centers = k, nstart = 30)$cl),
             "ward.D2" = D %>% as.dist() %>% hclust(method = "ward.D2") %>% cutree(clusters) %>% as.data.frame() %>% as.list()
@@ -138,7 +137,9 @@ PLNmixturefamily <-
           clusterings %>%
             map(as_indicator) %>%
             map(.check_boundaries) %>%
-            map(function(Z) PLNmixturefit$new(responses, covariates, offsets, Z, formula, control))
+            map(function(Z) {
+              PLNmixturefit$new(responses, covariates, offsets, Z, formula, control)}
+            )
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Optimization ----------------------
@@ -163,7 +164,7 @@ PLNmixturefamily <-
       #' @param control a list to control the smoothing process
       smooth = function(control) {
         if (control$trace > 0) control$trace <- TRUE else control$trace <- FALSE
-        for (i in seq_len(control$iterates)) {
+        for (i in seq_len(control$config_optim$it_smooth)) {
           if (control$smoothing %in% c('backward', 'both')) private$smooth_backward(control)
           if (control$smoothing %in% c('forward' , 'both')) private$smooth_forward(control)
         }

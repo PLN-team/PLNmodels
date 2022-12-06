@@ -29,7 +29,6 @@
 #' @param plot logical. Should the plot be displayed or sent back as ggplot object
 #' @param main character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.
 #'
-#'
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
 #' @examples
@@ -55,7 +54,7 @@ PLNLDAfit <- R6Class(
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$grouping <- grouping
-      super$optimize(responses, covariates, offsets, weights, control)
+      super$optimize(responses, covariates, offsets, weights, control$config_optim)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -65,7 +64,7 @@ PLNLDAfit <- R6Class(
     #' @param X Abundance matrix.
     #' @param covariates design matrix. Automatically built from the covariates and the formula from the call
     #' @param grouping design matrix for the grouping variable
-    optimize = function(grouping, covariates, control) {
+    fit = function(grouping, covariates) {
       design_group <- model.matrix( ~ grouping + 0)
       ## extract group means
       if (ncol(covariates) > 0) {
@@ -221,7 +220,7 @@ PLNLDAfit <- R6Class(
                        type = c("posterior", "response", "scores"),
                        scale = c("log", "prob"),
                        prior = NULL,
-                       control = list(), envir = parent.frame()) {
+                       control = PLN_param(backend="nlopt"), envir = parent.frame()) {
 
       type <- match.arg(type)
 
@@ -254,8 +253,8 @@ PLNLDAfit <- R6Class(
       for (k in 1:K) { ## One VE-step to estimate the conditional (variational) likelihood of each group
         grouping <- factor(rep(groups[k], n.new), levels = groups)
         X <- cbind(args$X, model.matrix( ~ grouping + 0))
-        ve_step <- self$VEstep(X, args$O, args$Y, args$w, control = control)
-        cond.log.lik[, k] <- ve_step$log.lik
+        ve_step <- self$optimize_vestep(X, args$O, args$Y, args$w, control = control)
+        cond.log.lik[, k] <- ve_step$Ji
         if (type == "scores") {
           latent_pos[ , k, ] <- ve_step$M + rep(1, n.new) %o% self$group_means[, k]
         }

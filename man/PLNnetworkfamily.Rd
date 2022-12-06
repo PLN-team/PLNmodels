@@ -123,7 +123,10 @@ Call to the C++ optimizer on all models of the collection
 \subsection{Method \code{stability_selection()}}{
 Compute the stability path by stability selection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$stability_selection(subsamples = NULL, control = list())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$stability_selection(
+  subsamples = NULL,
+  control = PLNnetwork_param()
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

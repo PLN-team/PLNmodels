@@ -1,11 +1,11 @@
 data("oaks")
 system.time(myPLN_torch <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "torch"))
+                  data = oaks, control = PLN_param(backend = "torch"))
 )
 system.time(myPLN_nlopt <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "nlopt"))
+                  data = oaks, control = PLN_param(backend = "nlopt"))
 )
 
 x11()
@@ -23,11 +23,11 @@ myPLN_nlopt$loglik
 
 system.time(myPLN_torch <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "torch", covariance = "spherical"))
+                  data = oaks, control = PLN_param(backend = "torch", covariance = "spherical"))
 )
 system.time(myPLN_nlopt <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "nlopt", covariance = "spherical"))
+                  data = oaks, control = PLN_param(backend = "nlopt", covariance = "spherical"))
 )
 plot(myPLN_torch$model_par$Theta,
      myPLN_nlopt$model_par$Theta); abline(0, 1)
@@ -38,11 +38,11 @@ myPLN_nlopt$loglik
 
 system.time(myPLN_torch <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "torch", covariance = "diagonal"))
+                  data = oaks, control = PLN_param(backend = "torch", covariance = "diagonal"))
 )
 system.time(myPLN_nlopt <-
               PLN(Abundance ~ 1  + offset(log(Offset)),
-                  data = oaks, control = list(backend = "nlopt", covariance = "diagonal"))
+                  data = oaks, control = PLN_param(backend = "nlopt", covariance = "diagonal"))
 )
 plot(myPLN_torch$model_par$Theta,
      myPLN_nlopt$model_par$Theta); abline(0, 1)
@@ -158,3 +158,26 @@ myPLN_torch$loglik
 myPLN_nlopt$loglik
 
 
+params <- PLNmodels:::create_parameters()
+Theta <- params$Theta
+## Extract X
+X <- params$X
+## Extract Y
+Y <- rPLN(n = nrow(X), mu = tcrossprod(X, Theta), Sigma = params$Sigma, depths = params$depths)
+data <- prepare_data(Y, X, offset = "none")
+O <- rowSums(Y)
+myPLN_nlopt <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data,
+             control = PLN_param(backend = "nlopt", covariance = "fixed", Omega = solve(params$Sigma)))
+myPLN_torch <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data,
+             control = PLN_param(backend = "torch", covariance = "fixed", Omega = solve(params$Sigma)))
+par(mfrow = c(2,2))
+plot(myPLN_torch$model_par$Theta,
+     myPLN_nlopt$model_par$Theta); abline(0, 1)
+plot(myPLN_torch$model_par$Sigma,
+     myPLN_nlopt$model_par$Sigma); abline(0, 1)
+plot(myPLN_torch$var_par$M,
+     myPLN_nlopt$var_par$M); abline(0, 1)
+plot(myPLN_torch$var_par$S2,
+     myPLN_nlopt$var_par$S2); abline(0, 1)
+myPLN_torch$loglik
+myPLN_nlopt$loglik

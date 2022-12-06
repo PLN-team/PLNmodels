@@ -62,10 +62,10 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_true(inherits(myPLNfit$plot_PCA(plot = FALSE), "grob"))
 
   ## R6 methods: VEstep
-  ve_results <- myPLNfit$VEstep(covariates = X, offsets = O, responses = Y)
+  ve_results <- myPLNfit$optimize_vestep(covariates = X, offsets = O, responses = Y)
   expect_equal(dim(ve_results$M), c(n, myPLNfit$rank))
-  expect_equal(dim(ve_results$S2), c(n, myPLNfit$rank))
-  expect_length(ve_results$log.lik, n)
+  expect_equal(dim(ve_results$S), c(n, myPLNfit$rank))
+  expect_length(ve_results$Ji, n)
   expect_equal(ve_results$M, unname(myPLNfit$var_par$M), tolerance = 1e-1)
   ## R6 methods: project()
   scores <- myPLNfit$project(newdata = trichoptera)

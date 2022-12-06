@@ -6,18 +6,18 @@ data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance[1:20, 1:5], trichoptera$Covariate[1:20, ])
 
 mix_wt <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:3, data = trichoptera,
-                      control_main = list(iterates = 0))
+                      control = PLNmixture_param(smoothing = "none"))
 mix_wo <- PLNmixture(Abundance ~ 0 + offset(log(Offset)), clusters = 1:3, data = trichoptera,
-                     control_main = list(iterates = 0))
+                     control = PLNmixture_param(smoothing = "none"))
 
 models_sphr <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:3, data = trichoptera,
-                          control_main = list(covariance = "spherical", iterates = 0))
+                          control = PLNmixture_param(covariance = "spherical", smoothing = "none"))
 
 models_diag <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:3, data = trichoptera,
-                       control_main = list(covariance = "diagonal", iterates = 0))
+                          control = PLNmixture_param(covariance = "diagonal", smoothing = "none"))
 
 models_full <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:3, data = trichoptera,
-                       control_main = list(covariance = "full", iterates = 0))
+                          control = PLNmixture_param(covariance = "full", smoothing = "none"))
 
 n <- nrow(trichoptera$Abundance)
 p <- ncol(trichoptera$Abundance)
@@ -178,7 +178,6 @@ test_that("Diagonal model of the covariance is working", {
    expect_equal(length(model$mixtureParam), k)
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
-   expect_lt(model$ICL, model$loglik)
    expect_gt(model$R_squared, 0)
    expect_equal(model$nb_param, p * d + (k - 1) + 2 * k * p)
 
@@ -254,7 +253,6 @@ test_that("Full model of the covariance is working", {
    expect_equal(length(model$mixtureParam), k)
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
-   expect_lt(model$ICL, model$loglik)
    expect_gt(model$R_squared, 0)
    expect_equal(model$nb_param, p * d + (k - 1) + k * (p + p * (p + 1) / 2) )
 
@@ -297,15 +295,15 @@ test_that("Full model of the covariance is working", {
 
 models_sphr_cov <- PLNmixture(Abundance ~ 1 + Precipitation + offset(log(Offset)),
                               clusters = 1:3, data = trichoptera,
-                              control_main = list(covariance = "spherical", iterates = 0))
+                              control = PLNmixture_param(covariance = "spherical", smoothing = "none"))
 
 models_diag_cov <- PLNmixture(Abundance ~ 1 + Precipitation + offset(log(Offset)),
                               clusters = 1:3, data = trichoptera,
-                       control_main = list(covariance = "diagonal", iterates = 0))
+                              control = PLNmixture_param(covariance = "diagonal", smoothing = "none"))
 
 models_full_cov <- PLNmixture(Abundance ~ 1 + Precipitation + offset(log(Offset)),
                               clusters = 1:3, data = trichoptera,
-                       control_main = list(covariance = "full", iterates = 0))
+                              control = PLNmixture_param(covariance = "full", smoothing = "none"))
 d <- 1
 
 model  <- getModel(models_sphr_cov, k)
@@ -399,7 +397,6 @@ test_that("Diagonal model of the covariance is working with covariate", {
    expect_equal(length(model$mixtureParam), k)
    expect_equal(sum(model$loglik_vec), model$loglik)
    expect_lt(model$BIC, model$loglik)
-   expect_lt(model$ICL, model$loglik)
    expect_gt(model$R_squared, 0)
    expect_equal(model$nb_param, p * d + (k - 1) + k * (p + p) )
 

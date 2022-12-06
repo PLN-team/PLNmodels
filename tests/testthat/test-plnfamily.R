@@ -11,8 +11,7 @@ test_that("PLNfamily: main function, field access and methods", {
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
 
   ## extract the data matrices and weights
-  ctrl_init <- PLNmodels:::PLN_param(list(), nrow(Y), ncol(Y))
-  ctrl_main <- PLNmodels:::PLNPCA_param(list())
+  ctrl <- PLNmodels:::PLN_param()
 
   ## Simple PLN models
   model1 <- PLN(Abundance ~ 1, data = trichoptera)
@@ -23,7 +22,7 @@ test_that("PLNfamily: main function, field access and methods", {
                                      covariates = unname(X),
                                      offsets = NULL,
                                      weights = NULL,
-                                     control = ctrl_init)
+                                     control = ctrl)
   ## Set params (hacky)
   models$.__enclos_env__$private$params <- c(0.1, 3)
   models$models <- list(model1, model2)

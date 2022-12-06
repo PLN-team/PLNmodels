@@ -12,19 +12,19 @@
 // Fixed inverse covariance (Omega)
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_fixed(
+Rcpp::List nlopt_optimize_fixed(
     const Rcpp::List & init_parameters, // List(Theta, M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)
     const arma::mat & O,                // offsets (n,p)
     const arma::vec & w,                // weights (n)
-    const arma::mat & Omega,            // covinv (p,p)
     const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
     const auto init_Theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,p)
+    const auto  Omega = Rcpp::as<arma::mat>(init_parameters["Omega"]);   // covinv (p,p)
 
     const auto metadata = tuple_metadata(init_Theta, init_M, init_S);
     enum { THETA_ID, M_ID, S_ID }; // Names for metadata indexes
@@ -80,15 +80,22 @@ Rcpp::List cpp_optimize_fixed(
     arma::mat loglik = sum(Y % Z - A - 0.5 * ((M * Omega) % M - log(S2) + S2 * diagmat(Omega)), 1) +
                        0.5 * real(log_det(Omega)) + ki(Y);
 
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
     return Rcpp::List::create(
-        Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", result.nb_iterations),
-        Rcpp::Named("Theta", Theta),
-        Rcpp::Named("M", M),
-        Rcpp::Named("S", S),
-        Rcpp::Named("Z", Z),
-        Rcpp::Named("A", A),
-        Rcpp::Named("Sigma", Sigma),
-        Rcpp::Named("loglik", loglik));
+      Rcpp::Named("Theta", Theta),
+      Rcpp::Named("M", M),
+      Rcpp::Named("S", S),
+      Rcpp::Named("Z", Z),
+      Rcpp::Named("A", A),
+      Rcpp::Named("Sigma", Sigma),
+      Rcpp::Named("Omega", Omega),
+      Rcpp::Named("Ji", Ji),
+      Rcpp::Named("monitoring", Rcpp::List::create(
+          Rcpp::Named("status", static_cast<int>(result.status)),
+          Rcpp::Named("backend", "nlopt"),
+          Rcpp::Named("iterations", result.nb_iterations)
+      ))
+    );
 }
 

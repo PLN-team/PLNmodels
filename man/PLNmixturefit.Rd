@@ -156,7 +156,7 @@ Predict group of new samples
   newdata,
   type = c("posterior", "response", "position"),
   prior = matrix(rep(1/self$k, self$k), nrow(newdata), self$k, byrow = TRUE),
-  control = list(),
+  control = PLNmixture_param(),
   envir = parent.frame()
 )}\if{html}{\out{</div>}}
 }
@@ -173,7 +173,7 @@ with weights equal to the posterior probabilities.}
 
 \item{\code{prior}}{User-specified prior group probabilities in the new data. The default uses a uniform prior.}
 
-\item{\code{control}}{a list for controlling the optimization. See \code{\link[=PLN]{PLN()}} for details.}
+\item{\code{control}}{a list-like structure for controlling the fit. See \code{\link[=PLNmixture_param]{PLNmixture_param()}} for details.}
 
 \item{\code{envir}}{Environment in which the prediction is evaluated}
 }

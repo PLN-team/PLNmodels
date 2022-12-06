@@ -1,3 +1,43 @@
+available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR2")
+
+config_default_nlopt <-
+  list(
+    algorithm     = "CCSAQ"  ,
+    maxeval       = 10000    ,
+    ftol_rel      = 1e-8     ,
+    xtol_rel      = 1e-6     ,
+    ftol_abs      = 0.0      ,
+    xtol_abs      = 0.0      ,
+    maxtime       = -1
+  )
+
+config_default_torch <-
+  list(
+    maxeval       = 10000    ,
+    ftol_rel      = 1e-8     ,
+    xtol_rel      = 1e-6     ,
+    learning_rate = 0.1      ,
+    trace         = 1
+  )
+
+status_to_message <- function(status) {
+  message <- switch(as.character(status),
+                    "1"  = "success",
+                    "2"  = "success, stopval was reached",
+                    "3"  = "success, ftol_rel or ftol_abs was reached",
+                    "4"  = "success, xtol_rel or xtol_abs was reached",
+                    "5"  = "success, maxeval was reached",
+                    "6"  = "success, maxtime was reached",
+                    "-1" = "failure",
+                    "-2" = "invalid arguments",
+                    "-3" = "out of memory.",
+                    "-4" = "roundoff errors led to a breakdown of the optimization algorithm",
+                    "-5" = "forced termination:",
+                    "Return status not recognized"
+  )
+  message
+}
+
 trace <- function(x) sum(diag(x))
 
 .xlogx <- function(x) ifelse(x < .Machine$double.eps, 0, x*log(x))
@@ -141,3 +181,23 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
   Y
 }
 
+# Internal function
+#' @importFrom stats rnorm
+create_parameters <- function(
+    n = 200,
+    p = 50,
+    d = 2,
+    rho = 0.2,
+    sigma = 1,
+    depths = 100000,
+    ...
+) {
+  ## Sigma chosen to achieve a given snr
+  list(n      = n,
+       p      = p,
+       X      = matrix(rnorm(n*d), nrow = n, ncol = d,
+                       dimnames = list(paste0("S", 1:n), paste0("Var_", 1:d))),
+       Theta  = matrix(rnorm(n = p*d, sd = 1/sqrt(d)), nrow = p, ncol = d),
+       Sigma  = sigma * toeplitz(x = rho^seq(0, p-1)),
+       depths = depths)
+}

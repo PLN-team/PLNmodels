@@ -33,7 +33,7 @@
 #' @seealso The function [PLNnetwork()], the class [`PLNnetworkfamily`]
 PLNnetworkfit <- R6Class(
   classname = "PLNnetworkfit",
-  inherit = PLNfit,
+  inherit = PLNfit_fixedcov,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,9 +42,9 @@ PLNnetworkfit <- R6Class(
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
     initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control) {
+      stopifnot(isSymmetric(penalty_weights), all(penalty_weights > 0))
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$lambda <- penalty
-      stopifnot(isSymmetric(penalty_weights), all(penalty_weights > 0))
       private$rho    <- penalty_weights
       if (!control$penalize_diagonal) diag(private$rho) <- 0
     },
@@ -69,55 +69,44 @@ PLNnetworkfit <- R6Class(
     #' @description Call to the C++ optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, control) {
       cond <- FALSE; iter <- 0
-      objective   <- numeric(control$maxit_out)
-      convergence <- numeric(control$maxit_out)
+      objective   <- numeric(control$config_optim$maxit_out)
+      convergence <- numeric(control$config_optim$maxit_out)
       ## start from the standard PLN at initialization
-      par0  <- list(Theta = private$Theta, M = private$M, S = private$S)
       objective.old <- -self$loglik
+      args <- list(Y = responses,
+                   X = covariates,
+                   O = offsets,
+                   w = weights,
+                   init_parameters = list(Theta = private$Theta, M = private$M, S = private$S),
+                   configuration = control$config_optim)
       while (!cond) {
         iter <- iter + 1
         if (control$trace > 1) cat("", iter)
-
-        ## CALL TO GLASSO TO UPDATE Omega/Sigma
-        Sigma_var <- crossprod(par0$M)/self$n + diag(colMeans(par0$S**2), nrow = self$p)
-        glasso_out <- glassoFast::glassoFast(Sigma_var, rho = self$penalty * self$penalty_weights)
+        ## CALL TO GLASSO TO UPDATE Omega
+        glasso_out <- glassoFast::glassoFast(private$Sigma, rho = self$penalty * self$penalty_weights)
         if (anyNA(glasso_out$wi)) break
-        Omega  <- glasso_out$wi ; if (!isSymmetric(Omega)) Omega <- Matrix::symmpart(Omega)
+        private$Omega <- args$init_parameters$Omega <- Matrix::symmpart(glasso_out$wi)
 
-        ## CALL TO NLOPT OPTIMIZATION
-        optim_out <- cpp_optimize_fixed(par0, responses, covariates, offsets, weights, Omega, control)
+        ## CALL TO NLOPT OPTIMIZATION TO UPDATE OTHER PARMAETERS
+        optim_out <- do.call(private$optimizer$main, args)
+        do.call(self$update, optim_out)
 
         ## Check convergence
-        objective[iter]   <- -sum(weights * optim_out$loglik) + self$penalty * sum(abs(Omega))
+        objective[iter]   <- -self$loglik + self$penalty * sum(abs(private$Omega))
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
-        if ((convergence[iter] < control$ftol_out) | (iter >= control$maxit_out)) cond <- TRUE
+        if ((convergence[iter] < control$config_optim$ftol_out) | (iter >= control$config_optim$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate
-        par0 <- list(Theta = optim_out$Theta, M = optim_out$M, S = optim_out$S)
+        args$init_parameters <- list(Theta = private$Theta, M = private$M, S = private$S)
         objective.old <- objective[iter]
       }
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## OUTPUT
-      Sigma <- glasso_out$w ; if (!isSymmetric(Sigma)) Sigma <- Matrix::symmpart(Sigma)
-      Ji <- optim_out$loglik
-      attr(Ji, "weights") <- weights
-      self$update(
-        Theta = optim_out$Theta,
-        Omega = Omega,
-        Sigma = Sigma,
-        M  = optim_out$M,
-        S  = optim_out$S,
-        Z  = optim_out$Z,
-        A  = optim_out$A,
-        Ji = Ji,
-        monitoring = list(objective        = objective[1:iter],
-                          convergence      = convergence[1:iter],
-                          outer_iterations = iter,
-                          inner_iterations = optim_out$iterations,
-                          inner_status     = optim_out$status,
-                          inner_message    = status_to_message_nlopt(optim_out$status)))
-
+      private$Sigma <- Matrix::symmpart(glasso_out$w)
+      private$monitoring$objective        <- objective[1:iter]
+      private$monitoring$convergence      <- convergence[1:iter]
+      private$monitoring$outer_iterations <- iter
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -230,6 +219,8 @@ PLNnetworkfit <- R6Class(
   ## ACTIVE BINDINGS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   active = list(
+    #' @field vcov_model character: the model used for the residual covariance
+    vcov_model = function() {"sparse"},
     #' @field penalty the global level of sparsity in the current model
     penalty         = function() {private$lambda},
     #' @field penalty_weights a matrix of weights controlling the amount of penalty element-wise.

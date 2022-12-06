@@ -12,7 +12,7 @@
 // Fully parametrized covariance
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_full(
+Rcpp::List nlopt_optimize(
     const Rcpp::List & init_parameters, // List(Theta, M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)
@@ -98,9 +98,9 @@ Rcpp::List cpp_optimize_full(
     arma::vec loglik = sum(Y % Z - A + 0.5 * log(S2) - 0.5 * ((M * Omega) % M + S2 * diagmat(Omega)), 1) +
                        0.5 * real(log_det(Omega)) + ki(Y);
 
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
     return Rcpp::List::create(
-        Rcpp::Named("status", static_cast<int>(result.status)),
-        Rcpp::Named("iterations", result.nb_iterations),
         Rcpp::Named("Theta", Theta),
         Rcpp::Named("M", M),
         Rcpp::Named("S", S),
@@ -108,14 +108,20 @@ Rcpp::List cpp_optimize_full(
         Rcpp::Named("A", A),
         Rcpp::Named("Sigma", Sigma),
         Rcpp::Named("Omega", Omega),
-        Rcpp::Named("loglik", loglik));
+        Rcpp::Named("Ji", Ji),
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status", static_cast<int>(result.status)),
+            Rcpp::Named("backend", "nlopt"),
+            Rcpp::Named("iterations", result.nb_iterations)
+        ))
+      );
 }
 
 // ---------------------------------------------------------------------------------------
 // VE full
 
 // [[Rcpp::export]]
-Rcpp::List cpp_optimize_vestep_full(
+Rcpp::List nlopt_optimize_vestep(
     const Rcpp::List & init_parameters, // List(M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)
@@ -151,8 +157,7 @@ Rcpp::List cpp_optimize_vestep_full(
     }
 
     // Optimize
-    auto objective_and_grad =
-        [&metadata, &O, &X, &Y, &w, &Theta, &Omega](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &Theta, &Omega](const double * params, double * grad) -> double {
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
 
@@ -175,13 +180,13 @@ Rcpp::List cpp_optimize_vestep_full(
     // Element-wise log-likelihood
     arma::mat Z = O + X * Theta.t() + M;
     arma::mat A = exp(Z + 0.5 * S2);
-    arma::mat loglik = sum(Y % Z - A + 0.5 * log(S2) - 0.5 * ((M * Omega) % M + S2 * diagmat(Omega)), 1) +
-                       0.5 * real(log_det(Omega)) + ki(Y);
+    arma::mat loglik =
+      sum(Y % Z - A + 0.5 * log(S2) - 0.5 * ((M * Omega) % M + S2 * diagmat(Omega)), 1) + 0.5 * real(log_det(Omega)) + ki(Y);
 
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
     return Rcpp::List::create(
-        Rcpp::Named("status") = (int)result.status,
-        Rcpp::Named("iterations") = result.nb_iterations,
-        Rcpp::Named("M") = M,
-        Rcpp::Named("S") = S,
-        Rcpp::Named("loglik") = loglik);
+      Rcpp::Named("M") = M,
+      Rcpp::Named("S") = S,
+      Rcpp::Named("Ji") = Ji);
 }

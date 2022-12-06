@@ -25,7 +25,7 @@ isPLNmixturefit <- function(Robject) {inherits(Robject, "PLNmixturefit")}
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#'            data = trichoptera, control = PLNmixture_param(smoothing = "none"))  %>% getBestModel()
 #' \dontrun{
 #' plot(myPLN, "pca")
 #' plot(myPLN, "matrix")
@@ -59,7 +59,7 @@ plot.PLNmixturefit <-
 #'  `response` is the group with maximal posterior probability and `latent` is the averaged latent in the latent space,
 #'  with weights equal to the posterior probabilities.
 #' @param prior User-specified prior group probabilities in the new data. The default uses a uniform prior.
-#' @param control a list for controlling the optimization. See [PLN()] for details.
+#' @param control a list-like structure for controlling the fit. See [PLNmixture_param()] for details.
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of posterior probabilities for each group (if type = "posterior"), a matrix of (average) position in the
 #' latent space (if type = "position") or a vector of predicted groups (if type = "response").
@@ -68,7 +68,7 @@ plot.PLNmixturefit <-
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#'            data = trichoptera, control = PLNmixture_param(smoothing = "none"))  %>% getBestModel()
 #' predict(myPLN, trichoptera, "posterior")
 #' predict(myPLN, trichoptera, "position")
 #' predict(myPLN, trichoptera, "response")
@@ -76,7 +76,7 @@ predict.PLNmixturefit <-
   function(object, newdata,
            type = c("posterior", "response", "position"),
            prior = matrix(rep(1/object$k, object$k), nrow(newdata), object$k, byrow = TRUE),
-           control = list(), ...) {
+           control = PLNmixture_param(), ...) {
 
   stopifnot(isPLNmixturefit(object))
   object$predict(newdata, type, prior, control, parent.frame())
@@ -102,7 +102,7 @@ predict.PLNmixturefit <-
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#'            data = trichoptera, control = PLNmixture_param(smoothing = "none"))  %>% getBestModel()
 #' coef(myPLN) ## Theta - empty here
 #' coef(myPLN, type = "mixture") ## pi
 #' coef(myPLN, type = "means") ## mu
@@ -148,7 +148,7 @@ fitted.PLNmixturefit <- function(object, ...) {
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-#'            data = trichoptera, control_main = list(iterates = 0))  %>% getBestModel()
+#'            data = trichoptera, control = PLNmixture_param(smoothing = "none"))  %>% getBestModel()
 #' sigma(myPLN) ## Sigma
 sigma.PLNmixturefit <- function(object, ...) {
   stopifnot(isPLNmixturefit(object))
