@@ -154,7 +154,7 @@ You can easily prepare your data from a biom file using the following steps:
 as illustrated below:
 <!-- Note that the covariates **must** be stored in the biom object as they are automatically extracted, reading a biom without covariates results in an error.  -->
 
-```{r import_biom,eval = FALSE}
+```{r import_biom, eval = FALSE}
 ## If biomformat is not installed, uncomment the following lines
 # if (!requireNamespace("BiocManager", quietly = TRUE)) {
 #   install.packages("BiocManager")

@@ -53,11 +53,8 @@ Suggests:
     testthat,
     covr,
     pkgdown,
-    biomformat,
-    phyloseq,
     spelling,
-    factoextra,
-    Wrench
+    factoextra
 LinkingTo: Rcpp, RcppArmadillo, nloptr
 VignetteBuilder: knitr
 Collate: 
