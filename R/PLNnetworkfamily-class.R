@@ -83,6 +83,7 @@ PLNnetworkfamily <- R6Class(
       list_penalty_weights <- list_penalty_weights[o]
 
       ## instantiate as many models as penalties
+      control$trace <- 0
       self$models <- map2(private$params, list_penalty_weights, function(penalty, penalty_weights) {
         PLNnetworkfit$new(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control)
       })
