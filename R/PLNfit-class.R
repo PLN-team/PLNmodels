@@ -271,30 +271,6 @@ PLNfit <- R6Class(
       if (!anyNA(monitoring)) private$monitoring <- monitoring
     },
 
-    do_jackknife = function(formula, data, weights, config = config_default_nlopt) {
-
-      data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
-
-      ## got for stability selection
-      cat("\nJackknife resampling for PLN\n")
-      jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
-        cat("+")
-        args <- list(Y = data_struct$Y[-i, , drop = FALSE],
-                     X = data_struct$X[-i, , drop = FALSE],
-                     O = data_struct$O[-i, , drop = FALSE],
-                     w = data_struct$w[-i],
-                     init_parameters = list(Theta = private$Theta, M = private$M[-i, ], S = private$S[-i, ]),
-                     configuration = config)
-        optim_out <- do.call(private$optimizer$main, args)
-        optim_out[c("Theta", "Omega")]
-      }, future.seed = TRUE)
-      Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
-      Theta_hat <- private$Theta; attributes(Theta_hat) <- NULL
-      list(bias     = (self$n - 1) * (Theta_jack - Theta_hat),
-           variance = (self$n - 1) / self$n * var_jack)
-    },
-
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## GENERIC OPTIMIZER
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -345,6 +321,54 @@ PLNfit <- R6Class(
       lmin   <- logLikPoisson(responses, nullModel, weights)
       lmax   <- logLikPoisson(responses, fullModelPoisson(responses, weights), weights)
       private$R2 <- (loglik - lmin) / (lmax - lmin)
+    },
+
+    variance_variational = function(X) {
+      ## Variance of Theta
+      fisher <- bdiag(lapply(1:self$p, function(j) {
+        crossprod(X, private$A[, j] * X)/self$n # t(X) %*% diag(A[, i]) %*% X
+      }))
+      vcov_Theta <- tryCatch(Matrix::solve(fisher), error = function(e) {e})
+      if (is(vcov_Theta, "error")) {
+        warning(paste("Inversion of the Fisher information matrix failed with following error message:",
+                      vcov_Theta$message, "Returning NA", sep = "\n"))
+        vcov_Theta <- matrix(NA, nrow = self$p, ncol = self$d)
+      }
+      var_Theta <- vcov_Theta %>% diag() %>% matrix(nrow = self$d) %>% t()
+      attr(private$Theta, "variance_variational") <- var_Theta
+      ## Variance of Omega
+      var_Omega <- 2 * outer(diag(private$Omega), diag(private$Omega))
+      attr(private$Omega, "variance_variational") <- var_Omega
+      invisible(list(var_Theta = var_Theta, var_Omega = var_Omega))
+    },
+
+    variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
+      data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
+
+      ## got for stability selection
+      cat("\nJackknife resampling for PLN\n")
+      jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
+        args <- list(Y = data_struct$Y[-i, , drop = FALSE],
+                     X = data_struct$X[-i, , drop = FALSE],
+                     O = data_struct$O[-i, , drop = FALSE],
+                     w = data_struct$w[-i],
+                     init_parameters = list(Theta = private$Theta, M = private$M[-i, ], S = private$S[-i, ]),
+                     configuration = config)
+        optim_out <- do.call(private$optimizer$main, args)
+        optim_out[c("Theta", "Omega")]
+      }, future.seed = TRUE)
+
+      Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
+      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
+      Theta_hat <- private$Theta; attributes(Theta_hat) <- NULL
+      attr(private$Theta, "bias") <- (self$n - 1) * (Theta_jack - Theta_hat)
+      attr(private$Theta, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+
+      Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
+      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
+      Omega_hat <- private$Omega; attributes(Omega_hat) <- NULL
+      attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
+      attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
 
     #' @description Experimental: compute the estimated variance of the coefficient Theta
@@ -552,19 +576,7 @@ PLNfit <- R6Class(
     #' @field R_squared approximated goodness-of-fit criterion
     R_squared  = function() {private$R2},
     #' @field criteria a vector with loglik, BIC, ICL and number of parameters
-    criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL)},
-    #' @field vcov_coef Approximation of the Variance-Covariance of Theta (experimental)
-    vcov_coef  = function() {attr(private$Theta, "vcov")},
-    #' @field std_err Approximation of the variance-covariance matrix of model parameters estimates (experimental)
-    std_err    = function() {
-      if (self$d > 0) {
-        stderr <- diag(attr(private$Theta, "vcov")) %>% sqrt %>% matrix(nrow = self$d) %>% t()
-        dimnames(stderr) <- dimnames(self$model_par$Theta)
-      } else {
-        stderr <- NULL
-      }
-      stderr
-    }
+    criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL)}
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  END OF THE CLASS PLNfit
@@ -784,7 +796,37 @@ PLNfit_fixedcov <- R6Class(
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
       private$Sigma <- solve(optim_out$Omega)
+    },
+
+    variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
+      data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
+
+      ## got for stability selection
+      cat("\nJackknife resampling for PLN\n")
+      jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
+        args <- list(Y = data_struct$Y[-i, , drop = FALSE],
+                     X = data_struct$X[-i, , drop = FALSE],
+                     O = data_struct$O[-i, , drop = FALSE],
+                     w = data_struct$w[-i],
+                     init_parameters = list(Theta = private$Theta, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
+                     configuration = config)
+        optim_out <- do.call(private$optimizer$main, args)
+        optim_out[c("Theta", "Omega")]
+      }, future.seed = TRUE)
+
+      Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
+      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
+      Theta_hat <- private$Theta; attributes(Theta_hat) <- NULL
+      attr(private$Theta, "bias") <- (self$n - 1) * (Theta_jack - Theta_hat)
+      attr(private$Theta, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+
+      Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
+      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
+      Omega_hat <- private$Omega; attributes(Omega_hat) <- NULL
+      attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
+      attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     }
+
   ),
   private = list(
 

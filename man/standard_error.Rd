@@ -5,12 +5,24 @@
 \alias{standard_error.PLNfit}
 \title{Component-wise standard errors of Theta}
 \usage{
-standard_error(object)
+standard_error(
+  object,
+  type = c("variational", "jackknife"),
+  parameter = c("Theta", "Omega")
+)
 
-\method{standard_error}{PLNfit}(object)
+\method{standard_error}{PLNfit}(
+  object,
+  type = c("variational", "jackknife"),
+  parameter = c("Theta", "Omega")
+)
 }
 \arguments{
 \item{object}{an R6 object with class PLNfit}
+
+\item{type}{string describing the type of variance approximation: "variational", "jackknife". Default is "variational".}
+
+\item{parameter}{string describing the target parameter: either Theta (regression coefficicents) or Omega (inverse residual covariance)}
 }
 \value{
 A p * d positive matrix (same size as \eqn{\Theta}) with standard errors for the coefficients of \eqn{\Theta}

@@ -95,33 +95,33 @@ fitted.PLNfit <- function(object, ...) {
   object$fitted
 }
 
-#' Calculate Variance-Covariance Matrix for a fitted [PLN()] model object
-#'
-#' @name vcov.PLNfit
-#'
-#' @description Returns the variance-covariance matrix of the main parameters of a fitted [PLN()] model object. The main parameters of the model correspond to \deqn{\Theta}, as returned by [coef.PLNfit()]. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via [sigma.PLNfit()]
-#'
-#' @inheritParams coef.PLNfit
-#' @return A matrix of variance/covariance extracted from the PLNfit model. If type="main" and \eqn{\Theta} is a matrix of size d * p, the result is a block-diagonal matrix with p (number of species) blocks of size d (number of covariates). if type="main", it is a symmetric matrix of size p.
-#' .
-#'
-#' @seealso [sigma.PLNfit()], [coef.PLNfit()], [standard_error.PLNfit()]
-#'
-#' @export
-#'
-#' @examples
-#' data(trichoptera)
-#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
-#' vcov(myPLN) ## variance-covariance of Theta
-#' vcov(myPLN, type = "covariance") ## Sigma
-vcov.PLNfit <- function(object, type = c("main", "covariance"), ...) {
-  stopifnot(isPLNfit(object))
-  switch(match.arg(type),
-         main       = object$vcov_coef,
-         covariance = object$model_par$Sigma)
-}
-
+# #' Calculate Variance-Covariance Matrix for a fitted [PLN()] model object
+# #'
+# #' @name vcov.PLNfit
+# #'
+# #' @description Returns the variance-covariance matrix of the main parameters of a fitted [PLN()] model object. The main parameters of the model correspond to \deqn{\Theta}, as returned by [coef.PLNfit()]. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via [sigma.PLNfit()]
+# #'
+# #' @inheritParams coef.PLNfit
+# #' @return A matrix of variance/covariance extracted from the PLNfit model. If type="main" and \eqn{\Theta} is a matrix of size d * p, the result is a block-diagonal matrix with p (number of species) blocks of size d (number of covariates). if type="main", it is a symmetric matrix of size p.
+# #' .
+# #'
+# #' @seealso [sigma.PLNfit()], [coef.PLNfit()], [standard_error.PLNfit()]
+# #'
+# #' @export
+# #'
+# #' @examples
+# #' data(trichoptera)
+# #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+# #' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+# #' vcov(myPLN) ## variance-covariance of Theta
+# #' vcov(myPLN, type = "covariance") ## Sigma
+# vcov.PLNfit <- function(object, type = c("main", "covariance"), ...) {
+#   stopifnot(isPLNfit(object))
+#   switch(match.arg(type),
+#          main       = object$vcov_coef,
+#          covariance = object$model_par$Sigma)
+# }
+#
 
 #' Extract variance-covariance of residuals 'Sigma'
 #'
@@ -152,6 +152,8 @@ sigma.PLNfit <- function(object, ...) {
 #' @description Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate) Fisher information matrix.
 #'
 #' @param object an R6 object with class PLNfit
+#' @param type string describing the type of variance approximation: "variational", "jackknife". Default is "variational".
+#' @param parameter string describing the target parameter: either Theta (regression coefficicents) or Omega (inverse residual covariance)
 #'
 #' @seealso [vcov.PLNfit()] for the complete variance covariance estimation of the coefficient
 #'
@@ -162,13 +164,27 @@ sigma.PLNfit <- function(object, ...) {
 #' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 #' standard_error(myPLN)
 #' @export
-standard_error <- function(object) {
+standard_error <- function(object, type = c("variational", "jackknife"), parameter = c("Theta", "Omega")) {
   UseMethod("standard_error", object)
 }
 
 #' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit`]
 #' @export
-standard_error.PLNfit <- function(object) {
+standard_error.PLNfit <- function(object, type = c("variational", "jackknife"), parameter = c("Theta", "Omega")) {
   stopifnot(isPLNfit(object))
-  object$std_err
+  type <- match.arg(type)
+  par  <- match.arg(parameter)
+  if (type == "jackknife" & is.null(attr(object$model_par$Theta, "variance_jackknife")))
+    stop("Jackknife estimation no available: you should call the method $do_jackknife() first")
+  switch(type,
+    "variational" =
+      switch(par,
+        "Theta" = attr(object$model_par$Theta, "variance_variational"),
+        "Omega" = attr(object$model_par$Omega, "variance_variational")),
+    "jackknife" =
+      switch(par,
+             "Theta" = attr(object$model_par$Theta, "variance_jackknife"),
+             "Omega" = attr(object$model_par$Omega, "variance_jackknife")),
+  ) %>% sqrt()
 }
+

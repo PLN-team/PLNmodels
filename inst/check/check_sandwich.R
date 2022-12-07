@@ -1,31 +1,7 @@
 library(tidyverse)
 library(PLNmodels)
 
-create_parameters <- function(
-    n = 200,
-    p = 50,
-    d = 2,
-    rho = 0.2,
-    # snr = 3,
-    sigma = 1,
-    depths = 100000,
-    ...
-) {
-  ## Sigma chosen to achieve a given snr
-  ## sigma <- sqrt(9*d/snr)
-  list(n      = n,
-       p      = p,
-       X      = matrix(rnorm(n*d), nrow = n, ncol = d,
-                       dimnames = list(paste0("S", 1:n), paste0("Var_", 1:d))),
-       # X      = matrix(c(rep(1, n), rnorm(n*(d - 1))),
-       #                 nrow = n, ncol = d,
-       #                 dimnames = list(paste0("S", 1:n), paste0("Var_", 1:d))),
-       Theta  = matrix(rnorm(n = p*d, sd = 1/sqrt(d)), nrow = p, ncol = d),
-       Sigma  = sigma * toeplitz(x = rho^seq(0, p-1)),
-       depths = depths)
-}
-
-params <- create_parameters()
+params <- PLNmodels:::create_parameters()
 Theta <- params$Theta
 
 ## Extract X
@@ -40,16 +16,21 @@ model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data,
              control = PLN_param(trace = 0, covariance = "fixed", Omega = solve(params$Sigma)))
 
 Theta_hat <- coef(model)
-model$get_vcov_hat("wald", Y, X)
-Theta_se_wald <- standard_error(model)
-model$get_vcov_hat("sandwich", Y, X)
-Theta_se_sandwich <- standard_error(model)
+
+model$variance_variational(X = X)
+Theta_se_var <- standard_error(model, "variational")
+
+model$variance_jackknife(Abundance ~ 0 + . + offset(log(O)), data = data)
+Theta_se_jk <- standard_error(model, "jackknife") * sqrt(nrow(X))
+
+# model$vcov_model("sandwich", Y, X)
+# Theta_se_sandwich <- standard_error(model)
 
 data.frame(
   Theta = rep(c(Theta), 2),
   Theta_hat = rep(c(Theta_hat), 2),
-  se = c(Theta_se_wald, Theta_se_sandwich),
-  method = rep(c("wald", "sandwich"), each = length(c(Theta))) ) %>%
+  se = c(Theta_se_var, Theta_se_jk),
+  method = rep(c("variational", "jackknife"), each = length(c(Theta))) ) %>%
   ggplot(aes(x = Theta, y = Theta_hat)) +
   geom_errorbar(aes(ymin = Theta_hat - 2 * se,
                     ymax = Theta_hat + 2 * se), color = "blue") + facet_wrap(~ method) +

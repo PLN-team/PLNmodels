@@ -34,6 +34,7 @@ print(myPLN)
 \itemize{
 \item \href{#method-PLNfit_fixedcov-new}{\code{PLNfit_fixedcov$new()}}
 \item \href{#method-PLNfit_fixedcov-optimize}{\code{PLNfit_fixedcov$optimize()}}
+\item \href{#method-PLNfit_fixedcov-variance_jackknife}{\code{PLNfit_fixedcov$variance_jackknife()}}
 \item \href{#method-PLNfit_fixedcov-clone}{\code{PLNfit_fixedcov$clone()}}
 }
 }
@@ -49,6 +50,7 @@ print(myPLN)
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-show'><code>PLNmodels::PLNfit$show()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="variance_variational"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-variance_variational'><code>PLNmodels::PLNfit$variance_variational()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -96,6 +98,31 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{config}}{part of the \code{control} argument which configures the optimizer}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit_fixedcov-variance_jackknife"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit_fixedcov-variance_jackknife}{}}}
+\subsection{Method \code{variance_jackknife()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$variance_jackknife(
+  formula,
+  data,
+  weights,
+  config = config_default_nlopt
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 

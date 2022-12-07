@@ -63,10 +63,6 @@ print(myPLN)
 \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
 \item{\code{criteria}}{a vector with loglik, BIC, ICL and number of parameters}
-
-\item{\code{vcov_coef}}{Approximation of the Variance-Covariance of Theta (experimental)}
-
-\item{\code{std_err}}{Approximation of the variance-covariance matrix of model parameters estimates (experimental)}
 }
 \if{html}{\out{</div>}}
 }
@@ -78,6 +74,8 @@ print(myPLN)
 \item \href{#method-PLNfit-optimize}{\code{PLNfit$optimize()}}
 \item \href{#method-PLNfit-optimize_vestep}{\code{PLNfit$optimize_vestep()}}
 \item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
+\item \href{#method-PLNfit-variance_variational}{\code{PLNfit$variance_variational()}}
+\item \href{#method-PLNfit-variance_jackknife}{\code{PLNfit$variance_jackknife()}}
 \item \href{#method-PLNfit-get_vcov_hat}{\code{PLNfit$get_vcov_hat()}}
 \item \href{#method-PLNfit-postTreatment}{\code{PLNfit$postTreatment()}}
 \item \href{#method-PLNfit-predict}{\code{PLNfit$predict()}}
@@ -261,11 +259,45 @@ Update R2 field after optimization
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-variance_variational"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-variance_variational}{}}}
+\subsection{Method \code{variance_variational()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$variance_variational(X)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit-variance_jackknife"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit-variance_jackknife}{}}}
+\subsection{Method \code{variance_jackknife()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$variance_jackknife(
+  formula,
+  data,
+  weights,
+  config = config_default_nlopt
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{config}}{part of the \code{control} argument which configures the optimizer}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit-get_vcov_hat"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-get_vcov_hat}{}}}
 \subsection{Method \code{get_vcov_hat()}}{
-Experimental: Compute the estimated variance of the coefficient Theta
-the true matrix Sigmamust be profided for sandwich estimation at the moment
+Experimental: compute the estimated variance of the coefficient Theta
+the true matrix Sigma must be provided for sandwich estimation at the moment
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$get_vcov_hat(type, responses, covariates, Sigma = self$model_par$Sigma)}\if{html}{\out{</div>}}
 }
