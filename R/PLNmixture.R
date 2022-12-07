@@ -32,6 +32,11 @@
 #' @export
 PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixture_param()) {
 
+  ## Temporary test for deprecated use of list()
+  if (!inherits(control, "PLNmodels_param"))
+    stop("We now use the function PLNmixture_param() to generate the list of parameters that controls the fit:
+    replace 'list(my_arg = xx)' by PLN_param(my_arg = xx) and see the documentation of PLNmixture_param().")
+
   # remove the intercept term if any (will be used to deal with group means)
   the_call <- match.call(expand.dots = FALSE)
   the_call$formula <- update.formula(formula(the_call), ~ . -1)

@@ -22,7 +22,7 @@
 #' @export
 PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 
-  ## Temporary test for deprecated se of list()
+  ## Temporary test for deprecated use of list()
   if (!inherits(control, "PLNmodels_param"))
     stop("We now use the function PLN_param() to generate the list of parameters that controls the fit:
     replace 'list(my_arg = xx)' by PLN_param(my_arg = xx) and see the documentation of PLN_param().")

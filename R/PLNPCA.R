@@ -33,6 +33,11 @@
 #' @export
 PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA_param()) {
 
+  ## Temporary test for deprecated use of list()
+  if (!inherits(control, "PLNmodels_param"))
+    stop("We now use the function PLNPCA_param() to generate the list of parameters that controls the fit:
+    replace 'list(my_arg = xx)' by PLN_param(my_arg = xx) and see the documentation of PLNPCA_param().")
+
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
