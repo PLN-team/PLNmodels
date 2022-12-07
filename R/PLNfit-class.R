@@ -271,6 +271,30 @@ PLNfit <- R6Class(
       if (!anyNA(monitoring)) private$monitoring <- monitoring
     },
 
+    do_jackknife = function(formula, data, weights, config = config_default_nlopt) {
+
+      data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
+
+      ## got for stability selection
+      cat("\nJackknife resampling for PLN\n")
+      jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
+        cat("+")
+        args <- list(Y = data_struct$Y[-i, , drop = FALSE],
+                     X = data_struct$X[-i, , drop = FALSE],
+                     O = data_struct$O[-i, , drop = FALSE],
+                     w = data_struct$w[-i],
+                     init_parameters = list(Theta = private$Theta, M = private$M[-i, ], S = private$S[-i, ]),
+                     configuration = config)
+        optim_out <- do.call(private$optimizer$main, args)
+        optim_out[c("Theta", "Omega")]
+      }, future.seed = TRUE)
+      Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
+      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
+      Theta_hat <- private$Theta; attributes(Theta_hat) <- NULL
+      list(bias     = (self$n - 1) * (Theta_jack - Theta_hat),
+           variance = (self$n - 1) / self$n * var_jack)
+    },
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## GENERIC OPTIMIZER
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -323,8 +347,8 @@ PLNfit <- R6Class(
       private$R2 <- (loglik - lmin) / (lmax - lmin)
     },
 
-    #' @description Experimental: Compute the estimated variance of the coefficient Theta
-    #' the true matrix Sigmamust be profided for sandwich estimation at the moment
+    #' @description Experimental: compute the estimated variance of the coefficient Theta
+    #' the true matrix Sigma must be provided for sandwich estimation at the moment
     #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
     #' @return a sparse matrix with sensible dimension names
     get_vcov_hat = function(type, responses, covariates, Sigma = self$model_par$Sigma) {
@@ -336,8 +360,9 @@ PLNfit <- R6Class(
                "none"     = NULL)
 
       ## set proper names, use sensible defaults if some names are missing
-      rownames(vcov_hat) <- expand.grid(covariates = colnames(covariates),
-                                   responses  = colnames(responses)) %>% rev() %>%
+      rownames(vcov_hat) <-
+        expand.grid(covariates = colnames(covariates),
+                    responses  = colnames(responses)) %>% rev() %>%
         ## Hack to make sure that species is first and varies slowest
         apply(1, paste0, collapse = "_")
       attr(vcov_hat, "name") <- type
@@ -371,7 +396,6 @@ PLNfit <- R6Class(
     #' @param envir Environment in which the prediction is evaluated
     #' @return A matrix with predictions scores or counts.
     predict = function(newdata, type = c("link", "response"), envir = parent.frame()) {
-      type <- match.arg(type)
 
       ## Extract the model matrices from the new data set with initial formula
       X <- model.matrix(formula(private$formula)[-2], newdata, xlev = attr(private$formula, "xlevels"))
@@ -383,8 +407,8 @@ PLNfit <- R6Class(
       EZ <- sweep(EZ, 2, .5 * diag(self$model_par$Sigma), "+")
       colnames(EZ) <- colnames(private$Sigma)
 
+      type <- match.arg(type)
       results <- switch(type, link = EZ, response = exp(EZ))
-
       attr(results, "type") <- type
       results
     },
@@ -402,9 +426,9 @@ PLNfit <- R6Class(
       # Checks
       Yc <- as.matrix(cond_responses)
       sp_names <- rownames(self$model_par$Theta)
-      if (! any(colnames(cond_responses) %in% sp_names))
+      if (!any(colnames(cond_responses) %in% sp_names))
         stop("Yc must be a subset of the species in responses")
-      if (! nrow(Yc) == nrow(newdata))
+      if (!nrow(Yc) == nrow(newdata))
         stop("The number of rows of Yc must match the number of rows in newdata")
 
       # Dimensions and subsets
