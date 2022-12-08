@@ -95,33 +95,33 @@ fitted.PLNfit <- function(object, ...) {
   object$fitted
 }
 
-# #' Calculate Variance-Covariance Matrix for a fitted [PLN()] model object
-# #'
-# #' @name vcov.PLNfit
-# #'
-# #' @description Returns the variance-covariance matrix of the main parameters of a fitted [PLN()] model object. The main parameters of the model correspond to \deqn{\Theta}, as returned by [coef.PLNfit()]. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via [sigma.PLNfit()]
-# #'
-# #' @inheritParams coef.PLNfit
-# #' @return A matrix of variance/covariance extracted from the PLNfit model. If type="main" and \eqn{\Theta} is a matrix of size d * p, the result is a block-diagonal matrix with p (number of species) blocks of size d (number of covariates). if type="main", it is a symmetric matrix of size p.
-# #' .
-# #'
-# #' @seealso [sigma.PLNfit()], [coef.PLNfit()], [standard_error.PLNfit()]
-# #'
-# #' @export
-# #'
-# #' @examples
-# #' data(trichoptera)
-# #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-# #' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
-# #' vcov(myPLN) ## variance-covariance of Theta
-# #' vcov(myPLN, type = "covariance") ## Sigma
-# vcov.PLNfit <- function(object, type = c("main", "covariance"), ...) {
-#   stopifnot(isPLNfit(object))
-#   switch(match.arg(type),
-#          main       = object$vcov_coef,
-#          covariance = object$model_par$Sigma)
-# }
-#
+#' Calculate Variance-Covariance Matrix for a fitted [PLN()] model object
+#'
+#' @name vcov.PLNfit
+#'
+#' @description Returns the variance-covariance matrix of the main parameters of a fitted [PLN()] model object. The main parameters of the model correspond to \deqn{\Theta}, as returned by [coef.PLNfit()]. The function can also be used to return the variance-covariance matrix of the residuals. The latter matrix can also be accessed via [sigma.PLNfit()]
+#'
+#' @inheritParams coef.PLNfit
+#' @return A matrix of variance/covariance extracted from the PLNfit model. If type="main" and \eqn{\Theta} is a matrix of size d * p, the result is a block-diagonal matrix with p (number of species) blocks of size d (number of covariates). if type="main", it is a symmetric matrix of size p.
+#' .
+#'
+#' @seealso [sigma.PLNfit()], [coef.PLNfit()], [standard_error.PLNfit()]
+#'
+#' @export
+#'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+#' vcov(myPLN) ## variance-covariance of Theta
+#' vcov(myPLN, type = "covariance") ## Sigma
+vcov.PLNfit <- function(object, type = c("main", "covariance"), ...) {
+  stopifnot(isPLNfit(object))
+  switch(match.arg(type),
+         main       = object$vcov_coef,
+         covariance = object$model_par$Sigma)
+}
+
 
 #' Extract variance-covariance of residuals 'Sigma'
 #'

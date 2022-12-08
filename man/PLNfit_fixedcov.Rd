@@ -26,6 +26,8 @@ print(myPLN)
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
+
+\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of Theta (need knwon covariance at the moment)}
 }
 \if{html}{\out{</div>}}
 }
@@ -35,22 +37,20 @@ print(myPLN)
 \item \href{#method-PLNfit_fixedcov-new}{\code{PLNfit_fixedcov$new()}}
 \item \href{#method-PLNfit_fixedcov-optimize}{\code{PLNfit_fixedcov$optimize()}}
 \item \href{#method-PLNfit_fixedcov-variance_jackknife}{\code{PLNfit_fixedcov$variance_jackknife()}}
+\item \href{#method-PLNfit_fixedcov-postTreatment}{\code{PLNfit_fixedcov$postTreatment()}}
 \item \href{#method-PLNfit_fixedcov-clone}{\code{PLNfit_fixedcov$clone()}}
 }
 }
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-get_vcov_hat'><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-postTreatment'><code>PLNmodels::PLNfit$postTreatment()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-show'><code>PLNmodels::PLNfit$show()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="variance_variational"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-variance_variational'><code>PLNmodels::PLNfit$variance_variational()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -127,6 +127,34 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{config}}{part of the \code{control} argument which configures the optimizer}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNfit_fixedcov-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit_fixedcov-postTreatment}{}}}
+\subsection{Method \code{postTreatment()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$postTreatment(
+  responses,
+  covariates,
+  offsets,
+  weights = rep(1, nrow(responses)),
+  nullModel = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 }
 \if{html}{\out{</div>}}
 }

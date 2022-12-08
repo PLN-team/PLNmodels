@@ -36,7 +36,7 @@ test_that("PLN fit: check classes, getters and field access",  {
   expect_equal(coef(model), model$model_par$Theta)
   expect_equal(coef(model, type = "covariance"), sigma(model))
   expect_equal(sigma(model), model$model_par$Sigma)
-  expect_equal(vcov(model), model$vcov_coef)
+  # expect_equal(vcov(model), model$vcov_coef)
 
   ## S3 methods: class
   expect_true(inherits(coef(model), "matrix"))
@@ -50,14 +50,6 @@ test_that("PLN fit: check classes, getters and field access",  {
   expect_is(model$latent, "matrix")
   expect_true(is.numeric(model$latent))
   expect_equal(dim(model$latent), c(model$n, model$p))
-
-  # ## Variational Fisher
-  # Y <- trichoptera$Abundance
-  # X <- model.matrix(Abundance ~ 1, data = trichoptera)
-  # vcov_wald  <- model$vcov_wald(X = X)
-  # vcov_sandwich <- model$vcov_sandwich(Y = Y, X = X)
-  # ## Sandwich underestimate less the variance of the variational estimators
-  # expect_gte(min(diag(vcov_sandwich) - diag(as.numeric(vcov_wald))), 0)
 
 })
 
@@ -85,21 +77,6 @@ capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names 
   expect_equal(capture_output(model$show()),
                capture_output(model$print()))
 })
-
-# test_that("standard error fails for degenerate models", {
-#   trichoptera$X1 <- ifelse(trichoptera$Cloudiness <= 50, 0, 1)
-#   trichoptera$X2 <- 1 - trichoptera$X1
-#   # expect_warning(model <- PLN(Abundance ~ 1 + X1 + X2, data = trichoptera),
-#   #                "Something went wrong during model fitting!!\nMatrix A has missing values.")
-#   model <- PLN(Abundance ~ 1 + X1, data = trichoptera)
-#   ## Force a degenerate matrix in the FIM slot
-#   model$.__enclos_env__$private$FIM <- diag(0, nrow = model$p * model$d)
-#   expect_warning(std_err <- model$compute_standard_error(),
-#                  "Inversion of the Fisher information matrix failed with following error message:")
-#   expect_equal(std_err,
-#                matrix(NA, nrow = model$p, ncol = model$d,
-#                       dimnames = dimnames(coef(model))))
-# })
 
 test_that("PLN fit: Check prediction",  {
 

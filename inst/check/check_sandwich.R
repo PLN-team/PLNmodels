@@ -16,9 +16,7 @@ model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data,
              control = PLN_param(trace = 0, covariance = "fixed", Omega = solve(params$Sigma)))
 
 Theta_hat <- coef(model)
-
-model$variance_variational(X = X)
-Theta_se_var <- standard_error(model, "variational")
+Theta_se_var <- standard_error(model)
 
 model$variance_jackknife(Abundance ~ 0 + . + offset(log(O)), data = data)
 Theta_se_jk <- standard_error(model, "jackknife") * sqrt(nrow(X))

@@ -168,38 +168,34 @@ PLNfit <- R6Class(
     ## PRIVATE METHODS FOR VARIANCE OF THE ESTIMATORS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    vcov_sandwich = function(Y, X, Sigma) {
-      getMat_iCnTheta <- function(i) {
-        a_i   <- as.numeric(private$A[i, ])
-        s2_i  <- as.numeric(private$S[i, ]**2)
-        # omega <- as.numeric(1/diag(private$Sigma))
-        # diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
-        diag_mat_i <- diag(1/a_i + .5 * s2_i^2)
-        solve(Sigma + diag_mat_i)
-      }
-      YmA <- Y - private$A
-      Dn <- matrix(0, self$d*self$p, self$d*self$p)
-      Cn <- matrix(0, self$d*self$p, self$d*self$p)
-      for (i in 1:self$n) {
-        xxt_i <- tcrossprod(X[i, ])
-        Cn <- Cn - kronecker(getMat_iCnTheta(i) , xxt_i) / (self$n)
-        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
-      }
-      Cn_inv <- solve(Cn)
-      (Cn_inv %*% Dn %*% Cn_inv) / (self$n)
-    },
-
-    vcov_wald = function(X) {
-      fisher <- bdiag(lapply(1:self$p, function(i) {
-        crossprod(X, private$A[, i] * X) # t(X) %*% diag(A[, i]) %*% X
+    variance_variational = function(X) {
+      ## Variance of Theta
+      fisher <- Matrix::bdiag(lapply(1:self$p, function(j) {
+        crossprod(X, private$A[, j] * X)/self$n # t(X) %*% diag(A[, i]) %*% X
       }))
-      res <- tryCatch(self$n*Matrix::solve(fisher), error = function(e) {e})
-      if (is(res, "error")) {
+      vcov_Theta <- tryCatch(Matrix::solve(fisher), error = function(e) {e})
+      if (is(vcov_Theta, "error")) {
         warning(paste("Inversion of the Fisher information matrix failed with following error message:",
-                      res$message, "Returning NA", sep = "\n"))
-        res <- matrix(NA, nrow = self$p, ncol = self$d)
+                      vcov_Theta$message, "Returning NA", sep = "\n"))
+        vcov_Theta <- matrix(NA, nrow = self$p, ncol = self$d)
+        var_Theta  <- matrix(NA, nrow = self$p, ncol = self$d)
+      } else {
+        var_Theta <- vcov_Theta %>% diag() %>% matrix(nrow = self$d) %>% t()
       }
-      res
+      rownames(vcov_Theta) <-
+        expand.grid(covariates = colnames(private$Theta),
+                    responses  = rownames(private$Theta)) %>% rev() %>%
+        ## Hack to make sure that species is first and varies slowest
+        apply(1, paste0, collapse = "_")
+      attr(private$Theta, "vcov_variational") <- vcov_Theta
+      dimnames(var_Theta) <- dimnames(private$Theta)
+      attr(private$Theta, "variance_variational") <- var_Theta
+
+      ## Variance of Omega
+      var_Omega <- 2 * outer(diag(private$Omega), diag(private$Omega))
+      dimnames(var_Omega) <- dimnames(private$Omega)
+      attr(private$Omega, "variance_variational") <- var_Omega
+      invisible(list(var_Theta = var_Theta, var_Omega = var_Omega))
     }
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -323,25 +319,6 @@ PLNfit <- R6Class(
       private$R2 <- (loglik - lmin) / (lmax - lmin)
     },
 
-    variance_variational = function(X) {
-      ## Variance of Theta
-      fisher <- bdiag(lapply(1:self$p, function(j) {
-        crossprod(X, private$A[, j] * X)/self$n # t(X) %*% diag(A[, i]) %*% X
-      }))
-      vcov_Theta <- tryCatch(Matrix::solve(fisher), error = function(e) {e})
-      if (is(vcov_Theta, "error")) {
-        warning(paste("Inversion of the Fisher information matrix failed with following error message:",
-                      vcov_Theta$message, "Returning NA", sep = "\n"))
-        vcov_Theta <- matrix(NA, nrow = self$p, ncol = self$d)
-      }
-      var_Theta <- vcov_Theta %>% diag() %>% matrix(nrow = self$d) %>% t()
-      attr(private$Theta, "variance_variational") <- var_Theta
-      ## Variance of Omega
-      var_Omega <- 2 * outer(diag(private$Omega), diag(private$Omega))
-      attr(private$Omega, "variance_variational") <- var_Omega
-      invisible(list(var_Theta = var_Theta, var_Omega = var_Omega))
-    },
-
     variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
       data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
@@ -360,58 +337,59 @@ PLNfit <- R6Class(
 
       Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
-      Theta_hat <- private$Theta; attributes(Theta_hat) <- NULL
+      Theta_hat  <- private$Theta; attributes(Theta_hat) <- NULL
       attr(private$Theta, "bias") <- (self$n - 1) * (Theta_jack - Theta_hat)
       attr(private$Theta, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
 
       Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
-      Omega_hat <- private$Omega; attributes(Omega_hat) <- NULL
+      Omega_hat  <- private$Omega; attributes(Omega_hat) <- NULL
       attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
       attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
 
-    #' @description Experimental: compute the estimated variance of the coefficient Theta
-    #' the true matrix Sigma must be provided for sandwich estimation at the moment
-    #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
-    #' @return a sparse matrix with sensible dimension names
-    get_vcov_hat = function(type, responses, covariates, Sigma = self$model_par$Sigma) {
-      ## compute and store the estimated covariance of the estimator of the parameter Theta
-      vcov_hat <-
-        switch(type,
-               "wald"     = private$vcov_wald(X = covariates),
-               "sandwich" = private$vcov_sandwich(Y = responses, X = covariates, Sigma = Sigma),
-               "none"     = NULL)
-
-      ## set proper names, use sensible defaults if some names are missing
-      rownames(vcov_hat) <-
-        expand.grid(covariates = colnames(covariates),
-                    responses  = colnames(responses)) %>% rev() %>%
-        ## Hack to make sure that species is first and varies slowest
-        apply(1, paste0, collapse = "_")
-      attr(vcov_hat, "name") <- type
-      attr(private$Theta, "vcov") <- vcov_hat
-    },
+#     #' @description Experimental: compute the estimated variance of the coefficient Theta
+#     #' the true matrix Sigma must be provided for sandwich estimation at the moment
+#     #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
+#     #' @return a sparse matrix with sensible dimension names
+#     get_vcov_hat = function(type, responses, covariates, Sigma = self$model_par$Sigma) {
+#       ## compute and store the estimated covariance of the estimator of the parameter Theta
+#       vcov_hat <-
+#         switch(type,
+#                "wald"     = private$vcov_wald(X = covariates),
+#                "sandwich" = private$vcov_sandwich(Y = responses, X = covariates, Sigma = Sigma),
+#                "none"     = NULL)
+#
+#       ## set proper names, use sensible defaults if some names are missing
+#       rownames(vcov_hat) <-
+#         expand.grid(covariates = colnames(covariates),
+#                     responses  = colnames(responses)) %>% rev() %>%
+#         ## Hack to make sure that species is first and varies slowest
+#         apply(1, paste0, collapse = "_")
+#       attr(vcov_hat, "name") <- type
+#       attr(private$Theta, "vcov") <- vcov_hat
+#     },
 
     #' @description Update R2, fisher and std_err fields after optimization
-    #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), type = c("wald", "sandwich", "none"), nullModel = NULL) {
-      type <- match.arg(type)
+    # @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL) {
       ## compute R2
       self$set_R2(responses, covariates, offsets, weights, nullModel)
       ## Set the name of the matrices according to those of the data matrices,
       ## if names are missing, set sensible defaults
-      if (is.null(colnames(responses))) colnames(responses) <- paste0("Y", 1:self$p)
-      rownames(private$Theta) <- colnames(responses)
-      colnames(private$Theta) <- colnames(covariates)
+      if (is.null(colnames(responses)))
+        colnames(responses) <- paste0("Y", 1:self$p)
+      if (self$d > 0) {
+        if (is.null(colnames(covariates))) colnames(covariates) <- paste0("X", 1:self$d)
+        rownames(private$Theta) <- colnames(responses)
+        colnames(private$Theta) <- colnames(covariates)
+      }
       rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
       rownames(private$Omega) <- colnames(private$Omega) <- colnames(responses)
       rownames(private$M) <- rownames(private$S) <- rownames(responses)
       colnames(private$S) <- 1:self$q
-      if (type != 'none') {
-        ## compute and store matrix of standard errors
-        self$get_vcov_hat(type, responses, covariates)
-      }
+      ## compute and store matrix of standard variances for Theta and Omega with rough variational approximation
+      private$variance_variational(covariates)
     },
 
     #' @description Predict position, scores or observations of new data.
@@ -559,6 +537,8 @@ PLNfit <- R6Class(
     latent_pos = function() {private$M},
     #' @field fitted a matrix: fitted values of the observations (A in the model)
     fitted     = function() {private$A},
+    #' @field vcov_coef matrix of sandwich estimator of the variance-covariance of Theta (need knwon covariance at the moment)
+    vcov_coef = function() {attr(private$Theta, "vcov_variational")},
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"full"},
     #' @field weights observational weights
@@ -825,10 +805,35 @@ PLNfit_fixedcov <- R6Class(
       Omega_hat <- private$Omega; attributes(Omega_hat) <- NULL
       attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
       attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+    },
+
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL) {
+      super$postTreatment(responses, covariates, offsets, weights, nullModel)
+      private$vcov_sandwich_Theta(responses, covariates)
     }
 
   ),
   private = list(
+    vcov_sandwich_Theta = function(Y, X) {
+      getMat_iCnTheta <- function(i) {
+        a_i   <- as.numeric(private$A[i, ])
+        s2_i  <- as.numeric(private$S[i, ]**2)
+        # omega <- as.numeric(1/diag(private$Sigma))
+        # diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
+        diag_mat_i <- diag(1/a_i + .5 * s2_i^2)
+        solve(private$Sigma + diag_mat_i)
+      }
+      YmA <- Y - private$A
+      Dn <- matrix(0, self$d*self$p, self$d*self$p)
+      Cn <- matrix(0, self$d*self$p, self$d*self$p)
+      for (i in 1:self$n) {
+        xxt_i <- tcrossprod(X[i, ])
+        Cn <- Cn - kronecker(getMat_iCnTheta(i) , xxt_i) / (self$n)
+        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
+      }
+      Cn_inv <- solve(Cn)
+      attr(private$Theta, "vcov_sandwich") <- (Cn_inv %*% Dn %*% Cn_inv) / (self$n)
+    },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
@@ -853,7 +858,9 @@ PLNfit_fixedcov <- R6Class(
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {as.integer(self$p * self$d)},
     #' @field vcov_model character: the model used for the residual covariance
-    vcov_model = function() {"fixed"}
+    vcov_model = function() {"fixed"},
+    #' @field vcov_coef matrix of sandwich estimator of the variance-covariance of Theta (need knwon covariance at the moment)
+    vcov_coef = function() {attr(private$Theta, "vcov_sandwich")}
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  END OF THE CLASS PLNfit_fixedcov

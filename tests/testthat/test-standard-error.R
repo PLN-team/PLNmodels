@@ -11,10 +11,9 @@ test_that("Check that fisher and standard_error return objects with proper dimen
   p <- myPLN_cov$p
   d <- myPLN_cov$d
 
-  fim <- vcov(myPLN_cov)
+
   sem <- standard_error(myPLN_cov)
   ## Dimensions
-  expect_equal(dim(fim), c(p*d, p*d))
   expect_equal(dim(sem), c(p, d))
 
   ## Names
@@ -35,16 +34,12 @@ myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 test_that("Check internal consistency of Fisher matrix for PLN models with no covariates",  {
   tol <- 1e-8
 
-  ## Consistency of the diagonal of the fisher matrix
-  fim.diag <- Matrix::diag(solve(vcov(myPLN)))
-  manual.fim.diag <- colMeans(myPLN$fitted)
   ## Consistency of the standard error matrix
   sem <- standard_error(myPLN) %>% as.numeric()
   manual.sem <- 1/colMeans(myPLN$fitted) %>% sqrt()
 
   ## Internal consistency
-  expect_equivalent(fim.diag, manual.fim.diag  , tolerance = tol)
-  expect_equal(sem          , manual.sem       , tolerance = tol)
+  expect_equal(sem, manual.sem, tolerance = tol)
 
 })
 
@@ -53,7 +48,7 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
   tol <- 1e-2
 
   ## Consistency of the diagonal of the fisher matrix
-  fim.diag <- Matrix::diag(solve(vcov(myPLN)))
+  fim.diag <- 1/(standard_error(myPLN)^2)
   ## Values computed on the 2018/12/11 with PLNmodels version 0.5.9601)
   expected.fim.diag <- c(0.0612123698810698, 0.0612384161054906, 3.73462487824109, 0.122467107738817,
                          122.19280897578, 2.2230572191967, 0.285741065637069, 0.285687659219944,

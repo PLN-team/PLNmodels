@@ -173,7 +173,7 @@ PLNPCAfit <- R6Class(
       #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
       #' after optimization
       postTreatment = function(responses, covariates, offsets, weights, nullModel) {
-        super$postTreatment(responses, covariates, offsets, weights, type = "none", nullModel = nullModel)
+        super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
         colnames(private$B) <- colnames(private$M) <- 1:self$q
         rownames(private$B) <- colnames(responses)
         self$setVisualization()

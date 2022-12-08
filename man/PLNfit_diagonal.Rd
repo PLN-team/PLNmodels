@@ -49,7 +49,6 @@ print(myPLNLDA)
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-get_vcov_hat'><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize'><code>PLNmodels::PLNfit$optimize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-postTreatment'><code>PLNmodels::PLNfit$postTreatment()</code></a></span></li>
@@ -60,7 +59,6 @@ print(myPLNLDA)
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-show'><code>PLNmodels::PLNfit$show()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="variance_jackknife"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-variance_jackknife'><code>PLNmodels::PLNfit$variance_jackknife()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="variance_variational"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-variance_variational'><code>PLNmodels::PLNfit$variance_variational()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -129,14 +127,12 @@ The objects of this class are cloneable with this method.
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-get_vcov_hat'><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-set_R2'><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="variance_jackknife"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-variance_jackknife'><code>PLNmodels::PLNfit$variance_jackknife()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="variance_variational"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-variance_variational'><code>PLNmodels::PLNfit$variance_variational()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="optimize"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-optimize'><code>PLNmodels::PLNLDAfit$optimize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="plot_LDA"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-plot_LDA'><code>PLNmodels::PLNLDAfit$plot_LDA()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="plot_correlation_map"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-plot_correlation_map'><code>PLNmodels::PLNLDAfit$plot_correlation_map()</code></a></span></li>

@@ -46,6 +46,8 @@ print(myPLN)
 
 \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 
+\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of Theta (need knwon covariance at the moment)}
+
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
 \item{\code{weights}}{observational weights}
@@ -74,9 +76,7 @@ print(myPLN)
 \item \href{#method-PLNfit-optimize}{\code{PLNfit$optimize()}}
 \item \href{#method-PLNfit-optimize_vestep}{\code{PLNfit$optimize_vestep()}}
 \item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
-\item \href{#method-PLNfit-variance_variational}{\code{PLNfit$variance_variational()}}
 \item \href{#method-PLNfit-variance_jackknife}{\code{PLNfit$variance_jackknife()}}
-\item \href{#method-PLNfit-get_vcov_hat}{\code{PLNfit$get_vcov_hat()}}
 \item \href{#method-PLNfit-postTreatment}{\code{PLNfit$postTreatment()}}
 \item \href{#method-PLNfit-predict}{\code{PLNfit$predict()}}
 \item \href{#method-PLNfit-predict_cond}{\code{PLNfit$predict_cond()}}
@@ -259,15 +259,6 @@ Update R2 field after optimization
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-variance_variational"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-variance_variational}{}}}
-\subsection{Method \code{variance_variational()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$variance_variational(X)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit-variance_jackknife"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-variance_jackknife}{}}}
 \subsection{Method \code{variance_jackknife()}}{
@@ -293,33 +284,6 @@ Update R2 field after optimization
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-get_vcov_hat"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-get_vcov_hat}{}}}
-\subsection{Method \code{get_vcov_hat()}}{
-Experimental: compute the estimated variance of the coefficient Theta
-the true matrix Sigma must be provided for sandwich estimation at the moment
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$get_vcov_hat(type, responses, covariates, Sigma = self$model_par$Sigma)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{type}}{approximation scheme used, either \code{wald} (default, variational), \code{sandwich} (based on MLE theory) or \code{none}.}
-
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a sparse matrix with sensible dimension names
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
@@ -330,7 +294,6 @@ Update R2, fisher and std_err fields after optimization
   covariates,
   offsets,
   weights = rep(1, nrow(responses)),
-  type = c("wald", "sandwich", "none"),
   nullModel = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -345,8 +308,6 @@ Update R2, fisher and std_err fields after optimization
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{type}}{approximation scheme used, either \code{wald} (default, variational), \code{sandwich} (based on MLE theory) or \code{none}.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }

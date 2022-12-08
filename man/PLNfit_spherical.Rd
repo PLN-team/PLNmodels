@@ -39,7 +39,6 @@ print(myPLN)
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-get_vcov_hat'><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize'><code>PLNmodels::PLNfit$optimize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-postTreatment'><code>PLNmodels::PLNfit$postTreatment()</code></a></span></li>
@@ -50,7 +49,6 @@ print(myPLN)
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-show'><code>PLNmodels::PLNfit$show()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="variance_jackknife"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-variance_jackknife'><code>PLNmodels::PLNfit$variance_jackknife()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="variance_variational"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-variance_variational'><code>PLNmodels::PLNfit$variance_variational()</code></a></span></li>
 </ul>
 </details>
 }}

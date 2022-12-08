@@ -283,17 +283,15 @@ PLNmixturefit <-
       postTreatment = function(responses, covariates, offsets, weights, nullModel) {
 
         ## restoring the full design matrix (group means + covariates)
-        mu_k <- setNames(matrix(1, self$n, ncol = 1), 'Intercept')
+        mu_k <- matrix(1, self$n, ncol = 1); colnames(mu_k) <- 'Intercept'
         offsets <- offsets + covariates %*% private$Theta
-
         for (k_ in seq.int(ncol(private$tau)))
           self$components[[k_]]$postTreatment(
             responses,
             mu_k,
             offsets,
             private$tau[,k_],
-            nullModel = nullModel,
-            type = "none"
+            nullModel = nullModel
           )
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
