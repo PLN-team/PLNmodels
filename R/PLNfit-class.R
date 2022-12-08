@@ -196,6 +196,18 @@ PLNfit <- R6Class(
       dimnames(var_Omega) <- dimnames(private$Omega)
       attr(private$Omega, "variance_variational") <- var_Omega
       invisible(list(var_Theta = var_Theta, var_Omega = var_Omega))
+    },
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE METHOD FOR DEVIANCE/R2
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    approx_r2 = function(responses, covariates, offsets, weights, nullModel = NULL) {
+      if (is.null(nullModel)) nullModel <- nullModelPoisson(responses, covariates, offsets, weights)
+      loglik <- logLikPoisson(responses, self$latent, weights)
+      lmin   <- logLikPoisson(responses, nullModel, weights)
+      lmax   <- logLikPoisson(responses, fullModelPoisson(responses, weights), weights)
+      private$R2 <- (loglik - lmin) / (lmax - lmin)
     }
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -308,17 +320,6 @@ PLNfit <- R6Class(
       optim_out
     },
 
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## Post treatment functions --------------
-    #' @description Update R2 field after optimization
-    set_R2 = function(responses, covariates, offsets, weights, nullModel = NULL) {
-      if (is.null(nullModel)) nullModel <- nullModelPoisson(responses, covariates, offsets, weights)
-      loglik <- logLikPoisson(responses, self$latent, weights)
-      lmin   <- logLikPoisson(responses, nullModel, weights)
-      lmax   <- logLikPoisson(responses, fullModelPoisson(responses, weights), weights)
-      private$R2 <- (loglik - lmin) / (lmax - lmin)
-    },
-
     variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
       data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
@@ -373,8 +374,8 @@ PLNfit <- R6Class(
     #' @description Update R2, fisher and std_err fields after optimization
     # @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL) {
-      ## compute R2
-      self$set_R2(responses, covariates, offsets, weights, nullModel)
+      ## compute approximated R2 with deviance
+      private$approx_r2(responses, covariates, offsets, weights, nullModel)
       ## Set the name of the matrices according to those of the data matrices,
       ## if names are missing, set sensible defaults
       if (is.null(colnames(responses)))

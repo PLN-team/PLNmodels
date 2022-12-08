@@ -75,7 +75,6 @@ print(myPLN)
 \item \href{#method-PLNfit-update}{\code{PLNfit$update()}}
 \item \href{#method-PLNfit-optimize}{\code{PLNfit$optimize()}}
 \item \href{#method-PLNfit-optimize_vestep}{\code{PLNfit$optimize_vestep()}}
-\item \href{#method-PLNfit-set_R2}{\code{PLNfit$set_R2()}}
 \item \href{#method-PLNfit-variance_jackknife}{\code{PLNfit$variance_jackknife()}}
 \item \href{#method-PLNfit-postTreatment}{\code{PLNfit$postTreatment()}}
 \item \href{#method-PLNfit-predict}{\code{PLNfit$predict()}}
@@ -231,31 +230,6 @@ A list with three components:
 \item the matrix \code{S2} of variational variances
 \item the vector \code{log.lik} of (variational) log-likelihood of each new observation
 }
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-set_R2"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-set_R2}{}}}
-\subsection{Method \code{set_R2()}}{
-Update R2 field after optimization
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$set_R2(responses, covariates, offsets, weights, nullModel = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
-}
-\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
