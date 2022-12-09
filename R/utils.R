@@ -1,22 +1,31 @@
 available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR2")
+available_algorithms_torch <- c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")
 
 config_default_nlopt <-
   list(
-    algorithm     = "CCSAQ"  ,
-    maxeval       = 10000    ,
-    ftol_rel      = 1e-8     ,
-    xtol_rel      = 1e-6     ,
-    ftol_abs      = 0.0      ,
-    xtol_abs      = 0.0      ,
+    algorithm     = "CCSAQ",
+    maxeval       = 10000  ,
+    ftol_rel      = 1e-8   ,
+    xtol_rel      = 1e-6   ,
+    ftol_abs      = 0.0    ,
+    xtol_abs      = 0.0    ,
     maxtime       = -1
   )
 
 config_default_torch <-
   list(
-    maxeval       = 10000    ,
-    ftol_rel      = 1e-8     ,
-    xtol_rel      = 1e-6     ,
-    learning_rate = 0.1      ,
+    algorithm     = "RPROP",
+    maxeval       = 10000  ,
+    num_epoch     = 1000   ,
+    num_batch     = 1      ,
+    ftol_rel      = 1e-8   ,
+    xtol_rel      = 1e-6   ,
+    lr            = 0.1    ,
+    momentum      = 0.05   ,
+    weight_decay  = 0      ,
+    step_sizes    = c(1e-3, 50),
+    etas          = c(0.5, 1.2),
+    centered      = FALSE,
     trace         = 1
   )
 

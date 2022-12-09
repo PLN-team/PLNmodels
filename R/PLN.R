@@ -90,10 +90,15 @@ PLN_param <- function(
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
   stopifnot(backend %in% c("nlopt", "torch"))
-  stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
   if (covariance == "fixed") stopifnot(inherits(Omega, "matrix") | inherits(Omega, "Matrix"))
-  if (backend == "nlopt") config <- config_default_nlopt
-  if (backend == "torch") config <- config_default_torch
+  if (backend == "nlopt") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
+    config <- config_default_nlopt
+  }
+  if (backend == "torch") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_torch)
+    config <- config_default_torch
+  }
   config[names(config_optim)] <- config_optim
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
   structure(list(
