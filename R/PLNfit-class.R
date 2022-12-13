@@ -860,7 +860,7 @@ PLNfit_fixedcov <- R6Class(
     nb_param   = function() {as.integer(self$p * self$d)},
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"fixed"},
-    #' @field vcov_coef matrix of sandwich estimator of the variance-covariance of Theta (need knwon covariance at the moment)
+    #' @field vcov_coef matrix of sandwich estimator of the variance-covariance of Theta (needs known covariance at the moment)
     vcov_coef = function() {attr(private$Theta, "vcov_sandwich")}
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
