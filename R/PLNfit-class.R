@@ -169,7 +169,7 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     variance_variational = function(X) {
-      ## Variance of Theta
+      ## Variance of Theta for one data point (should be multiplied by n to get I_n(\Theta))
       fisher <- Matrix::bdiag(lapply(1:self$p, function(j) {
         crossprod(X, private$A[, j] * X)/self$n # t(X) %*% diag(A[, i]) %*% X
       }))
@@ -187,11 +187,12 @@ PLNfit <- R6Class(
                     responses  = rownames(private$Theta)) %>% rev() %>%
         ## Hack to make sure that species is first and varies slowest
         apply(1, paste0, collapse = "_")
+      ## Those are the estimates for \sqrt{n}( \hat{\Theta} - \Theta^\star )
       attr(private$Theta, "vcov_variational") <- vcov_Theta
       dimnames(var_Theta) <- dimnames(private$Theta)
       attr(private$Theta, "variance_variational") <- var_Theta
 
-      ## Variance of Omega
+      ## Variance of Omega, missing a 1 / n scaling factor
       var_Omega <- 2 * outer(diag(private$Omega), diag(private$Omega))
       dimnames(var_Omega) <- dimnames(private$Omega)
       attr(private$Omega, "variance_variational") <- var_Omega
