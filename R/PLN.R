@@ -82,18 +82,20 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' @export
 PLN_param <- function(
-    backend       = "nlopt",
+    backend       = c("nlopt", "torch"),
     trace         = 1      ,
-    covariance    = "full" ,
+    covariance    = c("full", "diagonal", "spherical", "fixed", "genetic"),
     Omega         = NULL   ,
     config_optim  = list() ,
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
-  stopifnot(backend %in% c("nlopt", "torch"))
+  backend <- match.arg(backend)
+  covariance <- match.arg(covariance)
   stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
   if (covariance == "fixed") stopifnot(inherits(Omega, "matrix") | inherits(Omega, "Matrix"))
-  if (backend == "nlopt") config <- config_default_nlopt
-  if (backend == "torch") config <- config_default_torch
+  config <- switch(backend,
+                   nlopt = config_default_nlopt,
+                   torch = config_default_torch)
   config[names(config_optim)] <- config_optim
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
   structure(list(
