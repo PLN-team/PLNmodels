@@ -152,7 +152,7 @@ sigma.PLNfit <- function(object, ...) {
 #' @description Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate) Fisher information matrix.
 #'
 #' @param object an R6 object with class PLNfit
-#' @param type string describing the type of variance approximation: "variational", "jackknife". Default is "variational".
+#' @param type string describing the type of variance approximation: "variational", "jackknife", "sandwich" (only for fixed covariance). Default is "variational".
 #' @param parameter string describing the target parameter: either Theta (regression coefficicents) or Omega (inverse residual covariance)
 #'
 #' @seealso [vcov.PLNfit()] for the complete variance covariance estimation of the coefficient
@@ -164,27 +164,33 @@ sigma.PLNfit <- function(object, ...) {
 #' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
 #' standard_error(myPLN)
 #' @export
-standard_error <- function(object, type = c("variational", "jackknife"), parameter = c("Theta", "Omega")) {
+standard_error <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("Theta", "Omega")) {
   UseMethod("standard_error", object)
 }
 
 #' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit`]
 #' @export
-standard_error.PLNfit <- function(object, type = c("variational", "jackknife"), parameter = c("Theta", "Omega")) {
+standard_error.PLNfit <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("Theta", "Omega")) {
   stopifnot(isPLNfit(object))
   type <- match.arg(type)
   par  <- match.arg(parameter)
   if (type == "jackknife" & is.null(attr(object$model_par$Theta, "variance_jackknife")))
-    stop("Jackknife estimation no available: you should call the method $do_jackknife() first")
-  switch(type,
-    "variational" =
-      switch(par,
-        "Theta" = attr(object$model_par$Theta, "variance_variational"),
-        "Omega" = attr(object$model_par$Omega, "variance_variational")),
-    "jackknife" =
-      switch(par,
-             "Theta" = attr(object$model_par$Theta, "variance_jackknife"),
-             "Omega" = attr(object$model_par$Omega, "variance_jackknife")),
-  ) %>% sqrt()
+    stop("Jackknife estimation not available: you should call the method $variance_jackknife() first")
+  if (type == "sandwich") {
+    stop("Sandwich estimator is only available for fixed covariance / precision matrix.")
+  }
+  attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
 }
 
+#' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit_fixedcov`]
+#' @export
+standard_error.PLNfit_fixedcov <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("Theta", "Omega")) {
+  stopifnot(inherits(object, "PLNfit_fixedcov"))
+  type <- match.arg(type)
+  par  <- match.arg(parameter)
+  if (par == "Omega")
+    stop("Omega is not estimated for fixed covariance model")
+  if (type == "jackknife" & is.null(attr(object$model_par$Theta, "variance_jackknife")))
+    stop("Jackknife estimation not available: you should call the method $variance_jackknife() first")
+  attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
+}
