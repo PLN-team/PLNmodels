@@ -175,7 +175,7 @@ standard_error.PLNfit <- function(object, type = c("variational", "jackknife", "
   type <- match.arg(type)
   par  <- match.arg(parameter)
   if (type == "jackknife" & is.null(attr(object$model_par$Theta, "variance_jackknife")))
-    stop("Jackknife estimation no available: you should call the method $do_jackknife() first")
+    stop("Jackknife estimation not available: you should call the method $variance_jackknife() first")
   if (type == "sandwich") {
     stop("Sandwich estimator is only available for fixed covariance / precision matrix.")
   }
@@ -188,7 +188,9 @@ standard_error.PLNfit_fixedcov <- function(object, type = c("variational", "jack
   stopifnot(inherits(object, "PLNfit_fixedcov"))
   type <- match.arg(type)
   par  <- match.arg(parameter)
-  if (parameter == "Omega")
+  if (par == "Omega")
     stop("Omega is not estimated for fixed covariance model")
+  if (type == "jackknife" & is.null(attr(object$model_par$Theta, "variance_jackknife")))
+    stop("Jackknife estimation not available: you should call the method $variance_jackknife() first")
   attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
 }
