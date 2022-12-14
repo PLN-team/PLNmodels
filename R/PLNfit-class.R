@@ -182,7 +182,7 @@ PLNfit <- R6Class(
       } else {
         var_Theta <- vcov_Theta %>% diag() %>% matrix(nrow = self$d) %>% t()
       }
-      rownames(vcov_Theta) <-
+      rownames(vcov_Theta) <- colnames(vcov_Theta) <-
         expand.grid(covariates = colnames(private$Theta),
                     responses  = rownames(private$Theta)) %>% rev() %>%
         ## Hack to make sure that species is first and varies slowest
@@ -835,7 +835,11 @@ PLNfit_fixedcov <- R6Class(
         Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
       }
       Cn_inv <- solve(Cn)
-      attr(private$Theta, "vcov_sandwich") <- (Cn_inv %*% Dn %*% Cn_inv) / (self$n)
+      dim_names <- dimnames(attr(private$Theta, "vcov_variational"))
+      vcov_sand <- ((Cn_inv %*% Dn %*% Cn_inv) / self$n) %>% `dimnames<-`(dim_names)
+      attr(private$Theta, "vcov_sandwich") <- vcov_sand
+      attr(private$Theta, "variance_sandwich") <- matrix(diag(vcov_sand), nrow = self$p, ncol = self$d,
+                                                         dimnames = dimnames(private$Theta))
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
