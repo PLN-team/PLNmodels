@@ -348,9 +348,6 @@ PLNfit <- R6Class(
       optim_out
     },
 
-    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
-    #' @return Nothing, but add an attribute \code{variance_jacknife} to model_par$Theta and model_part$Omega, which can be reach by the method [standard_error()] by the user.
-
 #     #' @description Experimental: compute the estimated variance of the coefficient Theta
 #     #' the true matrix Sigma must be provided for sandwich estimation at the moment
 #     #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
@@ -860,7 +857,11 @@ PLNfit_fixedcov <- R6Class(
         Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
       }
       Cn_inv <- solve(Cn)
-      attr(private$Theta, "vcov_sandwich") <- (Cn_inv %*% Dn %*% Cn_inv) / (self$n)
+      dim_names <- dimnames(attr(private$Theta, "vcov_variational"))
+      vcov_sand <- ((Cn_inv %*% Dn %*% Cn_inv) / self$n) %>% `dimnames<-`(dim_names)
+      attr(private$Theta, "vcov_sandwich") <- vcov_sand
+      attr(private$Theta, "variance_sandwich") <- matrix(diag(vcov_sand), nrow = self$p, ncol = self$d,
+                                                         dimnames = dimnames(private$Theta))
     }
 
   ),
