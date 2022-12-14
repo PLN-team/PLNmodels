@@ -321,7 +321,7 @@ PLNfit <- R6Class(
     },
 
     #' @description Jackknife estimation of the bias and the variance of the model parameters
-    #' @inheritParams PLN
+    #' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
     variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
       data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
@@ -784,7 +784,7 @@ PLNfit_fixedcov <- R6Class(
     },
 
     #' @description Jackknife estimation of the bias and the variance of the model parameters
-    #' @inheritParams PLN
+    #' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
     variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
       data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
@@ -815,6 +815,8 @@ PLNfit_fixedcov <- R6Class(
       # attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
 
+    #' @description Update R2, fisher and std_err fields after optimization
+    #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL) {
       super$postTreatment(responses, covariates, offsets, weights, nullModel)
       private$vcov_sandwich_Theta(responses, covariates)
