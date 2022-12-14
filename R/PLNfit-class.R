@@ -170,7 +170,7 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     variance_variational = function(X) {
-      ## Variance of Theta for n data points
+    ## Variance of Theta for n data points
       fisher <- Matrix::bdiag(lapply(1:self$p, function(j) {
         crossprod(X, private$A[, j] * X) # t(X) %*% diag(A[, i]) %*% X
       }))
@@ -183,7 +183,7 @@ PLNfit <- R6Class(
       } else {
         var_Theta <- vcov_Theta %>% diag() %>% matrix(nrow = self$d) %>% t()
       }
-      rownames(vcov_Theta) <-
+      rownames(vcov_Theta) <- colnames(vcov_Theta) <-
         expand.grid(covariates = colnames(private$Theta),
                     responses  = rownames(private$Theta)) %>% rev() %>%
         ## Hack to make sure that species is first and varies slowest
@@ -192,8 +192,8 @@ PLNfit <- R6Class(
       dimnames(var_Theta) <- dimnames(private$Theta)
       attr(private$Theta, "variance_variational") <- var_Theta
 
-      ## Variance of Omega, missing a 1 / n scaling factor
-      var_Omega <-  2/self$n * outer(diag(private$Omega), diag(private$Omega))
+      ## Variance of Omega
+      var_Omega <- 2 * outer(diag(private$Omega), diag(private$Omega)) / self$n
       dimnames(var_Omega) <- dimnames(private$Omega)
       attr(private$Omega, "variance_variational") <- var_Omega
       invisible(list(var_Theta = var_Theta, var_Omega = var_Omega))
