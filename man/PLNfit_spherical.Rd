@@ -47,7 +47,6 @@ print(myPLN)
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-show'><code>PLNmodels::PLNfit$show()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="variance_jackknife"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-variance_jackknife'><code>PLNmodels::PLNfit$variance_jackknife()</code></a></span></li>
 </ul>
 </details>
 }}

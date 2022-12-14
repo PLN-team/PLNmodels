@@ -75,7 +75,6 @@ print(myPLN)
 \item \href{#method-PLNfit-update}{\code{PLNfit$update()}}
 \item \href{#method-PLNfit-optimize}{\code{PLNfit$optimize()}}
 \item \href{#method-PLNfit-optimize_vestep}{\code{PLNfit$optimize_vestep()}}
-\item \href{#method-PLNfit-variance_jackknife}{\code{PLNfit$variance_jackknife()}}
 \item \href{#method-PLNfit-postTreatment}{\code{PLNfit$postTreatment()}}
 \item \href{#method-PLNfit-predict}{\code{PLNfit$predict()}}
 \item \href{#method-PLNfit-predict_cond}{\code{PLNfit$predict_cond()}}
@@ -233,40 +232,12 @@ A list with three components:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit-variance_jackknife"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit-variance_jackknife}{}}}
-\subsection{Method \code{variance_jackknife()}}{
-Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$variance_jackknife(
-  formula,
-  data,
-  weights,
-  config = config_default_nlopt
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{data}}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{config}}{part of the \code{control} argument which configures the optimizer}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Nothing, but add an attribute \code{variance_jacknife} to model_par$Theta and model_part$Omega, which can be reach by the method \code{\link[=standard_error]{standard_error()}} by the user.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
+Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
+
+
 Update R2, fisher and std_err fields after optimization
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$postTreatment(
@@ -274,7 +245,8 @@ Update R2, fisher and std_err fields after optimization
   covariates,
   offsets,
   weights = rep(1, nrow(responses)),
-  nullModel = NULL
+  nullModel = NULL,
+  jackknife = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -290,8 +262,13 @@ Update R2, fisher and std_err fields after optimization
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
+
+\item{\code{jackknife}}{Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Nothing, but add an attribute \code{variance_jacknife} to model_par$Theta and model_part$Omega, which can be reach by the method \code{\link[=standard_error]{standard_error()}} by the user.
 }
 }
 \if{html}{\out{<hr>}}
