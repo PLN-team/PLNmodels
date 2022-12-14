@@ -337,14 +337,16 @@ PLNfit <- R6Class(
       }, future.seed = TRUE)
 
       Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
-      Theta_hat  <- private$Theta; attributes(Theta_hat) <- NULL
+      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`) %>%
+        `dimnames<-`(dimnames(private$Theta))
+      Theta_hat  <- private$Theta[,] ## strips attributes while preserving names
       attr(private$Theta, "bias") <- (self$n - 1) * (Theta_jack - Theta_hat)
       attr(private$Theta, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
 
       Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
-      Omega_hat  <- private$Omega; attributes(Omega_hat) <- NULL
+      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`) %>%
+        `dimnames<-`(dimnames(private$Omega))
+      Omega_hat  <- private$Omega[,] ## strips attributes while preserving names
       attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
       attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
