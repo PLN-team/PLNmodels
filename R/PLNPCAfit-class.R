@@ -173,7 +173,23 @@ PLNPCAfit <- R6Class(
       #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
       #' after optimization
       postTreatment = function(responses, covariates, offsets, weights, nullModel) {
-        super$postTreatment(responses, covariates, offsets, weights, nullModel = nullModel)
+        ####### Identical to PLNfit
+        ## compute approximated R2 with deviance
+        private$approx_r2(responses, covariates, offsets, weights, nullModel)
+        ## Set the name of the matrices according to those of the data matrices,
+        ## if names are missing, set sensible defaults
+        if (is.null(colnames(responses)))
+          colnames(responses) <- paste0("Y", 1:self$p)
+        if (self$d > 0) {
+          if (is.null(colnames(covariates))) colnames(covariates) <- paste0("X", 1:self$d)
+          rownames(private$Theta) <- colnames(responses)
+          colnames(private$Theta) <- colnames(covariates)
+        }
+        rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
+        rownames(private$Omega) <- colnames(private$Omega) <- colnames(responses)
+        rownames(private$M) <- rownames(private$S) <- rownames(responses)
+        colnames(private$S) <- 1:self$q
+        ######## end of Identical to PLNfit
         colnames(private$B) <- colnames(private$M) <- 1:self$q
         rownames(private$B) <- colnames(responses)
         self$setVisualization()

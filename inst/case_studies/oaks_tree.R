@@ -2,7 +2,7 @@ library(PLNmodels)
 library(factoextra)
 
 ## setting up future for parallelism
-nb_cores <- 6
+nb_cores <- 10
 options(future.fork.enable = TRUE)
 future::plan("multicore", workers = nb_cores)
 
@@ -65,12 +65,9 @@ myPLNPCA_tree <- getBestModel(myPLNPCAs_tree)
 
 # fancy graph with factoextra
 factoextra::fviz_pca_biplot(
-  myPLNPCA_tree, select.var = list(contrib = 10), col.ind  = oaks$distTOground,
+  myPLNPCA_tree, select.var = list(contrib = 12), col.ind  = oaks$distTOground,
   title = "Biplot after correction (10 most contributing species, samples colored by distance to ground)") +
   labs(col = "distance (cm)") + scale_color_viridis_c()
-
-factoextra::fviz_pca_ind(myPLNPCA_tree, axes = c(1,2), col.ind = oaks$distTOground)
-factoextra::fviz_pca_var(myPLNPCA_tree, axes = c(1,2), select.var = list(contrib = 10))
 
 ## Network inference with sparce covariance estimation
 system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(trace = 2)))

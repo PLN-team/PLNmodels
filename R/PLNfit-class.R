@@ -258,8 +258,6 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
       ## set up various quantities
       private$formula <- formula # user formula call
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
-      private$optimizer$vestep <- nlopt_optimize_vestep
       ## initialize the variational parameters
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -276,6 +274,8 @@ PLNfit <- R6Class(
         private$M     <- do.call(cbind, lapply(GLMs, residuals))
         private$S     <- matrix(1,n,p)
       }
+      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
+      private$optimizer$vestep <- nlopt_optimize_vestep
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
