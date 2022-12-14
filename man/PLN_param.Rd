@@ -5,9 +5,9 @@
 \title{Control of a PLN fit}
 \usage{
 PLN_param(
-  backend = "nlopt",
+  backend = c("nlopt", "torch"),
   trace = 1,
-  covariance = "full",
+  covariance = c("full", "diagonal", "spherical", "fixed", "genetic"),
   Omega = NULL,
   config_optim = list(),
   inception = NULL

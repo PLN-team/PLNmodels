@@ -27,7 +27,7 @@ print(myPLN)
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
-\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of Theta (need knwon covariance at the moment)}
+\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of Theta (needs known covariance at the moment)}
 }
 \if{html}{\out{</div>}}
 }
@@ -109,6 +109,7 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \if{html}{\out{<a id="method-PLNfit_fixedcov-variance_jackknife"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit_fixedcov-variance_jackknife}{}}}
 \subsection{Method \code{variance_jackknife()}}{
+Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$variance_jackknife(
   formula,
@@ -123,17 +124,23 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \describe{
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
+\item{\code{data}}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.}
+
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{config}}{part of the \code{control} argument which configures the optimizer}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+Nothing, but add an attribute \code{variance_jacknife} to model_par$Theta and model_part$Omega, which can be reach by the method \code{\link[=standard_error]{standard_error()}} by the user.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit_fixedcov-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit_fixedcov-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
+Update R2, fisher and std_err fields after optimization
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$postTreatment(
   responses,
@@ -154,6 +161,8 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }
 \if{html}{\out{</div>}}
 }

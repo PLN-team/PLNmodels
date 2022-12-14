@@ -13,6 +13,7 @@
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list-like structure for controlling the fit, see [PLN_param()].
 #' @param config part of the \code{control} argument which configures the optimizer
@@ -169,9 +170,9 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     variance_variational = function(X) {
-      ## Variance of Theta for one data point (should be multiplied by n to get I_n(\Theta))
+      ## Variance of Theta for n data points
       fisher <- Matrix::bdiag(lapply(1:self$p, function(j) {
-        crossprod(X, private$A[, j] * X)/self$n # t(X) %*% diag(A[, i]) %*% X
+        crossprod(X, private$A[, j] * X) # t(X) %*% diag(A[, i]) %*% X
       }))
       vcov_Theta <- tryCatch(Matrix::solve(fisher), error = function(e) {e})
       if (is(vcov_Theta, "error")) {
@@ -187,13 +188,12 @@ PLNfit <- R6Class(
                     responses  = rownames(private$Theta)) %>% rev() %>%
         ## Hack to make sure that species is first and varies slowest
         apply(1, paste0, collapse = "_")
-      ## Those are the estimates for \sqrt{n}( \hat{\Theta} - \Theta^\star )
       attr(private$Theta, "vcov_variational") <- vcov_Theta
       dimnames(var_Theta) <- dimnames(private$Theta)
       attr(private$Theta, "variance_variational") <- var_Theta
 
       ## Variance of Omega, missing a 1 / n scaling factor
-      var_Omega <- 2 * outer(diag(private$Omega), diag(private$Omega))
+      var_Omega <-  2/self$n * outer(diag(private$Omega), diag(private$Omega))
       dimnames(var_Omega) <- dimnames(private$Omega)
       attr(private$Omega, "variance_variational") <- var_Omega
       invisible(list(var_Theta = var_Theta, var_Omega = var_Omega))
@@ -321,6 +321,8 @@ PLNfit <- R6Class(
       optim_out
     },
 
+    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
+    #' @return Nothing, but add an attribute \code{variance_jacknife} to model_par$Theta and model_part$Omega, which can be reach by the method [standard_error()] by the user.
     variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
       data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
@@ -373,7 +375,6 @@ PLNfit <- R6Class(
 #     },
 
     #' @description Update R2, fisher and std_err fields after optimization
-    # @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL) {
       ## compute approximated R2 with deviance
       private$approx_r2(responses, covariates, offsets, weights, nullModel)
@@ -737,7 +738,9 @@ PLNfit_spherical <- R6Class(
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
 #' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param config part of the \code{control} argument which configures the optimizer
@@ -780,6 +783,8 @@ PLNfit_fixedcov <- R6Class(
       private$Sigma <- solve(optim_out$Omega)
     },
 
+    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
+    #' @return Nothing, but add an attribute \code{variance_jacknife} to model_par$Theta and model_part$Omega, which can be reach by the method [standard_error()] by the user.
     variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
       data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
@@ -809,6 +814,7 @@ PLNfit_fixedcov <- R6Class(
       attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
 
+    #' @description Update R2, fisher and std_err fields after optimization
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL) {
       super$postTreatment(responses, covariates, offsets, weights, nullModel)
       private$vcov_sandwich_Theta(responses, covariates)

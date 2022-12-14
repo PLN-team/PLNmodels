@@ -236,6 +236,7 @@ A list with three components:
 \if{html}{\out{<a id="method-PLNfit-variance_jackknife"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-variance_jackknife}{}}}
 \subsection{Method \code{variance_jackknife()}}{
+Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$variance_jackknife(
   formula,
@@ -250,11 +251,16 @@ A list with three components:
 \describe{
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
+\item{\code{data}}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.}
+
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{config}}{part of the \code{control} argument which configures the optimizer}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Nothing, but add an attribute \code{variance_jacknife} to model_par$Theta and model_part$Omega, which can be reach by the method \code{\link[=standard_error]{standard_error()}} by the user.
 }
 }
 \if{html}{\out{<hr>}}
