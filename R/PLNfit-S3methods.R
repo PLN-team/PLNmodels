@@ -171,7 +171,6 @@ standard_error <- function(object, type = c("variational", "jackknife", "sandwic
 #' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit`]
 #' @export
 standard_error.PLNfit <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("Theta", "Omega")) {
-  stopifnot(isPLNfit(object))
   type <- match.arg(type)
   par  <- match.arg(parameter)
   if (type == "jackknife" & is.null(attr(object$model_par$Theta, "variance_jackknife")))
@@ -185,7 +184,6 @@ standard_error.PLNfit <- function(object, type = c("variational", "jackknife", "
 #' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit_fixedcov`]
 #' @export
 standard_error.PLNfit_fixedcov <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("Theta", "Omega")) {
-  stopifnot(inherits(object, "PLNfit_fixedcov"))
   type <- match.arg(type)
   par  <- match.arg(parameter)
   if (par == "Omega")
