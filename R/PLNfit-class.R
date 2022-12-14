@@ -13,6 +13,7 @@
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list-like structure for controlling the fit, see [PLN_param()].
 #' @param config part of the \code{control} argument which configures the optimizer
@@ -185,9 +186,9 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     variance_variational = function(X) {
-      ## Variance of Theta
+      ## Variance of Theta for n data points
       fisher <- Matrix::bdiag(lapply(1:self$p, function(j) {
-        crossprod(X, private$A[, j] * X)/self$n # t(X) %*% diag(A[, i]) %*% X
+        crossprod(X, private$A[, j] * X) # t(X) %*% diag(A[, i]) %*% X
       }))
       vcov_Theta <- tryCatch(Matrix::solve(fisher), error = function(e) {e})
       if (is(vcov_Theta, "error")) {
@@ -207,11 +208,36 @@ PLNfit <- R6Class(
       dimnames(var_Theta) <- dimnames(private$Theta)
       attr(private$Theta, "variance_variational") <- var_Theta
 
-      ## Variance of Omega
-      var_Omega <- 2 * outer(diag(private$Omega), diag(private$Omega))
+      ## Variance of Omega, missing a 1 / n scaling factor
+      var_Omega <-  2/self$n * outer(diag(private$Omega), diag(private$Omega))
       dimnames(var_Omega) <- dimnames(private$Omega)
       attr(private$Omega, "variance_variational") <- var_Omega
       invisible(list(var_Theta = var_Theta, var_Omega = var_Omega))
+    },
+
+    variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
+      jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
+        args <- list(Y = Y[-i, , drop = FALSE],
+                     X = X[-i, , drop = FALSE],
+                     O = O[-i, , drop = FALSE],
+                     w = w[-i],
+                     init_parameters = list(Theta = private$Theta, M = private$M[-i, ], S = private$S[-i, ]),
+                     configuration = config)
+        optim_out <- do.call(private$optimizer$main, args)
+        optim_out[c("Theta", "Omega")]
+      }, future.seed = TRUE)
+
+      Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
+      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
+      Theta_hat  <- private$Theta; attributes(Theta_hat) <- NULL
+      attr(private$Theta, "bias") <- (self$n - 1) * (Theta_jack - Theta_hat)
+      attr(private$Theta, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+
+      Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
+      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
+      Omega_hat  <- private$Omega; attributes(Omega_hat) <- NULL
+      attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
+      attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -336,34 +362,8 @@ PLNfit <- R6Class(
       optim_out
     },
 
-    variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
-      data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
-
-      ## got for stability selection
-      cat("\nJackknife resampling for PLN\n")
-      jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
-        args <- list(Y = data_struct$Y[-i, , drop = FALSE],
-                     X = data_struct$X[-i, , drop = FALSE],
-                     O = data_struct$O[-i, , drop = FALSE],
-                     w = data_struct$w[-i],
-                     init_parameters = list(Theta = private$Theta, M = private$M[-i, ], S = private$S[-i, ]),
-                     configuration = config)
-        optim_out <- do.call(private$optimizer$main, args)
-        optim_out[c("Theta", "Omega")]
-      }, future.seed = TRUE)
-
-      Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
-      Theta_hat  <- private$Theta; attributes(Theta_hat) <- NULL
-      attr(private$Theta, "bias") <- (self$n - 1) * (Theta_jack - Theta_hat)
-      attr(private$Theta, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
-
-      Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
-      Omega_hat  <- private$Omega; attributes(Omega_hat) <- NULL
-      attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
-      attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
-    },
+    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
+    #' @return Nothing, but add an attribute \code{variance_jacknife} to model_par$Theta and model_part$Omega, which can be reach by the method [standard_error()] by the user.
 
 #     #' @description Experimental: compute the estimated variance of the coefficient Theta
 #     #' the true matrix Sigma must be provided for sandwich estimation at the moment
@@ -388,8 +388,8 @@ PLNfit <- R6Class(
 #     },
 
     #' @description Update R2, fisher and std_err fields after optimization
-    # @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL) {
+    #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL, jackknife = FALSE) {
       ## compute approximated R2 with deviance
       private$approx_r2(responses, covariates, offsets, weights, nullModel)
       ## Set the name of the matrices according to those of the data matrices,
@@ -407,6 +407,7 @@ PLNfit <- R6Class(
       colnames(private$S) <- 1:self$q
       ## compute and store matrix of standard variances for Theta and Omega with rough variational approximation
       private$variance_variational(covariates)
+      if (jackknife == TRUE) private$variance_jackknife(responses, covariates, offsets, weights)
     },
 
     #' @description Predict position, scores or observations of new data.
@@ -751,7 +752,9 @@ PLNfit_spherical <- R6Class(
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
 #' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param config part of the \code{control} argument which configures the optimizer
@@ -794,16 +797,44 @@ PLNfit_fixedcov <- R6Class(
       private$Sigma <- solve(optim_out$Omega)
     },
 
-    variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
-      data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
+    #' @description Update R2, fisher and std_err fields after optimization
+    #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL, jackknife = FALSE) {
+      super$postTreatment(responses, covariates, offsets, weights, nullModel, jackknife = jackknife)
+      private$vcov_sandwich_Theta(responses, covariates)
+    }
 
-      ## got for stability selection
-      cat("\nJackknife resampling for PLN\n")
+  ),
+  private = list(
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    torch_elbo = function(data, params) {
+      S2 <- torch_square(params$S[index], 2)
+      Z <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$Theta)
+      res <- sum(data$w) * torch_trace(torch_mm(private$torch_Sigma(data, params), private$torch_Omega(data, params))) +
+        sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z - .5 * torch_log(S2)))
+      res
+    },
+
+    torch_Omega = function(data, params) {
+      params$Omega <- torch_tensor(private$Omega)
+    },
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## END OF TORCH METHODS FOR OPTIMIZATION
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## PRIVATE METHODS FOR VARIANCE OF THE ESTIMATORS
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
       jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
-        args <- list(Y = data_struct$Y[-i, , drop = FALSE],
-                     X = data_struct$X[-i, , drop = FALSE],
-                     O = data_struct$O[-i, , drop = FALSE],
-                     w = data_struct$w[-i],
+        args <- list(Y = Y[-i, , drop = FALSE],
+                     X = X[-i, , drop = FALSE],
+                     O = O[-i, , drop = FALSE],
+                     w = w[-i],
                      init_parameters = list(Theta = private$Theta, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
                      configuration = config)
         optim_out <- do.call(private$optimizer$main, args)
@@ -823,13 +854,6 @@ PLNfit_fixedcov <- R6Class(
       attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
 
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL) {
-      super$postTreatment(responses, covariates, offsets, weights, nullModel)
-      private$vcov_sandwich_Theta(responses, covariates)
-    }
-
-  ),
-  private = list(
     vcov_sandwich_Theta = function(Y, X) {
       getMat_iCnTheta <- function(i) {
         a_i   <- as.numeric(private$A[i, ])
@@ -849,33 +873,14 @@ PLNfit_fixedcov <- R6Class(
       }
       Cn_inv <- solve(Cn)
       attr(private$Theta, "vcov_sandwich") <- (Cn_inv %*% Dn %*% Cn_inv) / (self$n)
-    },
-
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## PRIVATE TORCH METHODS FOR OPTIMIZATION
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
-      S2 <- torch_square(params$S[index], 2)
-      Z <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$Theta)
-      res <- sum(data$w) * torch_trace(torch_mm(private$torch_Sigma(data, params), private$torch_Omega(data, params))) +
-        sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z - .5 * torch_log(S2)))
-      res
-    },
-
-    torch_Omega = function(data, params) {
-      params$Omega <- torch_tensor(private$Omega)
     }
-
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## END OF TORCH METHODS FOR OPTIMIZATION
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ),
   active = list(
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {as.integer(self$p * self$d)},
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"fixed"},
-    #' @field vcov_coef matrix of sandwich estimator of the variance-covariance of Theta (need knwon covariance at the moment)
+    #' @field vcov_coef matrix of sandwich estimator of the variance-covariance of Theta (needs known covariance at the moment)
     vcov_coef = function() {attr(private$Theta, "vcov_sandwich")}
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

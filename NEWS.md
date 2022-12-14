@@ -13,7 +13,10 @@
 
 * added Barents fish data set
 * support for PLN when (inverse) covariance is known/fixed
-* integration of sandwich estimator fo the variance of Theta when Sigma is fixed
+* estimator of the variance of the model parameters 
+    * integration of sandwich estimator fo the variance-covariance of Theta when Sigma is fixed
+    * variational estimation of the variance-covariance based on variational approximation of the Fisher information 
+    * jackknife estimation of the variance of Theta and Sigma
 * handle list of penalty weights in PLNnetwork
 * first support for torch optimizers (for PLN and PLNLDA)
 

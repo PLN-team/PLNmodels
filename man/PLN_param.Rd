@@ -5,10 +5,11 @@
 \title{Control of a PLN fit}
 \usage{
 PLN_param(
-  backend = "nlopt",
+  backend = c("nlopt", "torch"),
   trace = 1,
-  covariance = "full",
+  covariance = c("full", "diagonal", "spherical", "fixed", "genetic"),
   Omega = NULL,
+  jackknife = FALSE,
   config_optim = list(),
   inception = NULL
 )
@@ -21,6 +22,8 @@ PLN_param(
 \item{covariance}{character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "genetic". Default is "full".}
 
 \item{Omega}{precision matrix of the latent variables. Inverse of Sigma. Must be specified if \code{covariance} is "fixed"}
+
+\item{jackknife}{boolean indicating wether jackknife estiamtion of bias and variance should be computed for the model parameters. Default is \code{FALSE}}
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 

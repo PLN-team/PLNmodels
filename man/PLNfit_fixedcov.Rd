@@ -27,7 +27,7 @@ print(myPLN)
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
-\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of Theta (need knwon covariance at the moment)}
+\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of Theta (needs known covariance at the moment)}
 }
 \if{html}{\out{</div>}}
 }
@@ -36,7 +36,6 @@ print(myPLN)
 \itemize{
 \item \href{#method-PLNfit_fixedcov-new}{\code{PLNfit_fixedcov$new()}}
 \item \href{#method-PLNfit_fixedcov-optimize}{\code{PLNfit_fixedcov$optimize()}}
-\item \href{#method-PLNfit_fixedcov-variance_jackknife}{\code{PLNfit_fixedcov$variance_jackknife()}}
 \item \href{#method-PLNfit_fixedcov-postTreatment}{\code{PLNfit_fixedcov$postTreatment()}}
 \item \href{#method-PLNfit_fixedcov-clone}{\code{PLNfit_fixedcov$clone()}}
 }
@@ -106,41 +105,18 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit_fixedcov-variance_jackknife"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit_fixedcov-variance_jackknife}{}}}
-\subsection{Method \code{variance_jackknife()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$variance_jackknife(
-  formula,
-  data,
-  weights,
-  config = config_default_nlopt
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{config}}{part of the \code{control} argument which configures the optimizer}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit_fixedcov-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit_fixedcov-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
+Update R2, fisher and std_err fields after optimization
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit_fixedcov$postTreatment(
   responses,
   covariates,
   offsets,
   weights = rep(1, nrow(responses)),
-  nullModel = NULL
+  nullModel = NULL,
+  jackknife = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -154,6 +130,10 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
+
+\item{\code{jackknife}}{Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}}
 }
 \if{html}{\out{</div>}}
 }
