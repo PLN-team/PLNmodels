@@ -320,6 +320,8 @@ PLNfit <- R6Class(
       optim_out
     },
 
+    #' @description Jackknife estimation of the bias and the variance of the model parameters
+    #' @inheritParams PLN
     variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
       data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
@@ -781,6 +783,8 @@ PLNfit_fixedcov <- R6Class(
       private$Sigma <- solve(optim_out$Omega)
     },
 
+    #' @description Jackknife estimation of the bias and the variance of the model parameters
+    #' @inheritParams PLN
     variance_jackknife = function(formula, data, weights, config = config_default_nlopt) {
       data_struct <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
@@ -798,16 +802,17 @@ PLNfit_fixedcov <- R6Class(
       }, future.seed = TRUE)
 
       Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
-      Theta_hat <- private$Theta; attributes(Theta_hat) <- NULL
+      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`) %>%
+        `dimnames<-`(dimnames(private$Theta))
+      Theta_hat  <- private$Theta[,] ## strips attributes while preserving names
       attr(private$Theta, "bias") <- (self$n - 1) * (Theta_jack - Theta_hat)
       attr(private$Theta, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
 
-      Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
-      Omega_hat <- private$Omega; attributes(Omega_hat) <- NULL
-      attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
-      attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+      # Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
+      # var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
+      # Omega_hat <- private$Omega; attributes(Omega_hat) <- NULL
+      # attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
+      # attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
 
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL) {
