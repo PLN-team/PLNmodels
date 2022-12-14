@@ -3,24 +3,31 @@
 \name{standard_error}
 \alias{standard_error}
 \alias{standard_error.PLNfit}
+\alias{standard_error.PLNfit_fixedcov}
 \title{Component-wise standard errors of Theta}
 \usage{
 standard_error(
   object,
-  type = c("variational", "jackknife"),
+  type = c("variational", "jackknife", "sandwich"),
   parameter = c("Theta", "Omega")
 )
 
 \method{standard_error}{PLNfit}(
   object,
-  type = c("variational", "jackknife"),
+  type = c("variational", "jackknife", "sandwich"),
+  parameter = c("Theta", "Omega")
+)
+
+\method{standard_error}{PLNfit_fixedcov}(
+  object,
+  type = c("variational", "jackknife", "sandwich"),
   parameter = c("Theta", "Omega")
 )
 }
 \arguments{
 \item{object}{an R6 object with class PLNfit}
 
-\item{type}{string describing the type of variance approximation: "variational", "jackknife". Default is "variational".}
+\item{type}{string describing the type of variance approximation: "variational", "jackknife", "sandwich" (only for fixed covariance). Default is "variational".}
 
 \item{parameter}{string describing the target parameter: either Theta (regression coefficicents) or Omega (inverse residual covariance)}
 }
@@ -33,6 +40,8 @@ Extracts univariate standard errors for the estimated coefficient of Theta. Stan
 \section{Methods (by class)}{
 \itemize{
 \item \code{standard_error(PLNfit)}: Component-wise standard errors of Theta in \code{\link{PLNfit}}
+
+\item \code{standard_error(PLNfit_fixedcov)}: Component-wise standard errors of Theta in \code{\link{PLNfit_fixedcov}}
 
 }}
 \examples{

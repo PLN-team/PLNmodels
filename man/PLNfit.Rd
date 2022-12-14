@@ -236,6 +236,7 @@ A list with three components:
 \if{html}{\out{<a id="method-PLNfit-variance_jackknife"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-variance_jackknife}{}}}
 \subsection{Method \code{variance_jackknife()}}{
+Jackknife estimation of the bias and the variance of the model parameters
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$variance_jackknife(
   formula,
@@ -249,6 +250,8 @@ A list with three components:
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+
+\item{\code{data}}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
