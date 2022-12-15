@@ -51,7 +51,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 
   ## Post-treatments: pseudo-R2, rearrange criteria and prepare PCA visualization
   if (control$trace > 0) cat("\n Post-treatments")
-  myPCA$postTreatment()
+  myPCA$postTreatment(control)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPCA
@@ -101,5 +101,8 @@ PLNPCA_param <- function(
     backend       = backend   ,
     trace         = trace     ,
     config_optim  = config    ,
+    jackknife     = FALSE     ,
+    bootstrap     = 0         ,
+    variance      = FALSE     ,
     inception     = inception   ), class = "PLNmodels_param")
 }

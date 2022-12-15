@@ -6,20 +6,18 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 test_that("PLN fit: check classes, getters and field access",  {
 
   expect_output(model <- PLN(Abundance ~ 1, data = trichoptera,
-                             control = PLN_param(trace = 2)),
+                             control = PLN_param(trace = 1)),
 "
  Initialization...
- Use LM after log transformation to define the inceptive model
  Adjusting a full covariance PLN model with nlopt optimizer
  Post-treatments...
  DONE!"
   )
 
   expect_output(model <- PLN(Abundance ~ 1, data = trichoptera,
-                             control = PLN_param(trace = 2, inception = model)),
+                             control = PLN_param(trace = 1, inception = model)),
 "
  Initialization...
- User defined inceptive PLN model
  Adjusting a full covariance PLN model with nlopt optimizer
  Post-treatments...
  DONE!"

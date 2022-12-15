@@ -25,7 +25,7 @@ test_that("PLNnetwork: main function, fields access and methods", {
   myPLN$optimize(ctrl)
 
   ## post-treatment
-  myPLN$postTreatment()
+  myPLN$postTreatment(PLNnetwork_param())
 
   expect_equivalent(myPLN, models)
 

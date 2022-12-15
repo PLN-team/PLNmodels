@@ -45,7 +45,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 
   ## post-treatment
   if (control$trace > 0) cat("\n Post-treatments...")
-  myPLN$postTreatment(args$Y, args$X, args$O, args$w, jackknife = control$jackknife, bootstrap = control$bootstrap)
+  myPLN$postTreatment(args$Y, args$X, args$O, args$w, control)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -58,7 +58,8 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "genetic". Default is "full".
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma. Must be specified if `covariance` is "fixed"
-#' @param jackknife boolean indicating wether jackknife estiamtion of bias and variance should be computed for the model parameters. Default is \code{FALSE}
+#' @param jackknife boolean indicating weither jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
+#' @param bootstrap integer indicating the number of bootstrap resamples to estimate the variance of the model parameters. Default is \code{0} (no boostraping)
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
 #' @param trace a integer for verbosity.
 #' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
@@ -87,8 +88,8 @@ PLN_param <- function(
     trace         = 1      ,
     covariance    = c("full", "diagonal", "spherical", "fixed", "genetic"),
     Omega         = NULL   ,
-    jackknife     = FALSE,
-    bootstrap     = FALSE,
+    jackknife     = FALSE  ,
+    bootstrap     = 0      ,
     config_optim  = list() ,
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
@@ -113,6 +114,7 @@ PLN_param <- function(
     Omega         = Omega     ,
     jackknife     = jackknife ,
     bootstrap     = bootstrap ,
+    variance      = TRUE      ,
     config_optim  = config    ,
     inception     = inception   ), class = "PLNmodels_param")
 }

@@ -41,7 +41,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 
   ## Post-treatments
   if (control$trace > 0) cat("\n Post-treatments")
-  myPLN$postTreatment()
+  myPLN$postTreatment(control)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -108,6 +108,9 @@ PLNnetwork_param <- function(
     min_ratio         = min_ratio        ,
     penalize_diagonal = penalize_diagonal,
     penalty_weights   = penalty_weights  ,
+    jackknife         = FALSE            ,
+    bootstrap         = 0                ,
+    variance          = TRUE             ,
     config_optim      = config           ,
     inception         = inception       ), class = "PLNmodels_param")
 }

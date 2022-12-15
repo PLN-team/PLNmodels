@@ -10,6 +10,7 @@ PLN_param(
   covariance = c("full", "diagonal", "spherical", "fixed", "genetic"),
   Omega = NULL,
   jackknife = FALSE,
+  bootstrap = 0,
   config_optim = list(),
   inception = NULL
 )
@@ -23,7 +24,9 @@ PLN_param(
 
 \item{Omega}{precision matrix of the latent variables. Inverse of Sigma. Must be specified if \code{covariance} is "fixed"}
 
-\item{jackknife}{boolean indicating wether jackknife estiamtion of bias and variance should be computed for the model parameters. Default is \code{FALSE}}
+\item{jackknife}{boolean indicating weither jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}}
+
+\item{bootstrap}{integer indicating the number of bootstrap resamples to estimate the variance of the model parameters. Default is \code{0} (no boostraping)}
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 

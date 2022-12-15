@@ -221,8 +221,7 @@ PLNfit <- R6Class(
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
                      w = w[-i],
-                     init_parameters = list(Theta = private$Theta, M = private$M[-i, ], S = matrix(1, self$n-1, self$p)),
-                     # init_parameters = list(Theta = private$Theta, M = matrix(0, self$n-1, self$p), S = private$S[-i, ]),
+                     init_parameters = list(Theta = private$Theta, M = matrix(0, self$n-1, self$p), S = private$S[-i, ]),
                      configuration = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("Theta", "Omega")]
@@ -246,14 +245,11 @@ PLNfit <- R6Class(
     variance_bootstrap = function(Y, X, O, w, n_resamples = 100, config = config_default_nlopt) {
       resamples <- replicate(n_resamples, sample.int(self$n, replace = TRUE), simplify = FALSE)
       boots <- future.apply::future_lapply(resamples, function(resample) {
-
         args <- list(Y = Y[resample, , drop = FALSE],
                      X = X[resample, , drop = FALSE],
                      O = O[resample, , drop = FALSE],
                      w = w[resample],
-                     # init_parameters = list(Theta = private$Theta, M = private$M[resample, ], S = private$S[resample, ]),
-                     init_parameters = list(Theta = private$Theta, M = private$M[resample, ], S = matrix(1, self$n, self$p)),
-                     # init_parameters = list(Theta = private$Theta, M = matrix(0, self$n, self$p), S = private$S[resample, ]),
+                     init_parameters = list(Theta = private$Theta, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
                      configuration = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("Theta", "Omega", "monitoring")]
@@ -416,7 +412,7 @@ PLNfit <- R6Class(
 
     #' @description Update R2, fisher and std_err fields after optimization
     #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL, variance = TRUE, jackknife = FALSE, bootstrap = FALSE) {
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), control, nullModel = NULL) {
       ## compute approximated R2 with deviance
       private$approx_r2(responses, covariates, offsets, weights, nullModel)
       ## Set the name of the matrices according to those of the data matrices,
@@ -433,9 +429,18 @@ PLNfit <- R6Class(
       rownames(private$M) <- rownames(private$S) <- rownames(responses)
       colnames(private$S) <- 1:self$q
       ## compute and store matrix of standard variances for Theta and Omega with rough variational approximation
-      if (variance == TRUE) private$variance_variational(covariates)
-      if (jackknife == TRUE) private$variance_jackknife(responses, covariates, offsets, weights)
-      if (bootstrap == TRUE) private$variance_bootstrap(responses, covariates, offsets, weights)
+      if (control$variance) {
+        if(control$trace > 1) cat("\n\tComputing variational estimator of the variance...")
+        private$variance_variational(covariates)
+      }
+      if (control$jackknife) {
+        if(control$trace > 1) cat("\n\tComputing jackknife estimator of the variance...")
+        private$variance_jackknife(responses, covariates, offsets, weights)
+      }
+      if (control$bootstrap) {
+        if(control$trace > 1) cat("\n\tComputing bootstrap estimator of the variance...")
+        private$variance_bootstrap(responses, covariates, offsets, weights)
+      }
     },
 
     #' @description Predict position, scores or observations of new data.
@@ -827,8 +832,8 @@ PLNfit_fixedcov <- R6Class(
 
     #' @description Update R2, fisher and std_err fields after optimization
     #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL, variance = TRUE, jackknife = FALSE) {
-      super$postTreatment(responses, covariates, offsets, weights, nullModel, variance = variance, jackknife = jackknife)
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), control, nullModel = NULL) {
+      super$postTreatment(responses, covariates, offsets, weights, control, nullModel)
       private$vcov_sandwich_Theta(responses, covariates)
     }
 

@@ -84,9 +84,9 @@ PLNLDAfit <- R6Class(
     ## Post treatment --------------------
     #' @description  Update R2, fisher and std_err fields and visualization
     #' after optimization
-    postTreatment = function(grouping, responses, covariates, offsets) {
+    postTreatment = function(grouping, responses, covariates, offsets, control) {
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
-      super$postTreatment(responses, covariates, offsets)
+      super$postTreatment(responses, covariates, offsets, control = control)
       rownames(private$B) <- colnames(private$B) <- colnames(responses)
       colnames(private$S) <- 1:self$q
       self$setVisualization()

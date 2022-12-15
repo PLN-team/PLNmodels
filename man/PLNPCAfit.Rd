@@ -275,7 +275,14 @@ Compute PCA scores in the latent space and update corresponding fields.
 \subsection{Method \code{postTreatment()}}{
 Update R2, fisher, std_err fields and set up visualization
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$postTreatment(responses, covariates, offsets, weights, nullModel)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$postTreatment(
+  responses,
+  covariates,
+  offsets,
+  weights,
+  control,
+  nullModel
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -288,6 +295,8 @@ Update R2, fisher, std_err fields and set up visualization
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 

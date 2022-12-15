@@ -58,7 +58,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
   if (control$trace > 0) cat("\n Post-treatments")
-  myPLN$postTreatment()
+  myPLN$postTreatment(control)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -125,6 +125,9 @@ PLNmixture_param <- function(
     covariance    = covariance ,
     init_cl       = init_cl    ,
     smoothing     = smoothing  ,
+    jackknife     = FALSE      ,
+    bootstrap     = 0          ,
+    variance      = FALSE      ,
     config_optim  = config     ,
     inception     = inception   ), class = "PLNmodels_param")
 }

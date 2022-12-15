@@ -143,7 +143,7 @@ latent space, update corresponding fields
 Update R2, fisher and std_err fields and visualization
 after optimization
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(grouping, responses, covariates, offsets)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(grouping, responses, covariates, offsets, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -156,6 +156,8 @@ after optimization
 \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
 }
 \if{html}{\out{</div>}}
 }

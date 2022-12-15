@@ -21,13 +21,13 @@ standard_error(
 
 \method{standard_error}{PLNfit}(
   object,
-  type = c("variational", "jackknife", "sandwich"),
+  type = c("variational", "jackknife", "bootstrap", "sandwich"),
   parameter = c("Theta", "Omega")
 )
 
 \method{standard_error}{PLNfit_fixedcov}(
   object,
-  type = c("variational", "jackknife", "sandwich"),
+  type = c("variational", "jackknife", "bootstrap", "sandwich"),
   parameter = c("Theta", "Omega")
 )
 }

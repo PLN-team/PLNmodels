@@ -64,7 +64,7 @@ PLNfamily <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Update fields after optimization
-      postTreatment = function() {
+      postTreatment = function(control) {
         nullModel <- nullModelPoisson(self$responses, self$covariates, self$offsets, self$weights)
         for (model in self$models)
           model$postTreatment(
@@ -72,6 +72,7 @@ PLNfamily <-
             self$covariates,
             self$offsets,
             self$weights,
+            control,
             nullModel = nullModel
           )
       },

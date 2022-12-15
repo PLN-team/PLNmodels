@@ -280,7 +280,7 @@ PLNmixturefit <-
       ## Post treatment --------------------
       #' @description Update fields after optimization
       #' @param weights an optional vector of observation weights to be used in the fitting process.
-      postTreatment = function(responses, covariates, offsets, weights, nullModel) {
+      postTreatment = function(responses, covariates, offsets, weights, control, nullModel) {
 
         ## restoring the full design matrix (group means + covariates)
         mu_k <- matrix(1, self$n, ncol = 1); colnames(mu_k) <- 'Intercept'
@@ -291,9 +291,8 @@ PLNmixturefit <-
             mu_k,
             offsets,
             private$tau[,k_],
-            nullModel = nullModel,
-            variance = FALSE,
-            jackknife = FALSE
+            control,
+            nullModel = nullModel
           )
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

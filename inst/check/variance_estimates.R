@@ -1,5 +1,6 @@
 library(tidyverse)
 library(PLNmodels)
+set.seed(1234)
 
 nb_cores <- 10
 options(future.fork.enable = TRUE)
@@ -16,9 +17,8 @@ Y <- rPLN(n = nrow(X), mu = tcrossprod(X, Theta), Sigma = params$Sigma, depths =
 data <- prepare_data(Y, X, offset = "none")
 O <- rowSums(Y)
 
-
 future::plan("multicore", workers = nb_cores)
-model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data, control = PLN_param(jackknife = TRUE, bootstrap = TRUE))
+model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data, control = PLN_param(jackknife = TRUE, bootstrap = nrow(Y)))
 future::plan("sequential")
 
 

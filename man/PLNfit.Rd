@@ -242,8 +242,8 @@ Update R2, fisher and std_err fields after optimization
   covariates,
   offsets,
   weights = rep(1, nrow(responses)),
-  nullModel = NULL,
-  jackknife = FALSE
+  control,
+  nullModel = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -257,6 +257,8 @@ Update R2, fisher and std_err fields after optimization
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{control}}{a list-like structure for controlling the fit, see \code{\link[=PLN_param]{PLN_param()}}.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 
