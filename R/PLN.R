@@ -45,7 +45,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 
   ## post-treatment
   if (control$trace > 0) cat("\n Post-treatments...")
-  myPLN$postTreatment(args$Y, args$X, args$O, args$w, jackknife = control$jackknife)
+  myPLN$postTreatment(args$Y, args$X, args$O, args$w, jackknife = control$jackknife, bootstrap = control$bootstrap)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -88,6 +88,7 @@ PLN_param <- function(
     covariance    = c("full", "diagonal", "spherical", "fixed", "genetic"),
     Omega         = NULL   ,
     jackknife     = FALSE,
+    bootstrap     = FALSE,
     config_optim  = list() ,
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
@@ -111,6 +112,7 @@ PLN_param <- function(
     covariance    = covariance,
     Omega         = Omega     ,
     jackknife     = jackknife ,
+    bootstrap     = bootstrap ,
     config_optim  = config    ,
     inception     = inception   ), class = "PLNmodels_param")
 }

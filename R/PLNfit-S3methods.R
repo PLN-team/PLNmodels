@@ -170,25 +170,28 @@ standard_error <- function(object, type = c("variational", "jackknife", "sandwic
 
 #' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit`]
 #' @export
-standard_error.PLNfit <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("Theta", "Omega")) {
+standard_error.PLNfit <- function(object, type = c("variational", "jackknife", "bootstrap", "sandwich"), parameter = c("Theta", "Omega")) {
   type <- match.arg(type)
   par  <- match.arg(parameter)
   if (type == "jackknife" & is.null(attr(object$model_par$Theta, "variance_jackknife")))
     stop("Jackknife estimation not available: you should call the method $variance_jackknife() first")
-  if (type == "sandwich") {
+  if (type == "sandwich")
     stop("Sandwich estimator is only available for fixed covariance / precision matrix.")
-  }
+  if (type == "bootstrap" & is.null(attr(object$model_par$Theta, "variance_bootstrap")))
+    stop("Bootstrap estimation not available: you should call the method $variance_bootsrap() first")
   attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
 }
 
 #' @describeIn standard_error Component-wise standard errors of Theta in [`PLNfit_fixedcov`]
 #' @export
-standard_error.PLNfit_fixedcov <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("Theta", "Omega")) {
+standard_error.PLNfit_fixedcov <- function(object, type = c("variational", "jackknife", "bootstrap", "sandwich"), parameter = c("Theta", "Omega")) {
   type <- match.arg(type)
   par  <- match.arg(parameter)
   if (par == "Omega")
     stop("Omega is not estimated for fixed covariance model")
   if (type == "jackknife" & is.null(attr(object$model_par$Theta, "variance_jackknife")))
     stop("Jackknife estimation not available: you should call the method $variance_jackknife() first")
+  if (type == "bootstrap" & is.null(attr(object$model_par$Theta, "variance_bootstrap")))
+    stop("Bootstrap estimation not available: you should call the method $variance_bootsrap() first")
   attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
 }
