@@ -291,7 +291,9 @@ PLNmixturefit <-
             mu_k,
             offsets,
             private$tau[,k_],
-            nullModel = nullModel
+            nullModel = nullModel,
+            variance = FALSE,
+            jackknife = FALSE
           )
       },
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

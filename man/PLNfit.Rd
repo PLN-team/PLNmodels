@@ -235,9 +235,6 @@ A list with three components:
 \if{html}{\out{<a id="method-PLNfit-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
-Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
-
-
 Update R2, fisher and std_err fields after optimization
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$postTreatment(
@@ -266,9 +263,6 @@ Update R2, fisher and std_err fields after optimization
 \item{\code{jackknife}}{Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Nothing, but add an attribute \code{variance_jacknife} to model_par$Theta and model_part$Omega, which can be reach by the method \code{\link[=standard_error]{standard_error()}} by the user.
 }
 }
 \if{html}{\out{<hr>}}

@@ -186,7 +186,7 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     variance_variational = function(X) {
-      ## Variance of Theta for n data points
+    ## Variance of Theta for n data points
       fisher <- Matrix::bdiag(lapply(1:self$p, function(j) {
         crossprod(X, private$A[, j] * X) # t(X) %*% diag(A[, i]) %*% X
       }))
@@ -199,7 +199,7 @@ PLNfit <- R6Class(
       } else {
         var_Theta <- vcov_Theta %>% diag() %>% matrix(nrow = self$d) %>% t()
       }
-      rownames(vcov_Theta) <-
+      rownames(vcov_Theta) <- colnames(vcov_Theta) <-
         expand.grid(covariates = colnames(private$Theta),
                     responses  = rownames(private$Theta)) %>% rev() %>%
         ## Hack to make sure that species is first and varies slowest
@@ -208,8 +208,8 @@ PLNfit <- R6Class(
       dimnames(var_Theta) <- dimnames(private$Theta)
       attr(private$Theta, "variance_variational") <- var_Theta
 
-      ## Variance of Omega, missing a 1 / n scaling factor
-      var_Omega <-  2/self$n * outer(diag(private$Omega), diag(private$Omega))
+      ## Variance of Omega
+      var_Omega <- 2 * outer(diag(private$Omega), diag(private$Omega)) / self$n
       dimnames(var_Omega) <- dimnames(private$Omega)
       attr(private$Omega, "variance_variational") <- var_Omega
       invisible(list(var_Theta = var_Theta, var_Omega = var_Omega))
@@ -228,14 +228,16 @@ PLNfit <- R6Class(
       }, future.seed = TRUE)
 
       Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
-      Theta_hat  <- private$Theta; attributes(Theta_hat) <- NULL
+      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`) %>%
+        `dimnames<-`(dimnames(private$Theta))
+      Theta_hat  <- private$Theta[,] ## strips attributes while preserving names
       attr(private$Theta, "bias") <- (self$n - 1) * (Theta_jack - Theta_hat)
       attr(private$Theta, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
 
       Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
-      Omega_hat  <- private$Omega; attributes(Omega_hat) <- NULL
+      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`) %>%
+        `dimnames<-`(dimnames(private$Omega))
+      Omega_hat  <- private$Omega[,] ## strips attributes while preserving names
       attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
       attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
@@ -274,8 +276,6 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
       ## set up various quantities
       private$formula <- formula # user formula call
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
-      private$optimizer$vestep <- nlopt_optimize_vestep
       ## initialize the variational parameters
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -292,6 +292,8 @@ PLNfit <- R6Class(
         private$M     <- do.call(cbind, lapply(GLMs, residuals))
         private$S     <- matrix(1,n,p)
       }
+      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
+      private$optimizer$vestep <- nlopt_optimize_vestep
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -362,9 +364,6 @@ PLNfit <- R6Class(
       optim_out
     },
 
-    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
-    #' @return Nothing, but add an attribute \code{variance_jacknife} to model_par$Theta and model_part$Omega, which can be reach by the method [standard_error()] by the user.
-
 #     #' @description Experimental: compute the estimated variance of the coefficient Theta
 #     #' the true matrix Sigma must be provided for sandwich estimation at the moment
 #     #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
@@ -389,7 +388,7 @@ PLNfit <- R6Class(
 
     #' @description Update R2, fisher and std_err fields after optimization
     #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL, jackknife = FALSE) {
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL, variance = TRUE, jackknife = FALSE) {
       ## compute approximated R2 with deviance
       private$approx_r2(responses, covariates, offsets, weights, nullModel)
       ## Set the name of the matrices according to those of the data matrices,
@@ -406,7 +405,7 @@ PLNfit <- R6Class(
       rownames(private$M) <- rownames(private$S) <- rownames(responses)
       colnames(private$S) <- 1:self$q
       ## compute and store matrix of standard variances for Theta and Omega with rough variational approximation
-      private$variance_variational(covariates)
+      if (variance == TRUE) private$variance_variational(covariates)
       if (jackknife == TRUE) private$variance_jackknife(responses, covariates, offsets, weights)
     },
 
@@ -799,8 +798,8 @@ PLNfit_fixedcov <- R6Class(
 
     #' @description Update R2, fisher and std_err fields after optimization
     #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL, jackknife = FALSE) {
-      super$postTreatment(responses, covariates, offsets, weights, nullModel, jackknife = jackknife)
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), nullModel = NULL, variance = TRUE, jackknife = FALSE) {
+      super$postTreatment(responses, covariates, offsets, weights, nullModel, variance = variance, jackknife = jackknife)
       private$vcov_sandwich_Theta(responses, covariates)
     }
 
@@ -842,16 +841,17 @@ PLNfit_fixedcov <- R6Class(
       }, future.seed = TRUE)
 
       Theta_jack <- jacks %>% map("Theta") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`)
-      Theta_hat <- private$Theta; attributes(Theta_hat) <- NULL
+      var_jack   <- jacks %>% map("Theta") %>% map(~( (. - Theta_jack)^2)) %>% reduce(`+`) %>%
+        `dimnames<-`(dimnames(private$Theta))
+      Theta_hat  <- private$Theta[,] ## strips attributes while preserving names
       attr(private$Theta, "bias") <- (self$n - 1) * (Theta_jack - Theta_hat)
       attr(private$Theta, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
 
-      Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
-      Omega_hat <- private$Omega; attributes(Omega_hat) <- NULL
-      attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
-      attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+      # Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
+      # var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
+      # Omega_hat <- private$Omega; attributes(Omega_hat) <- NULL
+      # attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
+      # attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
 
     vcov_sandwich_Theta = function(Y, X) {
@@ -872,7 +872,11 @@ PLNfit_fixedcov <- R6Class(
         Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
       }
       Cn_inv <- solve(Cn)
-      attr(private$Theta, "vcov_sandwich") <- (Cn_inv %*% Dn %*% Cn_inv) / (self$n)
+      dim_names <- dimnames(attr(private$Theta, "vcov_variational"))
+      vcov_sand <- ((Cn_inv %*% Dn %*% Cn_inv) / self$n) %>% `dimnames<-`(dim_names)
+      attr(private$Theta, "vcov_sandwich") <- vcov_sand
+      attr(private$Theta, "variance_sandwich") <- matrix(diag(vcov_sand), nrow = self$p, ncol = self$d,
+                                                         dimnames = dimnames(private$Theta))
     }
   ),
   active = list(

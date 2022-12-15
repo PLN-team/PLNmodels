@@ -50,7 +50,9 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_equal(vcov(myPLNfit, "main"), myPLNfit$vcov_coef)
   expect_equal(vcov(myPLNfit, "covariance"), myPLNfit$model_par$Sigma)
   expect_equal(vcov(myPLNfit, "covariance"), sigma(myPLNfit))
-  expect_equal(dim(standard_error(myPLNfit)), dim(coefficients(myPLNfit)))
+  expect_warning(sd_plnfit <- standard_error(myPLNfit), "Standard error of Theta is not implemented yet for PLNPCA models")
+  expect_equal(dim(sd_plnfit), dim(coefficients(myPLNfit)))
+  expect_error(standard_error(myPLNfit, parameter = "Omega"), "Omega is not estimated as such in PLNPCA models")
 
   expect_true(inherits(plot(myPLNfit, map = "variable", plot = FALSE), "ggplot"))
   expect_true(inherits(plot(myPLNfit, map = "individual", plot = FALSE), "ggplot"))
