@@ -151,6 +151,7 @@ PLNnetworkfamily <- R6Class(
         control$inception = inception_
         control$penalty_weights = map(self$models, "penalty_weights")
         control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
+        control$trace <- 0
 
         myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
                                       responses  = self$responses [subsample, , drop = FALSE],
