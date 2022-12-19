@@ -16,7 +16,7 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   ## fields and active bindings
   expect_equal(dim(myPLNfit$latent), dim(Y))
   expect_equal(dim(myPLNfit$model_par$Theta), c(ncol(Y), ncol(X)))
-  expect_equal(dim(myPLNfit$model_par$B), c(ncol(Y), myPLNfit$rank))
+  expect_equal(dim(myPLNfit$model_par$C), c(ncol(Y), myPLNfit$rank))
   expect_equal(dim(myPLNfit$model_par$Sigma), c(ncol(Y), ncol(Y)))
   expect_equal(dim(myPLNfit$var_par$M), c(nrow(Y), myPLNfit$rank))
   expect_equal(dim(myPLNfit$var_par$S), c(nrow(Y), myPLNfit$rank))

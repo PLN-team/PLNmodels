@@ -35,7 +35,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 
 \item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (covariance), Omega (precision) and B (loadings)}
+\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (covariance), Omega (precision) and C (loadings)}
 
 \item{\code{percent_var}}{the percent of variance explained by each axis}
 
@@ -120,7 +120,7 @@ Update a \code{\link{PLNPCAfit}} object
   Theta = NA,
   Sigma = NA,
   Omega = NA,
-  B = NA,
+  C = NA,
   M = NA,
   S = NA,
   Z = NA,
@@ -140,7 +140,7 @@ Update a \code{\link{PLNPCAfit}} object
 
 \item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
 
-\item{\code{B}}{matrix of PCA loadings (in the latent space)}
+\item{\code{C}}{matrix of PCA loadings (in the latent space)}
 
 \item{\code{M}}{matrix of mean vectors for the variational approximation}
 
@@ -274,6 +274,7 @@ Compute PCA scores in the latent space and update corresponding fields.
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 Update R2, fisher, std_err fields and set up visualization
+after optimization
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$postTreatment(
   responses,
@@ -299,9 +300,6 @@ Update R2, fisher, std_err fields and set up visualization
 \item{\code{control}}{a list for controlling the optimization. See details.}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
-
-\item{\code{type}}{approximation scheme used, either \code{wald} (default, variational), \code{sandwich} (based on MLE theory) or \code{none}.
-after optimization}
 }
 \if{html}{\out{</div>}}
 }

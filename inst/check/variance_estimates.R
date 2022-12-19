@@ -21,7 +21,6 @@ future::plan("multicore", workers = nb_cores)
 model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data, control = PLN_param(jackknife = TRUE, bootstrap = nrow(Y)))
 future::plan("sequential")
 
-
 Theta_hat <- coef(model)
 Theta_se_var <- standard_error(model)
 Theta_se_jk <- standard_error(model, "jackknife")

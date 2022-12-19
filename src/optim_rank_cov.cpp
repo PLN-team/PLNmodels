@@ -15,7 +15,7 @@
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_rank(
-    const Rcpp::List & init_parameters, // List(Theta, B, M, S)
+    const Rcpp::List & init_parameters, // List(Theta, C, M, S)
     const arma::mat & Y,                // responses (n,p)
     const arma::mat & X,                // covariates (n,d)
     const arma::mat & O,                // offsets (n,p)
@@ -24,16 +24,16 @@ Rcpp::List nlopt_optimize_rank(
 ) {
     // Conversion from R, prepare optimization
     const auto init_Theta = Rcpp::as<arma::mat>(init_parameters["Theta"]); // (p,d)
-    const auto init_B = Rcpp::as<arma::mat>(init_parameters["B"]);         // (p,q)
+    const auto init_C = Rcpp::as<arma::mat>(init_parameters["C"]);         // (p,q)
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]);         // (n,q)
     const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]);         // (n,q)
 
-    const auto metadata = tuple_metadata(init_Theta, init_B, init_M, init_S);
-    enum { THETA_ID, B_ID, M_ID, S_ID }; // Names for metadata indexes
+    const auto metadata = tuple_metadata(init_Theta, init_C, init_M, init_S);
+    enum { THETA_ID, C_ID, M_ID, S_ID }; // Names for metadata indexes
 
     auto parameters = std::vector<double>(metadata.packed_size);
     metadata.map<THETA_ID>(parameters.data()) = init_Theta;
-    metadata.map<B_ID>(parameters.data()) = init_B;
+    metadata.map<C_ID>(parameters.data()) = init_C;
     metadata.map<M_ID>(parameters.data()) = init_M;
     metadata.map<S_ID>(parameters.data()) = init_S;
 
@@ -46,7 +46,7 @@ Rcpp::List nlopt_optimize_rank(
             auto per_param_list = Rcpp::as<Rcpp::List>(value);
             auto packed = std::vector<double>(metadata.packed_size);
             set_from_r_sexp(metadata.map<THETA_ID>(packed.data()), per_param_list["Theta"]);
-            set_from_r_sexp(metadata.map<B_ID>(packed.data()), per_param_list["B"]);
+            set_from_r_sexp(metadata.map<C_ID>(packed.data()), per_param_list["C"]);
             set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
             set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
             set_per_value_xtol_abs(optimizer.get(), packed);
@@ -56,41 +56,41 @@ Rcpp::List nlopt_optimize_rank(
     // Optimize
     auto objective_and_grad = [&metadata, &O, &X, &Y, &w](const double * params, double * grad) -> double {
         const arma::mat Theta = metadata.map<THETA_ID>(params);
-        const arma::mat B = metadata.map<B_ID>(params);
+        const arma::mat C = metadata.map<C_ID>(params);
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
-        arma::mat Z = O + X * Theta.t() + M * B.t();
-        arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
+        arma::mat Z = O + X * Theta.t() + M * C.t();
+        arma::mat A = exp(Z + 0.5 * S2 * (C % C).t());
         double objective = accu(diagmat(w) * (A - Y % Z)) + 0.5 * accu(diagmat(w) * (M % M + S2 - log(S2) - 1.));
 
         metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
-        metadata.map<B_ID>(grad) = (diagmat(w) * (A - Y)).t() * M + (A.t() * (S2.each_col() % w)) % B;
-        metadata.map<M_ID>(grad) = diagmat(w) * ((A - Y) * B + M);
-        metadata.map<S_ID>(grad) = diagmat(w) * (S - 1. / S + A * (B % B) % S);
+        metadata.map<C_ID>(grad) = (diagmat(w) * (A - Y)).t() * M + (A.t() * (S2.each_col() % w)) % C;
+        metadata.map<M_ID>(grad) = diagmat(w) * ((A - Y) * C + M);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S - 1. / S + A * (C % C) % S);
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Model and variational parameters
     arma::mat Theta = metadata.copy<THETA_ID>(parameters.data());
-    arma::mat B = metadata.copy<B_ID>(parameters.data());
+    arma::mat C = metadata.copy<C_ID>(parameters.data());
     arma::mat M = metadata.copy<M_ID>(parameters.data());
     arma::mat S = metadata.copy<S_ID>(parameters.data());
     arma::mat S2 = S % S;
-    arma::mat Sigma = B * (M.t() * (M.each_col() % w) + diagmat(sum(S2.each_col() % w, 0))) * B.t() / accu(w);
-    arma::mat Omega = B * inv_sympd((M.t() * (M.each_col() % w) + diagmat(sum(S2.each_col() % w, 0)))/accu(w))  * B.t() ;
+    arma::mat Sigma = C * (M.t() * (M.each_col() % w) + diagmat(sum(S2.each_col() % w, 0))) * C.t() / accu(w);
+    arma::mat Omega = C * inv_sympd((M.t() * (M.each_col() % w) + diagmat(sum(S2.each_col() % w, 0)))/accu(w))  * C.t() ;
     // Element-wise log-likelihood
-    arma::mat Z = O + X * Theta.t() + M * B.t();
-    arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
+    arma::mat Z = O + X * Theta.t() + M * C.t();
+    arma::mat A = exp(Z + 0.5 * S2 * (C % C).t());
     arma::mat loglik = arma::sum(Y % Z - A, 1) - 0.5 * sum(M % M + S2 - log(S2) - 1., 1) + ki(Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;
     return Rcpp::List::create(
         Rcpp::Named("Theta", Theta),
-        Rcpp::Named("B", B),
+        Rcpp::Named("C", C),
         Rcpp::Named("M", M),
         Rcpp::Named("S", S),
         Rcpp::Named("Z", Z),
@@ -118,7 +118,7 @@ Rcpp::List nlopt_optimize_vestep_rank(
         const arma::mat & O,                // offsets (n,p)
         const arma::vec & w,                // weights (n)
         const arma::mat & Theta,            // (p,d)
-        const arma::mat & B,                // (p,q)
+        const arma::mat & C,                // (p,q)
         const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
@@ -147,18 +147,18 @@ Rcpp::List nlopt_optimize_vestep_rank(
     }
 
     // Optimize
-    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &Theta, &B](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &Theta, &C](const double * params, double * grad) -> double {
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
-        arma::mat Z = O + X * Theta.t() + M * B.t();
-        arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
+        arma::mat Z = O + X * Theta.t() + M * C.t();
+        arma::mat A = exp(Z + 0.5 * S2 * (C % C).t());
         arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2) ;
         double objective = accu(diagmat(w) * (A - Y % Z)) + 0.5 * accu(diagmat(w) * (M % M + S2 - log(S2) - 1.));
 
-        metadata.map<M_ID>(grad) = diagmat(w) * ((A - Y) * B + M);
-        metadata.map<S_ID>(grad) = diagmat(w) * (S - 1. / S + A * (B % B) % S);
+        metadata.map<M_ID>(grad) = diagmat(w) * ((A - Y) * C + M);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S - 1. / S + A * (C % C) % S);
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -168,8 +168,8 @@ Rcpp::List nlopt_optimize_vestep_rank(
     arma::mat S = metadata.copy<S_ID>(parameters.data());
     arma::mat S2 = S % S;
     // Element-wise log-likelihood
-    arma::mat Z = O + X * Theta.t() + M * B.t();
-    arma::mat A = exp(Z + 0.5 * S2 * (B % B).t());
+    arma::mat Z = O + X * Theta.t() + M * C.t();
+    arma::mat A = exp(Z + 0.5 * S2 * (C % C).t());
     arma::mat loglik = arma::sum(Y % Z - A, 1) - 0.5 * sum(M % M + S2 - log(S2) - 1., 1) + ki(Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));

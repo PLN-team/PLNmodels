@@ -33,8 +33,8 @@ nlopt_optimize_rank <- function(init_parameters, Y, X, O, w, configuration) {
     .Call('_PLNmodels_nlopt_optimize_rank', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, configuration)
 }
 
-nlopt_optimize_vestep_rank <- function(init_parameters, Y, X, O, w, Theta, B, configuration) {
-    .Call('_PLNmodels_nlopt_optimize_vestep_rank', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, B, configuration)
+nlopt_optimize_vestep_rank <- function(init_parameters, Y, X, O, w, Theta, C, configuration) {
+    .Call('_PLNmodels_nlopt_optimize_vestep_rank', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, Theta, C, configuration)
 }
 
 nlopt_optimize_spherical <- function(init_parameters, Y, X, O, w, configuration) {

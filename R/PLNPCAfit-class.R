@@ -46,8 +46,8 @@ PLNPCAfit <- R6Class(
     ## PRIVATE MEMBERS ----
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     private = list(
-      B     = NULL,
-      svdBM = NULL
+      C     = NULL,
+      svdCM = NULL
     ),
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PUBLIC MEMBERS ----
@@ -68,11 +68,11 @@ PLNPCAfit <- R6Class(
         ### TODO: check that it is really better than initializing with zeros...
         private$M  <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
         private$S  <- matrix(0.1, self$n, rank)
-        private$B  <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
+        private$C  <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
       },
       #' @description Update a [`PLNPCAfit`] object
       #' @param M     matrix of mean vectors for the variational approximation
-      #' @param B     matrix of PCA loadings (in the latent space)
+      #' @param C     matrix of PCA loadings (in the latent space)
       #' @param S     matrix of variance vectors for the variational approximation
       #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
       #' @param R2    approximate R^2 goodness-of-fit criterion
@@ -80,9 +80,9 @@ PLNPCAfit <- R6Class(
       #' @param A     matrix of fitted values
       #' @param monitoring a list with optimization monitoring quantities
       #' @return Update the current [`PLNPCAfit`] object
-      update = function(Theta=NA, Sigma=NA, Omega=NA, B=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+      update = function(Theta=NA, Sigma=NA, Omega=NA, C=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
         super$update(Theta = Theta, Sigma = Sigma, Omega = Omega, M = M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
-        if (!anyNA(B)) private$B <- B
+        if (!anyNA(C)) private$C <- C
       },
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,7 +93,7 @@ PLNPCAfit <- R6Class(
                      X = covariates,
                      O = offsets,
                      w = weights,
-                     init_parameters = list(Theta = private$Theta, B = private$B,
+                     init_parameters = list(Theta = private$Theta, C = private$C,
                                             M = private$M, S = private$S),
                      configuration = config)
         optim_out <- do.call(private$optimizer$main, args)
@@ -130,7 +130,7 @@ PLNPCAfit <- R6Class(
                      ## Initialize the variational parameters with the new dimension of the data
                      init_parameters = list(M = M_init, S = matrix(1, n, q)),
                      Theta = private$Theta,
-                     B     = private$B,
+                     C     = private$C,
                      configuration = control$config_optim)
         optim_out <- do.call(private$optimizer$vestep, args)
         optim_out
@@ -150,7 +150,7 @@ PLNPCAfit <- R6Class(
         ## Compute latent positions of the new samples
         M <- self$optimize_vestep(covariates = args$X, offsets = args$O, responses = args$Y,
                             weights = args$w, control = control)$M
-        latent_pos <- t(tcrossprod(self$model_par$B, M)) %>% scale(center = TRUE, scale = FALSE)
+        latent_pos <- t(tcrossprod(self$model_par$C, M)) %>% scale(center = TRUE, scale = FALSE)
 
         ## Compute scores in the PCA coordinate systems
         scores <- latent_pos %*% self$rotation
@@ -166,16 +166,15 @@ PLNPCAfit <- R6Class(
       #' @description Compute PCA scores in the latent space and update corresponding fields.
       #' @param scale.unit Logical. Should PCA scores be rescaled to have unit variance
       setVisualization = function(scale.unit = FALSE) {
-        private$svdBM <- svd(scale(self$latent_pos, TRUE, scale.unit), nv = self$rank)
+        private$svdCM <- svd(scale(self$latent_pos, TRUE, scale.unit), nv = self$rank)
       },
 
       #' @description Update R2, fisher, std_err fields and set up visualization
-      #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
       #' after optimization
       postTreatment = function(responses, covariates, offsets, weights, control, nullModel) {
         super$postTreatment(responses, covariates, offsets, weights, control, nullModel)
-        colnames(private$B) <- colnames(private$M) <- 1:self$q
-        rownames(private$B) <- colnames(responses)
+        colnames(private$C) <- colnames(private$M) <- 1:self$q
+        rownames(private$C) <- colnames(responses)
         self$setVisualization()
       },
 
@@ -313,21 +312,21 @@ PLNPCAfit <- R6Class(
       #' @field entropy entropy of the variational distribution
       entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2)))},
       #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
-      latent_pos = function() {tcrossprod(private$M, private$B)},
-      #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (covariance), Omega (precision) and B (loadings)
+      latent_pos = function() {tcrossprod(private$M, private$C)},
+      #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (covariance), Omega (precision) and C (loadings)
       model_par = function() {
         par <- super$model_par
-        par$B <- private$B
+        par$C <- private$C
         par
       },
       #' @field percent_var the percent of variance explained by each axis
       percent_var = function() {
-        eigen.val <- private$svdBM$d[1:self$rank]^2
+        eigen.val <- private$svdCM$d[1:self$rank]^2
         setNames(round(eigen.val/sum(eigen.val)*self$R_squared,4), paste0("PC", 1:self$rank))
       },
       #' @field corr_circle a matrix of correlations to plot the correlation circles
       corr_circle = function() {
-        corr <- private$svdBM$v[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], byrow = TRUE, nrow = self$p, ncol = self$rank)
+        corr <- private$svdCM$v[, 1:self$rank] * matrix(private$svdCM$d[1:self$rank], byrow = TRUE, nrow = self$p, ncol = self$rank)
         corr <- corr/sqrt(rowSums(corr^2))
         rownames(corr) <- rownames(private$Sigma)
         colnames(corr) <- paste0("PC", 1:self$rank)
@@ -335,21 +334,21 @@ PLNPCAfit <- R6Class(
       },
       #' @field scores a matrix of scores to plot the individual factor maps (a.k.a. principal components)
       scores     = function() {
-        scores <- private$svdBM$u[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], byrow = TRUE, nrow = self$n, ncol = self$rank)
+        scores <- private$svdCM$u[, 1:self$rank] * matrix(private$svdCM$d[1:self$rank], byrow = TRUE, nrow = self$n, ncol = self$rank)
         rownames(scores) <- rownames(private$M)
         colnames(scores) <- paste0("PC", 1:self$rank)
         scores
       },
       #' @field rotation a matrix of rotation of the latent space
       rotation   = function() {
-        rotation <- private$svdBM$v[, 1:self$rank, drop = FALSE]
+        rotation <- private$svdCM$v[, 1:self$rank, drop = FALSE]
         rownames(rotation) <- rownames(private$Sigma)
         colnames(rotation) <- paste0("PC", 1:self$rank)
         rotation
       },
       #' @field eig description of the eigenvalues, similar to percent_var but for use with external methods
       eig = function() {
-        eigen.val <- private$svdBM$d[1:self$rank]^2
+        eigen.val <- private$svdCM$d[1:self$rank]^2
         matrix(
           c(eigen.val,                                                # eigenvalues
             100 * self$R_squared * eigen.val / sum(eigen.val),        # percentage of variance
@@ -361,13 +360,13 @@ PLNPCAfit <- R6Class(
       },
       #' @field var a list of data frames with PCA results for the variables: `coord` (coordinates of the variables), `cor` (correlation between variables and dimensions), `cos2` (Cosine of the variables) and `contrib` (contributions of the variable to the axes)
       var = function() {
-        coord  <- private$svdBM$v[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], ncol = self$rank, nrow = self$p, byrow = TRUE)
+        coord  <- private$svdCM$v[, 1:self$rank] * matrix(private$svdCM$d[1:self$rank], ncol = self$rank, nrow = self$p, byrow = TRUE)
         ## coord[j, k] = d[k] * v[j, k]
         var_sd <- sqrt(rowSums(coord^2))
         coord  <- coord / var_sd
         cor    <- coord
         cos2 <- cor^2
-        contrib <- 100 * private$svdBM$v[, 1:self$rank, drop = FALSE]^2
+        contrib <- 100 * private$svdCM$v[, 1:self$rank, drop = FALSE]^2
         dimnames(coord) <- dimnames(cor) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$Sigma), paste0("Dim.", 1:self$rank))
         list(coord   = coord,
              cor     = cor,
@@ -376,11 +375,11 @@ PLNPCAfit <- R6Class(
       },
       #' @field ind a list of data frames with PCA results for the individuals: `coord` (coordinates of the individuals), `cos2` (Cosine of the individuals), `contrib` (contributions of individuals to an axis inertia) and `dist` (distance of individuals to the origin).
       ind = function() {
-        coord  <- private$svdBM$u[, 1:self$rank] * matrix(private$svdBM$d[1:self$rank], ncol = self$rank, nrow = self$n, byrow = TRUE)
+        coord  <- private$svdCM$u[, 1:self$rank] * matrix(private$svdCM$d[1:self$rank], ncol = self$rank, nrow = self$n, byrow = TRUE)
         ## coord[i, k] = d[k] * v[i, k]
         dist_origin <- sqrt(rowSums(coord^2))
         cos2 <- coord^2 / dist_origin^2
-        contrib <- 100 * private$svdBM$u[, 1:self$rank, drop = FALSE]^2
+        contrib <- 100 * private$svdCM$u[, 1:self$rank, drop = FALSE]^2
         dimnames(coord) <- dimnames(cos2) <- dimnames(contrib) <- list(rownames(private$M), paste0("Dim.", 1:self$rank))
         names(dist_origin) <- rownames(private$M)
         list(coord   = coord,

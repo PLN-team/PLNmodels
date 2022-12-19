@@ -139,8 +139,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // nlopt_optimize_vestep_rank
-Rcpp::List nlopt_optimize_vestep_rank(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Theta, const arma::mat& B, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_rank(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP ThetaSEXP, SEXP BSEXP, SEXP configurationSEXP) {
+Rcpp::List nlopt_optimize_vestep_rank(const Rcpp::List& init_parameters, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::vec& w, const arma::mat& Theta, const arma::mat& C, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_rank(SEXP init_parametersSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP wSEXP, SEXP ThetaSEXP, SEXP CSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -150,9 +150,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Theta(ThetaSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type C(CSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_rank(init_parameters, Y, X, O, w, Theta, B, configuration));
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_rank(init_parameters, Y, X, O, w, Theta, C, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
