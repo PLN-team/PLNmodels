@@ -842,10 +842,10 @@ PLNfit_fixedcov <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    torch_elbo = function(data, params) {
+    torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
       S2 <- torch_square(params$S[index])
       Z <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$Theta)
-      res <- sum(data$w) * torch_trace(torch_mm(private$torch_Sigma(data, params), private$torch_Omega(data, params))) +
+      res <- sum(data$w) * torch_trace(torch_mm(private$torch_Sigma(data, params, index), private$torch_Omega(data, params))) +
         sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z - .5 * torch_log(S2)))
       res
     },
