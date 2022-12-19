@@ -32,7 +32,7 @@ The function \code{\link{PLNLDA}}.
 
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), C (latent loadings), P (latent position) and Mu (group means)}
+\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the PLN model: B (covariates), Sigma (latent covariance), C (latent loadings), P (latent position) and Mu (group means)}
 
 \item{\code{percent_var}}{the percent of variance explained by each axis}
 

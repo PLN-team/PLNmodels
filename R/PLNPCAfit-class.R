@@ -13,7 +13,7 @@
 #' @param control a list for controlling the optimization. See details.
 #' @param config part of the \code{control} argument which configures the optimizer
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
-#' @param Theta matrix of regression matrix
+#' @param B matrix of regression matrix
 #' @param Sigma variance-covariance matrix of the latent variables
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
 #'
@@ -80,8 +80,8 @@ PLNPCAfit <- R6Class(
       #' @param A     matrix of fitted values
       #' @param monitoring a list with optimization monitoring quantities
       #' @return Update the current [`PLNPCAfit`] object
-      update = function(Theta=NA, Sigma=NA, Omega=NA, C=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-        super$update(Theta = Theta, Sigma = Sigma, Omega = Omega, M = M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+      update = function(B=NA, Sigma=NA, Omega=NA, C=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+        super$update(B = B, Sigma = Sigma, Omega = Omega, M = M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(C)) private$C <- C
       },
 
@@ -93,14 +93,14 @@ PLNPCAfit <- R6Class(
                      X = covariates,
                      O = offsets,
                      w = weights,
-                     init_parameters = list(Theta = private$Theta, C = private$C,
+                     init_parameters = list(B = private$B, C = private$C,
                                             M = private$M, S = private$S),
                      configuration = config)
         optim_out <- do.call(private$optimizer$main, args)
         do.call(self$update, optim_out)
       },
 
-      #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (B, Theta). Intended to position new data in the latent space for further use with PCA.
+      #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (C, B). Intended to position new data in the latent space for further use with PCA.
       #' @return A list with three components:
       #'  * the matrix `M` of variational means,
       #'  * the matrix `S2` of variational variances
@@ -129,8 +129,8 @@ PLNPCAfit <- R6Class(
                      w = weights,
                      ## Initialize the variational parameters with the new dimension of the data
                      init_parameters = list(M = M_init, S = matrix(1, n, q)),
-                     Theta = private$Theta,
-                     C     = private$C,
+                     B = private$B,
+                     C = private$C,
                      configuration = control$config_optim)
         optim_out <- do.call(private$optimizer$vestep, args)
         optim_out
@@ -313,7 +313,7 @@ PLNPCAfit <- R6Class(
       entropy  = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2)))},
       #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
       latent_pos = function() {tcrossprod(private$M, private$C)},
-      #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (covariance), Omega (precision) and C (loadings)
+      #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: B (covariates), Sigma (covariance), Omega (precision) and C (loadings)
       model_par = function() {
         par <- super$model_par
         par$C <- private$C

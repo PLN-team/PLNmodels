@@ -35,7 +35,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 
 \item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: Theta (covariates), Sigma (covariance), Omega (precision) and C (loadings)}
+\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: B (covariates), Sigma (covariance), Omega (precision) and C (loadings)}
 
 \item{\code{percent_var}}{the percent of variance explained by each axis}
 
@@ -117,7 +117,7 @@ Initialize a \code{\link{PLNPCAfit}} object
 Update a \code{\link{PLNPCAfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$update(
-  Theta = NA,
+  B = NA,
   Sigma = NA,
   Omega = NA,
   C = NA,
@@ -134,7 +134,7 @@ Update a \code{\link{PLNPCAfit}} object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{Theta}}{matrix of regression matrix}
+\item{\code{B}}{matrix of regression matrix}
 
 \item{\code{Sigma}}{variance-covariance matrix of the latent variables}
 
@@ -191,7 +191,7 @@ Call to the C++ optimizer and update of the relevant fields
 \if{html}{\out{<a id="method-PLNPCAfit-optimize_vestep"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-optimize_vestep}{}}}
 \subsection{Method \code{optimize_vestep()}}{
-Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (B, Theta). Intended to position new data in the latent space for further use with PCA.
+Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (C, B). Intended to position new data in the latent space for further use with PCA.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$optimize_vestep(
   covariates,

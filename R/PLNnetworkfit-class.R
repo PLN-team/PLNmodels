@@ -12,7 +12,7 @@
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
-#' @param Theta matrix of regression matrix
+#' @param B matrix of regression matrix
 #' @param Sigma variance-covariance matrix of the latent variables
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
 #'
@@ -49,7 +49,7 @@ PLNnetworkfit <- R6Class(
       if (!control$penalize_diagonal) diag(private$rho) <- 0
     },
     #' @description Update fields of a [`PLNnetworkfit`] object
-    #' @param Theta matrix of regression matrix
+    #' @param B matrix of regression matrix
     #' @param Sigma variance-covariance matrix of the latent variables
     #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
     #' @param M     matrix of mean vectors for the variational approximation
@@ -59,8 +59,8 @@ PLNnetworkfit <- R6Class(
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
     #' @param R2    approximate R^2 goodness-of-fit criterion
     #' @param monitoring a list with optimization monitoring quantities
-    update = function(penalty=NA, Theta=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-      super$update(Theta = Theta, Sigma = Sigma, Omega = Omega, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+    update = function(penalty=NA, B=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+      super$update(B = B, Sigma = Sigma, Omega = Omega, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
       if (!anyNA(penalty)) private$lambda <- penalty
     },
 
@@ -77,7 +77,7 @@ PLNnetworkfit <- R6Class(
                    X = covariates,
                    O = offsets,
                    w = weights,
-                   init_parameters = list(Theta = private$Theta, M = private$M, S = private$S),
+                   init_parameters = list(B = private$B, M = private$M, S = private$S),
                    configuration = control$config_optim)
       while (!cond) {
         iter <- iter + 1
@@ -97,7 +97,7 @@ PLNnetworkfit <- R6Class(
         if ((convergence[iter] < control$config_optim$ftol_out) | (iter >= control$config_optim$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate
-        args$init_parameters <- list(Theta = private$Theta, M = private$M, S = private$S)
+        args$init_parameters <- list(B = private$B, M = private$M, S = private$S)
         objective.old <- objective[iter]
       }
 

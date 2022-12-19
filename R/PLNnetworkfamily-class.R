@@ -108,9 +108,9 @@ PLNnetworkfamily <- R6Class(
         ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
         if (m < length(self$penalties))
           self$models[[m + 1]]$update(
-            Theta = self$models[[m]]$model_par$Theta,
-            M     = self$models[[m]]$var_par$M,
-            S     = self$models[[m]]$var_par$S
+            B = self$models[[m]]$model_par$B,
+            M = self$models[[m]]$var_par$M,
+            S = self$models[[m]]$var_par$S
           )
 
         if (control$trace > 1) {
@@ -168,7 +168,7 @@ PLNnetworkfamily <- R6Class(
 
       prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
       ## formatting/tyding
-      node_set <- rownames(self$getModel(index = 1)$model_par$Theta)
+      node_set <- colnames(self$getModel(index = 1)$model_par$B)
       colnames(prob) <- self$penalties
       private$stab_path <- prob %>%
         as.data.frame() %>%
