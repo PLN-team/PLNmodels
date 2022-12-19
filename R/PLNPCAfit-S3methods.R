@@ -65,14 +65,14 @@ plot.PLNPCAfit <-
     invisible(p)
   }
 
-#' @describeIn standard_error Component-wise standard errors of Theta in [`PLNPCAfit`] (not implemented yet)
+#' @describeIn standard_error Component-wise standard errors of B in [`PLNPCAfit`] (not implemented yet)
 #' @export
-standard_error.PLNPCAfit <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("Theta", "Omega")) {
+standard_error.PLNPCAfit <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("B", "Omega")) {
   par  <- match.arg(parameter)
   if (par == "Omega")
     stop("Omega is not estimated as such in PLNPCA models")
-  if (par == "Theta") {
-    warning("Standard error of Theta is not implemented yet for PLNPCA models")
+  if (par == "B") {
+    warning("Standard error of B is not implemented yet for PLNPCA models")
     theta_sd <- coef.PLNfit(object)
     theta_sd[ , ] <- NA
     theta_sd

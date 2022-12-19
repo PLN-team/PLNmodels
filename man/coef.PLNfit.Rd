@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{an R6 object with class \code{\link{PLNfit}}}
 
-\item{type}{type of parameter that should be extracted. Either "main" (default) for \deqn{\Theta} or "covariance" for \deqn{\Sigma}}
+\item{type}{type of parameter that should be extracted. Either "main" (default) for \deqn{B} or "covariance" for \deqn{\Sigma}}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
@@ -23,7 +23,7 @@ Extracts model coefficients from objects returned by \code{\link[=PLN]{PLN()}} a
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
-coef(myPLN) ## Theta
+coef(myPLN) ## B
 coef(myPLN, type = "covariance") ## Sigma
 }
 \seealso{

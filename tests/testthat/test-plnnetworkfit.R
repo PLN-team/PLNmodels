@@ -18,7 +18,7 @@ test_that("PLNnetwork fit: check classes, getters and field access", {
 
   ## fields and active bindings
   expect_equal(dim(myPLNfit$latent), dim(Y))
-  expect_equal(dim(myPLNfit$model_par$Theta), c(ncol(Y), ncol(X)))
+  expect_equal(dim(myPLNfit$model_par$B), c(ncol(X), ncol(Y)))
   expect_equal(dim(myPLNfit$model_par$Omega), c(ncol(Y), ncol(Y)))
   expect_equal(dim(myPLNfit$model_par$Sigma), c(ncol(Y), ncol(Y)))
   expect_equal(dim(myPLNfit$var_par$M), c(nrow(Y), ncol(Y)))
@@ -35,7 +35,7 @@ test_that("PLNnetwork fit: check classes, getters and field access", {
   expect_equal(myPLNfit$nb_param, p + myPLNfit$n_edges)
 
   ## S3 methods
-  expect_equal(coefficients(myPLNfit), myPLNfit$model_par$Theta)
+  expect_equal(coefficients(myPLNfit), myPLNfit$model_par$B)
   expect_equal(dim(fitted(myPLNfit)), dim(Y))
   expect_equal(sigma(myPLNfit), myPLNfit$model_par$Sigma)
   expect_equal(vcov(myPLNfit, "main"), myPLNfit$vcov_coef)

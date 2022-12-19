@@ -119,7 +119,7 @@ Update fields of a \code{\link{PLNnetworkfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$update(
   penalty = NA,
-  Theta = NA,
+  B = NA,
   Sigma = NA,
   Omega = NA,
   M = NA,
@@ -137,7 +137,7 @@ Update fields of a \code{\link{PLNnetworkfit}} object
 \describe{
 \item{\code{penalty}}{a positive real number controlling the level of sparsity of the underlying network.}
 
-\item{\code{Theta}}{matrix of regression matrix}
+\item{\code{B}}{matrix of regression matrix}
 
 \item{\code{Sigma}}{variance-covariance matrix of the latent variables}
 

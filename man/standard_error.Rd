@@ -5,30 +5,30 @@
 \alias{standard_error}
 \alias{standard_error.PLNfit}
 \alias{standard_error.PLNfit_fixedcov}
-\title{Component-wise standard errors of Theta}
+\title{Component-wise standard errors of B}
 \usage{
 \method{standard_error}{PLNPCAfit}(
   object,
   type = c("variational", "jackknife", "sandwich"),
-  parameter = c("Theta", "Omega")
+  parameter = c("B", "Omega")
 )
 
 standard_error(
   object,
   type = c("variational", "jackknife", "sandwich"),
-  parameter = c("Theta", "Omega")
+  parameter = c("B", "Omega")
 )
 
 \method{standard_error}{PLNfit}(
   object,
   type = c("variational", "jackknife", "bootstrap", "sandwich"),
-  parameter = c("Theta", "Omega")
+  parameter = c("B", "Omega")
 )
 
 \method{standard_error}{PLNfit_fixedcov}(
   object,
   type = c("variational", "jackknife", "bootstrap", "sandwich"),
-  parameter = c("Theta", "Omega")
+  parameter = c("B", "Omega")
 )
 }
 \arguments{
@@ -36,21 +36,21 @@ standard_error(
 
 \item{type}{string describing the type of variance approximation: "variational", "jackknife", "sandwich" (only for fixed covariance). Default is "variational".}
 
-\item{parameter}{string describing the target parameter: either Theta (regression coefficicents) or Omega (inverse residual covariance)}
+\item{parameter}{string describing the target parameter: either B (regression coefficicents) or Omega (inverse residual covariance)}
 }
 \value{
-A p * d positive matrix (same size as \eqn{\Theta}) with standard errors for the coefficients of \eqn{\Theta}
+A p * d positive matrix (same size as \eqn{B}) with standard errors for the coefficients of \eqn{B}
 }
 \description{
-Extracts univariate standard errors for the estimated coefficient of Theta. Standard errors are computed from the (approximate) Fisher information matrix.
+Extracts univariate standard errors for the estimated coefficient of B. Standard errors are computed from the (approximate) Fisher information matrix.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{standard_error(PLNPCAfit)}: Component-wise standard errors of Theta in \code{\link{PLNPCAfit}} (not implemented yet)
+\item \code{standard_error(PLNPCAfit)}: Component-wise standard errors of B in \code{\link{PLNPCAfit}} (not implemented yet)
 
-\item \code{standard_error(PLNfit)}: Component-wise standard errors of Theta in \code{\link{PLNfit}}
+\item \code{standard_error(PLNfit)}: Component-wise standard errors of B in \code{\link{PLNfit}}
 
-\item \code{standard_error(PLNfit_fixedcov)}: Component-wise standard errors of Theta in \code{\link{PLNfit_fixedcov}}
+\item \code{standard_error(PLNfit_fixedcov)}: Component-wise standard errors of B in \code{\link{PLNfit_fixedcov}}
 
 }}
 \examples{
