@@ -44,13 +44,13 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_equal(length(myPLNfit$ind$dist), n)
 
   ## S3 methods
-  expect_equal(coefficients(myPLNfit), myPLNfit$model_par$Theta)
+  expect_equal(coefficients(myPLNfit), myPLNfit$model_par$B)
   expect_equal(dim(fitted(myPLNfit)), dim(Y))
   expect_equal(sigma(myPLNfit), myPLNfit$model_par$Sigma)
   expect_equal(vcov(myPLNfit, "main"), myPLNfit$vcov_coef)
   expect_equal(vcov(myPLNfit, "covariance"), myPLNfit$model_par$Sigma)
   expect_equal(vcov(myPLNfit, "covariance"), sigma(myPLNfit))
-  expect_warning(sd_plnfit <- standard_error(myPLNfit), "Standard error of Theta is not implemented yet for PLNPCA models")
+  expect_warning(sd_plnfit <- standard_error(myPLNfit), "Standard error of B is not implemented yet for PLNPCA models")
   expect_equal(dim(sd_plnfit), dim(coefficients(myPLNfit)))
   expect_error(standard_error(myPLNfit, parameter = "Omega"), "Omega is not estimated as such in PLNPCA models")
 

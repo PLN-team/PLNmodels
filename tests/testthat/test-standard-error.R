@@ -14,7 +14,7 @@ test_that("Check that fisher and standard_error return objects with proper dimen
 
   sem <- standard_error(myPLN_cov)
   ## Dimensions
-  expect_equal(dim(sem), c(p, d))
+  expect_equal(dim(sem), c(d, p))
 
   ## Names
   expect_equal(rownames(sem), rownames(coef(myPLN_cov)))

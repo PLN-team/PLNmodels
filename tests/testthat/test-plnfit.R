@@ -31,7 +31,7 @@ test_that("PLN fit: check classes, getters and field access",  {
   expect_equal(model$d, 1)
 
   ## S3 methods: values
-  expect_equal(coef(model), model$model_par$Theta)
+  expect_equal(coef(model), model$model_par$B)
   expect_equal(coef(model, type = "covariance"), sigma(model))
   expect_equal(sigma(model), model$model_par$Sigma)
   # expect_equal(vcov(model), model$vcov_coef)
