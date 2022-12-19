@@ -31,7 +31,7 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
   expect_equal(dim(vcov(model)), c(model$d * model$p, model$d * model$p))
 
   ## fields and active bindings
-  expect_equal(dim(model$model_par$B), c(p, p))
+  expect_equal(dim(model$model_par$C), c(p, p))
   expect_equal(dim(model$model_par$Sigma), c(p, p))
   expect_equal(dim(model$var_par$M), c(n, p))
   expect_equal(dim(model$var_par$S), c(n, p))

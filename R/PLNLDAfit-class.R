@@ -77,7 +77,7 @@ PLNLDAfit <- R6Class(
       private$Mu <- Mu
       nk <- table(private$grouping)
       Mu_bar <- as.vector(Mu %*% nk / self$n)
-      private$B <- Mu %*% diag(nk) %*% t(Mu) / self$n - Mu_bar %o% Mu_bar
+      private$C <- Mu %*% diag(nk) %*% t(Mu) / self$n - Mu_bar %o% Mu_bar
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -87,7 +87,7 @@ PLNLDAfit <- R6Class(
     postTreatment = function(grouping, responses, covariates, offsets, control) {
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
       super$postTreatment(responses, covariates, offsets, control = control)
-      rownames(private$B) <- colnames(private$B) <- colnames(responses)
+      rownames(private$C) <- colnames(private$C) <- colnames(responses)
       colnames(private$S) <- 1:self$q
       self$setVisualization()
     },
@@ -95,8 +95,8 @@ PLNLDAfit <- R6Class(
     #' @description Compute LDA scores in the latent space and update corresponding fields.
     #' @param scale.unit Logical. Should LDA scores be rescaled to have unit variance
     setVisualization = function(scale.unit = FALSE) {
-      Wm1B <- solve(private$Sigma) %*% private$B
-      private$svdLDA <- svd(scale(Wm1B,TRUE, scale.unit), nv = self$rank)
+      Wm1C <- solve(private$Sigma) %*% private$C
+      private$svdLDA <- svd(scale(Wm1C,TRUE, scale.unit), nv = self$rank)
       P <- private$M + tcrossprod(model.matrix( ~ private$grouping + 0), private$Mu) ## P = M + G Mu
       private$P <- scale(P, TRUE, scale.unit)
     },
@@ -312,7 +312,7 @@ PLNLDAfit <- R6Class(
   ## PRIVATE MEMBERS
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
-    B        = NULL,
+    C        = NULL,
     P        = NULL,
     Mu       = NULL,
     grouping = NULL,
@@ -327,10 +327,10 @@ PLNLDAfit <- R6Class(
     rank = function() {nlevels(private$grouping) - 1},
     #' @field nb_param number of parameters in the current PLN model
     nb_param = function() {self$p * (self$d + self$rank)},
-    #' @field model_par a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), B (latent loadings), P (latent position) and Mu (group means)
+    #' @field model_par a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), C (latent loadings), P (latent position) and Mu (group means)
     model_par = function() {
       par <- super$model_par
-      par$B  <- private$B
+      par$C  <- private$C
       par$P  <- private$P
       par$Mu <- private$Mu
       par
@@ -343,7 +343,7 @@ PLNLDAfit <- R6Class(
     #' @field corr_map a matrix of correlations to plot the correlation circles
     corr_map = function() {
       corr <- cor(private$P, self$scores)
-      rownames(corr) <- rownames(private$B)
+      rownames(corr) <- rownames(private$C)
       colnames(corr) <- paste0("LD", 1:self$rank)
       corr
     },
@@ -413,10 +413,10 @@ PLNLDAfit_diagonal <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     torch_elbo = function(data, params) {
-      S2 <- torch_pow(params$S, 2)
-      Z <- data$O + params$M + torch_matmul(data$X, params$Theta)
+      S2 <- torch_square(params$S)
+      Z <- data$O + params$M + torch_mm(data$X, params$Theta)
       res <- .5 * sum(data$w) * sum(torch_log(private$torch_sigma_diag(data, params))) -
-        sum(torch_matmul(data$w , data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+        sum(torch_matmul(data$w, data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
       res
     },
 
