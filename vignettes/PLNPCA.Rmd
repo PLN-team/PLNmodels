@@ -64,15 +64,15 @@ This PLN-PCA model can be written in a hierarchical framework where a sample of 
 \begin{equation} 
   \begin{array}{rcl}
     \text{latent space }  & \mathbf{W}_i \quad \text{i.i.d.} & \mathbf{W}_i \sim      \mathcal{N}(\mathbf{0}_q, \mathbf{I}_q)  \\
-\text{parameter space } &   \mathbf{Z}_i = {\boldsymbol\mu} + \mathbf{B}^\top \mathbf{W}_i & \\
+\text{parameter space } &   \mathbf{Z}_i = {\boldsymbol\mu} + \mathbf{C}^\top \mathbf{W}_i & \\
   \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
 \end{equation}
 
-The parameter ${\boldsymbol\mu}\in\mathbb{R}^p$ corresponds to the main effects, the $p\times q$ matrix $\mathbf{B}$  to the \emph{rescaled} loadings in the parameter spaces and $\mathbf{W}_i$ to the scores of the $i$-th observation in the low-dimensional latent subspace of the parameter space. The dimension of the latent space $q$ corresponds to the number of axes in the PCA or, in other words, to the rank of $\mathbf{B}\mathbf{B}^\intercal$. An hopefully more intuitive way of writing this model is the following:
+The parameter ${\boldsymbol\mu}\in\mathbb{R}^p$ corresponds to the main effects, the $p\times q$ matrix $\mathbf{C}$  to the \emph{rescaled} loadings in the parameter spaces and $\mathbf{W}_i$ to the scores of the $i$-th observation in the low-dimensional latent subspace of the parameter space. The dimension of the latent space $q$ corresponds to the number of axes in the PCA or, in other words, to the rank of $\mathbf{C}\mathbf{C}^\intercal$. An hopefully more intuitive way of writing this model is the following:
 \begin{equation} 
   \begin{array}{rcl}
-  \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{B}\mathbf{B}^\top \\
+  \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{C}\mathbf{C}^\top \\
   \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
   \end{array}
 \end{equation}
@@ -82,7 +82,7 @@ where the interpretation of PLN-PCA as a rank-constrained PLN model is more obvi
 
 Just like PLN, PLN-PCA generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$. The latent layer then reads
 \begin{equation} 
-  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{B}\mathbf{B}^\top,
+  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{C}\mathbf{C}^\top,
 \end{equation}
 where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters.
 
