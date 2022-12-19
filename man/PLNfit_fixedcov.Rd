@@ -27,7 +27,7 @@ print(myPLN)
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
-\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of Theta (needs known covariance at the moment)}
+\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of B (needs known covariance at the moment)}
 }
 \if{html}{\out{</div>}}
 }

@@ -86,7 +86,7 @@ PLNLDAfit <- R6Class(
     #' after optimization
     postTreatment = function(grouping, responses, covariates, offsets, control) {
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
-      control$variance <- FALSE
+      if (control$backend == "torch") control$variance <- FALSE
       super$postTreatment(responses, covariates, offsets, control = control)
       rownames(private$C) <- colnames(private$C) <- colnames(responses)
       colnames(private$S) <- 1:self$q

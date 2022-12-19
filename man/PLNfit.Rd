@@ -34,7 +34,7 @@ print(myPLN)
 
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{model_par}}{a list with the matrices of the model parameters: Theta (covariates), Sigma (covariance), Omega (precision matrix), plus some others depending on the variant)}
+\item{\code{model_par}}{a list with the matrices of the model parameters: B (covariates), Sigma (covariance), Omega (precision matrix), plus some others depending on the variant)}
 
 \item{\code{var_par}}{a list with the matrices of the variational parameters: M (means) and S2 (variances)}
 
@@ -46,7 +46,7 @@ print(myPLN)
 
 \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 
-\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of Theta (need knwon covariance at the moment)}
+\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of B (need knwon covariance at the moment)}
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
@@ -117,7 +117,7 @@ Initialize a \code{\link{PLNfit}} model
 Update a \code{\link{PLNfit}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$update(
-  Theta = NA,
+  B = NA,
   Sigma = NA,
   Omega = NA,
   M = NA,
@@ -133,7 +133,7 @@ Update a \code{\link{PLNfit}} object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{Theta}}{matrix of regression matrix}
+\item{\code{B}}{matrix of regression matrix}
 
 \item{\code{Sigma}}{variance-covariance matrix of the latent variables}
 
@@ -188,14 +188,14 @@ Call to the NLopt or TORCH optimizer and update of the relevant fields
 \if{html}{\out{<a id="method-PLNfit-optimize_vestep"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-optimize_vestep}{}}}
 \subsection{Method \code{optimize_vestep()}}{
-Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, Theta). Intended to position new data in the latent space.
+Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNfit$optimize_vestep(
   covariates,
   offsets,
   responses,
   weights,
-  Theta = self$model_par$Theta,
+  B = self$model_par$B,
   Omega = self$model_par$Omega,
   control = PLN_param(backend = "nlopt")
 )}\if{html}{\out{</div>}}
@@ -212,7 +212,7 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{Theta}}{Optional fixed value of the regression parameters}
+\item{\code{B}}{Optional fixed value of the regression parameters}
 
 \item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
 
