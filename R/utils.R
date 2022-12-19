@@ -86,15 +86,13 @@ logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) 
 
 #' @importFrom stats glm.fit
 nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
-  Theta <- do.call(rbind, lapply(1:ncol(responses), function(j)
+  Theta <- do.call(cbind, future_lapply(1:ncol(responses), function(j)
     coefficients(suppressWarnings(glm.fit(covariates, responses[, j], weights = weights, offset = offsets[, j], family = stats::poisson())))))
-  lambda <- offsets + tcrossprod(covariates, Theta)
-  lambda
+  offsets + covariates %*% Theta
 }
 
 fullModelPoisson <- function(responses, weights = rep(1, nrow(responses))) {
-  lambda <- log(responses)
-  lambda
+  log(responses)
 }
 
 #' @importFrom stats .getXlevels

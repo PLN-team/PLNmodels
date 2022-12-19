@@ -124,7 +124,7 @@ test_that("plot_PCA works for 4 or more axes:", {
 test_that("PLNPCA fit: check print message",  {
 
   output <- paste(
-"Poisson Lognormal with rank constrained for PCA (rank = 4)
+"Poisson Lognormal with rank constrained for PCA (rank = 3)
 ==================================================================",
 capture_output(print(as.data.frame(round(myPLNfit$criteria, digits = 3), row.names = ""))),
 "==================================================================

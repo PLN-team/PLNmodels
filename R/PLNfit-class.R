@@ -308,13 +308,13 @@ PLNfit <- R6Class(
         private$Sigma <- control$inception$model_par$Sigma
         private$B     <- control$inception$model_par$B
         private$M     <- control$inception$var_par$M
-        private$S     <- sqrt(control$inception$var_par$S2)
+        private$S     <- control$inception$var_par$S
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-        GLMs <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset = log(1 + exp(offsets[,j]))))
-        private$B <- do.call(cbind, lapply(GLMs, coefficients))
-        private$M <- do.call(cbind, lapply(GLMs, residuals))
-        private$S <- matrix(1,n,p)
+        fits <- lm.fit(weights * covariates, weights * log((1 + responses)/(1 + exp(offsets))))
+        private$B <- matrix(fits$coefficients, d, p)
+        private$M <- matrix(fits$residuals, n, p)
+        private$S <- matrix(1, n, p)
       }
       private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
       private$optimizer$vestep <- nlopt_optimize_vestep
@@ -387,28 +387,6 @@ PLNfit <- R6Class(
       optim_out <- do.call(private$optimizer$vestep, args)
       optim_out
     },
-
-#     #' @description Experimental: compute the estimated variance of the coefficient B
-#     #' the true matrix Sigma must be provided for sandwich estimation at the moment
-#     #' @param type approximation scheme used, either `wald` (default, variational), `sandwich` (based on MLE theory) or `none`.
-#     #' @return a sparse matrix with sensible dimension names
-#     get_vcov_hat = function(type, responses, covariates, Sigma = self$model_par$Sigma) {
-#       ## compute and store the estimated covariance of the estimator of the parameter B
-#       vcov_hat <-
-#         switch(type,
-#                "wald"     = private$vcov_wald(X = covariates),
-#                "sandwich" = private$vcov_sandwich(Y = responses, X = covariates, Sigma = Sigma),
-#                "none"     = NULL)
-#
-#       ## set proper names, use sensible defaults if some names are missing
-#       rownames(vcov_hat) <-
-#         expand.grid(covariates = colnames(covariates),
-#                     responses  = colnames(responses)) %>% rev() %>%
-#         ## Hack to make sure that species is first and varies slowest
-#         apply(1, paste0, collapse = "_")
-#       attr(vcov_hat, "name") <- type
-#       attr(private$B, "vcov") <- vcov_hat
-#     },
 
     #' @description Update R2, fisher and std_err fields after optimization
     #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
