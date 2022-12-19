@@ -21,7 +21,7 @@ Rcpp::List nlopt_optimize_spherical(
     const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
-    const auto init_B = Rcpp::as<arma::mat>(init_parameters["B"]); // (p,d)
+    const auto init_B = Rcpp::as<arma::mat>(init_parameters["B"]); // (d,p)
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
 
@@ -58,12 +58,12 @@ Rcpp::List nlopt_optimize_spherical(
 
         arma::mat S2 = S % S;
         const arma::uword p = Y.n_cols;
-        arma::mat Z = O + X * B.t() + M;
+        arma::mat Z = O + X * B + M;
         arma::mat A = exp(Z + 0.5 * S2);
         double sigma2 = accu(diagmat(w) * (pow(M, 2) + S2)) / (double(p) * w_bar) ;
         double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * (double(p) * w_bar) * log(sigma2) ;
 
-        metadata.map<B_ID>(grad) = (A - Y).t() * (X.each_col() % w);
+        metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
         metadata.map<M_ID>(grad) = diagmat(w) * (M / sigma2 + A - Y);
         metadata.map<S_ID>(grad) = diagmat(w) * (S / sigma2 + S % A - pow(S, -1));
 
@@ -83,7 +83,7 @@ Rcpp::List nlopt_optimize_spherical(
     arma::sp_mat Sigma(p,p); Sigma.diag() = arma::ones<arma::vec>(p) * sigma2;
     arma::sp_mat Omega(p,p); Omega.diag() = arma::ones<arma::vec>(p) * pow(sigma2, -1);
     // Element-wise log-likelihood
-    arma::mat Z = O + X * B.t() + M;
+    arma::mat Z = O + X * B + M;
     arma::mat A = exp(Z + 0.5 * S2);
     arma::mat loglik = sum(Y % Z - A - 0.5 * (pow(M, 2) + S2 ) / sigma2 + 0.5 * log(S2 / sigma2), 1) + ki(Y);
 
@@ -116,7 +116,7 @@ Rcpp::List nlopt_optimize_vestep_spherical(
     const arma::mat & X,        // covariates (n,d)
     const arma::mat & O,        // offsets (n,p)
     const arma::vec & w,        // weights (n)
-    const arma::mat & B,        // (p,d)
+    const arma::mat & B,        // (d,p)
     const arma::mat & Omega,    // (p,p)
     const Rcpp::List & configuration    // List of config values
 ) {
@@ -151,7 +151,7 @@ Rcpp::List nlopt_optimize_vestep_spherical(
         const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
-        arma::mat Z = O + X * B.t() + M;
+        arma::mat Z = O + X * B + M;
         arma::mat A = exp(Z + 0.5 * S2);
         double n_sigma2 = accu(diagmat(w) * (pow(M, 2) + S2)) ;
         double omega2 = Omega(0, 0);
@@ -170,7 +170,7 @@ Rcpp::List nlopt_optimize_vestep_spherical(
     arma::mat S2 = S % S;
     double omega2 = Omega(0, 0);
     // Element-wise log-likelihood
-    arma::mat Z = O + X * B.t() + M;
+    arma::mat Z = O + X * B + M;
     arma::mat A = exp(Z + 0.5 * S2);
     arma::mat loglik = sum(Y % Z - A - 0.5 * (pow(M, 2) + S2 ) * omega2 + 0.5 * log(S2 * omega2), 1) + ki(Y);
 

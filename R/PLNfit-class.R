@@ -100,9 +100,9 @@ PLNfit <- R6Class(
         w = torch_tensor(w)
       )
       params <- list(
-        B = torch_tensor(t(init_parameters$B), requires_grad = TRUE),
-        M = torch_tensor(init_parameters$M   , requires_grad = TRUE),
-        S = torch_tensor(init_parameters$S   , requires_grad = TRUE)
+        B = torch_tensor(init_parameters$B, requires_grad = TRUE),
+        M = torch_tensor(init_parameters$M, requires_grad = TRUE),
+        S = torch_tensor(init_parameters$S, requires_grad = TRUE)
       )
 
       ## Initialize optimizer
@@ -162,7 +162,7 @@ PLNfit <- R6Class(
       params$A     <- torch_exp(params$Z + torch_pow(params$S, 2)/2)
 
       out <- list(
-        B      = t(as.matrix(params$B)),
+        B      = as.matrix(params$B),
         Sigma  = as.matrix(params$Sigma),
         Omega  = as.matrix(params$Omega),
         M      = as.matrix(params$M),
@@ -194,14 +194,14 @@ PLNfit <- R6Class(
       if (is(vcov_B, "error")) {
         warning(paste("Inversion of the Fisher information matrix failed with following error message:",
                       vcov_B$message, "Returning NA", sep = "\n"))
-        vcov_B <- matrix(NA, nrow = self$p, ncol = self$d)
-        var_B  <- matrix(NA, nrow = self$p, ncol = self$d)
+        vcov_B <- matrix(NA, nrow = self$d, ncol = self$p)
+        var_B  <- matrix(NA, nrow = self$d, ncol = self$p)
       } else {
-        var_B <- vcov_B %>% diag() %>% matrix(nrow = self$d) %>% t()
+        var_B <- vcov_B %>% diag() %>% matrix(nrow = self$d)
       }
       rownames(vcov_B) <- colnames(vcov_B) <-
-        expand.grid(covariates = colnames(private$B),
-                    responses  = rownames(private$B)) %>% rev() %>%
+        expand.grid(covariates = rownames(private$B),
+                    responses  = colnames(private$B)) %>% rev() %>%
         ## Hack to make sure that species is first and varies slowest
         apply(1, paste0, collapse = "_")
       attr(private$B, "vcov_variational") <- vcov_B
@@ -303,18 +303,18 @@ PLNfit <- R6Class(
       ## initialize the variational parameters
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
-        stopifnot(isTRUE(all.equal(dim(control$inception$model_par$B), c(p,d))))
-        stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)      , c(n,p))))
+        stopifnot(isTRUE(all.equal(dim(control$inception$model_par$B), c(d,p))))
+        stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)  , c(n,p))))
         private$Sigma <- control$inception$model_par$Sigma
-        private$B <- control$inception$model_par$B
+        private$B     <- control$inception$model_par$B
         private$M     <- control$inception$var_par$M
         private$S     <- sqrt(control$inception$var_par$S2)
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
         GLMs <- lapply(1:p, function(j) lm.wfit(covariates, log(1 + responses[,j]), weights, offset = log(1 + exp(offsets[,j]))))
-        private$B <- do.call(rbind, lapply(GLMs, coefficients))
-        private$M     <- do.call(cbind, lapply(GLMs, residuals))
-        private$S     <- matrix(1,n,p)
+        private$B <- do.call(cbind, lapply(GLMs, coefficients))
+        private$M <- do.call(cbind, lapply(GLMs, residuals))
+        private$S <- matrix(1,n,p)
       }
       private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
       private$optimizer$vestep <- nlopt_optimize_vestep
@@ -421,8 +421,8 @@ PLNfit <- R6Class(
         colnames(responses) <- paste0("Y", 1:self$p)
       if (self$d > 0) {
         if (is.null(colnames(covariates))) colnames(covariates) <- paste0("X", 1:self$d)
-        rownames(private$B) <- colnames(responses)
-        colnames(private$B) <- colnames(covariates)
+        colnames(private$B) <- colnames(responses)
+        rownames(private$B) <- colnames(covariates)
       }
       rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
       rownames(private$Omega) <- colnames(private$Omega) <- colnames(responses)
@@ -455,7 +455,7 @@ PLNfit <- R6Class(
       O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
 
       ## mean latent positions in the parameter space
-      EZ <- tcrossprod(X, private$B)
+      EZ <- X %*% private$B
       if (!is.null(O)) EZ <- EZ + O
       EZ <- sweep(EZ, 2, .5 * diag(self$model_par$Sigma), "+")
       colnames(EZ) <- colnames(private$Sigma)
@@ -478,7 +478,7 @@ PLNfit <- R6Class(
 
       # Checks
       Yc <- as.matrix(cond_responses)
-      sp_names <- rownames(self$model_par$B)
+      sp_names <- colnames(self$model_par$B)
       if (!any(colnames(cond_responses) %in% sp_names))
         stop("Yc must be a subset of the species in responses")
       if (!nrow(Yc) == nrow(newdata))
@@ -507,7 +507,7 @@ PLNfit <- R6Class(
               offsets    = O[, cond, drop = FALSE],
               responses  = Yc,
               weights    = rep(1, n_new),
-              B      = self$model_par$B[cond, , drop = FALSE],
+              B          = self$model_par$B[, cond, drop = FALSE],
               Omega      = prec11
           )
 
@@ -517,8 +517,7 @@ PLNfit <- R6Class(
       S <- map(1:n_new, ~crossprod(VE$S[., ] * t(A)) + Sigma21) %>% simplify2array()
 
       ## mean latent positions in the parameter space
-      EZ <- tcrossprod(X, private$B[!cond, , drop = FALSE]) + M
-      EZ <- EZ + O[, !cond, drop = FALSE]
+      EZ <- X %*% private$B[, !cond, drop = FALSE] + M + O[, !cond, drop = FALSE]
       colnames(EZ) <- setdiff(sp_names, colnames(Yc))
 
       # ! We should only add the .5*diag(S2) term only if we want the type="response"
@@ -571,13 +570,13 @@ PLNfit <- R6Class(
     #' @field q number of dimensions of the latent space
     q = function() {ncol(private$M)},
     #' @field p number of species
-    p = function() {nrow(private$B)},
+    p = function() {ncol(private$B)},
     #' @field d number of covariates
-    d = function() {ncol(private$B)},
+    d = function() {nrow(private$B)},
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {as.integer(self$p * self$d + self$p * (self$p + 1)/2)},
     #' @field model_par a list with the matrices of the model parameters: B (covariates), Sigma (covariance), Omega (precision matrix), plus some others depending on the variant)
-    model_par  = function() {list(B = private$B, Sigma = private$Sigma, Omega = private$Omega, Theta = private$B)},
+    model_par  = function() {list(B = private$B, Sigma = private$Sigma, Omega = private$Omega, Theta = t(private$B))},
     #' @field var_par a list with the matrices of the variational parameters: M (means) and S2 (variances)
     var_par    = function() {list(M = private$M, S2 = private$S**2, S = private$S)},
     #' @field optim_par a list with parameters useful for monitoring the optimization
@@ -909,7 +908,7 @@ PLNfit_fixedcov <- R6Class(
       dim_names <- dimnames(attr(private$B, "vcov_variational"))
       vcov_sand <- ((Cn_inv %*% Dn %*% Cn_inv) / self$n) %>% `dimnames<-`(dim_names)
       attr(private$B, "vcov_sandwich") <- vcov_sand
-      attr(private$B, "variance_sandwich") <- matrix(diag(vcov_sand), nrow = self$p, ncol = self$d,
+      attr(private$B, "variance_sandwich") <- matrix(diag(vcov_sand), nrow = self$d, ncol = self$p,
                                                          dimnames = dimnames(private$B))
     }
   ),

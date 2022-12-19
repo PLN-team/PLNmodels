@@ -21,7 +21,7 @@ Rcpp::List nlopt_optimize_diagonal(
     const Rcpp::List & configuration    // List of config values
 ) {
     // Conversion from R, prepare optimization
-    const auto init_B = Rcpp::as<arma::mat>(init_parameters["B"]); // (p,d)
+    const auto init_B = Rcpp::as<arma::mat>(init_parameters["B"]); // (d,p)
     const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
 
@@ -57,12 +57,12 @@ Rcpp::List nlopt_optimize_diagonal(
         const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
-        arma::mat Z = O + X * B.t() + M;
+        arma::mat Z = O + X * B + M;
         arma::mat A = exp(Z + 0.5 * S2);
         arma::rowvec diag_sigma = w.t() * (M % M + S2) / w_bar;
         double objective = accu(diagmat(w) * (A - Y % Z - 0.5 * log(S2))) + 0.5 * w_bar * accu(log(diag_sigma));
 
-        metadata.map<B_ID>(grad) = (A - Y).t() * (X.each_col() % w);
+        metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
         metadata.map<M_ID>(grad) = diagmat(w) * ((M.each_row() / diag_sigma) + A - Y);
         metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % pow(diag_sigma, -1) + S % A - pow(S, -1));
         return objective;
@@ -83,7 +83,7 @@ Rcpp::List nlopt_optimize_diagonal(
     arma::sp_mat Omega(Y.n_cols, Y.n_cols);
     Omega.diag() = omega2;
     // Element-wise log-likelihood
-    arma::mat Z = O + X * B.t() + M;
+    arma::mat Z = O + X * B + M;
     arma::mat A = exp(Z + 0.5 * S2);
     arma::mat loglik =
         sum(Y % Z - A + 0.5 * log(S2), 1) - 0.5 * (pow(M, 2) + S2) * omega2 + 0.5 * sum(log(omega2)) + ki(Y);
@@ -117,7 +117,7 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     const arma::mat & X,        // covariates (n,d)
     const arma::mat & O,        // offsets (n,p)
     const arma::vec & w,        // weights (n)
-    const arma::mat & B,        // (p,d)
+    const arma::mat & B,        // (d,p)
     const arma::mat & Omega,    // (p,p)
     const Rcpp::List & configuration    // List of config values
 ) {
@@ -152,7 +152,7 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
         const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
-        arma::mat Z = O + X * B.t() + M;
+        arma::mat Z = O + X * B + M;
         arma::mat A = exp(Z + 0.5 * S2);
         arma::vec omega2 = arma::diagvec(Omega);
         double objective =
@@ -170,7 +170,7 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     arma::mat S2 = S % S;
     arma::vec omega2 = Omega.diag();
     // Element-wise log-likelihood
-    arma::mat Z = O + X * B.t() + M;
+    arma::mat Z = O + X * B + M;
     arma::mat A = exp(Z + 0.5 * S2);
     arma::mat loglik =
       sum(Y % Z - A + 0.5 * log(S2), 1) - 0.5 * (pow(M, 2) + S2) * omega2 + 0.5 * sum(log(omega2)) + ki(Y);
