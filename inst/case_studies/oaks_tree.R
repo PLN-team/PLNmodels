@@ -30,20 +30,20 @@ rbind(
   knitr::kable()
 
 ## Discriminant Analysis with LDA
-myLDA_tree <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks)
+myLDA_tree <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(backend="torch"))
 plot(myLDA_tree)
 plot(myLDA_tree, "individual")
 
-myLDA_tree_diagonal <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "diagonal"))
+myLDA_tree_diagonal <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "diagonal", backend="torch"))
 plot(myLDA_tree_diagonal)
 otu.family <- factor(rep(c("fungi", "E. aphiltoides", "bacteria"), c(47, 1, 66)))
 plot(myLDA_tree, "variable", var_cols = otu.family) ## TODO: add color for arrows to check
 
-myLDA_tree_spherical <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "spherical"))
+myLDA_tree_spherical <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "spherical", backend = "torch"))
 plot(myLDA_tree_spherical)
 
 ## One dimensional check of plot
-myLDA_orientation <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = orientation, data = oaks)
+myLDA_orientation <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = orientation, data = oaks, control = PLN_param(backend = "torch"))
 plot(myLDA_orientation)
 
 ## Dimension reduction with PCA

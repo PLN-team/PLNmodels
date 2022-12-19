@@ -86,6 +86,7 @@ PLNLDAfit <- R6Class(
     #' after optimization
     postTreatment = function(grouping, responses, covariates, offsets, control) {
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
+      control$variance <- FALSE
       super$postTreatment(responses, covariates, offsets, control = control)
       rownames(private$C) <- colnames(private$C) <- colnames(responses)
       colnames(private$S) <- 1:self$q
@@ -412,20 +413,20 @@ PLNLDAfit_diagonal <- R6Class(
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    torch_elbo = function(data, params) {
-      S2 <- torch_square(params$S)
-      Z <- data$O + params$M + torch_mm(data$X, params$Theta)
-      res <- .5 * sum(data$w) * sum(torch_log(private$torch_sigma_diag(data, params))) -
-        sum(torch_matmul(data$w, data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+    torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
+      S2 <- torch_square(params$S[index])
+      Z <- data$O[index] + params$M[index] + torch_matmul(data$X[index], params$Theta)
+      res <- .5 * sum(data$w[index]) * sum(torch_log(private$torch_sigma_diag(data, params, index))) +
+        sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z -  .5 * torch_log(S2)))
       res
     },
 
-    torch_sigma_diag = function(data, params) {
-      torch_matmul(data$w, torch_pow(params$M, 2) + torch_pow(params$S,2)) / sum(data$w)
+    torch_sigma_diag = function(data, params, index=torch_tensor(1:self$n)) {
+      torch_sum(data$w[index,NULL] * (torch_square(params$M[index]) + torch_square(params$S[index])), 1) / sum(data$w[index])
     },
 
-    torch_Sigma = function(data, params) {
-      torch_diag(private$torch_sigma_diag(data, params))
+    torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
+      torch_diag(private$torch_sigma_diag(data, params, index))
     },
 
     torch_vloglik = function(data, params) {
@@ -500,20 +501,20 @@ PLNLDAfit_spherical <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    torch_elbo = function(data, params) {
-      S2 <- torch_pow(params$S, 2)
-      Z <- data$O + params$M + torch_matmul(data$X, params$Theta)
-      res <- .5 * sum(data$w) * self$p * torch_log(private$torch_sigma2(data, params)) -
-        sum(torch_matmul(data$w , data$Y * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+    torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
+      S2 <- torch_square(params$S[index])
+      Z <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$Theta)
+      res <- .5 * sum(data$w[index]) * self$p * torch_log(private$torch_sigma2(data, params, index)) -
+        sum(data$w[index,NULL] * (data$Y[index] * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
       res
     },
 
-    torch_sigma2 = function(data, params) {
-      sum(torch_matmul(data$w, torch_pow(params$M, 2) + torch_pow(params$S, 2))) / (sum(data$w) * self$p)
+    torch_sigma2 = function(data, params, index=torch_tensor(1:self$n)) {
+      sum(data$w[index, NULL] * (torch_square(params$M) + torch_square(params$S))) / (sum(data$w) * self$p)
     },
 
-    torch_Sigma = function(data, params) {
-      torch_eye(self$p) * private$torch_sigma2(data, params)
+    torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
+      torch_eye(self$p) * private$torch_sigma2(data, params, index)
     },
 
     torch_vloglik = function(data, params) {
