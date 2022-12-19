@@ -98,10 +98,10 @@ mixture component. The latent layer then reads
 $$
 \mathbf{Z}_i | \mathbf{C}_i = k \, \sim
 \mathcal{N}({\mathbf{o}_i +
-\mathbf{x}_i^{\top}{\boldsymbol\Theta} + \boldsymbol\mu}^{(k)},{\boldsymbol\Sigma}^{(k)}),
+\mathbf{x}_i^{\top}{\mathbf{B}} + \boldsymbol\mu}^{(k)},{\boldsymbol\Sigma}^{(k)}),
 $$
 
-where ${\boldsymbol\Theta}$ is a $d\times p$ matrix of regression
+where ${\mathbf{B}}$ is a $d\times p$ matrix of regression
 parameters common to all the mixture components.
 
 #### Parametrization of the covariance of the mixture models

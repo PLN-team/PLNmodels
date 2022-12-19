@@ -82,22 +82,22 @@ where, with a slight abuse of notation, $\mathbf{g}_i$ is a group-indicator vect
 
 Just like PLN, PLN-LDA generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of the discrete group structure, $d$ covariates $\mathbf{x}_i$ and a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$. The latent layer then reads
 \begin{equation} 
-  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{g}_i^\top \mathbf{M} + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma)
+  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{g}_i^\top \mathbf{M} + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Sigma)
 \end{equation}
-where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters.
+where $\mathbf{B}$ is a $d\times p$ matrix of regression parameters.
 
 #### Prediction 
 
 Given: 
 
 - a new observation $\mathbf{Y}$ with associated offset $\mathbf{o}$ and covariates $\mathbf{x}$
-- a model with estimated parameters $\hat{\boldsymbol{\Sigma}}$, $\hat{\boldsymbol{\Theta}}$, $\hat{\mathbf{M}}$ and group counts $(n_1, \dots, n_K)$ 
+- a model with estimated parameters $\hat{\boldsymbol{\Sigma}}$, $\hat{\mathbf{B}}$, $\hat{\mathbf{M}}$ and group counts $(n_1, \dots, n_K)$ 
 
 We can predict the observation's group using Bayes rule as follows: for $k \in {1, \dots, K}$, compute 
 \begin{equation}
 \begin{aligned}
-f_k(\mathbf{Y}) & = p(\mathbf{Y} | \mathbf{g} = k, \mathbf{o}, \mathbf{x}, \hat{\boldsymbol{\Theta}}, \hat{\boldsymbol{\Sigma}}) \\
-                & = \boldsymbol{\Phi}_{PLN}(\mathbf{Y}; \mathbf{o} + \boldsymbol{\mu}_k + \mathbf{x}^\top \hat{\boldsymbol{\Theta}}, \hat{\boldsymbol{\Sigma}}) \\
+f_k(\mathbf{Y}) & = p(\mathbf{Y} | \mathbf{g} = k, \mathbf{o}, \mathbf{x}, \hat{\mathbf{B}}, \hat{\boldsymbol{\Sigma}}) \\
+                & = \boldsymbol{\Phi}_{PLN}(\mathbf{Y}; \mathbf{o} + \boldsymbol{\mu}_k + \mathbf{x}^\top \hat{\mathbf{B}}, \hat{\boldsymbol{\Sigma}}) \\
 p_k             & = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}    
 \end{aligned}
 \end{equation}
@@ -113,7 +113,7 @@ The posterior probability $\hat{\pi}_k(\mathbf{Y})$ that observation $\mathbf{Y}
 
 #### Optimization by Variational inference
 
-Classification and prediction are the main objectives in (PLN-)LDA. To reach this goal, we first need to estimate the model parameters. Inference in PLN-LDA focuses on the group-specific main effects $\mathbf{M}$, the regression parameters $\boldsymbol\Theta$ and the covariance matrix $\boldsymbol\Sigma$. Technically speaking, we can treat $\mathbf{g}_i$ as a discrete covariate and estimate $[\mathbf{M}, \boldsymbol{\Theta}]$ using the same strategy as for the standard **PLN** model. Briefly, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package.
+Classification and prediction are the main objectives in (PLN-)LDA. To reach this goal, we first need to estimate the model parameters. Inference in PLN-LDA focuses on the group-specific main effects $\mathbf{M}$, the regression parameters $\mathbf{B}$ and the covariance matrix $\boldsymbol\Sigma$. Technically speaking, we can treat $\mathbf{g}_i$ as a discrete covariate and estimate $[\mathbf{M}, \mathbf{B}]$ using the same strategy as for the standard **PLN** model. Briefly, we adopt a variational strategy to approximate the log-likelihood function and optimize the consecutive variational surrogate of the log-likelihood with a gradient-ascent-based approach. To this end, we rely on the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package.
 
 ## Analysis of trichoptera data with a PLN-LDA model
 
@@ -153,7 +153,7 @@ The user can easily access several fields of the `PLNLDAfit` object using `S3` m
 sigma(myLDA_nocov) %>% corrplot::corrplot(is.corr = FALSE)
 ```
 
-- the regression coefficient matrix $\hat{\boldsymbol{\Theta}}$ (in this case `NULL` as there are no covariates)
+- the regression coefficient matrix $\hat{\mathbf{B}}$ (in this case `NULL` as there are no covariates)
 
 ```{r coef}
 coef(myLDA_nocov)
@@ -247,7 +247,7 @@ myLDA_cov <- PLNLDA(Abundance ~ Wind + 0 + offset(log(Offset)),
 
 #### Specific fields
 
-All fields of our new `PLNLDA` fit can be accessed as before with similar results. The only important difference is the result of `coef`: since we included a covariate in the model, `coef` now returns a 1-column matrix for $\hat{\boldsymbol{\Theta}}$ instead of `NULL`
+All fields of our new `PLNLDA` fit can be accessed as before with similar results. The only important difference is the result of `coef`: since we included a covariate in the model, `coef` now returns a 1-column matrix for $\hat{\mathbf{B}}$ instead of `NULL`
 
 ```{r coef-cov}
 coef(myLDA_cov) %>% head %>% knitr::kable()

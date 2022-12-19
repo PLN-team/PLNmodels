@@ -118,15 +118,15 @@ grid.arrange(p.latent + labs(x = "species 1", y = "species 2"),
 This model generalizes naturally to a formulation closer to a multivariate generalized linear model, where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ (including a vector of intercepts). We also let the possibility to add some offsets for the $p$ variables in in each sample, that is $\mathbf{o}_i$. Hence, the previous model generalizes to
 
 \begin{equation}
-  \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Sigma), \\
+  \mathbf{Y}_i | \mathbf{Z}_i \sim \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Sigma), \\
 \end{equation}
-where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters. When all individuals $i=1,\dots,n$ are stacked together, the data matrices available to feed the model are
+where $\mathbf{B}$ is a $d\times p$ matrix of regression parameters. When all individuals $i=1,\dots,n$ are stacked together, the data matrices available to feed the model are
 
   - the $n\times p$ matrix of counts  $\mathbf{Y}$
   - the $n\times d$ matrix of design  $\mathbf{X}$
   - the $n\times p$ matrix of offsets $\mathbf{O}$
 
-Inference in PLN then focuses on the regression parameters $\boldsymbol\Theta$ and on the covariance matrix $\boldsymbol\Sigma$. 
+Inference in PLN then focuses on the regression parameters $\mathbf{B}$ and on the covariance matrix $\boldsymbol\Sigma$. 
 
 #### Optimization by Variational inference
 
@@ -185,11 +185,11 @@ data.frame(
     theme_bw() + annotation_logticks()
 ```
 
-We can also reach the matrix of regression parameters $\mathbf{\Theta}$ and the residual variance/covariance matrix $\boldsymbol{\Sigma}$ of the latent variable with the traditional functions found in `R` for (G)LM manipulation: for the regression coefficients, we can use the `coef` (or `coefficients`) method. Approximated standard errors of the coefficients are also accessible via `standard_error`:
+We can also reach the matrix of regression parameters $\mathbf{B}$ and the residual variance/covariance matrix $\boldsymbol{\Sigma}$ of the latent variable with the traditional functions found in `R` for (G)LM manipulation: for the regression coefficients, we can use the `coef` (or `coefficients`) method. Approximated standard errors of the coefficients are also accessible via `standard_error`:
 
 ```{r coef}
 data.frame(
-  rbind(t(coef(myPLN)), t(standard_error(myPLN))), 
+  rbind(coef(myPLN), standard_error(myPLN)), 
   row.names = c("effect", "stderr")
  ) %>% select(1:5) %>% knitr::kable()
 ```
@@ -197,10 +197,10 @@ data.frame(
 <!-- rmarkdown::paged_table() causes re-building of vignette to fail on CRAN for OS X and Solaris flavor (probably due to a too old version of pandoc) -->
 
 
-The residual covariance matrix better displays as an image matrix: 
+The residual correlation matrix better displays as an image matrix: 
 
 ```{r plot covariance, fig.width=7, fig.height=5}
-corrplot(sigma(myPLN), is.corr = FALSE)
+myPLN %>% sigma() %>% cov2cor() %>% corrplot()
 ```
 
 #### Observation weights

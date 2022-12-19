@@ -66,13 +66,13 @@ The $\ell_1$-penalty on $\boldsymbol\Omega$ induces sparsity and selection of im
 
 Just like PLN, PLN-network generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$. The latent layer then reads
 \begin{equation} 
-  \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i + \mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Omega^{-1}\right), \qquad \|\boldsymbol\Omega\|_1 < c ,
+  \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Omega^{-1}\right), \qquad \|\boldsymbol\Omega\|_1 < c ,
 \end{equation}
-where $\boldsymbol\Theta$ is a $d\times p$ matrix of regression parameters.
+where $\mathbf{B}$ is a $d\times p$ matrix of regression parameters.
 
 #### Alternating optimization
 
-Regularization via sparsification of $\boldsymbol\Omega$ and visualization of the consecutive network is the main objective in PLN-network. To reach this goal, we need to first estimate the model parameters. Inference in PLN-network focuses on the regression parameters $\boldsymbol\Theta$ and the inverse covariance $\boldsymbol\Omega$. Technically speaking, we adopt a variational strategy to approximate the $\ell_1$-penalized log-likelihood function and optimize the consecutive sparse variational surrogate with an optimization scheme that alternates between two step
+Regularization via sparsification of $\boldsymbol\Omega$ and visualization of the consecutive network is the main objective in PLN-network. To reach this goal, we need to first estimate the model parameters. Inference in PLN-network focuses on the regression parameters $\mathbf{B}$ and the inverse covariance $\boldsymbol\Omega$. Technically speaking, we adopt a variational strategy to approximate the $\ell_1$-penalized log-likelihood function and optimize the consecutive sparse variational surrogate with an optimization scheme that alternates between two step
 
 1. a gradient-ascent-step, performed with the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package.
 2. a penalized log-likelihood step, performed with the graphical-Lasso of @FHT08, implemented in the package **fastglasso** [@glassofast].
