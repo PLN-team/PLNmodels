@@ -67,13 +67,13 @@ PLNLDAfit <- R6Class(
       ## extract group means
       if (ncol(covariates) > 0) {
         proj_orth_X <- (diag(self$n) - covariates %*% solve(crossprod(covariates)) %*% t(covariates))
-        P <- proj_orth_X %*% (tcrossprod(cbind(covariates, design_group), private$Theta) + private$M)
+        P <- proj_orth_X %*% ((cbind(covariates, design_group) %*% private$B) + private$M)
         Mu <- t(rowsum(P, private$grouping) / tabulate(private$grouping))
       } else {
-        Mu <- private$Theta
+        Mu <- t(private$B)
       }
       colnames(Mu) <- colnames(design_group)
-      rownames(Mu) <- rownames(private$Theta)
+      rownames(Mu) <- colnames(private$B)
       private$Mu <- Mu
       nk <- table(private$grouping)
       Mu_bar <- as.vector(Mu %*% nk / self$n)
@@ -328,7 +328,7 @@ PLNLDAfit <- R6Class(
     rank = function() {nlevels(private$grouping) - 1},
     #' @field nb_param number of parameters in the current PLN model
     nb_param = function() {self$p * (self$d + self$rank)},
-    #' @field model_par a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), C (latent loadings), P (latent position) and Mu (group means)
+    #' @field model_par a list with the matrices associated with the estimated parameters of the PLN model: B (covariates), Sigma (latent covariance), C (latent loadings), P (latent position) and Mu (group means)
     model_par = function() {
       par <- super$model_par
       par$C  <- private$C
@@ -415,7 +415,7 @@ PLNLDAfit_diagonal <- R6Class(
 
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
       S2 <- torch_square(params$S[index])
-      Z <- data$O[index] + params$M[index] + torch_matmul(data$X[index], params$Theta)
+      Z <- data$O[index] + params$M[index] + torch_matmul(data$X[index], params$B)
       res <- .5 * sum(data$w[index]) * sum(torch_log(private$torch_sigma_diag(data, params, index))) +
         sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z -  .5 * torch_log(S2)))
       res
@@ -503,7 +503,7 @@ PLNLDAfit_spherical <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
       S2 <- torch_square(params$S[index])
-      Z <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$Theta)
+      Z <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$B)
       res <- .5 * sum(data$w[index]) * self$p * torch_log(private$torch_sigma2(data, params, index)) -
         sum(data$w[index,NULL] * (data$Y[index] * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
       res
