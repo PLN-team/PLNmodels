@@ -11,7 +11,7 @@ bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{trichoptera}
+  %\VignetteIndexEntry{Description of the Trichoptera data set}
   %\VignetteEncoding{UTF-8}
 ---
 

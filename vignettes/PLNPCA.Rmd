@@ -10,7 +10,7 @@ bibliography: article/PLNreferences.bib
 link-citations: yes
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{PLNPCA}
+  %\VignetteIndexEntry{Dimension reduction of multivariate count data with PLN-PCA}
   %\VignetteEncoding{UTF-8}
 ---
 
