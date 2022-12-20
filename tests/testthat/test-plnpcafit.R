@@ -4,7 +4,7 @@ data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 models <- PLNPCA(Abundance ~ 1, data = trichoptera)
 X <- model.matrix(Abundance ~ 1, data = trichoptera)
-myPLNfit <- getBestModel(models)
+myPLNfit <- getModel(models, 3)
 
 test_that("PLNPCA fit: check classes, getters and field access", {
 
@@ -122,7 +122,6 @@ test_that("plot_PCA works for 4 or more axes:", {
 })
 
 test_that("PLNPCA fit: check print message",  {
-
   output <- paste(
 "Poisson Lognormal with rank constrained for PCA (rank = 3)
 ==================================================================",
