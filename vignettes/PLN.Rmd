@@ -185,17 +185,18 @@ data.frame(
     theme_bw() + annotation_logticks()
 ```
 
-We can also reach the matrix of regression parameters $\mathbf{B}$ and the residual variance/covariance matrix $\boldsymbol{\Sigma}$ of the latent variable with the traditional functions found in `R` for (G)LM manipulation: for the regression coefficients, we can use the `coef` (or `coefficients`) method. Approximated standard errors of the coefficients are also accessible via `standard_error`:
+<!-- I suggest to comment the part about standard error since we disable this by default. We should present bootstrap and jackknife along with the variational variance, which highly underestimates the variance. -->
 
-```{r coef}
-data.frame(
-  rbind(coef(myPLN), standard_error(myPLN)), 
-  row.names = c("effect", "stderr")
- ) %>% select(1:5) %>% knitr::kable()
-```
+<!-- We can also reach the matrix of regression parameters $\mathbf{B}$ and the residual variance/covariance matrix $\boldsymbol{\Sigma}$ of the latent variable with the traditional functions found in `R` for (G)LM manipulation: for the regression coefficients, we can use the `coef` (or `coefficients`) method. Approximated standard errors of the coefficients are also accessible via `standard_error`: -->
+
+<!-- ```{r coef} -->
+<!-- data.frame( -->
+<!--   rbind(coef(myPLN), standard_error(myPLN)),  -->
+<!--   row.names = c("effect", "stderr") -->
+<!--  ) %>% select(1:5) %>% knitr::kable() -->
+<!-- ``` -->
 
 <!-- rmarkdown::paged_table() causes re-building of vignette to fail on CRAN for OS X and Solaris flavor (probably due to a too old version of pandoc) -->
-
 
 The residual correlation matrix better displays as an image matrix: 
 

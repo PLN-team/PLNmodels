@@ -30,8 +30,8 @@ PLNmixturefamily <-
       smooth_forward = function(control) {
 
         trace <- control$trace > 0; control$trace <- FALSE
-        control_fast <- control
-        control_fast$maxit_out <- 2
+        config_fast <- control$config_optim
+        config_fast$maxit_out <- 2
 
         if (trace) cat("   Going forward ")
         for (k in self$clusters[-length(self$clusters)]) {
@@ -55,13 +55,13 @@ PLNmixturefamily <-
           }) %>% map(as_indicator)
 
           loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
-            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control_fast)
-            model$optimize(self$responses, self$covariates, self$offsets, control_fast)
+            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
+            model$optimize(self$responses, self$covariates, self$offsets, config_fast)
             model$loglik
           }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
 
           best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
-          best_one$optimize(self$responses, self$covariates, self$offsets, control)
+          best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
 
           if (best_one$loglik > self$models[[k + 1]]$loglik) {
             self$models[[k + 1]] <- best_one
@@ -73,8 +73,8 @@ PLNmixturefamily <-
       },
       smooth_backward = function(control) {
         trace <- control$trace > 0; control$trace <- FALSE
-        control_fast <- control
-        control_fast$maxit_out <- 2
+        config_fast <- control$config_optim
+        config_fast$maxit_out <- 2
         if (trace) cat("   Going backward ")
         for (k in rev(self$clusters[-1])) {
           if (trace) cat('+')
@@ -88,13 +88,13 @@ PLNmixturefamily <-
           })
 
           loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
-            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control_fast)
-            model$optimize(self$responses, self$covariates, self$offsets, control_fast)
+            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
+            model$optimize(self$responses, self$covariates, self$offsets, config_fast)
             model$loglik
           }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
 
           best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
-          best_one$optimize(self$responses, self$covariates, self$offsets, control)
+          best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
 
           if (best_one$loglik > self$models[[k - 1]]$loglik) {
               self$models[[k - 1]] <- best_one
