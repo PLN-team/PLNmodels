@@ -27,7 +27,7 @@ test_that("PLNnetwork fit: check classes, getters and field access", {
   expect_lt(myPLNfit$BIC, myPLNfit$loglik)
   expect_lt(myPLNfit$EBIC, myPLNfit$loglik)
   expect_lt(myPLNfit$EBIC, myPLNfit$BIC)
-  expect_gt(myPLNfit$R_squared, 0)
+  expect_equal(myPLNfit$R_squared, NA)
   expect_gt(myPLNfit$density, 0)
   expect_true(myPLNfit$penalty > 0)
   expect_true(is.data.frame(myPLNfit$criteria))
@@ -41,7 +41,7 @@ test_that("PLNnetwork fit: check classes, getters and field access", {
   expect_equal(vcov(myPLNfit, "main"), myPLNfit$vcov_coef)
   expect_equal(vcov(myPLNfit, "covariance"), myPLNfit$model_par$Sigma)
   expect_equal(vcov(myPLNfit, "covariance"), sigma(myPLNfit))
-  expect_equal(dim(standard_error(myPLNfit)), dim(coefficients(myPLNfit)))
+  expect_error(standard_error(myPLNfit))
   expect_true(igraph::is.igraph(myPLNfit$plot_network(output = "igraph", plot = FALSE)))
   expect_true(inherits(myPLNfit$plot_network(output = "corrplot", plot = FALSE), "Matrix"))
 

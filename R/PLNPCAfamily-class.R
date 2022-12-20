@@ -12,11 +12,10 @@
 #' @param covariates the matrix of covariates common to every models
 #' @param offsets the matrix of offsets common to every models
 #' @param weights the vector of observation weights
+#' @param control list controlling the optimization and the model
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
-#' @param control a list for controlling the optimization. See details.
 #' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
 #' @param index Integer index of the model to be returned. Only the first value is taken into account.
-#'
 #'
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
@@ -59,17 +58,18 @@ PLNPCAfamily <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimization -------------------
     #' @description Call to the C++ optimizer on all models of the collection
-    optimize = function(control) {
+    #' @param config list controlling the optimization.
+    optimize = function(config) {
       self$models <- future.apply::future_lapply(self$models, function(model) {
-        if (control$trace == 1) {
+        if (config$trace == 1) {
           cat("\t Rank approximation =",model$rank, "\r")
           flush.console()
         }
-        if (control$trace > 1) {
+        if (config$trace > 1) {
           cat(" Rank approximation =",model$rank)
           cat("\n\t conservative convex separable approximation for gradient descent")
         }
-        model$optimize(self$responses, self$covariates, self$offsets, self$weights, control$config_optim)
+        model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
         model
       }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
     },

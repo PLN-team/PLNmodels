@@ -6,8 +6,8 @@
 #' @param covariates the matrix of covariates common to every models
 #' @param offsets the matrix of offsets common to every models
 #' @param weights the vector of observation weights
-#' @param control a list for controlling the optimization. See details.
 #' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
+#' @param control list controlling the optimization and the model
 #' @param index Integer index of the model to be returned. Only the first value is taken into account.
 #'
 #' @inherit PLN details
@@ -64,7 +64,8 @@ PLNfamily <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Update fields after optimization
-      postTreatment = function(control) {
+      #' @param config a list for controlling the post-treatment.
+      postTreatment = function(config) {
         nullModel <- nullModelPoisson(self$responses, self$covariates, self$offsets, self$weights)
         for (model in self$models)
           model$postTreatment(
@@ -72,7 +73,7 @@ PLNfamily <-
             self$covariates,
             self$offsets,
             self$weights,
-            control,
+            config,
             nullModel = nullModel
           )
       },

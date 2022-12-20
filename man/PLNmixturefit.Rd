@@ -114,9 +114,7 @@ Initialize a \code{\link{PLNmixturefit}} model
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{control}}{a list for controlling the optimization.}
 }
 \if{html}{\out{</div>}}
 }
@@ -127,7 +125,7 @@ Initialize a \code{\link{PLNmixturefit}} model
 \subsection{Method \code{optimize()}}{
 Optimize a \code{\link{PLNmixturefit}} model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$optimize(responses, covariates, offsets, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$optimize(responses, covariates, offsets, config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -139,9 +137,7 @@ Optimize a \code{\link{PLNmixturefit}} model
 
 \item{\code{offsets}}{the matrix of offsets common to every models}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{config}}{a list for controlling the optimization}
 }
 \if{html}{\out{</div>}}
 }
@@ -244,7 +240,7 @@ Update fields after optimization
   covariates,
   offsets,
   weights,
-  control,
+  config,
   nullModel
 )}\if{html}{\out{</div>}}
 }
@@ -260,9 +256,7 @@ Update fields after optimization
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{config}}{a list for controlling the post-treatment}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }

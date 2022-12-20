@@ -47,11 +47,11 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 
   ## Adjust the PLN models
   if (control$trace > 0) cat("\n\n Adjusting", length(ranks), "PLN models for PCA analysis.\n")
-  myPCA$optimize(control)
+  myPCA$optimize(control$config_optim)
 
   ## Post-treatments: pseudo-R2, rearrange criteria and prepare PCA visualization
   if (control$trace > 0) cat("\n Post-treatments")
-  myPCA$postTreatment(control)
+  myPCA$postTreatment(control$config_post)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPCA
@@ -64,6 +64,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
 #' @param trace a integer for verbosity.
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
+#' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
 #' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 #'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 #'    which sometimes speeds up the inference.
@@ -84,25 +85,46 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
 #' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
 #'
+#' The list of parameters `config_post` controls the post-treatment processing, with the following entries:
+#' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
+#' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
+#' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
+#' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
+#'
 #' @export
 PLNPCA_param <- function(
     backend       = "nlopt",
     trace         = 1      ,
+    config_post   = list(),
     config_optim  = list() ,
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
-  stopifnot(backend %in% c("nlopt", "torch"))
-  stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-  if (backend == "nlopt") config <- config_default_nlopt
-  if (backend == "torch") config <- config_default_torch
-  config[names(config_optim)] <- config_optim
+
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
+
+  ## post-treatment config
+  config_pst <- config_post_default_PLNPCA
+  config_pst[names(config_post)] <- config_post
+  config_pst$trace <- trace
+
+  ## optimization config
+  backend <- match.arg(backend)
+  stopifnot(backend %in% c("nlopt", "torch"))
+  if (backend == "nlopt") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
+    config_opt <- config_default_nlopt
+  }
+  if (backend == "torch") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_torch)
+    config_opt <- config_default_torch
+  }
+  config_opt[names(config_optim)] <- config_optim
+  config_opt$trace <- trace
+
   structure(list(
     backend       = backend   ,
     trace         = trace     ,
-    config_optim  = config    ,
-    jackknife     = FALSE     ,
-    bootstrap     = 0         ,
-    variance      = FALSE     ,
+    config_post   = config_pst,
+    config_optim  = config_opt,
     inception     = inception   ), class = "PLNmodels_param")
 }

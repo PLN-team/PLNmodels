@@ -106,7 +106,7 @@ Initialize a \code{\link{PLNnetworkfit}} object
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{control}}{a list for controlling the optimization.}
 }
 \if{html}{\out{</div>}}
 }
@@ -166,7 +166,7 @@ Update fields of a \code{\link{PLNnetworkfit}} object
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer and update of the relevant fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$optimize(responses, covariates, offsets, weights, config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -180,7 +180,7 @@ Call to the C++ optimizer and update of the relevant fields
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{config}}{a list for controlling the optimization}
 }
 \if{html}{\out{</div>}}
 }

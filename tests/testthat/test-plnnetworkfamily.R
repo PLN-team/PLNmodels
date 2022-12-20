@@ -22,10 +22,10 @@ test_that("PLNnetwork: main function, fields access and methods", {
   myPLN <- PLNmodels:::PLNnetworkfamily$new(NULL, Y, X, O, w, Abundance ~ 1, ctrl)
 
   ## optimize
-  myPLN$optimize(ctrl)
+  myPLN$optimize(ctrl$config_optim)
 
   ## post-treatment
-  myPLN$postTreatment(PLNnetwork_param())
+  myPLN$postTreatment(ctrl$config_post)
 
   expect_equivalent(myPLN, models)
 

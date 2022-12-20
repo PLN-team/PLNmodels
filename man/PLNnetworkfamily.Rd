@@ -92,7 +92,7 @@ Initialize all models in the collection
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{control}}{a list for controlling the optimization.}
 }
 \if{html}{\out{</div>}}
 }
@@ -106,13 +106,13 @@ Update current \code{\link{PLNnetworkfit}} with smart starting values
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer on all models of the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$optimize(control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$optimize(config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{config}}{a list for controlling the optimization.}
 }
 \if{html}{\out{</div>}}
 }

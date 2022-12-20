@@ -173,12 +173,14 @@ standard_error <- function(object, type = c("variational", "jackknife", "sandwic
 standard_error.PLNfit <- function(object, type = c("variational", "jackknife", "bootstrap", "sandwich"), parameter = c("B", "Omega")) {
   type <- match.arg(type)
   par  <- match.arg(parameter)
+  if (type == "variational" & is.null(attr(object$model_par$B, "variance_variational")))
+    stop("Variational estimation not available: rerun by setting `variational_var = TRUE` in the control list.")
   if (type == "jackknife" & is.null(attr(object$model_par$B, "variance_jackknife")))
-    stop("Jackknife estimation not available: you should call the method $variance_jackknife() first")
+    stop("Jackknife estimation not available: rerun by setting `jackknife = TRUE` in the control list.")
+  if (type == "bootstrap" & is.null(attr(object$model_par$B, "variance_bootstrap")))
+    stop("Bootstrap estimation not available: rerun by setting `bootstrap > 0` in the control list.")
   if (type == "sandwich")
     stop("Sandwich estimator is only available for fixed covariance / precision matrix.")
-  if (type == "bootstrap" & is.null(attr(object$model_par$B, "variance_bootstrap")))
-    stop("Bootstrap estimation not available: you should call the method $variance_bootsrap() first")
   attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
 }
 
@@ -189,9 +191,11 @@ standard_error.PLNfit_fixedcov <- function(object, type = c("variational", "jack
   par  <- match.arg(parameter)
   if (par == "Omega")
     stop("Omega is not estimated for fixed covariance model")
+  if (type == "variational" & is.null(attr(object$model_par$B, "variance_variational")))
+    stop("Variational estimation not available: rerun by setting `variational_var = TRUE` in the control list.")
   if (type == "jackknife" & is.null(attr(object$model_par$B, "variance_jackknife")))
-    stop("Jackknife estimation not available: you should call the method $variance_jackknife() first")
+    stop("Jackknife estimation not available: rerun by setting `jackknife = TRUE` in the control list.")
   if (type == "bootstrap" & is.null(attr(object$model_par$B, "variance_bootstrap")))
-    stop("Bootstrap estimation not available: you should call the method $variance_bootsrap() first")
+    stop("Bootstrap estimation not available: rerun by setting `bootstrap > 0` in the control list.")
   attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
 }

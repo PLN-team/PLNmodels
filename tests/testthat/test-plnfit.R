@@ -42,7 +42,7 @@ test_that("PLN fit: check classes, getters and field access",  {
   # expect_true(inherits(vcov(model), "dsCMatrix"))
 
   ## S3 methods: dimensions
-  expect_equal(dim(vcov(model)), c(model$d * model$p, model$d * model$p))
+  ## expect_equal(dim(vcov(model)), c(model$d * model$p, model$d * model$p))
 
   ## R6 bindings
   expect_is(model$latent, "matrix")

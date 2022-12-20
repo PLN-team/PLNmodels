@@ -7,10 +7,9 @@
 PLN_param(
   backend = c("nlopt", "torch"),
   trace = 1,
-  covariance = c("full", "diagonal", "spherical", "fixed", "genetic"),
+  covariance = c("full", "diagonal", "spherical", "fixed"),
   Omega = NULL,
-  jackknife = FALSE,
-  bootstrap = 0,
+  config_post = list(),
   config_optim = list(),
   inception = NULL
 )
@@ -20,19 +19,21 @@ PLN_param(
 
 \item{trace}{a integer for verbosity.}
 
-\item{covariance}{character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "genetic". Default is "full".}
+\item{covariance}{character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "fixed". Default is "full".}
 
 \item{Omega}{precision matrix of the latent variables. Inverse of Sigma. Must be specified if \code{covariance} is "fixed"}
 
-\item{jackknife}{boolean indicating weither jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}}
-
-\item{bootstrap}{integer indicating the number of bootstrap resamples to estimate the variance of the model parameters. Default is \code{0} (no boostraping)}
+\item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.}
+
+\item{jackknife}{boolean indicating weither jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}}
+
+\item{bootstrap}{integer indicating the number of bootstrap resamples to estimate the variance of the model parameters. Default is \code{0} (no bootstraping)}
 }
 \value{
 list of parameters configuring the fit.
@@ -57,5 +58,13 @@ When "torch" backend is used, with the following entries are relevant:
 \item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 \item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
 \item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
+}
+
+The list of parameters \code{config_post} controls the post-treatment processing, with the following entries:
+\itemize{
+\item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
+\item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
+\item variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
+\item rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
 }
 }

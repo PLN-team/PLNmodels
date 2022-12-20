@@ -101,7 +101,7 @@ Initialize a \code{\link{PLNLDAfit}} object
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{control}}{list controlling the optimization and the model}
 }
 \if{html}{\out{</div>}}
 }
@@ -113,7 +113,7 @@ Initialize a \code{\link{PLNLDAfit}} object
 Compute group means and axis of the LDA (noted B in the model) in the
 latent space, update corresponding fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$optimize(grouping, responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$optimize(grouping, responses, covariates, offsets, weights, config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -129,7 +129,7 @@ latent space, update corresponding fields
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{config}}{list controlling the optimization}
 
 \item{\code{X}}{Abundance matrix.}
 }
@@ -141,9 +141,8 @@ latent space, update corresponding fields
 \if{latex}{\out{\hypertarget{method-PLNLDAfit-postTreatment}{}}}
 \subsection{Method \code{postTreatment()}}{
 Update R2, fisher and std_err fields and visualization
-after optimization
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(grouping, responses, covariates, offsets, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(grouping, responses, covariates, offsets, config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -157,7 +156,7 @@ after optimization
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{config}}{list controlling the post-treatment}
 }
 \if{html}{\out{</div>}}
 }

@@ -50,7 +50,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
   myPLN <- PLNmixturefamily$new(clusters, args$Y, args$X, args$O, args$formula, control)
 
   ## Now adjust the PLN models
-  myPLN$optimize(control)
+  myPLN$optimize(control$config_optim)
 
   ## Smoothing to avoid local minima
   if (control$smoothing != "none" & control$trace > 0) cat("\n\n Smoothing PLN mixture models.\n")
@@ -58,7 +58,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
   if (control$trace > 0) cat("\n Post-treatments")
-  myPLN$postTreatment(control)
+  myPLN$postTreatment(control$config_post)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -73,6 +73,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 #' @param smoothing The smoothing to apply. Either, 'none', forward', 'backward' or 'both'. Default is 'both'.
 #' @param init_cl The initial clustering to apply. Either, 'kmeans', CAH' or a user defined clustering given as a list of  clusterings, the size of which is equal to the number of clusters considered. Default is 'kmeans'.
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
+#' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
 #' @param trace a integer for verbosity.
 #' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 #'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
@@ -99,6 +100,12 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
 #' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
 #'
+#' The list of parameters `config_post` controls the post-treatment processing, with the following entries:
+#' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
+#' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
+#' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
+#' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is FALSE
+#'
 #' @export
 PLNmixture_param <- function(
     backend       = "nlopt"    ,
@@ -106,28 +113,41 @@ PLNmixture_param <- function(
     covariance    = "spherical",
     init_cl       = "kmeans"   ,
     smoothing     = "both"     ,
+    config_post   = list()     ,
     config_optim  = list()     ,
     inception     = NULL # pretrained PLNfit used as initialization
 ) {
-  stopifnot(backend %in% c("nlopt", "torch"))
-  stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-
-  if (backend == "nlopt") config <- config_default_nlopt
-  if (backend == "torch") config <- config_default_torch
-  config$ftol_out  <- 1e-3
-  config$maxit_out <- 50
-  config$it_smooth <- 1
-  config[names(config_optim)] <- config_optim
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
+
+  ## post-treatment config
+  config_pst <- config_post_default_PLN
+  config_pst[names(config_post)] <- config_post
+  config_pst$trace <- trace
+
+  ## optimization config
+  backend <- match.arg(backend)
+  stopifnot(backend %in% c("nlopt", "torch"))
+  if (backend == "nlopt") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
+    config_opt <- config_default_nlopt
+  }
+  if (backend == "torch") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_torch)
+    config_opt <- config_default_torch
+  }
+  config_opt$ftol_out  <- 1e-3
+  config_opt$maxit_out <- 50
+  config_opt$it_smooth <- 1
+  config_opt[names(config_optim)] <- config_optim
+  config_opt$trace <- trace
+
   structure(list(
     backend       = backend    ,
     trace         = trace      ,
     covariance    = covariance ,
     init_cl       = init_cl    ,
     smoothing     = smoothing  ,
-    jackknife     = FALSE      ,
-    bootstrap     = 0          ,
-    variance      = FALSE      ,
-    config_optim  = config     ,
+    config_optim  = config_opt ,
+    config_post   = config_pst ,
     inception     = inception   ), class = "PLNmodels_param")
 }

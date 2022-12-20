@@ -29,6 +29,46 @@ config_default_torch <-
     trace         = 1
   )
 
+config_post_default_PLN <-
+  list(
+    jackknife       = FALSE,
+    bootstrap       = 0L,
+    rsquared        = TRUE,
+    variational_var = FALSE
+  )
+
+config_post_default_PLNnetwork <-
+  list(
+    jackknife       = FALSE,
+    bootstrap       = 0L,
+    rsquared        = FALSE,
+    variational_var = FALSE
+  )
+
+config_post_default_PLNLDA <-
+  list(
+    jackknife       = FALSE,
+    bootstrap       = 0L,
+    rsquared        = TRUE,
+    variational_var = FALSE
+  )
+
+config_post_default_PLNPCA <-
+  list(
+    jackknife       = FALSE,
+    bootstrap       = 0L,
+    rsquared        = TRUE,
+    variational_var = FALSE
+  )
+
+config_post_default_PLNmixture <-
+  list(
+    jackknife       = FALSE,
+    bootstrap       = 0L,
+    rsquared        = FALSE,
+    variational_var = FALSE
+  )
+
 status_to_message <- function(status) {
   message <- switch(as.character(status),
                     "1"  = "success",

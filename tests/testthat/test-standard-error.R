@@ -6,7 +6,7 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 ## Error messages ---------------------
 test_that("Check that fisher and standard_error return objects with proper dimensions and sign",  {
 
-  myPLN_cov <- myPLN_cov <- PLN(Abundance ~ Wind + offset(log(Offset)), data = trichoptera)
+  myPLN_cov <- PLN(Abundance ~ Wind + offset(log(Offset)), data = trichoptera, control = PLN_param(config_post = list(variational_var = TRUE)))
   expect_is(myPLN_cov, "PLNfit")
   p <- myPLN_cov$p
   d <- myPLN_cov$d
@@ -28,7 +28,7 @@ test_that("Check that fisher and standard_error return objects with proper dimen
 })
 
 ## Fit model without covariates
-myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, control = PLN_param(config_post = list(variational_var = TRUE)))
 
 ## Consistency -----------------------
 test_that("Check internal consistency of Fisher matrix for PLN models with no covariates",  {

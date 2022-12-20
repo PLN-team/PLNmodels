@@ -9,10 +9,10 @@
 #' @param responses the matrix of responses common to every models
 #' @param covariates the matrix of covariates common to every models
 #' @param offsets the matrix of offsets common to every models
-#' @param control a list for controlling the optimization. See details.
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param control a list for controlling the optimization.
 #' @param clusters the dimensions of the successively fitted models
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
-#' @param control a list for controlling the optimization. See details.
 #' @param cluster the number of clusters of the current model
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #'
@@ -93,7 +93,8 @@ PLNmixturefit <-
 
       },
       #' @description Optimize a [`PLNmixturefit`] model
-      optimize = function(responses, covariates, offsets, control) {
+      #' @param config a list for controlling the optimization
+      optimize = function(responses, covariates, offsets, config) {
 
         ## The intercept term will serve as the mean in each group/component
         intercept <- matrix(1, nrow(responses), ncol = 1)
@@ -104,13 +105,13 @@ PLNmixturefit <-
         ## ===========================================
         ## INITIALISATION
         cond <- FALSE; iter <- 1
-        objective   <- numeric(control$config_optim$maxit_out); objective[iter]   <- Inf
-        convergence <- numeric(control$config_optim$maxit_out); convergence[iter] <- NA
+        objective   <- numeric(config$maxit_out); objective[iter]   <- Inf
+        convergence <- numeric(config$maxit_out); convergence[iter] <- NA
         ## ===========================================
         ## OPTIMISATION
         while (!cond) {
           iter <- iter + 1
-          if (control$trace > 1) cat("", iter)
+          if (config$trace > 1) cat("", iter)
 
           ## ---------------------------------------------------
           ## M - STEP
@@ -121,7 +122,7 @@ PLNmixturefit <-
           }
           ## UPDATE THE MIXTURE MODEL VIA OPTIMIZATION OF PLNmixture
           for (k in seq.int(self$k))
-            self$components[[k]]$optimize(responses, intercept, offsets, private$tau[, k], control$config_optim)
+            self$components[[k]]$optimize(responses, intercept, offsets, private$tau[, k], config)
 
           ## ---------------------------------------------------
           ## E - STEP
@@ -137,7 +138,7 @@ PLNmixturefit <-
           ## Assess convergence
           objective[iter]   <- -self$loglik
           convergence[iter] <- abs(objective[iter-1] - objective[iter]) /abs(objective[iter])
-          if ((convergence[iter] < control$config_optim$ftol_out) | (iter >= control$config_optim$maxit_out)) cond <- TRUE
+          if ((convergence[iter] < config$ftol_out) | (iter >= config$maxit_out)) cond <- TRUE
 
         }
 
@@ -279,8 +280,8 @@ PLNmixturefit <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Update fields after optimization
-      #' @param weights an optional vector of observation weights to be used in the fitting process.
-      postTreatment = function(responses, covariates, offsets, weights, control, nullModel) {
+      #' @param config a list for controlling the post-treatment
+      postTreatment = function(responses, covariates, offsets, weights, config, nullModel) {
 
         ## restoring the full design matrix (group means + covariates)
         mu_k <- matrix(1, self$n, ncol = 1); colnames(mu_k) <- 'Intercept'
@@ -291,7 +292,7 @@ PLNmixturefit <-
             mu_k,
             offsets,
             private$tau[,k_],
-            control,
+            config,
             nullModel = nullModel
           )
       },

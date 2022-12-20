@@ -68,7 +68,7 @@ Create a new \code{\link{PLNfamily}} object.
 
 \item{\code{weights}}{the vector of observation weights}
 
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{control}}{list controlling the optimization and the model}
 }
 \if{html}{\out{</div>}}
 }
@@ -82,13 +82,13 @@ A new \code{\link{PLNfamily}} object
 \subsection{Method \code{postTreatment()}}{
 Update fields after optimization
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$postTreatment(control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$postTreatment(config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{config}}{a list for controlling the post-treatment.}
 }
 \if{html}{\out{</div>}}
 }

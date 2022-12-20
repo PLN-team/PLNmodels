@@ -18,12 +18,12 @@
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param grouping a factor specifying the class of each observation used for discriminant analysis.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
-#' @param control a list for controlling the optimization. See details.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 ## Parameters common to many PLNLDAfit graphical methods
 #' @param map the type of output for the PCA visualization: either "individual", "variable" or "both". Default is "both".
 #' @param nb_axes scalar: the number of axes to be considered when map = "both". The default is min(3,rank).
 #' @param axes numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))
+#' @param control list controlling the optimization and the model
 #' @param ind_cols a character, factor or numeric to define the color associated with the individuals. By default, all variables receive the default color of the current palette.
 #' @param var_cols a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.
 #' @param plot logical. Should the plot be displayed or sent back as ggplot object
@@ -61,8 +61,9 @@ PLNLDAfit <- R6Class(
     #' latent space, update corresponding fields
     #' @param X Abundance matrix.
     #' @param covariates design matrix. Automatically built from the covariates and the formula from the call
-    optimize = function(grouping, responses, covariates, offsets, weights, control) {
-      super$optimize(responses, cbind(covariates, model.matrix( ~ grouping + 0)), offsets, weights, control$config_optim)
+    #' @param config list controlling the optimization
+    optimize = function(grouping, responses, covariates, offsets, weights, config) {
+      super$optimize(responses, cbind(covariates, model.matrix( ~ grouping + 0)), offsets, weights, config)
       design_group <- model.matrix( ~ grouping + 0)
       ## extract group means
       if (ncol(covariates) > 0) {
@@ -83,13 +84,13 @@ PLNLDAfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Post treatment --------------------
     #' @description  Update R2, fisher and std_err fields and visualization
-    #' after optimization
-    postTreatment = function(grouping, responses, covariates, offsets, control) {
+    #' @param config list controlling the post-treatment
+    postTreatment = function(grouping, responses, covariates, offsets, config) {
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
-      if (control$backend == "torch") control$variance <- FALSE
-      super$postTreatment(responses, covariates, offsets, control = control)
+      super$postTreatment(responses, covariates, offsets, config = config)
       rownames(private$C) <- colnames(private$C) <- colnames(responses)
       colnames(private$S) <- 1:self$q
+      if (config$trace > 1) cat("\n\tCompute LD scores for visualization...")
       self$setVisualization()
     },
 

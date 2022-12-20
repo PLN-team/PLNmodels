@@ -31,10 +31,10 @@ test_that("PLNPCAfamily: main function, field access and methods", {
   myPLN <- PLNmodels:::PLNPCAfamily$new(1:5, Y, X, O, w, Abundance ~ 1, ctrl)
 
   ## optimize
-  myPLN$optimize(ctrl)
+  myPLN$optimize(ctrl$config_optim)
 
   ## post-treatment
-  myPLN$postTreatment(PLNPCA_param())
+  myPLN$postTreatment(ctrl$config_post)
 
   ## S3 methods
   expect_true(PLNmodels:::isPLNPCAfamily(myPLN))

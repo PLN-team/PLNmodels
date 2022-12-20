@@ -61,11 +61,88 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = PLN_param
 
   ## Compute the group means
   if (control$trace > 0) cat("\n Performing discriminant Analysis...")
-  myLDA$optimize(grouping, args$Y, args$X, args$O, args$w, control)
+  myLDA$optimize(grouping, args$Y, args$X, args$O, args$w, control$config_optim)
 
   ## Post-treatment: prepare LDA visualization
-  myLDA$postTreatment(grouping, args$Y, args$X, args$O, control)
+  myLDA$postTreatment(grouping, args$Y, args$X, args$O, control$config_post)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myLDA
+}
+
+#' Control of a PLNLDA fit
+#'
+#' Helper to define list of parameters to control the PLNLDA fit. All arguments have defaults.
+#'
+#' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
+#' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal" or "spherical". Default is "full".
+#' @param jackknife boolean indicating weither jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
+#' @param bootstrap integer indicating the number of bootstrap resamples to estimate the variance of the model parameters. Default is \code{0} (no bootstraping)
+#' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
+#' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
+#' @param trace a integer for verbosity.
+#' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
+#'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
+#'    which sometimes speeds up the inference.
+#'
+#' @return list of parameters configuring the fit.
+#'
+#' @details The list of parameters `config_optim` controls the optimizers. When "nlopt" is chosen the following entries are relevant
+#' * "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
+#' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
+#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
+#' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol_abs. Default is 0.0 (disabled)
+#' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)
+#' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
+#'
+#' When "torch" backend is used, with the following entries are relevant:
+#' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
+#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
+#'
+#' The list of parameters `config_post` controls the post-treatment processing, with the following entries:
+#' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
+#' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
+#' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is TRUE.
+#' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
+#' @export
+PLNLDA_param <- function(
+    backend       = c("nlopt", "torch"),
+    trace         = 1,
+    covariance    = c("full", "diagonal", "spherical"),
+    config_post   = list(),
+    config_optim  = list(),
+    inception     = NULL     # pretrained PLNfit used as initialization
+) {
+  backend <- match.arg(backend)
+  covariance <- match.arg(covariance)
+  if (!is.null(inception)) stopifnot(isPLNfit(inception))
+
+  ## post-treatment config
+  config_pst <- config_post_default_PLNLDA
+  config_pst[names(config_post)] <- config_post
+  config_pst$trace <- trace
+
+  ## optimization config
+  stopifnot(backend %in% c("nlopt", "torch"))
+  if (covariance == "fixed") stopifnot(inherits(Omega, "matrix") | inherits(Omega, "Matrix"))
+  if (backend == "nlopt") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
+    config_opt <- config_default_nlopt
+  }
+  if (backend == "torch") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_torch)
+    config_opt <- config_default_torch
+  }
+  config_opt[names(config_optim)] <- config_optim
+  config_opt$trace <- trace
+
+  structure(list(
+    backend       = backend   ,
+    trace         = trace     ,
+    covariance    = covariance,
+    config_post   = config_pst,
+    config_optim  = config_opt,
+    inception     = inception), class = "PLNmodels_param")
 }

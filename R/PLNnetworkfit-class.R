@@ -10,7 +10,7 @@
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
-#' @param control a list for controlling the optimization. See details.
+#' @param control a list for controlling the optimization.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param B matrix of regression matrix
 #' @param Sigma variance-covariance matrix of the latent variables
@@ -67,10 +67,11 @@ PLNnetworkfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimization ----------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
-    optimize = function(responses, covariates, offsets, weights, control) {
+    #' @param config a list for controlling the optimization
+    optimize = function(responses, covariates, offsets, weights, config) {
       cond <- FALSE; iter <- 0
-      objective   <- numeric(control$config_optim$maxit_out)
-      convergence <- numeric(control$config_optim$maxit_out)
+      objective   <- numeric(config$maxit_out)
+      convergence <- numeric(config$maxit_out)
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
       args <- list(Y = responses,
@@ -78,10 +79,10 @@ PLNnetworkfit <- R6Class(
                    O = offsets,
                    w = weights,
                    params = list(B = private$B, M = private$M, S = private$S),
-                   config = control$config_optim)
+                   config = config)
       while (!cond) {
         iter <- iter + 1
-        if (control$trace > 1) cat("", iter)
+        if (config$trace > 1) cat("", iter)
         ## CALL TO GLASSO TO UPDATE Omega
         glasso_out <- glassoFast::glassoFast(private$Sigma, rho = self$penalty * self$penalty_weights)
         if (anyNA(glasso_out$wi)) break
@@ -94,7 +95,7 @@ PLNnetworkfit <- R6Class(
         ## Check convergence
         objective[iter]   <- -self$loglik + self$penalty * sum(abs(private$Omega))
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
-        if ((convergence[iter] < control$config_optim$ftol_out) | (iter >= control$config_optim$maxit_out)) cond <- TRUE
+        if ((convergence[iter] < config$ftol_out) | (iter >= config$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate
         args$params <- list(B = private$B, M = private$M, S = private$S)

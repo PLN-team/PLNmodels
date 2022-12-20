@@ -86,15 +86,13 @@ Initialize all models in the collection.
 \subsection{Method \code{optimize()}}{
 Call to the optimizer on all models of the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$optimize(control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$optimize(config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{control}}{a list for controlling the optimization. See details.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\item{\code{config}}{a list for controlling the optimization}
 }
 \if{html}{\out{</div>}}
 }

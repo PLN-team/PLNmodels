@@ -144,15 +144,16 @@ PLNmixturefamily <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Optimization ----------------------
       #' @description Call to the optimizer on all models of the collection
-      optimize = function(control) {
+      #' @param config a list for controlling the optimization
+      optimize = function(config) {
         ## go along the number of clusters (i.e the models)
          self$models <- future.apply::future_lapply(self$models, function(model) {
-          if (control$trace == 1) {
+          if (config$trace == 1) {
             cat("\tnumber of cluster =", model$k, "\r")
             flush.console()
           }
-          model$optimize(self$responses, self$covariates, self$offsets, control)
-          if (control$trace > 1) {
+          model$optimize(self$responses, self$covariates, self$offsets, config)
+          if (config$trace > 1) {
             cat("\r                                                                                    \r")
             flush.console()
           }

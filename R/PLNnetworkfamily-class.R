@@ -13,7 +13,7 @@
 #' @param offsets the matrix of offsets common to every models
 #' @param weights the vector of observation weights
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
-#' @param control a list for controlling the optimization. See details.
+#' @param control a list for controlling the optimization.
 #' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
 #' @param index Integer index of the model to be returned. Only the first value is taken into account
 #'
@@ -93,18 +93,19 @@ PLNnetworkfamily <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimization ----------------------
     #' @description Call to the C++ optimizer on all models of the collection
-    optimize = function(control) {
+    #' @param config a list for controlling the optimization.
+    optimize = function(config) {
       ## Go along the penalty grid (i.e the models)
       for (m in seq_along(self$models))  {
 
-        if (control$trace == 1) {
+        if (config$trace == 1) {
           cat("\tsparsifying penalty =", self$models[[m]]$penalty, "\r")
           flush.console()
         }
-        if (control$trace > 1) {
+        if (config$trace > 1) {
           cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
         }
-        self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, control)
+        self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
         ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
         if (m < length(self$penalties))
           self$models[[m + 1]]$update(
@@ -113,7 +114,7 @@ PLNnetworkfamily <- R6Class(
             S = self$models[[m]]$var_par$S
           )
 
-        if (control$trace > 1) {
+        if (config$trace > 1) {
           cat("\r                                                                                    \r")
           flush.console()
         }
@@ -152,6 +153,7 @@ PLNnetworkfamily <- R6Class(
         control$penalty_weights = map(self$models, "penalty_weights")
         control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
         control$trace <- 0
+        control$config_optim$trace <- 0
 
         myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
                                       responses  = self$responses [subsample, , drop = FALSE],
@@ -160,7 +162,7 @@ PLNnetworkfamily <- R6Class(
                                       formula    = private$formula,
                                       weights    = self$weights   [subsample], control = control)
 
-        myPLN$optimize(control)
+        myPLN$optimize(control$config_optim)
         nets <- do.call(cbind, lapply(myPLN$models, function(model) {
           as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
         }))

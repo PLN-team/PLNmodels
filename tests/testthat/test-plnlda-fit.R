@@ -27,8 +27,7 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
   expect_true(inherits(model$group_means, "matrix"))
   expect_true(inherits(sigma(model), "matrix"))
   # expect_true(inherits(vcov(model), "dsCMatrix"))
-
-  expect_equal(dim(vcov(model)), c(model$d * model$p, model$d * model$p))
+  # expect_equal(dim(vcov(model)), c(model$d * model$p, model$d * model$p))
 
   ## fields and active bindings
   expect_equal(dim(model$model_par$C), c(p, p))
