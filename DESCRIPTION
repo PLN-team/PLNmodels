@@ -83,7 +83,6 @@ Collate:
     'PLNnetworkfit-class.R'
     'RcppExports.R'
     'barents.R'
-    'deprecated.R'
     'import_utils.R'
     'mollusk.R'
     'oaks.R'
