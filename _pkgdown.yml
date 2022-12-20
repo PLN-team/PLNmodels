@@ -49,7 +49,8 @@ reference:
     Description of the PLNfit object and methods for its manipulation. Any PLN variant in the
     package inherits from this class (PLNPCAfit, PLNnetworkfit, PLNLDAfit).
   contents:
-    - '`PLNfit`'
+    - starts_with('PLNfit')
+    - '`PLN_param`'
     - '`coef.PLNfit`'
     - '`vcov.PLNfit`'
     - '`sigma.PLNfit`'
@@ -57,12 +58,12 @@ reference:
     - '`predict_cond.PLNfit`'
     - '`fitted.PLNfit`'
     - '`standard_error.PLNfit`'
-    - '`fisher.PLNfit`'
 - title: 'Linear discriminant analysis via a Poisson lognormal fit'
   desc: >
     Description of the PLNLDAfit object and methods for its manipulation.
   contents:
   - starts_with('PLNLDAfit')
+  - '`PLNLDA_param`'
   - '`plot.PLNLDAfit`'
   - '`predict.PLNLDAfit`'
   - '`coef.PLNLDAfit`'
@@ -71,6 +72,7 @@ reference:
     Description of the PLNPCAfit and PLNPCAfamily objects and methods for their manipulation.
   contents:
   - starts_with('PLNPCAfit')
+  - '`PLNPCA_param`'
   - '`plot.PLNPCAfit`'
   - '`PLNPCAfamily`'
   - '`plot.PLNPCAfamily`'
@@ -81,6 +83,7 @@ reference:
     Description of the PLNmixturefit and PLNmixturefamily objects and methods for their manipulation.
   contents:
   - starts_with('PLNmixturefit')
+  - '`PLNmixture_param`'
   - '`plot.PLNmixturefit`'
   - '`PLNmixturefamily`'
   - '`plot.PLNmixturefamily`'
@@ -95,6 +98,7 @@ reference:
     Description of the PLNnetworkfit and PLNnetworkfamily objects and methods for their manipulation.
   contents:
   - starts_with('PLNnetworkfit')
+  - '`PLNnetwork_param`'
   - '`plot.PLNnetworkfit`'
   - '`PLNnetworkfamily`'
   - '`plot.PLNnetworkfamily`'
@@ -111,10 +115,12 @@ reference:
     - '`PLNfamily`'
     - '`plot.PLNfamily`'
     - '`rPLN`'
+    - '`rPLN`'
 - title: Data sets
   desc: ~
   contents:
     - '`trichoptera`'
-    - '`mollusk`'
     - '`oaks`'
+    - '`barents`'
+    - '`mollusk`'
 
