@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9801</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
 count data with PLN-network</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-12-02</h4>
+            <h4 data-toc-skip class="date">2022-12-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNnetwork.Rmd" class="external-link"><code>vignettes/PLNnetwork.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -193,9 +193,9 @@ multivariate generalized linear model where the main effect is due to a
 linear combination of <span class="math inline">\(d\)</span> covariates
 <span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation}
   \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i +
-\mathbf{x}_i^\top\boldsymbol\Theta},\boldsymbol\Omega^{-1}\right),
-\qquad \|\boldsymbol\Omega\|_1 &lt; c ,
-\end{equation}\]</span> where <span class="math inline">\(\boldsymbol\Theta\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression
+\mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Omega^{-1}\right), \qquad
+\|\boldsymbol\Omega\|_1 &lt; c ,
+\end{equation}\]</span> where <span class="math inline">\(\mathbf{B}\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression
 parameters.</p>
 </div>
 <div class="section level4">
@@ -204,12 +204,11 @@ parameters.</p>
 <p>Regularization via sparsification of <span class="math inline">\(\boldsymbol\Omega\)</span> and visualization of
 the consecutive network is the main objective in PLN-network. To reach
 this goal, we need to first estimate the model parameters. Inference in
-PLN-network focuses on the regression parameters <span class="math inline">\(\boldsymbol\Theta\)</span> and the inverse
-covariance <span class="math inline">\(\boldsymbol\Omega\)</span>.
-Technically speaking, we adopt a variational strategy to approximate the
-<span class="math inline">\(\ell_1\)</span>-penalized log-likelihood
-function and optimize the consecutive sparse variational surrogate with
-an optimization scheme that alternates between two step</p>
+PLN-network focuses on the regression parameters <span class="math inline">\(\mathbf{B}\)</span> and the inverse covariance
+<span class="math inline">\(\boldsymbol\Omega\)</span>. Technically
+speaking, we adopt a variational strategy to approximate the <span class="math inline">\(\ell_1\)</span>-penalized log-likelihood function
+and optimize the consecutive sparse variational surrogate with an
+optimization scheme that alternates between two step</p>
 <ol style="list-style-type: decimal">
 <li>a gradient-ascent-step, performed with the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library
 <span class="citation">(<a href="#ref-nlopt" role="doc-biblioref">Johnson 2011</a>)</span>, which we link to the
@@ -247,36 +246,36 @@ of models is fitted as follows:</p>
 ##  Initialization...
 ##  Adjusting 30 PLN with sparse inverse covariance estimation
 ##  Joint optimization alternating gradient descent and graphical-lasso
-##  sparsifying penalty = 3.641811 
-    sparsifying penalty = 3.363835 
-    sparsifying penalty = 3.107076 
-    sparsifying penalty = 2.869916 
-    sparsifying penalty = 2.650857 
-    sparsifying penalty = 2.44852 
-    sparsifying penalty = 2.261626 
-    sparsifying penalty = 2.088998 
-    sparsifying penalty = 1.929547 
-    sparsifying penalty = 1.782266 
-    sparsifying penalty = 1.646227 
-    sparsifying penalty = 1.520572 
-    sparsifying penalty = 1.404508 
-    sparsifying penalty = 1.297303 
-    sparsifying penalty = 1.198281 
-    sparsifying penalty = 1.106818 
-    sparsifying penalty = 1.022335 
-    sparsifying penalty = 0.9443011 
-    sparsifying penalty = 0.8722234 
-    sparsifying penalty = 0.8056474 
-    sparsifying penalty = 0.744153 
-    sparsifying penalty = 0.6873524 
-    sparsifying penalty = 0.6348874 
-    sparsifying penalty = 0.586427 
-    sparsifying penalty = 0.5416655 
-    sparsifying penalty = 0.5003207 
-    sparsifying penalty = 0.4621316 
-    sparsifying penalty = 0.4268575 
-    sparsifying penalty = 0.3942758 
-    sparsifying penalty = 0.3641811 
+##  sparsifying penalty = 3.65921 
+    sparsifying penalty = 3.379906 
+    sparsifying penalty = 3.121921 
+    sparsifying penalty = 2.883627 
+    sparsifying penalty = 2.663522 
+    sparsifying penalty = 2.460218 
+    sparsifying penalty = 2.272432 
+    sparsifying penalty = 2.098979 
+    sparsifying penalty = 1.938766 
+    sparsifying penalty = 1.790781 
+    sparsifying penalty = 1.654092 
+    sparsifying penalty = 1.527837 
+    sparsifying penalty = 1.411218 
+    sparsifying penalty = 1.303501 
+    sparsifying penalty = 1.204006 
+    sparsifying penalty = 1.112105 
+    sparsifying penalty = 1.027219 
+    sparsifying penalty = 0.9488126 
+    sparsifying penalty = 0.8763906 
+    sparsifying penalty = 0.8094964 
+    sparsifying penalty = 0.7477083 
+    sparsifying penalty = 0.6906363 
+    sparsifying penalty = 0.6379207 
+    sparsifying penalty = 0.5892287 
+    sparsifying penalty = 0.5442534 
+    sparsifying penalty = 0.502711 
+    sparsifying penalty = 0.4643395 
+    sparsifying penalty = 0.4288969 
+    sparsifying penalty = 0.3961595 
+    sparsifying penalty = 0.365921 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model,
@@ -296,9 +295,9 @@ sends a very basic summary of the estimation process:</p>
 <span><span class="co">## --------------------------------------------------------</span></span>
 <span><span class="co">##  Task: Network Inference </span></span>
 <span><span class="co">## ========================================================</span></span>
-<span><span class="co">##  - 30 penalties considered: from 0.3641811 to 3.641811 </span></span>
-<span><span class="co">##  - Best model (greater BIC): lambda = 1.4 </span></span>
-<span><span class="co">##  - Best model (greater EBIC): lambda = 1.4</span></span></code></pre>
+<span><span class="co">##  - 30 penalties considered: from 0.365921 to 3.65921 </span></span>
+<span><span class="co">##  - Best model (greater BIC): lambda = 1.41 </span></span>
+<span><span class="co">##  - Best model (greater EBIC): lambda = 1.41</span></span></code></pre>
 <p>One can also easily access the successive values of the criteria in
 the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -330,74 +329,74 @@ the collection</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">3.641811</td>
+<td align="right">3.659210</td>
 <td align="right">17</td>
-<td align="right">-1293.172</td>
-<td align="right">-1326.253</td>
-<td align="right">-2797.343</td>
+<td align="right">-1293.805</td>
+<td align="right">-1326.886</td>
+<td align="right">-2799.213</td>
 <td align="right">0</td>
-<td align="right">-1326.253</td>
-<td align="right">-1299.425</td>
+<td align="right">-1326.886</td>
+<td align="right">-1300.059</td>
 <td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">3.363835</td>
+<td align="right">3.379906</td>
 <td align="right">17</td>
-<td align="right">-1287.798</td>
-<td align="right">-1320.879</td>
-<td align="right">-2791.953</td>
+<td align="right">-1288.407</td>
+<td align="right">-1321.487</td>
+<td align="right">-2793.814</td>
 <td align="right">0</td>
-<td align="right">-1320.879</td>
-<td align="right">-1293.784</td>
+<td align="right">-1321.487</td>
+<td align="right">-1294.395</td>
 <td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="right">3.107076</td>
+<td align="right">3.121920</td>
 <td align="right">17</td>
-<td align="right">-1282.642</td>
-<td align="right">-1315.722</td>
-<td align="right">-2786.796</td>
+<td align="right">-1283.242</td>
+<td align="right">-1316.323</td>
+<td align="right">-2788.650</td>
 <td align="right">0</td>
-<td align="right">-1315.722</td>
-<td align="right">-1288.373</td>
+<td align="right">-1316.323</td>
+<td align="right">-1288.976</td>
 <td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">2.869916</td>
+<td align="right">2.883627</td>
 <td align="right">18</td>
-<td align="right">-1277.715</td>
-<td align="right">-1312.741</td>
-<td align="right">-2783.815</td>
+<td align="right">-1278.273</td>
+<td align="right">-1313.300</td>
+<td align="right">-2785.627</td>
 <td align="right">1</td>
-<td align="right">-1315.197</td>
-<td align="right">-1283.201</td>
+<td align="right">-1315.756</td>
+<td align="right">-1283.764</td>
 <td align="right">0.0069204</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="right">2.650857</td>
+<td align="right">2.663522</td>
 <td align="right">18</td>
-<td align="right">-1272.955</td>
-<td align="right">-1307.981</td>
-<td align="right">-2779.055</td>
+<td align="right">-1273.506</td>
+<td align="right">-1308.532</td>
+<td align="right">-2780.859</td>
 <td align="right">1</td>
-<td align="right">-1310.438</td>
-<td align="right">-1278.210</td>
+<td align="right">-1310.988</td>
+<td align="right">-1278.765</td>
 <td align="right">0.0069204</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">2.448520</td>
+<td align="right">2.460218</td>
 <td align="right">18</td>
-<td align="right">-1268.499</td>
-<td align="right">-1303.525</td>
-<td align="right">-2774.599</td>
+<td align="right">-1269.042</td>
+<td align="right">-1304.068</td>
+<td align="right">-2776.395</td>
 <td align="right">1</td>
-<td align="right">-1305.982</td>
-<td align="right">-1273.527</td>
+<td align="right">-1306.525</td>
+<td align="right">-1274.075</td>
 <td align="right">0.0069204</td>
 <td align="left">NA</td>
 </tr>
@@ -409,93 +408,93 @@ the collection</p>
 <code class="sourceCode R"><span><span class="va">network_models</span><span class="op">$</span><span class="va">convergence</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="4%">
-<col width="7%">
-<col width="7%">
+<col width="6%">
 <col width="9%">
 <col width="9%">
+<col width="7%">
+<col width="8%">
+<col width="12%">
 <col width="13%">
 <col width="13%">
-<col width="10%">
-<col width="25%">
+<col width="18%">
 </colgroup>
 <thead><tr class="header">
 <th align="left"></th>
 <th align="right">param</th>
 <th align="left">nb_param</th>
+<th align="left">status</th>
+<th align="left">backend</th>
+<th align="left">iterations</th>
 <th align="left">objective</th>
 <th align="left">convergence</th>
 <th align="left">outer_iterations</th>
-<th align="left">inner_iterations</th>
-<th align="left">inner_status</th>
-<th align="left">inner_message</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">out</td>
-<td align="right">3.641811</td>
+<td align="right">3.659210</td>
 <td align="left">17</td>
-<td align="left">1299.424717</td>
-<td align="left">0.000004</td>
-<td align="left">19.000000</td>
-<td align="left">76</td>
 <td align="left">4</td>
-<td align="left">xtol_rel or xtol_abs was reached</td>
+<td align="left">nlopt</td>
+<td align="left">60</td>
+<td align="left">1300.059110</td>
+<td align="left">0.000105</td>
+<td align="left">20.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
-<td align="right">3.363835</td>
+<td align="right">3.379906</td>
 <td align="left">17</td>
-<td align="left">1293.784147</td>
-<td align="left">0.000004</td>
-<td align="left">2.000000</td>
-<td align="left">33</td>
-<td align="left">3</td>
-<td align="left">ftol_rel or ftol_abs was reached</td>
+<td align="left">4</td>
+<td align="left">nlopt</td>
+<td align="left">17</td>
+<td align="left">1294.395142</td>
+<td align="left">0.000000</td>
+<td align="left">3.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
-<td align="right">3.107076</td>
+<td align="right">3.121920</td>
 <td align="left">17</td>
-<td align="left">1288.373075</td>
-<td align="left">0.000000</td>
-<td align="left">2.000000</td>
-<td align="left">20</td>
 <td align="left">4</td>
-<td align="left">xtol_rel or xtol_abs was reached</td>
+<td align="left">nlopt</td>
+<td align="left">15</td>
+<td align="left">1288.976123</td>
+<td align="left">0.000000</td>
+<td align="left">3.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
-<td align="right">2.869916</td>
-<td align="left">18</td>
-<td align="left">1283.201488</td>
-<td align="left">0.000000</td>
-<td align="left">2.000000</td>
+<td align="right">2.883627</td>
 <td align="left">18</td>
 <td align="left">4</td>
-<td align="left">xtol_rel or xtol_abs was reached</td>
+<td align="left">nlopt</td>
+<td align="left">16</td>
+<td align="left">1283.764488</td>
+<td align="left">0.000000</td>
+<td align="left">3.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.3</td>
-<td align="right">2.650857</td>
+<td align="right">2.663522</td>
 <td align="left">18</td>
-<td align="left">1278.209913</td>
-<td align="left">0.000000</td>
-<td align="left">2.000000</td>
-<td align="left">17</td>
 <td align="left">4</td>
-<td align="left">xtol_rel or xtol_abs was reached</td>
+<td align="left">nlopt</td>
+<td align="left">15</td>
+<td align="left">1278.764810</td>
+<td align="left">0.000000</td>
+<td align="left">3.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.4</td>
-<td align="right">2.448520</td>
+<td align="right">2.460218</td>
 <td align="left">18</td>
-<td align="left">1273.527468</td>
-<td align="left">0.000000</td>
-<td align="left">2.000000</td>
-<td align="left">17</td>
 <td align="left">4</td>
-<td align="left">xtol_rel or xtol_abs was reached</td>
+<td align="left">nlopt</td>
+<td align="left">15</td>
+<td align="left">1274.074574</td>
+<td align="left">0.000000</td>
+<td align="left">3.000000</td>
 </tr>
 </tbody>
 </table>
@@ -610,10 +609,10 @@ specific one, mostly for network visualization purposes. Most fields and
 methods are recalled when such an object is printed:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_StARS</span></span></code></pre></div>
-<pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 1.52)</span></span>
+<pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 2.27)</span></span>
 <span><span class="co">## ==================================================================</span></span>
-<span><span class="co">##  nb_param    loglik       BIC       ICL n_edges     EBIC pen_loglik density</span></span>
-<span><span class="co">##        20 -1247.101 -1286.019 -2757.093       3 -1291.74  -1250.908   0.021</span></span>
+<span><span class="co">##  nb_param    loglik      BIC       ICL n_edges      EBIC pen_loglik density</span></span>
+<span><span class="co">##        18 -1264.864 -1299.89 -2772.217       1 -1302.347  -1269.676   0.007</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -632,12 +631,12 @@ additional analyses).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">my_graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH 5aecc95 UNW- 17 3 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH 7c0f6ca UNW- 17 1 -- </span></span>
 <span><span class="co">## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),</span></span>
 <span><span class="co">## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),</span></span>
 <span><span class="co">## | width (e/n)</span></span>
-<span><span class="co">## + edges from 5aecc95 (vertex names):</span></span>
-<span><span class="co">## [1] Che--Hve Glo--Hfo Hfo--Hsp</span></span></code></pre>
+<span><span class="co">## + edge from 7c0f6ca (vertex names):</span></span>
+<span><span class="co">## [1] Hfo--Hsp</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/stars_network-1.png" width="672"></p>
@@ -739,7 +738,7 @@ Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2):
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

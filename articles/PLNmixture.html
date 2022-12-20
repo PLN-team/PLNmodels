@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9801</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
 PLN-mixture</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-12-02</h4>
+            <h4 data-toc-skip class="date">2022-12-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNmixture.Rmd" class="external-link"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
@@ -195,12 +195,11 @@ layer then reads</p>
 <p><span class="math display">\[
 \mathbf{Z}_i | \mathbf{C}_i = k \, \sim
 \mathcal{N}({\mathbf{o}_i +
-\mathbf{x}_i^{\top}{\boldsymbol\Theta} +
+\mathbf{x}_i^{\top}{\mathbf{B}} +
 \boldsymbol\mu}^{(k)},{\boldsymbol\Sigma}^{(k)}),
 \]</span></p>
-<p>where <span class="math inline">\({\boldsymbol\Theta}\)</span> is a
-<span class="math inline">\(d\times p\)</span> matrix of regression
-parameters common to all the mixture components.</p>
+<p>where <span class="math inline">\({\mathbf{B}}\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression parameters
+common to all the mixture components.</p>
 </div>
 <div class="section level4">
 <h4 id="parametrization-of-the-covariance-of-the-mixture-models">Parametrization of the covariance of the mixture models<a class="anchor" aria-label="anchor" href="#parametrization-of-the-covariance-of-the-mixture-models"></a>
@@ -277,21 +276,21 @@ follows:</p>
 <code class="sourceCode R"><span><span class="va">mixture_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNmixture.html">PLNmixture</a></span><span class="op">(</span></span>
 <span>  <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  data  <span class="op">=</span> <span class="va">trichoptera</span>,</span>
-<span>  clusters <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
-<span>  control_main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>smoothing <span class="op">=</span> <span class="st">"forward"</span>, iterates <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  clusters <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ##  Initialization...
 ## 
-##  Adjusting 5 PLN mixture models.
+##  Adjusting 4 PLN mixture models.
 ##  number of cluster = 1 
     number of cluster = 2 
     number of cluster = 3 
     number of cluster = 4 
-    number of cluster = 5 
 ## 
 ##  Smoothing PLN mixture models.
-##    Going forward ++++
+##    Going backward +++
+                                                                                                    
+   Going forward +++
                                                                                                     
 ##  Post-treatments
 ##  DONE!</code></pre>
@@ -308,13 +307,13 @@ outputs a brief summary of the estimation process:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mixture_models</span></span></code></pre></div>
 <pre><code><span><span class="co">## --------------------------------------------------------</span></span>
-<span><span class="co">## COLLECTION OF 5 POISSON LOGNORMAL MODELS</span></span>
+<span><span class="co">## COLLECTION OF 4 POISSON LOGNORMAL MODELS</span></span>
 <span><span class="co">## --------------------------------------------------------</span></span>
 <span><span class="co">##  Task: Mixture Model </span></span>
 <span><span class="co">## ========================================================</span></span>
-<span><span class="co">##  - Number of clusters considered: from 1 to 5 </span></span>
+<span><span class="co">##  - Number of clusters considered: from 1 to 4 </span></span>
 <span><span class="co">##  - Best model (regarding BIC): cluster = 2 </span></span>
-<span><span class="co">##  - Best model (regarding ICL): cluster = 5</span></span></code></pre>
+<span><span class="co">##  - Best model (regarding ICL): cluster = 4</span></span></code></pre>
 <p>One can also easily access the successive values of the criteria in
 the collection</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -331,37 +330,30 @@ the collection</p>
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">18</td>
-<td align="right">-1158.503</td>
-<td align="right">-1193.530</td>
-<td align="right">-2152.619</td>
+<td align="right">-1158.465</td>
+<td align="right">-1193.491</td>
+<td align="right">-2153.094</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">37</td>
-<td align="right">-1104.242</td>
-<td align="right">-1176.241</td>
-<td align="right">-1981.670</td>
+<td align="right">-1104.147</td>
+<td align="right">-1176.145</td>
+<td align="right">-1982.991</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">56</td>
-<td align="right">-1070.276</td>
-<td align="right">-1179.247</td>
-<td align="right">-1887.299</td>
+<td align="right">-1070.268</td>
+<td align="right">-1179.239</td>
+<td align="right">-1888.311</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-1041.149</td>
-<td align="right">-1187.092</td>
-<td align="right">-1790.786</td>
-</tr>
-<tr class="odd">
-<td align="right">5</td>
-<td align="right">94</td>
-<td align="right">-1019.064</td>
-<td align="right">-1201.980</td>
-<td align="right">-1417.825</td>
+<td align="right">-1041.142</td>
+<td align="right">-1187.085</td>
+<td align="right">-1791.386</td>
 </tr>
 </tbody>
 </table>
@@ -383,7 +375,7 @@ the collection</p>
 <td align="left">out</td>
 <td align="right">1</td>
 <td align="left">18</td>
-<td align="left">1158.503345</td>
+<td align="left">1158.464633</td>
 <td align="left">0.000000</td>
 <td align="left">2.000000</td>
 </tr>
@@ -391,32 +383,24 @@ the collection</p>
 <td align="left">elt</td>
 <td align="right">2</td>
 <td align="left">37</td>
-<td align="left">1104.241949</td>
-<td align="left">0.000001</td>
+<td align="left">1104.146777</td>
+<td align="left">0.000000</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
 <td align="right">3</td>
 <td align="left">56</td>
-<td align="left">1070.276423</td>
-<td align="left">0.000001</td>
+<td align="left">1070.268286</td>
+<td align="left">0.000000</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">1041.148778</td>
+<td align="left">1041.142049</td>
 <td align="left">0.000000</td>
-<td align="left">2.000000</td>
-</tr>
-<tr class="odd">
-<td align="left">elt.3</td>
-<td align="right">5</td>
-<td align="left">94</td>
-<td align="left">1019.064399</td>
-<td align="left">0.000002</td>
 <td align="left">2.000000</td>
 </tr>
 </tbody>
@@ -484,14 +468,14 @@ A good place to start is the <code>show/print</code> method:</p>
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">memberships</span></span></code></pre></div>
-<pre><code><span><span class="co">##  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 2 2 2 2 2 2 2 1 1 1 1 1 1 1</span></span>
-<span><span class="co">## [39] 1 1 1 1 1 1 1 1 1 1 2</span></span></code></pre>
+<pre><code><span><span class="co">##  [1] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 2 1 1 1 1 1 1 1 2 2 2 2 2 2 2</span></span>
+<span><span class="co">## [39] 2 2 2 2 2 2 2 2 2 2 1</span></span></code></pre>
 <ul>
 <li>the group proportions:</li>
 </ul>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">mixtureParam</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.8163265 0.1836735</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.1846174 0.8153826</span></span></code></pre>
 <ul>
 <li>the posterior probabilities (often close to the boundaries <span class="math inline">\(\{0,1\}\)</span>):</li>
 </ul>
@@ -499,28 +483,28 @@ A good place to start is the <code>show/print</code> method:</p>
 <code class="sourceCode R"><span><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">posteriorProb</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 </tbody></table>
 <ul>
@@ -531,19 +515,19 @@ variances):</li>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myMix_BIC</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">as.matrix</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [[1]]</span></span>
 <span><span class="co">##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath </span></span>
-<span><span class="co">## 0.7177328 0.7177328 0.7177328 0.7177328 0.7177328 0.7177328 0.7177328 0.7177328 </span></span>
+<span><span class="co">## 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 </span></span>
 <span><span class="co">##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve </span></span>
-<span><span class="co">## 0.7177328 0.7177328 0.7177328 0.7177328 0.7177328 0.7177328 0.7177328 0.7177328 </span></span>
+<span><span class="co">## 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 </span></span>
 <span><span class="co">##       Sta </span></span>
-<span><span class="co">## 0.7177328 </span></span>
+<span><span class="co">## 0.9606478 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## [[2]]</span></span>
 <span><span class="co">##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath </span></span>
-<span><span class="co">## 0.9607135 0.9607135 0.9607135 0.9607135 0.9607135 0.9607135 0.9607135 0.9607135 </span></span>
+<span><span class="co">## 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 </span></span>
 <span><span class="co">##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve </span></span>
-<span><span class="co">## 0.9607135 0.9607135 0.9607135 0.9607135 0.9607135 0.9607135 0.9607135 0.9607135 </span></span>
+<span><span class="co">## 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 </span></span>
 <span><span class="co">##       Sta </span></span>
-<span><span class="co">## 0.9607135</span></span></code></pre>
+<span><span class="co">## 0.7203891</span></span></code></pre>
 <ul>
 <li>the regression coefficient matrix and other model of parameters
 (results not shown here, redundant with other fields)</li>
@@ -563,39 +547,39 @@ means <span class="math inline">\(\mathbf{M}\)</span>
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
-<th align="right">group_1</th>
-<th align="right">group_2</th>
+<th align="right">Intercept</th>
+<th align="right">Intercept.1</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
+<td align="right">-23.70</td>
 <td align="right">-7.16</td>
-<td align="right">-18.02</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-8.33</td>
 <td align="right">-7.71</td>
+<td align="right">-8.33</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-2.68</td>
 <td align="right">-4.87</td>
+<td align="right">-2.68</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-6.59</td>
 <td align="right">-8.40</td>
+<td align="right">-6.59</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">-0.49</td>
-<td align="right">-0.82</td>
+<td align="right">-0.88</td>
+<td align="right">-0.50</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">-3.72</td>
 <td align="right">-6.97</td>
+<td align="right">-3.72</td>
 </tr>
 </tbody>
 </table>
@@ -606,7 +590,7 @@ means <span class="math inline">\(\mathbf{M}\)</span>
 <pre><code><span><span class="co">## A multivariate Poisson Lognormal fit with spherical covariance model.</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">##  nb_param   loglik      BIC       ICL</span></span>
-<span><span class="co">##        18 -828.202 -863.228 -1564.048</span></span>
+<span><span class="co">##        18 -252.884 -287.911 -1398.381</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -649,28 +633,28 @@ probabilities <span class="math inline">\(\hat{\pi}_k\)</span></p>
 <span><span class="va">predicted.class</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
 </tr>
 </tbody></table>
 <p>Setting <code>type = "response"</code>, we can predict the most
@@ -681,9 +665,9 @@ likely cluster <span class="math inline">\(\hat{k} = \arg\max_{k =
 <span>                           prior <span class="op">=</span> <span class="va">myMix_BIC</span><span class="op">$</span><span class="va">posteriorProb</span>,  type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span></span>
 <span><span class="va">predicted.class</span></span></code></pre></div>
 <pre><code><span><span class="co">##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 </span></span>
-<span><span class="co">##  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  2  1  2  2 </span></span>
+<span><span class="co">##  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  1  2  1  1 </span></span>
 <span><span class="co">## 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 </span></span>
-<span><span class="co">##  2  2  2  2  2  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  2 </span></span>
+<span><span class="co">##  1  1  1  1  1  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  2  1 </span></span>
 <span><span class="co">## Levels: 1 2</span></span></code></pre>
 <p>We can assess that the predictions are quite similar to the real
 group (<em>this is not a proper validation of the method as we used data
@@ -741,7 +725,7 @@ Model-Based Cluster Analysis.”</span> <em>Journal of Classification</em>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

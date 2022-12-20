@@ -1,5 +1,5 @@
 pandoc: 2.19.2
-pkgdown: 2.0.6
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   Import_data: Import_data.html
@@ -9,7 +9,7 @@ articles:
   PLNmixture: PLNmixture.html
   PLNnetwork: PLNnetwork.html
   Trichoptera: Trichoptera.html
-last_built: 2022-12-02T18:57Z
+last_built: 2022-12-20T13:54Z
 urls:
   reference: https://pln-team.github.io/PLNmodels/reference
   article: https://pln-team.github.io/PLNmodels/articles

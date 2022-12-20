@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9801</span>
       </span>
     </div>
 
@@ -113,7 +113,7 @@
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>RLE has additional <code>pseudocounts</code> and <code>type</code> arguments to add pseudocounts to the observed counts (defaults to 0L) and to compute offsets using only positive counts (if <code>type == "poscounts"</code>). This mimics the behavior of <code>DESeq2::DESeq()</code> when using <code>sfType == "poscounts"</code>. CSS has an additional <code>reference</code> argument to choose the location function used to compute the reference quantiles (defaults to <code>median</code> as in the Nature publication but can be set to <code>mean</code> to reproduce behavior of functions cumNormStat* from metagenomeSeq). Wrench has two additional parameters: <code>groups</code> to specify sample groups and <code>type</code> to either reproduce exactly the default <code><a href="https://rdrr.io/pkg/Wrench/man/wrench.html" class="external-link">Wrench::wrench()</a></code> behavior (<code>type = "wrench"</code>, default) or to use simpler heuristics (<code>type = "simple"</code>). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples (unless <code>type == "poscounts"</code> has been specified) and (iii) GMPR fails if a sample does not share any species with all other samples.</p>
+    <p>RLE has additional <code>pseudocounts</code> and <code>type</code> arguments to add pseudocounts to the observed counts (defaults to 0L) and to compute offsets using only positive counts (if <code>type == "poscounts"</code>). This mimics the behavior of <code>DESeq2::DESeq()</code> when using <code>sfType == "poscounts"</code>. CSS has an additional <code>reference</code> argument to choose the location function used to compute the reference quantiles (defaults to <code>median</code> as in the Nature publication but can be set to <code>mean</code> to reproduce behavior of functions cumNormStat* from metagenomeSeq). Wrench has two additional parameters: <code>groups</code> to specify sample groups and <code>type</code> to either reproduce exactly the default <code>Wrench::wrench()</code> behavior (<code>type = "wrench"</code>, default) or to use simpler heuristics (<code>type = "simple"</code>). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples (unless <code>type == "poscounts"</code> has been specified) and (iii) GMPR fails if a sample does not share any species with all other samples.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -239,7 +239,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9801</span>
       </span>
     </div>
 
@@ -84,22 +84,6 @@
     </div>
 
 
-    <div id="details">
-    <h2>Details</h2>
-    <p>The parameter <code>control</code> is a list controlling the optimization with the following entries:</p><ul><li><p>"covariance" character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "genetic". Default is "full".</p></li>
-<li><p>"corr_matrix": a symmetric positive definite correlation matrix used for the "genetic" model of covariance. Useless in other cases</p></li>
-<li><p>"trace" integer for verbosity.</p></li>
-<li><p>"inception" Set up the initialization. By default, the model is initialized with a multivariate linear model applied on
-log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
-which sometimes speeds up the inference.</p></li>
-<li><p>"ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n &lt; p, 1e-8 otherwise.</p></li>
-<li><p>"ftol_abs" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0</p></li>
-<li><p>"xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6</p></li>
-<li><p>"xtol_abs" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0</p></li>
-<li><p>"maxeval" stop when the number of iteration exceeds maxeval. Default is 10000</p></li>
-<li><p>"maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)</p></li>
-<li><p>"algorithm" the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".</p></li>
-</ul></div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p><code><a href="getModel.html">getModel()</a></code></p></div>
@@ -184,7 +168,7 @@ BIC and ICL are defined so that they are on the same scale as the model log-like
 
 
 <dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See details.</p></dd>
+<dd><p>list controlling the optimization and the model</p></dd>
 
 
 </dl><p></p></div>
@@ -198,9 +182,17 @@ BIC and ICL are defined so that they are on the same scale as the model log-like
 <h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
 <p>Update fields after optimization</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfamily</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfamily</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span><span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+<div class="section">
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>config</code></dt>
+<dd><p>a list for controlling the post-treatment.</p></dd>
+
+
+</dl><p></p></div>
+</div>
 
 </div><p></p><hr><a id="method-PLNfamily-getModel"></a><div class="section">
 <h3 id="method-getmodel-">Method <code><a href="getModel.html">getModel()</a></code><a class="anchor" aria-label="anchor" href="#method-getmodel-"></a></h3>
@@ -210,7 +202,7 @@ BIC and ICL are defined so that they are on the same scale as the model log-like
 </div>
 
 <div class="section">
-<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>var</code></dt>
 <dd><p>value of the parameter (<code>rank</code> for PLNPCA, <code>sparsity</code> for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.</p></dd>
 
@@ -234,7 +226,7 @@ BIC and ICL are defined so that they are on the same scale as the model log-like
 </div>
 
 <div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>criteria</code></dt>
 <dd><p>A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)</p></dd>
 
@@ -276,7 +268,7 @@ the same scale as the log-likelihood.</p></dd>
 </div>
 
 <div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -300,7 +292,7 @@ the same scale as the log-likelihood.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

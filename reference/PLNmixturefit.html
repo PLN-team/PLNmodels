@@ -20,7 +20,7 @@ See the documentation for ..."><meta property="og:image" content="https://pln-te
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9801</span>
       </span>
     </div>
 
@@ -252,11 +252,7 @@ See the documentation for ...</p>
 
 
 <dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See details.</p></dd>
-
-
-<dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See details.</p></dd>
+<dd><p>a list for controlling the optimization.</p></dd>
 
 
 </dl><p></p></div>
@@ -266,7 +262,7 @@ See the documentation for ...</p>
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
 <p>Optimize a <code>PLNmixturefit</code> model</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -283,12 +279,8 @@ See the documentation for ...</p>
 <dd><p>the matrix of offsets common to every models</p></dd>
 
 
-<dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See details.</p></dd>
-
-
-<dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See details.</p></dd>
+<dt><code>config</code></dt>
+<dd><p>a list for controlling the optimization</p></dd>
 
 
 </dl><p></p></div>
@@ -302,7 +294,7 @@ See the documentation for ...</p>
 <span>  <span class="va">newdata</span>,</span>
 <span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"posterior"</span>, <span class="st">"response"</span>, <span class="st">"position"</span><span class="op">)</span>,</span>
 <span>  prior <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">self</span><span class="op">$</span><span class="va">k</span>, <span class="va">self</span><span class="op">$</span><span class="va">k</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">)</span>, <span class="va">self</span><span class="op">$</span><span class="va">k</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/PLNmixture_param.html">PLNmixture_param</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -325,7 +317,7 @@ with weights equal to the posterior probabilities.</p></dd>
 
 
 <dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See <code><a href="PLN.html">PLN()</a></code> for details.</p></dd>
+<dd><p>a list-like structure for controlling the fit. See <code><a href="PLNmixture_param.html">PLNmixture_param()</a></code> for details.</p></dd>
 
 
 <dt><code>envir</code></dt>
@@ -398,7 +390,14 @@ with weights equal to the posterior probabilities.</p></dd>
 <h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
 <p>Update fields after optimization</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">nullModel</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span></span>
+<span>  <span class="va">responses</span>,</span>
+<span>  <span class="va">covariates</span>,</span>
+<span>  <span class="va">offsets</span>,</span>
+<span>  <span class="va">weights</span>,</span>
+<span>  <span class="va">config</span>,</span>
+<span>  <span class="va">nullModel</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -417,6 +416,10 @@ with weights equal to the posterior probabilities.</p></dd>
 
 <dt><code>weights</code></dt>
 <dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
+
+
+<dt><code>config</code></dt>
+<dd><p>a list for controlling the post-treatment</p></dd>
 
 
 <dt><code>nullModel</code></dt>
@@ -474,7 +477,7 @@ with weights equal to the posterior probabilities.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

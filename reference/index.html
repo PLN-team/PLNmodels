@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9801</span>
       </span>
     </div>
 
@@ -114,6 +114,22 @@
         </td>
         <td><p>An R6 Class to represent a PLNfit in a standard, general framework</p></td>
       </tr><tr><td>
+          <p><code><a href="PLNfit_diagonal.html">PLNfit_diagonal</a></code> <code><a href="PLNfit_diagonal.html">PLNLDAfit_spherical</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a PLNfit in a standard, general framework, with diagonal residual covariance</p></td>
+      </tr><tr><td>
+          <p><code><a href="PLNfit_fixedcov.html">PLNfit_fixedcov</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a PLNfit in a standard, general framework, with fixed (inverse) residual covariance</p></td>
+      </tr><tr><td>
+          <p><code><a href="PLNfit_spherical.html">PLNfit_spherical</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a PLNfit in a standard, general framework, with spherical residual covariance</p></td>
+      </tr><tr><td>
+          <p><code><a href="PLN_param.html">PLN_param()</a></code> </p>
+        </td>
+        <td><p>Control of a PLN fit</p></td>
+      </tr><tr><td>
           <p><code><a href="coef.PLNfit.html">coef(<i>&lt;PLNfit&gt;</i>)</a></code> </p>
         </td>
         <td><p>Extract model coefficients</p></td>
@@ -140,11 +156,7 @@
       </tr><tr><td>
           <p><code><a href="standard_error.html">standard_error()</a></code> </p>
         </td>
-        <td><p>Component-wise standard errors of Theta</p></td>
-      </tr><tr><td>
-          <p><code><a href="fisher.html">fisher()</a></code> </p>
-        </td>
-        <td><p>Fisher information matrix for Theta</p></td>
+        <td><p>Component-wise standard errors of B</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="linear-discriminant-analysis-via-a-poisson-lognormal-fit">Linear discriminant analysis via a Poisson lognormal fit <a href="#linear-discriminant-analysis-via-a-poisson-lognormal-fit" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Description of the PLNLDAfit object and methods for its manipulation.</p>
@@ -153,6 +165,18 @@
           <p><code><a href="PLNLDAfit.html">PLNLDAfit</a></code> </p>
         </td>
         <td><p>An R6 Class to represent a PLNfit in a LDA framework</p></td>
+      </tr><tr><td>
+          <p><code><a href="PLNLDAfit_diagonal.html">PLNLDAfit_diagonal</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a PLNfit in a LDA framework with diagonal covariance</p></td>
+      </tr><tr><td>
+          <p><code><a href="PLNfit_diagonal.html">PLNfit_diagonal</a></code> <code><a href="PLNfit_diagonal.html">PLNLDAfit_spherical</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a PLNfit in a standard, general framework, with diagonal residual covariance</p></td>
+      </tr><tr><td>
+          <p><code><a href="PLNLDA_param.html">PLNLDA_param()</a></code> </p>
+        </td>
+        <td><p>Control of a PLNLDA fit</p></td>
       </tr><tr><td>
           <p><code><a href="plot.PLNLDAfit.html">plot(<i>&lt;PLNLDAfit&gt;</i>)</a></code> </p>
         </td>
@@ -173,6 +197,10 @@
           <p><code><a href="PLNPCAfit.html">PLNPCAfit</a></code> </p>
         </td>
         <td><p>An R6 Class to represent a PLNfit in a PCA framework</p></td>
+      </tr><tr><td>
+          <p><code><a href="PLNPCA_param.html">PLNPCA_param()</a></code> </p>
+        </td>
+        <td><p>Control of PLNPCA fit</p></td>
       </tr><tr><td>
           <p><code><a href="plot.PLNPCAfit.html">plot(<i>&lt;PLNPCAfit&gt;</i>)</a></code> </p>
         </td>
@@ -201,6 +229,10 @@
           <p><code><a href="PLNmixturefit.html">PLNmixturefit</a></code> </p>
         </td>
         <td><p>An R6 Class to represent a PLNfit in a mixture framework</p></td>
+      </tr><tr><td>
+          <p><code><a href="PLNmixture_param.html">PLNmixture_param()</a></code> </p>
+        </td>
+        <td><p>Control of a PLNmixture fit</p></td>
       </tr><tr><td>
           <p><code><a href="plot.PLNmixturefit.html">plot(<i>&lt;PLNmixturefit&gt;</i>)</a></code> </p>
         </td>
@@ -245,6 +277,10 @@
           <p><code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code> </p>
         </td>
         <td><p>An R6 Class to represent a PLNfit in a sparse inverse covariance framework</p></td>
+      </tr><tr><td>
+          <p><code><a href="PLNnetwork_param.html">PLNnetwork_param()</a></code> </p>
+        </td>
+        <td><p>Control of PLNnetwork fit</p></td>
       </tr><tr><td>
           <p><code><a href="plot.PLNnetworkfit.html">plot(<i>&lt;PLNnetworkfit&gt;</i>)</a></code> </p>
         </td>
@@ -310,13 +346,17 @@
         </td>
         <td><p>Trichoptera data set</p></td>
       </tr><tr><td>
-          <p><code><a href="mollusk.html">mollusk</a></code> </p>
-        </td>
-        <td><p>Mollusk data set</p></td>
-      </tr><tr><td>
           <p><code><a href="oaks.html">oaks</a></code> </p>
         </td>
         <td><p>Oaks amplicon data set</p></td>
+      </tr><tr><td>
+          <p><code><a href="barents.html">barents</a></code> </p>
+        </td>
+        <td><p>Barents fish data set</p></td>
+      </tr><tr><td>
+          <p><code><a href="mollusk.html">mollusk</a></code> </p>
+        </td>
+        <td><p>Mollusk data set</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -330,7 +370,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -20,7 +20,7 @@ LDA visualization and predict() method for prediction"><meta property="og:image"
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9801</span>
       </span>
     </div>
 
@@ -109,7 +109,7 @@ LDA visualization and <code><a href="https://rdrr.io/r/stats/predict.html" class
 
 
 <dt><code>model_par</code></dt>
-<dd><p>a list with the matrices associated with the estimated parameters of the PLN model: Theta (covariates), Sigma (latent covariance), B (latent loadings), P (latent position) and Mu (group means)</p></dd>
+<dd><p>a list with the matrices associated with the estimated parameters of the PLN model: B (covariates), Sigma (latent covariance), C (latent loadings), P (latent position) and Mu (group means)</p></dd>
 
 
 <dt><code>percent_var</code></dt>
@@ -146,16 +146,10 @@ LDA visualization and <code><a href="https://rdrr.io/r/stats/predict.html" class
 <li><p><a href="#method-PLNLDAfit-predict"><code>PLNLDAfit$predict()</code></a></p></li>
 <li><p><a href="#method-PLNLDAfit-show"><code>PLNLDAfit$show()</code></a></p></li>
 <li><p><a href="#method-PLNLDAfit-clone"><code>PLNLDAfit$clone()</code></a></p></li>
-</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="VEstep"><a href="PLNfit.html#method-VEstep"><code>PLNmodels::PLNfit$VEstep()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="get_vcov_hat"><a href="PLNfit.html#method-get_vcov_hat"><code>PLNmodels::PLNfit$get_vcov_hat()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_nlopt"><a href="PLNfit.html#method-optimize_nlopt"><code>PLNmodels::PLNfit$optimize_nlopt()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_torch"><a href="PLNfit.html#method-optimize_torch"><code>PLNmodels::PLNfit$optimize_torch()</code></a></span></li>
+</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href="PLNfit.html#method-optimize_vestep"><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="set_R2"><a href="PLNfit.html#method-set_R2"><code>PLNmodels::PLNfit$set_R2()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href="PLNfit.html#method-update"><code>PLNmodels::PLNfit$update()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_sandwich"><a href="PLNfit.html#method-vcov_sandwich"><code>PLNmodels::PLNfit$vcov_sandwich()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="vcov_wald"><a href="PLNfit.html#method-vcov_wald"><code>PLNmodels::PLNfit$vcov_wald()</code></a></span></li>
 </ul></details></p><hr><a id="method-PLNLDAfit-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize a <code>PLNLDAfit</code> object</p><div class="section">
@@ -198,7 +192,7 @@ LDA visualization and <code><a href="https://rdrr.io/r/stats/predict.html" class
 
 
 <dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See details.</p></dd>
+<dd><p>list controlling the optimization and the model</p></dd>
 
 
 </dl><p></p></div>
@@ -209,21 +203,33 @@ LDA visualization and <code><a href="https://rdrr.io/r/stats/predict.html" class
 <p>Compute group means and axis of the LDA (noted B in the model) in the
 latent space, update corresponding fields</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNLDAfit</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">grouping</span>, <span class="va">covariates</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNLDAfit</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">grouping</span>, <span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>grouping</code></dt>
-<dd><p>design matrix for the grouping variable</p></dd>
+<dd><p>a factor specifying the class of each observation used for discriminant analysis.</p></dd>
+
+
+<dt><code>responses</code></dt>
+<dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
 
 
 <dt><code>covariates</code></dt>
 <dd><p>design matrix. Automatically built from the covariates and the formula from the call</p></dd>
 
 
-<dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See details.</p></dd>
+<dt><code>offsets</code></dt>
+<dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
+
+
+<dt><code>weights</code></dt>
+<dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
+
+
+<dt><code>config</code></dt>
+<dd><p>list controlling the optimization</p></dd>
 
 
 <dt><code>X</code></dt>
@@ -235,10 +241,9 @@ latent space, update corresponding fields</p><div class="section">
 
 </div><p></p><hr><a id="method-PLNLDAfit-postTreatment"></a><div class="section">
 <h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
-<p>Update R2, fisher and std_err fields and visualization
-after optimization</p><div class="section">
+<p>Update R2, fisher and std_err fields and visualization</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNLDAfit</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span><span class="va">grouping</span>, <span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNLDAfit</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span><span class="va">grouping</span>, <span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -257,6 +262,10 @@ after optimization</p><div class="section">
 
 <dt><code>offsets</code></dt>
 <dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
+
+
+<dt><code>config</code></dt>
+<dd><p>list controlling the post-treatment</p></dd>
 
 
 </dl><p></p></div>
@@ -388,7 +397,7 @@ after optimization</p><div class="section">
 <span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"posterior"</span>, <span class="st">"response"</span>, <span class="st">"scores"</span><span class="op">)</span>,</span>
 <span>  scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"log"</span>, <span class="st">"prob"</span><span class="op">)</span>,</span>
 <span>  prior <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/PLN_param.html">PLN_param</a></span><span class="op">(</span>backend <span class="op">=</span> <span class="st">"nlopt"</span><span class="op">)</span>,</span>
 <span>  envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -473,7 +482,7 @@ after optimization</p><div class="section">
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

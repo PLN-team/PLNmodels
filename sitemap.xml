@@ -46,10 +46,19 @@
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNLDA.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/PLNLDA_param.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNLDAfit.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/PLNLDAfit_diagonal.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNPCA.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/PLNPCA_param.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNPCAfamily.html</loc>
@@ -58,13 +67,28 @@
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNPCAfit.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/PLN_param.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNfamily.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNfit.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/PLNfit_diagonal.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/PLNfit_fixedcov.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/PLNfit_spherical.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNmixture.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/PLNmixture_param.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNmixturefamily.html</loc>
@@ -79,10 +103,16 @@
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNnetwork.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/PLNnetwork_param.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNnetworkfamily.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNnetworkfit.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/barents.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/coef.PLNLDAfit.html</loc>
@@ -101,9 +131,6 @@
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/extract_probs.html</loc>
-  </url>
-  <url>
-    <loc>https://pln-team.github.io/PLNmodels/reference/fisher.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/fitted.PLNfit.html</loc>

@@ -20,7 +20,7 @@ getModel() and plot()"><meta property="og:image" content="https://pln-team.githu
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9801</span>
       </span>
     </div>
 
@@ -180,7 +180,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 
 
 <dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See details.</p></dd>
+<dd><p>a list for controlling the optimization.</p></dd>
 
 
 </dl><p></p></div>
@@ -194,13 +194,13 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
 <p>Call to the C++ optimizer on all models of the collection</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See details.</p></dd>
+<p></p><div class="arguments"><dl><dt><code>config</code></dt>
+<dd><p>a list for controlling the optimization.</p></dd>
 
 
 </dl><p></p></div>
@@ -210,7 +210,10 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <h3 id="method-stability-selection-">Method <code><a href="stability_selection.html">stability_selection()</a></code><a class="anchor" aria-label="anchor" href="#method-stability-selection-"></a></h3>
 <p>Compute the stability path by stability selection</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">stability_selection</span><span class="op">(</span>subsamples <span class="op">=</span> <span class="cn">NULL</span>, control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfamily</span><span class="op">$</span><span class="fu">stability_selection</span><span class="op">(</span></span>
+<span>  subsamples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/PLNnetwork_param.html">PLNnetwork_param</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -376,7 +379,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting 30 PLN with sparse inverse covariance estimation</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 	Joint optimization alternating gradient descent and graphical-lasso</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	sparsifying penalty = 7.510862 	sparsifying penalty = 6.937564 	sparsifying penalty = 6.408026 	sparsifying penalty = 5.918907 	sparsifying penalty = 5.467121 	sparsifying penalty = 5.049821 	sparsifying penalty = 4.664372 	sparsifying penalty = 4.308345 	sparsifying penalty = 3.979492 	sparsifying penalty = 3.675741 	sparsifying penalty = 3.395175 	sparsifying penalty = 3.136024 	sparsifying penalty = 2.896654 	sparsifying penalty = 2.675555 	sparsifying penalty = 2.471332 	sparsifying penalty = 2.282698 	sparsifying penalty = 2.108461 	sparsifying penalty = 1.947524 	sparsifying penalty = 1.798871 	sparsifying penalty = 1.661565 	sparsifying penalty = 1.534739 	sparsifying penalty = 1.417594 	sparsifying penalty = 1.30939 	sparsifying penalty = 1.209446 	sparsifying penalty = 1.11713 	sparsifying penalty = 1.03186 	sparsifying penalty = 0.953099 	sparsifying penalty = 0.8803498 	sparsifying penalty = 0.8131535 	sparsifying penalty = 0.7510862 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 	sparsifying penalty = 7.541317 	sparsifying penalty = 6.965695 	sparsifying penalty = 6.43401 	sparsifying penalty = 5.942907 	sparsifying penalty = 5.48929 	sparsifying penalty = 5.070297 	sparsifying penalty = 4.683286 	sparsifying penalty = 4.325815 	sparsifying penalty = 3.995629 	sparsifying penalty = 3.690646 	sparsifying penalty = 3.408942 	sparsifying penalty = 3.148741 	sparsifying penalty = 2.9084 	sparsifying penalty = 2.686404 	sparsifying penalty = 2.481353 	sparsifying penalty = 2.291954 	sparsifying penalty = 2.117011 	sparsifying penalty = 1.955421 	sparsifying penalty = 1.806166 	sparsifying penalty = 1.668303 	sparsifying penalty = 1.540962 	sparsifying penalty = 1.423342 	sparsifying penalty = 1.3147 	sparsifying penalty = 1.21435 	sparsifying penalty = 1.121659 	sparsifying penalty = 1.036044 	sparsifying penalty = 0.9569638 	sparsifying penalty = 0.8839195 	sparsifying penalty = 0.8164507 	sparsifying penalty = 0.7541317 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span></span></span>
@@ -395,7 +398,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

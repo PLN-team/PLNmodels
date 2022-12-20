@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9600</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.7-9801</span>
       </span>
     </div>
 
@@ -109,7 +109,7 @@
       <h1 data-toc-skip>Data importation in PLNmodels</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2022-12-02</h4>
+            <h4 data-toc-skip class="date">2022-12-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/Import_data.Rmd" class="external-link"><code>vignettes/Import_data.Rmd</code></a></small>
       <div class="hidden name"><code>Import_data.Rmd</code></div>
@@ -368,13 +368,13 @@ and needs to be installed separately.</p>
 <p>You can easily prepare your data from a biom file using the following
 steps:</p>
 <ul>
-<li>read your biom file with <code><a href="https://rdrr.io/pkg/biomformat/man/read_biom.html" class="external-link">biomformat::read_biom()</a></code>
+<li>read your biom file with <code>biomformat::read_biom()</code>
 </li>
 <li>extract the count table with
-<code><a href="https://rdrr.io/pkg/biomformat/man/biom_data-methods.html" class="external-link">biomformat::biom_data()</a></code>
+<code>biomformat::biom_data()</code>
 </li>
 <li>extract the covariates with
-<code><a href="https://rdrr.io/pkg/biomformat/man/sample_metadata-methods.html" class="external-link">biomformat::sample_metadata()</a></code> (or build your own)</li>
+<code>biomformat::sample_metadata()</code> (or build your own)</li>
 <li>feed them to <code>prepare_data</code>
 </li>
 </ul>
@@ -386,13 +386,13 @@ steps:</p>
 <span><span class="co">#   install.packages("BiocManager")</span></span>
 <span><span class="co"># }</span></span>
 <span><span class="co"># BiocManager::install("biomformat")</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joey711/biomformat/" class="external-link">biomformat</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">biomformat</span><span class="op">)</span></span>
 <span><span class="va">biomfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>, package <span class="op">=</span> <span class="st">"biomformat"</span><span class="op">)</span></span>
-<span><span class="va">biom</span> <span class="op">&lt;-</span> <span class="fu">biomformat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/read_biom.html" class="external-link">read_biom</a></span><span class="op">(</span><span class="va">biomfile</span><span class="op">)</span></span>
+<span><span class="va">biom</span> <span class="op">&lt;-</span> <span class="fu">biomformat</span><span class="fu">::</span><span class="fu">read_biom</span><span class="op">(</span><span class="va">biomfile</span><span class="op">)</span></span>
 <span><span class="co">## extract counts</span></span>
-<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="fu">biomformat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/biom_data-methods.html" class="external-link">biom_data</a></span><span class="op">(</span><span class="va">biom</span><span class="op">)</span>, <span class="st">"matrix"</span><span class="op">)</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="fu">biomformat</span><span class="fu">::</span><span class="fu">biom_data</span><span class="op">(</span><span class="va">biom</span><span class="op">)</span>, <span class="st">"matrix"</span><span class="op">)</span></span>
 <span><span class="co">## extract covariates (or prepare your own)</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">biomformat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomformat/man/sample_metadata-methods.html" class="external-link">sample_metadata</a></span><span class="op">(</span><span class="va">biom</span><span class="op">)</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">biomformat</span><span class="fu">::</span><span class="fu">sample_metadata</span><span class="op">(</span><span class="va">biom</span><span class="op">)</span></span>
 <span><span class="co">## prepare data</span></span>
 <span><span class="va">my_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">counts</span>, covariates <span class="op">=</span> <span class="va">covariates</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></span></code></pre></div>
@@ -407,9 +407,9 @@ and needs to be installed separately.</p>
 <p>You can easily prepare your data from a phyloseq object using the
 following steps:</p>
 <ul>
-<li>extract the count table with <code><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html" class="external-link">phyloseq::otu_table()</a></code>
+<li>extract the count table with <code>phyloseq::otu_table()</code>
 </li>
-<li>extract the covariates with <code><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html" class="external-link">phyloseq::sample_data()</a></code> (or
+<li>extract the covariates with <code>phyloseq::sample_data()</code> (or
 build your own)</li>
 <li>feed them to <code>prepare_data</code>
 </li>
@@ -422,12 +422,12 @@ build your own)</li>
 <span><span class="co">#   install.packages("BiocManager")</span></span>
 <span><span class="co"># }</span></span>
 <span><span class="co"># BiocManager::install("phyloseq")</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://dx.plos.org/10.1371/journal.pone.0061217" class="external-link">phyloseq</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">phyloseq</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"enterotype"</span><span class="op">)</span></span>
 <span><span class="co">## extract counts</span></span>
-<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html" class="external-link">otu_table</a></span><span class="op">(</span><span class="va">enterotype</span><span class="op">)</span>, <span class="st">"matrix"</span><span class="op">)</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="fu">phyloseq</span><span class="fu">::</span><span class="fu">otu_table</span><span class="op">(</span><span class="va">enterotype</span><span class="op">)</span>, <span class="st">"matrix"</span><span class="op">)</span></span>
 <span><span class="co">## extract covariates (or prepare your own)</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html" class="external-link">sample_data</a></span><span class="op">(</span><span class="va">enterotype</span><span class="op">)</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu">sample_data</span><span class="op">(</span><span class="va">enterotype</span><span class="op">)</span></span>
 <span><span class="co">## prepare data</span></span>
 <span><span class="va">my_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">counts</span>, covariates <span class="op">=</span> <span class="va">covariates</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></span></code></pre></div>
@@ -510,7 +510,7 @@ or when a sample shares no species with any other.</p>
 <p>This method is fully detailed in <span class="citation">Kumar et al.
 (<a href="#ref-Kumar2018" role="doc-biblioref">2018</a>)</span> and we
 only provide a barebone implementation corresponding to the defaults
-parameters of <code><a href="https://rdrr.io/pkg/Wrench/man/wrench.html" class="external-link">Wrench::wrench()</a></code>. Assume that samples belong
+parameters of <code>Wrench::wrench()</code>. Assume that samples belong
 to <span class="math inline">\(K\)</span> discrete groups and note <span class="math inline">\(g_i\)</span> the group of sample <span class="math inline">\(i\)</span>. Wrench is based on the following
 (simplified) log-normal model for counts: <span class="math display">\[
 Y_{ij} \sim \pi_{ij} \delta_0 + (1 - \pi_{ij})\log\mathcal{N}(\mu_{ij},
@@ -564,7 +564,7 @@ following Bernoulli models: <span class="math display">\[
 <li>The species variances <span class="math inline">\(\sigma^2_j\)</span> are estimated by fitting the
 following linear model (with no zero-inflation component) <span class="math display">\[
 \log Y_{ij} \sim \log(d_i) + \mu_{g_i} + \mathcal{N}(0, \sigma^2_j)
-\]</span> Note that in the original <code><a href="https://rdrr.io/pkg/Wrench/man/wrench.html" class="external-link">Wrench::wrench()</a></code>, the
+\]</span> Note that in the original <code>Wrench::wrench()</code>, the
 log depth <span class="math inline">\(\log(d_i)\)</span> is used as
 predictor but I believe it makes more sense to use it an offset.</li>
 <li>set the group proportions <span class="math inline">\(p_{gj}\)</span> and group ratios <span class="math inline">\(r_{gj}\)</span> to: <span class="math display">\[
@@ -680,7 +680,7 @@ Surveys.”</span> <em>Nat Methods</em> 10 (September): 1200–1202. <a href="ht
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
