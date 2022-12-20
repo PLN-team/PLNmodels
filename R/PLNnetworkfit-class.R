@@ -77,15 +77,15 @@ PLNnetworkfit <- R6Class(
                    X = covariates,
                    O = offsets,
                    w = weights,
-                   init_parameters = list(B = private$B, M = private$M, S = private$S),
-                   configuration = control$config_optim)
+                   params = list(B = private$B, M = private$M, S = private$S),
+                   config = control$config_optim)
       while (!cond) {
         iter <- iter + 1
         if (control$trace > 1) cat("", iter)
         ## CALL TO GLASSO TO UPDATE Omega
         glasso_out <- glassoFast::glassoFast(private$Sigma, rho = self$penalty * self$penalty_weights)
         if (anyNA(glasso_out$wi)) break
-        private$Omega <- args$init_parameters$Omega <- Matrix::symmpart(glasso_out$wi)
+        private$Omega <- args$params$Omega <- Matrix::symmpart(glasso_out$wi)
 
         ## CALL TO NLOPT OPTIMIZATION TO UPDATE OTHER PARMAETERS
         optim_out <- do.call(private$optimizer$main, args)
@@ -97,7 +97,7 @@ PLNnetworkfit <- R6Class(
         if ((convergence[iter] < control$config_optim$ftol_out) | (iter >= control$config_optim$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate
-        args$init_parameters <- list(B = private$B, M = private$M, S = private$S)
+        args$params <- list(B = private$B, M = private$M, S = private$S)
         objective.old <- objective[iter]
       }
 

@@ -93,9 +93,8 @@ PLNPCAfit <- R6Class(
                      X = covariates,
                      O = offsets,
                      w = weights,
-                     init_parameters = list(B = private$B, C = private$C,
-                                            M = private$M, S = private$S),
-                     configuration = config)
+                     params = list(B = private$B, C = private$C, M = private$M, S = private$S),
+                     config = config)
         optim_out <- do.call(private$optimizer$main, args)
         do.call(self$update, optim_out)
       },
@@ -128,10 +127,10 @@ PLNPCAfit <- R6Class(
                      O = offsets,
                      w = weights,
                      ## Initialize the variational parameters with the new dimension of the data
-                     init_parameters = list(M = M_init, S = matrix(1, n, q)),
+                     params = list(M = M_init, S = matrix(1, n, q)),
                      B = private$B,
                      C = private$C,
-                     configuration = control$config_optim)
+                     config = control$config_optim)
         optim_out <- do.call(private$optimizer$vestep, args)
         optim_out
       },

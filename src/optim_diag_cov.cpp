@@ -13,17 +13,17 @@
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_diagonal(
-    const Rcpp::List & init_parameters, // List(B, M, S)
-    const arma::mat & Y,                // responses (n,p)
-    const arma::mat & X,                // covariates (n,d)
-    const arma::mat & O,                // offsets (n,p)
-    const arma::vec & w,                // weights (n)
-    const Rcpp::List & configuration    // List of config values
+    const Rcpp::List & params, // List(B, M, S)
+    const arma::mat & Y,       // responses (n,p)
+    const arma::mat & X,       // covariates (n,d)
+    const arma::mat & O,       // offsets (n,p)
+    const arma::vec & w,       // weights (n)
+    const Rcpp::List & config  // List of config values
 ) {
     // Conversion from R, prepare optimization
-    const auto init_B = Rcpp::as<arma::mat>(init_parameters["B"]); // (d,p)
-    const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
-    const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
+    const auto init_B = Rcpp::as<arma::mat>(params["B"]); // (d,p)
+    const auto init_M = Rcpp::as<arma::mat>(params["M"]); // (n,p)
+    const auto init_S = Rcpp::as<arma::mat>(params["S"]); // (n,p)
 
     const auto metadata = tuple_metadata(init_B, init_M, init_S);
     enum { B_ID, M_ID, S_ID }; // Names for metadata indexes
@@ -33,9 +33,9 @@ Rcpp::List nlopt_optimize_diagonal(
     metadata.map<M_ID>(parameters.data()) = init_M;
     metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-    if(configuration.containsElementNamed("xtol_abs")) {
-        SEXP value = configuration["xtol_abs"];
+    auto optimizer = new_nlopt_optimizer(config, parameters.size());
+    if(config.containsElementNamed("xtol_abs")) {
+        SEXP value = config["xtol_abs"];
         if(Rcpp::is<double>(value)) {
             set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
         } else {
@@ -112,18 +112,18 @@ Rcpp::List nlopt_optimize_diagonal(
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_vestep_diagonal(
-    const Rcpp::List & init_parameters, // List(M, S)
-    const arma::mat & Y,        // responses (n,p)
-    const arma::mat & X,        // covariates (n,d)
-    const arma::mat & O,        // offsets (n,p)
-    const arma::vec & w,        // weights (n)
-    const arma::mat & B,        // (d,p)
-    const arma::mat & Omega,    // (p,p)
-    const Rcpp::List & configuration    // List of config values
+    const Rcpp::List & params, // List(M, S)
+    const arma::mat & Y,       // responses (n,p)
+    const arma::mat & X,       // covariates (n,d)
+    const arma::mat & O,       // offsets (n,p)
+    const arma::vec & w,       // weights (n)
+    const arma::mat & B,       // (d,p)
+    const arma::mat & Omega,   // (p,p)
+    const Rcpp::List & config  // List of config values
 ) {
     // Conversion from R, prepare optimization
-    const auto init_M = Rcpp::as<arma::mat>(init_parameters["M"]); // (n,p)
-    const auto init_S = Rcpp::as<arma::mat>(init_parameters["S"]); // (n,p)
+    const auto init_M = Rcpp::as<arma::mat>(params["M"]); // (n,p)
+    const auto init_S = Rcpp::as<arma::mat>(params["S"]); // (n,p)
 
     const auto metadata = tuple_metadata(init_M, init_S);
     enum { M_ID, S_ID }; // Names for metadata indexes
@@ -132,9 +132,9 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     metadata.map<M_ID>(parameters.data()) = init_M;
     metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-    if(configuration.containsElementNamed("xtol_abs")) {
-        SEXP value = configuration["xtol_abs"];
+    auto optimizer = new_nlopt_optimizer(config, parameters.size());
+    if(config.containsElementNamed("xtol_abs")) {
+        SEXP value = config["xtol_abs"];
         if(Rcpp::is<double>(value)) {
             set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
         } else {

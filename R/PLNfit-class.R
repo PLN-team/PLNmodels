@@ -90,7 +90,7 @@ PLNfit <- R6Class(
     },
 
     #' @import torch
-    torch_optimize = function(Y, X, O, w, init_parameters, configuration) {
+    torch_optimize = function(Y, X, O, w, params, config) {
 
       ## Initialization torch tensors (pointers)
       data <- list(
@@ -99,27 +99,24 @@ PLNfit <- R6Class(
         O = torch_tensor(O),
         w = torch_tensor(w)
       )
-      params <- list(
-        B = torch_tensor(init_parameters$B, requires_grad = TRUE),
-        M = torch_tensor(init_parameters$M, requires_grad = TRUE),
-        S = torch_tensor(init_parameters$S, requires_grad = TRUE)
-      )
+      ## List with B, M, S
+      params <- lapply(params, torch_tensor, requires_grad = TRUE)
 
       ## Initialize optimizer
-      optimizer <- switch(configuration$algorithm,
-          "RPROP"   = optim_rprop(params  , lr = configuration$lr, etas = configuration$etas, step_sizes = configuration$step_sizes),
-          "RMSPROP" = optim_rmsprop(params, lr = configuration$lr, weight_decay = configuration$weight_decay, momentum = configuration$momentum, centered = configuration$centered),
-          "ADAM"    = optim_adam(params   , lr = configuration$lr, weight_decay = configuration$weight_decay),
-          "ADAGRAD" = optim_adagrad(params, lr = configuration$lr, weight_decay = configuration$weight_decay)
+      optimizer <- switch(config$algorithm,
+          "RPROP"   = optim_rprop(params  , lr = config$lr, etas = config$etas, step_sizes = config$step_sizes),
+          "RMSPROP" = optim_rmsprop(params, lr = config$lr, weight_decay = config$weight_decay, momentum = config$momentum, centered = config$centered),
+          "ADAM"    = optim_adam(params   , lr = config$lr, weight_decay = config$weight_decay),
+          "ADAGRAD" = optim_adagrad(params, lr = config$lr, weight_decay = config$weight_decay)
       )
 
       ## Optimization loop
       status <- 5
-      num_epoch  <- configuration$num_epoch
-      num_batch  <- configuration$num_batch
+      num_epoch  <- config$num_epoch
+      num_batch  <- config$num_batch
       batch_size <- floor(self$n/num_batch)
 
-      objective <- double(length = configuration$num_epoch + 1)
+      objective <- double(length = config$num_epoch + 1)
       for (iterate in 1:num_epoch) {
         B_old <- as.numeric(optimizer$param_groups[[1]]$params$B)
 
@@ -143,13 +140,13 @@ PLNfit <- R6Class(
         delta_x   <- sum(abs(B_old - B_new))/sum(abs(B_new))
 
         ## display progress
-        if (configuration$trace >  1 && (iterate %% 50 == 0))
+        if (config$trace >  1 && (iterate %% 50 == 0))
           cat('\niteration: ', iterate, 'objective', objective[iterate + 1],
               'delta_f'  , round(delta_f, 6), 'delta_x', ro<und(delta_x, 6))
 
         ## Check for convergence
-        if (delta_f < configuration$ftol_rel) status <- 3
-        if (delta_x < configuration$xtol_rel) status <- 4
+        if (delta_f < config$ftol_rel) status <- 3
+        if (delta_x < config$xtol_rel) status <- 4
         if (status %in% c(3,4)) {
           objective <- objective[1:iterate + 1]
           break
@@ -221,8 +218,8 @@ PLNfit <- R6Class(
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
                      w = w[-i],
-                     init_parameters = list(B = private$B, M = matrix(0, self$n-1, self$p), S = private$S[-i, ]),
-                     configuration = config)
+                     params = list(B = private$B, M = matrix(0, self$n-1, self$p), S = private$S[-i, ]),
+                     config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
       }, future.seed = TRUE)
@@ -249,8 +246,8 @@ PLNfit <- R6Class(
                      X = X[resample, , drop = FALSE],
                      O = O[resample, , drop = FALSE],
                      w = w[resample],
-                     init_parameters = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
-                     configuration = config)
+                     params = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
+                     config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega", "monitoring")]
       }, future.seed = TRUE)
@@ -357,8 +354,8 @@ PLNfit <- R6Class(
                    X = covariates,
                    O = offsets,
                    w = weights,
-                   init_parameters = list(B = private$B, M = private$M, S = private$S),
-                   configuration = config)
+                   params = list(B = private$B, M = private$M, S = private$S),
+                   config = config)
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
     },
@@ -380,21 +377,20 @@ PLNfit <- R6Class(
                    O = offsets,
                    w = weights,
                    ## Initialize the variational parameters with the new dimension of the data
-                   init_parameters = list(M = matrix(0, n, p), S = matrix(1, n, p)),
+                   params = list(M = matrix(0, n, p), S = matrix(1, n, p)),
                    B = as.matrix(B),
                    Omega = as.matrix(Omega),
-                   configuration = control$config_optim)
+                   config = control$config_optim)
       optim_out <- do.call(private$optimizer$vestep, args)
       optim_out
     },
 
     #' @description Update R2, fisher and std_err fields after optimization
     #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), control, nullModel = NULL) {
-      ## compute approximated R2 with deviance
-      private$approx_r2(responses, covariates, offsets, weights, nullModel)
-      ## Set the name of the matrices according to those of the data matrices,
-      ## if names are missing, set sensible defaults
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config, nullModel = NULL) {
+
+      ## PARAMATERS DIMNAMES
+      ## Set names according to those of the data matrices. If missing, use sensible defaults
       if (is.null(colnames(responses)))
         colnames(responses) <- paste0("Y", 1:self$p)
       if (self$d > 0) {
@@ -406,17 +402,26 @@ PLNfit <- R6Class(
       rownames(private$Omega) <- colnames(private$Omega) <- colnames(responses)
       rownames(private$M) <- rownames(private$S) <- rownames(responses)
       colnames(private$S) <- 1:self$q
-      ## compute and store matrix of standard variances for B and Omega with rough variational approximation
-      if (control$variance) {
-        if(control$trace > 1) cat("\n\tComputing variational estimator of the variance...")
+
+      ## OPTIONAL POST-TREATMENT (potentially costly)
+      ## 1. compute and store approximated R2 with Poisson-based deviance
+      if (config$rsquared) {
+        if(config$trace > 1) cat("\n\tComputing bootstrap estimator of the variance...")
+        private$approx_r2(responses, covariates, offsets, weights, nullModel)
+      }
+      ## 2. compute and store matrix of standard variances for B and Omega with rough variational approximation
+      if (config$variational_var) {
+        if(config$trace > 1) cat("\n\tComputing variational estimator of the variance...")
         private$variance_variational(covariates)
       }
-      if (control$jackknife) {
-        if(control$trace > 1) cat("\n\tComputing jackknife estimator of the variance...")
+      ## 3. Jackknife estimation of bias and variance
+      if (config$jackknife) {
+        if(config$trace > 1) cat("\n\tComputing jackknife estimator of the variance...")
         private$variance_jackknife(responses, covariates, offsets, weights)
       }
-      if (control$bootstrap) {
-        if(control$trace > 1) cat("\n\tComputing bootstrap estimator of the variance...")
+      ## 4. Bootstrap estimation of variance
+      if (config$bootstrap) {
+        if(config$trace > 1) cat("\n\tComputing bootstrap estimator of the variance...")
         private$variance_bootstrap(responses, covariates, offsets, weights)
       }
     },
@@ -800,8 +805,8 @@ PLNfit_fixedcov <- R6Class(
                    X = covariates,
                    O = offsets,
                    w = weights,
-                   init_parameters = list(B = private$B, M = private$M, S = private$S, Omega = private$Omega),
-                   configuration = config)
+                   params = list(B = private$B, M = private$M, S = private$S, Omega = private$Omega),
+                   config = config)
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
       private$Sigma <- solve(optim_out$Omega)
@@ -845,8 +850,8 @@ PLNfit_fixedcov <- R6Class(
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
                      w = w[-i],
-                     init_parameters = list(B = private$B, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
-                     configuration = config)
+                     params = list(B = private$B, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
+                     config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
       }, future.seed = TRUE)
@@ -935,10 +940,10 @@ PLNfit_fixedcov <- R6Class(
 #                X = covariates,
 #                O = offsets,
 #                w = weights,
-#                init_parameters = list(B = private$B, M = private$M, S = private$S))
+#                params = list(B = private$B, M = private$M, S = private$S))
 #
 #   if (self$vcov_model == "genetic") {
-#     args$init_parameters$rho = 0.25
+#     args$params$rho = 0.25
 #     args$C <- control$corr_matrix
 #   }
 #   if (self$vcov_model == "fixed") {
@@ -946,12 +951,12 @@ PLNfit_fixedcov <- R6Class(
 #   }
 #
 #   if (control$backend == "nlopt")
-#     optim_out <- do.call(nlopt_optimizexxx, c(args, list(configuration = control$options_nlopt)))
+#     optim_out <- do.call(nlopt_optimizexxx, c(args, list(config = control$options_nlopt)))
 #   else {
 #     ## initialize torch with nlopt
-#     optim_out <- self$optimize_nlopt(c(args, list(configuration = control$options_nlopt)))
-#     args$init_parameters = list(B = optim_out$B, M = optim_out$M, S = optim_out$S)
-#     optim_out <- self$optimize_torch(c(args, list(configuration = control$options_torch)))
+#     optim_out <- self$optimize_nlopt(c(args, list(config = control$options_nlopt)))
+#     args$params = list(B = optim_out$B, M = optim_out$M, S = optim_out$S)
+#     optim_out <- self$optimize_torch(c(args, list(config = control$options_torch)))
 #   }
 #
 #   private$B <- optim_out$B
