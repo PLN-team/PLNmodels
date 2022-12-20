@@ -27,10 +27,6 @@ PLNLDA_param(
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.}
-
-\item{jackknife}{boolean indicating weither jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}}
-
-\item{bootstrap}{integer indicating the number of bootstrap resamples to estimate the variance of the model parameters. Default is \code{0} (no bootstraping)}
 }
 \value{
 list of parameters configuring the fit.

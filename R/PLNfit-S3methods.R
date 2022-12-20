@@ -161,7 +161,8 @@ sigma.PLNfit <- function(object, ...) {
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
+#' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
+#'               control = PLN_param(config_post = list(variational_var = TRUE)))
 #' standard_error(myPLN)
 #' @export
 standard_error <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("B", "Omega")) {

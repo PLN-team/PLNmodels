@@ -58,8 +58,6 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "fixed". Default is "full".
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma. Must be specified if `covariance` is "fixed"
-#' @param jackknife boolean indicating weither jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
-#' @param bootstrap integer indicating the number of bootstrap resamples to estimate the variance of the model parameters. Default is \code{0} (no bootstraping)
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
 #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
 #' @param trace a integer for verbosity.
@@ -101,8 +99,8 @@ PLN_param <- function(
 ) {
 
   covariance <- match.arg(covariance)
-  if (!is.null(inception)) stopifnot(isPLNfit(inception))
   if (covariance == "fixed") stopifnot(inherits(Omega, "matrix") | inherits(Omega, "Matrix"))
+  if (!is.null(inception)) stopifnot(isPLNfit(inception))
 
   ## post-treatment config
   config_pst <- config_post_default_PLN

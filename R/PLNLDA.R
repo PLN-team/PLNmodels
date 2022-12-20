@@ -76,8 +76,6 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = PLN_param
 #'
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal" or "spherical". Default is "full".
-#' @param jackknife boolean indicating weither jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
-#' @param bootstrap integer indicating the number of bootstrap resamples to estimate the variance of the model parameters. Default is \code{0} (no bootstraping)
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
 #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
 #' @param trace a integer for verbosity.
@@ -126,7 +124,6 @@ PLNLDA_param <- function(
 
   ## optimization config
   stopifnot(backend %in% c("nlopt", "torch"))
-  if (covariance == "fixed") stopifnot(inherits(Omega, "matrix") | inherits(Omega, "Matrix"))
   if (backend == "nlopt") {
     stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
     config_opt <- config_default_nlopt
