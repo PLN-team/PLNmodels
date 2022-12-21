@@ -92,11 +92,9 @@ PLNfit <- R6Class(
     #' @import torch
     torch_optimize = function(data, params, config) {
 
-      ## Initialization torch tensors (pointers)
-      # list with Y, X, O, w
-      data <- lapply(data, torch_tensor)
-      # list with B, M, S
-      params <- lapply(params, torch_tensor, requires_grad = TRUE)
+      ## Conversion of data and parameters to torch tensors (pointers)
+      data   <- lapply(data, torch_tensor)                         # list with Y, X, O, w
+      params <- lapply(params, torch_tensor, requires_grad = TRUE) # list with B, M, S
 
       ## Initialize optimizer
       optimizer <- switch(config$algorithm,
@@ -154,22 +152,14 @@ PLNfit <- R6Class(
       params$Z     <- data$O + params$M + torch_matmul(data$X, params$B)
       params$A     <- torch_exp(params$Z + torch_pow(params$S, 2)/2)
 
-      out <- list(
-        B      = as.matrix(params$B),
-        Sigma  = as.matrix(params$Sigma),
-        Omega  = as.matrix(params$Omega),
-        M      = as.matrix(params$M),
-        S      = as.matrix(params$S),
-        Z      = as.matrix(params$Z),
-        A      = as.matrix(params$A),
-        Ji     = private$torch_vloglik(data, params),
-        monitoring = list(
+      out <- lapply(params, as.matrix)
+      out$Ji <- private$torch_vloglik(data, params)
+      out$monitoring <- list(
           objective  = objective,
           iterations = iterate,
           status     = status,
           backend = "torch"
         )
-      )
       out
     },
 
@@ -851,12 +841,6 @@ PLNfit_fixedcov <- R6Class(
       B_hat  <- private$B[,] ## strips attributes while preserving names
       attr(private$B, "bias") <- (self$n - 1) * (B_jack - B_hat)
       attr(private$B, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
-
-      # Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
-      # var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`)
-      # Omega_hat <- private$Omega; attributes(Omega_hat) <- NULL
-      # attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
-      # attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
     },
 
     vcov_sandwich_B = function(Y, X) {
