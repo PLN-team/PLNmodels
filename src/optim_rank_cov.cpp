@@ -15,14 +15,15 @@
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_rank(
+    const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params, // List(B, C, M, S)
-    const arma::mat & Y,       // responses (n,p)
-    const arma::mat & X,       // covariates (n,d)
-    const arma::mat & O,       // offsets (n,p)
-    const arma::vec & w,       // weights (n)
     const Rcpp::List & config  // List of config values
 ) {
     // Conversion from R, prepare optimization
+    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
+    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
+    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
+    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
     const auto init_B = Rcpp::as<arma::mat>(params["B"]); // (d,p)
     const auto init_C = Rcpp::as<arma::mat>(params["C"]); // (p,q)
     const auto init_M = Rcpp::as<arma::mat>(params["M"]); // (n,q)
@@ -112,16 +113,17 @@ Rcpp::List nlopt_optimize_rank(
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_vestep_rank(
+        const Rcpp::List & data  , // List(Y, X, O, w)
         const Rcpp::List & params, // List(M, S)
-        const arma::mat & Y,       // responses (n,p)
-        const arma::mat & X,       // covariates (n,d)
-        const arma::mat & O,       // offsets (n,p)
-        const arma::vec & w,       // weights (n)
         const arma::mat & B,       // (d,p)
         const arma::mat & C,       // (p,q)
         const Rcpp::List & config  // List of config values
 ) {
     // Conversion from R, prepare optimization
+    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
+    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
+    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
+    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
     const auto init_M = Rcpp::as<arma::mat>(params["M"]); // (n,q)
     const auto init_S = Rcpp::as<arma::mat>(params["S"]); // (n,q)
 

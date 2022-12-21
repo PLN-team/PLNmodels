@@ -90,16 +90,12 @@ PLNfit <- R6Class(
     },
 
     #' @import torch
-    torch_optimize = function(Y, X, O, w, params, config) {
+    torch_optimize = function(data, params, config) {
 
       ## Initialization torch tensors (pointers)
-      data <- list(
-        X = torch_tensor(X),
-        Y = torch_tensor(Y),
-        O = torch_tensor(O),
-        w = torch_tensor(w)
-      )
-      ## List with B, M, S
+      # list with Y, X, O, w
+      data <- lapply(data, torch_tensor)
+      # list with B, M, S
       params <- lapply(params, torch_tensor, requires_grad = TRUE)
 
       ## Initialize optimizer
@@ -214,10 +210,11 @@ PLNfit <- R6Class(
 
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
       jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
-        args <- list(Y = Y[-i, , drop = FALSE],
+        data <- list(Y = Y[-i, , drop = FALSE],
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
-                     w = w[-i],
+                     w = w[-i])
+        args <- list(data = data,
                      params = list(B = private$B, M = matrix(0, self$n-1, self$p), S = private$S[-i, ]),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
@@ -242,10 +239,11 @@ PLNfit <- R6Class(
     variance_bootstrap = function(Y, X, O, w, n_resamples = 100, config = config_default_nlopt) {
       resamples <- replicate(n_resamples, sample.int(self$n, replace = TRUE), simplify = FALSE)
       boots <- future.apply::future_lapply(resamples, function(resample) {
-        args <- list(Y = Y[resample, , drop = FALSE],
+        data <- list(Y = Y[resample, , drop = FALSE],
                      X = X[resample, , drop = FALSE],
                      O = O[resample, , drop = FALSE],
-                     w = w[resample],
+                     w = w[resample])
+        args <- list(data = data,
                      params = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
@@ -271,7 +269,7 @@ PLNfit <- R6Class(
       if (is.null(nullModel)) nullModel <- nullModelPoisson(responses, covariates, offsets, weights)
       loglik <- logLikPoisson(responses, self$latent, weights)
       lmin   <- logLikPoisson(responses, nullModel, weights)
-      lmax   <- logLikPoisson(responses, fullModelPoisson(responses, weights), weights)
+      lmax   <- logLikPoisson(responses, log(responses), weights)
       private$R2 <- (loglik - lmin) / (lmax - lmin)
     }
 
@@ -350,10 +348,7 @@ PLNfit <- R6Class(
 
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
-      args <- list(Y = responses,
-                   X = covariates,
-                   O = offsets,
-                   w = weights,
+      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
                    params = list(B = private$B, M = private$M, S = private$S),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
@@ -372,10 +367,7 @@ PLNfit <- R6Class(
                       Omega = self$model_par$Omega,
                       control = PLN_param(backend = "nlopt")) {
       n <- nrow(responses); p <- ncol(responses)
-      args <- list(Y = responses,
-                   X = covariates,
-                   O = offsets,
-                   w = weights,
+      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
                    ## Initialize the variational parameters with the new dimension of the data
                    params = list(M = matrix(0, n, p), S = matrix(1, n, p)),
                    B = as.matrix(B),
@@ -801,10 +793,7 @@ PLNfit_fixedcov <- R6Class(
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
-      args <- list(Y = responses,
-                   X = covariates,
-                   O = offsets,
-                   w = weights,
+      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
                    params = list(B = private$B, M = private$M, S = private$S, Omega = private$Omega),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)

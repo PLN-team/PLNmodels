@@ -74,10 +74,7 @@ PLNnetworkfit <- R6Class(
       convergence <- numeric(config$maxit_out)
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
-      args <- list(Y = responses,
-                   X = covariates,
-                   O = offsets,
-                   w = weights,
+      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
                    params = list(B = private$B, M = private$M, S = private$S),
                    config = config)
       while (!cond) {

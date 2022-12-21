@@ -13,14 +13,15 @@
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_diagonal(
+    const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params, // List(B, M, S)
-    const arma::mat & Y,       // responses (n,p)
-    const arma::mat & X,       // covariates (n,d)
-    const arma::mat & O,       // offsets (n,p)
-    const arma::vec & w,       // weights (n)
     const Rcpp::List & config  // List of config values
 ) {
     // Conversion from R, prepare optimization
+    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
+    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
+    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
+    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
     const auto init_B = Rcpp::as<arma::mat>(params["B"]); // (d,p)
     const auto init_M = Rcpp::as<arma::mat>(params["M"]); // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(params["S"]); // (n,p)
@@ -112,16 +113,18 @@ Rcpp::List nlopt_optimize_diagonal(
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_vestep_diagonal(
+    const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params, // List(M, S)
-    const arma::mat & Y,       // responses (n,p)
-    const arma::mat & X,       // covariates (n,d)
-    const arma::mat & O,       // offsets (n,p)
-    const arma::vec & w,       // weights (n)
     const arma::mat & B,       // (d,p)
     const arma::mat & Omega,   // (p,p)
     const Rcpp::List & config  // List of config values
 ) {
     // Conversion from R, prepare optimization
+    // Conversion from R, prepare optimization
+    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
+    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
+    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
+    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
     const auto init_M = Rcpp::as<arma::mat>(params["M"]); // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(params["S"]); // (n,p)
 

@@ -89,10 +89,7 @@ PLNPCAfit <- R6Class(
       ## Optimization ----------------------
       #' @description Call to the C++ optimizer and update of the relevant fields
       optimize = function(responses, covariates, offsets, weights, config) {
-        args <- list(Y = responses,
-                     X = covariates,
-                     O = offsets,
-                     w = weights,
+        args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
                      params = list(B = private$B, C = private$C, M = private$M, S = private$S),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
@@ -122,10 +119,7 @@ PLNPCAfit <- R6Class(
         M_init <- svd_residuals$u[, 1:q, drop = FALSE] %*% diag(svd_residuals$d[1:q], nrow = q, ncol = q) %*% t(svd_residuals$v[1:q, 1:q, drop = FALSE])
 
         ## Initialize the variational parameters with the appropriate new dimension of the data
-        args <- list(Y = responses,
-                     X = covariates,
-                     O = offsets,
-                     w = weights,
+        args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
                      ## Initialize the variational parameters with the new dimension of the data
                      params = list(M = M_init, S = matrix(1, n, q)),
                      B = private$B,
