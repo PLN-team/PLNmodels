@@ -124,7 +124,7 @@ logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) 
   loglik
 }
 
-#' @importFrom stats glm.fit
+#' @importFrom stats glm.fit glm.control
 nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
 ### TODO: use fastglm
   B <- do.call(cbind, future_lapply(1:ncol(responses), function(j)
