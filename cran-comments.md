@@ -44,8 +44,7 @@ The use of 'control = list()' is deprecated: the code stop and send an error.
 
 * tested remotely with R-hub 
   - Windows Server 2022, R-devel, 64 bit
-  - Fedora Linux, R-devel, clang, gfortran
-	- Ubuntu Linux 20.04.1 LTS, R-release, GCC
+	- Ubuntu Linux 22.04 LTS, R-release, GCC
 
 * tested remotely with github-action
   - Linux Ubuntu 22.04, R-release
@@ -56,19 +55,7 @@ The use of 'control = list()' is deprecated: the code stop and send an error.
 
 all status OK except for
 
-* the usual NOTE about libs size (RccpArmadillo)
-
-  checking installed package size ... NOTE
-  installed size is  6.0Mb
-  sub-directories of 1Mb or more:
-    doc    2.1Mb
-    libs   2.7Mb (platform dependent)
-
-On my computer I get (Ubuntu 22.04)
-
-
-── R CMD check results ──────────────────────────────────────────────────────────────────────────── PLNmodels 0.11.7-9805 ────
-Duration: 4m 0.5s
+* the usual NOTE about libs size (RcppArmadillo)
 
 ❯ checking installed package size ... NOTE
     installed size is 19.4Mb
@@ -80,3 +67,6 @@ Duration: 4m 0.5s
 0 errors ✓ | 0 warnings ✓ | 1 note x
 
 R CMD check succeeded
+
+On my computer I get (Ubuntu 22.04)
+
