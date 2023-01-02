@@ -84,7 +84,7 @@ test_that("Bindings for factoextra return sensible values", {
   expect_gte(min(myPLNfit$eig[, "eigenvalue"]), 0)
   expect_gte(min(myPLNfit$eig[, "percentage of variance"]), 0)
   expect_lte(max(myPLNfit$eig[, "percentage of variance"]), 100 * myPLNfit$R_squared)
-  expect_equivalent(tail(myPLNfit$eig[, "cumulative percentage of variance"], n = 1), 100 * myPLNfit$R_squared)
+  expect_equal(tail(myPLNfit$eig[, "cumulative percentage of variance"], n = 1), 100 * myPLNfit$R_squared, check.attributes = FALSE)
   ## $var
   .var <- myPLNfit$var
   cor_range <- range(.var$cor)
@@ -93,16 +93,16 @@ test_that("Bindings for factoextra return sensible values", {
   cos2_range <- range(.var$cos2)
   expect_gte(cos2_range[1], 0)
   expect_lte(cos2_range[2], 1)
-  expect_equivalent(rowSums(.var$cos2), rep(1, myPLNfit$p))
-  expect_equivalent(colSums(.var$contrib), rep(100, myPLNfit$rank))
+  expect_equal(rowSums(.var$cos2), rep(1, myPLNfit$p), check.attributes = FALSE)
+  expect_equal(colSums(.var$contrib), rep(100, myPLNfit$rank), check.attributes = FALSE)
   ## $ind
   .ind <- myPLNfit$ind
   cos2_range <- range(.ind$cos2)
   expect_gte(cos2_range[1], 0)
   expect_lte(cos2_range[2], 1)
-  expect_equivalent(rowSums(.ind$cos2), rep(1, myPLNfit$n))
-  expect_equivalent(colSums(.ind$contrib), rep(100, myPLNfit$rank))
-  expect_equivalent(colSums(.ind$coord), rep(0, myPLNfit$rank))
+  expect_equal(rowSums(.ind$cos2), rep(1, myPLNfit$n), check.attributes = FALSE)
+  expect_equal(colSums(.ind$contrib), rep(100, myPLNfit$rank), check.attributes = FALSE)
+  expect_equal(colSums(.ind$coord), rep(0, myPLNfit$rank), check.attributes = FALSE)
 })
 
 

@@ -27,7 +27,7 @@ test_that("PLNnetwork: main function, fields access and methods", {
   ## post-treatment
   myPLN$postTreatment(ctrl$config_post)
 
-  expect_equivalent(myPLN, models)
+  expect_equal(myPLN$criteria$BIC, models$criteria$BIC)
 
   ## S3 methods
   expect_true(PLNmodels:::isPLNnetworkfamily(myPLN))

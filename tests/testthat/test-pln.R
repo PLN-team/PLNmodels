@@ -122,8 +122,8 @@ test_that("PLN is working with unnamed data matrix",  {
     CCSAQ  <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(config_optim = list(algorithm = "CCSAQ")))
     LBFGS  <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(config_optim = list(algorithm = "LBFGS")))
 
-    expect_equivalent(MMA$loglik, CCSAQ$loglik, tolerance = 1e-1) ## Almost equivalent, CCSAQ faster
-    expect_equivalent(MMA$loglik, LBFGS$loglik, tolerance = 1e-1)
+    expect_equal(MMA$loglik, CCSAQ$loglik, tolerance = 1e-1) ## Almost equivalent, CCSAQ faster
+    expect_equal(MMA$loglik, LBFGS$loglik, tolerance = 1e-1)
 
     expect_error(PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(config_optim = list(algorithm = "nawak"))))
  })

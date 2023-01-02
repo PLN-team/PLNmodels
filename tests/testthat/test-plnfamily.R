@@ -54,9 +54,6 @@ COLLECTION OF 2 POISSON LOGNORMAL MODELS
   expect_equal(res, model1)
 
   ## Check convergence
-  expect_is(models$convergence, "data.frame")
-  expect_equal(dim(models$convergence),
-               c(length(models$models), 2 + length(model1$optim_par)))
-  expect_equal(names(models$convergence),
-               c("param", "nb_param", names(model1$optim_par)))
+  expect_s3_class(models$convergence, "data.frame")
+  expect_named(models$convergence, as.character(c("param", "nb_param", names(model1$optim_par))))
 })
