@@ -33,7 +33,8 @@ future::plan("multisession", workers = 2)
 
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:4, data = trichoptera)
+myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:4, data = trichoptera,
+                         control = PLNmixture_param(smoothing = 'none'))
 
 # Shut down parallel workers
 \dontrun{

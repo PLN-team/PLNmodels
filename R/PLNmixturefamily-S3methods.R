@@ -23,7 +23,7 @@ isPLNmixturefamily     <- function(Robject) {inherits(Robject, "PLNmixturefamily
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)),
-#'            data = trichoptera, control = PLNmixture_param(smoothing = "forward"))
+#'            data = trichoptera, control = PLNmixture_param(smoothing = "none"))
 #' plot(myMixtures, reverse = TRUE)
 #' @export
 plot.PLNmixturefamily <-
