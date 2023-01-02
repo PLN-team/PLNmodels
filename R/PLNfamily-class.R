@@ -67,8 +67,8 @@ PLNfamily <-
       #' @param config a list for controlling the post-treatment.
       postTreatment = function(config) {
         nullModel <- nullModelPoisson(self$responses, self$covariates, self$offsets, self$weights)
-        for (model in self$models)
-          model$postTreatment(
+        future_lapply(self$models, function(m)
+          m$postTreatment(
             self$responses,
             self$covariates,
             self$offsets,
@@ -76,6 +76,7 @@ PLNfamily <-
             config,
             nullModel = nullModel
           )
+        )
       },
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

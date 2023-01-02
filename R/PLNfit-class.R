@@ -370,7 +370,6 @@ PLNfit <- R6Class(
     #' @description Update R2, fisher and std_err fields after optimization
     #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config, nullModel = NULL) {
-
       ## PARAMATERS DIMNAMES
       ## Set names according to those of the data matrices. If missing, use sensible defaults
       if (is.null(colnames(responses)))
@@ -402,9 +401,9 @@ PLNfit <- R6Class(
         private$variance_jackknife(responses, covariates, offsets, weights)
       }
       ## 4. Bootstrap estimation of variance
-      if (config$bootstrap) {
+      if (config$bootstrap > 0) {
         if(config$trace > 1) cat("\n\tComputing bootstrap estimator of the variance...")
-        private$variance_bootstrap(responses, covariates, offsets, weights)
+        private$variance_bootstrap(responses, covariates, offsets, weights, config$bootstrap)
       }
     },
 
@@ -793,11 +792,14 @@ PLNfit_fixedcov <- R6Class(
 
     #' @description Update R2, fisher and std_err fields after optimization
     #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), control, nullModel = NULL) {
-      super$postTreatment(responses, covariates, offsets, weights, control, nullModel)
-      private$vcov_sandwich_B(responses, covariates)
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config, nullModel = NULL) {
+      super$postTreatment(responses, covariates, offsets, weights, config, nullModel)
+      ## 6. compute and store matrix of standard variances for B with sandwich correction approximation
+      if (config$sandwich_var) {
+        if(config$trace > 1) cat("\n\tComputing sandwich estimator of the variance...")
+        private$vcov_sandwich_B(responses, covariates)
+      }
     }
-
   ),
   private = list(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

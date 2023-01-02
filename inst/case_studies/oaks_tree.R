@@ -30,16 +30,16 @@ rbind(
   knitr::kable()
 
 ## Discriminant Analysis with LDA
-myLDA_tree <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(backend="torch"))
+myLDA_tree <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks)
 plot(myLDA_tree)
 plot(myLDA_tree, "individual")
 
-myLDA_tree_diagonal <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "diagonal", backend="torch"))
+myLDA_tree_diagonal <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "diagonal"))
 plot(myLDA_tree_diagonal)
 otu.family <- factor(rep(c("fungi", "E. aphiltoides", "bacteria"), c(47, 1, 66)))
 plot(myLDA_tree, "variable", var_cols = otu.family) ## TODO: add color for arrows to check
 
-myLDA_tree_spherical <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "spherical", backend = "torch"))
+myLDA_tree_spherical <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "spherical"))
 plot(myLDA_tree_spherical)
 
 ## One dimensional check of plot

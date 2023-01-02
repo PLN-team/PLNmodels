@@ -34,7 +34,8 @@ config_post_default_PLN <-
     jackknife       = FALSE,
     bootstrap       = 0L,
     rsquared        = TRUE,
-    variational_var = FALSE
+    variational_var = FALSE,
+    sandwich_var    = FALSE
   )
 
 config_post_default_PLNnetwork <-
@@ -42,7 +43,8 @@ config_post_default_PLNnetwork <-
     jackknife       = FALSE,
     bootstrap       = 0L,
     rsquared        = FALSE,
-    variational_var = FALSE
+    variational_var = FALSE,
+    sandwich_var    = FALSE
   )
 
 config_post_default_PLNLDA <-
