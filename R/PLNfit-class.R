@@ -551,7 +551,7 @@ PLNfit <- R6Class(
     latent_pos = function() {private$M},
     #' @field fitted a matrix: fitted values of the observations (A in the model)
     fitted     = function() {private$A},
-    #' @field vcov_coef matrix of sandwich estimator of the variance-covariance of B (need knwon covariance at the moment)
+    #' @field vcov_coef matrix of sandwich estimator of the variance-covariance of B (need fixed -ie known- covariance at the moment)
     vcov_coef = function() {attr(private$B, "vcov_variational")},
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"full"},

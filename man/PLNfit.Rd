@@ -46,7 +46,7 @@ print(myPLN)
 
 \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 
-\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of B (need knwon covariance at the moment)}
+\item{\code{vcov_coef}}{matrix of sandwich estimator of the variance-covariance of B (need fixed -ie known- covariance at the moment)}
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 

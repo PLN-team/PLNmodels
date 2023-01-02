@@ -153,7 +153,7 @@ sigma.PLNfit <- function(object, ...) {
 #'
 #' @param object an R6 object with class PLNfit
 #' @param type string describing the type of variance approximation: "variational", "jackknife", "sandwich" (only for fixed covariance). Default is "variational".
-#' @param parameter string describing the target parameter: either B (regression coefficicents) or Omega (inverse residual covariance)
+#' @param parameter string describing the target parameter: either B (regression coefficients) or Omega (inverse residual covariance)
 #'
 #' @seealso [vcov.PLNfit()] for the complete variance covariance estimation of the coefficient
 #'

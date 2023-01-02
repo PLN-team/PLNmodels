@@ -36,7 +36,7 @@ standard_error(
 
 \item{type}{string describing the type of variance approximation: "variational", "jackknife", "sandwich" (only for fixed covariance). Default is "variational".}
 
-\item{parameter}{string describing the target parameter: either B (regression coefficicents) or Omega (inverse residual covariance)}
+\item{parameter}{string describing the target parameter: either B (regression coefficients) or Omega (inverse residual covariance)}
 }
 \value{
 A p * d positive matrix (same size as \eqn{B}) with standard errors for the coefficients of \eqn{B}
