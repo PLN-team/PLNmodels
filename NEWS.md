@@ -1,4 +1,4 @@
-# PLNmodels dev version
+# PLNmodels 1.0.0
 
 ## Breaking changes
 

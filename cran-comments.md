@@ -34,13 +34,13 @@ The use of 'control = list()' is deprecated: the code stop and send an error.
 * fix in objective functions of ve_step of standard PLN models
 * fix in objective functions of main  of standard PLN models
 
-
 ## Tested environments
 
 * tested locally on Ubuntu Linux 22.04.1 LTS, R-release, GCC
 
 * tested remotely with win-builder 
   - Windows Server 2022, R-devel, 64 bit
+  - Windows Server 2022, R-release, 64 bit
 
 * tested remotely with R-hub 
   - Windows Server 2022, R-devel, 64 bit
@@ -63,10 +63,6 @@ all status OK except for
       doc    2.2Mb
       libs  15.9Mb
       
-
 0 errors ✓ | 0 warnings ✓ | 1 note x
 
 R CMD check succeeded
-
-On my computer I get (Ubuntu 22.04)
-
