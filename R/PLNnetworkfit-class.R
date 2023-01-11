@@ -42,7 +42,7 @@ PLNnetworkfit <- R6Class(
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
     initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control) {
-      stopifnot(isSymmetric(penalty_weights), all(penalty_weights > 0))
+      stopifnot(isSymmetric(penalty_weights), all(penalty_weights >= 0))
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$lambda <- penalty
       private$rho    <- penalty_weights
@@ -226,17 +226,14 @@ PLNnetworkfit <- R6Class(
     #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
     n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param number of parameters in the current PLN model
-    nb_param        = function() {self$p * self$d + self$n_edges},
+    nb_param        = function() {self$p * self$d + self$p + self$n_edges},
     #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood
     pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
     #' @field EBIC variational lower bound of the EBIC
-    EBIC      = function() {
-      self$BIC - .5 * ifelse(self$n_edges > 0, self$n_edges * log(.5 * self$p*(self$p - 1)/self$n_edges), 0)
-    },
+    EBIC      = function() {self$BIC - .5 * ifelse(self$n_edges > 0, self$n_edges * log(.5 * self$p*(self$p - 1)/self$n_edges), 0)},
     #' @field density proportion of non-null edges in the network
     density   = function() {mean(self$latent_network("support"))},
-    #' @field criteria a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges,
-    #' and graph density
+    #' @field criteria a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges and graph density
     criteria  = function() {data.frame(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik, density = self$density)}
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
