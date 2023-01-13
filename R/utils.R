@@ -193,7 +193,8 @@ node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
 #' @param Sigma covariance matrix of the latent variable
 #' @param depths Numeric vector of target depths. The first is recycled if there are not `n` values
 #'
-#' @return a n * p count matrix, with row-sums close to depths
+#' @return a n * p count matrix, with row-sums close to depths, with an attribute "offsets"
+#' corresponding to the true generated offsets (in log-scale).
 #'
 #' @details The default value for mu and Sigma assume equal abundances and no correlation between
 #'          the different species.

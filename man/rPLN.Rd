@@ -21,7 +21,8 @@ rPLN(
 \item{depths}{Numeric vector of target depths. The first is recycled if there are not \code{n} values}
 }
 \value{
-a n * p count matrix, with row-sums close to depths
+a n * p count matrix, with row-sums close to depths, with an attribute "offsets"
+corresponding to the true generated offsets (in log-scale).
 }
 \description{
 Random generation for the PLN model with latent mean equal to mu, latent covariance matrix
