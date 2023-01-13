@@ -247,7 +247,7 @@ create_parameters <- function(
        p      = p,
        X      = matrix(rnorm(n*d), nrow = n, ncol = d,
                        dimnames = list(paste0("S", 1:n), paste0("Var_", 1:d))),
-       Theta  = matrix(rnorm(n = p*d, sd = 1/sqrt(d)), nrow = p, ncol = d),
+       B      = matrix(rnorm(n = p*d, sd = 1/sqrt(d)), nrow = d, ncol = b),
        Sigma  = sigma * toeplitz(x = rho^seq(0, p-1)),
        depths = depths)
 }
