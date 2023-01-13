@@ -1,6 +1,7 @@
 # PLNmodels dev
 
 * fix in the use of future_lapply which used to make postTreatment in PLNPCA last for ever with multicore in v1.0.0...
+* prevent use of bootstrap/jackknife when not appropriate
 
 # PLNmodels 1.0.0
 

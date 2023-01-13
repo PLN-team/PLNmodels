@@ -114,7 +114,6 @@ PLNmixture_param <- function(
     covariance    = "spherical",
     init_cl       = "kmeans"   ,
     smoothing     = "both"     ,
-    config_post   = list()     ,
     config_optim  = list()     ,
     inception     = NULL # pretrained PLNfit used as initialization
 ) {
