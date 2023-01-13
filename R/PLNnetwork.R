@@ -41,7 +41,8 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 
   ## Post-treatments
   if (control$trace > 0) cat("\n Post-treatments")
-  myPLN$postTreatment(control$config_post)
+  config_post <- config_post_default_PLNnetwork; config_post$trace <- control$trace
+  myPLN$postTreatment(config_post)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -53,7 +54,6 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #'
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
-#' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
 #' @param trace a integer for verbosity.
 #' @param n_penalties an integer that specifies the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`
 #' @param min_ratio the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by `min_ratio`. Default is 0.1.
@@ -83,12 +83,6 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
 #' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
 #'
-#' The list of parameters `config_post` controls the post-treatment processing, with the following entries:
-#' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
-#' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
-#' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
-#' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is FALSE
-#'
 #' @export
 PLNnetwork_param <- function(
     backend           = "nlopt",
@@ -97,17 +91,11 @@ PLNnetwork_param <- function(
     min_ratio         = 0.1    ,
     penalize_diagonal = TRUE   ,
     penalty_weights   = NULL   ,
-    config_post   = list(),
     config_optim  = list(),
     inception         = NULL
 ) {
 
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
-
-  ## post-treatment config
-  config_pst <- config_post_default_PLNnetwork
-  config_pst[names(config_post)] <- config_post
-  config_pst$trace <- trace
 
   ## optimization config
   backend <- match.arg(backend)
@@ -136,6 +124,5 @@ PLNnetwork_param <- function(
     bootstrap         = 0                ,
     variance          = TRUE             ,
     config_optim      = config_opt       ,
-    config_post       = config_pst       ,
     inception         = inception       ), class = "PLNmodels_param")
 }
