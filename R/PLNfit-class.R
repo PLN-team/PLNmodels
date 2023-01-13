@@ -368,7 +368,13 @@ PLNfit <- R6Class(
     },
 
     #' @description Update R2, fisher and std_err fields after optimization
-    #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
+    #' @param config a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
+    #' @details The list of parameters `config` controls the post-treatment processing, with the following entries:
+    #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
+    #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
+    #' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
+    #' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
+    #' * trace integer for verbosity. should be > 1 to see output in post-treatments
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config, nullModel = NULL) {
       ## PARAMATERS DIMNAMES
       ## Set names according to those of the data matrices. If missing, use sensible defaults
@@ -791,7 +797,13 @@ PLNfit_fixedcov <- R6Class(
     },
 
     #' @description Update R2, fisher and std_err fields after optimization
-    #' @param jackknife Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}
+    #' @param config a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
+    #' @details The list of parameters `config` controls the post-treatment processing, with the following entries:
+    #' * trace integer for verbosity. should be > 1 to see output in post-treatments
+    #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
+    #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
+    #' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
+    #' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config, nullModel = NULL) {
       super$postTreatment(responses, covariates, offsets, weights, config, nullModel)
       ## 6. compute and store matrix of standard variances for B with sandwich correction approximation

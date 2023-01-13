@@ -67,7 +67,7 @@ config_post_default_PLNmixture <-
   list(
     jackknife       = FALSE,
     bootstrap       = 0L,
-    rsquared        = FALSE,
+    rsquared        = TRUE,
     variational_var = FALSE
   )
 
@@ -247,7 +247,7 @@ create_parameters <- function(
        p      = p,
        X      = matrix(rnorm(n*d), nrow = n, ncol = d,
                        dimnames = list(paste0("S", 1:n), paste0("Var_", 1:d))),
-       B      = matrix(rnorm(n = p*d, sd = 1/sqrt(d)), nrow = d, ncol = b),
+       B      = matrix(rnorm(n = p*d, sd = 1/sqrt(d)), nrow = d, ncol = p),
        Sigma  = sigma * toeplitz(x = rho^seq(0, p-1)),
        depths = depths)
 }

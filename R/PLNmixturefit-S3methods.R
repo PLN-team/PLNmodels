@@ -154,3 +154,17 @@ sigma.PLNmixturefit <- function(object, ...) {
   stopifnot(isPLNmixturefit(object))
   object$model_par$Sigma
 }
+
+#' @describeIn standard_error Component-wise standard errors of B in [`PLNmixturefit`] (not implemented yet)
+#' @export
+standard_error.PLNmixturefit <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("B", "Omega")) {
+  par  <- match.arg(parameter)
+  if (par == "Omega")
+    stop("Omega is not estimated as such in PLNmixture models")
+  if (par == "B") {
+    warning("Standard error of B is not implemented yet for PLNmixture models")
+    theta_sd <- coef.PLNmixturefit(object)
+    theta_sd[ , ] <- NA
+    theta_sd
+  }
+}

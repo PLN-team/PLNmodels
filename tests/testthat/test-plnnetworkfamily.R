@@ -25,7 +25,9 @@ test_that("PLNnetwork: main function, fields access and methods", {
   myPLN$optimize(ctrl$config_optim)
 
   ## post-treatment
-  myPLN$postTreatment(ctrl$config_post)
+  config_post <- PLNmodels:::config_post_default_PLNnetwork
+  config_post$trace <- 0
+  myPLN$postTreatment(config_post)
 
   expect_equal(myPLN$criteria$BIC, models$criteria$BIC)
 
