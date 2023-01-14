@@ -2,7 +2,7 @@ library(PLNmodels)
 library(factoextra)
 
 ## setting up future for parallelism
-nb_cores <- 10
+nb_cores <- 20
 options(future.fork.enable = TRUE)
 future::plan("multicore", workers = nb_cores)
 
