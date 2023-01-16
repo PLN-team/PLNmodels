@@ -18,7 +18,7 @@ equal to Sigma and average depths (sum of counts in a sample) equal to depths"><
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0-9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0-9020</span>
       </span>
     </div>
 
@@ -129,17 +129,17 @@ the different species.</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## 10 samples of 5 species with equal abundances, no covariance and target depths of 10,000</span></span></span>
 <span class="r-in"><span><span class="fu">rPLN</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       Y1   Y2    Y3   Y4   Y5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S1   155 1509   845 1374  354</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S2   782 3169 14346 1694  447</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S3  2261 2411   426 5418 3625</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S4   667  862   652  773  860</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S5  6596 2724  1162  663 1298</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S6  1025 5225  2924  338  408</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S7   411 4837   604  716  719</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S8   298 2702  3842 1483 1366</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S9  2601 1199   123  772  976</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S10 1527 1392  2623  918 2863</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Y1   Y2   Y3   Y4   Y5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S1  2864  468 2002  466 1422</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S2   756  556 3191  214  105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S3  5293  310  821 1717 1116</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S4   807 2545 1679 1662  747</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S5   565 4581  618 3835 3527</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S6  1382   81 1428 1170 2264</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S7   986 2753 1600 1976  577</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S8   247  390 3964  562  126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S9   356  551  180  497 4796</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S10 5550  869 3208 1822 1194</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"offsets")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           [,1]     [,2]     [,3]     [,4]     [,5]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 7.100902 7.100902 7.100902 7.100902 7.100902</span>
@@ -157,9 +157,9 @@ the different species.</p>
 <span class="r-in"><span><span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">Sigma</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">Sigma</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="fu">rPLN</span><span class="op">(</span>n<span class="op">=</span><span class="fl">2</span>, mu <span class="op">=</span> <span class="va">mu</span>, Sigma <span class="op">=</span> <span class="va">Sigma</span>, depths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e3</span>, <span class="fl">1e5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       Y1   Y2    Y3   Y4    Y5   Y6   Y7   Y8   Y9  Y10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S1    94   94    41   54    45    5   15    9    7   13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> S2 30918 8445 32395 6799 21430 1800 2094 2687 2615 1965</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Y1    Y2    Y3    Y4    Y5   Y6   Y7   Y8   Y9  Y10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S1    80    78    31    72   105   12   16   28   10   19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> S2 22687 34020 19108 20837 25897 2720 3377 4114 3400 2516</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"offsets")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 3.671389 3.671389 3.671389 3.671389 3.671389 3.671389 3.671389 3.671389</span>
