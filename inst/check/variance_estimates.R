@@ -5,27 +5,23 @@ set.seed(1234)
 nb_cores <- 10
 options(future.fork.enable = TRUE)
 
-params <- PLNmodels:::create_parameters()
-B <- t(params$Theta)
-
-## Extract X
+params <- PLNmodels:::create_parameters(n = 50, p = 10, d = 1, depths = 1e3)
 X <- params$X
-
-## Extract Y
+B <- params$B
 Y <- rPLN(n = nrow(X), mu = X %*% B, Sigma = params$Sigma, depths = params$depths)
 
 data <- prepare_data(Y, X, offset = "none")
-O <- rowSums(Y)
+logO <- attr(Y, "offsets")
 
 conf <- list(variational_var = TRUE, jackknife = TRUE, bootstrap = nrow(Y))
 future::plan("multicore", workers = nb_cores)
-model <- PLN(Abundance ~ 0 + . + offset(log(O)), data = data, control = PLN_param(config_post = conf))
+model <- PLN(Abundance ~ 0 + . + offset(logO), data = data, control = PLN_param(config_post = conf))
 future::plan("sequential")
 
 B_hat <- coef(model)
-B_se_var <- standard_error(model)
-B_se_jk <- standard_error(model, "jackknife")
-B_se_bt <- standard_error(model, "bootstrap")
+B_se_var <- standard_error(model, "variational")
+B_se_jk  <- standard_error(model, "jackknife")
+B_se_bt  <- standard_error(model, "bootstrap")
 
 data.frame(
   B = rep(c(B), 3),

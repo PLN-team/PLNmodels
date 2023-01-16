@@ -11,7 +11,6 @@ PLNnetwork_param(
   min_ratio = 0.1,
   penalize_diagonal = TRUE,
   penalty_weights = NULL,
-  config_post = list(),
   config_optim = list(),
   inception = NULL
 )
@@ -28,8 +27,6 @@ PLNnetwork_param(
 \item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{TRUE}}
 
 \item{penalty_weights}{either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
-
-\item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 
@@ -64,13 +61,5 @@ When "torch" backend is used, with the following entries are relevant:
 \item "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
 \item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
 \item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
-}
-
-The list of parameters \code{config_post} controls the post-treatment processing, with the following entries:
-\itemize{
-\item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
-\item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
-\item variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
-\item rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is FALSE
 }
 }

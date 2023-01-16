@@ -22,7 +22,8 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
   expect_null(coef(model))
   expect_lt(sum((model$group_means - model$model_par$Theta)^2), .Machine$double.eps)
   expect_equal(sigma(model), model$model_par$Sigma)
-  expect_equal(vcov(model), model$vcov_coef)
+  expect_error(vcov(model))
+  expect_null(model$vcov_coef)
 
   expect_true(inherits(model$group_means, "matrix"))
   expect_true(inherits(sigma(model), "matrix"))
@@ -47,7 +48,9 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
   ## S3 methods
   expect_equal(dim(fitted(model)), c(n, p))
   expect_equal(sigma(model), model$model_par$Sigma)
-  expect_equal(vcov(model, "main"), model$vcov_coef)
+  expect_error(vcov(model, "main"))
+  expect_null(model$vcov_coef)
+
   expect_equal(vcov(model, "covariance"), model$model_par$Sigma)
   expect_equal(vcov(model, "covariance"), sigma(model))
 

@@ -59,7 +59,8 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
   if (control$trace > 0) cat("\n Post-treatments")
-  myPLN$postTreatment(control$config_post)
+  config_post <- config_post_default_PLNmixture; config_post$trace <- control$trace
+  myPLN$postTreatment(config_post)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -74,7 +75,6 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 #' @param smoothing The smoothing to apply. Either, 'none', forward', 'backward' or 'both'. Default is 'both'.
 #' @param init_cl The initial clustering to apply. Either, 'kmeans', CAH' or a user defined clustering given as a list of  clusterings, the size of which is equal to the number of clusters considered. Default is 'kmeans'.
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
-#' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
 #' @param trace a integer for verbosity.
 #' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 #'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
@@ -114,16 +114,10 @@ PLNmixture_param <- function(
     covariance    = "spherical",
     init_cl       = "kmeans"   ,
     smoothing     = "both"     ,
-    config_post   = list()     ,
     config_optim  = list()     ,
     inception     = NULL # pretrained PLNfit used as initialization
 ) {
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
-
-  ## post-treatment config
-  config_pst <- config_post_default_PLN
-  config_pst[names(config_post)] <- config_post
-  config_pst$trace <- trace
 
   ## optimization config
   backend <- match.arg(backend)
@@ -149,6 +143,5 @@ PLNmixture_param <- function(
     init_cl       = init_cl    ,
     smoothing     = smoothing  ,
     config_optim  = config_opt ,
-    config_post   = config_pst ,
     inception     = inception   ), class = "PLNmodels_param")
 }

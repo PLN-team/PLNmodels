@@ -67,7 +67,7 @@ config_post_default_PLNmixture <-
   list(
     jackknife       = FALSE,
     bootstrap       = 0L,
-    rsquared        = FALSE,
+    rsquared        = TRUE,
     variational_var = FALSE
   )
 
@@ -193,7 +193,8 @@ node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
 #' @param Sigma covariance matrix of the latent variable
 #' @param depths Numeric vector of target depths. The first is recycled if there are not `n` values
 #'
-#' @return a n * p count matrix, with row-sums close to depths
+#' @return a n * p count matrix, with row-sums close to depths, with an attribute "offsets"
+#' corresponding to the true generated offsets (in log-scale).
 #'
 #' @details The default value for mu and Sigma assume equal abundances and no correlation between
 #'          the different species.
@@ -226,6 +227,7 @@ rPLN <- function(n = 10, mu = rep(0, ncol(Sigma)), Sigma = diag(1, 5, 5),
   Z <- mu + mvrnorm(n, rep(0,ncol(Sigma)), as.matrix(Sigma)) + offsets
   Y <- matrix(rpois(n * p, as.vector(exp(Z))), n, p)
   dimnames(Y) <- list(paste0("S", 1:n), paste0("Y", 1:p))
+  attr(Y, "offsets") <- offsets
   Y
 }
 
@@ -245,7 +247,7 @@ create_parameters <- function(
        p      = p,
        X      = matrix(rnorm(n*d), nrow = n, ncol = d,
                        dimnames = list(paste0("S", 1:n), paste0("Var_", 1:d))),
-       Theta  = matrix(rnorm(n = p*d, sd = 1/sqrt(d)), nrow = p, ncol = d),
+       B      = matrix(rnorm(n = p*d, sd = 1/sqrt(d)), nrow = d, ncol = p),
        Sigma  = sigma * toeplitz(x = rho^seq(0, p-1)),
        depths = depths)
 }

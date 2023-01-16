@@ -42,3 +42,17 @@ plot.PLNnetworkfit <-
            plot            = TRUE, ...) {
     invisible(x$plot_network(type, output, edge.color, remove.isolated, node.labels, layout, plot))
   }
+
+#' @describeIn standard_error Component-wise standard errors of B in [`PLNnetworkfit`] (not implemented yet)
+#' @export
+standard_error.PLNnetworkfit <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("B", "Omega")) {
+  par  <- match.arg(parameter)
+  if (par == "Omega")
+    stop("Omega is not estimated as such in PLNnetwork models")
+  if (par == "B") {
+    warning("Standard error of B is not implemented yet for PLNnetwork models")
+    theta_sd <- coef.PLNfit(object)
+    theta_sd[ , ] <- NA
+    theta_sd
+  }
+}

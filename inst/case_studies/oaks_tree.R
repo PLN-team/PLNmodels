@@ -2,7 +2,7 @@ library(PLNmodels)
 library(factoextra)
 
 ## setting up future for parallelism
-nb_cores <- 10
+nb_cores <- 20
 options(future.fork.enable = TRUE)
 future::plan("multicore", workers = nb_cores)
 
@@ -70,7 +70,7 @@ factoextra::fviz_pca_biplot(
   labs(col = "distance (cm)") + scale_color_viridis_c()
 
 ## Network inference with sparce covariance estimation
-system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(trace = 2)))
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks))
 plot(myPLNnets)
 # stability_selection(myPLNnets)
 # plot(getBestModel(myPLNnets, "StARS", stability = .975))

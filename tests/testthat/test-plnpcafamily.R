@@ -34,7 +34,9 @@ test_that("PLNPCAfamily: main function, field access and methods", {
   myPLN$optimize(ctrl$config_optim)
 
   ## post-treatment
-  myPLN$postTreatment(ctrl$config_post)
+  config <- PLNmodels:::config_post_default_PLNPCA
+  config$trace <- 0
+  myPLN$postTreatment(config)
 
   ## S3 methods
   expect_true(PLNmodels:::isPLNPCAfamily(myPLN))

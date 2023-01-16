@@ -43,7 +43,8 @@ test_that("Use or not of the intercept does not change the result.",  {
                      data = trichoptera)
   expect_equal(lda_with$group_means, lda_wo$group_means)
   expect_equal(coef(lda_with), coef(lda_wo))
-  expect_equal(vcov(lda_with), vcov(lda_wo))
+  expect_error(vcov(lda_with))
+  expect_error(vcov(lda_wo))
 })
 
 test_that("Using a discrete covariate in the formula does not throw an error.", {

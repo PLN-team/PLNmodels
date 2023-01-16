@@ -131,14 +131,23 @@ Update R2, fisher and std_err fields after optimization
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{config}}{part of the \code{control} argument which configures the optimizer}
+\item{\code{config}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
-
-\item{\code{jackknife}}{Boolean indicating whether jackknife estimation of bias and variance should be computed for the model parameters. Default is \code{FALSE}}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The list of parameters \code{config} controls the post-treatment processing, with the following entries:
+\itemize{
+\item trace integer for verbosity. should be > 1 to see output in post-treatments
+\item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
+\item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
+\item variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
+\item rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
+}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit_fixedcov-clone"></a>}}

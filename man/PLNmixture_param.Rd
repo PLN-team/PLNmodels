@@ -10,7 +10,6 @@ PLNmixture_param(
   covariance = "spherical",
   init_cl = "kmeans",
   smoothing = "both",
-  config_post = list(),
   config_optim = list(),
   inception = NULL
 )
@@ -25,8 +24,6 @@ PLNmixture_param(
 \item{init_cl}{The initial clustering to apply. Either, 'kmeans', CAH' or a user defined clustering given as a list of  clusterings, the size of which is equal to the number of clusters considered. Default is 'kmeans'.}
 
 \item{smoothing}{The smoothing to apply. Either, 'none', forward', 'backward' or 'both'. Default is 'both'.}
-
-\item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 

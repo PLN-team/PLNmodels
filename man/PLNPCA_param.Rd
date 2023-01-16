@@ -7,7 +7,6 @@
 PLNPCA_param(
   backend = "nlopt",
   trace = 1,
-  config_post = list(),
   config_optim = list(),
   inception = NULL
 )
@@ -16,8 +15,6 @@ PLNPCA_param(
 \item{backend}{optimization back used, either "nlopt" or "torch". Default is "nlopt"}
 
 \item{trace}{a integer for verbosity.}
-
-\item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 
@@ -48,13 +45,5 @@ When "torch" backend is used, with the following entries are relevant:
 \item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
 \item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
 \item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
-}
-
-The list of parameters \code{config_post} controls the post-treatment processing, with the following entries:
-\itemize{
-\item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
-\item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
-\item variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
-\item rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
 }
 }

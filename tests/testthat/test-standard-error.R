@@ -72,3 +72,71 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
   expect_equal(sem             , expected.sem     , tolerance = tol)
 
 })
+
+params <- PLNmodels:::create_parameters(n = 30, p = 3, d = 1, depths = 1e3)
+B <- params$B
+X <- as.matrix(params$X)
+Y <- rPLN(n = nrow(X), mu = X %*% B, Sigma = params$Sigma, depths = params$depths)
+log_O <- attr(Y, "offsets")
+rownames(Y) <- rownames(X) <- rownames(log_O) <-1:nrow(X)
+data <- prepare_data(Y, X, offset = exp(log_O))
+
+test_that("Check that variance estimation are coherent in PLNfit",  {
+
+  ## using postTreatments function to compute variances a posteriori
+  myPLN <- PLN(Y ~ X + 0 + offset(log_O))
+
+  config_post <-
+    list(
+      jackknife       = TRUE,
+      bootstrap       = 50L,
+      variational_var = TRUE,
+      rsquared        = FALSE,
+      trace           = 2
+    )
+
+  myPLN$postTreatment(Y, X, exp(log_O), config = config_post)
+
+  tr_variational <- sum(standard_error(myPLN, "variational")^2)
+  tr_bootstrap   <- sum(standard_error(myPLN, "bootstrap")^2)
+  tr_jackknife   <- sum(standard_error(myPLN, "jackknife")^2)
+
+  expect_gt(tr_variational, 0)
+  expect_gt(tr_jackknife  , 0)
+  expect_gt(tr_bootstrap  , 0)
+
+  ## using control parameters
+  myPLN_prime <- PLN(Abundance ~ Var_1 + 0 + offset(log(Offset)), data = data, control = PLN_param(config_post = config_post))
+
+  tr_variational <- sum(standard_error(myPLN_prime, "variational")^2)
+  tr_bootstrap   <- sum(standard_error(myPLN_prime, "bootstrap")^2)
+  tr_jackknife   <- sum(standard_error(myPLN_prime, "jackknife")^2)
+
+  expect_gt(tr_variational, 0)
+  expect_gt(tr_jackknife  , 0)
+  expect_gt(tr_bootstrap  , 0)
+})
+
+test_that("Check that variance estimation are coherent in PLNnetwork",  {
+  myPCAs <- PLNPCA(Abundance ~ Var_1 + 0 + offset(log(Offset)), data = data, ranks = 1:3)
+  myPCA <- myPCAs$models[[2]]
+  B <- coef(myPCA); B[ , ] <- NA
+  expect_equal(suppressWarnings(standard_error(myPCA)), B)
+  expect_warning(standard_error(myPCA))
+})
+
+test_that("Check that variance estimation are coherent in PLNnetwork",  {
+  myNetworks <- PLNnetwork(Abundance ~ Var_1 + 0 + offset(log(Offset)), data = data)
+  myNet <- myNetworks$models[[1]]
+  B <- coef(myNet); B[ , ] <- NA
+  expect_equal(suppressWarnings(standard_error(myNet)), B)
+  expect_warning(standard_error(myNet))
+})
+
+test_that("Check that variance estimation are coherent in PLNmixture",  {
+  myModels <- PLNmixture(Abundance ~ Var_1 + 0 + offset(log(Offset)), data = data, clusters = 1:3, control = PLNmixture_param(smoothing = "none"))
+  myModel <- myModels$models[[1]]
+  B <- coef(myModel); B[ , ] <- NA
+  expect_equal(suppressWarnings(standard_error(myModel)), B)
+  expect_warning(standard_error(myModel))
+})
