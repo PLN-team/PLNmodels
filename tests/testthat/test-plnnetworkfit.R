@@ -31,8 +31,7 @@ test_that("PLNnetwork fit: check classes, getters and field access", {
   expect_gt(myPLNfit$density, 0)
   expect_true(myPLNfit$penalty > 0)
   expect_true(is.data.frame(myPLNfit$criteria))
-  ## FIXME: what about the variance parameters ? (+p??)
-  expect_equal(myPLNfit$nb_param, p + myPLNfit$n_edges)
+  expect_equal(myPLNfit$nb_param, 2 *p + myPLNfit$n_edges)
 
   ## S3 methods
   expect_equal(coefficients(myPLNfit), myPLNfit$model_par$B)
