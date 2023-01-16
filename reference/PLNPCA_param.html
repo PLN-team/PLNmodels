@@ -87,7 +87,6 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PLNPCA_param</span><span class="op">(</span></span>
 <span>  backend <span class="op">=</span> <span class="st">"nlopt"</span>,</span>
 <span>  trace <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  inception <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -101,10 +100,6 @@
 
 <dt>trace</dt>
 <dd><p>a integer for verbosity.</p></dd>
-
-
-<dt>config_post</dt>
-<dd><p>a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details</p></dd>
 
 
 <dt>config_optim</dt>
@@ -135,10 +130,6 @@ which sometimes speeds up the inference.</p></dd>
 </ul><p>When "torch" backend is used, with the following entries are relevant:</p><ul><li><p>"maxeval" stop when the number of iteration exceeds maxeval. Default is 10000</p></li>
 <li><p>"ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8</p></li>
 <li><p>"xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6</p></li>
-</ul><p>The list of parameters <code>config_post</code> controls the post-treatment processing, with the following entries:</p><ul><li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
-<li><p>bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).</p></li>
-<li><p>variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
-<li><p>rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE</p></li>
 </ul></div>
 
   </div>

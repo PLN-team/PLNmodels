@@ -412,15 +412,14 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 
 </div><p></p><hr><a id="method-PLNPCAfit-postTreatment"></a><div class="section">
 <h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
-<p>Update R2, fisher, std_err fields and set up visualization
-after optimization</p><div class="section">
+<p>Update R2, fisher, std_err fields and set up visualization</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span></span>
 <span>  <span class="va">responses</span>,</span>
 <span>  <span class="va">covariates</span>,</span>
 <span>  <span class="va">offsets</span>,</span>
 <span>  <span class="va">weights</span>,</span>
-<span>  <span class="va">control</span>,</span>
+<span>  <span class="va">config</span>,</span>
 <span>  <span class="va">nullModel</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -443,8 +442,8 @@ after optimization</p><div class="section">
 <dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
 
-<dt><code>control</code></dt>
-<dd><p>a list for controlling the optimization. See details.</p></dd>
+<dt><code>config</code></dt>
+<dd><p>part of the <code>control</code> argument which configures the optimizer</p></dd>
 
 
 <dt><code>nullModel</code></dt>
@@ -453,6 +452,15 @@ after optimization</p><div class="section">
 
 </dl><p></p></div>
 </div>
+<div class="section">
+<h4 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h4>
+<p>The list of parameters <code>config</code> controls the post-treatment processing, with the following entries:</p><ul><li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
+<li><p>bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).</p></li>
+<li><p>variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
+<li><p>rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE</p></li>
+<li><p>trace integer for verbosity. should be &gt; 1 to see output in post-treatments</p></li>
+</ul></div>
+
 
 </div><p></p><hr><a id="method-PLNPCAfit-plot_individual_map"></a><div class="section">
 <h3 id="method-plot-individual-map-">Method <code>plot_individual_map()</code><a class="anchor" aria-label="anchor" href="#method-plot-individual-map-"></a></h3>
@@ -602,7 +610,7 @@ after optimization</p><div class="section">
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting 5 PLN models for PCA analysis.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 5 	 Rank approximation = 1 	 Rank approximation = 3 	 Rank approximation = 4 	 Rank approximation = 2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 	 Rank approximation = 3 	 Rank approximation = 1 	 Rank approximation = 5 	 Rank approximation = 4 	 Rank approximation = 2 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="va">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">myPCAs</span><span class="op">)</span></span></span>

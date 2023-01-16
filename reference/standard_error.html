@@ -75,7 +75,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Component-wise standard errors of B</h1>
-    <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/R/PLNPCAfit-S3methods.R" class="external-link"><code>R/PLNPCAfit-S3methods.R</code></a>, <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/R/PLNfit-S3methods.R" class="external-link"><code>R/PLNfit-S3methods.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/R/PLNPCAfit-S3methods.R" class="external-link"><code>R/PLNPCAfit-S3methods.R</code></a>, <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/R/PLNfit-S3methods.R" class="external-link"><code>R/PLNfit-S3methods.R</code></a>, <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/R/PLNmixturefit-S3methods.R" class="external-link"><code>R/PLNmixturefit-S3methods.R</code></a>, and 1 more</small>
     <div class="hidden name"><code>standard_error.Rd</code></div>
     </div>
 
@@ -109,6 +109,20 @@
 <span>  <span class="va">object</span>,</span>
 <span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variational"</span>, <span class="st">"jackknife"</span>, <span class="st">"bootstrap"</span>, <span class="st">"sandwich"</span><span class="op">)</span>,</span>
 <span>  parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"Omega"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for PLNmixturefit</span></span>
+<span><span class="fu">standard_error</span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variational"</span>, <span class="st">"jackknife"</span>, <span class="st">"sandwich"</span><span class="op">)</span>,</span>
+<span>  parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"Omega"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for PLNnetworkfit</span></span>
+<span><span class="fu">standard_error</span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variational"</span>, <span class="st">"jackknife"</span>, <span class="st">"sandwich"</span><span class="op">)</span>,</span>
+<span>  parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"Omega"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -140,6 +154,8 @@
 <ul><li><p><code>standard_error(PLNPCAfit)</code>: Component-wise standard errors of B in <code><a href="PLNPCAfit.html">PLNPCAfit</a></code> (not implemented yet)</p></li>
 <li><p><code>standard_error(PLNfit)</code>: Component-wise standard errors of B in <code><a href="PLNfit.html">PLNfit</a></code></p></li>
 <li><p><code>standard_error(PLNfit_fixedcov)</code>: Component-wise standard errors of B in <code><a href="PLNfit_fixedcov.html">PLNfit_fixedcov</a></code></p></li>
+<li><p><code>standard_error(PLNmixturefit)</code>: Component-wise standard errors of B in <code><a href="PLNmixturefit.html">PLNmixturefit</a></code> (not implemented yet)</p></li>
+<li><p><code>standard_error(PLNnetworkfit)</code>: Component-wise standard errors of B in <code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code> (not implemented yet)</p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>
