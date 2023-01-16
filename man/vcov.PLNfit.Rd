@@ -24,7 +24,6 @@ Returns the variance-covariance matrix of the main parameters of a fitted \code{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
-vcov(myPLN) ## variance-covariance of B
 vcov(myPLN, type = "covariance") ## Sigma
 }
 \seealso{

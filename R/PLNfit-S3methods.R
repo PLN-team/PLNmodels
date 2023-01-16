@@ -113,7 +113,6 @@ fitted.PLNfit <- function(object, ...) {
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera)
-#' vcov(myPLN) ## variance-covariance of B
 #' vcov(myPLN, type = "covariance") ## Sigma
 vcov.PLNfit <- function(object, type = c("main", "covariance"), ...) {
   stopifnot(isPLNfit(object))
