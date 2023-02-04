@@ -99,7 +99,7 @@ PLNmixturefamily <-
         config_fast$maxit_out <- 2
 
         ## number of clusters
-        if (is.null(k)) k <- max(model$memberships)
+        if (is.null(k)) k <- length(model$components)
 
         tau <- model$posteriorProb
         tau_candidates <- lapply(combn(k, 2, simplify = FALSE), function(couple) {
@@ -126,20 +126,19 @@ PLNmixturefamily <-
           if (trace) cat('+')
 
           ## current and target number of clusters
-          current_k <- self$clusters[model_index]
           target_k <- self$clusters[model_index - 1]
+          current_k <- self$clusters[model_index]
           candidate <- private$remove_one_cluster(self$models[[model_index]], k = current_k, control = control)
-          candidate_k <- length(unique(candidate$memberships))
+          current_k <- current_k - 1
 
-          ## While the target number of clusters has not been reached and the number of clusters decreases, keep going
-          while (candidate_k < current_k && candidate_k > target_k) {
-            current_k <- candidate_k
+          ## The number of clusters always decreases by one after merging (unlike). Keep going until the target number of clusters has been reached
+          while (current_k > target_k) {
             candidate <- private$remove_one_cluster(candidate, k = current_k, control = control)
-            candidate_k <- length(unique(candidate$memberships))
+            current_k <- current_k - 1
           }
 
           ## Sanity check: candidate is viable only if it has the correct number of clusters
-          if (candidate_k != target_k) next
+          if (current_k != target_k) next ## should never happen
           if (candidate$loglik > self$models[[model_index - 1]]$loglik) {
             self$models[[model_index - 1]] <- candidate
             # cat("found one")
