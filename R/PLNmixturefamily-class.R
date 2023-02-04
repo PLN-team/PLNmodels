@@ -34,12 +34,13 @@ PLNmixturefamily <-
         config_fast$maxit_out <- 2
 
         if (trace) cat("   Going forward ")
-        for (k in self$clusters[-length(self$clusters)]) {
+        for (model_index in head(seq_along(self$clusters), -1)) {
           if (trace) cat("+")
-          ## current clustering
-          cl  <- self$models[[k]]$memberships
+          ## current clustering and number of clusters
+          k <- self$clusters[model_index]
+          cl  <- self$models[[model_index]]$memberships
           ## all best split according to kmeans
-          data_split <- self$models[[k]]$latent_pos %>% as.data.frame() %>% split(cl)
+          data_split <- self$models[[model_index]]$latent_pos %>% as.data.frame() %>% split(cl)
           cl_splitable <- (1:k)[tabulate(cl) >= 3]
           cl_split <- vector("list", k)
           cl_split[cl_splitable] <- data_split[cl_splitable] %>% map(kmeans, 2, nstart = 10) %>% map("cluster")
@@ -63,8 +64,8 @@ PLNmixturefamily <-
           best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
           best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
 
-          if (best_one$loglik > self$models[[k + 1]]$loglik) {
-            self$models[[k + 1]] <- best_one
+          if (best_one$loglik > self$models[[model_index + 1]]$loglik) {
+            self$models[[model_index + 1]] <- best_one
             # cat("found one")
           }
 
@@ -76,10 +77,12 @@ PLNmixturefamily <-
         config_fast <- control$config_optim
         config_fast$maxit_out <- 2
         if (trace) cat("   Going backward ")
-        for (k in rev(self$clusters[-1])) {
+        for (model_index in rev(seq_along(self$clusters)[-1])) {
           if (trace) cat('+')
 
-          tau <- self$models[[k]]$posteriorProb
+          ## current number of clusters
+          k <- self$clusters[model_index]
+          tau <- self$models[[model_index]]$posteriorProb
           tau_candidates <- lapply(combn(k, 2, simplify = FALSE), function(couple) {
             i <- min(couple); j <- max(couple)
             tau_merged <- tau[, -j, drop = FALSE]
@@ -96,8 +99,8 @@ PLNmixturefamily <-
           best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
           best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
 
-          if (best_one$loglik > self$models[[k - 1]]$loglik) {
-              self$models[[k - 1]] <- best_one
+          if (best_one$loglik > self$models[[model_index - 1]]$loglik) {
+              self$models[[model_index - 1]] <- best_one
               # cat("found one")
           }
 
