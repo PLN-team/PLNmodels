@@ -64,6 +64,11 @@ PLNmixturefamily <-
           best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
           best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
 
+          ## Sanity check: does the best "split" model have k+1 groups ? If not skip to avoid problems during further smoothing steps
+          if (length(unique(best_one$memberships)) != k+1) {
+            next
+          }
+
           if (best_one$loglik > self$models[[model_index + 1]]$loglik) {
             self$models[[model_index + 1]] <- best_one
             # cat("found one")
@@ -83,6 +88,7 @@ PLNmixturefamily <-
           ## current number of clusters
           k <- self$clusters[model_index]
           tau <- self$models[[model_index]]$posteriorProb
+
           tau_candidates <- lapply(combn(k, 2, simplify = FALSE), function(couple) {
             i <- min(couple); j <- max(couple)
             tau_merged <- tau[, -j, drop = FALSE]
@@ -98,6 +104,11 @@ PLNmixturefamily <-
 
           best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
           best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
+
+          ## Sanity check: does the best "merged" model have k-1 groups ? If not skip to avoid problems during further smoothing steps
+          if (length(unique(best_one$memberships)) < k-1) {
+            next
+          }
 
           if (best_one$loglik > self$models[[model_index - 1]]$loglik) {
               self$models[[model_index - 1]] <- best_one
