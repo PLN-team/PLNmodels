@@ -33,9 +33,10 @@ PLNmixturefamily <-
         config_fast <- control$config_optim
         config_fast$maxit_out <- 2
 
-        ## current clustering and number of clusters
+        ## Effective number of clusters (remove empty classes) and current clustering with clusters numbered in 1:k (with no gaps)
         cl  <- model$memberships
-        if (is.null(k)) k <- max(cl)
+        k <- length(unique(cl))
+        cl <- factor(cl) %>% as.integer() ## hacky way of getting memberships in 1:k
         ## all best split according to kmeans
         data_split <- model$latent_pos %>% as.data.frame() %>% split(cl)
         cl_splitable <- (1:k)[tabulate(cl) >= 3]
@@ -69,16 +70,17 @@ PLNmixturefamily <-
         if (trace) cat("   Going forward ")
         for (model_index in head(seq_along(self$clusters), -1)) {
           if (trace) cat("+")
-          ## current and target number of clusters
-          current_k <- self$clusters[model_index]
+          ## effective and target number of clusters
+          effective_k <- length(unique(self$models[[model_index]]$memberships)) ## instead of self$clusters[model_index] to protect against empty classes
           target_k <- self$clusters[model_index+1]
-          candidate <- private$add_one_cluster(self$models[[model_index]], k = current_k, control = control)
+          candidate <- private$add_one_cluster(self$models[[model_index]],
+                                               control = control)
           candidate_k <- length(unique(candidate$memberships))
 
           ## While the target number of clusters has not been reached and the number of clusters increases, keep going
-          while (candidate_k > current_k && candidate_k < target_k) {
-            current_k <- candidate_k
-            candidate <- private$add_one_cluster(candidate, k = current_k, control = control)
+          while (candidate_k > effective_k && candidate_k < target_k) {
+            effective_k <- candidate_k
+            candidate <- private$add_one_cluster(candidate, control = control)
             candidate_k <- length(unique(candidate$memberships))
           }
 
