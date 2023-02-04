@@ -131,6 +131,12 @@ PLNmixturefamily <-
 
         ## initialize the required fields
         super$initialize(responses, covariates, offsets, rep(1, nrow(responses)), control)
+
+        ## Check that the cluster sequence is compatible with smoothing
+        if (control$smoothing != "none" && any(! seq(min(clusters), max(clusters)) %in% clusters)) {
+          warning(paste0("Smoothing only allowed for contiguous cluster sequences.\nExtending the cluster sequence to ", min(clusters), ":", max(clusters)))
+          clusters <- seq(min(clusters), max(clusters))
+        }
         private$params  <- clusters
         private$formula <- formula
 
