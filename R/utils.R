@@ -26,7 +26,8 @@ config_default_torch <-
     step_sizes    = c(1e-3, 50),
     etas          = c(0.5, 1.2),
     centered      = FALSE,
-    trace         = 1
+    trace         = 1,
+    device        = "cpu"
   )
 
 config_post_default_PLN <-
@@ -105,6 +106,11 @@ trace <- function(x) sum(diag(x))
   x[x > 1 - zero] <- 1 - zero
   x[x <     zero] <-     zero
   x
+}
+
+.logfactorial_torch <- function(n){
+  n[n == 0] <- 1 ## 0! = 1!
+  n*torch_log(n) - n + torch_log(8*torch_pow(n,3) + 4*torch_pow(n,2) + n + 1/30)/6 + log(pi)/2
 }
 
 .logfactorial <- function(n) { # Ramanujan's formula

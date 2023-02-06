@@ -80,21 +80,27 @@ PLNfit <- R6Class(
 
     torch_vloglik = function(data, params) {
       S2    <- torch_square(params$S)
-      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
-        .5 * torch_logdet(params$Omega) +
-          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
-          .5 * torch_sum(torch_mm(params$M, params$Omega) * params$M + S2 * torch_diag(params$Omega), dim = 2)
-      )
-      attr(Ji, "weights") <- as.numeric(data$w)
+
+      Ji_tmp = .5 * torch_logdet(params$Omega) +
+        torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
+        .5 * torch_sum(torch_mm(params$M, params$Omega) * params$M + S2 * torch_diag(params$Omega), dim = 2)
+      Ji_tmp = Ji_tmp$cpu()
+      Ji_tmp = as.numeric(Ji_tmp)
+      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y$cpu()))) + Ji_tmp
+
+      attr(Ji, "weights") <- as.numeric(data$w$cpu())
       Ji
     },
 
     #' @import torch
     torch_optimize = function(data, params, config) {
 
+      #config$device = "mps"
+      if (config$trace >  1)
+        message (paste("optimizing with device: ", config$device))
       ## Conversion of data and parameters to torch tensors (pointers)
-      data   <- lapply(data, torch_tensor)                         # list with Y, X, O, w
-      params <- lapply(params, torch_tensor, requires_grad = TRUE) # list with B, M, S
+      data   <- lapply(data, torch_tensor, dtype = torch_float32(), device = config$device)                         # list with Y, X, O, w
+      params <- lapply(params, torch_tensor, dtype = torch_float32(), requires_grad = TRUE, device = config$device) # list with B, M, S
 
       ## Initialize optimizer
       optimizer <- switch(config$algorithm,
@@ -111,11 +117,14 @@ PLNfit <- R6Class(
       batch_size <- floor(self$n/num_batch)
 
       objective <- double(length = config$num_epoch + 1)
+      #B_old = optimizer$param_groups[[1]]$params$B$clone()
       for (iterate in 1:num_epoch) {
-        B_old <- as.numeric(optimizer$param_groups[[1]]$params$B)
-
+        #B_old <- as.numeric(optimizer$param_groups[[1]]$params$B)
+        B_old = optimizer$param_groups[[1]]$params$B$clone()
         # rearrange the data each epoch
-        permute <- torch::torch_randperm(self$n) + 1L
+        #permute <- torch::torch_randperm(self$n, device = "cpu") + 1L
+        permute = torch::torch_tensor(sample.int(self$n), dtype = torch_long(), device=config$device)
+
         for (batch_idx in 1:num_batch) {
           # here index is a vector of the indices in the batch
           index <- permute[(batch_size*(batch_idx - 1) + 1):(batch_idx*batch_size)]
@@ -129,14 +138,21 @@ PLNfit <- R6Class(
 
         ## assess convergence
         objective[iterate + 1] <- loss$item()
-        B_new <- as.numeric(optimizer$param_groups[[1]]$params$B)
+        B_new <- optimizer$param_groups[[1]]$params$B
         delta_f   <- abs(objective[iterate] - objective[iterate + 1]) / abs(objective[iterate + 1])
-        delta_x   <- sum(abs(B_old - B_new))/sum(abs(B_new))
+        delta_x   <- torch::torch_sum(torch::torch_abs(B_old - B_new))/torch::torch_sum(torch::torch_abs(B_new))
+
+        #print (delta_f)
+        #print (delta_x)
+        delta_x = delta_x$cpu()
+        #print (delta_x)
+        delta_x = as.matrix(delta_x)
+        #print (delta_x)
 
         ## display progress
         if (config$trace >  1 && (iterate %% 50 == 0))
           cat('\niteration: ', iterate, 'objective', objective[iterate + 1],
-              'delta_f'  , round(delta_f, 6), 'delta_x', ro<und(delta_x, 6))
+              'delta_f'  , round(delta_f, 6), 'delta_x', round(delta_x, 6))
 
         ## Check for convergence
         if (delta_f < config$ftol_rel) status <- 3
@@ -152,7 +168,10 @@ PLNfit <- R6Class(
       params$Z     <- data$O + params$M + torch_matmul(data$X, params$B)
       params$A     <- torch_exp(params$Z + torch_pow(params$S, 2)/2)
 
-      out <- lapply(params, as.matrix)
+      out <- lapply(params, function(x) {
+        x = x$cpu()
+        as.matrix(x)}
+        )
       out$Ji <- private$torch_vloglik(data, params)
       out$monitoring <- list(
           objective  = objective,
@@ -199,7 +218,7 @@ PLNfit <- R6Class(
     },
 
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
-      jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
+      jacks <- lapply(seq_len(self$n), function(i) {
         data <- list(Y = Y[-i, , drop = FALSE],
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
@@ -209,7 +228,7 @@ PLNfit <- R6Class(
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
-      }, future.seed = TRUE)
+      })
 
       B_jack <- jacks %>% map("B") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%
@@ -228,17 +247,28 @@ PLNfit <- R6Class(
 
     variance_bootstrap = function(Y, X, O, w, n_resamples = 100, config = config_default_nlopt) {
       resamples <- replicate(n_resamples, sample.int(self$n, replace = TRUE), simplify = FALSE)
-      boots <- future.apply::future_lapply(resamples, function(resample) {
+      boots <- lapply(resamples, function(resample) {
         data <- list(Y = Y[resample, , drop = FALSE],
                      X = X[resample, , drop = FALSE],
                      O = O[resample, , drop = FALSE],
                      w = w[resample])
+        #print (config$torch_device)
+        #print (config)
+        if (config$algorithm %in% c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")) # hack, to know if we're doing torch or not
+          data   <- lapply(data, torch_tensor, device = config$device)                         # list with Y, X, O, w
+
+        #print (data$Y$device)
+
         args <- list(data = data,
                      params = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
                      config = config)
+        if (config$algorithm %in% c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")) # hack, to know if we're doing torch or not
+          args$params <- lapply(args$params, torch_tensor, requires_grad = TRUE, device = config$device) # list with B, M, S
+
         optim_out <- do.call(private$optimizer$main, args)
+        #print (optim_out)
         optim_out[c("B", "Omega", "monitoring")]
-      }, future.seed = TRUE)
+      })
 
       B_boots <- boots %>% map("B") %>% reduce(`+`) / n_resamples
       attr(private$B, "variance_bootstrap") <-
