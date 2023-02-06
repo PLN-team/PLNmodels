@@ -60,7 +60,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
   ## Post-treatments: Compute pseudo-R2, rearrange criteria and the visualization for PCA
   if (control$trace > 0) cat("\n Post-treatments")
   config_post <- config_post_default_PLNmixture; config_post$trace <- control$trace
-  myPLN$postTreatment(config_post)
+  myPLN$postTreatment(config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN

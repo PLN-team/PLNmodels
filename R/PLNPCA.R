@@ -52,7 +52,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
   ## Post-treatments: pseudo-R2, rearrange criteria and prepare PCA visualization
   if (control$trace > 0) cat("\n Post-treatments")
   config_post <- config_post_default_PLNPCA; config_post$trace <- control$trace
-  myPCA$postTreatment(config_post)
+  myPCA$postTreatment(config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPCA

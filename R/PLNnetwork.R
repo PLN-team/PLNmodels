@@ -41,8 +41,9 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 
   ## Post-treatments
   if (control$trace > 0) cat("\n Post-treatments")
-  config_post <- config_post_default_PLNnetwork; config_post$trace <- control$trace
-  myPLN$postTreatment(config_post)
+  #config_post <- config_post_default_PLNnetwork;
+  #config_post$trace <- control$trace
+  myPLN$postTreatment(control$config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -85,17 +86,23 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #'
 #' @export
 PLNnetwork_param <- function(
-    backend           = "nlopt",
+    backend           = c("nlopt", "torch"),
     trace             = 1      ,
     n_penalties       = 30     ,
     min_ratio         = 0.1    ,
     penalize_diagonal = TRUE   ,
     penalty_weights   = NULL   ,
+    config_post   = list(),
     config_optim  = list(),
     inception         = NULL
 ) {
 
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
+
+  ## post-treatment config
+  config_pst <- config_post_default_PLN
+  config_pst[names(config_post)] <- config_post
+  config_pst$trace <- trace
 
   ## optimization config
   backend <- match.arg(backend)
@@ -123,6 +130,7 @@ PLNnetwork_param <- function(
     jackknife         = FALSE            ,
     bootstrap         = 0                ,
     variance          = TRUE             ,
+    config_post       = config_pst       ,
     config_optim      = config_opt       ,
     inception         = inception       ), class = "PLNmodels_param")
 }

@@ -64,17 +64,18 @@ PLNfamily <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Update fields after optimization
-      #' @param config a list for controlling the post-treatment.
-      postTreatment = function(config) {
-        nullModel <- nullModelPoisson(self$responses, self$covariates, self$offsets, self$weights)
+      #' @param config_post a list for controlling the post-treatment.
+      postTreatment = function(config_post, config_optim) {
+        #nullModel <- nullModelPoisson(self$responses, self$covariates, self$offsets, self$weights)
         for (model in self$models)
           model$postTreatment(
             self$responses,
             self$covariates,
             self$offsets,
             self$weights,
-            config,
-            nullModel = nullModel
+            config_post=config_post,
+            config_optim=config_optim,
+            nullModel = NULL
         )
       },
 

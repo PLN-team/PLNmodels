@@ -85,9 +85,9 @@ PLNLDAfit <- R6Class(
     ## Post treatment --------------------
     #' @description  Update R2, fisher and std_err fields and visualization
     #' @param config list controlling the post-treatment
-    postTreatment = function(grouping, responses, covariates, offsets, config) {
+    postTreatment = function(grouping, responses, covariates, offsets, config_post, config_optim) {
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
-      super$postTreatment(responses, covariates, offsets, config = config)
+      super$postTreatment(responses, covariates, offsets, config_post = config_post, config_optim = config_optim)
       rownames(private$C) <- colnames(private$C) <- colnames(responses)
       colnames(private$S) <- 1:self$q
       if (config$trace > 1) cat("\n\tCompute LD scores for visualization...")

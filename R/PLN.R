@@ -45,7 +45,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 
   ## post-treatment
   if (control$trace > 0) cat("\n Post-treatments...")
-  myPLN$postTreatment(args$Y, args$X, args$O, args$w, control$config_post)
+  myPLN$postTreatment(args$Y, args$X, args$O, args$w, control$config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN

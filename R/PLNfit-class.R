@@ -168,7 +168,7 @@ PLNfit <- R6Class(
     ## PRIVATE METHODS FOR VARIANCE OF THE ESTIMATORS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    variance_variational = function(X) {
+    variance_variational = function(X, config = config_default_nlopt) {
     ## Variance of B for n data points
       fisher <- Matrix::bdiag(lapply(1:self$p, function(j) {
         crossprod(X, private$A[, j] * X) # t(X) %*% diag(A[, i]) %*% X
@@ -375,7 +375,7 @@ PLNfit <- R6Class(
     #' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
     #' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
     #' * trace integer for verbosity. should be > 1 to see output in post-treatments
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config, nullModel = NULL) {
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config_post, config_optim, nullModel = NULL) {
       ## PARAMATERS DIMNAMES
       ## Set names according to those of the data matrices. If missing, use sensible defaults
       if (is.null(colnames(responses)))
@@ -392,24 +392,27 @@ PLNfit <- R6Class(
 
       ## OPTIONAL POST-TREATMENT (potentially costly)
       ## 1. compute and store approximated R2 with Poisson-based deviance
-      if (config$rsquared) {
-        if(config$trace > 1) cat("\n\tComputing bootstrap estimator of the variance...")
+      if (config_post$rsquared) {
+        if(config_post$trace > 1) cat("\n\tComputing approximate R^2...")
         private$approx_r2(responses, covariates, offsets, weights, nullModel)
       }
       ## 2. compute and store matrix of standard variances for B and Omega with rough variational approximation
-      if (config$variational_var) {
-        if(config$trace > 1) cat("\n\tComputing variational estimator of the variance...")
-        private$variance_variational(covariates)
+      if (config_post$variational_var) {
+        if(config_post$trace > 1) cat("\n\tComputing variational estimator of the variance...")
+        private$variance_variational(covariates, config = config_optim)
       }
       ## 3. Jackknife estimation of bias and variance
-      if (config$jackknife) {
-        if(config$trace > 1) cat("\n\tComputing jackknife estimator of the variance...")
-        private$variance_jackknife(responses, covariates, offsets, weights)
+      if (config_post$jackknife) {
+        if(config_post$trace > 1) cat("\n\tComputing jackknife estimator of the variance...")
+        private$variance_jackknife(responses, covariates, offsets, weights, config = config_optim)
       }
       ## 4. Bootstrap estimation of variance
-      if (config$bootstrap > 0) {
-        if(config$trace > 1) cat("\n\tComputing bootstrap estimator of the variance...")
-        private$variance_bootstrap(responses, covariates, offsets, weights, config$bootstrap)
+      if (config_post$bootstrap > 0) {
+        if(config_post$trace > 1) {
+          cat("\n\tComputing bootstrap estimator of the variance...")
+          print (str(config_optim))
+        }
+        private$variance_bootstrap(responses, covariates, offsets, weights, n_resamples=config_post$bootstrap, config = config_optim)
       }
     },
 
@@ -804,11 +807,11 @@ PLNfit_fixedcov <- R6Class(
     #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
     #' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
     #' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config, nullModel = NULL) {
-      super$postTreatment(responses, covariates, offsets, weights, config, nullModel)
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config_post, config_optim, nullModel = NULL) {
+      super$postTreatment(responses, covariates, offsets, weights, config_post, config_optim, nullModel)
       ## 6. compute and store matrix of standard variances for B with sandwich correction approximation
-      if (config$sandwich_var) {
-        if(config$trace > 1) cat("\n\tComputing sandwich estimator of the variance...")
+      if (config_post$sandwich_var) {
+        if(config_post$trace > 1) cat("\n\tComputing sandwich estimator of the variance...")
         private$vcov_sandwich_B(responses, covariates)
       }
     }
