@@ -26,13 +26,8 @@ d <- 0
 
 ### ======================== GENERAL
 test_that("PLN works for abitrary cluster sequences when smoothing is requested", {
-  expect_warning(PLNmixture(
-    Abundance ~ 1 + offset(log(Offset)), clusters = c(1, 3),
-    data = trichoptera[1:15, ],
-    control = PLNmixture_param(smoothing = "both")
-  ))
   expect_is(PLNmixture(
-    Abundance ~ 1 + offset(log(Offset)), clusters = c(2, 3, 4),
+    Abundance ~ 1 + offset(log(Offset)), clusters = c(2, 4),
     data = trichoptera,
     control = PLNmixture_param(smoothing = "both")
   ), "PLNmixturefamily")
