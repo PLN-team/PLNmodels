@@ -60,6 +60,8 @@ PLNfit <- R6Class(
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
+      #print (index)
+      #print (params$S)
       S2 <- torch_square(params$S[index])
       Z  <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$B)
       res <- .5 * sum(data$w[index]) * torch_logdet(private$torch_Sigma(data, params, index)) +
@@ -140,11 +142,12 @@ PLNfit <- R6Class(
         objective[iterate + 1] <- loss$item()
         B_new <- optimizer$param_groups[[1]]$params$B
         delta_f   <- abs(objective[iterate] - objective[iterate + 1]) / abs(objective[iterate + 1])
+        #delta_x = 0
         delta_x   <- torch::torch_sum(torch::torch_abs(B_old - B_new))/torch::torch_sum(torch::torch_abs(B_new))
+        delta_x = delta_x$cpu()
 
         #print (delta_f)
         #print (delta_x)
-        delta_x = delta_x$cpu()
         #print (delta_x)
         delta_x = as.matrix(delta_x)
         #print (delta_x)
@@ -156,7 +159,7 @@ PLNfit <- R6Class(
 
         ## Check for convergence
         if (delta_f < config$ftol_rel) status <- 3
-        if (delta_x < config$xtol_rel) status <- 4
+        #if (delta_x < config$xtol_rel) status <- 4
         if (status %in% c(3,4)) {
           objective <- objective[1:iterate + 1]
           break
@@ -217,6 +220,54 @@ PLNfit <- R6Class(
       invisible(list(var_B = var_B, var_Omega = var_Omega))
     },
 
+    compute_vcov_from_resamples = function(resamples){
+      # compute the covariance of the parameters
+      get_cov_mat = function(data, cell_group) {
+
+        cov_matrix = cov(data)
+        rownames(cov_matrix) = paste0(cell_group, "_", rownames(cov_matrix))
+        colnames(cov_matrix) = paste0(cell_group, "_", colnames(cov_matrix))
+        return(cov_matrix)
+      }
+
+
+      B_list = resamples %>% map("B")
+      #print (B_list)
+      vcov_B = lapply(seq(1, ncol(private$B)), function(B_col){
+        param_ests_for_col = B_list %>% map(~.x[, B_col])
+        param_ests_for_col = do.call(rbind, param_ests_for_col)
+        print (param_ests_for_col)
+        row_vcov = cov(param_ests_for_col)
+      })
+      #print ("vcov blocks")
+      #print (vcov_B)
+
+      #B_vcov <- resamples %>% map("B") %>% map(~( . )) %>% reduce(cov)
+
+      #var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%
+      #  `dimnames<-`(dimnames(private$B))
+      #B_hat  <- private$B[,] ## strips attributes while preserving names
+
+      vcov_B = Matrix::bdiag(vcov_B) %>% as.matrix()
+
+      rownames(vcov_B) <- colnames(vcov_B) <-
+        expand.grid(covariates = rownames(private$B),
+                    responses  = colnames(private$B)) %>% rev() %>%
+        ## Hack to make sure that species is first and varies slowest
+        apply(1, paste0, collapse = "_")
+
+      #print (pheatmap::pheatmap(vcov_B, cluster_rows=FALSE, cluster_cols=FALSE))
+
+
+      #names = lapply(bootstrapped_df$cov_mat, function(m){ colnames(m)}) %>% unlist()
+      #rownames(bootstrapped_vhat) = names
+      #colnames(bootstrapped_vhat) = names
+
+      vcov_B = methods::as(vcov_B, "dgCMatrix")
+
+      return(vcov_B)
+    },
+
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
       jacks <- lapply(seq_len(self$n), function(i) {
         data <- list(Y = Y[-i, , drop = FALSE],
@@ -236,6 +287,9 @@ PLNfit <- R6Class(
       B_hat  <- private$B[,] ## strips attributes while preserving names
       attr(private$B, "bias") <- (self$n - 1) * (B_jack - B_hat)
       attr(private$B, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+
+      vcov_boots = private$compute_vcov_from_resamples(boots)
+      attr(private$B, "vcov_jackknife") <- vcov_boots
 
       Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`) %>%
@@ -274,6 +328,9 @@ PLNfit <- R6Class(
       attr(private$B, "variance_bootstrap") <-
         boots %>% map("B") %>% map(~( (. - B_boots)^2)) %>% reduce(`+`)  %>%
           `dimnames<-`(dimnames(private$B)) / n_resamples
+
+      vcov_boots = private$compute_vcov_from_resamples(boots)
+      attr(private$B, "vcov_bootstrap") <- vcov_boots
 
       Omega_boots <- boots %>% map("Omega") %>% reduce(`+`) / n_resamples
       attr(private$Omega, "variance_bootstrap") <-
