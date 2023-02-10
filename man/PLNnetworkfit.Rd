@@ -43,8 +43,7 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 
 \item{\code{density}}{proportion of non-null edges in the network}
 
-\item{\code{criteria}}{a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges,
-and graph density}
+\item{\code{criteria}}{a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges and graph density}
 }
 \if{html}{\out{</div>}}
 }
