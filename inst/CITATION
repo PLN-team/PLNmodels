@@ -1,6 +1,7 @@
 citHeader("To cite PLNmodels (either PLNPCA or PLNnetwork) in publications, please use:")
 
-citEntry(entry = "article",
+bibentry(
+  bibtype = "article",
   key = "PLNmodels",
   author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
   title = "The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances",
@@ -11,7 +12,8 @@ citEntry(entry = "article",
   textVersion = "J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, Frontiers in Ecology and Evolution, 2021."
 )
 
-citEntry(entry = "inproceedings",
+bibentry(
+  bibtype = "inproceedings",
   key = "PLNnetwork",
   author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
   title = "Variational inference for sparse network reconstruction from count data",
@@ -23,7 +25,8 @@ citEntry(entry = "inproceedings",
   textVersion = "J. Chiquet, M. Mariadassou and S. Robin:  Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019."
 )
 
-citEntry(entry = "article",
+bibentry(
+  bibtype = "article",
   key = "PLNPCA",
   author = c("Julien Chiquet", "Mahendra Mariadassou", "Stéphane Robin"),
   title = "Variational inference for probabilistic Poisson PCA",
