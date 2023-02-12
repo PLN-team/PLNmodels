@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0-9030</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
 Poisson log-normal model</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2023-02-11</h4>
+            <h4 data-toc-skip class="date">2023-02-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLN.Rmd" class="external-link"><code>vignettes/PLN.Rmd</code></a></small>
       <div class="hidden name"><code>PLN.Rmd</code></div>
@@ -271,7 +271,7 @@ when printing/showing such an object in the <code>R</code> console:</p>
 <pre><code><span><span class="co">## A multivariate Poisson Lognormal fit with full covariance model.</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">##  nb_param    loglik       BIC       ICL</span></span>
-<span><span class="co">##       170 -1129.636 -1460.441 -2308.168</span></span>
+<span><span class="co">##       170 -1129.652 -1460.457 -2306.873</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -288,11 +288,11 @@ when printing/showing such an object in the <code>R</code> console:</p>
 just like with a traditional list, <em>e.g.</em>,</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">$</span><span class="va">loglik</span>, <span class="va">myPLN</span><span class="op">$</span><span class="va">BIC</span>, <span class="va">myPLN</span><span class="op">$</span><span class="va">ICL</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] -1129.636 -1460.441 -2308.168</span></span></code></pre>
+<pre><code><span><span class="co">## [1] -1129.652 -1460.457 -2306.873</span></span></code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN</span><span class="op">$</span><span class="va">criteria</span></span></code></pre></div>
 <pre><code><span><span class="co">##   nb_param    loglik       BIC       ICL</span></span>
-<span><span class="co">## 1      170 -1129.636 -1460.441 -2308.168</span></span></code></pre>
+<span><span class="co">## 1      170 -1129.652 -1460.457 -2306.873</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="glm-like-interface">GLM-like interface<a class="anchor" aria-label="anchor" href="#glm-like-interface"></a>
@@ -399,15 +399,15 @@ log-likelihood is higher with the same number of parameters<a href="#fn2" class=
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1129.636</td>
-<td align="right">-1460.441</td>
-<td align="right">-2308.168</td>
+<td align="right">-1129.652</td>
+<td align="right">-1460.457</td>
+<td align="right">-2306.873</td>
 </tr>
 <tr class="even">
 <td align="right">170</td>
-<td align="right">-1051.766</td>
-<td align="right">-1382.570</td>
-<td align="right">-2203.751</td>
+<td align="right">-1051.825</td>
+<td align="right">-1382.630</td>
+<td align="right">-2211.163</td>
 </tr>
 </tbody>
 </table>
@@ -437,15 +437,15 @@ variable:</p>
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1051.766</td>
-<td align="right">-1382.57</td>
-<td align="right">-2203.751</td>
+<td align="right">-1051.825</td>
+<td align="right">-1382.630</td>
+<td align="right">-2211.163</td>
 </tr>
 <tr class="even">
 <td align="right">187</td>
-<td align="right">-1028.015</td>
-<td align="right">-1391.90</td>
-<td align="right">-2080.201</td>
+<td align="right">-1028.062</td>
+<td align="right">-1391.947</td>
+<td align="right">-2082.081</td>
 </tr>
 </tbody>
 </table>
@@ -521,23 +521,23 @@ additional parameters:</p>
 <tr class="odd">
 <td align="left">full</td>
 <td align="right">170</td>
-<td align="right">-1051.766</td>
-<td align="right">-1382.570</td>
-<td align="right">-2203.751</td>
+<td align="right">-1051.825</td>
+<td align="right">-1382.630</td>
+<td align="right">-2211.163</td>
 </tr>
 <tr class="even">
 <td align="left">diagonal</td>
 <td align="right">34</td>
-<td align="right">-1109.647</td>
-<td align="right">-1175.808</td>
-<td align="right">-2059.938</td>
+<td align="right">-1109.671</td>
+<td align="right">-1175.832</td>
+<td align="right">-2072.274</td>
 </tr>
 <tr class="odd">
 <td align="left">spherical</td>
 <td align="right">18</td>
-<td align="right">-1158.479</td>
-<td align="right">-1193.505</td>
-<td align="right">-2152.719</td>
+<td align="right">-1158.504</td>
+<td align="right">-1193.530</td>
+<td align="right">-2151.531</td>
 </tr>
 </tbody>
 </table>
@@ -564,21 +564,21 @@ covariate, which gives a slight improvement.</p>
 <tbody>
 <tr class="odd">
 <td align="right">187</td>
-<td align="right">-1028.015</td>
-<td align="right">-1391.900</td>
-<td align="right">-2080.201</td>
+<td align="right">-1028.062</td>
+<td align="right">-1391.947</td>
+<td align="right">-2082.081</td>
 </tr>
 <tr class="even">
 <td align="right">34</td>
-<td align="right">-1109.647</td>
-<td align="right">-1175.808</td>
-<td align="right">-2059.938</td>
+<td align="right">-1109.671</td>
+<td align="right">-1175.832</td>
+<td align="right">-2072.274</td>
 </tr>
 <tr class="odd">
 <td align="right">51</td>
-<td align="right">-1073.085</td>
-<td align="right">-1172.326</td>
-<td align="right">-1761.925</td>
+<td align="right">-1073.266</td>
+<td align="right">-1172.507</td>
+<td align="right">-1802.281</td>
 </tr>
 </tbody>
 </table>
