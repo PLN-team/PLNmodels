@@ -1,6 +1,6 @@
 # PLNmodels 1.0.1 (2023-02-12)
 
-* fix in the use of future_lapply which used to make postTreatment in PLNPCA last for ever with multicore in v1.0.0...
+* fix in the use of future_lapply which used to make post-Treatments in PLNPCA last for ever with multicore in v1.0.0...
 * prevent use of bootstrap/jackknife when not appropriate
 * fix bug in PLNmixture() when the sequence of cluster numbers (`clusters`) is not of the form `1:K_max`
 
