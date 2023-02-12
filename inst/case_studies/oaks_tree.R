@@ -72,8 +72,8 @@ factoextra::fviz_pca_biplot(
 ## Network inference with sparce covariance estimation
 system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks))
 plot(myPLNnets)
-# stability_selection(myPLNnets)
-# plot(getBestModel(myPLNnets, "StARS", stability = .975))
+stability_selection(myPLNnets)
+plot(getBestModel(myPLNnets, "StARS", stability = .975))
 
 ## Mixture model to recover tree structure
 system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5))
