@@ -288,8 +288,8 @@ PLNfit <- R6Class(
       attr(private$B, "bias") <- (self$n - 1) * (B_jack - B_hat)
       attr(private$B, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
 
-      vcov_boots = private$compute_vcov_from_resamples(boots)
-      attr(private$B, "vcov_jackknife") <- vcov_boots
+      vcov_jacks = private$compute_vcov_from_resamples(jacks)
+      attr(private$B, "vcov_jackknife") <- vcov_jacks
 
       Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`) %>%
