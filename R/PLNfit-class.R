@@ -236,7 +236,7 @@ PLNfit <- R6Class(
       vcov_B = lapply(seq(1, ncol(private$B)), function(B_col){
         param_ests_for_col = B_list %>% map(~.x[, B_col])
         param_ests_for_col = do.call(rbind, param_ests_for_col)
-        print (param_ests_for_col)
+        #print (param_ests_for_col)
         row_vcov = cov(param_ests_for_col)
       })
       #print ("vcov blocks")
@@ -497,7 +497,7 @@ PLNfit <- R6Class(
       if (config_post$bootstrap > 0) {
         if(config_post$trace > 1) {
           cat("\n\tComputing bootstrap estimator of the variance...")
-          print (str(config_optim))
+          #print (str(config_optim))
         }
         private$variance_bootstrap(responses, covariates, offsets, weights, n_resamples=config_post$bootstrap, config = config_optim)
       }
