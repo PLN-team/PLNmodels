@@ -87,6 +87,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @export
 PLNnetwork_param <- function(
     backend           = c("nlopt", "torch"),
+    covariance        = c("fixed", "spherical", "diagonal"),
     trace             = 1      ,
     n_penalties       = 30     ,
     min_ratio         = 0.1    ,
@@ -115,6 +116,7 @@ PLNnetwork_param <- function(
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_opt <- config_default_torch
   }
+  covariance <- match.arg(covariance)
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-5
   config_opt$maxit_out <- 20
@@ -123,6 +125,7 @@ PLNnetwork_param <- function(
   structure(list(
     backend           = backend          ,
     trace             = trace            ,
+    covariance        = covariance       ,
     n_penalties       = n_penalties      ,
     min_ratio         = min_ratio        ,
     penalize_diagonal = penalize_diagonal,

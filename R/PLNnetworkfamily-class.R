@@ -45,7 +45,12 @@ PLNnetworkfamily <- R6Class(
       ## A basic model for inception, useless one is defined by the user
 ### TODO check if it is useful
       if (is.null(control$inception)) {
-        myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, control)
+
+        myPLN <- switch(control$covariance,
+                       "spherical" = PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control), 
+                       "diagonal" = PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control),
+                       PLNfit$new(responses, covariates, offsets, weights, formula, control)) # defaults to fixed
+        # myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, control)
         myPLN$optimize(responses, covariates, offsets, weights, control$config_optim)
         control$inception <- myPLN
       }

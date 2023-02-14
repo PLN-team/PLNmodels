@@ -33,7 +33,7 @@
 #' @seealso The function [PLNnetwork()], the class [`PLNnetworkfamily`]
 PLNnetworkfit <- R6Class(
   classname = "PLNnetworkfit",
-  inherit = PLNfit_fixedcov,
+  inherit = PLNfit_spherical, #_fixedcov,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
