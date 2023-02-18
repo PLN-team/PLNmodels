@@ -47,7 +47,7 @@ PLNnetworkfamily <- R6Class(
       if (is.null(control$inception)) {
 
         myPLN <- switch(control$covariance,
-                       "spherical" = PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control), 
+                       "spherical" = PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control),
                        "diagonal" = PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control),
                        PLNfit$new(responses, covariates, offsets, weights, formula, control)) # defaults to fixed
         # myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, control)
@@ -74,7 +74,7 @@ PLNnetworkfamily <- R6Class(
       if (is.null(penalties)) {
         if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
         max_pen <- list_penalty_weights %>%
-          map(~ myPLN$model_par$Sigma / .x) %>%
+          map(~ as.matrix(myPLN$model_par$Sigma) / .x) %>%
           map_dbl(~ max(abs(.x[upper.tri(.x, diag = control$penalize_diagonal)]))) %>%
           max()
         penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min_ratio), len = control$n_penalties)
