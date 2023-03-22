@@ -141,7 +141,7 @@ extract_model <- function(call, envir) {
 
   ## extract relevant arguments from the high level call for the model frame
   call_args <- call[match(c("formula", "data", "subset", "weights"), names(call), 0L)]
-  call_args <- c(as.list(call_args), list(xlev = attr(call$formula, "xlevels")))
+  call_args <- c(as.list(call_args), list(xlev = attr(call$formula, "xlevels"), na.action = NULL))
 
   ## eval the call in the parent environment
   frame <- do.call(stats::model.frame, call_args, envir = envir)
@@ -160,7 +160,7 @@ extract_model <- function(call, envir) {
   }
   ## Save encountered levels for predict methods as attribute of the formula
   attr(call$formula, "xlevels") <- .getXlevels(terms(frame), frame)
-  list(Y = Y, X = X, O = O, w = w, formula = call$formula)
+  list(Y = Y, X = X, O = O, miss = is.na(Y), w = w, formula = call$formula)
 }
 
 edge_to_node <- function(x, n = max(x)) {
