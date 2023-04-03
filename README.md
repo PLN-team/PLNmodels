@@ -18,7 +18,7 @@ stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecyc
 > and network inference for count data). This package implements
 > efficient algorithms to fit such models accompanied with a set of
 > functions for visualization and diagnostic. See [this deck of
-> slides](https://pln-team.github.io/slideshow/slides) for a
+> slides](https://pln-team.github.io/slideshow/) for a
 > comprehensive introduction.
 
 ## Installation
