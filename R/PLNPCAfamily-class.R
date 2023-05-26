@@ -42,12 +42,9 @@ PLNPCAfamily <- R6Class(
       ## initialize the required fields
       super$initialize(responses, covariates, offsets, weights, control)
       private$params <- ranks
-
       ## save some time by using a common SVD to define the inceptive models
-      M <- do.call(cbind, lapply(1:ncol(responses), function(j)
-        residuals(lm.wfit(covariates, log(1 + responses[,j]), w = weights, offset = offsets[, j]))))
-      control$svdM <- svd(M, nu = max(ranks), nv = ncol(responses))
-
+      control$inception <- PLNfit$new(responses, covariates, offsets, weights, formula, control)
+      control$svdM <- svd(control$inception$var_par$M, nu = max(ranks), nv = ncol(responses))
       ## instantiate as many models as ranks
       self$models <- lapply(ranks, function(rank){
         model <- PLNPCAfit$new(rank, responses, covariates, offsets, weights, formula, control)

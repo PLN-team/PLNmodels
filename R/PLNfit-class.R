@@ -289,17 +289,16 @@ PLNfit <- R6Class(
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
         stopifnot(isTRUE(all.equal(dim(control$inception$model_par$B), c(d,p))))
-        stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)  , c(n,p))))
         private$Sigma <- control$inception$model_par$Sigma
         private$B     <- control$inception$model_par$B
         private$M     <- control$inception$var_par$M
         private$S     <- control$inception$var_par$S
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-        fits <- lm.fit(weights * covariates, weights * log((1 + responses)/(1 + exp(offsets))))
+        fits <- lm.fit(weights * covariates, weights * log((1 + responses)/exp(offsets)))
         private$B <- matrix(fits$coefficients, d, p)
         private$M <- matrix(fits$residuals, n, p)
-        private$S <- matrix(1, n, p)
+        private$S <- matrix(.1, n, p)
       }
       private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
       private$optimizer$vestep <- nlopt_optimize_vestep
