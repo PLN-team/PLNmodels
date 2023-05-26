@@ -1,3 +1,9 @@
+# PLNmodels development version
+
+* Fix bug when using inception in PLNnetwork( 
+* starting handling of missing data
+* slightly faster (factorized) initialization for PCA
+
 # PLNmodels 1.0.1 (2023-02-12)
 
 * fix in the use of future_lapply which used to make post-Treatments in PLNPCA last for ever with multicore in v1.0.0...
