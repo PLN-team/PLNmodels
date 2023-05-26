@@ -100,26 +100,26 @@ test_that("plot_LDA works for 4 or more axes:", {
   expect_true(inherits(model$plot_LDA(nb_axes = 4, plot = FALSE), "grob"))
 })
 
-# test_that("PLNLDA fit: Check number of parameters",  {
-#
-#   p <- ncol(trichoptera$Abundance)
-#
-#   mdl <- PLN(Abundance ~ 1, data = trichoptera)
-#   expect_equal(mdl$nb_param, p*(p+1)/2 + p * 1)
-#
-#   mdl <- PLN(Abundance ~ 1 + Wind, data = trichoptera)
-#   expect_equal(mdl$nb_param, p*(p+1)/2 + p * 2)
-#
-#   mdl <- PLN(Abundance ~ Group + 0 , data = trichoptera)
-#   expect_equal(mdl$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
-#
-#   mdl <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "diagonal"))
-#   expect_equal(mdl$nb_param, p + p * 1)
-#
-#   mdl <- PLN(Abundance ~ 1, data = trichoptera, control = list(covariance = "spherical"))
-#   expect_equal(mdl$nb_param, 1 + p * 1)
-#
-# })
+test_that("PLNLDA fit: Check number of parameters",  {
+
+  p <- ncol(trichoptera$Abundance)
+
+  mdl <- PLN(Abundance ~ 1, data = trichoptera)
+  expect_equal(mdl$nb_param, p*(p+1)/2 + p * 1)
+
+  mdl <- PLN(Abundance ~ 1 + Wind, data = trichoptera)
+  expect_equal(mdl$nb_param, p*(p+1)/2 + p * 2)
+
+  mdl <- PLN(Abundance ~ Group + 0 , data = trichoptera)
+  expect_equal(mdl$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
+
+  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = PLNLDA_param(covariance = "diagonal"))
+  expect_equal(mdl$nb_param, p + p * 1)
+
+  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = PLNLDA_param(covariance = "spherical"))
+  expect_equal(mdl$nb_param, 1 + p * 1)
+
+})
 
 ## add tests for predictions, tests for fit --------------------------------------------
 test_that("Predictions have the right dimensions.", {
@@ -135,7 +135,7 @@ test_that("Predictions have the right dimensions.", {
   expect_equal(dim(predictions_score),
                c(nrow(trichoptera), length(levels(trichoptera$Group))))
   ## log-posterior probabilities are nonpositive
-##  expect_lt(max(predictions_post), 0)
+  expect_lt(max(predictions_post), 0)
   ## Posterior probabilities are between 0 and 1
   expect_lte(max(predictions_prob), 1)
   expect_gte(min(predictions_prob), 0)

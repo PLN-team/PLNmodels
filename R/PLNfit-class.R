@@ -298,7 +298,7 @@ PLNfit <- R6Class(
         fits <- lm.fit(weights * covariates, weights * log((1 + responses)/exp(offsets)))
         private$B <- matrix(fits$coefficients, d, p)
         private$M <- matrix(fits$residuals, n, p)
-        private$S <- matrix(1, n, p)
+        private$S <- matrix(.1, n, p)
       }
       private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
       private$optimizer$vestep <- nlopt_optimize_vestep
