@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1-9010</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
 PLN-mixture</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2023-04-03</h4>
+            <h4 data-toc-skip class="date">2023-05-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNmixture.Rmd" class="external-link"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
@@ -330,30 +330,30 @@ the collection</p>
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">18</td>
-<td align="right">-1158.465</td>
-<td align="right">-1193.491</td>
-<td align="right">-2153.094</td>
+<td align="right">-1158.503</td>
+<td align="right">-1193.529</td>
+<td align="right">-2152.660</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">37</td>
-<td align="right">-1104.147</td>
-<td align="right">-1176.145</td>
-<td align="right">-1982.991</td>
+<td align="right">-1104.237</td>
+<td align="right">-1176.236</td>
+<td align="right">-1982.233</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">56</td>
-<td align="right">-1070.268</td>
-<td align="right">-1179.239</td>
-<td align="right">-1888.311</td>
+<td align="right">-1070.278</td>
+<td align="right">-1179.249</td>
+<td align="right">-1887.761</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-1041.142</td>
-<td align="right">-1187.085</td>
-<td align="right">-1791.386</td>
+<td align="right">-1041.141</td>
+<td align="right">-1187.084</td>
+<td align="right">-1790.660</td>
 </tr>
 </tbody>
 </table>
@@ -375,7 +375,7 @@ the collection</p>
 <td align="left">out</td>
 <td align="right">1</td>
 <td align="left">18</td>
-<td align="left">1158.464633</td>
+<td align="left">1158.503076</td>
 <td align="left">0.000000</td>
 <td align="left">2.000000</td>
 </tr>
@@ -383,23 +383,23 @@ the collection</p>
 <td align="left">elt</td>
 <td align="right">2</td>
 <td align="left">37</td>
-<td align="left">1104.146777</td>
-<td align="left">0.000000</td>
+<td align="left">1104.237030</td>
+<td align="left">0.000001</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
 <td align="right">3</td>
 <td align="left">56</td>
-<td align="left">1070.268286</td>
-<td align="left">0.000000</td>
+<td align="left">1070.277622</td>
+<td align="left">0.000001</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">1041.142049</td>
+<td align="left">1041.140992</td>
 <td align="left">0.000000</td>
 <td align="left">2.000000</td>
 </tr>
@@ -475,7 +475,7 @@ A good place to start is the <code>show/print</code> method:</p>
 </ul>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">mixtureParam</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.8153826 0.1846174</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.8163265 0.1836735</span></span></code></pre>
 <ul>
 <li>the posterior probabilities (often close to the boundaries <span class="math inline">\(\{0,1\}\)</span>):</li>
 </ul>
@@ -515,19 +515,19 @@ variances):</li>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myMix_BIC</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">as.matrix</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [[1]]</span></span>
 <span><span class="co">##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath </span></span>
-<span><span class="co">## 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 </span></span>
+<span><span class="co">## 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 </span></span>
 <span><span class="co">##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve </span></span>
-<span><span class="co">## 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 0.7203891 </span></span>
+<span><span class="co">## 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 </span></span>
 <span><span class="co">##       Sta </span></span>
-<span><span class="co">## 0.7203891 </span></span>
+<span><span class="co">## 0.7188196 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## [[2]]</span></span>
 <span><span class="co">##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath </span></span>
-<span><span class="co">## 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 </span></span>
+<span><span class="co">## 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 </span></span>
 <span><span class="co">##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve </span></span>
-<span><span class="co">## 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 0.9606478 </span></span>
+<span><span class="co">## 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 </span></span>
 <span><span class="co">##       Sta </span></span>
-<span><span class="co">## 0.9606478</span></span></code></pre>
+<span><span class="co">## 0.9623077</span></span></code></pre>
 <ul>
 <li>the regression coefficient matrix and other model of parameters
 (results not shown here, redundant with other fields)</li>
@@ -554,7 +554,7 @@ means <span class="math inline">\(\mathbf{M}\)</span>
 <tr class="odd">
 <td align="left">Che</td>
 <td align="right">-7.16</td>
-<td align="right">-23.70</td>
+<td align="right">-26.20</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
@@ -573,8 +573,8 @@ means <span class="math inline">\(\mathbf{M}\)</span>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">-0.50</td>
-<td align="right">-0.88</td>
+<td align="right">-0.53</td>
+<td align="right">-0.82</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
@@ -589,8 +589,8 @@ means <span class="math inline">\(\mathbf{M}\)</span>
 <code class="sourceCode R"><span><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">components</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## A multivariate Poisson Lognormal fit with spherical covariance model.</span></span>
 <span><span class="co">## ==================================================================</span></span>
-<span><span class="co">##  nb_param   loglik      BIC       ICL</span></span>
-<span><span class="co">##        18 -828.043 -863.069 -1741.035</span></span>
+<span><span class="co">##  nb_param   loglik      BIC      ICL</span></span>
+<span><span class="co">##        18 -828.209 -863.235 -1388.35</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>

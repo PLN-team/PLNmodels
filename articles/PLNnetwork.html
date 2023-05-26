@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1-9010</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
 count data with PLN-network</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2023-04-03</h4>
+            <h4 data-toc-skip class="date">2023-05-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNnetwork.Rmd" class="external-link"><code>vignettes/PLNnetwork.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -246,36 +246,36 @@ of models is fitted as follows:</p>
 ##  Initialization...
 ##  Adjusting 30 PLN with sparse inverse covariance estimation
 ##  Joint optimization alternating gradient descent and graphical-lasso
-##  sparsifying penalty = 3.65921 
-    sparsifying penalty = 3.379906 
-    sparsifying penalty = 3.121921 
-    sparsifying penalty = 2.883627 
-    sparsifying penalty = 2.663522 
-    sparsifying penalty = 2.460218 
-    sparsifying penalty = 2.272432 
-    sparsifying penalty = 2.098979 
-    sparsifying penalty = 1.938766 
-    sparsifying penalty = 1.790781 
-    sparsifying penalty = 1.654092 
-    sparsifying penalty = 1.527837 
-    sparsifying penalty = 1.411218 
-    sparsifying penalty = 1.303501 
-    sparsifying penalty = 1.204006 
-    sparsifying penalty = 1.112105 
-    sparsifying penalty = 1.027219 
-    sparsifying penalty = 0.9488126 
-    sparsifying penalty = 0.8763906 
-    sparsifying penalty = 0.8094964 
-    sparsifying penalty = 0.7477083 
-    sparsifying penalty = 0.6906363 
-    sparsifying penalty = 0.6379207 
-    sparsifying penalty = 0.5892287 
-    sparsifying penalty = 0.5442534 
-    sparsifying penalty = 0.502711 
-    sparsifying penalty = 0.4643395 
-    sparsifying penalty = 0.4288969 
-    sparsifying penalty = 0.3961595 
-    sparsifying penalty = 0.365921 
+##  sparsifying penalty = 3.638537 
+    sparsifying penalty = 3.360811 
+    sparsifying penalty = 3.104283 
+    sparsifying penalty = 2.867336 
+    sparsifying penalty = 2.648475 
+    sparsifying penalty = 2.446319 
+    sparsifying penalty = 2.259593 
+    sparsifying penalty = 2.087121 
+    sparsifying penalty = 1.927812 
+    sparsifying penalty = 1.780664 
+    sparsifying penalty = 1.644748 
+    sparsifying penalty = 1.519205 
+    sparsifying penalty = 1.403246 
+    sparsifying penalty = 1.296137 
+    sparsifying penalty = 1.197204 
+    sparsifying penalty = 1.105823 
+    sparsifying penalty = 1.021416 
+    sparsifying penalty = 0.9434523 
+    sparsifying penalty = 0.8714394 
+    sparsifying penalty = 0.8049232 
+    sparsifying penalty = 0.7434841 
+    sparsifying penalty = 0.6867346 
+    sparsifying penalty = 0.6343167 
+    sparsifying penalty = 0.5858998 
+    sparsifying penalty = 0.5411786 
+    sparsifying penalty = 0.4998709 
+    sparsifying penalty = 0.4617162 
+    sparsifying penalty = 0.4264738 
+    sparsifying penalty = 0.3939214 
+    sparsifying penalty = 0.3638537 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model,
@@ -295,9 +295,9 @@ sends a very basic summary of the estimation process:</p>
 <span><span class="co">## --------------------------------------------------------</span></span>
 <span><span class="co">##  Task: Network Inference </span></span>
 <span><span class="co">## ========================================================</span></span>
-<span><span class="co">##  - 30 penalties considered: from 0.365921 to 3.65921 </span></span>
-<span><span class="co">##  - Best model (greater BIC): lambda = 1.41 </span></span>
-<span><span class="co">##  - Best model (greater EBIC): lambda = 1.41</span></span></code></pre>
+<span><span class="co">##  - 30 penalties considered: from 0.3638537 to 3.638537 </span></span>
+<span><span class="co">##  - Best model (greater BIC): lambda = 1.4 </span></span>
+<span><span class="co">##  - Best model (greater EBIC): lambda = 1.4</span></span></code></pre>
 <p>One can also easily access the successive values of the criteria in
 the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -329,74 +329,74 @@ the collection</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">3.659210</td>
+<td align="right">3.638537</td>
 <td align="right">34</td>
-<td align="right">-1293.805</td>
-<td align="right">-1359.966</td>
-<td align="right">-2832.293</td>
+<td align="right">-1293.029</td>
+<td align="right">-1359.190</td>
+<td align="right">-2829.568</td>
 <td align="right">0</td>
-<td align="right">-1359.966</td>
-<td align="right">-1300.059</td>
+<td align="right">-1359.190</td>
+<td align="right">-1299.285</td>
 <td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">3.379906</td>
+<td align="right">3.360811</td>
 <td align="right">34</td>
-<td align="right">-1288.407</td>
-<td align="right">-1354.568</td>
-<td align="right">-2826.895</td>
+<td align="right">-1287.509</td>
+<td align="right">-1353.670</td>
+<td align="right">-2824.046</td>
 <td align="right">0</td>
-<td align="right">-1354.568</td>
-<td align="right">-1294.395</td>
+<td align="right">-1353.670</td>
+<td align="right">-1293.503</td>
 <td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="right">3.121920</td>
+<td align="right">3.104283</td>
 <td align="right">34</td>
-<td align="right">-1283.242</td>
-<td align="right">-1349.403</td>
-<td align="right">-2821.730</td>
+<td align="right">-1282.342</td>
+<td align="right">-1348.503</td>
+<td align="right">-2818.879</td>
 <td align="right">0</td>
-<td align="right">-1349.403</td>
-<td align="right">-1288.976</td>
+<td align="right">-1348.503</td>
+<td align="right">-1288.081</td>
 <td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">2.883627</td>
+<td align="right">2.867336</td>
 <td align="right">35</td>
-<td align="right">-1278.273</td>
-<td align="right">-1346.380</td>
-<td align="right">-2818.707</td>
+<td align="right">-1277.397</td>
+<td align="right">-1345.504</td>
+<td align="right">-2815.880</td>
 <td align="right">1</td>
-<td align="right">-1348.836</td>
-<td align="right">-1283.764</td>
+<td align="right">-1347.960</td>
+<td align="right">-1282.893</td>
 <td align="right">0.0069204</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="right">2.663522</td>
+<td align="right">2.648474</td>
 <td align="right">35</td>
-<td align="right">-1273.506</td>
-<td align="right">-1341.613</td>
-<td align="right">-2813.940</td>
+<td align="right">-1272.628</td>
+<td align="right">-1340.734</td>
+<td align="right">-2811.111</td>
 <td align="right">1</td>
-<td align="right">-1344.069</td>
-<td align="right">-1278.765</td>
+<td align="right">-1343.191</td>
+<td align="right">-1277.891</td>
 <td align="right">0.0069204</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">2.460218</td>
+<td align="right">2.446319</td>
 <td align="right">35</td>
-<td align="right">-1269.042</td>
-<td align="right">-1337.149</td>
-<td align="right">-2809.476</td>
+<td align="right">-1268.162</td>
+<td align="right">-1336.269</td>
+<td align="right">-2806.646</td>
 <td align="right">1</td>
-<td align="right">-1339.605</td>
-<td align="right">-1274.075</td>
+<td align="right">-1338.726</td>
+<td align="right">-1273.199</td>
 <td align="right">0.0069204</td>
 <td align="left">NA</td>
 </tr>
@@ -432,67 +432,67 @@ the collection</p>
 <tbody>
 <tr class="odd">
 <td align="left">out</td>
-<td align="right">3.659210</td>
+<td align="right">3.638537</td>
 <td align="left">34</td>
 <td align="left">4</td>
 <td align="left">nlopt</td>
-<td align="left">60</td>
-<td align="left">1300.059110</td>
-<td align="left">0.000105</td>
-<td align="left">20.000000</td>
+<td align="left">8</td>
+<td align="left">1299.284999</td>
+<td align="left">0.000001</td>
+<td align="left">16.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
-<td align="right">3.379906</td>
+<td align="right">3.360811</td>
 <td align="left">34</td>
 <td align="left">4</td>
 <td align="left">nlopt</td>
-<td align="left">17</td>
-<td align="left">1294.395142</td>
+<td align="left">27</td>
+<td align="left">1293.503320</td>
 <td align="left">0.000000</td>
 <td align="left">3.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
-<td align="right">3.121920</td>
+<td align="right">3.104283</td>
 <td align="left">34</td>
 <td align="left">4</td>
 <td align="left">nlopt</td>
-<td align="left">15</td>
-<td align="left">1288.976123</td>
+<td align="left">18</td>
+<td align="left">1288.081299</td>
 <td align="left">0.000000</td>
 <td align="left">3.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
-<td align="right">2.883627</td>
+<td align="right">2.867336</td>
 <td align="left">35</td>
 <td align="left">4</td>
 <td align="left">nlopt</td>
 <td align="left">16</td>
-<td align="left">1283.764488</td>
+<td align="left">1282.892509</td>
 <td align="left">0.000000</td>
 <td align="left">3.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.3</td>
-<td align="right">2.663522</td>
+<td align="right">2.648474</td>
 <td align="left">35</td>
 <td align="left">4</td>
 <td align="left">nlopt</td>
 <td align="left">15</td>
-<td align="left">1278.764810</td>
+<td align="left">1277.890786</td>
 <td align="left">0.000000</td>
 <td align="left">3.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.4</td>
-<td align="right">2.460218</td>
+<td align="right">2.446319</td>
 <td align="left">35</td>
 <td align="left">4</td>
 <td align="left">nlopt</td>
 <td align="left">15</td>
-<td align="left">1274.074574</td>
+<td align="left">1273.199018</td>
 <td align="left">0.000000</td>
 <td align="left">3.000000</td>
 </tr>
@@ -609,10 +609,10 @@ specific one, mostly for network visualization purposes. Most fields and
 methods are recalled when such an object is printed:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_StARS</span></span></code></pre></div>
-<pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 2.27)</span></span>
+<pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 2.26)</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">##  nb_param    loglik       BIC       ICL n_edges      EBIC pen_loglik density</span></span>
-<span><span class="co">##        35 -1264.864 -1332.971 -2805.298       1 -1335.427  -1269.676   0.007</span></span>
+<span><span class="co">##        35 -1263.984 -1332.091 -2802.467       1 -1334.547    -1268.8   0.007</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -631,11 +631,11 @@ additional analyses).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">my_graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH ace7d3b UNW- 17 1 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH a155679 UNW- 17 1 -- </span></span>
 <span><span class="co">## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),</span></span>
 <span><span class="co">## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),</span></span>
 <span><span class="co">## | width (e/n)</span></span>
-<span><span class="co">## + edge from ace7d3b (vertex names):</span></span>
+<span><span class="co">## + edge from a155679 (vertex names):</span></span>
 <span><span class="co">## [1] Hfo--Hsp</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></span></code></pre></div>
