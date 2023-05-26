@@ -26,6 +26,7 @@
 ^inst/torch_for_r$
 ^inst/case_studies$
 ^inst/test/
+^inst/missing_data$
 ^\.github$
 ^data-raw$
 ^CRAN-SUBMISSION$
