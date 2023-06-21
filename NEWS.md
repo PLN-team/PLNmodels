@@ -1,5 +1,5 @@
 
-# PLNmodels 1.0.2 (2023-06-20)
+# PLNmodels 1.0.2 (2023-06-21)
 
 * changed initial value in optim for variational variance (1 -> 0.1),
     which caused failure in some cases

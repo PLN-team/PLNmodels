@@ -1,10 +1,11 @@
 
-Submitting PLNmodels version 1.0.1 to CRAN
+Submitting PLNmodels version 1.0.2 to CRAN
 
-* fix in the use of future_lapply which used to make postTreatment in PLNPCA last for ever with multicore in v1.0.0...
-* prevent use of bootstrap/jackknife when not appropriate
-* fix bug in PLNmixture() when the sequence of cluster numbers (`clusters`) is not of the form `1:K_max`
-* use bibentry to replace citEntry in CITATION
+* changed initial value in optim for variational variance (1 -> 0.1),
+    which caused failure in some cases
+* fix bug when using inception in PLNnetwork()
+* starting handling of missing data
+* slightly faster (factorized) initialization for PCA
 
 ## Tested environments
 
@@ -14,10 +15,6 @@ Submitting PLNmodels version 1.0.1 to CRAN
   - Windows Server 2022, R-devel, 64 bit
   - Windows Server 2022, R-release, 64 bit
   - Windows Server 2022, R-old, 64 bit
-
-* tested remotely with R-hub 
-  - Windows Server 2022, R-devel, 64 bit
-	- Ubuntu Linux 22.04 LTS, R-release, GCC
 
 * tested remotely with github-action
   - Linux Ubuntu 22.04, R-release
