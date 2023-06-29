@@ -1,4 +1,9 @@
 
+# PLNmodels 1.0.3 
+
+* higher tolerance on a single test (among 700) that fails on the 'noLD' 
+  additional architecture on CRAN (tests without long double)
+
 # PLNmodels 1.0.2 (2023-06-21)
 
 * changed initial value in optim for variational variance (1 -> 0.1),
