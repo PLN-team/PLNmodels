@@ -262,10 +262,10 @@ as follows:</p>
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 2 
+##   Rank approximation = 4 
      Rank approximation = 3 
+     Rank approximation = 2 
      Rank approximation = 1 
-     Rank approximation = 4 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model,
@@ -304,30 +304,30 @@ the collection</p>
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">34</td>
-<td align="right">-1042.0745</td>
-<td align="right">-1108.2355</td>
-<td align="right">-1120.0924</td>
+<td align="right">-1042.0498</td>
+<td align="right">-1108.2107</td>
+<td align="right">-1120.3598</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">50</td>
-<td align="right">-730.5558</td>
-<td align="right">-827.8513</td>
-<td align="right">-860.3039</td>
+<td align="right">-730.8873</td>
+<td align="right">-828.1828</td>
+<td align="right">-860.4342</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">65</td>
-<td align="right">-641.3825</td>
-<td align="right">-767.8667</td>
-<td align="right">-824.3415</td>
+<td align="right">-641.6382</td>
+<td align="right">-768.1224</td>
+<td align="right">-824.4667</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">79</td>
-<td align="right">-596.9058</td>
-<td align="right">-750.6327</td>
-<td align="right">-838.8095</td>
+<td align="right">-596.9179</td>
+<td align="right">-750.6449</td>
+<td align="right">-838.1019</td>
 </tr>
 </tbody>
 </table>
@@ -351,7 +351,7 @@ the collection</p>
 <td align="left">34</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">589</td>
+<td align="left">624</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
@@ -359,7 +359,7 @@ the collection</p>
 <td align="left">50</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1523</td>
+<td align="left">1290</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
@@ -367,7 +367,7 @@ the collection</p>
 <td align="left">65</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1756</td>
+<td align="left">1470</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
@@ -375,7 +375,7 @@ the collection</p>
 <td align="left">79</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">3994</td>
+<td align="left">3601</td>
 </tr>
 </tbody>
 </table>
@@ -438,7 +438,7 @@ context of PCA are</p>
 </ul>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
+<table class="table">
 <colgroup>
 <col width="6%">
 <col width="5%">
@@ -456,7 +456,7 @@ context of PCA are</p>
 <col width="5%">
 <col width="5%">
 <col width="5%">
-<col width="5%">
+<col width="4%">
 <col width="5%">
 </colgroup>
 <thead><tr class="header">
@@ -481,23 +481,23 @@ context of PCA are</p>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-7.502918</td>
-<td align="right">-8.095747</td>
-<td align="right">-3.023816</td>
-<td align="right">-6.862104</td>
-<td align="right">-0.5339895</td>
-<td align="right">-3.820183</td>
-<td align="right">-6.420115</td>
-<td align="right">-5.826587</td>
-<td align="right">-7.333493</td>
-<td align="right">-3.520042</td>
-<td align="right">-4.115511</td>
-<td align="right">-5.048393</td>
-<td align="right">-4.313785</td>
-<td align="right">-5.937578</td>
-<td align="right">-3.971213</td>
-<td align="right">-7.423077</td>
-<td align="right">-2.582003</td>
+<td align="right">-7.526638</td>
+<td align="right">-8.092334</td>
+<td align="right">-3.022203</td>
+<td align="right">-6.859169</td>
+<td align="right">-0.5337661</td>
+<td align="right">-3.819185</td>
+<td align="right">-6.425681</td>
+<td align="right">-5.835904</td>
+<td align="right">-7.338011</td>
+<td align="right">-3.520943</td>
+<td align="right">-4.112206</td>
+<td align="right">-5.044647</td>
+<td align="right">-4.301884</td>
+<td align="right">-5.936765</td>
+<td align="right">-3.969752</td>
+<td align="right">-7.48973</td>
+<td align="right">-2.581151</td>
 </tr></tbody>
 </table>
 <ul>
@@ -521,39 +521,39 @@ context of PCA are</p>
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-0.2044582</td>
-<td align="right">0.3293331</td>
-<td align="right">0.0555773</td>
+<td align="right">-0.2129137</td>
+<td align="right">0.3222291</td>
+<td align="right">0.0807904</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-0.4335069</td>
-<td align="right">-0.2689133</td>
-<td align="right">0.1455259</td>
+<td align="right">-0.4276132</td>
+<td align="right">-0.2888048</td>
+<td align="right">0.1236294</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-0.1219451</td>
-<td align="right">0.0850126</td>
-<td align="right">0.3327006</td>
+<td align="right">-0.1216441</td>
+<td align="right">0.0536348</td>
+<td align="right">0.3394911</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-0.4125562</td>
-<td align="right">0.2713408</td>
-<td align="right">0.3861607</td>
+<td align="right">-0.4139177</td>
+<td align="right">0.2281237</td>
+<td align="right">0.4110469</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">0.0502550</td>
-<td align="right">0.0344179</td>
-<td align="right">-0.0631976</td>
+<td align="right">0.0491037</td>
+<td align="right">0.0401536</td>
+<td align="right">-0.0597043</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">0.0742223</td>
-<td align="right">0.2190798</td>
-<td align="right">0.2731309</td>
+<td align="right">0.0717720</td>
+<td align="right">0.1942298</td>
+<td align="right">0.2919988</td>
 </tr>
 </tbody>
 </table>
@@ -570,34 +570,34 @@ context of PCA are</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-1.679062</td>
-<td align="right">-0.6613174</td>
-<td align="right">0.6491076</td>
+<td align="right">-1.642772</td>
+<td align="right">-0.7754081</td>
+<td align="right">0.6094163</td>
 </tr>
 <tr class="even">
-<td align="right">3.706858</td>
-<td align="right">0.2595393</td>
-<td align="right">2.2288367</td>
+<td align="right">3.714348</td>
+<td align="right">0.0702490</td>
+<td align="right">2.2358384</td>
 </tr>
 <tr class="odd">
-<td align="right">7.376533</td>
-<td align="right">-1.2673287</td>
-<td align="right">0.0801102</td>
+<td align="right">7.418730</td>
+<td align="right">-1.1891703</td>
+<td align="right">-0.0456368</td>
 </tr>
 <tr class="even">
-<td align="right">6.220114</td>
-<td align="right">-0.8605575</td>
-<td align="right">-2.1642434</td>
+<td align="right">6.238708</td>
+<td align="right">-0.5621851</td>
+<td align="right">-2.2510867</td>
 </tr>
 <tr class="odd">
-<td align="right">4.590906</td>
-<td align="right">0.2680092</td>
-<td align="right">-1.1274612</td>
+<td align="right">4.582156</td>
+<td align="right">0.4422044</td>
+<td align="right">-1.1173710</td>
 </tr>
 <tr class="even">
-<td align="right">4.084722</td>
-<td align="right">0.6253345</td>
-<td align="right">0.5626871</td>
+<td align="right">4.072033</td>
+<td align="right">0.6172200</td>
+<td align="right">0.5987338</td>
 </tr>
 </tbody>
 </table>
@@ -609,7 +609,7 @@ vignette</a>). Most are recalled via the show method:</p>
 <pre><code><span><span class="co">## Poisson Lognormal with rank constrained for PCA (rank = 3)</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">##  nb_param   loglik      BIC      ICL</span></span>
-<span><span class="co">##        65 -641.383 -767.867 -824.341</span></span>
+<span><span class="co">##        65 -641.638 -768.122 -824.467</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -634,39 +634,39 @@ bindings allow you to use widely popular tools to make your own plots:
 <code class="sourceCode R"><span><span class="co">## All summaries associated to the individuals</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">ind</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## List of 4</span></span>
-<span><span class="co">##  $ coord  : num [1:49, 1:3] -1.68 3.71 7.38 6.22 4.59 ...</span></span>
+<span><span class="co">##  $ coord  : num [1:49, 1:3] -1.64 3.71 7.42 6.24 4.58 ...</span></span>
 <span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
 <span><span class="co">##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...</span></span>
 <span><span class="co">##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"</span></span>
-<span><span class="co">##  $ cos2   : num [1:49, 1:3] 0.767 0.732 0.971 0.877 0.94 ...</span></span>
+<span><span class="co">##  $ cos2   : num [1:49, 1:3] 0.735 0.734 0.975 0.878 0.936 ...</span></span>
 <span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
 <span><span class="co">##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...</span></span>
 <span><span class="co">##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"</span></span>
-<span><span class="co">##  $ contrib: num [1:49, 1:3] 0.564 2.75 10.891 7.744 4.218 ...</span></span>
+<span><span class="co">##  $ contrib: num [1:49, 1:3] 0.54 2.76 11 7.78 4.2 ...</span></span>
 <span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
 <span><span class="co">##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...</span></span>
 <span><span class="co">##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"</span></span>
-<span><span class="co">##  $ dist   : Named num [1:49] 1.92 4.33 7.49 6.64 4.73 ...</span></span>
+<span><span class="co">##  $ dist   : Named num [1:49] 1.92 4.34 7.51 6.66 4.74 ...</span></span>
 <span><span class="co">##   ..- attr(*, "names")= chr [1:49] "1" "2" "3" "4" ...</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Coordinates of the individuals in the principal plane</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">ind</span><span class="op">$</span><span class="va">coord</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##       Dim.1      Dim.2       Dim.3</span></span>
-<span><span class="co">## 1 -1.679062 -0.6613174  0.64910757</span></span>
-<span><span class="co">## 2  3.706858  0.2595393  2.22883672</span></span>
-<span><span class="co">## 3  7.376533 -1.2673287  0.08011023</span></span>
-<span><span class="co">## 4  6.220114 -0.8605575 -2.16424343</span></span>
-<span><span class="co">## 5  4.590906  0.2680092 -1.12746117</span></span>
-<span><span class="co">## 6  4.084722  0.6253345  0.56268706</span></span></code></pre>
+<pre><code><span><span class="co">##       Dim.1       Dim.2       Dim.3</span></span>
+<span><span class="co">## 1 -1.642772 -0.77540814  0.60941630</span></span>
+<span><span class="co">## 2  3.714348  0.07024898  2.23583837</span></span>
+<span><span class="co">## 3  7.418731 -1.18917026 -0.04563682</span></span>
+<span><span class="co">## 4  6.238708 -0.56218508 -2.25108668</span></span>
+<span><span class="co">## 5  4.582156  0.44220441 -1.11737103</span></span>
+<span><span class="co">## 6  4.072033  0.61721996  0.59873375</span></span></code></pre>
 <p>You can also use high level functions from the <a href="https://cran.r-project.org/package=factoextra" class="external-link">factoextra</a>
 package to extract relevant informations</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Eigenvalues</span></span>
 <span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/eigenvalue.html" class="external-link">get_eig</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##       eigenvalue variance.percent cumulative.variance.percent</span></span>
-<span><span class="co">## Dim.1   499.6388         39.08384                    39.08384</span></span>
-<span><span class="co">## Dim.2   293.1372         22.93042                    62.01426</span></span>
-<span><span class="co">## Dim.3   234.5906         18.35066                    80.36492</span></span></code></pre>
+<span><span class="co">## Dim.1   500.1456         38.77240                    38.77240</span></span>
+<span><span class="co">## Dim.2   300.2624         23.27701                    62.04942</span></span>
+<span><span class="co">## Dim.3   236.2813         18.31706                    80.36647</span></span></code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Variables</span></span>
 <span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html" class="external-link">get_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
@@ -739,10 +739,10 @@ thanks to the model formula:</p>
 ##  Initialization...
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
-##   Rank approximation = 3 
-     Rank approximation = 2 
-     Rank approximation = 4 
+##   Rank approximation = 2 
+     Rank approximation = 3 
      Rank approximation = 1 
+     Rank approximation = 4 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>

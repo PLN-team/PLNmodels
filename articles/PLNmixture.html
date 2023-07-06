@@ -330,30 +330,30 @@ the collection</p>
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">18</td>
-<td align="right">-1158.510</td>
-<td align="right">-1193.536</td>
-<td align="right">-2152.473</td>
+<td align="right">-1158.503</td>
+<td align="right">-1193.529</td>
+<td align="right">-2152.660</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">37</td>
-<td align="right">-1104.275</td>
-<td align="right">-1176.274</td>
-<td align="right">-1982.181</td>
+<td align="right">-1104.237</td>
+<td align="right">-1176.236</td>
+<td align="right">-1982.233</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">56</td>
-<td align="right">-1070.275</td>
-<td align="right">-1179.246</td>
-<td align="right">-1887.746</td>
+<td align="right">-1070.278</td>
+<td align="right">-1179.249</td>
+<td align="right">-1887.761</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-1041.142</td>
-<td align="right">-1187.085</td>
-<td align="right">-1790.797</td>
+<td align="right">-1038.384</td>
+<td align="right">-1184.327</td>
+<td align="right">-1746.207</td>
 </tr>
 </tbody>
 </table>
@@ -375,23 +375,23 @@ the collection</p>
 <td align="left">out</td>
 <td align="right">1</td>
 <td align="left">18</td>
-<td align="left">1158.509929</td>
-<td align="left">0.000001</td>
+<td align="left">1158.503076</td>
+<td align="left">0.000000</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
 <td align="right">2</td>
 <td align="left">37</td>
-<td align="left">1104.275161</td>
-<td align="left">0.000002</td>
+<td align="left">1104.237030</td>
+<td align="left">0.000001</td>
 <td align="left">2.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
 <td align="right">3</td>
 <td align="left">56</td>
-<td align="left">1070.275351</td>
+<td align="left">1070.277622</td>
 <td align="left">0.000001</td>
 <td align="left">2.000000</td>
 </tr>
@@ -399,8 +399,8 @@ the collection</p>
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">1041.142068</td>
-<td align="left">0.000000</td>
+<td align="left">1038.383888</td>
+<td align="left">0.000002</td>
 <td align="left">2.000000</td>
 </tr>
 </tbody>
@@ -515,19 +515,19 @@ variances):</li>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myMix_BIC</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">as.matrix</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [[1]]</span></span>
 <span><span class="co">##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath </span></span>
-<span><span class="co">## 0.7187567 0.7187567 0.7187567 0.7187567 0.7187567 0.7187567 0.7187567 0.7187567 </span></span>
+<span><span class="co">## 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 </span></span>
 <span><span class="co">##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve </span></span>
-<span><span class="co">## 0.7187567 0.7187567 0.7187567 0.7187567 0.7187567 0.7187567 0.7187567 0.7187567 </span></span>
+<span><span class="co">## 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 </span></span>
 <span><span class="co">##       Sta </span></span>
-<span><span class="co">## 0.7187567 </span></span>
+<span><span class="co">## 0.7188196 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## [[2]]</span></span>
-<span><span class="co">##      Che      Hyc      Hym      Hys      Psy      Aga      Glo      Ath </span></span>
-<span><span class="co">## 0.962438 0.962438 0.962438 0.962438 0.962438 0.962438 0.962438 0.962438 </span></span>
-<span><span class="co">##      Cea      Ced      Set      All      Han      Hfo      Hsp      Hve </span></span>
-<span><span class="co">## 0.962438 0.962438 0.962438 0.962438 0.962438 0.962438 0.962438 0.962438 </span></span>
-<span><span class="co">##      Sta </span></span>
-<span><span class="co">## 0.962438</span></span></code></pre>
+<span><span class="co">##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath </span></span>
+<span><span class="co">## 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 </span></span>
+<span><span class="co">##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve </span></span>
+<span><span class="co">## 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 </span></span>
+<span><span class="co">##       Sta </span></span>
+<span><span class="co">## 0.9623077</span></span></code></pre>
 <ul>
 <li>the regression coefficient matrix and other model of parameters
 (results not shown here, redundant with other fields)</li>
@@ -554,7 +554,7 @@ means <span class="math inline">\(\mathbf{M}\)</span>
 <tr class="odd">
 <td align="left">Che</td>
 <td align="right">-7.16</td>
-<td align="right">-22.14</td>
+<td align="right">-26.20</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
@@ -574,7 +574,7 @@ means <span class="math inline">\(\mathbf{M}\)</span>
 <tr class="odd">
 <td align="left">Psy</td>
 <td align="right">-0.53</td>
-<td align="right">-0.81</td>
+<td align="right">-0.82</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
@@ -589,8 +589,8 @@ means <span class="math inline">\(\mathbf{M}\)</span>
 <code class="sourceCode R"><span><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">components</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## A multivariate Poisson Lognormal fit with spherical covariance model.</span></span>
 <span><span class="co">## ==================================================================</span></span>
-<span><span class="co">##  nb_param   loglik      BIC       ICL</span></span>
-<span><span class="co">##        18 -828.206 -863.233 -1388.325</span></span>
+<span><span class="co">##  nb_param   loglik      BIC      ICL</span></span>
+<span><span class="co">##        18 -828.209 -863.235 -1388.35</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
