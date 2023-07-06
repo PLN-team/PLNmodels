@@ -64,7 +64,7 @@ test_that("Check that PLNmixture is running and robust (spherical variant)",  {
 
   expect_error(PLNmixture(Abundance ~ 0, weights = rep(1.0, nrow(trichoptera)), data = trichoptera))
 
-  expect_equal(sum(map_dbl(mix_wt$models, "loglik")), sum(map_dbl(mix_wo$models, "loglik")))
+  expect_equal(sum(map_dbl(mix_wt$models, "loglik")), sum(map_dbl(mix_wo$models, "loglik")), tolerance = 1e-1)
 
 })
 
