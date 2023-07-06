@@ -358,7 +358,7 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses)
       args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
                    ## Initialize the variational parameters with the new dimension of the data
-                   params = list(M = matrix(0, n, p), S = matrix(1, n, p)),
+                   params = list(M = matrix(0, n, p), S = matrix(.1, n, p)),
                    B = as.matrix(B),
                    Omega = as.matrix(Omega),
                    config = control$config_optim)

@@ -121,7 +121,7 @@ PLNPCAfit <- R6Class(
         ## Initialize the variational parameters with the appropriate new dimension of the data
         args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
                      ## Initialize the variational parameters with the new dimension of the data
-                     params = list(M = M_init, S = matrix(1, n, q)),
+                     params = list(M = M_init, S = matrix(.1, n, q)),
                      B = private$B,
                      C = private$C,
                      config = control$config_optim)
