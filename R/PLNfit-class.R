@@ -356,9 +356,15 @@ PLNfit <- R6Class(
                       Omega = self$model_par$Omega,
                       control = PLN_param(backend = "nlopt")) {
       n <- nrow(responses); p <- ncol(responses)
-      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
+      ## initialize variational parameters with current value if dimension is the same
+      if ((p != self$p) || (n != self$n)) {
+        params0 <- list(M = matrix(0, n, p), S = matrix(.1, n, p))
+      } else {
+        params0 <- list(M = self$var_par$M, S = self$var_par$S)
+      }
+      args <- list(data = list(Y = responses, X = covariates, O = offsets, w = weights),
                    ## Initialize the variational parameters with the new dimension of the data
-                   params = list(M = matrix(0, n, p), S = matrix(.1, n, p)),
+                   params = params0,
                    B = as.matrix(B),
                    Omega = as.matrix(Omega),
                    config = control$config_optim)
