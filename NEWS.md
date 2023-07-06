@@ -1,3 +1,6 @@
+# PLNmodels dev version 
+
+* changed initial value in optim for variational variance (1 -> 0.1) in VE-step of PLN and PLNPCA
 
 # PLNmodels 1.0.3 
 
