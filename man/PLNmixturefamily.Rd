@@ -48,6 +48,9 @@ The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefit]{PLN
 \if{html}{\out{<a id="method-PLNmixturefamily-new"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefamily-new}{}}}
 \subsection{Method \code{new()}}{
+helper function for forward smoothing: split a group
+
+
 Initialize all models in the collection.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$new(

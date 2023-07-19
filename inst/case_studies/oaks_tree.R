@@ -43,7 +43,7 @@ myLDA_tree_spherical <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = t
 plot(myLDA_tree_spherical)
 
 ## One dimensional check of plot
-myLDA_orientation <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = orientation, data = oaks, control = PLN_param(backend = "torch"))
+myLDA_orientation <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = orientation, data = oaks)
 plot(myLDA_orientation)
 
 ## Dimension reduction with PCA
@@ -70,10 +70,11 @@ factoextra::fviz_pca_biplot(
   labs(col = "distance (cm)") + scale_color_viridis_c()
 
 ## Network inference with sparce covariance estimation
-system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks))
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.1, penalize_diagonal = FALSE)))
 plot(myPLNnets)
-# stability_selection(myPLNnets)
-# plot(getBestModel(myPLNnets, "StARS", stability = .975))
+plot(getBestModel(myPLNnets, "EBIC"))
+stability_selection(myPLNnets)
+plot(getBestModel(myPLNnets, "StARS", stability = .975))
 
 ## Mixture model to recover tree structure
 system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5))

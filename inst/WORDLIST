@@ -93,6 +93,7 @@ amplicon
 arg
 barebone
 benthos
+bibentry
 bigg
 bioconductor
 biom
@@ -100,6 +101,7 @@ biomformat
 boldsymbol
 caddisflies
 caughts
+citEntry
 cloneable
 coercible
 compositional
@@ -134,7 +136,6 @@ gj
 grey
 gtable
 http
-https
 i'j
 ie
 igraph
@@ -143,7 +144,6 @@ ik
 indep
 instable
 intercal
-io
 ixed
 kmeans
 knitr
@@ -175,6 +175,7 @@ nlopt
 nloptr
 normalisation
 ofposterior
+optim
 optimizers
 ot
 overset

@@ -376,17 +376,16 @@ PLNfit <- R6Class(
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
         stopifnot(isTRUE(all.equal(dim(control$inception$model_par$B), c(d,p))))
-        stopifnot(isTRUE(all.equal(dim(control$inception$var_par$M)  , c(n,p))))
         private$Sigma <- control$inception$model_par$Sigma
         private$B     <- control$inception$model_par$B
         private$M     <- control$inception$var_par$M
         private$S     <- control$inception$var_par$S
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-        fits <- lm.fit(weights * covariates, weights * log((1 + responses)/(1 + exp(offsets))))
+        fits <- lm.fit(weights * covariates, weights * log((1 + responses)/exp(offsets)))
         private$B <- matrix(fits$coefficients, d, p)
         private$M <- matrix(fits$residuals, n, p)
-        private$S <- matrix(1, n, p)
+        private$S <- matrix(.1, n, p)
       }
       private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
       private$optimizer$vestep <- nlopt_optimize_vestep
@@ -444,9 +443,15 @@ PLNfit <- R6Class(
                       Omega = self$model_par$Omega,
                       control = PLN_param(backend = "nlopt")) {
       n <- nrow(responses); p <- ncol(responses)
-      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
+      ## initialize variational parameters with current value if dimension is the same
+      if ((p != self$p) || (n != self$n)) {
+        params0 <- list(M = matrix(0, n, p), S = matrix(.1, n, p))
+      } else {
+        params0 <- list(M = self$var_par$M, S = self$var_par$S)
+      }
+      args <- list(data = list(Y = responses, X = covariates, O = offsets, w = weights),
                    ## Initialize the variational parameters with the new dimension of the data
-                   params = list(M = matrix(0, n, p), S = matrix(1, n, p)),
+                   params = params0,
                    B = as.matrix(B),
                    Omega = as.matrix(Omega),
                    config = control$config_optim)

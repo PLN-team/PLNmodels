@@ -1,7 +1,27 @@
-# PLNmodels dev
+# PLNmodels dev version 
 
-* fix in the use of future_lapply which used to make postTreatment in PLNPCA last for ever with multicore in v1.0.0...
+* changed initial value in optim for variational variance (1 -> 0.1) in VE-step of PLN and PLNPCA
+* fix sign in objective of VE_step for PLN with full covariance Issue #100
+
+# PLNmodels 1.0.3 
+
+* higher tolerance on a single test (among 700) that fails on the 'noLD' 
+  additional architecture on CRAN (tests without long double)
+
+# PLNmodels 1.0.2 (2023-06-21)
+
+* changed initial value in optim for variational variance (1 -> 0.1),
+    which caused failure in some cases
+* fix bug when using inception in PLNnetwork()
+* starting handling of missing data
+* slightly faster (factorized) initialization for PCA
+
+# PLNmodels 1.0.1 (2023-02-12)
+
+* fix in the use of future_lapply which used to make post-Treatments in PLNPCA last for ever with multicore in v1.0.0...
 * prevent use of bootstrap/jackknife when not appropriate
+* fix bug in PLNmixture() when the sequence of cluster numbers (`clusters`) is not of the form `1:K_max`
+* use bibentry to replace citEntry in CITATION
 
 # PLNmodels 1.0.0
 

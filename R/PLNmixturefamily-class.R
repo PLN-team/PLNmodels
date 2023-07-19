@@ -26,81 +26,125 @@ PLNmixturefamily <-
     ),
     private = list(
       formula = NULL,
-
-      smooth_forward = function(control) {
-
-        trace <- control$trace > 0; control$trace <- FALSE
+      #' @description helper function for forward smoothing: split a group
+      add_one_cluster = function(model, k = NULL, control) {
+        ## Control options
+        control$trace <- FALSE
         config_fast <- control$config_optim
         config_fast$maxit_out <- 2
 
+        ## Effective number of clusters (remove empty classes) and current clustering with clusters numbered in 1:k (with no gaps)
+        cl  <- model$memberships
+        k <- length(unique(cl))
+        cl <- factor(cl) %>% as.integer() ## hacky way of getting memberships in 1:k
+        ## all best split according to kmeans
+        data_split <- model$latent_pos %>% as.data.frame() %>% split(cl)
+        cl_splitable <- (1:k)[tabulate(cl) >= 3]
+        cl_split <- vector("list", k)
+        cl_split[cl_splitable] <- data_split[cl_splitable] %>% map(kmeans, 2, nstart = 10) %>% map("cluster")
+
+        ## Reformating into indicator of clusters
+        tau_candidates <- map(cl_splitable, function(k_)  {
+          split <- cl_split[[k_]]
+          split[cl_split[[k_]] == 1] <- k_
+          split[cl_split[[k_]] == 2] <- k + 1
+          candidate <- cl
+          candidate[candidate == k_] <- split
+          candidate
+        }) %>% map(as_indicator)
+
+        loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
+          model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
+          model$optimize(self$responses, self$covariates, self$offsets, config_fast)
+          model$loglik
+        }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
+
+        best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
+        best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
+        best_one
+      },
+      smooth_forward  = function(control) {
+        ## setup and verbosity levels
+        trace <- control$trace > 0
+
         if (trace) cat("   Going forward ")
-        for (k in self$clusters[-length(self$clusters)]) {
+        for (model_index in head(seq_along(self$clusters), -1)) {
           if (trace) cat("+")
-          ## current clustering
-          cl  <- self$models[[k]]$memberships
-          ## all best split according to kmeans
-          data_split <- self$models[[k]]$latent_pos %>% as.data.frame() %>% split(cl)
-          cl_splitable <- (1:k)[tabulate(cl) >= 3]
-          cl_split <- vector("list", k)
-          cl_split[cl_splitable] <- data_split[cl_splitable] %>% map(kmeans, 2, nstart = 10) %>% map("cluster")
+          ## effective and target number of clusters
+          effective_k <- length(unique(self$models[[model_index]]$memberships)) ## instead of self$clusters[model_index] to protect against empty classes
+          target_k <- self$clusters[model_index+1]
+          candidate <- private$add_one_cluster(self$models[[model_index]],
+                                               control = control)
+          candidate_k <- length(unique(candidate$memberships))
 
-          ## Reformating into indicator of clusters
-          tau_candidates <- map(cl_splitable, function(k_)  {
-            split <- cl_split[[k_]]
-            split[cl_split[[k_]] == 1] <- k_
-            split[cl_split[[k_]] == 2] <- k + 1
-            candidate <- cl
-            candidate[candidate == k_] <- split
-            candidate
-          }) %>% map(as_indicator)
+          ## While the target number of clusters has not been reached and the number of clusters increases, keep going
+          while (candidate_k > effective_k && candidate_k < target_k) {
+            effective_k <- candidate_k
+            candidate <- private$add_one_cluster(candidate, control = control)
+            candidate_k <- length(unique(candidate$memberships))
+          }
 
-          loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
-            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
-            model$optimize(self$responses, self$covariates, self$offsets, config_fast)
-            model$loglik
-          }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
-
-          best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
-          best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
-
-          if (best_one$loglik > self$models[[k + 1]]$loglik) {
-            self$models[[k + 1]] <- best_one
+          ## Sanity check: candidate is viable only if it has the correct number of clusters
+          if (candidate_k != target_k) next
+          if (candidate$loglik > self$models[[model_index + 1]]$loglik) {
+            self$models[[model_index + 1]] <- candidate
             # cat("found one")
           }
 
       }
       if (trace) cat("\r                                                                                                    \r")
       },
-      smooth_backward = function(control) {
-        trace <- control$trace > 0; control$trace <- FALSE
+      remove_one_cluster = function(model, k = NULL, control) {
+        ## Control options
+        control$trace <- FALSE
         config_fast <- control$config_optim
         config_fast$maxit_out <- 2
+
+        ## number of clusters
+        if (is.null(k)) k <- length(model$components)
+
+        tau <- model$posteriorProb
+        tau_candidates <- lapply(combn(k, 2, simplify = FALSE), function(couple) {
+          i <- min(couple); j <- max(couple)
+          tau_merged <- tau[, -j, drop = FALSE]
+          tau_merged[, i] <- rowSums(tau[, c(i,j)])
+          tau_merged
+        })
+
+        loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
+          model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
+          model$optimize(self$responses, self$covariates, self$offsets, config_fast)
+          model$loglik
+        }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
+
+        best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
+        best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
+        best_one
+      },
+      smooth_backward = function(control) {
+        trace <- control$trace > 0
         if (trace) cat("   Going backward ")
-        for (k in rev(self$clusters[-1])) {
+        for (model_index in rev(seq_along(self$clusters)[-1])) {
           if (trace) cat('+')
 
-          tau <- self$models[[k]]$posteriorProb
-          tau_candidates <- lapply(combn(k, 2, simplify = FALSE), function(couple) {
-            i <- min(couple); j <- max(couple)
-            tau_merged <- tau[, -j, drop = FALSE]
-            tau_merged[, i] <- rowSums(tau[, c(i,j)])
-            tau_merged
-          })
+          ## current and target number of clusters
+          target_k <- self$clusters[model_index - 1]
+          current_k <- self$clusters[model_index]
+          candidate <- private$remove_one_cluster(self$models[[model_index]], k = current_k, control = control)
+          current_k <- current_k - 1
 
-          loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
-            model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
-            model$optimize(self$responses, self$covariates, self$offsets, config_fast)
-            model$loglik
-          }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
-
-          best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
-          best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
-
-          if (best_one$loglik > self$models[[k - 1]]$loglik) {
-              self$models[[k - 1]] <- best_one
-              # cat("found one")
+          ## The number of clusters always decreases by one after merging (unlike). Keep going until the target number of clusters has been reached
+          while (current_k > target_k) {
+            candidate <- private$remove_one_cluster(candidate, k = current_k, control = control)
+            current_k <- current_k - 1
           }
 
+          ## Sanity check: candidate is viable only if it has the correct number of clusters
+          if (current_k != target_k) next ## should never happen
+          if (candidate$loglik > self$models[[model_index - 1]]$loglik) {
+            self$models[[model_index - 1]] <- candidate
+            # cat("found one")
+          }
         }
         if (trace) cat("\r                                                                                                    \r")
       }
