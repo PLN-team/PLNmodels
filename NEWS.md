@@ -1,6 +1,7 @@
 # PLNmodels dev version 
 
 * changed initial value in optim for variational variance (1 -> 0.1) in VE-step of PLN and PLNPCA
+* fix sign in objective of VE_step for PLN with full covariance Issue #100
 
 # PLNmodels 1.0.3 
 

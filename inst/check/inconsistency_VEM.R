@@ -1,5 +1,4 @@
 library("PLNmodels")
-library(tidyr)
 
 # choose data
 n <- 100
@@ -7,14 +6,9 @@ p <- 2
 counts <- matrix(rpois(n*p, c(5,11)), n, p)
 covariates <- matrix(1, n, 1)
 
-# choose parameters
-control <- PLN_param(backend = "nlopt",
-                     covariance = "full",
-                     config_optim = list(ftol_rel = 1e-10, xtol_rel = 1e-8))
-
 # Fit PLN on data
 data  <- prepare_data(counts, covariates)
-model <- PLN(Abundance ~ 1 + offset(log(Offset)), data = data, control = control)
+model <- PLN(Abundance ~ 1 + offset(log(Offset)), data = data)
 
 # take training data
 # get parameters for the VE-step
@@ -39,10 +33,10 @@ args <- list(data = list(Y = new_responses, X = new_covariates, O = new_offsets,
              params = list(M = M_init, S = S_init),
              B = as.matrix(B),
              Omega = as.matrix(Omega) ,
-             config = control$config_optim)
+             config = PLN_param()$config_optim)
 VE <- do.call(PLNmodels:::nlopt_optimize_vestep, args)
 
 mse <- function(a, b) sum((a-b)^2)
-print(mse(VE$S, S_init))
+print(mse(VE$S**2, S_init**2))
 print(mse(VE$M, M_init))
 print(mse(VE$Ji, model$loglik_vec[ind]))
