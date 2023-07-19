@@ -182,5 +182,11 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     return Rcpp::List::create(
       Rcpp::Named("M") = M,
       Rcpp::Named("S") = S,
-      Rcpp::Named("Ji") = Ji);
+      Rcpp::Named("Ji") = Ji,
+      Rcpp::Named("monitoring", Rcpp::List::create(
+          Rcpp::Named("status", static_cast<int>(result.status)),
+          Rcpp::Named("backend", "nlopt"),
+          Rcpp::Named("iterations", result.nb_iterations)
+      ))
+    );
 }

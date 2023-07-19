@@ -59,7 +59,7 @@ Rcpp::List nlopt_optimize_fixed(
         arma::mat Z = O + X * B + M;
         arma::mat A = exp(Z + 0.5 * S2);
         arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2);
-        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) - 0.5 * trace(Omega * nSigma);
+        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * trace(Omega * nSigma);
 
         metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
         metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);

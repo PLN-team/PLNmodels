@@ -47,6 +47,7 @@ Rcpp::List nlopt_optimize(
             set_per_value_xtol_abs(optimizer.get(), packed);
         }
     }
+
     // if(config.containsElementNamed("x_weights")) {
     //   SEXP value = config["x_weights"];
     //   if(Rcpp::is<double>(value)) {
@@ -68,6 +69,7 @@ Rcpp::List nlopt_optimize(
         const arma::mat B = metadata.map<B_ID>(params);
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
+        const double w_bar = accu(w);
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * B + M;
@@ -161,15 +163,17 @@ Rcpp::List nlopt_optimize_vestep(
     auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &B, &Omega](const double * params, double * grad) -> double {
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
+        const double w_bar = accu(w);
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * B + M;
         arma::mat A = exp(Z + 0.5 * S2);
         arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2) ;
-        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) - 0.5 * trace(Omega * nSigma);
+        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * trace(Omega * nSigma) ;
 
         metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
         metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
+
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -181,13 +185,19 @@ Rcpp::List nlopt_optimize_vestep(
     // Element-wise log-likelihood
     arma::mat Z = O + X * B + M;
     arma::mat A = exp(Z + 0.5 * S2);
-    arma::mat loglik =
-      sum(Y % Z - A + 0.5 * log(S2) - 0.5 * ((M * Omega) % M + S2 * diagmat(Omega)), 1) + 0.5 * real(log_det(Omega)) + ki(Y);
+    arma::vec loglik = sum(Y % Z - A + 0.5 * log(S2) - 0.5 * ((M * Omega) % M + S2 * diagmat(Omega)), 1) +
+      0.5 * real(log_det(Omega)) + ki(Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;
     return Rcpp::List::create(
       Rcpp::Named("M") = M,
       Rcpp::Named("S") = S,
-      Rcpp::Named("Ji") = Ji);
+      Rcpp::Named("Ji") = Ji,
+      Rcpp::Named("monitoring", Rcpp::List::create(
+          Rcpp::Named("status", static_cast<int>(result.status)),
+          Rcpp::Named("backend", "nlopt"),
+          Rcpp::Named("iterations", result.nb_iterations)
+      ))
+    );
 }
