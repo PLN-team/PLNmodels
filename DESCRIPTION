@@ -59,6 +59,9 @@ VignetteBuilder: knitr
 Collate: 
     'PLNfit-class.R'
     'PLN.R'
+    'PLNARfit-class.R'
+    'PLNAR.R'
+    'PLNARfit-S3methods.R'
     'PLNLDA.R'
     'PLNLDAfit-S3methods.R'
     'PLNLDAfit-class.R'
