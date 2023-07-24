@@ -2,6 +2,7 @@
 
 * changed initial value in optim for variational variance (1 -> 0.1) in VE-step of PLN and PLNPCA
 * fix sign in objective of VE_step for PLN with full covariance Issue #100
+* add a `scale` argument compute_offset() to force the offsets (RLE, CSS, GMPR, Wrench) to be on the same scale as the counts, like TSS.
 
 # PLNmodels 1.0.3 
 
