@@ -108,6 +108,13 @@ Finally, we can use wrench to compute the offsets:
 compute_offset(trichoptera$Abundance, "Wrench")
 ```
 
+**Note** TSS is the only methods that produces offset on the same scale as the counts, all others produces offsets that are (hopefully) *proportional* to library sizes but on a different scale. To force the offsets to be on the same scale as the counts for all methods, you can use the option `scale = "count"`.
+
+```{r wrench_counts}
+compute_offset(trichoptera$Abundance, "Wrench", scale = "count")
+```
+
+
 ## Building data frame using `prepare_data`
 
 We'll already learned that `prepare_data` can join counts and covariates into a single data.frame. It can also compute offset through `compute_offset` and does so by default with `offset = "TSS"`, hence the `Offset` column in `trichoptera2`. You can change the offset method and provide additional arguments that will passed on to `compute_offset`. 
@@ -324,8 +331,6 @@ The offsets are then the product of compositional correction factors and depths:
 $$
 O_i = \frac{\hat{\Lambda}_i}{(\prod_{i = 1}^n \hat{\Lambda}_i)^{1/n}} \times \frac{d_i}{(\prod_{i = 1}^n d_i)^{1/n}}
 $$
-
-
 
 [^1]: although a `data.frame` is technically a `list`
 
