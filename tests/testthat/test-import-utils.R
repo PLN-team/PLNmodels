@@ -82,15 +82,33 @@ test_that("compute_offset provides correct answers for proportional samples", {
   median_scale_size <- median(sizes)
   geom_mean_size <- geom_mean(sizes)
   gmpr <- sapply(seq_along(sizes), function(i) { geom_mean(sizes[i]/sizes[-i]) } )
+  expected_tss <- sizes * sum(1:10)
 
-  expect_equal(compute_offset(counts, "TSS"),  sizes * sum(1:10))
+  expect_equal(compute_offset(counts, "TSS"),  expected_tss)
+  expect_equal(compute_offset(counts, "TSS", scale = "count"),  expected_tss)
   expect_equal(compute_offset(counts, "CSS"),  sizes / median_scale_size)
+  expect_equal(compute_offset(counts, "CSS", scale = "count"),  expected_tss)
   expect_equal(compute_offset(counts, "RLE"),  sizes / geom_mean_size)
+  expect_equal(compute_offset(counts, "RLE", scale = "count"),  expected_tss)
   expect_equal(compute_offset(counts, "GMPR"), gmpr)
   expect_equal(compute_offset(counts, "Wrench", type = "simple"), sizes / geom_mean_size)
+  expect_equal(compute_offset(counts, "Wrench", type = "simple", scale = "count"), expected_tss)
   expect_equal(compute_offset(counts, "Wrench", type = "wrench"), sizes / geom_mean_size)
+  expect_equal(compute_offset(counts, "Wrench", type = "wrench", scale = "count"), expected_tss)
   expect_null(compute_offset(counts, "none"))
+  expect_null(compute_offset(counts, "none", scale = "count"))
 })
+
+test_that("compute_offset( , 'GMPR') provides correct answers on the scale count", {
+  sizes <- c(1, 1, 1)
+  counts <- sizes %o% 1:10
+  gmpr <- sapply(seq_along(sizes), function(i) { geom_mean(sizes[i]/sizes[-i]) } )
+  expected_tss <- sizes * sum(1:10)
+
+  expect_equal(compute_offset(counts, "GMPR"), gmpr)
+  expect_equal(compute_offset(counts, "GMPR", scale = "count"), gmpr * expected_tss)
+})
+
 
 test_that("compute_offset provides correct answers for single row matrices", {
   sizes <- c(2)
