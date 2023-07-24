@@ -62,3 +62,9 @@ tests/testthat/Rplots.pdf
 README.html
 
 pkgdown
+
+*.nix
+*.lock
+result*
+.direnv/*
+.envrc
