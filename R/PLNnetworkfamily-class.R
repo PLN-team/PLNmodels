@@ -79,9 +79,10 @@ PLNnetworkfamily <- R6Class(
         # CHECK_ME_TORCH_GPU
         # This appears to be in torch_gpu only. The commented out line below is
         # in both PLNmodels/master and PLNmodels/dev.
+        # changed it to other one
         max_pen <- list_penalty_weights %>%
-          map(~ as.matrix(myPLN$model_par$Sigma) / .x) %>%
-          # map(~ control$inception$model_par$Sigma / .x) %>%
+          # map(~ as.matrix(myPLN$model_par$Sigma) / .x) %>%
+          map(~ control$inception$model_par$Sigma / .x) %>%
           map_dbl(~ max(abs(.x[upper.tri(.x, diag = control$penalize_diagonal)]))) %>%
           max()
         penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min_ratio), len = control$n_penalties)
