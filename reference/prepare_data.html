@@ -18,7 +18,7 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3-9020</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3-9030</span>
       </span>
     </div>
 
@@ -135,7 +135,8 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
 <span class="r-in"><span><span class="va">proper_data</span> <span class="op">&lt;-</span> <span class="fu">prepare_data</span><span class="op">(</span></span></span>
 <span class="r-in"><span> counts     <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>,</span></span>
 <span class="r-in"><span> covariates <span class="op">=</span> <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span>,</span></span>
-<span class="r-in"><span> offset     <span class="op">=</span> <span class="st">"TSS"</span></span></span>
+<span class="r-in"><span> offset     <span class="op">=</span> <span class="st">"GMPR"</span>,</span></span>
+<span class="r-in"><span> scale      <span class="op">=</span> <span class="st">"count"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">proper_data</span><span class="op">$</span><span class="va">Abundance</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Che Hyc Hym Hys  Psy Aga Glo Ath Cea Ced Set All Han Hfo Hsp Hve Sta</span>
@@ -189,10 +190,15 @@ a covariate data frame in the most comprehensive way and (ii) computes offsets f
 <span class="r-out co"><span class="r-pr">#&gt;</span> 48   1   0   0   0   17   0   0   1   1   2   0   0   3   0   0   0   6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 49   0   1   2   0   27   0   0   0   0   1   4   0  36   0  11   0   4</span>
 <span class="r-in"><span><span class="va">proper_data</span><span class="op">$</span><span class="va">Offset</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]   29   13   38  192   79   18    8   34   12    4    4    3   49   33  600</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16]  172   58   51   56  127   35   13   17    3   27   40   44    8    9 1599</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31] 2980   88  135  327   66   90   63   15   14   20   70   53   95   43   62</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [46]  149   16   31   86</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  30.084856  29.463845  37.495950  57.505735  49.888839  29.513765</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7]  19.949548  31.864374  32.075396  12.733865   9.104921   4.550832</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13]  41.915322  36.609494 249.546262 100.457779  46.401773  47.994943</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19]  69.219635 106.791751  48.521274  19.577977  18.898231   7.790568</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25]  23.345452  25.239568  34.703381   9.006205  10.116829 542.364607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] 243.692871  82.500856 108.703715 241.444947  77.274416  95.984236</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37]  62.017749  29.133040  22.133947  25.942671  75.746825  51.798296</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43]  67.640234  52.596146  57.108005  83.702490  22.685087  43.059821</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [49]  41.384158</span>
 </code></pre></div>
     </div>
   </div>
