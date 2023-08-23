@@ -142,11 +142,12 @@ extract_model <- function(call, envir) {
   ## extract relevant arguments from the high level call for the model frame
   call_args <- call[match(c("formula", "data", "subset", "weights"), names(call), 0L)]
   call_args <- c(as.list(call_args), list(xlev = attr(call$formula, "xlevels"), na.action = NULL))
-
   ## eval the call in the parent environment
   frame <- do.call(stats::model.frame, call_args, envir = envir)
   ## create the set of matrices to fit the PLN model
-  Y <- frame[[1L]] ## model.response oversimplifies into a numeric when a single variable is involved
+  Y <- model.response(frame)
+  ## model.response oversimplifies into a numeric when a single variable is involved
+  if (is.null(dim(Y))) Y <- matrix(Y, nrow = length(Y), ncol = 1)
   if (ncol(Y) == 1 & is.null(colnames(Y))) colnames(Y) <- "Y"
   X <- model.matrix(terms(frame), frame)
   O <- model.offset(frame)

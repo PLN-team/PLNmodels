@@ -287,6 +287,13 @@ geom_mean <- function(x, poscounts = TRUE, na.rm = TRUE) {
   exp(mean(x_log, na.rm = na.rm))
 }
 
+## Transform scaling factor to normalized offsets (on the count scale)
+sf2nf <- function(scaling_factors, lib_size){
+  if (is.null(scaling_factors)) return(NULL)
+  tmp <- scaling_factors / lib_size
+  (tmp / geom_mean(tmp)) * lib_size
+}
+
 species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_offset = TRUE) {
   ## n = number of samples, p = number of species
   n <- nrow(counts); p <- ncol(counts)
@@ -358,7 +365,8 @@ species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_of
 #' proper_data <- prepare_data(
 #'  counts     = trichoptera$Abundance,
 #'  covariates = trichoptera$Covariate,
-#'  offset     = "TSS"
+#'  offset     = "GMPR",
+#'  scale      = "count"
 #' )
 #' proper_data$Abundance
 #' proper_data$Offset
@@ -414,6 +422,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' @description Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature.
 #'
 #' @inheritParams prepare_data
+#' @param scale Either `"none"` (default) or `"count"`. Should the offset be normalized to be on the same scale as the counts ?
 #' @param ... Additional parameters passed on to specific methods (for now CSS and RLE)
 #' @inherit prepare_data references
 #'
@@ -435,7 +444,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' ## User supplied offsets
 #' my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
 #' compute_offset(counts, offset = my_offset)
-compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wrench", "none"), ...) {
+compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wrench", "none"), scale = c("none", "count"), ...) {
   ## special behavior for data.frame
   if (inherits(offset, "data.frame")) {
     stop(
@@ -460,7 +469,15 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wren
   ## Ensure that counts is a matrix
   counts <- counts %>% data.matrix()
   ## Compute offset (with optional parameters)
-  offset_function(counts, ...)
+  scale <- match.arg(scale)
+  if (scale == "none") {
+    offset_function(counts, ...)
+  } else {
+    lib_size <- offset_tss(counts)
+    sf2nf(offset_function(counts, ...), lib_size = lib_size)
+  }
+
+
 }
 
 # Prepare data for use in PLN models from a biom object

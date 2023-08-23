@@ -30,7 +30,8 @@ data(trichoptera)
 proper_data <- prepare_data(
  counts     = trichoptera$Abundance,
  covariates = trichoptera$Covariate,
- offset     = "TSS"
+ offset     = "GMPR",
+ scale      = "count"
 )
 proper_data$Abundance
 proper_data$Offset

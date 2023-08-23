@@ -136,7 +136,7 @@ PLNfit <- R6Class(
         ## display progress
         if (config$trace >  1 && (iterate %% 50 == 0))
           cat('\niteration: ', iterate, 'objective', objective[iterate + 1],
-              'delta_f'  , round(delta_f, 6), 'delta_x', ro<und(delta_x, 6))
+              'delta_f'  , round(delta_f, 6), 'delta_x', round(delta_x, 6))
 
         ## Check for convergence
         if (delta_f < config$ftol_rel) status <- 3
