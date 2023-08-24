@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3-9050</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
       </span>
     </div>
 
@@ -79,7 +79,17 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="1.0.3" id="plnmodels-103">PLNmodels 1.0.3<small>2023-07-01</small><a class="anchor" aria-label="anchor" href="#plnmodels-103"></a></h2>
+<h2 class="page-header" data-toc-text="1.0.4" id="plnmodels-104-2023-08-24">PLNmodels 1.0.4 (2023-08-24)<a class="anchor" aria-label="anchor" href="#plnmodels-104-2023-08-24"></a></h2>
+<ul><li>changed initial value in optim for variational variance (1 -&gt; 0.1) in VE-step of PLN and PLNPCA</li>
+<li>fix sign in objective of VE_step for PLN with full covariance Issue <a href="https://github.com/pln-team/PLNmodels/issues/100" class="external-link">#100</a></li>
+<li>add a <code>scale</code> argument compute_offset() to force the offsets (RLE, CSS, GMPR, Wrench) to be on the same scale as the counts, like TSS.</li>
+<li>fix nb_param for PLNLDA, which caused wrong BIC/ICL and erratic model selection</li>
+<li>fix minor issues <a href="https://github.com/pln-team/PLNmodels/issues/102" class="external-link">#102</a>, <a href="https://github.com/pln-team/PLNmodels/issues/103" class="external-link">#103</a> plus some others</li>
+<li>fix package file documentation as suggested in <a href="https://github.com/r-lib/roxygen2/issues/1491" class="external-link uri">https://github.com/r-lib/roxygen2/issues/1491</a>
+</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.0.3" id="plnmodels-103-2023-07-06">PLNmodels 1.0.3 (2023-07-06)<small>2023-07-01</small><a class="anchor" aria-label="anchor" href="#plnmodels-103-2023-07-06"></a></h2>
 <ul><li>higher tolerance on a single test (among 700) that fails on the ‘noLD’ additional architecture on CRAN (tests without long double)</li>
 </ul></div>
     <div class="section level2">
