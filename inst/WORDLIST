@@ -43,6 +43,7 @@ Microb
 NLOPT
 NLopt
 Nilssen
+ORCID
 OTU
 OTUs
 Okrah
@@ -118,7 +119,6 @@ distTObase
 distTOground
 distTOtrunk
 doi
-el
 emph
 espèces
 et
@@ -169,10 +169,12 @@ microbiome
 mutivariate
 myPLN
 météorologiques
+nb
 neq
 newdata
 nlopt
 nloptr
+noLD
 normalisation
 ofposterior
 optim
