@@ -4,7 +4,7 @@
 * fix sign in objective of VE_step for PLN with full covariance Issue #100
 * add a `scale` argument compute_offset() to force the offsets (RLE, CSS, GMPR, Wrench) to be on the same scale as the counts, like TSS.
 * fix nb_param for PLNLDA, which caused wrong BIC/ICL and erratic model selection
-* fix minor issues #102, #103 abd others
+* fix minor issues #102, #103 plus some others
 * fix package file documentation as suggested in <https://github.com/r-lib/roxygen2/issues/1491>
 
 # PLNmodels 1.0.3 
