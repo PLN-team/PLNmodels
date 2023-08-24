@@ -26,6 +26,8 @@ print(myPLNLDA)
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
+
+\item{\code{nb_param}}{number of parameters in the current PLN model}
 }
 \if{html}{\out{</div>}}
 }
