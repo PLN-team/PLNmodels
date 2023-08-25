@@ -44,6 +44,8 @@ Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential ab
 Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \doi{10.1186/gb-2010-11-10-r106}
 
 Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 \doi{10.1186/s12864-018-5160-5}
+
+Robinson, M.D., Oshlack, A. (2010) A scaling normalization method for differential expression analysis of RNA-seq data. Genome Biol 11, R25 \doi{10.1186/gb-2010-11-3-r25}
 }
 \seealso{
 \code{\link[=compute_offset]{compute_offset()}} for details on the different normalization schemes
