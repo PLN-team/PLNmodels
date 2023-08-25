@@ -1,4 +1,4 @@
-# PLNmodels dev version 
+# PLNmodels 1.0.4 (2023-08-24)
 
 * changed initial value in optim for variational variance (1 -> 0.1) in VE-step of PLN and PLNPCA
 * fix sign in objective of VE_step for PLN with full covariance Issue #100
@@ -8,7 +8,7 @@
 * fix minor issues #102, #103 plus some others
 * fix package file documentation as suggested in <https://github.com/r-lib/roxygen2/issues/1491>
 
-# PLNmodels 1.0.3 
+# PLNmodels 1.0.3 (2023-07-06)
 
 * higher tolerance on a single test (among 700) that fails on the 'noLD' 
   additional architecture on CRAN (tests without long double)
