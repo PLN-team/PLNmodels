@@ -146,6 +146,64 @@ offset_rle <- function(counts, pseudocounts = 0L, type = c("ratio", "poscounts")
   size_factor
 }
 
+## Trimmed Mean of M-values (TMM) normalization (as used in edgeR and presented in \doi{10.1186/gb-2010-11-3-r25})
+# We choose by default refColumn = NULL, logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff
+calcFactorTMM <- function(obs, ref, nO, nR, logratioTrim=.3, sumTrim=0.05, Acutoff=-1e10)
+  #	TMM between two libraries simplified and adapted from M. Robinson (edgeR:::.calcFactorTMM)
+  # The final output is different from original TMM as we directly multiply normalization factors
+  # by library sizes to use them as such in the model, unlike the philosophy behind TMM
+{
+  logR <- log2((obs/nO)/(ref/nR))          # log ratio of expression, accounting for library size
+  absE <- (log2(obs/nO) + log2(ref/nR))/2  # absolute expression
+  v <- (nO-obs)/nO/obs + (nR-ref)/nR/ref   # estimated asymptotic variance
+
+  #	remove infinite values, cutoff based on A
+  fin <- is.finite(logR) & is.finite(absE) & (absE > Acutoff)
+
+  logR <- logR[fin]
+  absE <- absE[fin]
+  v <- v[fin]
+
+  if(max(abs(logR)) < 1e-6) return(1)
+
+  n <- length(logR)
+  loL <- floor(n * logratioTrim) + 1
+  hiL <- n + 1 - loL
+  loS <- floor(n * sumTrim) + 1
+  hiS <- n + 1 - loS
+
+    keep <- (rank(logR)>=loL & rank(logR)<=hiL) & (rank(absE)>=loS & rank(absE)<=hiS)
+
+ # doWeighting = TRUE
+    f <- sum(logR[keep]/v[keep], na.rm=TRUE) / sum(1/v[keep], na.rm=TRUE)
+  #	Results will be missing if the two libraries share no features with positive counts
+  #	In this case, return unity
+  if(is.na(f)) f <- 0
+  2^f
+}
+
+offset_tmm <- function(counts, logratioTrim=.3, sumTrim=0.05, Acutoff=-1e10) {
+  nsamples <- nrow(counts)
+  ## Compute lib.size
+  lib_size <- rowSums(counts)
+  ## Reference sample calculated from the .75 quantile
+  f75 <- apply(counts, 1, FUN = function(g) quantile(g, p=0.75)/sum(g))
+  if(median(f75) < 1e-20) {
+    refColumn <- which.max(rowSums(sqrt(counts)))
+  } else {
+    refColumn <- which.min(abs(f75-mean(f75)))
+  }
+  ## Compute TMM normalization factor
+  ref <- as.numeric(counts[refColumn,])
+  nR <- lib_size[refColumn]
+  # rel_counts <- counts/lib_size
+  f <- vapply(seq(nsamples), FUN.VALUE = numeric(1),FUN = function(i) calcFactorTMM(obs=counts[i,],ref=ref, nO=lib_size[i], nR=nR, logratioTrim=logratioTrim, sumTrim=sumTrim, Acutoff=Acutoff))
+  #	Factors should multiple to one
+  f <- f * lib_size
+  f / geom_mean(f)
+}
+
+
 ## Cumulative Sum Scaling (CSS) normalization (as used in metagenomeSeq and presented in \doi{10.1038/nmeth.2658})
 offset_css <- function(counts, reference = median) {
   ## special treatment for edge case of one-column matrix (1 OTU, many samples)
@@ -351,6 +409,7 @@ species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_of
 #' @references Paulson, J. N., Colin Stine, O., Bravo, H. C. and Pop, M. (2013) Differential abundance analysis for microbial marker-gene surveys. Nature Methods, 10, 1200-1202 \doi{10.1038/nmeth.2658}
 #' @references Anders, S. and Huber, W. (2010) Differential expression analysis for sequence count data. Genome Biology, 11, R106 \doi{10.1186/gb-2010-11-10-r106}
 #' @references Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of compositional bias in sparse sequencing count data. BMC Genomics 19, 799 \doi{10.1186/s12864-018-5160-5}
+#' @references Robinson, M.D., Oshlack, A. (2010) A scaling normalization method for differential expression analysis of RNA-seq data. Genome Biol 11, R25 \doi{10.1186/gb-2010-11-3-r25}
 #'
 #' @return A data.frame suited for use in [PLN()] and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
 #' @note User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
@@ -419,7 +478,7 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' @title Compute offsets from a count data using one of several normalization schemes
 #' @name compute_offset
 #'
-#' @description Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, etc) described in the literature.
+#' @description Computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, Wrench, TMM, etc) described in the literature.
 #'
 #' @inheritParams prepare_data
 #' @param scale Either `"none"` (default) or `"count"`. Should the offset be normalized to be on the same scale as the counts ?
@@ -427,6 +486,10 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' @inherit prepare_data references
 #'
 #' @details RLE has additional `pseudocounts` and `type` arguments to add pseudocounts to the observed counts (defaults to 0L) and to compute offsets using only positive counts (if `type == "poscounts"`). This mimics the behavior of \code{DESeq2::DESeq()} when using `sfType == "poscounts"`. CSS has an additional `reference` argument to choose the location function used to compute the reference quantiles (defaults to `median` as in the Nature publication but can be set to `mean` to reproduce behavior of functions cumNormStat* from metagenomeSeq). Wrench has two additional parameters: `groups` to specify sample groups and `type` to either reproduce exactly the default \code{Wrench::wrench()} behavior (`type = "wrench"`, default) or to use simpler heuristics (`type = "simple"`). Note that (i) CSS normalization fails when the median absolute deviation around quantiles does not become instable for high quantiles (limited count variations both within and across samples) and/or one sample has less than two positive counts, (ii) RLE fails when there are no common species across all samples (unless `type == "poscounts"` has been specified) and (iii) GMPR fails if a sample does not share any species with all other samples.
+#' TMM code between two libraries is simplified and adapted from M. Robinson (edgeR:::.calcFactorTMM).
+#' The final output is however different from the one produced by edgeR:::.calcFactorTMM as they are intended
+#' to be used as such in the model (whereas they need to be multiplied by sequencing depths in edgeR)
+#'
 #'
 #' @return If `offset = "none"`, `NULL` else a vector of length `nrow(counts)` with one offset per sample.
 #'
@@ -441,10 +504,11 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 #' compute_offset(counts, offset = "RLE", pseudocounts = 1)
 #' compute_offset(counts, offset = "Wrench", groups = trichoptera$Covariate$Group)
 #' compute_offset(counts, offset = "GMPR")
+#' compute_offset(counts, offset = "TMM")
 #' ## User supplied offsets
 #' my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
 #' compute_offset(counts, offset = my_offset)
-compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wrench", "none"), scale = c("none", "count"), ...) {
+compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wrench", "TMM", "none"), scale = c("none", "count"), ...) {
   ## special behavior for data.frame
   if (inherits(offset, "data.frame")) {
     stop(
@@ -464,6 +528,7 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wren
                             "RLE"    = offset_rle,
                             "CSS"    = offset_css,
                             "Wrench" = offset_wrench,
+                            "TMM" = offset_tmm,
                             "none"   = offset_none
   )
   ## Ensure that counts is a matrix
