@@ -8,6 +8,7 @@ Authors@R: c(
       comment = c(ORCID = "0000-0003-2986-354X")),
   person("Stéphane", "Robin", role ="ctb", email = "stephane.robin@inrae.fr"),
   person("Giovanni", "Poggiato", role = "ctb", email = "giov.poggiato@gmail.com"),
+  person("Julie", "Aubert", role = "ctb", email = "julie.aubert@inrae.fr"),
   person("François", "Gindraud", role = "aut", email = "francois.gindraud@gmail.com")
   )
 Description: The Poisson-lognormal model and variants (Chiquet, Mariadassou and Robin, 
