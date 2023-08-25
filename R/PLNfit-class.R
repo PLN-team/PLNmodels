@@ -792,7 +792,7 @@ PLNfit_spherical <- R6Class(
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_spherical, private$torch_optimize)
-      private$optimizer$vestep <- nlopt_optimize_vestep_diagonal
+      private$optimizer$vestep <- nlopt_optimize_vestep_spherical
     }
   ),
   private = list(

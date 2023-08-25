@@ -328,7 +328,7 @@ PLNLDAfit <- R6Class(
     #' @field rank the dimension of the current model
     rank = function() {nlevels(private$grouping) - 1},
     #' @field nb_param number of parameters in the current PLN model
-    nb_param = function() {self$p * (self$d + self$rank)},
+    nb_param = function() {self$p * self$d + self$p * (self$p + 1)/2},
     #' @field model_par a list with the matrices associated with the estimated parameters of the PLN model: B (covariates), Sigma (latent covariance), C (latent loadings), P (latent position) and Mu (group means)
     model_par = function() {
       par <- super$model_par
@@ -448,7 +448,9 @@ PLNLDAfit_diagonal <- R6Class(
   ),
   active = list(
     #' @field vcov_model character: the model used for the residual covariance
-    vcov_model = function() {"diagonal"}
+    vcov_model = function() {"diagonal"},
+    #' @field nb_param number of parameters in the current PLN model
+    nb_param = function() {self$p * self$d + self$p}
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  END OF THE CLASS PLNLDAfit_diagonal
@@ -494,7 +496,7 @@ PLNLDAfit_spherical <- R6Class(
     initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
       super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
       private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_spherical, private$torch_optimize)
-      private$optimizer$vestep <- nlopt_optimize_vestep_diagonal
+      private$optimizer$vestep <- nlopt_optimize_vestep_spherical
     }
   ),
   private = list(
@@ -533,7 +535,9 @@ PLNLDAfit_spherical <- R6Class(
   ),
   active = list(
     #' @field vcov_model character: the model used for the residual covariance
-    vcov_model = function() {"spherical"}
+    vcov_model = function() {"spherical"},
+    #' @field nb_param number of parameters in the current PLN model
+    nb_param = function() {self$p * self$d + 1}
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  END OF THE CLASS PLNLDAfit_spherical

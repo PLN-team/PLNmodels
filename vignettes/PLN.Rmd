@@ -255,7 +255,7 @@ myPLN_offsets <-
       data = trichoptera, control = PLN_param(trace = 0))
 ```
 
-Note that we use the function `offset` with a log-transform of the total counts since it acts in the latent layer of the model. Obviously the model with offsets is better since the log-likelihood is higher with the same number of parameters^[In **PLNmodels** the R-squared is a pseudo-R-squared that can only be trusted between model where the same offsets term was used]:
+Note that we use the function `offset` with a log-transform of the total counts[^1] since it acts in the latent layer of the model. Obviously the model with offsets is better since the log-likelihood is higher with the same number of parameters^[In **PLNmodels** the R-squared is a pseudo-R-squared that can only be trusted between model where the same offsets term was used]:
 
 ```{r compare w/wo offset}
 rbind(
@@ -333,6 +333,8 @@ rbind(
   myPLN_final$criteria
 ) %>% knitr::kable()
 ```
+
+[^1]: Note that if the offset is not computed on the same scale as the count, you might need a different transformation than the log. To ensure that the offset are on the count-scale, you can use the `scale = "count"` argument in `prepare_data()`, see also the [corresponding vignette](Import_data.html). 
 
 ## References
 

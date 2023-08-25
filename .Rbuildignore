@@ -23,10 +23,12 @@
 ^vignettes/*_cache/
 ^vignettes/cache/
 ^inst/sticker$
+^inst/check$
 ^inst/torch_for_r$
 ^inst/case_studies$
 ^inst/test/
 ^inst/missing_data$
+^inst/simus_PLNnetwork$
 ^\.github$
 ^data-raw$
 ^CRAN-SUBMISSION$

@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 1.0.3-9020
+Version: 1.0.4-0100
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inrae.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -8,6 +8,7 @@ Authors@R: c(
       comment = c(ORCID = "0000-0003-2986-354X")),
   person("Stéphane", "Robin", role ="ctb", email = "stephane.robin@inrae.fr"),
   person("Giovanni", "Poggiato", role = "ctb", email = "giov.poggiato@gmail.com"),
+  person("Julie", "Aubert", role = "ctb", email = "julie.aubert@inrae.fr"),
   person("François", "Gindraud", role = "aut", email = "francois.gindraud@gmail.com")
   )
 Description: The Poisson-lognormal model and variants (Chiquet, Mariadassou and Robin, 

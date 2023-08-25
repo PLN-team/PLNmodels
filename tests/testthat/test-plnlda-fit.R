@@ -39,7 +39,7 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
   expect_lt(model$BIC, model$loglik)
   expect_lt(model$ICL, model$loglik)
   expect_gt(model$R_squared, 0)
-  expect_equal(model$nb_param, p * (2 *g - 1))
+  expect_equal(model$nb_param, p * g + p * (p + 1)/2)
   expect_equal(dim(model$group_means), c(p, g))
   expect_equal(dim(model$scores), c(n, model$rank))
   expect_true(all(model$percent_var >= 0))

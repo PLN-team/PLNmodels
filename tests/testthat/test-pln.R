@@ -128,6 +128,13 @@ test_that("PLN is working with unnamed data matrix",  {
     expect_error(PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(config_optim = list(algorithm = "nawak"))))
  })
 
+test_that("PLN: Check that univariate PLN models works, with matrix of numeric format",  {
+  expect_no_error(uniPLN <- PLN(Abundance[,1,drop=FALSE] ~ 1, data = trichoptera))
+  expect_no_error(uniPLN <- PLN(Abundance[,1] ~ 1, data = trichoptera))
+   y <- trichoptera$Abundance[,1]
+   expect_no_error(uniPLN <- PLN(y ~ 1))
+})
+
 test_that("PLN: Check that all univariate PLN models are equivalent with the multivariate diagonal case",  {
 
   p <- ncol(trichoptera$Abundance)

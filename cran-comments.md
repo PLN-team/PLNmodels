@@ -1,8 +1,7 @@
 
-Submitting PLNmodels version 1.0.3 to CRAN
+Submitting PLNmodels version 1.0.4 to CRAN
 
-Higher tolerance on a single test (among 700) that fails on the 'noLD' additional 
-  architecture on CRAN (tests without long double)
+Fix various bugs, better offsets handling and update package documentation as ask by CRAN maintainers.
 
 ## Tested environments
 
