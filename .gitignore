@@ -63,8 +63,5 @@ README.html
 
 pkgdown
 
-*.nix
-*.lock
-result*
 .direnv/*
-.envrc
+result*

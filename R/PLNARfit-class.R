@@ -44,31 +44,42 @@ PLNARfit <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
     ## PRIVATE INTERNAL FIELDS
-    C = NA, # the autoregressive matrix parameter
-    Mprev = NA, # the previous value of M
-    Sprev = NA, # the previous value of S
+    Phi = NA, # the autoregressive matrix parameter
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    torch_omega_squared_norm = function(x, Omega) {
+      torch_sum(torch_mm(x, Omega) * x, dim = 2)
+    },
+
+    torch_frobenius = function(A, B) {
+      torch_sum(A * B, dim = 2)
+    },
+
     torch_elbo = function(data, params, index = torch_tensor(1:self$n)) {
       S2 <- torch_square(params$S[index])
-      Z <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$B)
-      res <- .5 * sum(data$w[index]) * torch_logdet(private$torch_Sigma(data, params, index)) +
-        sum(data$w[index, NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z - .5 * torch_log(S2)))
+      M_shift <- torch_roll(params$M)
+      M_diff - params$M - torch_mm(params$Phi, M_shift)
+      mu <- data$O[index] + torch_mm(data$X[index], params$B)
+      mu_eps <- mu - torch_mm(Phi, mu)
+      Omega_eps <- torch_inverse(params$Sigma - torch_mm(torch_mm(params$Phi, params$Sigma), torch_transpose(params$Phi)))
+      
+      res <- torch_exp(params$M[index] + .5 * S2) -
+        sum(data$Y[index] * params$M[index]) -
+        .5 * torch_logdet(params$Omega[index]) +
+        .5 * torch_omega_squared_norm(torch_index_select(M, 2, 1:self$p) - mu, params$Omega) +
+        .5 * torch_frobenius(torch_index_select(S2, 2, 1:self$p), torch_diag(params$Omega), dim = 2) -
+        .5 * sum(data$w[index] - 1) * torch_logdet(params$Omega_eps[index]) +
+        .5 * torch_omega_squared_norm(M_diff - mu_eps, Omega_eps) +
+        .5 * torch_frobenius(torch_index_select(S2, 2, 2:data$w[index]), torch_diag(Omega_eps)) -
+        .5 * torch_log(S2)
       res
     },
 
     torch_vloglik = function(data, params) {
-      MwithC  <- params$M - torch_mm(params$C, params$Mprev)
-      S2      <- torch_square(params$S)
-      Sprev2  <- torch_square(params$Sprev)
-      S2withC <- S2 + torch_mm(torch_mm(params$C, Sprev2), torch_transpose(params$C), 1, 2) 
-      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
-        .5 * torch_logdet(params$Omega) +
-          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
-          .5 * torch_sum(torch_mm(MwithC, params$Omega) * MwithC) + torch_trace(torch_mm(S2withC, params$Omega))
-      )
+      S2    <- torch_square(params$S)
+      Ji <- - torch_elbo(data, params) + rowSums(.logfactorial(as.matrix(data$Y))) - .5 * self$p  
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
