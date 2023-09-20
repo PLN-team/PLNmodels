@@ -84,26 +84,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = PLN_param
 #'    which sometimes speeds up the inference.
 #'
 #' @return list of parameters configuring the fit.
-#'
-#' @details The list of parameters `config_optim` controls the optimizers. When "nlopt" is chosen the following entries are relevant
-#' * "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
-#' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
-#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
-#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
-#' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol_abs. Default is 0.0 (disabled)
-#' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)
-#' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
-#'
-#' When "torch" backend is used, with the following entries are relevant:
-#' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
-#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
-#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
-#'
-#' The list of parameters `config_post` controls the post-treatment processing, with the following entries:
-#' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
-#' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
-#' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is TRUE.
-#' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
+#' @inherit PLN_param details
 #' @export
 PLNLDA_param <- function(
     backend       = c("nlopt", "torch"),

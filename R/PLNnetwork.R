@@ -64,25 +64,12 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #'    which sometimes speeds up the inference.
 #'
 #' @return list of parameters configuring the fit.
+#' @inherit PLN_param details
+#' @details See [PLN_param()] for a full description of the generic optimization parameters. PLNnetwork_param() also has two additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:
+#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
+#' * "maxit_out" outer solver stops when the number of iteration exceeds maxit_out. Default is 50
 #'
-#' @details The list of parameters `config_optim` controls the optimizers. When "nlopt" is chosen the following entries are relevant
-#' * "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
-#' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
-#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
-#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
-#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
-#' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
-#' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol_abs. Default is 0.0 (disabled)
-#' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)
-#' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
-#'
-#' When "torch" backend is used, with the following entries are relevant:
-#' * "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
-#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
-#' * "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
-#' * "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
-#' * "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
-#'
+#' @seealso [PLN_param()]
 #' @export
 PLNnetwork_param <- function(
     backend           = "nlopt",
