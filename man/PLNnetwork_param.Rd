@@ -41,25 +41,12 @@ list of parameters configuring the fit.
 Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 }
 \details{
-The list of parameters \code{config_optim} controls the optimizers. When "nlopt" is chosen the following entries are relevant
+See \code{\link[=PLN_param]{PLN_param()}} for a full description of the generic optimization parameters. PLNnetwork_param() also has two additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:
 \itemize{
-\item "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
-\item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
-\item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
-\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
-\item "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
-\item "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
-\item "ftol_abs" stop when an optimization step changes the objective function by less than ftol_abs. Default is 0.0 (disabled)
-\item "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)
-\item "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
+\item "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
+\item "maxit_out" outer solver stops when the number of iteration exceeds maxit_out. Default is 50
 }
-
-When "torch" backend is used, with the following entries are relevant:
-\itemize{
-\item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
-\item "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6
-\item "maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50
-\item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
-\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
 }
+\seealso{
+\code{\link[=PLN_param]{PLN_param()}}
 }

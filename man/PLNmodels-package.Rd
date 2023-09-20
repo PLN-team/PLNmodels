@@ -31,6 +31,7 @@ Other contributors:
 \itemize{
   \item Stéphane Robin \email{stephane.robin@inrae.fr} [contributor]
   \item Giovanni Poggiato \email{giov.poggiato@gmail.com} [contributor]
+  \item Julie Aubert \email{julie.aubert@inrae.fr} [contributor]
 }
 
 }
