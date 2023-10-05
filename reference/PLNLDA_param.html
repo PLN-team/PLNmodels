@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4-0200</span>
       </span>
     </div>
 
@@ -137,12 +137,22 @@ which sometimes speeds up the inference.</p></dd>
 <li><p>"ftol_abs" stop when an optimization step changes the objective function by less than ftol_abs. Default is 0.0 (disabled)</p></li>
 <li><p>"xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)</p></li>
 <li><p>"maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)</p></li>
-</ul><p>When "torch" backend is used, with the following entries are relevant:</p><ul><li><p>"maxeval" stop when the number of iteration exceeds maxeval. Default is 10000</p></li>
+</ul><p>When "torch" backend is used (only for PLN and PLNLDA for now), the following entries are relevant:</p><ul><li><p>"algorithm" the optimizer used by torch among RPROP (default), RMSPROP, ADAM and ADAGRAD</p></li>
+<li><p>"maxeval" stop when the number of iteration exceeds maxeval. Default is 10 000</p></li>
+<li><p>"numepoch" stop training once this number of epochs exceeds numepoch. Set to -1 to enable infinite training. Default is 1 000</p></li>
+<li><p>"num_batch" number of batches to use during training. Defaults to 1 (use full dataset at each epoch)</p></li>
 <li><p>"ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8</p></li>
 <li><p>"xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6</p></li>
-</ul><p>The list of parameters <code>config_post</code> controls the post-treatment processing, with the following entries:</p><ul><li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
+<li><p>"lr" learning rate. Default is 0.1.</p></li>
+<li><p>"momentum" momentum factor. Default is 0 (no momentum). Only used in RMSPROP</p></li>
+<li><p>"weight_decay" Weight decay penalty. Default is 0 (no decay). Not used in RPROP</p></li>
+<li><p>"step_sizes" pair of minimal (default: 1e-6) and maximal (default: 50) allowed step sizes. Only used in RPROP</p></li>
+<li><p>"etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP</p></li>
+<li><p>"centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP</p></li>
+</ul><p>The list of parameters <code>config_post</code> controls the post-treatment processing (for PLN and PLNLDA), with the following entries:</p><ul><li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
 <li><p>bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).</p></li>
-<li><p>variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is TRUE.</p></li>
+<li><p>variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
+<li><p>sandwich_var boolean indicating whether sandwich estimation should be used to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
 <li><p>rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE</p></li>
 </ul></div>
 

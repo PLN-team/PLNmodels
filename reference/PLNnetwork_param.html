@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4-0200</span>
       </span>
     </div>
 
@@ -140,21 +140,13 @@ which sometimes speeds up the inference.</p></dd>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>The list of parameters <code>config_optim</code> controls the optimizers. When "nlopt" is chosen the following entries are relevant</p><ul><li><p>"algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".</p></li>
-<li><p>"maxeval" stop when the number of iteration exceeds maxeval. Default is 10000</p></li>
-<li><p>"ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8</p></li>
-<li><p>"xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6</p></li>
-<li><p>"ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6</p></li>
-<li><p>"maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50</p></li>
-<li><p>"ftol_abs" stop when an optimization step changes the objective function by less than ftol_abs. Default is 0.0 (disabled)</p></li>
-<li><p>"xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)</p></li>
-<li><p>"maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)</p></li>
-</ul><p>When "torch" backend is used, with the following entries are relevant:</p><ul><li><p>"maxeval" stop when the number of iteration exceeds maxeval. Default is 10000</p></li>
-<li><p>"ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiply by the absolute value of the parameter. Default is 1e-6</p></li>
-<li><p>"maxit_out" outer solver stops when the number of iteration exceeds out.maxit. Default is 50</p></li>
-<li><p>"ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8</p></li>
-<li><p>"xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6</p></li>
+    <p>See <code><a href="PLN_param.html">PLN_param()</a></code> for a full description of the generic optimization parameters. PLNnetwork_param() also has two additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:</p><ul><li><p>"ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6</p></li>
+<li><p>"maxit_out" outer solver stops when the number of iteration exceeds maxit_out. Default is 50</p></li>
 </ul></div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p><code><a href="PLN_param.html">PLN_param()</a></code></p></div>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
