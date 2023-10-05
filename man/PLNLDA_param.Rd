@@ -46,18 +46,28 @@ The list of parameters \code{config_optim} controls the optimizers. When "nlopt"
 \item "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
 }
 
-When "torch" backend is used, with the following entries are relevant:
+When "torch" backend is used (only for PLN and PLNLDA for now), the following entries are relevant:
 \itemize{
-\item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+\item "algorithm" the optimizer used by torch among RPROP (default), RMSPROP, ADAM and ADAGRAD
+\item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10 000
+\item "numepoch" stop training once this number of epochs exceeds numepoch. Set to -1 to enable infinite training. Default is 1 000
+\item "num_batch" number of batches to use during training. Defaults to 1 (use full dataset at each epoch)
 \item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
 \item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
+\item "lr" learning rate. Default is 0.1.
+\item "momentum" momentum factor. Default is 0 (no momentum). Only used in RMSPROP
+\item "weight_decay" Weight decay penalty. Default is 0 (no decay). Not used in RPROP
+\item "step_sizes" pair of minimal (default: 1e-6) and maximal (default: 50) allowed step sizes. Only used in RPROP
+\item "etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP
+\item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 }
 
-The list of parameters \code{config_post} controls the post-treatment processing, with the following entries:
+The list of parameters \code{config_post} controls the post-treatment processing (for PLN and PLNLDA), with the following entries:
 \itemize{
 \item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
 \item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
-\item variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is TRUE.
+\item variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
+\item sandwich_var boolean indicating whether sandwich estimation should be used to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
 \item rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
 }
 }

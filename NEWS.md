@@ -1,3 +1,8 @@
+# Current version
+
+* Update documentation of PLN*_param() functions to include torch optimization parameters
+* Add (somehow) explicit error message when torch convergence fails
+
 # PLNmodels 1.0.4 (2023-08-24)
 
 * changed initial value in optim for variational variance (1 -> 0.1) in VE-step of PLN and PLNPCA
