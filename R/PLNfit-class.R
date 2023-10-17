@@ -60,12 +60,11 @@ PLNfit <- R6Class(
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
-      #print (index)
-      #print (params$S)
       S2 <- torch_square(params$S[index])
       Z  <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$B)
+      A <- torch_exp(Z + .5 * S2)
       res <- .5 * sum(data$w[index]) * torch_logdet(private$torch_Sigma(data, params, index)) +
-        sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z - .5 * torch_log(S2)))
+        sum(data$w[index,NULL] * (A - data$Y[index] * Z - .5 * torch_log(S2)))
       res
     },
 
@@ -122,11 +121,11 @@ PLNfit <- R6Class(
       #B_old = optimizer$param_groups[[1]]$params$B$clone()
       for (iterate in 1:num_epoch) {
         #B_old <- as.numeric(optimizer$param_groups[[1]]$params$B)
-        B_old = optimizer$param_groups[[1]]$params$B$clone()
         # rearrange the data each epoch
         #permute <- torch::torch_randperm(self$n, device = "cpu") + 1L
         permute = torch::torch_tensor(sample.int(self$n), dtype = torch_long(), device=config$device)
 
+        #print (paste("num batches", num_batch))
         for (batch_idx in 1:num_batch) {
           # here index is a vector of the indices in the batch
           index <- permute[(batch_size*(batch_idx - 1) + 1):(batch_idx*batch_size)]
@@ -140,24 +139,15 @@ PLNfit <- R6Class(
 
         ## assess convergence
         objective[iterate + 1] <- loss$item()
-        B_new <- optimizer$param_groups[[1]]$params$B
         delta_f   <- abs(objective[iterate] - objective[iterate + 1]) / abs(objective[iterate + 1])
-        #delta_x = 0
-        delta_x   <- torch::torch_sum(torch::torch_abs(B_old - B_new))/torch::torch_sum(torch::torch_abs(B_new))
-        delta_x = delta_x$cpu()
-
-        #print (delta_f)
-        #print (delta_x)
-        #print (delta_x)
-        delta_x = as.matrix(delta_x)
-        #print (delta_x)
 
         ## display progress
-        if (config$trace >  1 && (iterate %% 50 == 0))
+        if (config$trace >  1 && (iterate %% 50 == 1))
           cat('\niteration: ', iterate, 'objective', objective[iterate + 1],
-              'delta_f'  , round(delta_f, 6), 'delta_x', round(delta_x, 6))
+              'delta_f'  , round(delta_f, 6))
 
         ## Check for convergence
+        #print (delta_f)
         if (delta_f < config$ftol_rel) status <- 3
         #if (delta_x < config$xtol_rel) status <- 4
         if (status %in% c(3,4)) {
