@@ -141,6 +141,12 @@ PLNfit <- R6Class(
         objective[iterate + 1] <- loss$item()
         delta_f   <- abs(objective[iterate] - objective[iterate + 1]) / abs(objective[iterate + 1])
 
+        ## Error message if objective diverges
+        if (!is.finite(loss$item())) {
+          stop(sprintf("The ELBO diverged during the optimization procedure.\nConsider using:\n* a different optimizer (current optimizer: %s)\n* a smaller learning rate (current rate: %.3f)\nwith `control = PLN_param(config_optim = list(algorithm = ..., lr = ...))`",
+                       config$algorithm, config$lr))
+        }
+
         ## display progress
         if (config$trace >  1 && (iterate %% 50 == 1))
           cat('\niteration: ', iterate, 'objective', objective[iterate + 1],
