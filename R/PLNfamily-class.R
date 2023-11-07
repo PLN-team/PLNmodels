@@ -99,6 +99,7 @@ PLNfamily <-
           warning(paste("No such a model in the collection. Acceptable parameter values can be found via",
                         "$ranks (for PCA)",
                         "$clusters (for mixture models)",
+                        "$nb_blocks (for block)",
                         "$penalties (for network)",
                         paste("Returning model with closest value. Requested:", var, ", returned:", private$params[id]),
                         sep = "\n"))
