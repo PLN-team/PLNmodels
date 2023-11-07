@@ -88,12 +88,12 @@ PLNblockfit <- R6Class(
     torch_update_Tau = function(data, params) {
       A <- torch_t(torch_exp(params$M + .5 * torch_square(params$S)))
       B <- torch_exp(torch_mm(data$X, params$B) + data$O)
-      log_Alpha <- log(torch_unsqueeze(torch_mean(private$Tau, 2), 2))
+      log_Alpha <- torch_log(torch_unsqueeze(torch_mean(private$Tau, 2), 2))
       with_no_grad({
         rho <- torch_mm(log_Alpha, torch_ones(c(1,self$p))) +
           torch_mm(torch_t(params$M), data$Y) - torch_mm(A, B)
       })
-      private$Tau <- torch_clamp(torch:::torch_softmax(rho, 1), 1e-3, 1 - 1e-3)
+      private$Tau <- torch_clamp(torch:::torch_softmax(rho, 1), .Machine$double.eps, 1 - .Machine$double.eps)
     },
 
     torch_vloglik = function(data, params) {
@@ -115,8 +115,8 @@ PLNblockfit <- R6Class(
     torch_optimize = function(data, params, config) {
 
       ## Conversion of data and parameters to torch tensors (pointers)
-      data   <- lapply(data, torch_tensor)                         # list with Y, X, O, w
-      params <- lapply(params, torch_tensor, requires_grad = TRUE) # list with B, M, S
+      data   <- lapply(data, torch_tensor, dtype = torch_float32())                         # list with Y, X, O, w
+      params <- lapply(params, torch_tensor, requires_grad = TRUE, dtype = torch_float32()) # list with B, M, S
       private$Tau <- torch_tensor(private$Tau, dtype = torch_float32())
 
       ## Initialize optimizer
