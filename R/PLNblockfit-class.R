@@ -79,9 +79,9 @@ PLNblockfit <- R6Class(
       S2 <- torch_square(params$S[index])
       XB <- torch_mm(data$X[index], params$B)
       A  <- torch_exp(data$O[index] + XB) * torch_mm(torch_exp(params$M[index] + S2 / 2), private$Tau)
-      res <- .5 * sum(data$w[index]) * torch_logdet(private$torch_Sigma(data, params, index)) +
-        sum(data$w[index,NULL] * (A - data$Y[index] * (data$O[index] + XB + torch_mm(params$M[index], private$Tau)))) -
-              .5 * sum(data$w[index,NULL] * torch_log(S2))
+      res <- self$n/2 * torch_logdet(private$torch_Sigma(data, params, index)) +
+        torch_sum((A - data$Y[index] * (data$O[index] + XB + torch_mm(params$M[index], private$Tau)))) -
+              .5 * torch_sum(torch_log(S2))
       res
     },
 
@@ -90,10 +90,10 @@ PLNblockfit <- R6Class(
       B <- torch_exp(torch_mm(data$X, params$B) + data$O)
       log_Alpha <- torch_log(torch_unsqueeze(torch_mean(private$Tau, 2), 2))
       with_no_grad({
-        rho <- torch_mm(log_Alpha, torch_ones(c(1,self$p))) +
+        rho <- torch_mm(log_Alpha, torch_ones(c(1,self$p), dtype = torch_float64())) +
           torch_mm(torch_t(params$M), data$Y) - torch_mm(A, B)
       })
-      private$Tau <- torch_clamp(torch:::torch_softmax(rho, 1), .Machine$double.eps, 1 - .Machine$double.eps)
+      private$Tau <- torch_clamp(torch:::torch_softmax(rho, 1), 1e-3, 1 - 1e-3)
     },
 
     torch_vloglik = function(data, params) {
@@ -115,9 +115,9 @@ PLNblockfit <- R6Class(
     torch_optimize = function(data, params, config) {
 
       ## Conversion of data and parameters to torch tensors (pointers)
-      data   <- lapply(data, torch_tensor, dtype = torch_float32())                         # list with Y, X, O, w
-      params <- lapply(params, torch_tensor, requires_grad = TRUE, dtype = torch_float32()) # list with B, M, S
-      private$Tau <- torch_tensor(private$Tau, dtype = torch_float32())
+      data   <- lapply(data, torch_tensor, dtype = torch_float64())                         # list with Y, X, O, w
+      params <- lapply(params, torch_tensor, requires_grad = TRUE, dtype = torch_float64()) # list with B, M, S
+      private$Tau <- torch_tensor(private$Tau, dtype = torch_float64())
 
       ## Initialize optimizer
       optimizer <- switch(config$algorithm,
@@ -168,7 +168,7 @@ PLNblockfit <- R6Class(
         }
 
         ## display progress
-        if (config$trace >  1 && (iterate %% 50 == 0))
+        if (config$trace >=  1 && (iterate %% 50 == 0))
           cat('\niteration: ', iterate, 'objective', objective[iterate + 1],
               'delta_f'  , round(delta_f, 6), 'delta_x', round(delta_x, 6))
 

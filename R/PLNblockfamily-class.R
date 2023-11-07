@@ -47,8 +47,9 @@ PLNblockfamily <- R6Class(
       control_init$config_optim <- config_default_nlopt
       control_init$backend <- "nlopt"
       myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control_init)
-      myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control_init$config_optim)
-      blocks <- hclust(as.dist(1 - cov2cor(myPLN$model_par$Sigma))) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
+      # myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control_init$config_optim)
+      # blocks <- hclust(as.dist(1 - cov2cor(myPLN$model_par$Sigma))) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
+      blocks <- hclust(as.dist(1 - abs(cor(myPLN$var_par$M)))) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
 
       ## instantiate as many models as cluterings
       self$models <-

@@ -88,7 +88,7 @@ PLNblock_param <- function(
     config_opt <- config_default_torch
   }
 
-  config_opt$it_update_tau <- 20
+  config_opt$it_update_tau <- 1
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-5
   config_opt$maxit_out <- 20
