@@ -15,6 +15,7 @@
 #' @param B matrix of regression matrix
 #' @param Sigma variance-covariance matrix of the latent variables
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
+#' @param Tau matrix of posterior probabilities for block belonging
 #'
 ## Parameters specific to PLNnetwork-fit methods
 #' @param blocks blocks indicators for regrouping the variables/responses (dimension of the residual covariance)
@@ -39,51 +40,72 @@ PLNblockfit <- R6Class(
       super$initialize(responses, covariates, offsets, weights, formula, control)
 
       ## Initial memberships/blocks
-      private$q <- ncol(blocks)
-
       ## Overwrite PLNfit Variational parameters (dimension q)
-      private$M   <- private$M %*% Z
+      private$M   <- private$M %*% blocks
       private$S   <- matrix(.1, self$n, self$q)
-      private$Tau <- t(Z)
+      private$Tau <- t(blocks)
 
       ## Setup of the optimization backend
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_block, private$torch_optimize)
-      private$optimizer$vestep <- nlopt_optimize_vestep_block
+      # private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_block, private$torch_optimize)
+      # private$optimizer$vestep <- nlopt_optimize_vestep_block
+      private$optimizer$main   <- private$torch_optimize
+    },
+    #' @description Update fields of a [`PLNnetworkfit`] object
+    #' @param B matrix of regression matrix
+    #' @param Sigma variance-covariance matrix of the latent variables
+    #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
+    #' @param M     matrix of mean vectors for the variational approximation
+    #' @param S     matrix of variance vectors for the variational approximation
+    #' @param Z     matrix of latent vectors (includes covariates and offset effects)
+    #' @param A     matrix of fitted values
+    #' @param Tau matrix of posterior probabilities for block belonging
+    #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
+    #' @param R2    approximate R^2 goodness-of-fit criterion
+    #' @param monitoring a list with optimization monitoring quantities
+    update = function(Tau=NA, B=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+      super$update(B = B, Sigma = Sigma, Omega = Omega, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+      if (!anyNA(Tau)) private$Tau <- Tau
     }
+
   ),
   private = list(
+    Tau = NA, # variational parameters for the block memberships
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    torch_ELBO = function(data, params, Tau, index=torch_tensor(1:self$n)){
+    torch_elbo = function(data, params, index=torch_tensor(1:self$n)){
       S2 <- torch_square(params$S[index])
-      XB <- torch_mm(data$X[index], params$B[index])
-      A <- torch_exp(data$O[index] + XB) * torch_mm(torch_exp(params$M[index] + S2 / 2), Tau)
-
-      res <- sum(data$w[index,NULL] * (data$Y[index] * (data$O[index] + XB + torch_mm(params$M[index], Tau))  - A + .5 * torch_log(S2)))
+      XB <- torch_mm(data$X[index], params$B)
+      A  <- torch_exp(data$O[index] + XB) * torch_mm(torch_exp(params$M[index] + S2 / 2), private$Tau)
+      res <- .5 * sum(data$w[index]) * torch_logdet(private$torch_Sigma(data, params, index)) +
+        sum(data$w[index,NULL] * (A - data$Y[index] * (data$O[index] + XB + torch_mm(params$M[index], private$Tau)))) -
+              .5 * sum(data$w[index,NULL] * torch_log(S2))
       res
     },
 
-    torch_Tau = function(data, params) {
+    torch_update_Tau = function(data, params) {
       A <- torch_t(torch_exp(params$M + .5 * torch_square(params$S)))
       B <- torch_exp(torch_mm(data$X, params$B) + data$O)
-      log_Alpha <- log(torch_unsqueeze(torch_mean(Tau, 2), 2))
+      log_Alpha <- log(torch_unsqueeze(torch_mean(private$Tau, 2), 2))
       with_no_grad({
         rho <- torch_mm(log_Alpha, torch_ones(c(1,self$p))) +
           torch_mm(torch_t(params$M), data$Y) - torch_mm(A, B)
       })
-      torch_clamp(torch:::torch_softmax(rho, 1), 1e-3, 1 - 1e-3)
+      private$Tau <- torch_clamp(torch:::torch_softmax(rho, 1), 1e-3, 1 - 1e-3)
     },
 
     torch_vloglik = function(data, params) {
       S2 <- torch_square(params$S)
+      log_Alpha <- log(torch_unsqueeze(torch_mean(params$Tau, 2), 2))
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
         .5 * torch_logdet(params$Omega) +
-          torch_sum(data$Y * (params$mu + torch_mm(params$M, params$Tau)) - params$A + .5 * torch_log(S2), dim = 2) -
+          torch_sum(data$Y * params$Z - params$A, dim = 2) +
+          .5 * torch_sum(torch_log(S2), dim = 2) -
           .5 * torch_sum(torch_mm(params$M, params$Omega) * params$M + S2 * torch_diag(params$Omega), dim = 2) -
             torch_sum(torch:::torch_xlogy(params$Tau, params$Tau)) +
-            torch_sum(torch_mm(torch_t(torch_log(params$Alpha)), params$Tau))
+            torch_sum(torch_mm(torch_t(log_Alpha), params$Tau))
       )
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
@@ -94,8 +116,8 @@ PLNblockfit <- R6Class(
 
       ## Conversion of data and parameters to torch tensors (pointers)
       data   <- lapply(data, torch_tensor)                         # list with Y, X, O, w
-      Tau <- torch_tensor(params$Tau); params$Tau <- NULL
       params <- lapply(params, torch_tensor, requires_grad = TRUE) # list with B, M, S
+      private$Tau <- torch_tensor(private$Tau, dtype = torch_float32())
 
       ## Initialize optimizer
       optimizer <- switch(config$algorithm,
@@ -123,21 +145,18 @@ PLNblockfit <- R6Class(
 
           ## Optimization
           optimizer$zero_grad() # reinitialize gradients
-          loss <- - private$torch_elbo(data, params, Tau, index) # compute current ELBO
+          loss <- private$torch_elbo(data, params, index) # compute current ELBO
           loss$backward()                   # backward propagation
           optimizer$step()                  # optimization
         }
 
         ## Update Tau only every xx iterations
-        if(iterate %% it_update_tau == 0){
-          Tau   <- private$torch_Tau(data, params)
-          Alpha <- torch_unsqueeze(torch_mean(Tau, 2), 2)
-          nUpdatesTauDone = nUpdatesTauDone + 1
-          last_iupdate = last_iupdate + 1
+        if(iterate %% config$it_update_tau == 0){
+          private$torch_update_Tau(data, params)
         }
 
         ## assess convergence
-        objective[iterate + 1] <- - loss$item()
+        objective[iterate + 1] <- loss$item()
         B_new   <- as.numeric(optimizer$param_groups[[1]]$params$B)
         delta_f <- abs(objective[iterate] - objective[iterate + 1]) / abs(objective[iterate + 1])
         delta_x <- sum(abs(B_old - B_new))/sum(abs(B_new))
@@ -162,12 +181,11 @@ PLNblockfit <- R6Class(
         }
       }
 
-      params$Tau   <- private$torch_Tau(data, params)
-      params$Alpha <- torch_unsqueeze(torch_mean(params$Tau, 2), 2)
+      params$Tau   <- private$Tau
       params$Sigma <- private$torch_Sigma(data, params)
       params$Omega <- private$torch_Omega(data, params)
-      params$mu    <- data$O + torch_mm(data$X, params$B)
-      params$A     <- torch_exp(params$mu) * torch_mm(torch_exp(params$M + torch_square(params$S) / 2), params$Tau)
+      params$Z     <- data$O + torch_mm(data$X, params$B) + torch_mm(params$M, params$Tau)
+      params$A     <- torch_exp(data$O + torch_mm(data$X, params$B)) * torch_mm(torch_exp(params$M + torch_square(params$S) / 2), params$Tau)
 
       out <- lapply(params, as.matrix)
       out$Ji <- private$torch_vloglik(data, params)
@@ -190,8 +208,13 @@ PLNblockfit <- R6Class(
     #' @field nb_block number blocks of variables (dimension of the residual covariance)
     nb_block   = function() {as.integer(self$q)},
     #' @field vcov_model character: the model used for the residual covariance
-    vcov_model = function() {"block"}
+    vcov_model = function() {"blocks"},
+    #' @field membership block membership of each variable
+    membership = function() {apply(private$Tau, 2, which.max)},
+    #' @field posteriorProb matrix of posterior probabilities for block belonging
+    posteriorProb = function() {private$Tau}
   )
+
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  END OF THE CLASS PLNblockfit_diagonal
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

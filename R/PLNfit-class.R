@@ -396,8 +396,14 @@ PLNfit <- R6Class(
         colnames(private$B) <- colnames(responses)
         rownames(private$B) <- colnames(covariates)
       }
-      rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
-      rownames(private$Omega) <- colnames(private$Omega) <- colnames(responses)
+      if (self$vcov_model == "blocks") {
+        rownames(private$Sigma) <- colnames(private$Sigma) <- paste("block", 1:self$q, sep="-")
+        rownames(private$Omega) <- colnames(private$Omega) <- paste("block", 1:self$q, sep="-")
+      } else {
+        rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
+        rownames(private$Omega) <- colnames(private$Omega) <- colnames(responses)
+      }
+
       rownames(private$M) <- rownames(private$S) <- rownames(responses)
       colnames(private$S) <- 1:self$q
 

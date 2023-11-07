@@ -68,7 +68,7 @@ PLNblock <- function(formula, nb_blocks = 1:5, data, subset, weights, control = 
 #' @seealso [PLN_param()]
 #' @export
 PLNblock_param <- function(
-    backend       = c("nlopt", "torch"),
+    backend       = c("torch"),
     trace         = 1,
     config_optim  = list(),
     inception     = NULL     # pretrained PLNfit used as initialization
@@ -78,7 +78,7 @@ PLNblock_param <- function(
 
   ## optimization config
   backend <- match.arg(backend)
-  stopifnot(backend %in% c("nlopt", "torch"))
+  stopifnot(backend %in% c("torch"))
   if (backend == "nlopt") {
     stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
     config_opt <- config_default_nlopt
@@ -87,6 +87,8 @@ PLNblock_param <- function(
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_opt <- config_default_torch
   }
+
+  config_opt$it_update_tau <- 20
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-5
   config_opt$maxit_out <- 20

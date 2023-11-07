@@ -20,7 +20,7 @@ config_default_torch <-
     num_batch     = 1      ,
     ftol_rel      = 1e-8   ,
     xtol_rel      = 1e-6   ,
-    lr            = 0.1    ,
+    lr            = 0.01    ,
     momentum      = 0.05   ,
     weight_decay  = 0      ,
     step_sizes    = c(1e-3, 50),

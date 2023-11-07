@@ -41,11 +41,13 @@ PLNblockfamily <- R6Class(
       ## Initialize fields shared by the super class
       super$initialize(responses, covariates, offsets, weights, control)
       private$params  <- nb_blocks
-      private$formula <- formula
 
       ## Default clustering is obtained by CAH on the variational parameters of the means of a fully parametrized PLN
-      myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control)
-      myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control$config_optim)
+      control_init <- control
+      control_init$config_optim <- config_default_nlopt
+      control_init$backend <- "nlopt"
+      myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control_init)
+      myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control_init$config_optim)
       blocks <- hclust(as.dist(1 - cov2cor(myPLN$model_par$Sigma))) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
 
       ## instantiate as many models as cluterings
@@ -54,7 +56,7 @@ PLNblockfamily <- R6Class(
         map(as_indicator) %>%
         map(.check_boundaries) %>%
         map(function(Z) {
-          PLNblock$new(Z, responses, covariates, offsets, formula, control)}
+          PLNblockfit$new(Z, responses, covariates, offsets, weights, formula, control)}
         )
     },
 
@@ -113,7 +115,7 @@ PLNblockfamily <- R6Class(
     #' natural direction, on the same scale as the log-likelihood..
     #' @return a [`ggplot`] graph
     plot = function(criteria = c("loglik", "ICL", "BIC"), reverse = FALSE) {
-      vlines <- sapply(intersect(criteria, c("BIC", "ICL")) , function(crit) self$getBestModel(crit)$nb_bloc)
+      vlines <- sapply(intersect(criteria, c("BIC", "ICL")) , function(crit) self$getBestModel(crit)$nb_block)
       p <- super$plot(criteria, reverse) + xlab("# blocks") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
       p
     },
