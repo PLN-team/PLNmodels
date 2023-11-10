@@ -71,13 +71,11 @@ Rcpp::List nlopt_optimize_block(
     metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + ((A1 * Tau.t()) % A2) % S - pow(S, -1));
     arma::colvec log_alpha = arma::log(mean(Tau,1));
 
-    std::cout << "size Tau" << Tau.size() << std::endl ;
-
-    arma::mat rho = M.t() * Y - arma::trunc_exp(M + .5 * S2).t() * arma::trunc_exp(mu) ;
-    rho.each_col() += log_alpha ;
-
-    rho = arma::exp(rho.each_col() - arma::max(rho, 1));
-    Tau = arma::clamp(rho.each_col() / sum(rho, 1), 1e-5, 1-1e-5);
+    // arma::mat rho = M.t() * Y - arma::trunc_exp(M + .5 * S2).t() * arma::trunc_exp(mu) ;
+    // rho.each_col() += log_alpha ;
+    //
+    // rho = arma::exp(rho.each_row() - arma::max(rho, 0));
+    // Tau = arma::clamp(rho.each_row() / sum(rho, 0), 1e-5, 1-1e-5);
 
     return objective;
   };
