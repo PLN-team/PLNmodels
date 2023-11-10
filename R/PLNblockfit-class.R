@@ -27,7 +27,7 @@
 #' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, blocks = 1:5)
+#' myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, nb_blocks = 1:5)
 #' class(myPLN)
 #' print(myPLN)
 #' }
