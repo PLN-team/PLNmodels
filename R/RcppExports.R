@@ -5,6 +5,14 @@ cpp_test_nlopt <- function() {
     .Call('_PLNmodels_cpp_test_nlopt', PACKAGE = 'PLNmodels')
 }
 
+nlopt_optimize_block <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_block', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+nlopt_optimize_vestep_block <- function(data, params, B, Omega, config) {
+    .Call('_PLNmodels_nlopt_optimize_vestep_block', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
+}
+
 nlopt_optimize_diagonal <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_diagonal', PACKAGE = 'PLNmodels', data, params, config)
 }

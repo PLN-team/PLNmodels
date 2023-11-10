@@ -46,9 +46,8 @@ PLNblockfit <- R6Class(
       private$Tau <- t(blocks)
 
       ## Setup of the optimization backend
-      # private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_block, private$torch_optimize)
-      # private$optimizer$vestep <- nlopt_optimize_vestep_block
-      private$optimizer$main   <- private$torch_optimize
+      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_block, private$torch_optimize)
+      private$optimizer$vestep <- nlopt_optimize_vestep_block
     },
     #' @description Update fields of a [`PLNnetworkfit`] object
     #' @param B matrix of regression matrix
@@ -65,6 +64,15 @@ PLNblockfit <- R6Class(
     update = function(Tau=NA, B=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
       super$update(B = B, Sigma = Sigma, Omega = Omega, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
       if (!anyNA(Tau)) private$Tau <- Tau
+    },
+
+    #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
+    optimize = function(responses, covariates, offsets, weights, config) {
+      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights, Tau = private$Tau),
+                   params = list(B = private$B, M = private$M, S = private$S),
+                   config = config)
+      optim_out <- do.call(private$optimizer$main, args)
+      do.call(self$update, optim_out)
     }
 
   ),
@@ -115,9 +123,9 @@ PLNblockfit <- R6Class(
     torch_optimize = function(data, params, config) {
 
       ## Conversion of data and parameters to torch tensors (pointers)
-      data   <- lapply(data, torch_tensor, dtype = torch_float64())                         # list with Y, X, O, w
+      data   <- lapply(data, torch_tensor, dtype = torch_float64())                         # list with Y, X, O, w and Tau0
       params <- lapply(params, torch_tensor, requires_grad = TRUE, dtype = torch_float64()) # list with B, M, S
-      private$Tau <- torch_tensor(private$Tau, dtype = torch_float64())
+      private$Tau <- data$Tau
 
       ## Initialize optimizer
       optimizer <- switch(config$algorithm,
@@ -151,7 +159,7 @@ PLNblockfit <- R6Class(
         }
 
         ## Update Tau only every xx iterations
-        if(iterate %% config$it_update_tau == 0){
+        if (iterate %% config$it_update_tau == 0) {
           private$torch_update_Tau(data, params)
         }
 
