@@ -254,7 +254,7 @@ PLNfit <- R6Class(
     },
 
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
-      jacks <- lapply(seq_len(self$n), function(i) {
+      jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
         data <- list(Y = Y[-i, , drop = FALSE],
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
@@ -286,7 +286,7 @@ PLNfit <- R6Class(
 
     variance_bootstrap = function(Y, X, O, w, n_resamples = 100, config = config_default_nlopt) {
       resamples <- replicate(n_resamples, sample.int(self$n, replace = TRUE), simplify = FALSE)
-      boots <- lapply(resamples, function(resample) {
+      boots <- future.apply::future_lapply(resamples, function(resample) {
         data <- list(Y = Y[resample, , drop = FALSE],
                      X = X[resample, , drop = FALSE],
                      O = O[resample, , drop = FALSE],
