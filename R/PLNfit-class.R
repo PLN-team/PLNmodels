@@ -216,16 +216,6 @@ PLNfit <- R6Class(
     },
 
     compute_vcov_from_resamples = function(resamples){
-      # compute the covariance of the parameters
-      get_cov_mat = function(data, cell_group) {
-
-        cov_matrix = cov(data)
-        rownames(cov_matrix) = paste0(cell_group, "_", rownames(cov_matrix))
-        colnames(cov_matrix) = paste0(cell_group, "_", colnames(cov_matrix))
-        return(cov_matrix)
-      }
-
-
       B_list = resamples %>% map("B")
       #print (B_list)
       vcov_B = lapply(seq(1, ncol(private$B)), function(B_col){
