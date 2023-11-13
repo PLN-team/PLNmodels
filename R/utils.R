@@ -110,7 +110,7 @@ trace <- function(x) sum(diag(x))
 
 .logfactorial_torch <- function(n){
   n[n == 0] <- 1 ## 0! = 1!
-  n*torch_log(n) - n + torch_log(8*torch_pow(n,3) + 4*torch_pow(n,2) + n + 1/30)/6 + log(pi)/2
+  n*torch_log(n) - n + torch_log(8*torch_pow(n,3) + 4*torch_pow(n,2) + n + 1/30)/6 + torch_log(pi)/2
 }
 
 .logfactorial <- function(n) { # Ramanujan's formula

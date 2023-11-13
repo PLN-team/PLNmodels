@@ -85,9 +85,8 @@ PLNfit <- R6Class(
       Ji_tmp = .5 * torch_logdet(params$Omega) +
         torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
         .5 * torch_sum(torch_mm(params$M, params$Omega) * params$M + S2 * torch_diag(params$Omega), dim = 2)
-      Ji_tmp = Ji_tmp$cpu()
-      Ji_tmp = as.numeric(Ji_tmp)
-      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y$cpu()))) + Ji_tmp
+      Ji <- - torch_sum(.logfactorial_torch(data$Y), dim = 2) + Ji_tmp
+      Ji <- .5 * self$p + as.numeric(Ji$cpu())
 
       attr(Ji, "weights") <- as.numeric(data$w$cpu())
       Ji
