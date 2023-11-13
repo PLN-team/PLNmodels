@@ -456,7 +456,8 @@ PLNfit <- R6Class(
     },
 
     #' @description Update R2, fisher and std_err fields after optimization
-    #' @param config a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
+    #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
+    #' @param config_optim a list for controlling the optimization (optional bootstrap, jackknife, R2, etc.). See details
     #' @details The list of parameters `config` controls the post-treatment processing, with the following entries:
     #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
     #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).

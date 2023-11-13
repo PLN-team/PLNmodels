@@ -41,8 +41,6 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 
   ## Post-treatments
   if (control$trace > 0) cat("\n Post-treatments")
-  #config_post <- config_post_default_PLNnetwork;
-  #config_post$trace <- control$trace
   myPLN$postTreatment(control$config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
@@ -56,6 +54,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
 #' @param inception_cov Covariance structure used for the inception model used to initialize the PLNfamily. Defaults to "full" and can be constrained to "diagonal" and "spherical".
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
+#' @param config_post a list for controlling the post-treatment (optional bootstrap, jackknife, R2, etc).
 #' @param trace a integer for verbosity.
 #' @param n_penalties an integer that specifies the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`
 #' @param min_ratio the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by `min_ratio`. Default is 0.1.

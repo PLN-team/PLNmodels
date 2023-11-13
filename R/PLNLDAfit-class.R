@@ -84,7 +84,8 @@ PLNLDAfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Post treatment --------------------
     #' @description  Update R2, fisher and std_err fields and visualization
-    #' @param config list controlling the post-treatment
+    #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).
+    #' @param config_optim list controlling the optimization parameters
     postTreatment = function(grouping, responses, covariates, offsets, config_post, config_optim) {
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
       super$postTreatment(responses, covariates, offsets, config_post = config_post, config_optim = config_optim)
