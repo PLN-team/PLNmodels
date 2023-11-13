@@ -71,6 +71,7 @@ Collate:
     'PLNPCAfit-class.R'
     'PLNblockfit-class.R'
     'PLNblock.R'
+    'PLNblockfamily-S3methods.R'
     'PLNblockfamily-class.R'
     'PLNfamily-S3methods.R'
     'PLNfit-S3methods.R'

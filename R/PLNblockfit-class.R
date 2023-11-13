@@ -11,6 +11,7 @@
 #' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization.
+#' @param config part of the \code{control} argument which configures the optimizer
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param B matrix of regression matrix
 #' @param Sigma variance-covariance matrix of the latent variables
