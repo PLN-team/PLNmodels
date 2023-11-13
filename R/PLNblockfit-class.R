@@ -223,13 +223,13 @@ PLNblockfit <- R6Class(
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
     loglik_vec = function() {private$Ji},
     #' @field entropy Entropy of the variational distribution
-    entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2))) - sum(.xlogx(private$tau))},
+    entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2))) - sum(.xlogx(private$Tau))},
     #' @field ICL variational lower bound of the ICL
     membership = function() {apply(private$Tau, 2, which.max)},
     #' @field posteriorProb matrix of posterior probabilities for block belonging
     posteriorProb = function() {private$Tau},
     #' @field groupProportion vector of cluster proportions
-    groupProportion  = function() {rowMeans(private$tau)}
+    groupProportion  = function() {rowMeans(private$Tau)}
   )
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
