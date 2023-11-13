@@ -291,9 +291,7 @@ PLNfit <- R6Class(
                      X = X[resample, , drop = FALSE],
                      O = O[resample, , drop = FALSE],
                      w = w[resample])
-        #print (config$torch_device)
-        #print (config)
-        if (config$algorithm %in% c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")) # hack, to know if we're doing torch or not
+        if (config$backend == "torch") # Convert data to torch tensors
           data   <- lapply(data, torch_tensor, device = config$device)                         # list with Y, X, O, w
 
         #print (data$Y$device)
@@ -301,7 +299,7 @@ PLNfit <- R6Class(
         args <- list(data = data,
                      params = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
                      config = config)
-        if (config$algorithm %in% c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")) # hack, to know if we're doing torch or not
+        if (config$backend == "torch") # Convert data to torch tensors
           args$params <- lapply(args$params, torch_tensor, requires_grad = TRUE, device = config$device) # list with B, M, S
 
         optim_out <- do.call(private$optimizer$main, args)

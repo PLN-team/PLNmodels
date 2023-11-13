@@ -4,6 +4,7 @@ available_algorithms_torch <- c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")
 config_default_nlopt <-
   list(
     algorithm     = "CCSAQ",
+    backend       = "nlopt",
     maxeval       = 10000  ,
     ftol_rel      = 1e-8   ,
     xtol_rel      = 1e-6   ,
@@ -15,6 +16,7 @@ config_default_nlopt <-
 config_default_torch <-
   list(
     algorithm     = "RPROP",
+    backend       = "torch",
     maxeval       = 10000  ,
     num_epoch     = 1000   ,
     num_batch     = 1      ,
