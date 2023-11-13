@@ -8,7 +8,7 @@
 #include "utils.h"
 
 // ---------------------------------------------------------------------------------------
-  // Fully parametrized covariance
+// Fully parametrized covariance
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_block(
@@ -67,19 +67,16 @@ Rcpp::List nlopt_optimize_block(
     arma::mat Omega = w_bar * inv_sympd(M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
     double objective = accu(w.t() * (A - Y % (mu + M * Tau))) - 0.5 * accu(w.t() * log(S2)) - 0.5 * w_bar * real(log_det(Omega));
 
-
     metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
     metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A_tau - Y * Tau.t());
     metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + A_tau % S - pow(S, -1));
 
     arma::colvec log_alpha = arma::log(mean(Tau,1));
-    arma::mat rho = M.t() * Y - A1.t() * A2  ; rho.each_col() += log_alpha ;
-
-    arma::rowvec rho_max = arma::max(rho, 0) ;
-    rho_max.print() ;
-
-    rho = arma::trunc_exp(rho.each_row() - rho_max) ;
-    Tau = arma::clamp(rho.each_col() / sum(rho, 0), 1e-5, 1-1e-5);
+    arma::mat Tau = M.t() * Y - A1.t() * A2  ;
+    Tau.each_col() += log_alpha ;
+    Tau.each_col( [](arma::vec& x){
+      x = exp(x - max(x)) / sum(exp(x - max(x))) ;
+    }) ;
 
     return objective;
   };
@@ -95,18 +92,13 @@ Rcpp::List nlopt_optimize_block(
   arma::mat Sigma = (1. / w_bar) * (M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
   arma::mat Omega = inv_sympd(Sigma);
 
-
   // Element-wise log-likehood
-
   arma::mat mu = O + X * B;
   arma::mat Z = mu + M * Tau;
   arma::mat A1 = trunc_exp(M + .5 * S2) ;
   arma::mat A2 = trunc_exp(mu) ;
   arma::mat A = A2 % (A1 * Tau) ;
   arma::colvec log_alpha = arma::log(mean(Tau,1));
-  arma::mat rho = M.t() * Y - A1.t() * A2  ; rho.each_col() += log_alpha ;
-  rho = arma::trunc_exp(rho.each_row() - arma::max(rho, 0)) ;
-  Tau = arma::clamp(rho.each_col() / sum(rho, 1), 1e-5, 1-1e-5);
 
   arma::vec loglik = sum(Y % Z - A, 1) + 0.5 * sum(log(S2), 1) - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1) +
   0.5 * real(log_det(Omega)) + ki(Y) + accu(log_alpha.t() * Tau) + accu(Tau % arma::trunc_log(Tau)) ;

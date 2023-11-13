@@ -72,7 +72,6 @@ PLNblockfit <- R6Class(
                    params = list(B = private$B, M = private$M, S = private$S),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
-      browser()
       do.call(self$update, optim_out)
     }
 
