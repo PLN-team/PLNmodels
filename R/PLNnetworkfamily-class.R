@@ -49,11 +49,14 @@ PLNnetworkfamily <- R6Class(
         # CHECK_ME_TORCH_GPU
         # This appears to be in torch_gpu only. The commented out line below is
         # in both PLNmodels/master and PLNmodels/dev.
-        myPLN <- switch(control$covariance,
-                       "spherical" = PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control),
-                       "diagonal" = PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control),
-                       PLNfit$new(responses, covariates, offsets, weights, formula, control)) # defaults to fixed
-        # myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, control)
+        myPLN <- switch(
+          control$inception_cov,
+          "spherical" = PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control),
+          "diagonal" = PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control),
+          PLNfit$new(responses, covariates, offsets, weights, formula, control) # defaults to full
+        )
+        ## Allow inception with spherical / diagonal / full PLNfit before switching back to PLNfit_fixedcov
+        ## for the inner-outer loop of PLNnetwork.
         myPLN$optimize(responses, covariates, offsets, weights, control$config_optim)
         control$inception <- myPLN
       }

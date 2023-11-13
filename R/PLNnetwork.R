@@ -54,6 +54,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
+#' @param inception_cov Covariance structure used for the inception model used to initialize the PLNfamily. Defaults to "full" and can be constrained to "diagonal" and "spherical".
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
 #' @param trace a integer for verbosity.
 #' @param n_penalties an integer that specifies the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`
@@ -74,14 +75,14 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @export
 PLNnetwork_param <- function(
     backend           = c("nlopt", "torch"),
-    covariance        = c("fixed", "spherical", "diagonal"),
+    inception_cov     = c("full", "spherical", "diagonal"),
     trace             = 1      ,
     n_penalties       = 30     ,
     min_ratio         = 0.1    ,
     penalize_diagonal = TRUE   ,
     penalty_weights   = NULL   ,
-    config_post   = list(),
-    config_optim  = list(),
+    config_post       = list(),
+    config_optim      = list(),
     inception         = NULL
 ) {
 
@@ -103,7 +104,7 @@ PLNnetwork_param <- function(
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_opt <- config_default_torch
   }
-  covariance <- match.arg(covariance)
+  inception_cov <- match.arg(inception_cov)
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-5
   config_opt$maxit_out <- 20
@@ -112,7 +113,7 @@ PLNnetwork_param <- function(
   structure(list(
     backend           = backend          ,
     trace             = trace            ,
-    covariance        = covariance       ,
+    inception_cov     = inception_cov    ,
     n_penalties       = n_penalties      ,
     min_ratio         = min_ratio        ,
     penalize_diagonal = penalize_diagonal,
