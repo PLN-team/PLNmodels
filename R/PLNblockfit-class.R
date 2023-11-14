@@ -219,7 +219,7 @@ PLNblockfit <- R6Class(
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"blocks"},
     #' @field loglik (weighted) variational lower bound of the loglikelihood
-    loglik     = function() {sum(self$weights[self$weights > .Machine$double.eps] * private$Ji[self$weights > .Machine$double.eps]) },
+    loglik     = function() {sum(self$weights * private$Ji) },
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
     loglik_vec = function() {private$Ji},
     #' @field entropy Entropy of the variational distribution

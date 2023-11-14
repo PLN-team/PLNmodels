@@ -63,19 +63,19 @@ Rcpp::List nlopt_optimize_block(
     arma::mat A1 = trunc_exp(M + .5 * S2) ;
     arma::mat A2 = trunc_exp(mu) ;
     arma::mat A = A2 % (A1 * Tau) ;
-    arma::mat A_tau = ((A2 * Tau.t()) % A1) ;
+    arma::mat A_tau = A1 % (A2 * Tau.t()) ;
     arma::mat Omega = w_bar * inv_sympd(M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
     double objective = accu(w.t() * (A - Y % (mu + M * Tau))) - 0.5 * accu(w.t() * log(S2)) - 0.5 * w_bar * real(log_det(Omega));
 
     metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
     metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A_tau - Y * Tau.t());
-    metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + A_tau % S - pow(S, -1));
+    metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A_tau - pow(S, -1));
 
     arma::colvec log_alpha = arma::log(mean(Tau,1));
     arma::mat Tau = M.t() * Y - A1.t() * A2  ;
     Tau.each_col() += log_alpha ;
     Tau.each_col( [](arma::vec& x){
-      x = exp(x - max(x)) / sum(exp(x - max(x))) ;
+      x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;
     }) ;
 
     return objective;
@@ -95,13 +95,11 @@ Rcpp::List nlopt_optimize_block(
   // Element-wise log-likehood
   arma::mat mu = O + X * B;
   arma::mat Z = mu + M * Tau;
-  arma::mat A1 = trunc_exp(M + .5 * S2) ;
-  arma::mat A2 = trunc_exp(mu) ;
-  arma::mat A = A2 % (A1 * Tau) ;
-  arma::colvec log_alpha = arma::log(mean(Tau,1));
+  arma::mat A = trunc_exp(mu) % (trunc_exp(M + .5 * S2) * Tau) ;
+  arma::colvec log_alpha = arma::log(mean(Tau, 1));
 
   arma::vec loglik = sum(Y % Z - A, 1) + 0.5 * sum(log(S2), 1) - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1) +
-  0.5 * real(log_det(Omega)) + ki(Y) + accu(log_alpha.t() * Tau) - accu(Tau % arma::trunc_log(Tau)) ;
+  0.5 * real(log_det(Omega)) + ki(Y) + (accu(log_alpha.t() * Tau) - accu(Tau % arma::trunc_log(Tau)))/w_bar ;
 
   Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
   Ji.attr("weights") = w;

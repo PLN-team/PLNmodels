@@ -48,20 +48,6 @@ Rcpp::List nlopt_optimize(
         }
     }
 
-    // if(config.containsElementNamed("x_weights")) {
-    //   SEXP value = config["x_weights"];
-    //   if(Rcpp::is<double>(value)) {
-    //     set_uniform_x_weights(optimizer.get(), Rcpp::as<double>(value));
-    //   } else {
-    //     auto per_param_list = Rcpp::as<Rcpp::List>(value);
-    //     auto packed = std::vector<double>(metadata.packed_size);
-    //     set_from_r_sexp(metadata.map<B_ID>(packed.data()), per_param_list["B"]);
-    //     set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
-    //     set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
-    //     set_per_value_x_weights(optimizer.get(), packed);
-    //   }
-    // }
-
     const double w_bar = accu(w);
 
     // Optimize

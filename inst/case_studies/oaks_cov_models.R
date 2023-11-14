@@ -15,7 +15,7 @@ system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), da
 system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
 
 ## Blockwise covariance
-system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = 1:40, data = oaks))
+system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = 1:70, data = oaks))
 myPLN_block <- getBestModel(myPLN_blocks)
 
 data.frame(
