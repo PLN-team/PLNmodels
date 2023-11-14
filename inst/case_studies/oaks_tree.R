@@ -16,6 +16,20 @@ system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), d
 
 ## Blockwise covariance
 system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = 1:40, data = oaks))
+myPLN_block <- getBestModel(myPLN_blocks)
+
+data.frame(
+  fitted   = c(as.vector(fitted(myPLN)), as.vector(fitted(myPLN_diagonal)),
+               as.vector(fitted(myPLN_spherical)), as.vector(fitted(myPLN_block))),
+  observed = rep(as.vector(oaks$Abundance), 2),
+  method   = factor(rep(c("full", "diagonal", "spherical", "block"), each = length(oaks$Abundance)))
+) %>%
+  ggplot(aes(x = observed, y = fitted)) +
+  geom_point(size = .5, alpha =.25 ) +
+  facet_wrap( ~ method) +
+  scale_x_log10() +
+  scale_y_log10(limits  =c(1e-2, 1e4)) +
+  theme_bw() + annotation_logticks()
 
 ## Genetic model : mixture between fixed correlation matrix + I sigma^2
 # C <- toeplitz(0.5^(1:ncol(oaks$Abundance) - 1))
@@ -26,10 +40,10 @@ system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)),
 rbind(
   myPLN$criteria,
   myPLN_diagonal$criteria,
-  myPLN_spherical$criteria
-  # myPLN_genetic$criteria
+  myPLN_spherical$criteria,
+  myPLN_block$criteria
 ) %>%
-  as.data.frame(row.names = c("full", "diagonal", "spherical")) %>%
+  as.data.frame(row.names = c("full", "diagonal", "spherical", "block")) %>%
   knitr::kable()
 
 ## Discriminant Analysis with LDA

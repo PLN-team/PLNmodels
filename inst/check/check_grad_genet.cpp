@@ -2,7 +2,6 @@
 
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(nloptr)]]
-// [[Rcpp::plugins(cpp11)]]
 
 // [[Rcpp::export]]
 double objective_genet(arma::vec param, const arma::mat &Y, const arma::mat&X, const arma::mat&V, const arma::vec &Lambda) {
