@@ -14,6 +14,9 @@ system.time(myPLN <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks
 system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "diagonal")))
 system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
 
+## Blockwise covariance
+system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = 1:40, data = oaks))
+
 ## Genetic model : mixture between fixed correlation matrix + I sigma^2
 # C <- toeplitz(0.5^(1:ncol(oaks$Abundance) - 1))
 # system.time(myPLN_genetic <-

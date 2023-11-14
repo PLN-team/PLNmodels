@@ -68,30 +68,18 @@ PLNblockfamily <- R6Class(
     #' @description Call to the C++ optimizer on all models of the collection
     #' @param config a list for controlling the optimization.
     optimize = function(config) {
-      ## Go along the penalty grid (i.e the models)
-      for (m in seq_along(self$models))  {
-
+      self$models <- future.apply::future_lapply(self$models, function(model) {
         if (config$trace == 1) {
-          cat("\tnumber of blocks =", self$models[[m]]$nb_block, "\r")
+          cat("\tnumber of blocks =", model$nb_block, "\r")
           flush.console()
         }
         if (config$trace > 1) {
-          cat("\tnumber of blocks =", self$models[[m]]$nb_block, "- iteration:")
+          cat("\tnumber of blocks =", model$nb_block, "\r")
+          cat("\n\t conservative convex separable approximation for gradient descent")
         }
-        self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
-        ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
-        if (m < length(self$penalties))
-          self$models[[m + 1]]$update(
-            B = self$models[[m]]$model_par$B,
-          )
-
-        if (config$trace > 1) {
-          cat("\r                                                                                    \r")
-          flush.console()
-        }
-
-      }
-
+        model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
+        model
+      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
     },
 
     #' @description Extract best model in the collection
