@@ -205,14 +205,17 @@ PLNfit <- R6Class(
     },
 
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
-      cat("Computing jackknife variance estimator", sep = "\n")
+      cat("\n  Computing jackknife variance estimator", sep = "\n")
       jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
+        # cat(paste0("Jackknife estimate ", i, "/", self$n), sep = "\n")
         data <- list(Y = Y[-i, , drop = FALSE],
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
                      w = w[-i])
         args <- list(data = data,
-                     params = list(B = private$B, M = matrix(0, self$n-1, self$p), S = private$S[-i, ]),
+                     params = list(B = private$B * (1 + matrix(runif(min = -0.5, max = 0.5, n = self$d * self$p), self$d, self$p)),
+                                   M = matrix(0, self$n-1, self$p),
+                                   S = private$S[-i, , drop = FALSE]),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
