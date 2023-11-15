@@ -223,6 +223,7 @@ PLNfit <- R6Class(
       B_hat  <- private$B[,] ## strips attributes while preserving names
       attr(private$B, "bias") <- (self$n - 1) * (B_jack - B_hat)
       attr(private$B, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+      attr(private$B, "estimates_jackknife") <- jacks
 
       Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`) %>%
