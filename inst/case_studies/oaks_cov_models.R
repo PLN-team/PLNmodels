@@ -2,7 +2,7 @@ library(PLNmodels)
 library(tidyverse)
 
 ## setting up future for parallelism
-nb_cores <- 20
+nb_cores <- 10
 options(future.fork.enable = TRUE)
 future::plan("multicore", workers = nb_cores)
 
@@ -15,7 +15,7 @@ system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), da
 system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
 
 ## Blockwise covariance
-system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = 1:70, data = oaks))
+system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = 1:70, data = oaks, control = PLNblock_param(inception = myPLN)))
 myPLN_block <- getBestModel(myPLN_blocks)
 
 data.frame(
@@ -30,5 +30,14 @@ data.frame(
   scale_x_log10() +
   scale_y_log10(limits  =c(1e-2, 1e4)) +
   theme_bw() + annotation_logticks()
+
+rbind(
+  myPLN$criteria,
+  myPLN_diagonal$criteria,
+  myPLN_spherical$criteria,
+  myPLN_block$criteria
+) %>%
+  as.data.frame(row.names = c("full", "diagonal", "spherical", "block")) %>%
+  knitr::kable()
 
 future::plan("sequential")

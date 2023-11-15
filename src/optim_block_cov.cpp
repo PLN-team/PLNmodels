@@ -99,7 +99,7 @@ Rcpp::List nlopt_optimize_block(
   arma::colvec log_alpha = arma::log(mean(Tau, 1));
 
   arma::vec loglik = sum(Y % Z - A, 1) + 0.5 * sum(log(S2), 1) - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1) +
-  0.5 * real(log_det(Omega)) + ki(Y) + (accu(log_alpha.t() * Tau) - accu(Tau % arma::trunc_log(Tau)))/w_bar ;
+  0.5 * real(log_det(Omega)) + ki(Y) + accu(log_alpha.t() * Tau) - accu(Tau % arma::trunc_log(Tau)) ;
 
   Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
   Ji.attr("weights") = w;
