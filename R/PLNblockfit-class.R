@@ -226,8 +226,12 @@ PLNblockfit <- R6Class(
     },
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
     loglik_vec = function() {private$Ji},
-    #' @field entropy Entropy of the variational distribution
-    entropy    = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2))) - sum(.xlogx(private$Tau))},
+    #' @field entropy_clustering Entropy of the variational distribution of the block (multinomial)
+    entropy_blocks = function() {-sum(.xlogx(private$tau))},
+    #' @field entropy_latent Entropy of the variational distribution of the latent vector (Gaussian)
+    entropy_latent = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2)))},
+    #' @field entropy Full entropy of the variational distribution (latent vector + block)
+    entropy = function() {self$entropy_latent + self$entropy_blocks},
     #' @field ICL variational lower bound of the ICL
     membership = function() {apply(private$Tau, 2, which.max)},
     #' @field posteriorProb matrix of posterior probabilities for block belonging

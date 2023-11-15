@@ -27,3 +27,22 @@ rbind(
 ) %>%
   as.data.frame(row.names = c("full", "spherical", "p block", "1 block")) %>%
   knitr::kable()
+
+## Check PLN full and PLN p block are similar (up to the term sum(tau * log(alpha)) )
+vll_PLN_block <- PLN_full_block$loglik_vec - sum(PLN_full_block$posteriorProb * log(PLN_full_block$groupProportion))
+vll_PLN <- PLN_full$loglik_vec
+plot(vll_PLN, vll_PLN_block)
+abline(0,1)
+## YES
+print(PLN_full$loglik - (PLN_full_block$loglik - sum(PLN_full_block$posteriorProb * log(PLN_full_block$groupProportion))))
+
+
+## Check PLN full and PLN p block are similar (up to the term sum(tau * log(alpha)) )
+vll_PLN_one_block <- PLN_one_block$loglik_vec - sum(PLN_one_block$posteriorProb * log(PLN_one_block$groupProportion))
+vll_PLN_spherical <- PLN_spherical$loglik_vec
+plot(vll_PLN_spherical, vll_PLN_one_block)
+abline(0,1)
+## YES
+print(PLN_full$loglik - (PLN_full_block$loglik - sum(PLN_full_block$posteriorProb * log(PLN_full_block$groupProportion))))
+
+

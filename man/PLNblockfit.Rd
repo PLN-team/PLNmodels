@@ -20,6 +20,13 @@ print(myPLN)
 \section{Super class}{
 \code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{PLNblockfit}
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{ICL}}{variational lower bound of the ICL}
+}
+\if{html}{\out{</div>}}
+}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
@@ -29,9 +36,17 @@ print(myPLN)
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
-\item{\code{membership}}{block membership of each variable}
+\item{\code{loglik}}{(weighted) variational lower bound of the loglikelihood}
+
+\item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}
+
+\item{\code{entropy}}{Entropy of the variational distribution}
+
+\item{\code{ICL}}{variational lower bound of the ICL}
 
 \item{\code{posteriorProb}}{matrix of posterior probabilities for block belonging}
+
+\item{\code{groupProportion}}{vector of cluster proportions}
 }
 \if{html}{\out{</div>}}
 }
