@@ -499,8 +499,6 @@ PLNfit <- R6Class(
           )
 
       M <- tcrossprod(VE$M, A)
-      # S <- map(1:n_new, ~crossprod(sqrt(VE$S[., ]) * t(A)) + Sigma21) %>%
-      #   simplify2array()
       S <- map(1:n_new, ~crossprod(VE$S[., ] * t(A)) + Sigma21) %>% simplify2array()
 
       ## mean latent positions in the parameter space
@@ -510,9 +508,9 @@ PLNfit <- R6Class(
       # ! We should only add the .5*diag(S2) term only if we want the type="response"
       if (type == "response") {
         if (ncol(EZ) == 1) {
-          EZ <- EZ + .5 * S
+          EZ <- EZ + .5 * S**2
         } else {
-          EZ <- EZ + .5 * t(apply(S, 3, diag))
+          EZ <- EZ + .5 * t(apply(S**2, 3, diag))
         }
       }
       results <- switch(type, link = EZ, response = exp(EZ))
