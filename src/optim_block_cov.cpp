@@ -27,7 +27,7 @@ Rcpp::List nlopt_optimize_block(
   arma::mat Tau       = Rcpp::as<arma::mat>(data["Tau"]); // (q,p)
 
   const auto metadata = tuple_metadata(init_B, init_M, init_S);
-  enum { B_ID, M_ID, S_ID }; // Names for metadata indexes
+  enum { B_ID, M_ID, S_ID}; // Names for metadata indexes
 
   auto parameters = std::vector<double>(metadata.packed_size);
   metadata.map<B_ID>(parameters.data()) = init_B;
@@ -62,6 +62,7 @@ Rcpp::List nlopt_optimize_block(
     arma::mat mu = O + X * B ;
     arma::mat A1 = trunc_exp(M + .5 * S2) ;
     arma::mat A2 = trunc_exp(mu) ;
+
     arma::mat A = A2 % (A1 * Tau) ;
     arma::mat A_tau = A1 % (A2 * Tau.t()) ;
     arma::mat Omega = w_bar * inv_sympd(M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
@@ -71,16 +72,40 @@ Rcpp::List nlopt_optimize_block(
     metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A_tau - Y * Tau.t());
     metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A_tau - pow(S, -1));
 
+    return objective;
+  };
+
+  // V-EM Initialization (first step)
+  OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+  Rcpp::NumericVector objective ; objective.push_back(result.objective) ;
+  arma::mat current_Tau(Tau) ;
+  Rcpp::List posteriorProb ; posteriorProb.push_back(current_Tau) ;
+  int iter = 0;
+  double threshold = Rcpp::as<double>(config["ftol_out"]);
+  double maxiter = Rcpp::as<int>(config["maxit_out"]);
+  do { // GO for it
+    iter++;
+    // VE
     arma::colvec log_alpha = arma::log(mean(Tau,1));
-    arma::mat Tau = M.t() * Y - A1.t() * A2  ;
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
+    arma::mat S2 = S % S;
+    arma::mat B = metadata.copy<B_ID>(parameters.data());
+    arma::mat mu = O + X * B ;
+    arma::mat A1 = trunc_exp(M + .5 * S2) ;
+    arma::mat A2 = trunc_exp(mu) ;
+    Tau = M.t() * Y - A1.t() * A2  ;
     Tau.each_col() += log_alpha ;
     Tau.each_col( [](arma::vec& x){
       x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;
     }) ;
+    arma::mat current_Tau(Tau) ; posteriorProb.push_back(current_Tau) ;
 
-    return objective;
-  };
-  OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+    // M
+    result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+    objective.push_back(result.objective)  ;
+
+  } while( std::abs(objective[iter] - objective[iter-1])/std::abs(objective[iter-1]) > threshold & iter < maxiter) ;
 
   // Variational parameters
   arma::mat M = metadata.copy<M_ID>(parameters.data());
@@ -117,6 +142,9 @@ Rcpp::List nlopt_optimize_block(
     Rcpp::Named("monitoring", Rcpp::List::create(
         Rcpp::Named("status", static_cast<int>(result.status)),
         Rcpp::Named("backend", "nlopt"),
+        Rcpp::Named("posteriorProb", wrap(posteriorProb)),
+        Rcpp::Named("objective", wrap(objective)),
+        Rcpp::Named("outer_iterations", objective.length()),
         Rcpp::Named("iterations", result.nb_iterations)
     ))
   );

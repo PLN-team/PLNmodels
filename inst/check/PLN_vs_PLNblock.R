@@ -1,4 +1,5 @@
 library(PLNmodels)
+library(tidyverse)
 
 ## setting up future for parallelism
 nb_cores <- 10
@@ -46,3 +47,14 @@ abline(0,1)
 print(PLN_full$loglik - (PLN_full_block$loglik - sum(PLN_full_block$posteriorProb * log(PLN_full_block$groupProportion))))
 
 
+data.frame(
+  fitted   = c(as.vector(fitted(PLN_full)), as.vector(fitted(PLN_spherical)), as.vector(fitted(PLN_blocks$models[[8]]))),
+  observed = rep(as.vector(trichoptera$Abundance), 3),
+  method   = factor(rep(c("full", "spherical", "block"), each = length(trichoptera$Abundance)))
+) %>%
+  ggplot(aes(x = observed, y = fitted)) +
+  geom_point(size = .5, alpha =.25 ) +
+  facet_wrap( ~ method) +
+  scale_x_log10() +
+  scale_y_log10(limits  =c(1e-2, 1e4)) +
+  theme_bw() + annotation_logticks()
