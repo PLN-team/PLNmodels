@@ -1,3 +1,7 @@
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS PLNfit #######################################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 #' An R6 Class to represent a PLNfit in a standard, general framework
 #'
 #' @description The function [PLN()] fit a model which is an instance of a object with class [`PLNfit`].
@@ -211,7 +215,10 @@ PLNfit <- R6Class(
                      O = O[-i, , drop = FALSE],
                      w = w[-i])
         args <- list(data = data,
-                     params = list(B = private$B, M = matrix(0, self$n-1, self$p), S = private$S[-i, ]),
+                     # params = list(B = private$B,
+                     #               M = matrix(0, self$n-1, self$p),
+                     #               S = private$S[-i, , drop = FALSE]),
+                     params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
@@ -240,7 +247,8 @@ PLNfit <- R6Class(
                      O = O[resample, , drop = FALSE],
                      w = w[resample])
         args <- list(data = data,
-                     params = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
+                     # params = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
+                     params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega", "monitoring")]
@@ -301,10 +309,14 @@ PLNfit <- R6Class(
         private$S     <- control$inception$var_par$S
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-        fits <- lm.fit(weights * covariates, weights * log((1 + responses)/exp(offsets)))
-        private$B <- matrix(fits$coefficients, d, p)
-        private$M <- matrix(fits$residuals, n, p)
-        private$S <- matrix(.1, n, p)
+        # fits <- lm.fit(weights * covariates, weights * log((1 + responses)/exp(offsets)))
+        # private$B <- matrix(fits$coefficients, d, p)
+        # private$M <- matrix(fits$residuals, n, p)
+        # private$S <- matrix(.1, n, p)
+        start_point <- compute_PLN_starting_point(Y = responses, X = covariates, O = offsets, w = weights)
+        private$B <- start_point$B
+        private$M <- start_point$M
+        private$S <- start_point$S
       }
       private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
       private$optimizer$vestep <- nlopt_optimize_vestep
@@ -595,7 +607,7 @@ PLNfit <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##  CLASS PLNfit_diagonal
+##  CLASS PLNfit_diagonal ##############################
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' An R6 Class to represent a PLNfit in a standard, general framework, with diagonal residual covariance
@@ -677,7 +689,7 @@ PLNfit_diagonal <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##  CLASS PLNfit_spherical
+##  CLASS PLNfit_spherical  ############################
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' An R6 Class to represent a PLNfit in a standard, general framework, with spherical residual covariance
@@ -757,7 +769,7 @@ PLNfit_spherical <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##  CLASS PLNfit_fixedcov
+##  CLASS PLNfit_fixedcov  #############################
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' An R6 Class to represent a PLNfit in a standard, general framework, with fixed (inverse) residual covariance
@@ -850,11 +862,13 @@ PLNfit_fixedcov <- R6Class(
 
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
       jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
-        args <- list(Y = Y[-i, , drop = FALSE],
+        data <- list(Y = Y[-i, , drop = FALSE],
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
-                     w = w[-i],
-                     params = list(B = private$B, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
+                     w = w[-i])
+        args <- list(data = data,
+                     # params = list(B = private$B, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
+                     params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
@@ -907,8 +921,8 @@ PLNfit_fixedcov <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##  CLASS PLNfit_genetprior
-# ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS PLNfit_genetprior ############################
+# ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #
 # #' An R6 Class to represent a PLNfit in a standard, general framework, with residual covariance modelling
 # #' motivatived by population genetics

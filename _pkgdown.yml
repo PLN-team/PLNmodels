@@ -115,7 +115,7 @@ reference:
     - '`PLNfamily`'
     - '`plot.PLNfamily`'
     - '`rPLN`'
-    - '`rPLN`'
+    - '`compute_PLN_starting_point`'
 - title: Data sets
   desc: ~
   contents:

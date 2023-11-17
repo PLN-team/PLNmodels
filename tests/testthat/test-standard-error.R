@@ -95,7 +95,7 @@ test_that("Check that variance estimation are coherent in PLNfit",  {
       trace           = 2
     )
 
-  myPLN$postTreatment(Y, X, exp(log_O), config = config_post)
+  myPLN$postTreatment(Y, X, log_O, config = config_post)
 
   tr_variational <- sum(standard_error(myPLN, "variational")^2)
   tr_bootstrap   <- sum(standard_error(myPLN, "bootstrap")^2)
