@@ -58,6 +58,7 @@ Initialize all models in the collection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNblockfamily$new(
   nb_blocks,
+  sparsity,
   responses,
   covariates,
   offsets,
@@ -71,6 +72,8 @@ Initialize all models in the collection
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{nb_blocks}}{a vector of positive real number controlling the level of sparsity of the underlying network.}
+
+\item{\code{sparsity}}{tuning parameter for controlling the sparsity level of Omega/Sigma}
 
 \item{\code{responses}}{the matrix of responses common to every models}
 

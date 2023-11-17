@@ -9,6 +9,10 @@ nlopt_optimize_block <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_block', PACKAGE = 'PLNmodels', data, params, config)
 }
 
+nlopt_optimize_block_sparse <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_block_sparse', PACKAGE = 'PLNmodels', data, params, config)
+}
+
 nlopt_optimize_vestep_block <- function(data, params, B, Omega, config) {
     .Call('_PLNmodels_nlopt_optimize_vestep_block', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
 }

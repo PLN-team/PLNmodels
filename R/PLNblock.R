@@ -22,7 +22,7 @@
 #' @seealso The classes [`PLNblockfamily`] and [`PLNblockfit`], and the and the configuration function [PLNblock_param()].
 #' @importFrom stats model.frame model.matrix model.response model.offset model.weights terms
 #' @export
-PLNblock <- function(formula, nb_blocks = 1:5, data, subset, weights, control = PLNblock_param()) {
+PLNblock <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, weights, control = PLNblock_param()) {
 
   ## Temporary test for deprecated use of list()
   if (!inherits(control, "PLNmodels_param"))
@@ -34,7 +34,7 @@ PLNblock <- function(formula, nb_blocks = 1:5, data, subset, weights, control = 
 
   ## initialization
   if (control$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNblockfamily$new(nb_blocks, args$Y, args$X, args$O, args$w, args$formula, control)
+  myPLN <- PLNblockfamily$new(nb_blocks, sparsity, args$Y, args$X, args$O, args$w, args$formula, control)
 
   ## optimization
   if (control$trace > 0) cat("\n Adjusting", length(myPLN$nb_blocks), "PLN with block covariance estimation with", control$backend, "optimizer\n")
@@ -89,7 +89,6 @@ PLNblock_param <- function(
     config_opt <- config_default_torch
   }
 
-  config_opt$it_update_tau <- 1
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-5
   config_opt$maxit_out <- 20

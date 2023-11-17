@@ -7,6 +7,7 @@
 PLNblock(
   formula,
   nb_blocks = 1:5,
+  sparsity = 0,
   data,
   subset,
   weights,

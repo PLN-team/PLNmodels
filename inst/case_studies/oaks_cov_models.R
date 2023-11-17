@@ -2,7 +2,7 @@ library(PLNmodels)
 library(tidyverse)
 
 ## setting up future for parallelism
-nb_cores <- 10
+nb_cores <- 20
 options(future.fork.enable = TRUE)
 future::plan("multicore", workers = nb_cores)
 
@@ -39,5 +39,31 @@ rbind(
 ) %>%
   as.data.frame(row.names = c("full", "diagonal", "spherical", "block")) %>%
   knitr::kable()
+
+library(PLNmodels)
+library(tidyverse)
+
+## setting up future for parallelism
+nb_cores <- 20
+options(future.fork.enable = TRUE)
+future::plan("multicore", workers = nb_cores)
+
+## get oaks data set
+data(oaks)
+
+## simple PLN
+system.time(myPLN <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks))
+
+## Blockwise covariance
+system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)),
+                                     nb_blocks = c(seq(2,72, by=4), 114), data = oaks,
+                                     control = PLNblock_param(inception = myPLN)))
+plot(myPLN_blocks)
+myPLN_blocks$plot_objective()
+
+best_block <- getBestModel(myPLN_blocks)
+list_Tau <- best_block$optim_par$posteriorProb
+
+clusterings <- map(list_Tau, ~apply(., 2, which.max))
 
 future::plan("sequential")

@@ -8,6 +8,7 @@
 #'
 ## Parameters shared by many methods
 #' @param nb_blocks a vector of positive real number controlling the level of sparsity of the underlying network.
+#' @param sparsity tuning parameter for controlling the sparsity level of Omega/Sigma
 #' @param responses the matrix of responses common to every models
 #' @param covariates the matrix of covariates common to every models
 #' @param offsets the matrix of offsets common to every models
@@ -36,7 +37,7 @@ PLNblockfamily <- R6Class(
     ## Creation functions ----------------
     #' @description Initialize all models in the collection
     #' @return Update current [`PLNblockfit`] with smart starting values
-    initialize = function(nb_blocks, responses, covariates, offsets, weights, formula, control) {
+    initialize = function(nb_blocks, sparsity, responses, covariates, offsets, weights, formula, control) {
 
       ## Initialize fields shared by the super class
       super$initialize(responses, covariates, offsets, weights, control)
@@ -69,9 +70,13 @@ PLNblockfamily <- R6Class(
       blocks %>%
         map(as_indicator) %>%
         map(.check_boundaries) %>%
-        map(function(Z) {
-          PLNblockfit$new(Z, responses, covariates, offsets, weights, formula, control)}
-        )
+        map(function(blocks_) {
+          if (sparsity > 0) {
+            model <- PLNblockfit_sparse$new(blocks_, sparsity, responses, covariates, offsets, weights, formula, control)
+          } else {
+            model <- PLNblockfit$new(blocks_, responses, covariates, offsets, weights, formula, control)
+          }
+        })
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -135,7 +140,6 @@ PLNblockfamily <- R6Class(
                  label = paste("nb blocks=",format(self$criteria$param, digits = 1)), hjust = -.1, size = 3, alpha = 0.7) + theme_bw()
       p
     },
-
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Print methods ---------------------

@@ -1,5 +1,5 @@
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##  CLASS PLNblockfit_diagonal
+##  CLASS PLNblockfit
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' An R6 Class to represent a PLNfit with block-wise residual covariance
@@ -43,11 +43,11 @@ PLNblockfit <- R6Class(
       ## Initial memberships/blocks
       ## Overwrite PLNfit Variational parameters (dimension q)
       private$M   <- private$M %*% blocks
-      private$S   <- matrix(.1, self$n, self$q)
+      private$S   <- private$S %*% blocks
       private$Tau <- t(blocks)
 
       ## Setup of the optimization backend
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_block, private$torch_optimize)
+      private$optimizer$main <- ifelse(control$backend == "nlopt", nlopt_optimize_block, private$torch_optimize)
       private$optimizer$vestep <- nlopt_optimize_vestep_block
     },
     #' @description Update fields of a [`PLNnetworkfit`] object
@@ -69,8 +69,8 @@ PLNblockfit <- R6Class(
 
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
-      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights, Tau = private$Tau),
-                   params = list(B = private$B, M = private$M, S = private$S),
+      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
+                   params = list(B = private$B, M = private$M, S = private$S, Tau = private$Tau),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
@@ -226,13 +226,13 @@ PLNblockfit <- R6Class(
     },
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
     loglik_vec = function() {private$Ji},
-    #' @field entropy_clustering Entropy of the variational distribution of the block (multinomial)
+    #' @field entropy_blocks Entropy of the variational distribution of the block (multinomial)
     entropy_blocks = function() {-sum(.xlogx(private$tau))},
     #' @field entropy_latent Entropy of the variational distribution of the latent vector (Gaussian)
     entropy_latent = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2)))},
     #' @field entropy Full entropy of the variational distribution (latent vector + block)
     entropy = function() {self$entropy_latent + self$entropy_blocks},
-    #' @field ICL variational lower bound of the ICL
+    #' @field membership block membership for variables
     membership = function() {apply(private$Tau, 2, which.max)},
     #' @field posteriorProb matrix of posterior probabilities for block belonging
     posteriorProb = function() {private$Tau},
@@ -241,6 +241,78 @@ PLNblockfit <- R6Class(
   )
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  ##  END OF THE CLASS PLNblockfit_diagonal
+  ##  END OF THE CLASS PLNblockfit
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+)
+
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS PLNblockfit_sparse
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' An R6 Class to represent a PLNfit with sparse block-wise residual covariance
+#'
+## Parameters common to all PLN-xx-fit methods (shared with PLNfit but inheritance does not work)
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization.
+#' @param config part of the \code{control} argument which configures the optimizer
+#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
+#' @param B matrix of regression matrix
+#' @param Sigma variance-covariance matrix of the latent variables
+#' @param Omega precision matrix of the latent variables. Inverse of Sigma.
+#' @param Tau matrix of posterior probabilities for block belonging
+#'
+## Parameters specific to PLNblock-fit methods
+#' @param sparsity tuning parameter for controlling the sparsity level of Omega/Sigma
+#' @param blocks blocks indicators for regrouping the variables/responses (dimension of the residual covariance)
+#'
+#' @rdname PLNblockfit_sparse
+#' @importFrom R6 R6Class
+#'
+#' @examples
+#' \dontrun{
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, nb_blocks = 1:5, rho = 0.1)
+#' class(myPLN)
+#' print(myPLN)
+#' }
+PLNblockfit_sparse <- R6Class(
+  classname = "PLNblockfit_sparse",
+  inherit = PLNblockfit,
+  private = list(lambda = NA),
+  public  = list(
+    #' @description Initialize a [`PLNblockfit_sparse`] model
+    initialize = function(blocks, sparsity, responses, covariates, offsets, weights, formula, control) {
+      super$initialize(blocks, responses, covariates, offsets, weights, formula, control)
+      private$optimizer$main <- nlopt_optimize_block_sparse
+      private$lambda <- sparsity
+      private$rho    <- matrix(1, self$q, self$q)
+    },
+    #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
+    optimize = function(responses, covariates, offsets, weights, config) {
+      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
+                   params = list(B = private$B, M = private$M, S = private$S, Tau = private$Tau, rho = private$rho),
+                   config = config)
+      optim_out <- do.call(private$optimizer$main, args)
+      do.call(self$update, optim_out)
+    }
+  ),
+  active = list(
+    #' @field penalty tuning parameter for controlling the sparsity level of Omega/Sigma
+    penalty         = function() {private$lambda},
+    #' @field penalty_weights a matrix of weights controlling the amount of penalty element-wise.
+    penalty_weights = function() {private$rho},
+    #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
+    n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
+    #' @field nb_param number of parameters in the current PLN model
+    nb_param   = function() {as.integer(self$p * self$d + self$n_edges + self$q - 1)},
+    #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood
+    pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
+    #' @field EBIC variational lower bound of the EBIC
+    EBIC      = function() {self$BIC - .5 * ifelse(self$n_edges > 0, self$n_edges * log(.5 * self$p*(self$p - 1)/self$n_edges), 0)}
+  )
 )
