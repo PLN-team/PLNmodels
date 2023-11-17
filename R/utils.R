@@ -253,7 +253,7 @@ create_parameters <- function(
        depths = depths)
 }
 
-#' barebone function to compute starting points for B and M
+#' Barebone function to compute starting points for B, M and S
 #' @importFrom stats lm.fit
 starting_point <- function(Y, X, O, w) {
   # Y = responses, X = covariates, O = offsets (in log scale), w = weights
