@@ -209,7 +209,6 @@ PLNfit <- R6Class(
     },
 
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
-      cat("\n  Computing jackknife variance estimator", sep = "\n")
       jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
         data <- list(Y = Y[-i, , drop = FALSE],
                      X = X[-i, , drop = FALSE],
