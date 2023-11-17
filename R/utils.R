@@ -253,8 +253,16 @@ create_parameters <- function(
        depths = depths)
 }
 
-#' Barebone function to compute starting points for B, M and S
+#' Helper function for PLNfit initialization.
+#'
+#' @description
+#' Barebone helper function to compute starting points for B, M and S when fitting a PLN. Intended for internal use only.
+#'
 #' @importFrom stats lm.fit
+#' @param Y Response matrix
+#' @param X Covariate matrix
+#' @param O Offset matrix
+#' @param w Weight vector
 starting_point <- function(Y, X, O, w) {
   # Y = responses, X = covariates, O = offsets (in log scale), w = weights
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)

@@ -2,10 +2,19 @@
 % Please edit documentation in R/utils.R
 \name{starting_point}
 \alias{starting_point}
-\title{Barebone function to compute starting points for B, M and S}
+\title{Helper function for PLNfit initialization.}
 \usage{
 starting_point(Y, X, O, w)
 }
+\arguments{
+\item{Y}{Response matrix}
+
+\item{X}{Covariate matrix}
+
+\item{O}{Offset matrix}
+
+\item{w}{Weight vector}
+}
 \description{
-Barebone function to compute starting points for B, M and S
+Barebone helper function to compute starting points for B, M and S when fitting a PLN. Intended for internal use only.
 }
