@@ -256,7 +256,7 @@ create_parameters <- function(
 #' barebone function to compute starting points for B and M
 #' @importFrom stats lm.fit
 starting_point <- function(Y, X, O, w) {
-  # Y = responses, X = covariates, O = offsets, w = weights
+  # Y = responses, X = covariates, O = offsets (in log scale), w = weights
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
   fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
   list(B = matrix(fits$coefficients, d, p),
