@@ -219,7 +219,7 @@ PLNfit <- R6Class(
                      # params = list(B = private$B,
                      #               M = matrix(0, self$n-1, self$p),
                      #               S = private$S[-i, , drop = FALSE]),
-                     params = do.call(starting_point, data),
+                     params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
@@ -249,7 +249,7 @@ PLNfit <- R6Class(
                      w = w[resample])
         args <- list(data = data,
                      # params = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
-                     params = do.call(starting_point, data),
+                     params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega", "monitoring")]
@@ -314,7 +314,7 @@ PLNfit <- R6Class(
         # private$B <- matrix(fits$coefficients, d, p)
         # private$M <- matrix(fits$residuals, n, p)
         # private$S <- matrix(.1, n, p)
-        start_point <- starting_point(Y = responses, X = covariates, O = offsets, w = weights)
+        start_point <- compute_PLN_starting_point(Y = responses, X = covariates, O = offsets, w = weights)
         private$B <- start_point$B
         private$M <- start_point$M
         private$S <- start_point$S
@@ -869,7 +869,7 @@ PLNfit_fixedcov <- R6Class(
                      w = w[-i])
         args <- list(data = data,
                      # params = list(B = private$B, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
-                     params = do.call(starting_point, data),
+                     params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
