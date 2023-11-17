@@ -71,6 +71,7 @@ PLNblock_param <- function(
     backend       = c("nlopt", "torch"),
     trace         = 1,
     config_optim  = list(),
+    init_cl       = "ward.D2",
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
 
@@ -98,5 +99,6 @@ PLNblock_param <- function(
     backend       = backend   ,
     trace         = trace     ,
     config_optim  = config_opt,
+    init_cl       = init_cl,
     inception     = inception), class = "PLNmodels_param")
 }
