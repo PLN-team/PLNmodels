@@ -70,7 +70,7 @@ PLNblock <- function(formula, nb_blocks = 1:5, data, subset, weights, control = 
 PLNblock_param <- function(
     backend       = c("nlopt", "torch"),
     trace         = 1,
-    config_optim  = list(),
+    config_optim  = list(init_cl=""),
     init_cl       = "ward.D2",
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
