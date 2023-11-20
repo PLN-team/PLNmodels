@@ -56,7 +56,6 @@ Rcpp::List nlopt_optimize_block(
     const arma::mat B = metadata.map<B_ID>(params);
     const arma::mat M = metadata.map<M_ID>(params);
     const arma::mat S = metadata.map<S_ID>(params);
-    const double w_bar = accu(w);
 
     arma::mat S2 = S % S;
     arma::mat mu = O + X * B ;
@@ -65,7 +64,7 @@ Rcpp::List nlopt_optimize_block(
 
     arma::mat A = A2 % (A1 * Tau) ;
     arma::mat A_tau = A1 % (A2 * Tau.t()) ;
-    arma::mat Omega = w_bar * inv_sympd(M.t() * (M.each_col() % w) + diagmat(w.t() * S2 + 1e-3));
+    arma::mat Omega = w_bar * inv_sympd(M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
     double objective = accu(w.t() * (A - Y % (mu + M * Tau))) - 0.5 * accu(w.t() * log(S2)) - 0.5 * w_bar * real(log_det(Omega));
 
     metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
@@ -75,15 +74,17 @@ Rcpp::List nlopt_optimize_block(
     return objective;
   };
 
-  // V-EM Initialization (first step)
+  // Initialization (first step)
   int iter = 0;
   if (Rcpp::as<int>(config["trace"]) > 2) {
     std::cout << "VE-M iterations " << iter+1 << std::endl;
   }
-  OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
-  Rcpp::NumericVector objective ; objective.push_back(result.objective) ;
   arma::mat current_Tau(Tau) ;
   Rcpp::List posteriorProb ; posteriorProb.push_back(current_Tau) ;
+  OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+  Rcpp::NumericVector objective ; objective.push_back(result.objective) ;
+
+  // Alternate optimization
   double threshold = Rcpp::as<double>(config["ftol_out"]);
   double maxiter = Rcpp::as<int>(config["maxit_out"]);
   do { // GO for it
@@ -172,7 +173,6 @@ Rcpp::List nlopt_optimize_block_sparse(
   const auto init_M   = Rcpp::as<arma::mat>(params["M"]);   // (n,q)
   const auto init_S   = Rcpp::as<arma::mat>(params["S"]);   // (n,q)
   arma::mat Tau       = Rcpp::as<arma::mat>(params["Tau"]); // (q,p)
-  arma::mat Omega  ; // (q,q)
   const Rcpp::NumericMatrix rho = params["rho"] ; // double
 
   const auto metadata = tuple_metadata(init_B, init_M, init_S);
@@ -199,6 +199,7 @@ Rcpp::List nlopt_optimize_block_sparse(
   }
 
   const double w_bar = accu(w);
+  arma::mat Omega ; // (q,q)
 
   // Optimize
   auto objective_and_grad = [&metadata, &Y, &X, &O, &w, &w_bar, &Omega, &Tau](const double * params, double * grad) -> double {
@@ -224,30 +225,32 @@ Rcpp::List nlopt_optimize_block_sparse(
     return objective;
   };
 
-  // Graphical-Lasso
+  // Graphical-Lasso: interface to glassoFast function
   Rcpp::Environment pkg = Rcpp::Environment::namespace_env("glassoFast");
   Rcpp::Function graphical_lasso = pkg["glassoFast"];
   Rcpp::List out_glasso ;
 
-  // V-EM Initialization (first step)
+  // Initialization (first step)
   int iter = 0;
   if (Rcpp::as<int>(config["trace"]) > 2) {
     std::cout << "VE-M iterations " << iter+1 << std::endl;
   }
-  // M.t() * (M.each_col() % w) + diagmat(w.t() * S2)
-  // Variational parameters
+  // Tau (initialized from R)
+  arma::mat current_Tau(Tau) ;
+  Rcpp::List posteriorProb ; posteriorProb.push_back(current_Tau) ;
+  // Omega (first pass of graphical-lasso)
   arma::mat M = metadata.copy<M_ID>(parameters.data());
   arma::mat S = metadata.copy<S_ID>(parameters.data());
   arma::mat S2 = S % S;
   arma::mat Sigma = (1. / w_bar) * (M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
   out_glasso = graphical_lasso(Sigma, rho) ;
   Omega = Rcpp::as<arma::mat>(out_glasso["wi"]) ;
-  arma::mat Sigma_sp ;
+  arma::mat Sigma_sp = Rcpp::as<arma::mat>(out_glasso["w"]);
+  // B, M, S: gradient ascent along the ELBO
   OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
-
   Rcpp::NumericVector objective ; objective.push_back(result.objective) ;
-  arma::mat current_Tau(Tau) ;
-  Rcpp::List posteriorProb ; posteriorProb.push_back(current_Tau) ;
+
+  // Alternate optimization
   double threshold = Rcpp::as<double>(config["ftol_out"]);
   double maxiter = Rcpp::as<int>(config["maxit_out"]);
   do { // GO for it
@@ -257,17 +260,14 @@ Rcpp::List nlopt_optimize_block_sparse(
     }
 
     // VE
+
+    // Tau
     arma::colvec log_alpha = arma::log(mean(Tau,1));
-    arma::mat M = metadata.copy<M_ID>(parameters.data());
-    arma::mat S = metadata.copy<S_ID>(parameters.data());
-    arma::mat S2 = S % S;
+    M = metadata.copy<M_ID>(parameters.data());
+    S = metadata.copy<S_ID>(parameters.data());
+    S2 = S % S;
     arma::mat B = metadata.copy<B_ID>(parameters.data());
-
-    arma::mat Sigma = (1. / w_bar) * (M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
-    out_glasso = graphical_lasso(Sigma, rho) ;
-    Omega = Rcpp::as<arma::mat>(out_glasso["wi"]) ;
-    Sigma_sp = Rcpp::as<arma::mat>(out_glasso["w"]) ;
-
+    Sigma = (1. / w_bar) * (M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
     arma::mat mu = O + X * B ;
     arma::mat A1 = trunc_exp(M + .5 * S2) ;
     arma::mat A2 = trunc_exp(mu) ;
@@ -278,7 +278,12 @@ Rcpp::List nlopt_optimize_block_sparse(
     }) ;
     arma::mat current_Tau(Tau) ; posteriorProb.push_back(current_Tau) ;
 
-    // M
+    // Omega
+    out_glasso = graphical_lasso(Sigma, rho) ;
+    Omega = Rcpp::as<arma::mat>(out_glasso["wi"]) ;
+    Sigma_sp = Rcpp::as<arma::mat>(out_glasso["w"]) ;
+
+    // B, M, S
     result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
     objective.push_back(result.objective)  ;
 

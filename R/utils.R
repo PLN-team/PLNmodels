@@ -38,6 +38,15 @@ config_post_default_PLN <-
     sandwich_var    = FALSE
   )
 
+config_post_default_PLNblock <-
+  list(
+    jackknife       = FALSE,
+    bootstrap       = 0L,
+    rsquared        = FALSE,
+    variational_var = FALSE,
+    sandwich_var    = FALSE
+  )
+
 config_post_default_PLNnetwork <-
   list(
     jackknife       = FALSE,

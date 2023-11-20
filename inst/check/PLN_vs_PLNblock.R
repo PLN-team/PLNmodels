@@ -16,17 +16,19 @@ PLN_spherical <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, co
 PLN_full_block <- PLNblock(Abundance ~ 1 + offset(log(Offset)), nb_blocks = p, data = trichoptera)$models[[1]]
 PLN_one_block  <- PLNblock(Abundance ~ 1 + offset(log(Offset)), nb_blocks = 1, data = trichoptera)$models[[1]]
 
-PLN_blocks <- PLNblock(Abundance ~ 1 + offset(log(Offset)), nb_blocks = 1:p, data = trichoptera)
-plot(PLN_blocks)
 
+PLN_blocks <- PLNblock(Abundance ~ 1 + offset(log(Offset)), nb_blocks = 1:p, sparsity = 0.1, data = trichoptera)
+plot(PLN_blocks)
+PLN_best_block <- getBestModel(PLN_blocks)
 
 rbind(
   PLN_full$criteria,
   PLN_spherical$criteria,
+  PLN_best_block$criteria,
   PLN_full_block$criteria,
   PLN_one_block$criteria
 ) %>%
-  as.data.frame(row.names = c("full", "spherical", "p block", "1 block")) %>%
+  as.data.frame(row.names = c("full", "spherical", "best block", "p block", "1 block")) %>%
   knitr::kable()
 
 ## Check PLN full and PLN p block are similar (up to the term sum(tau * log(alpha)) )

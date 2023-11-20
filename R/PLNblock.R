@@ -42,8 +42,7 @@ PLNblock <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, weigh
 
   ## Post-treatments
   if (control$trace > 0) cat("\n Post-treatments")
-  config_post <- config_post_default_PLN; config_post$trace <- control$trace
-  myPLN$postTreatment(config_post)
+  myPLN$postTreatment(control$config_post)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -70,12 +69,18 @@ PLNblock <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, weigh
 PLNblock_param <- function(
     backend       = c("nlopt", "torch"),
     trace         = 1,
-    config_optim  = list(init_cl=""),
+    config_optim  = list(),
     init_cl       = "ward.D2",
+    config_post   = list(),
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
 
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
+
+  ## post-treatment config
+  config_pst <- config_post_default_PLNblock
+  config_pst[names(config_post)] <- config_post
+  config_pst$trace <- trace
 
   ## optimization config
   backend <- match.arg(backend)
@@ -95,9 +100,10 @@ PLNblock_param <- function(
   config_opt[names(config_optim)] <- config_optim
 
   structure(list(
-    backend       = backend   ,
-    trace         = trace     ,
-    config_optim  = config_opt,
+    backend      = backend   ,
+    trace        = trace     ,
+    config_optim = config_opt,
+    config_post  = config_pst,
     init_cl       = init_cl,
-    inception     = inception), class = "PLNmodels_param")
+    inception    = inception), class = "PLNmodels_param")
 }

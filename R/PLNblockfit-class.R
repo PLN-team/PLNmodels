@@ -283,7 +283,7 @@ PLNblockfit <- R6Class(
 PLNblockfit_sparse <- R6Class(
   classname = "PLNblockfit_sparse",
   inherit = PLNblockfit,
-  private = list(lambda = NA),
+  private = list(lambda = NA, rho = NA),
   public  = list(
     #' @description Initialize a [`PLNblockfit_sparse`] model
     initialize = function(blocks, sparsity, responses, covariates, offsets, weights, formula, control) {
@@ -313,6 +313,9 @@ PLNblockfit_sparse <- R6Class(
     #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood
     pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
     #' @field EBIC variational lower bound of the EBIC
-    EBIC      = function() {self$BIC - .5 * ifelse(self$n_edges > 0, self$n_edges * log(.5 * self$p*(self$p - 1)/self$n_edges), 0)}
+    EBIC      = function() {self$BIC - .5 * ifelse(self$n_edges > 0, self$n_edges * log(.5 * self$p*(self$p - 1)/self$n_edges), 0)},
+    #' @field criteria a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges and graph density
+    criteria  = function() {data.frame(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik)}
+
   )
 )
