@@ -34,6 +34,8 @@ print(myPLN)
 \item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood}
 
 \item{\code{EBIC}}{variational lower bound of the EBIC}
+
+\item{\code{criteria}}{a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges and graph density}
 }
 \if{html}{\out{</div>}}
 }

@@ -17,7 +17,7 @@ PLN_full_block <- PLNblock(Abundance ~ 1 + offset(log(Offset)), nb_blocks = p, d
 PLN_one_block  <- PLNblock(Abundance ~ 1 + offset(log(Offset)), nb_blocks = 1, data = trichoptera)$models[[1]]
 
 
-PLN_blocks <- PLNblock(Abundance ~ 1 + offset(log(Offset)), nb_blocks = 1:p, sparsity = 0.1, data = trichoptera)
+PLN_blocks <- PLNblock(Abundance ~ 1 + offset(log(Offset)), nb_blocks = 1:p,  data = trichoptera)
 plot(PLN_blocks)
 PLN_best_block <- getBestModel(PLN_blocks)
 
@@ -36,17 +36,14 @@ vll_PLN_block <- PLN_full_block$loglik_vec - sum(PLN_full_block$posteriorProb * 
 vll_PLN <- PLN_full$loglik_vec
 plot(vll_PLN, vll_PLN_block)
 abline(0,1)
-## YES
+## nOT ANYMORE... CHECK THAT
 print(PLN_full$loglik - (PLN_full_block$loglik - sum(PLN_full_block$posteriorProb * log(PLN_full_block$groupProportion))))
-
 
 ## Check PLN full and PLN p block are similar (up to the term sum(tau * log(alpha)) )
 vll_PLN_one_block <- PLN_one_block$loglik_vec - sum(PLN_one_block$posteriorProb * log(PLN_one_block$groupProportion))
 vll_PLN_spherical <- PLN_spherical$loglik_vec
 plot(vll_PLN_spherical, vll_PLN_one_block)
 abline(0,1)
-## YES
-print(PLN_full$loglik - (PLN_full_block$loglik - sum(PLN_full_block$posteriorProb * log(PLN_full_block$groupProportion))))
 
 
 data.frame(

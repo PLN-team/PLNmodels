@@ -48,12 +48,12 @@ PLNblockfamily <- R6Class(
       control_init$config_optim <- config_default_nlopt
       control_init$backend <- "nlopt"
 
-      if (is.numeric(control$config_optim$init_cl)) {
+      if (is.numeric(control$init_cl)) {
         blocks <- control$init_cl
       }else{
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control_init)
         myPLN$optimize(responses, covariates, offsets, weights, control_init$config_optim)
-        if(control$config_optim$init_cl=="kmeans"){
+        if(control$init_cl=="kmeans"){
           Means <- t(myPLN$var_par$M)
           blocks <- lapply(seq(1:nb_blocks), function(k) kmeans(Means, centers=k)$clusters)
         }else{
@@ -63,7 +63,6 @@ PLNblockfamily <- R6Class(
           # blocks <- lapply(nb_blocks, function(k) kmeans(D, centers = k, nstart = 30)$cl)
         }
       }
-
 
       ## instantiate as many models as cluterings
       self$models <-
@@ -85,13 +84,9 @@ PLNblockfamily <- R6Class(
     #' @param config a list for controlling the optimization.
     optimize = function(config) {
       self$models <- future.apply::future_lapply(self$models, function(model) {
-        if (config$trace == 1) {
+        if (config$trace >= 1) {
           cat("\tnumber of blocks =", model$nb_block, "\r")
           flush.console()
-        }
-        if (config$trace > 1) {
-          cat("\tnumber of blocks =", model$nb_block, "\r")
-          cat("\n\t conservative convex separable approximation for gradient descent")
         }
         model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
         model

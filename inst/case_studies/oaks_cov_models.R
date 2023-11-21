@@ -15,7 +15,7 @@ system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), da
 system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
 
 ## Blockwise covariance
-system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + offset(log(Offset)), nb_blocks = 1:50, data = oaks, control = PLNblock_param(inception = myPLN)))
+system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = 1:10, data = oaks, control = PLNblock_param(inception = myPLN)))
 myPLN_block <- getBestModel(myPLN_blocks)
 
 data.frame(
@@ -52,11 +52,11 @@ future::plan("multicore", workers = nb_cores)
 data(oaks)
 
 ## simple PLN
-system.time(myPLN <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks))
+system.time(myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = oaks))
 
 ## Blockwise covariance
-system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)),
-                                     nb_blocks = c(seq(2,72, by=4), 114), data = oaks,
+system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + offset(log(Offset)),
+                                     nb_blocks = 1:114, data = oaks,
                                      control = PLNblock_param(inception = myPLN)))
 plot(myPLN_blocks)
 myPLN_blocks$plot_objective()

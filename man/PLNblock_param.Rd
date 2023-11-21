@@ -8,6 +8,8 @@ PLNblock_param(
   backend = c("nlopt", "torch"),
   trace = 1,
   config_optim = list(),
+  init_cl = "ward.D2",
+  config_post = list(),
   inception = NULL
 )
 }
