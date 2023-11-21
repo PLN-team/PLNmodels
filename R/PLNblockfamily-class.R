@@ -50,14 +50,14 @@ PLNblockfamily <- R6Class(
 
       if (is.numeric(control$init_cl)) {
         blocks <- control$init_cl
-      }else{
+      } else {
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control_init)
         myPLN$optimize(responses, covariates, offsets, weights, control_init$config_optim)
-        if(control$init_cl=="kmeans"){
+        if (control$init_cl == "kmeans") {
           Means <- t(myPLN$var_par$M)
-          blocks <- lapply(seq(1:nb_blocks), function(k) kmeans(Means, centers=k)$clusters)
+          blocks <- lapply(nb_blocks, function(k) kmeans(Means, centers = k, nstart = 30)$clusters)
         }else{
-          D <- 1 - abs(cov2cor(myPLN$model_par$Sigma))
+          D <- 1 - cov2cor(myPLN$model_par$Sigma)
           ## D <- diag(diag(myPLN$model_par$Sigma)) - abs(cov(myPLN$model_par$Sigma))
           blocks <- hclust(as.dist(D), method = "ward.D2") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
           # blocks <- lapply(nb_blocks, function(k) kmeans(D, centers = k, nstart = 30)$cl)

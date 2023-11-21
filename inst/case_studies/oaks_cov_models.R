@@ -56,7 +56,7 @@ system.time(myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = oaks))
 
 ## Blockwise covariance
 system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + offset(log(Offset)),
-                                     nb_blocks = 1:114, data = oaks,
+                                     nb_blocks = 1:40, data = oaks,
                                      control = PLNblock_param(inception = myPLN)))
 plot(myPLN_blocks)
 myPLN_blocks$plot_objective()

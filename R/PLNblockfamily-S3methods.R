@@ -5,7 +5,7 @@
 ## =========================================================================================
 
 ## Auxiliary functions to check the given class of an objet
-isPLNblockfamily     <- function(Robject) {inherits(Robject, "PLNblockfamily"    )}
+isPLNblockfamily <- function(Robject) {inherits(Robject, "PLNblockfamily")}
 
 #' Display the criteria associated with a collection of PLNblock fits (a PLNblockfamily)
 #'
