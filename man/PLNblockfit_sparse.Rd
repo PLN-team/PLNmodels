@@ -12,7 +12,7 @@ An R6 Class to represent a PLNfit with sparse block-wise residual covariance
 \dontrun{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, nb_blocks = 1:5, rho = 0.1)
+myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, nb_blocks = 1:5, sparsity = 0.1)
 class(myPLN)
 print(myPLN)
 }

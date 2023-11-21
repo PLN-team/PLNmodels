@@ -276,7 +276,7 @@ PLNblockfit <- R6Class(
 #' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, nb_blocks = 1:5, rho = 0.1)
+#' myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, nb_blocks = 1:5, sparsity = 0.1)
 #' class(myPLN)
 #' print(myPLN)
 #' }
@@ -295,7 +295,7 @@ PLNblockfit_sparse <- R6Class(
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
       args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                   params = list(B = private$B, M = private$M, S = private$S, Tau = private$Tau, rho = private$rho),
+                   params = list(B = private$B, M = private$M, S = private$S, Tau = private$Tau, rho = private$lambda * private$rho),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
