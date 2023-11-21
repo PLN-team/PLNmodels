@@ -18,7 +18,7 @@ isPLNblockfamily     <- function(Robject) {inherits(Robject, "PLNblockfamily"   
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myBlocks <- PLNblocks(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, nb_blocks = 1:5)
+#' myBlocks <- PLNblock(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, nb_blocks = 1:5)
 #' \dontrun{
 #' plot(myBlocks)
 #' }
