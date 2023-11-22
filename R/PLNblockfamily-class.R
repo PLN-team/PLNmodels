@@ -55,7 +55,7 @@ PLNblockfamily <- R6Class(
         myPLN$optimize(responses, covariates, offsets, weights, control_init$config_optim)
         if (control$init_cl == "kmeans") {
           Means <- t(myPLN$var_par$M)
-          blocks <- lapply(nb_blocks, function(k) kmeans(Means, centers = k, nstart = 30)$clusters)
+          blocks <- lapply(nb_blocks, function(k) kmeans(Means, centers = k, nstart = 30)$cl)
         }else{
           D <- 1 - cov2cor(myPLN$model_par$Sigma)
           ## D <- diag(diag(myPLN$model_par$Sigma)) - cov(myPLN$model_par$Sigma)
