@@ -55,12 +55,14 @@ PLNblockfamily <- R6Class(
         myPLN$optimize(responses, covariates, offsets, weights, control_init$config_optim)
         if (control$init_cl == "kmeans") {
           Means <- t(myPLN$var_par$M)
-          blocks <- lapply(nb_blocks, function(k) kmeans(Means, centers = k, nstart = 30)$cl)
-        }else{
+          blocks <- lapply(nb_blocks, function(k) {
+            if (k == private$p) res <- 1:private$p
+            else res <- kmeans(Means, centers = k, nstart = 30)$cl
+            res
+          })
+        } else {
           D <- 1 - cov2cor(myPLN$model_par$Sigma)
-          ## D <- diag(diag(myPLN$model_par$Sigma)) - cov(myPLN$model_par$Sigma)
           blocks <- hclust(as.dist(D), method = "ward.D2") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
-          # blocks <- lapply(nb_blocks, function(k) kmeans(D, centers = k, nstart = 30)$cl)
         }
       }
 
