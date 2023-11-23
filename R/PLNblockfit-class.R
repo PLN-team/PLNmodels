@@ -28,7 +28,7 @@
 #' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, nb_blocks = 1:5)
+#' myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, nb_blocks = 1:15)
 #' class(myPLN)
 #' print(myPLN)
 #' }
@@ -85,6 +85,7 @@ PLNblockfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)){
+      browser()
       S2 <- torch_square(params$S[index])
       XB <- torch_mm(data$X[index], params$B)
       A  <- torch_exp(data$O[index] + XB) * torch_mm(torch_exp(params$M[index] + S2 / 2), private$Tau)
@@ -99,7 +100,7 @@ PLNblockfit <- R6Class(
       B <- torch_exp(torch_mm(data$X, params$B) + data$O)
       log_Alpha <- torch_log(torch_unsqueeze(torch_mean(private$Tau, 2), 2))
       with_no_grad({
-        rho <- torch_mm(log_Alpha, torch_ones(c(1,self$p), dtype = torch_float64())) +
+        rho <- torch_mm(log_Alpha, torch_ones(c(1,self$p))) +
           torch_mm(torch_t(params$M), data$Y) - torch_mm(A, B)
       })
       private$Tau <- torch_clamp(torch:::torch_softmax(rho, 1), 1e-3, 1 - 1e-3)
@@ -124,8 +125,8 @@ PLNblockfit <- R6Class(
     torch_optimize = function(data, params, config) {
 
       ## Conversion of data and parameters to torch tensors (pointers)
-      data   <- lapply(data, torch_tensor, dtype = torch_float64())                         # list with Y, X, O, w and Tau0
-      params <- lapply(params, torch_tensor, requires_grad = TRUE, dtype = torch_float64()) # list with B, M, S
+      data   <- lapply(data, torch_tensor)                         # list with Y, X, O, w and Tau0
+      params <- lapply(params, torch_tensor, requires_grad = TRUE) # list with B, M, S
       private$Tau <- data$Tau
 
       ## Initialize optimizer
@@ -141,7 +142,6 @@ PLNblockfit <- R6Class(
       num_epoch  <- config$num_epoch
       num_batch  <- config$num_batch
       batch_size <- floor(self$n/num_batch)
-
       objective <- double(length = config$num_epoch + 1)
       for (iterate in 1:num_epoch) {
         B_old <- as.numeric(optimizer$param_groups[[1]]$params$B)
