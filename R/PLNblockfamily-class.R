@@ -43,12 +43,14 @@ PLNblockfamily <- R6Class(
       super$initialize(responses, covariates, offsets, weights, control)
       private$params  <- nb_blocks
 
-      ## Default clustering is obtained by CAH on the variational parameters of the means of a fully parametrized PLN
+      ## Default clustering is obtained by kmeans on the variational parameters of the means of a fully parametrized PLN
       control_init <- control
       control_init$config_optim <- config_default_nlopt
       control_init$backend <- "nlopt"
 
-      if (is.numeric(control$init_cl)) {
+      if (is.list(control$init_cl)) {
+        stopifnot(length(control$init_cl) == length(nb_blocks),
+                  all(sapply(control$init_cl, length) == private$p))
         blocks <- control$init_cl
       } else {
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control_init)
