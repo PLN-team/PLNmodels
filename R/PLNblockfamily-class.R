@@ -1,3 +1,4 @@
+# library(Rmixmod)
 #' An R6 Class to represent a collection of PLNblockfit
 #'
 #' @description The function [PLNblock()] produces an instance of this class.
@@ -55,28 +56,19 @@ PLNblockfamily <- R6Class(
       } else {
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control_init)
         myPLN$optimize(responses, covariates, offsets, weights, control_init$config_optim)
-        if (control$init_cl == "kmeans") {
+        if (control$config_optim$init_cl == "kmeans") {
           Means <- t(myPLN$var_par$M)
           blocks <- lapply(nb_blocks, function(k) {
             if (k == private$p) res <- 1:private$p
             else res <- kmeans(Means, centers = k, nstart = 30)$cl
             res
           })
-        } else {
-          if(init_cl=="hclustvar"){
-            blocks <- hclustvar(myPLN$var_par$M) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
-          }else{
-            if(init_cl == "mixmod"){
-              out <- mixmodCluster(data.frame(Mt), nbCluster=nb_blocks, model = mixmodGaussianModel(listModels = c("Gaussian_pk_L_I")))
-              o <- order(map(out@results, "nbCluster") %>% unlist())
-              blocks <- lapply(out@results, function(model) model@partition)[o]
-            }else{
+        } else{
               D <- 1 - cov2cor(myPLN$model_par$Sigma)
               blocks <- hclust(as.dist(D), method = "ward.D2") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
             }
           }
-        }
-      }
+
 
       ## instantiate as many models as cluterings
       self$models <-
