@@ -63,8 +63,18 @@ PLNblockfamily <- R6Class(
             res
           })
         } else {
-          D <- 1 - cov2cor(myPLN$model_par$Sigma)
-          blocks <- hclust(as.dist(D), method = "ward.D2") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
+          if(init_cl=="hclustvar"){
+            blocks <- hclustvar(myPLN$var_par$M) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
+          }else{
+            if(init_cl == "mixmod"){
+              out <- mixmodCluster(data.frame(Mt), nbCluster=nb_blocks, model = mixmodGaussianModel(listModels = c("Gaussian_pk_L_I")))
+              o <- order(map(out@results, "nbCluster") %>% unlist())
+              blocks <- lapply(out@results, function(model) model@partition)[o]
+            }else{
+              D <- 1 - cov2cor(myPLN$model_par$Sigma)
+              blocks <- hclust(as.dist(D), method = "ward.D2") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
+            }
+          }
         }
       }
 
