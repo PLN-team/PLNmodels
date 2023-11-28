@@ -67,7 +67,11 @@ PLNfamily <-
       #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).
       #' @param config_optim a list for controlling the optimization parameters used during post_treatments
       postTreatment = function(config_post, config_optim) {
-        #nullModel <- nullModelPoisson(self$responses, self$covariates, self$offsets, self$weights)
+        if (config_post$rsquared) {
+          nullModel <- nullModelPoisson(self$responses, self$covariates, self$offsets, self$weights)
+        } else {
+          nullModel <- NULL
+        }
         for (model in self$models)
           model$postTreatment(
             self$responses,
@@ -76,7 +80,7 @@ PLNfamily <-
             self$weights,
             config_post=config_post,
             config_optim=config_optim,
-            nullModel = NULL
+            nullModel = nullModel
         )
       },
 

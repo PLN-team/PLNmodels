@@ -88,7 +88,7 @@ PLNnetwork_param <- function(
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
 
   ## post-treatment config
-  config_pst <- config_post_default_PLN
+  config_pst <- config_post_default_PLNnetwork
   config_pst[names(config_post)] <- config_post
   config_pst$trace <- trace
 
