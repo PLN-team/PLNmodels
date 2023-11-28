@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4-0300</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.5-0000</span>
       </span>
     </div>
 
@@ -154,7 +154,7 @@ which sometimes speeds up the inference.</p></dd>
 <li><p>"step_sizes" pair of minimal (default: 1e-6) and maximal (default: 50) allowed step sizes. Only used in RPROP</p></li>
 <li><p>"etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP</p></li>
 <li><p>"centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP</p></li>
-</ul><p>The list of parameters <code>config_post</code> controls the post-treatment processing (for PLN and PLNLDA), with the following entries:</p><ul><li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
+</ul><p>The list of parameters <code>config_post</code> controls the post-treatment processing (for most <code>PLN*()</code> functions), with the following entries (defaults may vary depending on the specific function, check <code>config_post_default_*</code> for defaults values):</p><ul><li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
 <li><p>bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).</p></li>
 <li><p>variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
 <li><p>sandwich_var boolean indicating whether sandwich estimation should be used to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4-0300</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.5-0000</span>
       </span>
     </div>
 
@@ -182,13 +182,17 @@ BIC and ICL are defined so that they are on the same scale as the model log-like
 <h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
 <p>Update fields after optimization</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfamily</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span><span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfamily</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span><span class="va">config_post</span>, <span class="va">config_optim</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>config</code></dt>
-<dd><p>a list for controlling the post-treatment.</p></dd>
+<p></p><div class="arguments"><dl><dt><code>config_post</code></dt>
+<dd><p>a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).</p></dd>
+
+
+<dt><code>config_optim</code></dt>
+<dd><p>a list for controlling the optimization parameters used during post_treatments</p></dd>
 
 
 </dl><p></p></div>

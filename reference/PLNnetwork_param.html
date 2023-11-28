@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4-0300</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.5-0000</span>
       </span>
     </div>
 
@@ -85,12 +85,14 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PLNnetwork_param</span><span class="op">(</span></span>
-<span>  backend <span class="op">=</span> <span class="st">"nlopt"</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nlopt"</span>, <span class="st">"torch"</span><span class="op">)</span>,</span>
+<span>  inception_cov <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"spherical"</span>, <span class="st">"diagonal"</span><span class="op">)</span>,</span>
 <span>  trace <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_penalties <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  min_ratio <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  penalize_diagonal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  penalty_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  inception <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -100,6 +102,10 @@
     <h2>Arguments</h2>
     <dl><dt>backend</dt>
 <dd><p>optimization back used, either "nlopt" or "torch". Default is "nlopt"</p></dd>
+
+
+<dt>inception_cov</dt>
+<dd><p>Covariance structure used for the inception model used to initialize the PLNfamily. Defaults to "full" and can be constrained to "diagonal" and "spherical".</p></dd>
 
 
 <dt>trace</dt>
@@ -120,6 +126,10 @@
 
 <dt>penalty_weights</dt>
 <dd><p>either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.</p></dd>
+
+
+<dt>config_post</dt>
+<dd><p>a list for controlling the post-treatment (optional bootstrap, jackknife, R2, etc).</p></dd>
 
 
 <dt>config_optim</dt>

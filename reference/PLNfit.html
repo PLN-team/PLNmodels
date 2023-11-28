@@ -21,7 +21,7 @@ Fields are accessed via active binding and cannot be changed by the user."><meta
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4-0300</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.5-0000</span>
       </span>
     </div>
 
@@ -398,7 +398,8 @@ See the documentation for <code><a href="https://rdrr.io/r/stats/coef.html" clas
 <span>  <span class="va">covariates</span>,</span>
 <span>  <span class="va">offsets</span>,</span>
 <span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">responses</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="va">config</span>,</span>
+<span>  <span class="va">config_post</span>,</span>
+<span>  <span class="va">config_optim</span>,</span>
 <span>  nullModel <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -421,8 +422,12 @@ See the documentation for <code><a href="https://rdrr.io/r/stats/coef.html" clas
 <dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
 
-<dt><code>config</code></dt>
+<dt><code>config_post</code></dt>
 <dd><p>a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details</p></dd>
+
+
+<dt><code>config_optim</code></dt>
+<dd><p>a list for controlling the optimization (optional bootstrap, jackknife, R2, etc.). See details</p></dd>
 
 
 <dt><code>nullModel</code></dt>
