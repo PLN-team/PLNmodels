@@ -280,7 +280,8 @@ PLNmixturefit <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Update fields after optimization
-      #' @param config a list for controlling the post-treatment
+      #' @param config_post a list for controlling the post-treatment
+      #' @param config_optim a list for controlling the optimization during the post-treatment computations
       postTreatment = function(responses, covariates, offsets, weights, config_post, config_optim, nullModel) {
 
         ## restoring the full design matrix (group means + covariates)
