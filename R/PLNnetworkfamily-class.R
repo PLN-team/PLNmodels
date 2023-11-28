@@ -45,7 +45,18 @@ PLNnetworkfamily <- R6Class(
       ## A basic model for inception, useless one is defined by the user
 ### TODO check if it is useful
       if (is.null(control$inception)) {
-        myPLN <- PLNfit$new(responses, covariates, offsets, weights, formula, control)
+
+        # CHECK_ME_TORCH_GPU
+        # This appears to be in torch_gpu only. The commented out line below is
+        # in both PLNmodels/master and PLNmodels/dev.
+        myPLN <- switch(
+          control$inception_cov,
+          "spherical" = PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control),
+          "diagonal" = PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control),
+          PLNfit$new(responses, covariates, offsets, weights, formula, control) # defaults to full
+        )
+        ## Allow inception with spherical / diagonal / full PLNfit before switching back to PLNfit_fixedcov
+        ## for the inner-outer loop of PLNnetwork.
         myPLN$optimize(responses, covariates, offsets, weights, control$config_optim)
         control$inception <- myPLN
       }
@@ -68,8 +79,13 @@ PLNnetworkfamily <- R6Class(
       ## Get an appropriate grid of penalties
       if (is.null(penalties)) {
         if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
+        # CHECK_ME_TORCH_GPU
+        # This appears to be in torch_gpu only. The commented out line below is
+        # in both PLNmodels/master and PLNmodels/dev.
+        # changed it to other one
         max_pen <- list_penalty_weights %>%
-          map(~ control$inception$model_par$Sigma / .x) %>%
+          map(~ as.matrix(myPLN$model_par$Sigma) / .x) %>%
+          # map(~ control$inception$model_par$Sigma / .x) %>%
           map_dbl(~ max(abs(.x[upper.tri(.x, diag = control$penalize_diagonal)]))) %>%
           max()
         penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min_ratio), len = control$n_penalties)

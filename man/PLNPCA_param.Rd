@@ -8,6 +8,7 @@ PLNPCA_param(
   backend = "nlopt",
   trace = 1,
   config_optim = list(),
+  config_post = list(),
   inception = NULL
 )
 }
@@ -17,6 +18,8 @@ PLNPCA_param(
 \item{trace}{a integer for verbosity.}
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
+
+\item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
@@ -56,7 +59,7 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 }
 
-The list of parameters \code{config_post} controls the post-treatment processing (for PLN and PLNLDA), with the following entries:
+The list of parameters \code{config_post} controls the post-treatment processing (for most \verb{PLN*()} functions), with the following entries (defaults may vary depending on the specific function, check \verb{config_post_default_*} for defaults values):
 \itemize{
 \item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
 \item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).

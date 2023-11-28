@@ -115,7 +115,8 @@ Update R2, fisher and std_err fields after optimization
   covariates,
   offsets,
   weights = rep(1, nrow(responses)),
-  config,
+  config_post,
+  config_optim,
   nullModel = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -131,7 +132,9 @@ Update R2, fisher and std_err fields after optimization
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{config}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
+\item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
+
+\item{\code{config_optim}}{a list for controlling the optimization parameter. See details}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }

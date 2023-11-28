@@ -64,7 +64,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = PLN_param
   myLDA$optimize(grouping, args$Y, args$X, args$O, args$w, control$config_optim)
 
   ## Post-treatment: prepare LDA visualization
-  myLDA$postTreatment(grouping, args$Y, args$X, args$O, control$config_post)
+  myLDA$postTreatment(grouping, args$Y, args$X, args$O, control$config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myLDA

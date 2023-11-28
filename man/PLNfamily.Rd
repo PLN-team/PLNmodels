@@ -82,13 +82,15 @@ A new \code{\link{PLNfamily}} object
 \subsection{Method \code{postTreatment()}}{
 Update fields after optimization
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$postTreatment(config)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$postTreatment(config_post, config_optim)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{config}}{a list for controlling the post-treatment.}
+\item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).}
+
+\item{\code{config_optim}}{a list for controlling the optimization parameters used during post_treatments}
 }
 \if{html}{\out{</div>}}
 }

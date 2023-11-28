@@ -280,7 +280,8 @@ Update R2, fisher, std_err fields and set up visualization
   covariates,
   offsets,
   weights,
-  config,
+  config_post,
+  config_optim,
   nullModel
 )}\if{html}{\out{</div>}}
 }
@@ -296,14 +297,16 @@ Update R2, fisher, std_err fields and set up visualization
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{config}}{part of the \code{control} argument which configures the optimizer}
+\item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
+
+\item{\code{config_optim}}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-The list of parameters \code{config} controls the post-treatment processing, with the following entries:
+The list of parameters \code{config_post} controls the post-treatment processing, with the following entries:
 \itemize{
 \item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
 \item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
