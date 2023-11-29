@@ -12,7 +12,7 @@ An R6 Class to represent a PLNfit with block-wise residual covariance
 \dontrun{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, nb_blocks = 1:5)
+myPLN <- PLNblock(Abundance ~ 1, data = trichoptera, nb_blocks = 1:15)
 class(myPLN)
 print(myPLN)
 }

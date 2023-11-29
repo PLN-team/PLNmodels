@@ -24,7 +24,7 @@
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' fits <- PLNblock(Abundance ~ 1, nb_blocks = 1:5, data = trichoptera)
+#' fits <- PLNblock(Abundance ~ 1, nb_blocks = 1:15, data = trichoptera)
 #' class(fits)
 #' @seealso The function [PLNblock()], the class [`PLNblockfit`]
 PLNblockfamily <- R6Class(
@@ -37,6 +37,7 @@ PLNblockfamily <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize all models in the collection
+    #' @import ClustOfVar
     #' @return Update current [`PLNblockfit`] with smart starting values
     initialize = function(nb_blocks, sparsity, responses, covariates, offsets, weights, formula, control) {
 
@@ -56,19 +57,19 @@ PLNblockfamily <- R6Class(
       } else {
         myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control_init)
         myPLN$optimize(responses, covariates, offsets, weights, control_init$config_optim)
-        if (control$config_optim$init_cl == "kmeans") {
-          Means <- t(myPLN$var_par$M)
-          blocks <- lapply(nb_blocks, function(k) {
-            if (k == private$p) res <- 1:private$p
-            else res <- kmeans(Means, centers = k, nstart = 30)$cl
-            res
-          })
-        } else{
-              D <- 1 - cov2cor(myPLN$model_par$Sigma)
-              blocks <- hclust(as.dist(D), method = "ward.D2") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
-            }
-          }
-
+        blocks <- switch(control$init_cl,
+          "kmeans" = {
+            Means <- t(myPLN$var_par$M)
+            blocks <- lapply(nb_blocks, function(k) {
+              if (k == private$p) res <- 1:private$p
+              else res <- kmeans(Means, centers = k, nstart = 30)$cl
+              res
+            })
+          },
+          "clustofvar" = hclustvar(myPLN$var_par$M) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list(),
+          "hclust" = hclust(as.dist(1 - cov2cor(myPLN$model_par$Sigma)), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
+        )
+      }
 
       ## instantiate as many models as cluterings
       self$models <-

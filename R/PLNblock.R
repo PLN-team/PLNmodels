@@ -71,7 +71,7 @@ PLNblock_param <- function(
     backend       = c("nlopt", "torch"),
     trace         = 1,
     config_optim  = list(),
-    init_cl       = "kmeans",
+    init_cl       = "clustofvar",
     config_post   = list(),
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
