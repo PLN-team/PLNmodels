@@ -142,7 +142,14 @@ latent space, update corresponding fields
 \subsection{Method \code{postTreatment()}}{
 Update R2, fisher and std_err fields and visualization
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(grouping, responses, covariates, offsets, config)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(
+  grouping,
+  responses,
+  covariates,
+  offsets,
+  config_post,
+  config_optim
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -156,7 +163,9 @@ Update R2, fisher and std_err fields and visualization
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
-\item{\code{config}}{list controlling the post-treatment}
+\item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).}
+
+\item{\code{config_optim}}{list controlling the optimization parameters}
 }
 \if{html}{\out{</div>}}
 }

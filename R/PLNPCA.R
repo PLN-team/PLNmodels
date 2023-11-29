@@ -51,8 +51,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 
   ## Post-treatments: pseudo-R2, rearrange criteria and prepare PCA visualization
   if (control$trace > 0) cat("\n Post-treatments")
-  config_post <- config_post_default_PLNPCA; config_post$trace <- control$trace
-  myPCA$postTreatment(config_post)
+  myPCA$postTreatment(control$config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPCA
@@ -65,6 +64,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
 #' @param trace a integer for verbosity.
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
+#' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
 #' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 #'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 #'    which sometimes speeds up the inference.
@@ -77,10 +77,16 @@ PLNPCA_param <- function(
     backend       = "nlopt",
     trace         = 1      ,
     config_optim  = list() ,
+    config_post   = list() ,
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
 
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
+
+  ## post-treatment config
+  config_pst <- config_post_default_PLNPCA
+  config_pst[names(config_post)] <- config_post
+  config_pst$trace <- trace
 
   ## optimization config
   backend <- match.arg(backend)
@@ -100,5 +106,6 @@ PLNPCA_param <- function(
     backend       = backend   ,
     trace         = trace     ,
     config_optim  = config_opt,
+    config_post   = config_pst,
     inception     = inception   ), class = "PLNmodels_param")
 }

@@ -240,7 +240,8 @@ Update fields after optimization
   covariates,
   offsets,
   weights,
-  config,
+  config_post,
+  config_optim,
   nullModel
 )}\if{html}{\out{</div>}}
 }
@@ -256,7 +257,9 @@ Update fields after optimization
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{config}}{a list for controlling the post-treatment}
+\item{\code{config_post}}{a list for controlling the post-treatment}
+
+\item{\code{config_optim}}{a list for controlling the optimization during the post-treatment computations}
 
 \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
 }

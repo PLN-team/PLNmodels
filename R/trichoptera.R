@@ -9,7 +9,7 @@
 #'
 #' @format A list with 2 two data frames:
 #' \describe{
-#'   \code{Abundance}{a 49 x 17 matrix of abundancies/counts (49 trapping nights and 17 trichoptera species)}
+#'   \item{Abundance}{a 49 x 17 matrix of abundancies/counts (49 trapping nights and 17 trichoptera species)}
 #'   \item{Covariate}{a 49 x 7 data frame of covariates:
 #'   \describe{
 #'   \item{Temperature}{Evening Temperature in Celsius}

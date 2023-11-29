@@ -30,8 +30,12 @@ Authors:
 Other contributors:
 \itemize{
   \item Stéphane Robin \email{stephane.robin@inrae.fr} [contributor]
-  \item Giovanni Poggiato \email{giov.poggiato@gmail.com} [contributor]
   \item Julie Aubert \email{julie.aubert@inrae.fr} [contributor]
+  \item Bastien Batardière \email{bastien.batardiere@inrae.fr} [contributor]
+  \item Giovanni Poggiato \email{giov.poggiato@gmail.com} [contributor]
+  \item Cole Trapnell \email{coletrap@uw.edu} [contributor]
+  \item Maddy Duran \email{duran@uw.edu} [contributor]
+  \item Brent Ewing \email{bge@uw.edu} [contributor]
 }
 
 }

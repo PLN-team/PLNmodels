@@ -41,8 +41,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 
   ## Post-treatments
   if (control$trace > 0) cat("\n Post-treatments")
-  config_post <- config_post_default_PLNnetwork; config_post$trace <- control$trace
-  myPLN$postTreatment(config_post)
+  myPLN$postTreatment(control$config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -53,7 +52,9 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
+#' @param inception_cov Covariance structure used for the inception model used to initialize the PLNfamily. Defaults to "full" and can be constrained to "diagonal" and "spherical".
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
+#' @param config_post a list for controlling the post-treatment (optional bootstrap, jackknife, R2, etc).
 #' @param trace a integer for verbosity.
 #' @param n_penalties an integer that specifies the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`
 #' @param min_ratio the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by `min_ratio`. Default is 0.1.
@@ -72,17 +73,24 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @seealso [PLN_param()]
 #' @export
 PLNnetwork_param <- function(
-    backend           = "nlopt",
+    backend           = c("nlopt", "torch"),
+    inception_cov     = c("full", "spherical", "diagonal"),
     trace             = 1      ,
     n_penalties       = 30     ,
     min_ratio         = 0.1    ,
     penalize_diagonal = TRUE   ,
     penalty_weights   = NULL   ,
-    config_optim  = list(),
+    config_post       = list(),
+    config_optim      = list(),
     inception         = NULL
 ) {
 
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
+
+  ## post-treatment config
+  config_pst <- config_post_default_PLNnetwork
+  config_pst[names(config_post)] <- config_post
+  config_pst$trace <- trace
 
   ## optimization config
   backend <- match.arg(backend)
@@ -95,6 +103,7 @@ PLNnetwork_param <- function(
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_opt <- config_default_torch
   }
+  inception_cov <- match.arg(inception_cov)
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-5
   config_opt$maxit_out <- 20
@@ -103,6 +112,7 @@ PLNnetwork_param <- function(
   structure(list(
     backend           = backend          ,
     trace             = trace            ,
+    inception_cov     = inception_cov    ,
     n_penalties       = n_penalties      ,
     min_ratio         = min_ratio        ,
     penalize_diagonal = penalize_diagonal,
@@ -110,6 +120,7 @@ PLNnetwork_param <- function(
     jackknife         = FALSE            ,
     bootstrap         = 0                ,
     variance          = TRUE             ,
+    config_post       = config_pst       ,
     config_optim      = config_opt       ,
     inception         = inception       ), class = "PLNmodels_param")
 }

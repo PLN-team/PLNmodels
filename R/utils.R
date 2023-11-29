@@ -15,6 +15,7 @@ config_default_nlopt_block <-
 config_default_nlopt <-
   list(
     algorithm     = "CCSAQ",
+    backend       = "nlopt",
     maxeval       = 10000  ,
     ftol_rel      = 1e-8   ,
     xtol_rel      = 1e-6   ,
@@ -26,6 +27,7 @@ config_default_nlopt <-
 config_default_torch <-
   list(
     algorithm     = "RPROP",
+    backend       = "torch",
     maxeval       = 10000  ,
     num_epoch     = 1000   ,
     num_batch     = 1      ,
@@ -37,7 +39,8 @@ config_default_torch <-
     step_sizes    = c(1e-3, 50),
     etas          = c(0.5, 1.2),
     centered      = FALSE,
-    trace         = 1
+    trace         = 1,
+    device        = "cpu"
   )
 
 config_post_default_PLN <-
@@ -125,6 +128,11 @@ trace <- function(x) sum(diag(x))
   x[x > 1 - zero] <- 1 - zero
   x[x <     zero] <-     zero
   x
+}
+
+.logfactorial_torch <- function(n){
+  n[n == 0] <- 1 ## 0! = 1!
+  n*torch_log(n) - n + torch_log(8*torch_pow(n,3) + 4*torch_pow(n,2) + n + 1/30)/6 + torch_log(pi)/2
 }
 
 .logfactorial <- function(n) { # Ramanujan's formula
@@ -271,4 +279,40 @@ create_parameters <- function(
        B      = matrix(rnorm(n = p*d, sd = 1/sqrt(d)), nrow = d, ncol = p),
        Sigma  = sigma * toeplitz(x = rho^seq(0, p-1)),
        depths = depths)
+}
+
+#' Helper function for PLN initialization.
+#'
+#' @description
+#' Barebone function to compute starting points for B, M and S when fitting a PLN. Mostly intended for internal use.
+#'
+#' @param Y Response count matrix
+#' @param X Covariate matrix
+#' @param O Offset matrix (in log-scale)
+#' @param w Weight vector (defaults to 1)
+#' @param s Scale parameter for S (defaults to 0.1)
+#' @return a named list of starting values for model parameter B and variational parameters M and S used in the iterative optimization algorithm of [PLN()]
+#'
+#' @details The default strategy to estimate B and M is to fit a linear model with covariates `X` to the response count matrix (after adding a pseudocount of 1, scaling by the offset and taking the log). The regression matrix is used to initialize `B` and the residuals to initialize `M`. `S` is initialized as a constant conformable matrix with value `s`.
+#'
+#' @rdname compute_PLN_starting_point
+#' @examples
+#' \dontrun{
+#' data(barents)
+#' Y <- barents$Abundance
+#' X <- model.matrix(Abundance ~ Latitude + Longitude + Depth + Temperature, data = barents)
+#' O <- log(barents$Offset)
+#' w <-- rep(1, nrow(Y))
+#' compute_PLN_starting_point(Y, X, O, w)
+#' }
+#'
+#' @importFrom stats lm.fit
+#' @export
+compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
+  # Y = responses, X = covariates, O = offsets (in log scale), w = weights
+  n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
+  fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
+  list(B = matrix(fits$coefficients, d, p),
+       M = matrix(fits$residuals, n, p),
+       S = matrix(s, n, p))
 }

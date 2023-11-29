@@ -1,3 +1,7 @@
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS PLNfit #######################################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 #' An R6 Class to represent a PLNfit in a standard, general framework
 #'
 #' @description The function [PLN()] fit a model which is an instance of a object with class [`PLNfit`].
@@ -62,8 +66,9 @@ PLNfit <- R6Class(
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
       S2 <- torch_square(params$S[index])
       Z  <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$B)
+      A <- torch_exp(Z + .5 * S2)
       res <- .5 * sum(data$w[index]) * torch_logdet(private$torch_Sigma(data, params, index)) +
-        sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z - .5 * torch_log(S2)))
+        sum(data$w[index,NULL] * (A - data$Y[index] * Z - .5 * torch_log(S2)))
       res
     },
 
@@ -80,21 +85,26 @@ PLNfit <- R6Class(
 
     torch_vloglik = function(data, params) {
       S2    <- torch_square(params$S)
-      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
-        .5 * torch_logdet(params$Omega) +
-          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
-          .5 * torch_sum(torch_mm(params$M, params$Omega) * params$M + S2 * torch_diag(params$Omega), dim = 2)
-      )
-      attr(Ji, "weights") <- as.numeric(data$w)
+
+      Ji_tmp = .5 * torch_logdet(params$Omega) +
+        torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
+        .5 * torch_sum(torch_mm(params$M, params$Omega) * params$M + S2 * torch_diag(params$Omega), dim = 2)
+      Ji <- - torch_sum(.logfactorial_torch(data$Y), dim = 2) + Ji_tmp
+      Ji <- .5 * self$p + as.numeric(Ji$cpu())
+
+      attr(Ji, "weights") <- as.numeric(data$w$cpu())
       Ji
     },
 
     #' @import torch
     torch_optimize = function(data, params, config) {
 
+      #config$device = "mps"
+      if (config$trace >  1)
+        message (paste("optimizing with device: ", config$device))
       ## Conversion of data and parameters to torch tensors (pointers)
-      data   <- lapply(data, torch_tensor)                         # list with Y, X, O, w
-      params <- lapply(params, torch_tensor, requires_grad = TRUE) # list with B, M, S
+      data   <- lapply(data, torch_tensor, dtype = torch_float32(), device = config$device)                         # list with Y, X, O, w
+      params <- lapply(params, torch_tensor, dtype = torch_float32(), requires_grad = TRUE, device = config$device) # list with B, M, S
 
       ## Initialize optimizer
       optimizer <- switch(config$algorithm,
@@ -111,11 +121,14 @@ PLNfit <- R6Class(
       batch_size <- floor(self$n/num_batch)
 
       objective <- double(length = config$num_epoch + 1)
+      #B_old = optimizer$param_groups[[1]]$params$B$clone()
       for (iterate in 1:num_epoch) {
-        B_old <- as.numeric(optimizer$param_groups[[1]]$params$B)
-
+        #B_old <- as.numeric(optimizer$param_groups[[1]]$params$B)
         # rearrange the data each epoch
-        permute <- torch::torch_randperm(self$n) + 1L
+        #permute <- torch::torch_randperm(self$n, device = "cpu") + 1L
+        permute = torch::torch_tensor(sample.int(self$n), dtype = torch_long(), device=config$device)
+
+        #print (paste("num batches", num_batch))
         for (batch_idx in 1:num_batch) {
           # here index is a vector of the indices in the batch
           index <- permute[(batch_size*(batch_idx - 1) + 1):(batch_idx*batch_size)]
@@ -129,9 +142,7 @@ PLNfit <- R6Class(
 
         ## assess convergence
         objective[iterate + 1] <- loss$item()
-        B_new <- as.numeric(optimizer$param_groups[[1]]$params$B)
         delta_f   <- abs(objective[iterate] - objective[iterate + 1]) / abs(objective[iterate + 1])
-        delta_x   <- sum(abs(B_old - B_new))/sum(abs(B_new))
 
         ## Error message if objective diverges
         if (!is.finite(loss$item())) {
@@ -140,11 +151,12 @@ PLNfit <- R6Class(
         }
 
         ## display progress
-        if (config$trace >  1 && (iterate %% 50 == 0))
+        if (config$trace >  1 && (iterate %% 50 == 1))
           cat('\niteration: ', iterate, 'objective', objective[iterate + 1],
-              'delta_f'  , round(delta_f, 6), 'delta_x', round(delta_x, 6))
+              'delta_f'  , round(delta_f, 6))
 
         ## Check for convergence
+        #print (delta_f)
         if (delta_f < config$ftol_rel) status <- 3
         if (delta_x < config$xtol_rel) status <- 4
         if (status %in% c(3,4)) {
@@ -158,7 +170,10 @@ PLNfit <- R6Class(
       params$Z     <- data$O + params$M + torch_matmul(data$X, params$B)
       params$A     <- torch_exp(params$Z + torch_pow(params$S, 2)/2)
 
-      out <- lapply(params, as.matrix)
+      out <- lapply(params, function(x) {
+        x = x$cpu()
+        as.matrix(x)}
+        )
       out$Ji <- private$torch_vloglik(data, params)
       out$monitoring <- list(
           objective  = objective,
@@ -174,7 +189,7 @@ PLNfit <- R6Class(
     ## PRIVATE METHODS FOR VARIANCE OF THE ESTIMATORS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    variance_variational = function(X) {
+    variance_variational = function(X, config = config_default_nlopt) {
     ## Variance of B for n data points
       fisher <- Matrix::bdiag(lapply(1:self$p, function(j) {
         crossprod(X, private$A[, j] * X) # t(X) %*% diag(A[, i]) %*% X
@@ -204,6 +219,44 @@ PLNfit <- R6Class(
       invisible(list(var_B = var_B, var_Omega = var_Omega))
     },
 
+    compute_vcov_from_resamples = function(resamples){
+      B_list = resamples %>% map("B")
+      #print (B_list)
+      vcov_B = lapply(seq(1, ncol(private$B)), function(B_col){
+        param_ests_for_col = B_list %>% map(~.x[, B_col])
+        param_ests_for_col = do.call(rbind, param_ests_for_col)
+        #print (param_ests_for_col)
+        row_vcov = cov(param_ests_for_col)
+      })
+      #print ("vcov blocks")
+      #print (vcov_B)
+
+      #B_vcov <- resamples %>% map("B") %>% map(~( . )) %>% reduce(cov)
+
+      #var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%
+      #  `dimnames<-`(dimnames(private$B))
+      #B_hat  <- private$B[,] ## strips attributes while preserving names
+
+      vcov_B = Matrix::bdiag(vcov_B) %>% as.matrix()
+
+      rownames(vcov_B) <- colnames(vcov_B) <-
+        expand.grid(covariates = rownames(private$B),
+                    responses  = colnames(private$B)) %>% rev() %>%
+        ## Hack to make sure that species is first and varies slowest
+        apply(1, paste0, collapse = "_")
+
+      #print (pheatmap::pheatmap(vcov_B, cluster_rows=FALSE, cluster_cols=FALSE))
+
+
+      #names = lapply(bootstrapped_df$cov_mat, function(m){ colnames(m)}) %>% unlist()
+      #rownames(bootstrapped_vhat) = names
+      #colnames(bootstrapped_vhat) = names
+
+      vcov_B = methods::as(vcov_B, "dgCMatrix")
+
+      return(vcov_B)
+    },
+
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
       jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
         data <- list(Y = Y[-i, , drop = FALSE],
@@ -211,11 +264,14 @@ PLNfit <- R6Class(
                      O = O[-i, , drop = FALSE],
                      w = w[-i])
         args <- list(data = data,
-                     params = list(B = private$B, M = matrix(0, self$n-1, self$p), S = private$S[-i, ]),
+                     # params = list(B = private$B,
+                     #               M = matrix(0, self$n-1, self$p),
+                     #               S = private$S[-i, , drop = FALSE]),
+                     params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
-      }, future.seed = TRUE)
+      })
 
       B_jack <- jacks %>% map("B") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%
@@ -223,6 +279,9 @@ PLNfit <- R6Class(
       B_hat  <- private$B[,] ## strips attributes while preserving names
       attr(private$B, "bias") <- (self$n - 1) * (B_jack - B_hat)
       attr(private$B, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+
+      vcov_jacks = private$compute_vcov_from_resamples(jacks)
+      attr(private$B, "vcov_jackknife") <- vcov_jacks
 
       Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`) %>%
@@ -239,17 +298,30 @@ PLNfit <- R6Class(
                      X = X[resample, , drop = FALSE],
                      O = O[resample, , drop = FALSE],
                      w = w[resample])
+        if (config$backend == "torch") # Convert data to torch tensors
+          data   <- lapply(data, torch_tensor, device = config$device)                         # list with Y, X, O, w
+
+        #print (data$Y$device)
+
         args <- list(data = data,
-                     params = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
+                     # params = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
+                     params = do.call(compute_PLN_starting_point, data),
                      config = config)
+        if (config$backend == "torch") # Convert data to torch tensors
+          args$params <- lapply(args$params, torch_tensor, requires_grad = TRUE, device = config$device) # list with B, M, S
+
         optim_out <- do.call(private$optimizer$main, args)
+        #print (optim_out)
         optim_out[c("B", "Omega", "monitoring")]
-      }, future.seed = TRUE)
+      })
 
       B_boots <- boots %>% map("B") %>% reduce(`+`) / n_resamples
       attr(private$B, "variance_bootstrap") <-
         boots %>% map("B") %>% map(~( (. - B_boots)^2)) %>% reduce(`+`)  %>%
           `dimnames<-`(dimnames(private$B)) / n_resamples
+
+      vcov_boots = private$compute_vcov_from_resamples(boots)
+      attr(private$B, "vcov_bootstrap") <- vcov_boots
 
       Omega_boots <- boots %>% map("Omega") %>% reduce(`+`) / n_resamples
       attr(private$Omega, "variance_bootstrap") <-
@@ -301,10 +373,14 @@ PLNfit <- R6Class(
         private$S     <- control$inception$var_par$S
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-        fits <- lm.fit(weights * covariates, weights * log((1 + responses)/exp(offsets)))
-        private$B <- matrix(fits$coefficients, d, p)
-        private$M <- matrix(fits$residuals, n, p)
-        private$S <- matrix(.1, n, p)
+        # fits <- lm.fit(weights * covariates, weights * log((1 + responses)/exp(offsets)))
+        # private$B <- matrix(fits$coefficients, d, p)
+        # private$M <- matrix(fits$residuals, n, p)
+        # private$S <- matrix(.1, n, p)
+        start_point <- compute_PLN_starting_point(Y = responses, X = covariates, O = offsets, w = weights)
+        private$B <- start_point$B
+        private$M <- start_point$M
+        private$S <- start_point$S
       }
       private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
       private$optimizer$vestep <- nlopt_optimize_vestep
@@ -379,14 +455,15 @@ PLNfit <- R6Class(
     },
 
     #' @description Update R2, fisher and std_err fields after optimization
-    #' @param config a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
+    #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
+    #' @param config_optim a list for controlling the optimization (optional bootstrap, jackknife, R2, etc.). See details
     #' @details The list of parameters `config` controls the post-treatment processing, with the following entries:
     #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
     #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
     #' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
     #' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
     #' * trace integer for verbosity. should be > 1 to see output in post-treatments
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config, nullModel = NULL) {
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config_post, config_optim, nullModel = NULL) {
       ## PARAMATERS DIMNAMES
       ## Set names according to those of the data matrices. If missing, use sensible defaults
       if (is.null(colnames(responses)))
@@ -409,24 +486,27 @@ PLNfit <- R6Class(
 
       ## OPTIONAL POST-TREATMENT (potentially costly)
       ## 1. compute and store approximated R2 with Poisson-based deviance
-      if (config$rsquared) {
-        if(config$trace > 1) cat("\n\tComputing bootstrap estimator of the variance...")
+      if (config_post$rsquared) {
+        if(config_post$trace > 1) cat("\n\tComputing approximate R^2...")
         private$approx_r2(responses, covariates, offsets, weights, nullModel)
       }
       ## 2. compute and store matrix of standard variances for B and Omega with rough variational approximation
-      if (config$variational_var) {
-        if(config$trace > 1) cat("\n\tComputing variational estimator of the variance...")
-        private$variance_variational(covariates)
+      if (config_post$variational_var) {
+        if(config_post$trace > 1) cat("\n\tComputing variational estimator of the variance...")
+        private$variance_variational(covariates, config = config_optim)
       }
       ## 3. Jackknife estimation of bias and variance
-      if (config$jackknife) {
-        if(config$trace > 1) cat("\n\tComputing jackknife estimator of the variance...")
-        private$variance_jackknife(responses, covariates, offsets, weights)
+      if (config_post$jackknife) {
+        if(config_post$trace > 1) cat("\n\tComputing jackknife estimator of the variance...")
+        private$variance_jackknife(responses, covariates, offsets, weights, config = config_optim)
       }
       ## 4. Bootstrap estimation of variance
-      if (config$bootstrap > 0) {
-        if(config$trace > 1) cat("\n\tComputing bootstrap estimator of the variance...")
-        private$variance_bootstrap(responses, covariates, offsets, weights, config$bootstrap)
+      if (config_post$bootstrap > 0) {
+        if(config_post$trace > 1) {
+          cat("\n\tComputing bootstrap estimator of the variance...")
+          #print (str(config_optim))
+        }
+        private$variance_bootstrap(responses, covariates, offsets, weights, n_resamples=config_post$bootstrap, config = config_optim)
       }
     },
 
@@ -599,7 +679,7 @@ PLNfit <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##  CLASS PLNfit_diagonal
+##  CLASS PLNfit_diagonal ##############################
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' An R6 Class to represent a PLNfit in a standard, general framework, with diagonal residual covariance
@@ -681,7 +761,7 @@ PLNfit_diagonal <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##  CLASS PLNfit_spherical
+##  CLASS PLNfit_spherical  ############################
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' An R6 Class to represent a PLNfit in a standard, general framework, with spherical residual covariance
@@ -761,7 +841,7 @@ PLNfit_spherical <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##  CLASS PLNfit_fixedcov
+##  CLASS PLNfit_fixedcov  #############################
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' An R6 Class to represent a PLNfit in a standard, general framework, with fixed (inverse) residual covariance
@@ -812,18 +892,19 @@ PLNfit_fixedcov <- R6Class(
     },
 
     #' @description Update R2, fisher and std_err fields after optimization
-    #' @param config a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
+    #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
+    #' @param config_optim a list for controlling the optimization parameter. See details
     #' @details The list of parameters `config` controls the post-treatment processing, with the following entries:
     #' * trace integer for verbosity. should be > 1 to see output in post-treatments
     #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
     #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
     #' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
     #' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config, nullModel = NULL) {
-      super$postTreatment(responses, covariates, offsets, weights, config, nullModel)
+    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config_post, config_optim, nullModel = NULL) {
+      super$postTreatment(responses, covariates, offsets, weights, config_post, config_optim, nullModel)
       ## 6. compute and store matrix of standard variances for B with sandwich correction approximation
-      if (config$sandwich_var) {
-        if(config$trace > 1) cat("\n\tComputing sandwich estimator of the variance...")
+      if (config_post$sandwich_var) {
+        if(config_post$trace > 1) cat("\n\tComputing sandwich estimator of the variance...")
         private$vcov_sandwich_B(responses, covariates)
       }
     }
@@ -854,11 +935,13 @@ PLNfit_fixedcov <- R6Class(
 
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
       jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
-        args <- list(Y = Y[-i, , drop = FALSE],
+        data <- list(Y = Y[-i, , drop = FALSE],
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
-                     w = w[-i],
-                     params = list(B = private$B, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
+                     w = w[-i])
+        args <- list(data = data,
+                     # params = list(B = private$B, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
+                     params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
@@ -911,8 +994,8 @@ PLNfit_fixedcov <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##  CLASS PLNfit_genetprior
-# ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS PLNfit_genetprior ############################
+# ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #
 # #' An R6 Class to represent a PLNfit in a standard, general framework, with residual covariance modelling
 # #' motivatived by population genetics

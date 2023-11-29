@@ -1,11 +1,11 @@
 
-Submitting PLNmodels version 1.0.4 to CRAN
+Submitting PLNmodels version 1.1.0 to CRAN
 
-Fix various bugs, better offsets handling and update package documentation as ask by CRAN maintainers.
+Fix various bugs, update package documentation for controling optimization, better integration of the torch backend, better jackknife estimation for PLN.
 
 ## Tested environments
 
-* tested locally on Ubuntu Linux 22.04.1 LTS, R-release, GCC
+* tested locally on Ubuntu Linux 22.04.3 LTS, R-release, GCC
 
 * tested remotely with win-builder 
   - Windows Server 2022, R-devel, 64 bit
@@ -27,7 +27,7 @@ all status OK except for
     installed size is 19.4Mb
     sub-directories of 1Mb or more:
       doc    2.2Mb
-      libs  15.9Mb
+      libs  14.9Mb
       
 0 errors ✓ | 0 warnings ✓ | 1 note x
 

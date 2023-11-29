@@ -45,7 +45,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 
   ## post-treatment
   if (control$trace > 0) cat("\n Post-treatments...")
-  myPLN$postTreatment(args$Y, args$X, args$O, args$w, control$config_post)
+  myPLN$postTreatment(args$Y, args$X, args$O, args$w, control$config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -90,7 +90,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #' * "etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP
 #' * "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 #'
-#' The list of parameters `config_post` controls the post-treatment processing (for PLN and PLNLDA), with the following entries:
+#' The list of parameters `config_post` controls the post-treatment processing (for most `PLN*()` functions), with the following entries (defaults may vary depending on the specific function, check `config_post_default_*` for defaults values):
 #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
 #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
 #' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.

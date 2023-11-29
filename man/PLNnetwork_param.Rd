@@ -5,18 +5,22 @@
 \title{Control of PLNnetwork fit}
 \usage{
 PLNnetwork_param(
-  backend = "nlopt",
+  backend = c("nlopt", "torch"),
+  inception_cov = c("full", "spherical", "diagonal"),
   trace = 1,
   n_penalties = 30,
   min_ratio = 0.1,
   penalize_diagonal = TRUE,
   penalty_weights = NULL,
+  config_post = list(),
   config_optim = list(),
   inception = NULL
 )
 }
 \arguments{
 \item{backend}{optimization back used, either "nlopt" or "torch". Default is "nlopt"}
+
+\item{inception_cov}{Covariance structure used for the inception model used to initialize the PLNfamily. Defaults to "full" and can be constrained to "diagonal" and "spherical".}
 
 \item{trace}{a integer for verbosity.}
 
@@ -27,6 +31,8 @@ PLNnetwork_param(
 \item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{TRUE}}
 
 \item{penalty_weights}{either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
+
+\item{config_post}{a list for controlling the post-treatment (optional bootstrap, jackknife, R2, etc).}
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 

@@ -1,7 +1,13 @@
-# Current version
+# PLNmodels 1.1.0 (2023-08-24)
 
 * Update documentation of PLN*_param() functions to include torch optimization parameters
 * Add (somehow) explicit error message when torch convergence fails
+* Change initialization in `variance_jackknife()` and `variance_bootstrap()` to prevent estimation recycling, results from those functions are now comparable to doing jackknife / bootstrap "by hand". 
+* Merge PR #110 from Cole Trapnell to add:
+  - bootstrap estimation of the variance of model parameter
+  - improved interface for model initialization / optimisation parameters, which
+    are now passed on to jackknife / bootstrap post-treatments
+  - better support of GPU when using torch backend
 
 # PLNmodels 1.0.4 (2023-08-24)
 

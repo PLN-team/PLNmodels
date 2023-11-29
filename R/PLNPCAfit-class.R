@@ -163,14 +163,16 @@ PLNPCAfit <- R6Class(
       },
 
       #' @description Update R2, fisher, std_err fields and set up visualization
-      #' @details The list of parameters `config` controls the post-treatment processing, with the following entries:
+      #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
+      #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
+      #' @details The list of parameters `config_post` controls the post-treatment processing, with the following entries:
       #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
       #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
       #' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
       #' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
       #' * trace integer for verbosity. should be > 1 to see output in post-treatments
-      postTreatment = function(responses, covariates, offsets, weights, config, nullModel) {
-        super$postTreatment(responses, covariates, offsets, weights, config, nullModel)
+      postTreatment = function(responses, covariates, offsets, weights, config_post, config_optim, nullModel) {
+        super$postTreatment(responses, covariates, offsets, weights, config_post, config_optim, nullModel)
         colnames(private$C) <- colnames(private$M) <- 1:self$q
         rownames(private$C) <- colnames(responses)
         self$setVisualization()

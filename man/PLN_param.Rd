@@ -65,7 +65,7 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 }
 
-The list of parameters \code{config_post} controls the post-treatment processing (for PLN and PLNLDA), with the following entries:
+The list of parameters \code{config_post} controls the post-treatment processing (for most \verb{PLN*()} functions), with the following entries (defaults may vary depending on the specific function, check \verb{config_post_default_*} for defaults values):
 \itemize{
 \item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
 \item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).

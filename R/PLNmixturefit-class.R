@@ -280,8 +280,9 @@ PLNmixturefit <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Post treatment --------------------
       #' @description Update fields after optimization
-      #' @param config a list for controlling the post-treatment
-      postTreatment = function(responses, covariates, offsets, weights, config, nullModel) {
+      #' @param config_post a list for controlling the post-treatment
+      #' @param config_optim a list for controlling the optimization during the post-treatment computations
+      postTreatment = function(responses, covariates, offsets, weights, config_post, config_optim, nullModel) {
 
         ## restoring the full design matrix (group means + covariates)
         mu_k <- matrix(1, self$n, ncol = 1); colnames(mu_k) <- 'Intercept'
@@ -292,7 +293,8 @@ PLNmixturefit <-
             mu_k,
             offsets,
             private$tau[,k_],
-            config,
+            config_post,
+            config_optim,
             nullModel = nullModel
           )
       },
