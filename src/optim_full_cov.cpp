@@ -163,7 +163,6 @@ Rcpp::List nlopt_optimize_vestep(
     auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &B, &Omega](const double * params, double * grad) -> double {
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
-        const double w_bar = accu(w);
 
         arma::mat S2 = S % S;
         arma::mat Z = O + X * B + M;

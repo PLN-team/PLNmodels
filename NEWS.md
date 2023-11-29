@@ -1,4 +1,4 @@
-# Current version
+# PLNmodels 1.1.0 (2023-08-24)
 
 * Update documentation of PLN*_param() functions to include torch optimization parameters
 * Add (somehow) explicit error message when torch convergence fails
