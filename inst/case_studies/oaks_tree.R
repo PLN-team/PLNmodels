@@ -10,13 +10,14 @@ future::plan("multicore", workers = nb_cores)
 data(oaks)
 
 ## simple PLN
-system.time(myPLN <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks))
-system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
+system.time(myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = oaks))
+system.time(myPLN_diagonal <- PLN(Abundance ~ 1 + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_spherical <- PLN(Abundance ~ 1 + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
 
+## TODO! fails at q=2, one empty group
 ## Blockwise covariance
-system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + tree + offset(log(Offset)),
-                                     nb_blocks = 1:70, data = oaks))
+system.time(myPLN_blocks <- PLNblock(Abundance ~1 + offset(log(Offset)),
+                                     nb_blocks = seq(20, 100, by = 4), data = oaks, control = PLNblock_param(inception = myPLN)))
 myPLN_block <- getBestModel(myPLN_blocks)
 
 data.frame(
@@ -31,12 +32,6 @@ data.frame(
   scale_x_log10() +
   scale_y_log10(limits  =c(1e-2, 1e4)) +
   theme_bw() + annotation_logticks()
-
-## Genetic model : mixture between fixed correlation matrix + I sigma^2
-# C <- toeplitz(0.5^(1:ncol(oaks$Abundance) - 1))
-# system.time(myPLN_genetic <-
-#    PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks,
-#        control = list(covariance = "genetic", corr_matrix = C)))
 
 rbind(
   myPLN$criteria,

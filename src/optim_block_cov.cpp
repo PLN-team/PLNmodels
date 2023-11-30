@@ -101,6 +101,7 @@ Rcpp::List nlopt_optimize_block(
   Rcpp::List posteriorProb ; posteriorProb.push_back(arma::mat(Tau)) ;
   OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
   Rcpp::NumericVector objective ; objective.push_back(result.objective) ;
+  // std::cout << "objective" << result.objective << "  inner iteration" << result.nb_iterations << std::endl;
 
   update_posterior_prob(parameters.data()) ;
 
@@ -112,11 +113,12 @@ Rcpp::List nlopt_optimize_block(
 
     // Optimize Tau
     update_posterior_prob(parameters.data()) ;
-    posteriorProb.push_back(arma::mat(Tau)) ;
 
     // Optimize B, M and S
     result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
     objective.push_back(result.objective)  ;
+
+    // std::cout << "objective" << result.objective << "  inner iteration" << result.nb_iterations << std::endl;
 
   } while( std::abs(objective[iter] - objective[iter-1])/std::abs(objective[iter-1]) > threshold & iter+1 < maxiter) ;
 
@@ -161,7 +163,7 @@ Rcpp::List nlopt_optimize_block(
     Rcpp::Named("monitoring", Rcpp::List::create(
         Rcpp::Named("status", static_cast<int>(result.status)),
         Rcpp::Named("backend", "nlopt"),
-        Rcpp::Named("posteriorProb", wrap(posteriorProb)),
+        // Rcpp::Named("posteriorProb", wrap(posteriorProb)),
         Rcpp::Named("objective", wrap(objective)),
         Rcpp::Named("outer_iterations", objective.length()),
         Rcpp::Named("iterations", result.nb_iterations)

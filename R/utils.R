@@ -1,17 +1,6 @@
 available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "LBFGS_NOCEDAL", "VAR1", "VAR2")
 available_algorithms_torch <- c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")
 
-config_default_nlopt_block <-
-  list(
-    algorithm     = "CCSAQ",
-    maxeval       = 10000  ,
-    ftol_rel      = 1e-10   ,
-    xtol_rel      = 1e-8   ,
-    ftol_abs      = 0.0    ,
-    xtol_abs      = 0.0    ,
-    maxtime       = -1
-  )
-
 config_default_nlopt <-
   list(
     algorithm     = "CCSAQ",

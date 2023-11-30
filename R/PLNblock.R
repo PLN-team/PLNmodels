@@ -88,7 +88,7 @@ PLNblock_param <- function(
   stopifnot(backend %in% c("torch", "nlopt"))
   if (backend == "nlopt") {
     stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-    config_opt <- config_default_nlopt_block
+    config_opt <- config_default_nlopt
   }
   if (backend == "torch") {
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
@@ -96,8 +96,8 @@ PLNblock_param <- function(
   }
 
   config_opt$trace <- trace
-  config_opt$ftol_out  <- 1e-5
-  config_opt$maxit_out <- 20
+  config_opt$ftol_out  <- 1e-8
+  config_opt$maxit_out <- 100
   config_opt[names(config_optim)] <- config_optim
 
   structure(list(
