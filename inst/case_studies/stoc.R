@@ -11,7 +11,10 @@ data(stoc)
 
 ## simple PLN
 system.time(myPLN_diag_0 <- PLN(Abundance ~ 1 + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_diag_zonebio <- PLN(Abundance ~0 + zonebio + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_temp <- PLN(Abundance ~ 1 + temp + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_precip <- PLN(Abundance ~ 1 + precip + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal", config_optim = list(xtol_rel=1e-8))))
+system.time(myPLN_diag_div <- PLN(Abundance ~ 1 + div + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_zonebio <- PLN(Abundance ~ 0 + zonebio + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
 system.time(myPLN_diag_Agricultural <- PLN(Abundance ~ 1 + cover_Agricultural + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
 system.time(myPLN_diag_Forest <- PLN(Abundance ~ 1 + cover_Forest + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
 system.time(myPLN_diag_Artificial <- PLN(Abundance ~ 1 + cover_Artificial + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
@@ -23,33 +26,30 @@ U <- eigen(cov(cover))$vectors
 stoc$cover_PC1 <- cover %*% U[, 1, drop = FALSE]
 system.time(myPLN_diag_cover <- PLN(Abundance ~ 1 + cover_PC1 + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal", config_optim = list(xtol_rel = 1e-8))))
 
+system.time(myPLN_diag_temp_Forest <- PLN(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
+
 rbind(
   myPLN_diag_0$criteria,
+  myPLN_diag_temp$criteria,
+  myPLN_diag_precip$criteria,
+  myPLN_diag_div$criteria,
   myPLN_diag_zonebio$criteria,
   myPLN_diag_Agricultural$criteria,
   myPLN_diag_Forest$criteria,
   myPLN_diag_Artificial$criteria,
-  myPLN_diag_cover$criteria
+  myPLN_diag_cover$criteria,
+  myPLN_diag_temp_Forest$criteria
 ) %>%
-  as.data.frame(row.names = c("1", "zonebio", "Agricultural", "Forest", "Artificial", "cover")) %>%
+  as.data.frame(row.names = c("1", "temp", "precip", "div", "zonebio", "Agricultural", "Forest", "Artificial", "cover", "temp-Forest")) %>%
+  dplyr::arrange(loglik) %>%
   knitr::kable()
 
-system.time(myPLN_diag_Forest <- PLN(Abundance ~ 1 + cover_Forest + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
+## --> best model is temp + cover_Forest
 
-system.time(myPLN_diag_Forest <- PLN(Abundance ~ 0 + zone + cover_Forest + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
+myPLN_temp_Forest <- PLN(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), data = stoc)
 
-
-
-
-system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + zonebio + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + zonebio + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_spherical <- PLN(Abundance ~ 0 + zonebio + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "spherical")))
-
-## Blockwise covariance
-D <- 1 - cov2cor(myPLN$model_par$Sigma)
-nb_blocks <- 6:50
-blocks <- hclust(as.dist(D), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
-system.time(myPLN_blocks <- PLNblock(Abundance ~ 0 + zonebio + offset(log(Offset)), nb_blocks = nb_blocks, data = stoc, control = PLNblock_param(inception = myPLN, init_cl = blocks)))
+nb_blocks <- seq(20, 80, by=4)
+system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), nb_blocks = nb_blocks, data = stoc, control = PLNblock_param(inception = myPLN_temp_Forest)))
 myPLN_block <- getBestModel(myPLN_blocks)
 
 data.frame(

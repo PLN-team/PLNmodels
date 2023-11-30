@@ -113,6 +113,7 @@ Rcpp::List nlopt_optimize_block(
 
     // Optimize Tau
     update_posterior_prob(parameters.data()) ;
+    posteriorProb.push_back(arma::mat(Tau)) ;
 
     // Optimize B, M and S
     result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -163,7 +164,7 @@ Rcpp::List nlopt_optimize_block(
     Rcpp::Named("monitoring", Rcpp::List::create(
         Rcpp::Named("status", static_cast<int>(result.status)),
         Rcpp::Named("backend", "nlopt"),
-        // Rcpp::Named("posteriorProb", wrap(posteriorProb)),
+        Rcpp::Named("posteriorProb", wrap(posteriorProb)),
         Rcpp::Named("objective", wrap(objective)),
         Rcpp::Named("outer_iterations", objective.length()),
         Rcpp::Named("iterations", result.nb_iterations)
