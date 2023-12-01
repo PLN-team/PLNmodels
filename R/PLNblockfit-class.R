@@ -47,7 +47,12 @@ PLNblockfit <- R6Class(
       private$Tau <- t(blocks)
 
       ## Setup of the optimization backend
-      private$optimizer$main <- ifelse(control$backend == "nlopt", nlopt_optimize_block, private$torch_optimize)
+      private$optimizer$main <-
+        switch(control$backend,
+               "nlopt" = nlopt_optimize_block,
+               "torch" = private$torch_optimize,
+               "nlopt-vem" =  optimize_plnblock
+        )
       private$optimizer$vestep <- nlopt_optimize_vestep_block
     },
     #' @description Update fields of a [`PLNnetworkfit`] object
@@ -91,7 +96,7 @@ PLNblockfit <- R6Class(
       A  <- torch_exp(data$O[index] + XB) * torch_mm(torch_exp(params$M[index] + S2 / 2), private$Tau)
       res <- self$n/2 * torch_logdet(private$torch_Sigma(data, params, index)) +
         torch_sum((A - data$Y[index] * (data$O[index] + XB + torch_mm(params$M[index], private$Tau)))) -
-              .5 * torch_sum(torch_log(S2))
+        .5 * torch_sum(torch_log(S2))
       res
     },
 
@@ -114,8 +119,8 @@ PLNblockfit <- R6Class(
           torch_sum(data$Y * params$Z - params$A, dim = 2) +
           .5 * torch_sum(torch_log(S2), dim = 2) -
           .5 * torch_sum(torch_mm(params$M, params$Omega) * params$M + S2 * torch_diag(params$Omega), dim = 2) -
-            torch_sum(torch:::torch_xlogy(params$Tau, params$Tau)) +
-            torch_sum(torch_mm(torch_t(log_Alpha), params$Tau))
+          torch_sum(torch:::torch_xlogy(params$Tau, params$Tau)) +
+          torch_sum(torch_mm(torch_t(log_Alpha), params$Tau))
       )
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji

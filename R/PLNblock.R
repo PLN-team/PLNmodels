@@ -68,7 +68,7 @@ PLNblock <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, weigh
 #' @seealso [PLN_param()]
 #' @export
 PLNblock_param <- function(
-    backend       = c("nlopt", "torch"),
+    backend       = c("nlopt", "nlopt-vem", "torch"),
     trace         = 1,
     config_optim  = list(),
     init_cl       = "clustofvar",
@@ -85,8 +85,8 @@ PLNblock_param <- function(
 
   ## optimization config
   backend <- match.arg(backend)
-  stopifnot(backend %in% c("torch", "nlopt"))
-  if (backend == "nlopt") {
+  stopifnot(backend %in% c("torch", "nlopt", "nlopt-vem"))
+  if (backend %in% c("nlopt", "nlopt-vem")) {
     stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
     config_opt <- config_default_nlopt
   }
@@ -96,7 +96,7 @@ PLNblock_param <- function(
   }
 
   config_opt$trace <- trace
-  config_opt$ftol_out  <- 1e-8
+  config_opt$ftol_out  <- 1e-4
   config_opt$maxit_out <- 100
   config_opt[names(config_optim)] <- config_optim
 

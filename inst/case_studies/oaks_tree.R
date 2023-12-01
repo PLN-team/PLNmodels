@@ -3,8 +3,7 @@ library(factoextra)
 
 ## setting up future for parallelism
 nb_cores <- 20
-options(future.fork.enable = TRUE)
-future::plan("multicore", workers = nb_cores)
+future::plan("multisession", workers = nb_cores)
 
 ## get oaks data set
 data(oaks)
@@ -17,7 +16,7 @@ system.time(myPLN_spherical <- PLN(Abundance ~ 1 + offset(log(Offset)), data = o
 ## TODO! fails at q=2, one empty group
 ## Blockwise covariance
 system.time(myPLN_blocks <- PLNblock(Abundance ~1 + offset(log(Offset)),
-                                     nb_blocks = seq(20, 100, by = 4), data = oaks, control = PLNblock_param(inception = myPLN)))
+                                     nb_blocks = seq(20, 100, by = 4), data = oaks, control = PLNblock_param(inception = myPLN, backend = "nlopt-vem")))
 myPLN_block <- getBestModel(myPLN_blocks)
 
 data.frame(

@@ -13,7 +13,7 @@ See the documentation for \code{\link[=getBestModel]{getBestModel()}},
 \examples{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-fits <- PLNblock(Abundance ~ 1, nb_blocks = 1:15, data = trichoptera)
+fits <- PLNblock(Abundance ~ 1, nb_blocks = 1:17, data = trichoptera)
 class(fits)
 }
 \seealso{

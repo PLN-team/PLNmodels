@@ -24,7 +24,7 @@
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' fits <- PLNblock(Abundance ~ 1, nb_blocks = 1:15, data = trichoptera)
+#' fits <- PLNblock(Abundance ~ 1, nb_blocks = 1:17, data = trichoptera)
 #' class(fits)
 #' @seealso The function [PLNblock()], the class [`PLNblockfit`]
 PLNblockfamily <- R6Class(
@@ -90,14 +90,22 @@ PLNblockfamily <- R6Class(
     #' @description Call to the C++ optimizer on all models of the collection
     #' @param config a list for controlling the optimization.
     optimize = function(config) {
-      self$models <- future.apply::future_lapply(self$models, function(model) {
+      # self$models <- future.apply::future_lapply(self$models, function(model) {
+      #   if (config$trace >= 1) {
+      #     cat("\tnumber of blocks =", model$nb_block, "\r")
+      #     flush.console()
+      #   }
+      #   model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
+      #   model
+      # }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      self$models <- lapply(self$models, function(model) {
         if (config$trace >= 1) {
           cat("\tnumber of blocks =", model$nb_block, "\r")
           flush.console()
         }
         model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
         model
-      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      })
     },
 
     #' @description Extract best model in the collection

@@ -94,6 +94,7 @@ Collate:
     'import_utils.R'
     'mollusk.R'
     'oaks.R'
+    'optimize_plnblock.R'
     'plot_utils.R'
     'trichoptera.R'
     'utils-pipe.R'

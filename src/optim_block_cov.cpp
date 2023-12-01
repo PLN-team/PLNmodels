@@ -8,7 +8,7 @@
 #include "utils.h"
 
 // ---------------------------------------------------------------------------------------
-// Fully parametrized covariance
+// Fully parametrized covariance, Gradient Descent
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_block(
@@ -64,7 +64,9 @@ Rcpp::List nlopt_optimize_block(
     arma::mat A = A2 % (A1 * Tau) ;
     arma::mat A_tau = A1 % (A2 * Tau.t()) ;
     arma::mat Omega = w_bar * inv_sympd(M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
-    double objective = accu(w.t() * (A - Y % (mu + M * Tau))) - 0.5 * accu(w.t() * log(S2)) - 0.5 * w_bar * real(log_det(Omega));
+    double objective =
+      accu(w.t() * (A - Y % (mu + M * Tau)))
+      - 0.5 * accu(w.t() * log(S2)) - 0.5 * w_bar * real(log_det(Omega));
 
     metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
     metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A_tau - Y * Tau.t());
@@ -147,7 +149,7 @@ Rcpp::List nlopt_optimize_block(
 
   // Element-wise log-likehood
   arma::vec loglik = sum(Y % Z - A, 1) + 0.5 * sum(log(S2), 1) - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1) +
-  0.5 * real(log_det(Omega)) - logfact(Y) + .5 * M.n_cols + accu(log_alpha.t() * Tau) - accu(Tau % arma::trunc_log(Tau)) ;
+    0.5 * real(log_det(Omega)) - logfact(Y) + .5 * M.n_cols + accu(log_alpha.t() * Tau) - accu(Tau % arma::trunc_log(Tau)) ;
 
   Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
   Ji.attr("weights") = w;
@@ -354,15 +356,15 @@ Rcpp::List nlopt_optimize_block_sparse(
 }
 
 // ---------------------------------------------------------------------------------------
-  // VE full
+// VE step
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_vestep_block(
-  const Rcpp::List & data  , // List(Y, X, O, w)
-  const Rcpp::List & params, // List(M, S)
-  const arma::mat & B,       // (d,p)
-  const arma::mat & Omega,   // (p,p)
-  const Rcpp::List & config  // List of config values
+    const Rcpp::List & data  , // List(Y, X, O, w)
+    const Rcpp::List & params, // List(M, S)
+    const arma::mat & B,       // (d,p)
+    const arma::mat & Omega,   // (p,p)
+    const Rcpp::List & config  // List of config values
 ) {
   // Conversion from R, prepare optimization
   const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
@@ -371,6 +373,7 @@ Rcpp::List nlopt_optimize_vestep_block(
   const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
   const auto init_M   = Rcpp::as<arma::mat>(params["M"]); // (n,p)
   const auto init_S   = Rcpp::as<arma::mat>(params["S"]); // (n,p)
+  arma::mat Tau = Rcpp::as<arma::mat>(params["Tau"]);     // (q,p)
 
   const auto metadata = tuple_metadata(init_M, init_S);
   enum { M_ID, S_ID }; // Names for metadata indexes
@@ -393,44 +396,106 @@ Rcpp::List nlopt_optimize_vestep_block(
     }
   }
 
-  // Optimize
-  auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &B, &Omega](const double * params, double * grad) -> double {
+  const arma::mat mu = O + X * B ;
+  const arma::mat A2 = trunc_exp(mu) ;
+
+  // Optimization over M and S: computation of objective and gradients
+  auto objective_and_grad = [&metadata, &Y, &X, &O, &w, &mu, &A2, &B, &Omega, &Tau](const double * params, double * grad) -> double {
     const arma::mat M = metadata.map<M_ID>(params);
     const arma::mat S = metadata.map<S_ID>(params);
 
     arma::mat S2 = S % S;
-    arma::mat Z = O + X * B + M;
-    arma::mat A = exp(Z + 0.5 * S2);
-    arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2) ;
-    double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * trace(Omega * nSigma) ;
+    arma::mat A1 = trunc_exp(M + .5 * S2) ;
 
-    metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
-    metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
+    arma::mat A = A2 % (A1 * Tau) ;
+    arma::mat A_tau = A1 % (A2 * Tau.t()) ;
+
+    arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2) ;
+    double objective = accu(w.t() * (A - Y % (mu + M * Tau))) - 0.5 * accu(w.t() * log(S2)) + 0.5 * trace(Omega * nSigma) ;
+
+    metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A_tau - Y * Tau.t());
+    metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A_tau - pow(S, -1));
 
     return objective;
   };
+
+  // Posterior probabilities (Tau): compute updates
+  // arma::vec param
+  auto update_posterior_prob = [&metadata, &Y, &X, &O, &mu, &A2, &B, &Tau](const double *params) {
+    const arma::vec log_alpha = arma::log(mean(Tau,1));
+    const arma::mat M = metadata.map<M_ID>(params);
+    const arma::mat S = metadata.map<S_ID>(params);
+
+    arma::mat S2 = S % S;
+    arma::mat A1 = trunc_exp(M + .5 * S2) ;
+
+    Tau = M.t() * Y - A1.t() * A2  ;
+    Tau.each_col() += log_alpha ;
+    Tau.each_col( [](arma::vec& x){
+      x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;
+    }) ;
+  };
+
+  // =========================================================================
+  //
+  // MAIN OPTIMIZATION
+
+  // Initialization and first step
+  int iter = 0;
+  Rcpp::List posteriorProb ; posteriorProb.push_back(arma::mat(Tau)) ;
   OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+  Rcpp::NumericVector objective ; objective.push_back(result.objective) ;
+  // std::cout << "objective" << result.objective << "  inner iteration" << result.nb_iterations << std::endl;
+
+  update_posterior_prob(parameters.data()) ;
+
+  // Alternate optimization
+  double threshold = Rcpp::as<double>(config["ftol_out"]);
+  double maxiter = Rcpp::as<int>(config["maxit_out"]);
+  do { // GO FOR IT!!
+    iter++;
+
+    // Optimize Tau
+    update_posterior_prob(parameters.data()) ;
+    posteriorProb.push_back(arma::mat(Tau)) ;
+
+    // Optimize B, M and S
+    result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+    objective.push_back(result.objective)  ;
+
+    // std::cout << "objective" << result.objective << "  inner iteration" << result.nb_iterations << std::endl;
+
+  } while( std::abs(objective[iter] - objective[iter-1])/std::abs(objective[iter-1]) > threshold & iter+1 < maxiter) ;
+
+  // =========================================================================
+  //
+  // MAIN OPTIMIZATION DONE
+  //
+  // Preparing output
 
   // Model and variational parameters
   arma::mat M = metadata.copy<M_ID>(parameters.data());
   arma::mat S = metadata.copy<S_ID>(parameters.data());
   arma::mat S2 = S % S;
-  // Element-wise log-likelihood
-  arma::mat Z = O + X * B + M;
-  arma::mat A = exp(Z + 0.5 * S2);
-  arma::vec loglik = sum(Y % Z - A + 0.5 * log(S2) - 0.5 * ((M * Omega) % M + S2 * diagmat(Omega)), 1) +
-  0.5 * real(log_det(Omega)) + ki(Y);
+  arma::vec log_alpha = arma::log(mean(Tau, 1));
+  // Latent variable and expected value
+  arma::mat Z = mu + M * Tau;
+  arma::mat A = A2 % (trunc_exp(M + .5 * S2) * Tau) ;
+  // Element-wise log-likehood
+  arma::vec loglik = sum(Y % Z - A, 1) + 0.5 * sum(log(S2), 1) - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1) +
+    0.5 * real(log_det(Omega)) - logfact(Y) + .5 * M.n_cols + accu(log_alpha.t() * Tau) - accu(Tau % arma::trunc_log(Tau)) ;
 
-Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-Ji.attr("weights") = w;
-return Rcpp::List::create(
-  Rcpp::Named("M") = M,
-  Rcpp::Named("S") = S,
-  Rcpp::Named("Ji") = Ji,
-  Rcpp::Named("monitoring", Rcpp::List::create(
-    Rcpp::Named("status", static_cast<int>(result.status)),
-    Rcpp::Named("backend", "nlopt"),
-    Rcpp::Named("iterations", result.nb_iterations)
-  ))
-);
+  Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+  Ji.attr("weights") = w;
+  return Rcpp::List::create(
+    Rcpp::Named("M") = M,
+    Rcpp::Named("S") = S,
+    Rcpp::Named("Tau") = Tau,
+    Rcpp::Named("Ji") = Ji,
+    Rcpp::Named("monitoring", Rcpp::List::create(
+        Rcpp::Named("status", static_cast<int>(result.status)),
+        Rcpp::Named("backend", "nlopt"),
+        Rcpp::Named("iterations", result.nb_iterations)
+    ))
+  );
 }

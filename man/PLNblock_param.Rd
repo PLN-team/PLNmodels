@@ -5,7 +5,7 @@
 \title{Control of a PLNblock fit}
 \usage{
 PLNblock_param(
-  backend = c("nlopt", "torch"),
+  backend = c("nlopt", "nlopt-vem", "torch"),
   trace = 1,
   config_optim = list(),
   init_cl = "clustofvar",

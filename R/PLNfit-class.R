@@ -108,10 +108,10 @@ PLNfit <- R6Class(
 
       ## Initialize optimizer
       optimizer <- switch(config$algorithm,
-          "RPROP"   = optim_rprop(params  , lr = config$lr, etas = config$etas, step_sizes = config$step_sizes),
-          "RMSPROP" = optim_rmsprop(params, lr = config$lr, weight_decay = config$weight_decay, momentum = config$momentum, centered = config$centered),
-          "ADAM"    = optim_adam(params   , lr = config$lr, weight_decay = config$weight_decay),
-          "ADAGRAD" = optim_adagrad(params, lr = config$lr, weight_decay = config$weight_decay)
+                          "RPROP"   = optim_rprop(params  , lr = config$lr, etas = config$etas, step_sizes = config$step_sizes),
+                          "RMSPROP" = optim_rmsprop(params, lr = config$lr, weight_decay = config$weight_decay, momentum = config$momentum, centered = config$centered),
+                          "ADAM"    = optim_adam(params   , lr = config$lr, weight_decay = config$weight_decay),
+                          "ADAGRAD" = optim_adagrad(params, lr = config$lr, weight_decay = config$weight_decay)
       )
 
       ## Optimization loop
@@ -173,14 +173,14 @@ PLNfit <- R6Class(
       out <- lapply(params, function(x) {
         x = x$cpu()
         as.matrix(x)}
-        )
+      )
       out$Ji <- private$torch_vloglik(data, params)
       out$monitoring <- list(
-          objective  = objective,
-          iterations = iterate,
-          status     = status,
-          backend = "torch"
-        )
+        objective  = objective,
+        iterations = iterate,
+        status     = status,
+        backend = "torch"
+      )
       out
     },
 
@@ -190,7 +190,7 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     variance_variational = function(X, config = config_default_nlopt) {
-    ## Variance of B for n data points
+      ## Variance of B for n data points
       fisher <- Matrix::bdiag(lapply(1:self$p, function(j) {
         crossprod(X, private$A[, j] * X) # t(X) %*% diag(A[, i]) %*% X
       }))
@@ -318,7 +318,7 @@ PLNfit <- R6Class(
       B_boots <- boots %>% map("B") %>% reduce(`+`) / n_resamples
       attr(private$B, "variance_bootstrap") <-
         boots %>% map("B") %>% map(~( (. - B_boots)^2)) %>% reduce(`+`)  %>%
-          `dimnames<-`(dimnames(private$B)) / n_resamples
+        `dimnames<-`(dimnames(private$B)) / n_resamples
 
       vcov_boots = private$compute_vcov_from_resamples(boots)
       attr(private$B, "vcov_bootstrap") <- vcov_boots
@@ -434,9 +434,9 @@ PLNfit <- R6Class(
     #'  * the matrix `S2` of variational variances
     #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
     optimize_vestep = function(covariates, offsets, responses, weights,
-                      B = self$model_par$B,
-                      Omega = self$model_par$Omega,
-                      control = PLN_param(backend = "nlopt")) {
+                               B = self$model_par$B,
+                               Omega = self$model_par$Omega,
+                               control = PLN_param(backend = "nlopt")) {
       n <- nrow(responses); p <- ncol(responses)
       ## initialize variational parameters with current value if dimension is the same
       if ((p != self$p) || (n != self$n)) {
@@ -570,13 +570,13 @@ PLNfit <- R6Class(
 
       # Call to VEstep to obtain M1, S1
       VE <- self$optimize_vestep(
-              covariates = X,
-              offsets    = O[, cond, drop = FALSE],
-              responses  = Yc,
-              weights    = rep(1, n_new),
-              B          = self$model_par$B[, cond, drop = FALSE],
-              Omega      = prec11
-          )
+        covariates = X,
+        offsets    = O[, cond, drop = FALSE],
+        responses  = Yc,
+        weights    = rep(1, n_new),
+        B          = self$model_par$B[, cond, drop = FALSE],
+        Omega      = prec11
+      )
 
       M <- tcrossprod(VE$M, A)
       S <- map(1:n_new, ~crossprod(VE$S[., ] * t(A)) + Sigma21) %>% simplify2array()
@@ -977,7 +977,7 @@ PLNfit_fixedcov <- R6Class(
       vcov_sand <- ((Cn_inv %*% Dn %*% Cn_inv) / self$n) %>% `dimnames<-`(dim_names)
       attr(private$B, "vcov_sandwich") <- vcov_sand
       attr(private$B, "variance_sandwich") <- matrix(diag(vcov_sand), nrow = self$d, ncol = self$p,
-                                                         dimnames = dimnames(private$B))
+                                                     dimnames = dimnames(private$B))
     }
   ),
   active = list(
