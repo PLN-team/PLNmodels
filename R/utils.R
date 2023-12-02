@@ -105,6 +105,8 @@ trace <- function(x) sum(diag(x))
 
 .xlogx <- function(x) ifelse(x < .Machine$double.eps, 0, x*log(x))
 
+.xlogy <- function(x,y) ifelse(x < .Machine$double.eps & y < .Machine$double.eps, 0, x*log(y))
+
 .softmax <- function(x) {
   b <- max(x)
   exp(x - b) / sum(exp(x - b))

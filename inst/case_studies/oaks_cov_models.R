@@ -3,8 +3,6 @@ library(tidyverse)
 
 ## setting up future for parallelism
 nb_cores <- 20
-options(future.fork.enable = TRUE)
-future::plan("multicore", workers = nb_cores)
 
 ## get oaks data set
 data(oaks)
@@ -66,4 +64,3 @@ list_Tau <- best_block$optim_par$posteriorProb
 
 clusterings <- map(list_Tau, ~apply(., 2, which.max))
 
-future::plan("sequential")

@@ -226,7 +226,8 @@ PLNblockfit <- R6Class(
     #' @field loglik (weighted) variational lower bound of the loglikelihood
     loglik     = function() {
       ## this term should not be sumeed over sites/individuals
-      tau_log_alpha_over_tau <- sum(private$Tau * log(self$groupProportion)) - sum(.xlogx(private$Tau))
+      pi <- matrix(self$groupProportion, self$q, self$p)
+      tau_log_alpha_over_tau <- sum(.xlogy(private$Tau,pi)) - sum(.xlogx(private$Tau))
       sum(self$weights * private$Ji - tau_log_alpha_over_tau) +  tau_log_alpha_over_tau
     },
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
