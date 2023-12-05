@@ -49,7 +49,8 @@ rbind(
 myPLN_temp_Forest <- PLN(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), data = stoc)
 
 nb_blocks <- seq(20, 80, by=4)
-system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), nb_blocks = nb_blocks, data = stoc, control = PLNblock_param(inception = myPLN_temp_Forest)))
+system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), nb_blocks = nb_blocks, data = stoc,
+                                     control = PLNblock_param(inception = myPLN_temp_Forest, backend = "nlopt-vem")))
 myPLN_block <- getBestModel(myPLN_blocks)
 
 data.frame(
