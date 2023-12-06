@@ -2,7 +2,7 @@ library(PLNmodels)
 library(factoextra)
 
 ## setting up future for parallelism
-nb_cores <- 10
+nb_cores <- 20
 options(future.fork.enable = TRUE)
 future::plan("multicore", workers = nb_cores)
 
@@ -48,9 +48,9 @@ rbind(
 
 myPLN_temp_Forest <- PLN(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), data = stoc)
 
-nb_blocks <- seq(20, 80, by=4)
+nb_blocks <- seq(32, 100, by=4)
 system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), nb_blocks = nb_blocks, data = stoc,
-                                     control = PLNblock_param(inception = myPLN_temp_Forest, backend = "nlopt-vem")))
+                                     control = PLNblock_param(inception = myPLN_temp_Forest)))
 myPLN_block <- getBestModel(myPLN_blocks)
 
 data.frame(
