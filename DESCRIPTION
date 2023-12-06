@@ -6,14 +6,13 @@ Authors@R: c(
       comment = c(ORCID = "0000-0002-3629-3429")),
   person("Mahendra", "Mariadassou", role = "aut", email = "mahendra.mariadassou@inrae.fr", 
       comment = c(ORCID = "0000-0003-2986-354X")),
-  person("Stéphane", "Robin", role ="ctb", email = "stephane.robin@inrae.fr"),
+  person("Stéphane", "Robin", role ="aut", email = "stephane.robin@inrae.fr"),
   person("François", "Gindraud", role = "aut", email = "francois.gindraud@gmail.com"),
   person("Julie", "Aubert", role = "ctb", email = "julie.aubert@inrae.fr"),
   person("Bastien", "Batardière", role = "ctb", email = "bastien.batardiere@inrae.fr"),
   person("Giovanni", "Poggiato", role = "ctb", email = "giov.poggiato@gmail.com"),
   person("Cole", "Trapnell", role = "ctb", email = "coletrap@uw.edu"),
-  person("Maddy", "Duran", role = "ctb", email = "duran@uw.edu"),
-  person("Brent", "Ewing", role = "ctb", email = "bge@uw.edu")
+  person("Maddy", "Duran", role = "ctb", email = "duran@uw.edu")
   )
 Description: The Poisson-lognormal model and variants (Chiquet, Mariadassou and Robin, 
     2021 <doi:10.3389/fevo.2021.588292>) can be used for 
