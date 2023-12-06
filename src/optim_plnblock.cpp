@@ -75,7 +75,7 @@ arma::vec plnblock_loglik(
 }
 
 // [[Rcpp::export]]
-Rcpp::List  optim_plnblock_Omega_full(
+Rcpp::List  optim_plnblock_Omega(
   const arma::mat & M, // (n,q)
   const arma::mat & S, // (n,q)
   const arma::vec & w  // (n)
@@ -96,7 +96,6 @@ arma::mat optim_plnblock_Tau(
   const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
   const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
   const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
-  const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
   const arma::mat & B = Rcpp::as<arma::mat>(params["B"]); // (n,q)
   const arma::mat & M = Rcpp::as<arma::mat>(params["M"]); // (n,q)
   const arma::mat & S = Rcpp::as<arma::mat>(params["S"]); // (n,q)
@@ -191,11 +190,9 @@ Rcpp::List optim_plnblock_VE(
 
   const arma::mat mu = O + X * B ;
   const arma::mat A2 = trunc_exp(mu) ;
-  const double w_bar = accu(w);
-  const double log_det_Omega = 0.5 * w_bar * real(log_det(Omega)) ;
 
   // Optimize
-  auto objective_and_grad = [&metadata, &Y, &X, &mu, &A2,  &T, &Omega,&log_det_Omega, &w, &w_bar](const double * params, double * grad) -> double {
+  auto objective_and_grad = [&metadata, &Y, &X, &mu, &A2,  &T, &Omega, &w](const double * params, double * grad) -> double {
     const arma::mat M = metadata.map<M_ID>(params);
     const arma::mat S = metadata.map<S_ID>(params);
 
@@ -206,7 +203,7 @@ Rcpp::List optim_plnblock_VE(
     arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2);
     double objective =
       accu(w.t() * (A - Y % (mu + M * T))) - 0.5 * accu(w.t() * log(S2))
-      + .5 * trace(Omega * nSigma) - log_det_Omega;
+      + .5 * trace(Omega * nSigma) ;
 
     metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A_T - Y * T.t());
     metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A_T - pow(S, -1));

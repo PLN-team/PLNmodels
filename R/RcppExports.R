@@ -49,8 +49,8 @@ plnblock_loglik <- function(data, params) {
     .Call('_PLNmodels_plnblock_loglik', PACKAGE = 'PLNmodels', data, params)
 }
 
-optim_plnblock_Omega_full <- function(M, S, w) {
-    .Call('_PLNmodels_optim_plnblock_Omega_full', PACKAGE = 'PLNmodels', M, S, w)
+optim_plnblock_Omega <- function(M, S, w) {
+    .Call('_PLNmodels_optim_plnblock_Omega', PACKAGE = 'PLNmodels', M, S, w)
 }
 
 optim_plnblock_Tau <- function(data, params) {

@@ -85,27 +85,58 @@ PLNblockfamily <- R6Class(
         })
     },
 
+    optimize_sequentially = function(config) {
+      ## go along modes by decrezasing group sizes
+      models_order <- order(self$nb_blocks, decreasing = TRUE)
+      for (m in seq_along(models_order))  {
+        if (config$trace == 1) {
+          cat("\tNumber of blocks =", self$models[[models_order[m]]]$nb_block, "\r")
+          flush.console()
+        }
+        if (config$trace > 1) {
+          cat("\tNumber of blocks =", self$models[[models_order[m]]]$nb_block, "- iteration:")
+        }
+        self$models[[models_order[m]]]$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
+        ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
+        if (m < length(self$nb_blocks)) {
+          blocks <-
+            self$models[[models_order[m]]]$var_par$M  %>%
+            kmeansvar(init = self$models[[models_order[m+1]]]$nb_block, nstart = 30) %>%
+            pluck("cluster") %>% as_indicator() %>% .check_boundaries()
+          self$models[[models_order[m+1]]]$update(
+            B = self$models[[models_order[m]]]$model_par$B,
+            M = self$models[[models_order[m]]]$var_par$M %*% blocks ,
+            S = self$models[[models_order[m]]]$var_par$S %*% blocks
+          )
+        }
+        if (config$trace > 1) {
+          cat("\r                                                                                    \r")
+          flush.console()
+        }
+      }
+    },
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimization ----------------------
     #' @description Call to the C++ optimizer on all models of the collection
     #' @param config a list for controlling the optimization.
+    #' @importFrom purrr pluck
     optimize = function(config) {
-      # self$models <- future.apply::future_lapply(self$models, function(model) {
-      #   if (config$trace >= 1) {
-      #     cat("\tnumber of blocks =", model$nb_block, "\r")
-      #     flush.console()
-      #   }
-      #   model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
-      #   model
-      # }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
-      self$models <- lapply(self$models, function(model) {
+      self$models <- future.apply::future_lapply(self$models, function(model) {
         if (config$trace >= 1) {
           cat("\tnumber of blocks =", model$nb_block, "\r")
           flush.console()
         }
         model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
         model
-      })
+      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      # self$models <- lapply(self$models, function(model) {
+      #   if (config$trace >= 1) {
+      #     cat("\tnumber of blocks =", model$nb_block, "\r")
+      #     flush.console()
+      #   }
+      #   model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
+      #   model
+      # })
     },
 
     #' @description Extract best model in the collection

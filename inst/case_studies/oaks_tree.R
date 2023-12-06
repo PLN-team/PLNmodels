@@ -3,9 +3,9 @@ library(factoextra)
 
 ## setting up future for parallelism
 nb_cores <- 10
-future::plan("multisession", workers = nb_cores)
-# options(future.fork.enable = TRUE)
-# future::plan("multicore", workers = nb_cores)
+# future::plan("multisession", workers = nb_cores)
+options(future.fork.enable = TRUE)
+future::plan("multicore", workers = nb_cores)
 
 ## get oaks data set
 data(oaks)
@@ -19,7 +19,7 @@ system.time(myPLN_spherical <- PLN(Abundance ~ 1 + offset(log(Offset)), data = o
 ## Blockwise covariance
 system.time(myPLN_blocks <- PLNblock(
             Abundance ~1 + offset(log(Offset)), nb_blocks = seq(20, 100, by = 4), data = oaks,
-            control = PLNblock_param(inception = myPLN, backend = "nlopt-vem"))
+            control = PLNblock_param(inception = myPLN))
 )
 myPLN_block <- getBestModel(myPLN_blocks)
 
@@ -33,7 +33,7 @@ data.frame(
   geom_point(size = .5, alpha =.25 ) +
   facet_wrap( ~ method) +
   scale_x_log10() +
-  scale_y_log10(limits  =c(1e-2, 1e4)) +
+  scale_y_log10(limits = c(1e-2, 1e4)) +
   theme_bw() + annotation_logticks()
 
 rbind(

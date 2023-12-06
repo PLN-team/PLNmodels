@@ -18,16 +18,11 @@
 # Dimensions are checked only on C++ side.
 optimize_plnblock <- function(data, params, config) {
 
-  config_B <- config_VE <- config
-
   # Link to the approximate function to optimize Omega, depending on the target structure
-  optim_plnblock_Omega <- optim_plnblock_Omega_full
-  # switch(
-  #   config$covariance,
-  #   "full"      = optim_plnblock_Omega_full,
-  #   "sparse"    = function(M, S) optim_plnblock_Omega_sparse(M, S, rho = config$rho)
-  # )
-
+  optim_plnblock_Omega <- ifelse(is.null(params$rho),
+        optim_plnblock_Omega,
+        function(M, S) optim_plnblock_Omega_sparse(M, S, w, rho = config$rho)
+    )
   # Main loop
   nb_iter <- 0
   parameters <- params; parameters$Omega <- diag(1, ncol(params$M), ncol(params$M))
@@ -41,13 +36,13 @@ optimize_plnblock <- function(data, params, config) {
     new_parameters$Omega <- optim_Omega$Omega
 
     # VE Step
-    optim_VE <- optim_plnblock_VE(data, new_parameters, config_VE)
+    optim_VE <- optim_plnblock_VE(data, new_parameters, config)
     new_parameters$M <- optim_VE$M
     new_parameters$S <- optim_VE$S
     new_parameters$T <- optim_plnblock_Tau(data, new_parameters)
 
     # M Step
-    optim_B <- optim_plnblock_B(data, new_parameters, config_B)
+    optim_B <- optim_plnblock_B(data, new_parameters, config)
     new_parameters$B <- optim_B$B
 
     # Going next step and assessing convergence
@@ -87,13 +82,12 @@ optimize_plnblock <- function(data, params, config) {
     backend = "nlopt-vem"
   )
   out
-
 }
 
 #' @importFrom glassoFast glassoFast
-optim_plnblock_Omega_sparse <- function(M, S, rho) {
-  n <- nrow(M); p <- ncol(M)
-  glassoFast::glassoFast( crossprod(M)/n + diag(colMeans(S * S), p, p), rho = rho )$wi
+optim_plnblock_Omega_sparse <- function(M, S, w, rho) {
+  n <- sum(w); p <- ncol(M)
+  glassoFast::glassoFast( crossprod(M)/n + diag(crossprod(w, (S * S)), p, p), rho = rho )$wi
 }
 
 # Test convergence for a named list of parameters
@@ -121,25 +115,6 @@ parameter_list_converged <- function(oldp, newp, xtol_abs = NULL, xtol_rel = NUL
   # Check convergence with xtol_abs (homogeneous) if enabled
   if(is.double(xtol_abs) && xtol_abs > 0) {
     if(all(mapply(function(o, n) { all(abs(n - o) <= xtol_abs) }, oldp, newp))) {
-      return(TRUE)
-    }
-  }
-
-  # Check convergence with xtol_abs as list(xtol_abs for each param_name)
-  if(is.list(xtol_abs)) {
-    xtol_abs <- xtol_abs[order(names(xtol_abs))]
-    stopifnot(all(names(oldp) == names(xtol_abs)))
-    # Due to the possible presence of NULLs, mapply may return a list. unlist allows all() to operate anyway.
-    if(all(unlist(mapply(
-      function(o, n, tol) {
-        if((is.double(tol) && tol > 0) || is.matrix(tol)) {
-          all(abs(n - o) <= tol)
-        } else {
-          NULL # Ignore comparison in outer all()
-        }
-      },
-      oldp, newp, xtol_abs
-    )))) {
       return(TRUE)
     }
   }

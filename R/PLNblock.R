@@ -39,7 +39,10 @@ PLNblock <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, weigh
 
   ## optimization
   if (control$trace > 0) cat("\n Adjusting", length(myPLN$nb_blocks), "PLN with block covariance estimation with", control$backend, "optimizer\n")
-  myPLN$optimize(control$config_optim)
+  if (control$config_optim$route == "sequential")
+    myPLN$optimize_sequentially(control$config_optim)
+  else
+    myPLN$optimize(control$config_optim)
 
   ## Post-treatments
   if (control$trace > 0) cat("\n Post-treatments")
@@ -68,7 +71,7 @@ PLNblock <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, weigh
 #' @seealso [PLN_param()]
 #' @export
 PLNblock_param <- function(
-    backend       = c("nlopt", "nlopt-vem", "torch"),
+    backend       = c("nlopt-vem", "nlopt", "torch"),
     trace         = 1,
     config_optim  = list(),
     init_cl       = "clustofvar",
@@ -98,6 +101,7 @@ PLNblock_param <- function(
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-4
   config_opt$maxit_out <- 100
+  config_opt$route <- "flat"
   config_opt[names(config_optim)] <- config_optim
 
   structure(list(

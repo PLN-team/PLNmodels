@@ -33,6 +33,7 @@ The function \code{\link[=PLNblock]{PLNblock()}}, the class \code{\link{PLNblock
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-PLNblockfamily-new}{\code{PLNblockfamily$new()}}
+\item \href{#method-PLNblockfamily-optimize_sequentially}{\code{PLNblockfamily$optimize_sequentially()}}
 \item \href{#method-PLNblockfamily-optimize}{\code{PLNblockfamily$optimize()}}
 \item \href{#method-PLNblockfamily-getBestModel}{\code{PLNblockfamily$getBestModel()}}
 \item \href{#method-PLNblockfamily-plot}{\code{PLNblockfamily$plot()}}
@@ -92,6 +93,15 @@ Initialize all models in the collection
 \subsection{Returns}{
 Update current \code{\link{PLNblockfit}} with smart starting values
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNblockfamily-optimize_sequentially"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNblockfamily-optimize_sequentially}{}}}
+\subsection{Method \code{optimize_sequentially()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PLNblockfamily$optimize_sequentially(config)}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNblockfamily-optimize"></a>}}

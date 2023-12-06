@@ -172,16 +172,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// optim_plnblock_Omega_full
-Rcpp::List optim_plnblock_Omega_full(const arma::mat& M, const arma::mat& S, const arma::vec& w);
-RcppExport SEXP _PLNmodels_optim_plnblock_Omega_full(SEXP MSEXP, SEXP SSEXP, SEXP wSEXP) {
+// optim_plnblock_Omega
+Rcpp::List optim_plnblock_Omega(const arma::mat& M, const arma::mat& S, const arma::vec& w);
+RcppExport SEXP _PLNmodels_optim_plnblock_Omega(SEXP MSEXP, SEXP SSEXP, SEXP wSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_plnblock_Omega_full(M, S, w));
+    rcpp_result_gen = Rcpp::wrap(optim_plnblock_Omega(M, S, w));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -303,7 +303,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_nlopt_optimize_genetic_modeling", (DL_FUNC) &_PLNmodels_nlopt_optimize_genetic_modeling, 7},
     {"_PLNmodels_plnblock_vloglik", (DL_FUNC) &_PLNmodels_plnblock_vloglik, 2},
     {"_PLNmodels_plnblock_loglik", (DL_FUNC) &_PLNmodels_plnblock_loglik, 2},
-    {"_PLNmodels_optim_plnblock_Omega_full", (DL_FUNC) &_PLNmodels_optim_plnblock_Omega_full, 3},
+    {"_PLNmodels_optim_plnblock_Omega", (DL_FUNC) &_PLNmodels_optim_plnblock_Omega, 3},
     {"_PLNmodels_optim_plnblock_Tau", (DL_FUNC) &_PLNmodels_optim_plnblock_Tau, 2},
     {"_PLNmodels_optim_plnblock_B", (DL_FUNC) &_PLNmodels_optim_plnblock_B, 3},
     {"_PLNmodels_optim_plnblock_VE", (DL_FUNC) &_PLNmodels_optim_plnblock_VE, 3},
