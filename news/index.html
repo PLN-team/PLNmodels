@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.5-0000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.0</span>
       </span>
     </div>
 
@@ -78,6 +78,17 @@
       <small>Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.1.0" id="plnmodels-110-2023-08-24">PLNmodels 1.1.0 (2023-08-24)<a class="anchor" aria-label="anchor" href="#plnmodels-110-2023-08-24"></a></h2>
+<ul><li>Update documentation of PLN*_param() functions to include torch optimization parameters</li>
+<li>Add (somehow) explicit error message when torch convergence fails</li>
+<li>Change initialization in <code>variance_jackknife()</code> and <code>variance_bootstrap()</code> to prevent estimation recycling, results from those functions are now comparable to doing jackknife / bootstrap “by hand”.</li>
+<li>Merge PR <a href="https://github.com/pln-team/PLNmodels/issues/110" class="external-link">#110</a> from Cole Trapnell to add:
+<ul><li>bootstrap estimation of the variance of model parameter</li>
+<li>improved interface for model initialization / optimisation parameters, which are now passed on to jackknife / bootstrap post-treatments</li>
+<li>better support of GPU when using torch backend</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.4" id="plnmodels-104-2023-08-24">PLNmodels 1.0.4 (2023-08-24)<small>2023-08-24</small><a class="anchor" aria-label="anchor" href="#plnmodels-104-2023-08-24"></a></h2>
 <ul><li>changed initial value in optim for variational variance (1 -&gt; 0.1) in VE-step of PLN and PLNPCA</li>
@@ -273,7 +284,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Julien Chiquet, Mahendra Mariadassou, François Gindraud.</p>
+  <p></p><p>Developed by Julien Chiquet, Mahendra Mariadassou, Stéphane Robin, François Gindraud.</p>
 </div>
 
 <div class="pkgdown">
