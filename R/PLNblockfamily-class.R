@@ -44,6 +44,8 @@ PLNblockfamily <- R6Class(
       ## Initialize fields shared by the super class
       super$initialize(responses, covariates, offsets, weights, control)
       private$params  <- nb_blocks
+      if (length(sparsity) == 1) sparsity <- rep(sparsity, length(nb_blocks))
+      stopifnot(all.equal(length(sparsity),length(nb_blocks)))
 
       ## Default clustering is obtained by kmeans on the variational parameters of the means of a fully parametrized PLN
       control_init <- control
@@ -70,15 +72,13 @@ PLNblockfamily <- R6Class(
           "hclust" = hclust(as.dist(1 - cov2cor(myPLN$model_par$Sigma)), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
         )
       }
+      blocks <- blocks %>% map(as_indicator) %>% map(.check_boundaries)
 
       ## instantiate as many models as cluterings
       self$models <-
-      blocks %>%
-        map(as_indicator) %>%
-        map(.check_boundaries) %>%
-        map(function(blocks_) {
-          if (sparsity > 0) {
-            model <- PLNblockfit_sparse$new(blocks_, sparsity, responses, covariates, offsets, weights, formula, control)
+        map2(blocks, sparsity, function(blocks_, sparsity_) {
+          if (sparsity_ > 0) {
+            model <- PLNblockfit_sparse$new(blocks_, sparsity_, responses, covariates, offsets, weights, formula, control)
           } else {
             model <- PLNblockfit$new(blocks_, responses, covariates, offsets, weights, formula, control)
           }
@@ -129,14 +129,6 @@ PLNblockfamily <- R6Class(
         model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
         model
       }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
-      # self$models <- lapply(self$models, function(model) {
-      #   if (config$trace >= 1) {
-      #     cat("\tnumber of blocks =", model$nb_block, "\r")
-      #     flush.console()
-      #   }
-      #   model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
-      #   model
-      # })
     },
 
     #' @description Extract best model in the collection

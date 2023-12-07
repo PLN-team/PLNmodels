@@ -4,7 +4,7 @@
 #'
 #' @param formula an object of class "formula": a symbolic description of the model to be fitted.
 #' @param nb_blocks vector of number of blocks for regrouping the variables/responses (dimension of the residual covariance)
-#' @param sparsity tuning parameter for controlling the sparsity level of Omega/Sigma
+#' @param sparsity tuning parameter for controlling the sparsity level of Omega/Sigma either a scalar or a vector with the same size as `nb_blocks`
 #' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
 #' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 #' @param weights an optional vector of observation weights to be used in the fitting process.

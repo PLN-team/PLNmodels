@@ -233,7 +233,7 @@ PLNnetworkfit <- R6Class(
     EBIC      = function() {self$BIC - .5 * ifelse(self$n_edges > 0, self$n_edges * log(.5 * self$p*(self$p - 1)/self$n_edges), 0)},
     #' @field density proportion of non-null edges in the network
     density   = function() {mean(self$latent_network("support"))},
-    #' @field criteria a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges and graph density
+    #' @field criteria a vector with loglik, penalized loglik, BIC, EBIC, ICL, number of parameters, number of edges and graph density
     criteria  = function() {data.frame(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik, density = self$density)}
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
