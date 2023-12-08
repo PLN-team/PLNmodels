@@ -47,6 +47,8 @@ n <- 200
 p <- 40
 q <- 5
 d <- 1
+# R2 blanace the part of variance due to XB o Sigma
+# High R2 -> part of variance due to B is important comapre to Sigma so group are harder to find
 R2_target <- 0.95
 params <- PLNmodels:::create_parameters(n = n, p = p, q = q, d = d, depths = 1e3)
 Sigma <- toeplitz(0.75^(1:q - 1))
