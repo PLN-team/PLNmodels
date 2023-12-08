@@ -5,14 +5,14 @@ library(factoextra)
 data(oaks)
 
 ## simple PLN
-system.time(myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = oaks))
+system.time(myPLN <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks))
 system.time(myPLN_diagonal <- PLN(Abundance ~ 1 + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "diagonal")))
 system.time(myPLN_spherical <- PLN(Abundance ~ 1 + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
 
-## TODO! fails at q=2, one empty group
 ## Blockwise covariance
 system.time(myPLN_blocks <- PLNblock(
-            Abundance ~1 + offset(log(Offset)), nb_blocks = seq(20, 100, by = 4), data = oaks,
+            Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = seq(20, 100, by = 4),
+            sparsity = 0.25 * sqrt(seq(20, 100, by = 4)), data = oaks,
             control = PLNblock_param(inception = myPLN))
 )
 myPLN_block <- getBestModel(myPLN_blocks)
