@@ -47,7 +47,7 @@ n <- 200
 p <- 40
 q <- 5
 d <- 1
-R2_target <- 0.8
+R2_target <- 0.95
 params <- PLNmodels:::create_parameters(n = n, p = p, q = q, d = d, depths = 1e3)
 Sigma <- toeplitz(0.75^(1:q - 1))
 ##  Adjusting Sigma to get a specified R2/SNR
@@ -100,12 +100,12 @@ one_simu <- function(i) {
 
 res <- do.call(rbind, lapply(1:100, one_simu))
 
-p_B <- ggplot(res) + aes(x = factor(n), y = rmse_B, fill = method) + geom_boxplot() +
+p_B <- ggplot(res) + aes(x = factor(n), y = rmse_B, fill = method) + geom_boxplot() + ylim(c(0,0.5)) +
   scale_fill_viridis_d() + ggtitle(paste("RMSE Beta (R2 =", R2_target, " p =", p, "q =",q,")"))
 p_B
 
 p_Sigma <- ggplot(res) + aes(x = factor(n), y = rmse_Sigma, fill = method) + geom_boxplot()  +
-  scale_fill_viridis_d() +
+  scale_fill_viridis_d() + ylim(c(0,0.5)) +
   ggtitle(paste("RMSE Sigma (R2 =", R2_target, " p =", p, "q =",q,")"))
 p_Sigma
 
