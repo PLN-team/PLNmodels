@@ -28,6 +28,7 @@ optimize_plnblock <- function(data, params, config) {
   parameters <- params; parameters$Omega <- diag(1, ncol(params$M), ncol(params$M))
   parameters$T <- parameters$Tau; parameters$Tau <- NULL
   new_parameters <- parameters
+  posteriorProb <- list(new_parameters$T)
   criterion <- vector("numeric", config$maxit_out)
   objective <- Inf
   repeat {
@@ -65,7 +66,7 @@ optimize_plnblock <- function(data, params, config) {
       if (maxit_reached) statut <- 5
       break
     }
-
+    posteriorProb <- append(posteriorProb, list(new_parameters$T))
     parameters <- new_parameters
     objective  <- new_objective
   }
@@ -79,6 +80,7 @@ optimize_plnblock <- function(data, params, config) {
     objective  = criterion[1:nb_iter],
     outer_iterations = nb_iter,
     status     = statut,
+    posteriorProb = posteriorProb,
     backend = "nlopt-vem"
   )
   out
