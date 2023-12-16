@@ -7,8 +7,9 @@
 PLNblock_param(
   backend = c("nlopt-vem", "nlopt", "torch"),
   trace = 1,
-  config_optim = list(),
   init_cl = "clustofvar",
+  fixed_cl = FALSE,
+  config_optim = list(),
   config_post = list(),
   inception = NULL
 )
@@ -18,11 +19,14 @@ PLNblock_param(
 
 \item{trace}{a integer for verbosity.}
 
+\item{init_cl}{either a string indicating how initial clusters are computed ("clustofvar", "kmeans" or "hclust"), or a list of vectors of membership, where the list has as many element as in nb_blocks. Default is "clustofvar"}
+
+\item{fixed_cl}{should the clustering be fixed once for all after initialization or, by let free along the optimization. Default is FALSE.}
+
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 
-\item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
-log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
-which sometimes speeds up the inference.}
+\item{inception}{Set up the parameters initialization: by default, the model is initialized by fitting a fully parametrized PLN covariance.
+However, the user can provide a previously fitted PLNfit to speed up the inference.}
 }
 \value{
 list of parameters configuring the fit.

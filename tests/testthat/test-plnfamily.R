@@ -48,6 +48,7 @@ COLLECTION OF 2 POISSON LOGNORMAL MODELS
                  paste("No such a model in the collection. Acceptable parameter values can be found via",
                        "$ranks (for PCA)",
                        "$clusters (for mixture models)",
+                       "$nb_blocks (for block)",
                        "$penalties (for network)",
                        "Returning model with closest value. Requested: 1 , returned: 0.1",
                        sep = "\n"), fixed = TRUE)

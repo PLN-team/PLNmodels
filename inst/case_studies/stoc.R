@@ -50,8 +50,8 @@ myPLN_temp_Forest <- PLN(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset
 
 nb_blocks <- seq(32, 100, by=4)
 system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), nb_blocks = nb_blocks, data = stoc,
-                                     control = PLNblock_param(inception = myPLN_temp_Forest)))
-myPLN_block <- getBestModel(myPLN_blocks)
+                                     control = PLNblock_param(inception = myPLN_temp_Forest, config_optim = list(route = "sequential"))))
+myPLN_block <- getBestModel(myPLN_blocks, "ICL")
 
 data.frame(
   fitted   = c(as.vector(fitted(myPLN)), as.vector(fitted(myPLN_diagonal)),

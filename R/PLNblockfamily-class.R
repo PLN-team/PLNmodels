@@ -47,34 +47,47 @@ PLNblockfamily <- R6Class(
       if (length(sparsity) == 1) sparsity <- rep(sparsity, length(nb_blocks))
       stopifnot(all.equal(length(sparsity),length(nb_blocks)))
 
-      ## Default clustering is obtained by kmeans on the variational parameters of the means of a fully parametrized PLN
-      control_init <- control
-      control_init$config_optim <- config_default_nlopt
-      control_init$backend <- "nlopt"
+      ## ==================================================
+      ##
+      ## Common PLN (use as starting point for B, M, S)
+      if (isPLNfit(control$inception)) {
+        if (control$trace > 1) cat("\n User defined inceptive PLN model")
+        myPLN_init <- control$inception
+      } else {
+        control_init <- control
+        control_init$config_optim <- config_default_nlopt
+        control_init$backend <- "nlopt"
+        myPLN_init <- PLNfit$new(responses, covariates, offsets, weights, formula, control_init)
+        myPLN_init$optimize(responses, covariates, offsets, weights, control_init$config_optim)
+        control$inception <- myPLN_init
+      }
 
+      ## ==================================================
+      ## Initial clustering
+      ##
+      ## Either user defined or obtained (the default)
+      ## by kmeans on the variational parameters of the means of a fully parametrized PLN
       if (is.list(control$init_cl)) {
         stopifnot(length(control$init_cl) == length(nb_blocks),
                   all(sapply(control$init_cl, length) == private$p))
         blocks <- control$init_cl
       } else {
-        myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control_init)
-        myPLN$optimize(responses, covariates, offsets, weights, control_init$config_optim)
         blocks <- switch(control$init_cl,
           "kmeans" = {
-            Means <- t(myPLN$var_par$M)
+            Means <- t(myPLN_init$var_par$M)
             blocks <- lapply(nb_blocks, function(k) {
               if (k == private$p) res <- 1:private$p
               else res <- kmeans(Means, centers = k, nstart = 30)$cl
               res
             })
           },
-          "clustofvar" = hclustvar(myPLN$var_par$M) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list(),
-          "hclust" = hclust(as.dist(1 - cov2cor(myPLN$model_par$Sigma)), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
+          "clustofvar" = hclustvar(myPLN_init$var_par$M) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list(),
+          "hclust" = hclust(as.dist(1 - cov2cor(myPLN_init$model_par$Sigma)), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
         )
       }
       blocks <- blocks %>% map(as_indicator) %>% map(.check_boundaries)
 
-      ## instantiate as many models as cluterings
+      ## instantiate as many models as clusterings
       self$models <-
         map2(blocks, sparsity, function(blocks_, sparsity_) {
           if (sparsity_ > 0) {
@@ -85,6 +98,10 @@ PLNblockfamily <- R6Class(
         })
     },
 
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Optimization ----------------------
+    #' @description Call to the C++ optimizer on all models of the collection
+    #' @param config a list for controlling the optimization.
     optimize_sequentially = function(config) {
       ## go along modes by decrezasing group sizes
       models_order <- order(self$nb_blocks, decreasing = TRUE)

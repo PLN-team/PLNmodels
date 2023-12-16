@@ -145,14 +145,24 @@ logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) 
   loglik
 }
 
-#' @importFrom stats glm.fit glm.control
-nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
-### TODO: use fastglm
-  B <- do.call(cbind, future_lapply(1:ncol(responses), function(j)
-    coefficients(suppressWarnings(
-      glm.fit(covariates, responses[, j], weights = weights, offset = offsets[, j], family = stats::poisson(),
-        control = glm.control(epsilon = 1e-3, maxit = 10))))))
-  offsets + covariates %*% B
+#' @importFrom fastglm fastglm
+nullModelPoisson <- function(Y, X, O, w = rep(1, nrow(responses))) {
+  # Y = responses, X = covariates, O = offsets (in log scale), w = weights
+  p <- ncol(Y); d <- ncol(X)
+  glm_func <- ifelse(d > 0,  fastglm, glm.fit)
+  B_list <- tryCatch(
+    future_lapply(1:p, function(j) {
+      suppressWarnings(coefficients(glm_func(X, Y[, j], weights = w, offset = O[, j], family = stats::poisson())))
+    }), error = function(e) {e}
+  )
+  if (is(B_list, "error")) {
+    warning(paste("glm_fit failed: using log-lm in post treatments"))
+    lm_fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
+    B <- matrix(lm_fits$coefficients, d, p)
+  } else {
+    B <- do.call(cbind, B_list)
+  }
+  O + X %*% B
 }
 
 #' @importFrom stats .getXlevels
@@ -297,13 +307,28 @@ create_parameters <- function(
 #' compute_PLN_starting_point(Y, X, O, w)
 #' }
 #'
-#' @importFrom stats lm.fit
+#' @importFrom stats lm.fit, glm.fit
+#' @importFrom fastglm fastglm
 #' @export
 compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
   # Y = responses, X = covariates, O = offsets (in log scale), w = weights
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-  fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
-  list(B = matrix(fits$coefficients, d, p),
-       M = matrix(fits$residuals, n, p),
-       S = matrix(s, n, p))
+  lm_fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
+  glm_func <- ifelse(d > 0,  fastglm, glm.fit)
+  B_list <- tryCatch(
+    future_lapply(1:p, function(j) {
+      suppressWarnings(coefficients(glm_func(X, Y[, j], weights = w, offset = O[, j], family = stats::poisson())))
+    }), error = function(e) {e}
+  )
+  if (is(B_list, "error")) {
+    warning(paste("glm_fit failed: using log-lm to initialize model parameters"))
+    B <- matrix(lm_fits, coef, d, p)
+  } else {
+    B <- do.call(cbind, B_list)
+  }
+  list(
+    B = B,
+    M = matrix(lm_fits$residuals, n, p),
+    S = matrix(s, n, p)
+  )
 }

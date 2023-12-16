@@ -1,18 +1,22 @@
 library(PLNmodels)
 library(factoextra)
 
+nb_cores <- 20
+options(future.fork.enable = TRUE)
+future::plan("multicore", workers = nb_cores)
+
 ## get oaks data set
 data(oaks)
 
 ## simple PLN
 system.time(myPLN <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks))
-system.time(myPLN_diagonal <- PLN(Abundance ~ 1 + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_spherical <- PLN(Abundance ~ 1 + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
+system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
 
 ## Blockwise covariance
 system.time(myPLN_blocks <- PLNblock(
-            Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = seq(20, 100, by = 4),
-            sparsity = 0.25 * sqrt(seq(20, 100, by = 4)), data = oaks,
+            Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = seq(24, 100, by = 4), data = oaks,
+            # sparsity = 0.25 * sqrt(seq(20, 100, by = 4)),
             control = PLNblock_param(inception = myPLN))
 )
 myPLN_block <- getBestModel(myPLN_blocks)
@@ -34,7 +38,7 @@ rbind(
   myPLN$criteria,
   myPLN_diagonal$criteria,
   myPLN_spherical$criteria,
-  myPLN_block$criteria
+  myPLN_block$criteria[, 1:4]
 ) %>%
   as.data.frame(row.names = c("full", "diagonal", "spherical", "block")) %>%
   knitr::kable()
@@ -80,7 +84,7 @@ factoextra::fviz_pca_biplot(
   labs(col = "distance (cm)") + scale_color_viridis_c()
 
 ## Network inference with sparce covariance estimation
-system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.1, penalize_diagonal = FALSE)))
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.01, penalize_diagonal = TRUE)))
 plot(myPLNnets)
 plot(getBestModel(myPLNnets, "EBIC"))
 stability_selection(myPLNnets)

@@ -105,7 +105,7 @@ PLN_param <- function(
     Omega         = NULL,
     config_post   = list(),
     config_optim  = list(),
-    inception     = NULL     # pretrained PLNfit used as initialization
+    inception     = NULL  # pretrained PLNfit used as initialization
 ) {
 
   covariance <- match.arg(covariance)

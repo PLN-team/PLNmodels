@@ -66,48 +66,49 @@ one_simu <- function(i) {
   data <- prepare_data(sim$Y, params$X, offset = sim$O)
   logO <- data$Offset; data$Offset <- NULL
 
-  err_PLNblock <- sapply(vec_n,  function(n_) {
-    myPLNblock <- PLNblock(Abundance ~ 0 + . + offset(logO), data = data, , subset = 1:n_, nb_blocks = q, control = PLNblock_param(trace = 0))$models[[1]]
-    c(rmse_B = sqrt(mean((myPLNblock$model_par$B - params$B)^2)),
-      rmse_Sigma = sqrt(mean((myPLNblock$model_par$Sigma - Sigma)^2)),
-      ari = ARI(myPLNblock$membership, sim$membership)
-    )
-  })
+  do.call(rbind, lapply(vec_n,  function(n_) {
 
-  err_baseline <- sapply(vec_n,  function(n_) {
-    ## revoie l'initialisation (lm  + log trasnformation)
-    LMlog <- PLN(Abundance ~ 0 + . + offset(logO), data = data, , subset = 1:n_,
-                 control = PLN_param(trace = 0, config_optim = list(maxeval = 1)))
-    cl <- kmeans(t(LMlog$var_par$M), q)$cl
+    ## revoie l'initialisation (glm  + log trasnformation)
+    glm <- PLN(Abundance ~ 0 + . + offset(logO), data = data, , subset = 1:n_,
+               control = PLN_param(trace = 0, config_optim = list(maxeval = 1)))
+    cl <- kmeans(t(glm$var_par$M), q)$cl
     blocks <- PLNmodels:::as_indicator(cl)
-    c(rmse_B = sqrt(mean((LMlog$model_par$B - params$B)^2)),
-      rmse_Sigma = sqrt(mean((LMlog$model_par$Sigma - blocks %*% Sigma %*% t(blocks))^2)),
+    err_baseline <- c(rmse_B = sqrt(mean((glm$model_par$B - params$B)^2)),
+      rmse_Sigma = sqrt(mean((glm$model_par$Sigma - blocks %*% Sigma %*% t(blocks))^2)),
       ari = ARI(cl, sim$membership)
     )
-  })
 
-  err_PLN <- sapply(vec_n,  function(n_) {
     myPLN <- PLN(Abundance ~ 0 + . + offset(logO), data = data, , subset = 1:n_, control = PLN_param(trace = 0))
     cl <- kmeans(t(myPLN$var_par$M), q)$cl
     blocks <- PLNmodels:::as_indicator(cl)
-    c(rmse_B = sqrt(mean((myPLN$model_par$B - params$B)^2)),
+    err_PLN <- c(rmse_B = sqrt(mean((myPLN$model_par$B - params$B)^2)),
       rmse_Sigma = sqrt(mean((myPLN$model_par$Sigma - blocks %*% Sigma %*% t(blocks))^2)),
       ari = ARI(cl, sim$membership)
     )
-  })
-  data.frame(rbind(t(err_PLNblock), t(err_PLN), t(err_baseline)),
-             method = rep(c("PLNblock","PLN + kmeans", "LMlog+kmeans"), each = length(vec_n)),
-             n = rep(vec_n, 3), simu = rep(i, 3*length(vec_n)))
+
+    myPLNblock <- PLNblock(Abundance ~ 0 + . + offset(logO), data = data, , subset = 1:n_, nb_blocks = q,
+                           control = PLNblock_param(trace = 0, inception = myPLN))$models[[1]]
+    err_PLNblock <- c(rmse_B = sqrt(mean((myPLNblock$model_par$B - params$B)^2)),
+      rmse_Sigma = sqrt(mean((myPLNblock$model_par$Sigma - Sigma)^2)),
+      ari = ARI(myPLNblock$membership, sim$membership)
+    )
+
+    data.frame(
+      rbind(t(err_PLNblock), t(err_PLN), t(err_baseline)),
+      method = c("PLNblock","PLN + kmeans", "glm/logLM+kmeans"),
+      n = n_, simu = i)
+
+  }))
 }
 
 res <- do.call(rbind, lapply(1:100, one_simu))
 
-p_B <- ggplot(res) + aes(x = factor(n), y = rmse_B, fill = method) + geom_boxplot() + ylim(c(0,0.5)) +
+p_B <- ggplot(res) + aes(x = factor(n), y = rmse_B, fill = method) + geom_boxplot() + ylim(c(0,0.3)) +
   scale_fill_viridis_d() + ggtitle(paste("RMSE Beta (R2 =", R2_target, " p =", p, "q =",q,")"))
 p_B
 
 p_Sigma <- ggplot(res) + aes(x = factor(n), y = rmse_Sigma, fill = method) + geom_boxplot()  +
-  scale_fill_viridis_d() + ylim(c(0,0.5)) +
+  scale_fill_viridis_d() + ylim(c(0.025,0.15)) +
   ggtitle(paste("RMSE Sigma (R2 =", R2_target, " p =", p, "q =",q,")"))
 p_Sigma
 

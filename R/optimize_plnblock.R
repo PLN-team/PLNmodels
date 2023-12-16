@@ -1,4 +1,4 @@
-# BLOCK optimization:
+# PLNBLOCK optimization:
 #
 # init_parameters: named list(B, M, S, Tau)
 # Y, X, O: observed data, constant
@@ -40,7 +40,7 @@ optimize_plnblock <- function(data, params, config) {
     optim_VE <- optim_plnblock_VE(data, new_parameters, config)
     new_parameters$M <- optim_VE$M
     new_parameters$S <- optim_VE$S
-    new_parameters$T <- optim_plnblock_Tau(data, new_parameters)
+    if (!config$fixed_cl) new_parameters$T <- optim_plnblock_Tau(data, new_parameters)
 
     # M Step
     optim_B <- optim_plnblock_B(data, new_parameters, config)

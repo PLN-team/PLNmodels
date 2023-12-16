@@ -98,10 +98,18 @@ Update current \code{\link{PLNblockfit}} with smart starting values
 \if{html}{\out{<a id="method-PLNblockfamily-optimize_sequentially"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNblockfamily-optimize_sequentially}{}}}
 \subsection{Method \code{optimize_sequentially()}}{
+Call to the C++ optimizer on all models of the collection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PLNblockfamily$optimize_sequentially(config)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{config}}{a list for controlling the optimization.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNblockfamily-optimize"></a>}}

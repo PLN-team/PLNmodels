@@ -59,9 +59,10 @@ PLNblock <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, weigh
 #' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
 #' @param trace a integer for verbosity.
-#' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
-#'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
-#'    which sometimes speeds up the inference.
+#' @param init_cl either a string indicating how initial clusters are computed ("clustofvar", "kmeans" or "hclust"), or a list of vectors of membership, where the list has as many element as in nb_blocks. Default is "clustofvar"
+#' @param fixed_cl should the clustering be fixed once for all after initialization or, by let free along the optimization. Default is FALSE.
+#' @param inception Set up the parameters initialization: by default, the model is initialized by fitting a fully parametrized PLN covariance.
+#'  However, the user can provide a previously fitted PLNfit to speed up the inference.
 #' @return list of parameters configuring the fit.
 #' @inherit PLN_param details
 #' @details See [PLN_param()] for a full description of the generic optimization parameters. PLNnetwork_param() also has two additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:
@@ -73,8 +74,9 @@ PLNblock <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, weigh
 PLNblock_param <- function(
     backend       = c("nlopt-vem", "nlopt", "torch"),
     trace         = 1,
-    config_optim  = list(),
     init_cl       = "clustofvar",
+    fixed_cl      = FALSE,
+    config_optim  = list(),
     config_post   = list(),
     inception     = NULL     # pretrained PLNfit used as initialization
 ) {
@@ -101,7 +103,8 @@ PLNblock_param <- function(
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-4
   config_opt$maxit_out <- 100
-  config_opt$route <- "flat"
+  config_opt$route     <- "flat"
+  config_opt$fixed_cl  <- fixed_cl
   config_opt[names(config_optim)] <- config_optim
 
   structure(list(
@@ -109,6 +112,6 @@ PLNblock_param <- function(
     trace        = trace     ,
     config_optim = config_opt,
     config_post  = config_pst,
-    init_cl       = init_cl,
-    inception    = inception), class = "PLNmodels_param")
+    init_cl      = init_cl  ,
+    inception    = inception ), class = "PLNmodels_param")
 }

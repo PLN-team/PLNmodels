@@ -79,7 +79,7 @@ capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names 
 test_that("PLN fit: Check prediction",  {
 
   model1 <- PLN(Abundance ~ 1, data = trichoptera, subset = 1:30)
-  model2 <- PLN(Abundance ~ Pressure, data = trichoptera, subset = 1:30)
+  model2 <- PLN(Abundance ~ 1 + Wind, data = trichoptera, subset = 1:30)
 
   newdata <- trichoptera[31:49, ]
   newdata$Abundance <- NULL
