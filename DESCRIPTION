@@ -49,6 +49,8 @@ Imports:
   ggplot2,
   corrplot,
   magrittr,
+  fastglm,
+  ClustOfVar,
   torch,
   rlang
 Suggests: 

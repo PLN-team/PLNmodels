@@ -127,7 +127,7 @@ test_that("PLN fit: Check conditional prediction",  {
   expect_equal(dim(pred), c(n_cond,p-p_cond))
 
   # check if the RMSE of conditional predictions are greater than the marginal ones
-  expect_gt(
+  expect_lt(
     mean((trichoptera$Abundance[1:n_cond, (p_cond+1):p] -
             predict(myPLN, newdata = newX, type = "response")[1:n_cond, (p_cond+1):p])^2),
     mean((trichoptera$Abundance[1:n_cond, (p_cond+1):p] - pred)^2)

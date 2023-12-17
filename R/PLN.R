@@ -61,8 +61,8 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
 #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
 #' @param trace a integer for verbosity.
-#' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
-#'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
+#' @param inception Set up the parameters initialization: by default, the model is initialized with a generalized linear model applied on
+#'    with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 #'    which sometimes speeds up the inference.
 #'
 #' @return list of parameters configuring the fit.

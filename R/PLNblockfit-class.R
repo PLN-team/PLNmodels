@@ -49,9 +49,8 @@ PLNblockfit <- R6Class(
       ## Setup of the optimization backend
       private$optimizer$main <-
         switch(control$backend,
-               "nlopt" = nlopt_optimize_block,
                "torch" = private$torch_optimize,
-               "nlopt-vem" =  optimize_plnblock
+               "nlopt" =  optimize_plnblock
         )
       private$optimizer$vestep <- nlopt_optimize_vestep_block
     },
@@ -90,7 +89,6 @@ PLNblockfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)){
-      browser()
       S2 <- torch_square(params$S[index])
       XB <- torch_mm(data$X[index], params$B)
       A  <- torch_exp(data$O[index] + XB) * torch_mm(torch_exp(params$M[index] + S2 / 2), private$Tau)

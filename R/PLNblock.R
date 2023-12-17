@@ -56,9 +56,7 @@ PLNblock <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, weigh
 #'
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
-#' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
-#' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
-#' @param trace a integer for verbosity.
+#' @inheritParams PLN_param
 #' @param init_cl either a string indicating how initial clusters are computed ("clustofvar", "kmeans" or "hclust"), or a list of vectors of membership, where the list has as many element as in nb_blocks. Default is "clustofvar"
 #' @param fixed_cl should the clustering be fixed once for all after initialization or, by let free along the optimization. Default is FALSE.
 #' @param inception Set up the parameters initialization: by default, the model is initialized by fitting a fully parametrized PLN covariance.

@@ -357,7 +357,7 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     #' @description Initialize a [`PLNfit`] model
-    #' @importFrom stats lm.wfit lm.fit poisson residuals coefficients runif
+    #' @importFrom stats poisson residuals coefficients runif
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       ## problem dimensions
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
@@ -440,7 +440,7 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses)
       ## initialize variational parameters with current value if dimension is the same
       if ((p != self$p) || (n != self$n)) {
-        params0 <- list(M = matrix(0, n, p), S = matrix(.1, n, p))
+        params0 <- .compute_PLN_starting_point_var_par(responses, covariates, offsets, weights, s = 0.1)
       } else {
         params0 <- list(M = self$var_par$M, S = self$var_par$S)
       }

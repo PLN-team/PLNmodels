@@ -123,7 +123,7 @@ Rcpp::List nlopt_optimize_block(
 
     // std::cout << "objective" << result.objective << "  inner iteration" << result.nb_iterations << std::endl;
 
-  } while( std::abs(objective[iter] - objective[iter-1])/std::abs(objective[iter-1]) > threshold & iter+1 < maxiter) ;
+  } while( (std::abs(objective[iter] - objective[iter-1])/std::abs(objective[iter-1]) > threshold) && (iter+1 < maxiter)) ;
 
   // =========================================================================
   //
@@ -222,7 +222,6 @@ Rcpp::List nlopt_optimize_block_sparse(
     const arma::mat B = metadata.map<B_ID>(params);
     const arma::mat M = metadata.map<M_ID>(params);
     const arma::mat S = metadata.map<S_ID>(params);
-    const double w_bar = accu(w);
 
     arma::mat S2 = S % S;
     arma::mat mu = O + X * B ;
@@ -304,7 +303,7 @@ Rcpp::List nlopt_optimize_block_sparse(
     result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
     objective.push_back(result.objective)  ;
 
-  } while( std::abs(objective[iter] - objective[iter-1])/std::abs(objective[iter-1]) > threshold & iter < maxiter) ;
+  } while( (std::abs(objective[iter] - objective[iter-1])/std::abs(objective[iter-1]) > threshold) && (iter < maxiter)) ;
 
 
   // =========================================================================

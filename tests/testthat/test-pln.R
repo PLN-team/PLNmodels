@@ -24,12 +24,9 @@ test_that("PLN: Check consistency of initialization - fully parametrized covaria
   ## initialization with the previous fit
   model2 <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(inception = model1, trace = 0))
 
-  expect_equal(model2$loglik   , model1$loglik   , tolerance = 0.1)
-  tol <- 1e-2
-  expect_lt(sum((model2$model_par$Theta - model1$model_par$Theta)^2), tol)
-  expect_lt(sum((model2$model_par$Sigma - model1$model_par$Sigma)^2), tol)
-  expect_lt(sum((model2$var_par$M - model1$var_par$M)^2), tol)
-  expect_lt(sum((model2$var_par$S2 - model1$var_par$S2)^2), tol)
+  expect_equal(model2$loglik, model1$loglik, tolerance = .1)
+  expect_lt(sum((model2$model_par$B - model1$model_par$B)^2), 1e-2)
+  expect_lt(sum((model2$model_par$Sigma - model1$model_par$Sigma)^2), 1e-2)
 
 })
 

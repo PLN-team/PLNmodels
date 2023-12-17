@@ -146,6 +146,7 @@ logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) 
 }
 
 #' @importFrom fastglm fastglm
+#' @importFrom stats lm.fit glm.fit
 nullModelPoisson <- function(Y, X, O, w = rep(1, nrow(responses))) {
   # Y = responses, X = covariates, O = offsets (in log scale), w = weights
   p <- ncol(Y); d <- ncol(X)
@@ -307,7 +308,7 @@ create_parameters <- function(
 #' compute_PLN_starting_point(Y, X, O, w)
 #' }
 #'
-#' @importFrom stats lm.fit, glm.fit
+#' @importFrom stats lm.fit glm.fit
 #' @importFrom fastglm fastglm
 #' @export
 compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
@@ -328,6 +329,16 @@ compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
   }
   list(
     B = B,
+    M = matrix(lm_fits$residuals, n, p),
+    S = matrix(s, n, p)
+  )
+}
+
+.compute_PLN_starting_point_var_par <- function(Y, X, O, w, s = 0.1) {
+  # Y = responses, X = covariates, O = offsets (in log scale), w = weights
+  n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
+  lm_fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
+  list(
     M = matrix(lm_fits$residuals, n, p),
     S = matrix(s, n, p)
   )

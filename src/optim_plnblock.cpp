@@ -23,8 +23,6 @@ arma::vec plnblock_vloglik(
   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
   const arma::vec log_pi = arma::trunc_log(mean(T,1));
 
-  const arma::uword n = Y.n_rows;
-  const arma::uword p = Y.n_cols;
   const arma::uword q = M.n_cols;
   const arma::mat S2 = S % S ;
   const arma::mat mu = O + X * B;
@@ -56,8 +54,6 @@ arma::vec plnblock_loglik(
   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
   const arma::vec log_pi = arma::trunc_log(mean(T,1));
 
-  const arma::uword n = Y.n_rows;
-  const arma::uword p = Y.n_cols;
   const arma::uword q = M.n_cols;
   const arma::mat S2 = S % S ;
   const arma::mat mu = O + X * B;
