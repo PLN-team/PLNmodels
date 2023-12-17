@@ -147,7 +147,7 @@ logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) 
 
 #' @importFrom fastglm fastglm
 #' @importFrom stats lm.fit glm.fit
-nullModelPoisson <- function(Y, X, O, w = rep(1, nrow(responses))) {
+nullModelPoisson <- function(Y, X, O, w = rep(1, nrow(Y))) {
   # Y = responses, X = covariates, O = offsets (in log scale), w = weights
   p <- ncol(Y); d <- ncol(X)
   glm_func <- ifelse(d > 0,  fastglm, glm.fit)
@@ -308,7 +308,7 @@ create_parameters <- function(
 #' compute_PLN_starting_point(Y, X, O, w)
 #' }
 #'
-#' @importFrom stats lm.fit glm.fit
+#' @importFrom stats lm.fit glm.fit coefficients
 #' @importFrom fastglm fastglm
 #' @export
 compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
@@ -323,7 +323,7 @@ compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
   )
   if (is(B_list, "error")) {
     warning(paste("glm_fit failed: using log-lm to initialize model parameters"))
-    B <- matrix(lm_fits, coef, d, p)
+    B <- matrix(lm_fits, coefficients, d, p)
   } else {
     B <- do.call(cbind, B_list)
   }

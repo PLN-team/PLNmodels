@@ -21,7 +21,7 @@ optimize_plnblock <- function(data, params, config) {
   # Link to the approximate function to optimize Omega, depending on the target structure
   optim_plnblock_Omega <- ifelse(is.null(params$rho),
         optim_plnblock_Omega,
-        function(M, S) optim_plnblock_Omega_sparse(M, S, w, rho = config$rho)
+        function(M, S) optim_plnblock_Omega_sparse(M, S, data$w, rho = config$rho)
     )
   # Main loop
   nb_iter <- 0

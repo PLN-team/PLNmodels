@@ -50,7 +50,8 @@ PLNblockfit <- R6Class(
       private$optimizer$main <-
         switch(control$backend,
                "torch" = private$torch_optimize,
-               "nlopt" =  optimize_plnblock
+               "nlopt" =  nlopt_optimize_block,
+               "nlopt-vem" =  optimize_plnblock
         )
       private$optimizer$vestep <- nlopt_optimize_vestep_block
     },
