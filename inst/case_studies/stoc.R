@@ -2,9 +2,9 @@ library(PLNmodels)
 library(factoextra)
 
 ## setting up future for parallelism
-nb_cores <- 20
-options(future.fork.enable = TRUE)
-future::plan("multicore", workers = nb_cores)
+# nb_cores <- 20
+# options(future.fork.enable = TRUE)
+# future::plan("multicore", workers = nb_cores)
 
 ## get oaks data set
 data(stoc)
@@ -48,9 +48,10 @@ rbind(
 
 myPLN_temp_Forest <- PLN(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), data = stoc)
 
-nb_blocks <- seq(32, 100, by=4)
+nb_blocks <- seq(22, 100, by=2)
 system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), nb_blocks = nb_blocks, data = stoc,
-                                     control = PLNblock_param(inception = myPLN_temp_Forest, config_optim = list(route = "sequential"))))
+                                     control = PLNblock_param(inception = myPLN_temp_Forest)))
+
 myPLN_block <- getBestModel(myPLN_blocks, "ICL")
 
 data.frame(
@@ -63,7 +64,7 @@ data.frame(
   geom_point(size = .5, alpha =.25 ) +
   facet_wrap( ~ method) +
   scale_x_log10() +
-  scale_y_log10(limits  =c(1e-2, 1e4)) +
+  scale_y_log10(limits = c(1e-2, 1e4)) +
   theme_bw() + annotation_logticks()
 
 rbind(
@@ -75,27 +76,6 @@ rbind(
   as.data.frame(row.names = c("full", "diagonal", "spherical", "block")) %>%
   knitr::kable()
 
-## Discriminant Analysis with LDA
-myLDA_zonebio <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = zonebio, data = stoc)
-plot(myLDA_zonebio)
-plot(myLDA_zonebio, "individual")
-
-## Dimension reduction with PCA
-system.time(myPLNPCAs <- PLNPCA(Abundance ~ cover_Agriculture + offset(log(Offset)), data = stoc, ranks = 1:30)) # about 40 secs.
-plot(myPLNPCAs)
-myPLNPCA <- getBestModel(myPLNPCAs)
-
-# fancy graph with factoextra
-factoextra::fviz_pca_biplot(
-  myPLNPCA, select.var = list(contrib = 10), col.ind = stoc$cover_Forest,
-  title = "Biplot (10 most contributing species)"
-) + labs(col = "cover") + scale_color_viridis_c()
-
-## Dimension reduction with PCA
-system.time(myPLNPCAs_zonebio <- PLNPCA(Abundance ~ 0 + zonebio + offset(log(Offset)), data = stoc, ranks = 1:30)) # about 40 sec.
-plot(myPLNPCAs_tree)
-myPLNPCA_tree <- getBestModel(myPLNPCAs_tree)
-
 ## Network inference with sparce covariance estimation
 system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.1, penalize_diagonal = FALSE)))
 plot(myPLNnets)
@@ -103,4 +83,4 @@ plot(getBestModel(myPLNnets, "EBIC"))
 stability_selection(myPLNnets)
 plot(getBestModel(myPLNnets, "StARS", stability = .975))
 
-future::plan("sequential")
+# future::plan("sequential")

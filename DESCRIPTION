@@ -35,6 +35,7 @@ Imports:
   MASS,
   future,
   future.apply,
+  furrr,
   R6,
   glassoFast,
   Matrix,

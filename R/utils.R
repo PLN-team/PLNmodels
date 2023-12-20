@@ -152,7 +152,7 @@ nullModelPoisson <- function(Y, X, O, w = rep(1, nrow(Y))) {
   p <- ncol(Y); d <- ncol(X)
   glm_func <- ifelse(d > 0,  fastglm, glm.fit)
   B_list <- tryCatch(
-    future_lapply(1:p, function(j) {
+    future_map(1:p, function(j) {
       suppressWarnings(coefficients(glm_func(X, Y[, j], weights = w, offset = O[, j], family = stats::poisson())))
     }), error = function(e) {e}
   )
@@ -317,7 +317,7 @@ compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
   lm_fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
   glm_func <- ifelse(d > 0,  fastglm, glm.fit)
   B_list <- tryCatch(
-    future_lapply(1:p, function(j) {
+    future_map(1:p, function(j) {
       suppressWarnings(coefficients(glm_func(X, Y[, j], weights = w, offset = O[, j], family = stats::poisson())))
     }), error = function(e) {e}
   )

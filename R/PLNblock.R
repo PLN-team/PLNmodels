@@ -19,7 +19,7 @@
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLNblock(Abundance ~ 1, nb_blocks = 1:10, data = trichoptera)
+#' myPLN <- PLNblock(Abundance ~ 1, nb_blocks = 1:17, data = trichoptera)
 #' @seealso The classes [`PLNblockfamily`] and [`PLNblockfit`], and the and the configuration function [PLNblock_param()].
 #' @importFrom stats model.frame model.matrix model.response model.offset model.weights terms
 #' @export

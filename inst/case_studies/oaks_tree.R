@@ -1,9 +1,8 @@
 library(PLNmodels)
 library(factoextra)
 
-nb_cores <- 20
-options(future.fork.enable = TRUE)
-future::plan("multicore", workers = nb_cores)
+nb_cores <- 5
+future::plan("multisession", workers = nb_cores)
 
 ## get oaks data set
 data(oaks)

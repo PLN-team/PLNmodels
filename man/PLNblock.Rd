@@ -40,7 +40,7 @@ Fit the multivariate Poisson lognormal with model with a variational algorithm. 
 \examples{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPLN <- PLNblock(Abundance ~ 1, nb_blocks = 1:10, data = trichoptera)
+myPLN <- PLNblock(Abundance ~ 1, nb_blocks = 1:17, data = trichoptera)
 }
 \seealso{
 The classes \code{\link{PLNblockfamily}} and \code{\link{PLNblockfit}}, and the and the configuration function \code{\link[=PLNblock_param]{PLNblock_param()}}.
