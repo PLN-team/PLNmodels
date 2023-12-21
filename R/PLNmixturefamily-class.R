@@ -172,7 +172,7 @@ PLNmixturefamily <-
           myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control$config_optim)
           Sbar <- rowSums(myPLN$var_par$S2)
           D <- sqrt(as.matrix(dist(myPLN$var_par$M)^2) + outer(Sbar,rep(1,myPLN$n)) + outer(rep(1, myPLN$n), Sbar))
-          clusterings <-switch(control$init_cl,
+          clusterings <- switch(control$init_cl,
                                "kmeans"  = lapply(clusters, function(k) kmeans(D, centers = k, nstart = 30)$cl),
                                "ward.D2" = D %>% as.dist() %>% hclust(method = "ward.D2") %>% cutree(clusters) %>% as.data.frame() %>% as.list()
           )

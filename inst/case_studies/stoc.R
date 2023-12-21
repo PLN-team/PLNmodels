@@ -10,23 +10,23 @@ library(factoextra)
 data(stoc)
 
 ## simple PLN
-system.time(myPLN_diag_0 <- PLN(Abundance ~ 1 + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_diag_temp <- PLN(Abundance ~ 1 + temp + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_diag_precip <- PLN(Abundance ~ 1 + precip + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal", config_optim = list(xtol_rel=1e-8))))
-system.time(myPLN_diag_div <- PLN(Abundance ~ 1 + div + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_diag_zonebio <- PLN(Abundance ~ 0 + zonebio + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_diag_Agricultural <- PLN(Abundance ~ 1 + cover_Agricultural + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_diag_Forest <- PLN(Abundance ~ 1 + cover_Forest + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
-system.time(myPLN_diag_Artificial <- PLN(Abundance ~ 1 + cover_Artificial + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_0 <- PLN(Abundance ~ 1, data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_temp <- PLN(Abundance ~ 1 + temp, data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_precip <- PLN(Abundance ~ 1 + precip, data = stoc, control = PLN_param(covariance = "diagonal", config_optim = list(xtol_rel=1e-8))))
+system.time(myPLN_diag_div <- PLN(Abundance ~ 1 + div, data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_zonebio <- PLN(Abundance ~ 0 + zonebio, data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_Agricultural <- PLN(Abundance ~ 1 + cover_Agricultural, data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_Forest <- PLN(Abundance ~ 1 + cover_Forest, data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_Artificial <- PLN(Abundance ~ 1 + cover_Artificial, data = stoc, control = PLN_param(covariance = "diagonal")))
 
 cover <- dplyr::select(stoc, starts_with('cover')) %>%  scale(TRUE, FALSE)
 ## Loadings/rotation matrix
 U <- eigen(cov(cover))$vectors
 ## Function for projection
 stoc$cover_PC1 <- cover %*% U[, 1, drop = FALSE]
-system.time(myPLN_diag_cover <- PLN(Abundance ~ 1 + cover_PC1 + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal", config_optim = list(xtol_rel = 1e-8))))
+system.time(myPLN_diag_cover <- PLN(Abundance ~ 1 + cover_PC1 + temp, data = stoc, control = PLN_param(covariance = "diagonal", config_optim = list(xtol_rel = 1e-8))))
 
-system.time(myPLN_diag_temp_Forest <- PLN(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), data = stoc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_diag_temp_Forest <- PLN(Abundance ~ 1 + cover_Forest + temp, data = stoc, control = PLN_param(covariance = "diagonal")))
 
 rbind(
   myPLN_diag_0$criteria,
@@ -45,12 +45,15 @@ rbind(
   knitr::kable()
 
 ## --> best model is temp + cover_Forest
+##
+##
+myPLN_temp_Forest <- PLN(Abundance ~ 1 + cover_Forest + temp, data = stoc)
 
-myPLN_temp_Forest <- PLN(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), data = stoc)
 
-nb_blocks <- seq(22, 100, by=2)
-system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + cover_Forest + temp + offset(log(Offset)), nb_blocks = nb_blocks, data = stoc,
-                                     control = PLNblock_param(inception = myPLN_temp_Forest)))
+
+nb_blocks <- seq(2, 70, by=4)
+system.time(myPLN_blocks <- PLNblock(Abundance ~ 1 + cover_PC1 + temp, nb_blocks = nb_blocks, data = stoc,
+                                     control = PLNblock_param(inception = myPLN_diag_cover, config_optim = list(route = "sequential"))))
 
 myPLN_block <- getBestModel(myPLN_blocks, "ICL")
 

@@ -33,6 +33,8 @@ optimize_plnblock <- function(data, params, config) {
   objective <- Inf
   repeat {
 
+    browser()
+
     optim_Omega <- optim_plnblock_Omega(M = new_parameters$M, S = new_parameters$S, w = data$w)
     new_parameters$Omega <- optim_Omega$Omega
 
