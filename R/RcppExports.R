@@ -45,6 +45,42 @@ nlopt_optimize_vestep_spherical <- function(data, params, B, Omega, config) {
     .Call('_PLNmodels_nlopt_optimize_vestep_spherical', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
 }
 
+zipln_vloglik <- function(Y, X, O, Pi, Omega, B, R, M, S) {
+    .Call('_PLNmodels_zipln_vloglik', PACKAGE = 'PLNmodels', Y, X, O, Pi, Omega, B, R, M, S)
+}
+
+optim_zipln_Omega_full <- function(M, X, B, S) {
+    .Call('_PLNmodels_optim_zipln_Omega_full', PACKAGE = 'PLNmodels', M, X, B, S)
+}
+
+optim_zipln_Omega_spherical <- function(M, X, B, S) {
+    .Call('_PLNmodels_optim_zipln_Omega_spherical', PACKAGE = 'PLNmodels', M, X, B, S)
+}
+
+optim_zipln_Omega_diagonal <- function(M, X, B, S) {
+    .Call('_PLNmodels_optim_zipln_Omega_diagonal', PACKAGE = 'PLNmodels', M, X, B, S)
+}
+
+optim_zipln_B_dense <- function(M, X) {
+    .Call('_PLNmodels_optim_zipln_B_dense', PACKAGE = 'PLNmodels', M, X)
+}
+
+optim_zipln_zipar_covar <- function(init_B0, X, R, configuration) {
+    .Call('_PLNmodels_optim_zipln_zipar_covar', PACKAGE = 'PLNmodels', init_B0, X, R, configuration)
+}
+
+optim_zipln_R <- function(Y, X, O, M, S, Pi) {
+    .Call('_PLNmodels_optim_zipln_R', PACKAGE = 'PLNmodels', Y, X, O, M, S, Pi)
+}
+
+optim_zipln_M <- function(init_M, Y, X, O, R, S, B, Omega, configuration) {
+    .Call('_PLNmodels_optim_zipln_M', PACKAGE = 'PLNmodels', init_M, Y, X, O, R, S, B, Omega, configuration)
+}
+
+optim_zipln_S <- function(init_S, O, M, R, B, diag_Omega, configuration) {
+    .Call('_PLNmodels_optim_zipln_S', PACKAGE = 'PLNmodels', init_S, O, M, R, B, diag_Omega, configuration)
+}
+
 cpp_test_packing <- function() {
     .Call('_PLNmodels_cpp_test_packing', PACKAGE = 'PLNmodels')
 }

@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 1.1.0
+Version: 1.1.0-9000
 Authors@R: c(
   person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inrae.fr",
       comment = c(ORCID = "0000-0002-3629-3429")),
@@ -86,11 +86,16 @@ Collate:
     'PLNnetworkfit-S3methods.R'
     'PLNnetworkfit-class.R'
     'RcppExports.R'
+    'ZIPLNfit-class.R'
+    'ZIPLN.R'
+    'ZIPLNfits-S3methods.R'
     'barents.R'
     'import_utils.R'
     'mollusk.R'
     'oaks.R'
+    'optim-zipln.R'
     'plot_utils.R'
+    'scRNA.R'
     'trichoptera.R'
     'utils-pipe.R'
     'utils.R'

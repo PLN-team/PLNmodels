@@ -184,7 +184,6 @@ PLNfit <- R6Class(
       out
     },
 
-
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE METHODS FOR VARIANCE OF THE ESTIMATORS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -345,7 +344,6 @@ PLNfit <- R6Class(
     ## END OF PRIVATE METHODS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS
@@ -373,10 +371,6 @@ PLNfit <- R6Class(
         private$S     <- control$inception$var_par$S
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-        # fits <- lm.fit(weights * covariates, weights * log((1 + responses)/exp(offsets)))
-        # private$B <- matrix(fits$coefficients, d, p)
-        # private$M <- matrix(fits$residuals, n, p)
-        # private$S <- matrix(.1, n, p)
         start_point <- compute_PLN_starting_point(Y = responses, X = covariates, O = offsets, w = weights)
         private$B <- start_point$B
         private$M <- start_point$M

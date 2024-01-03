@@ -16,3 +16,11 @@ inline arma::vec ki(arma::mat y) {
     arma::uword p = y.n_cols;
     return -logfact(std::move(y)) + 0.5 * double(p) ;
 }
+
+inline arma::mat logistic(arma::mat M) {
+  return arma::trunc_exp(M) % pow(1. + arma::trunc_exp(M), -1) ;
+}
+
+inline arma::mat logit(arma::mat M) {
+  return arma::trunc_log(M) - arma::trunc_log(1 - M) ;
+}

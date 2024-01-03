@@ -172,6 +172,53 @@ extract_model <- function(call, envir) {
   list(Y = Y, X = X, O = O, miss = is.na(Y), w = w, formula = call$formula)
 }
 
+#' @importFrom stats .getXlevels
+extract_model_zi <- function(call, envir, xlev = NULL) {
+
+  ## create the call for the model frame
+  call_frame <- call[c(1L, match(c("formula", "data", "subset"), names(call), 0L))]
+  call_frame[[1]] <- quote(stats::model.frame)
+
+  formula <- as.formula(call$formula)
+  ff <- formula
+
+  ## Check if a ZI specific formula has been
+  if (length(ff[[3]]) > 1 && identical(ff[[3]][[1]], as.name("|"))) {
+    ff_zi <-  ~. ; ff_zi[[3]]  <- ff[[3]][[3]] ; ff_zi[[2]]  <- NULL
+    ff_pln <- ~. ; ff_pln[[3]] <- ff[[3]][[2]] ; ff_pln[[2]] <- NULL
+    tt_zi  <- terms(ff_zi)  ; attr(tt_zi , "offset") <- NULL
+    tt_pln <- terms(ff_pln) ; attr(tt_pln, "offset") <- NULL
+    formula[[3]][1] <- call("+")
+    ziparam <- "covar"
+    if (tt_zi[[2]] == "row") {ziparam <- "row"; formula[[3]][[3]] <- NULL}
+    if (tt_zi[[2]] == "col") {ziparam <- "col"; formula[[3]][[3]] <- NULL}
+    call_frame$formula <- formula
+  } else {
+    ff_pln <- ff
+    tt_pln <- terms(ff_pln) ; attr(tt_pln, "offset") <- NULL
+    ziparam <- "single"
+  }
+
+  ## eval the call in the parent environment
+  frame <- eval(call_frame, envir)
+  ## create the set of matrices to fit the PLN model
+  Y <- frame[[1L]] ## model.response oversimplifies into a numeric when a single variable is involved
+  if (ncol(Y) == 1 & is.null(colnames(Y))) colnames(Y) <- "Y"
+
+  ## Extract the design matrices for ZI and PLN components
+  X  <- model.matrix(tt_pln, frame, xlev = xlev$pln)
+  X0 <- switch(ziparam, "covar" = model.matrix(tt_zi, frame, xlev = xlev$zi), NULL)
+
+  # Offsets are only considered for the PLN component
+  O <- model.offset(frame)
+  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
+  if (is.vector(O)) O <- O %o% rep(1, ncol(Y))
+
+  ## Save encoutered levels for predict methods
+  xlevels <- .getXlevels(terms(frame), frame)
+  list(Y = Y, X = X, X0 = X0, O = O, formula = call$formula, ziparam = ziparam, xlevels = xlevels)
+}
+
 edge_to_node <- function(x, n = max(x)) {
   x <- x - 1 ## easier for arithmetic to number edges starting from 0
   n.node <- round((1 + sqrt(1 + 8*n)) / 2) ## n.node * (n.node -1) / 2 = n (if integer)
