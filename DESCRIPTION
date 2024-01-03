@@ -37,6 +37,8 @@ Imports:
   future.apply,
   R6,
   glassoFast,
+  pscl,
+  glmnet,
   Matrix,
   Rcpp,
   nloptr,
