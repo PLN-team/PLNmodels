@@ -13,13 +13,15 @@ isPLNfit <- function(Robject) {inherits(Robject, "PLNfit"          )}
 #'
 #' @param object an R6 object with class [`PLNfit`]
 #' @param newdata A data frame in which to look for variables and offsets with which to predict
+#' @param responses Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.
 #' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)
+#' @param level Optional integer value the level to be used in obtaining the predictions. Level zero corresponds to the population predictions (default if `responses` is not provided) while level one (default) corresponds to predictions after evaluating the variational parameters for the new data.
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of predicted log-counts (if `type = "link"`) or predicted counts (if `type = "response"`).
 #' @export
-predict.PLNfit <- function(object, newdata, type = c("link", "response"), ...) {
+predict.PLNfit <- function(object, newdata, responses = NULL, level = 1, type = c("link", "response"), ...) {
   stopifnot(isPLNfit(object))
-  object$predict(newdata, type, parent.frame())
+  object$predict(newdata = newdata, type = type, envir = parent.frame(), level = level, responses = responses)
 }
 
 #' Predict counts conditionally
