@@ -1,8 +1,10 @@
 library(PLNmodels)
 library(factoextra)
 
-nb_cores <- 5
-future::plan("multisession", workers = nb_cores)
+## setting up future for parallelism
+nb_cores <- 10
+options(future.fork.enable = TRUE)
+future::plan("multicore", workers = nb_cores)
 
 ## get oaks data set
 data(oaks)
@@ -83,11 +85,11 @@ factoextra::fviz_pca_biplot(
   labs(col = "distance (cm)") + scale_color_viridis_c()
 
 ## Network inference with sparce covariance estimation
-system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.01, penalize_diagonal = TRUE)))
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.05)))
 plot(myPLNnets)
 plot(getBestModel(myPLNnets, "EBIC"))
-stability_selection(myPLNnets)
-plot(getBestModel(myPLNnets, "StARS", stability = .975))
+# stability_selection(myPLNnets)
+# plot(getBestModel(myPLNnets, "StARS", stability = .975))
 
 ## Mixture model to recover tree structure
 system.time(my_mixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), data = oaks, clusters = 1:5))

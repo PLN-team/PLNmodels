@@ -285,7 +285,13 @@ The list of parameters \code{config} controls the post-treatment processing, wit
 \subsection{Method \code{predict()}}{
 Predict position, scores or observations of new data.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit$predict(newdata, type = c("link", "response"), envir = parent.frame())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNfit$predict(
+  newdata,
+  responses = NULL,
+  type = c("link", "response"),
+  level = 1,
+  envir = parent.frame()
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -293,12 +299,21 @@ Predict position, scores or observations of new data.
 \describe{
 \item{\code{newdata}}{A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.}
 
+\item{\code{responses}}{Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.}
+
 \item{\code{type}}{Scale used for the prediction. Either \code{link} (default, predicted positions in the latent space) or \code{response} (predicted counts).}
+
+\item{\code{level}}{Optional integer value the level to be used in obtaining the predictions. Level zero corresponds to the population predictions (default if \code{responses} is not provided) while level one (default) corresponds to predictions after evaluating the variational parameters for the new data.}
 
 \item{\code{envir}}{Environment in which the prediction is evaluated}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+Note that \code{level = 1} can only be used if responses are provided,
+as the variational parameters can't be estimated otherwise. In the absence of responses, \code{level} is ignored and the fitted values are returned
+}
+
 \subsection{Returns}{
 A matrix with predictions scores or counts.
 }

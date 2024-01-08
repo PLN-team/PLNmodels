@@ -33,8 +33,6 @@ optimize_plnblock <- function(data, params, config) {
   objective <- Inf
   repeat {
 
-    browser()
-
     optim_Omega <- optim_plnblock_Omega(M = new_parameters$M, S = new_parameters$S, w = data$w)
     new_parameters$Omega <- optim_Omega$Omega
 
@@ -59,8 +57,6 @@ optimize_plnblock <- function(data, params, config) {
       xtol_abs = config$xtol_abs, xtol_rel = config$xtol_rel
     )
     maxit_reached <- config$maxit_out >= 0 && nb_iter >= config$maxit_out
-
-    if (is.nan(new_objective)) browser()
 
     if (parameters_converged | objective_converged | maxit_reached) {
       if (parameters_converged) statut <- 4

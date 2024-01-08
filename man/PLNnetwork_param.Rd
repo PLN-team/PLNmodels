@@ -9,7 +9,7 @@ PLNnetwork_param(
   inception_cov = c("full", "spherical", "diagonal"),
   trace = 1,
   n_penalties = 30,
-  min_ratio = 0.1,
+  min_ratio = 0.05,
   penalize_diagonal = TRUE,
   penalty_weights = NULL,
   config_post = list(),
