@@ -1,8 +1,3 @@
-# PLNmodels 1.1.1 (2023-08-24)
-
-* Change behavior of `predict()` function for PLNfit model to (i) return fitted values if newdata is missing and (ii) perform one VE step to improve fit if responses are provided. 
-* Fix issue #114
-
 # PLNmodels 1.1.0 (2023-08-24)
 
 * Update documentation of PLN*_param() functions to include torch optimization parameters
@@ -13,6 +8,7 @@
   - improved interface for model initialization / optimisation parameters, which
     are now passed on to jackknife / bootstrap post-treatments
   - better support of GPU when using torch backend
+* Change behavior of `predict()` function for PLNfit model to (i) return fitted values if newdata is missing or (ii) perform one VE step to improve fit if responses are provided (fix issue #114)
 
 # PLNmodels 1.0.4 (2023-08-24)
 
