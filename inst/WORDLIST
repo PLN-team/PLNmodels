@@ -1,3 +1,4 @@
+ADAGRAD
 Anders
 Annales
 Archiv
@@ -5,6 +6,7 @@ Aschan
 Auda
 BLAS
 BMC
+Barebone
 Bournaud
 CAH
 CCSA
@@ -47,6 +49,7 @@ ORCID
 OTU
 OTUs
 Okrah
+Oshlack
 PLN
 PLNLDA
 PLNLDAfit
@@ -71,6 +74,9 @@ Paulson
 PeerJ
 Polatera
 RLE
+RMSPROP
+RMSProp
+RPROP
 Richardot
 Robject
 Roxygen
@@ -78,6 +84,7 @@ Schwaller
 Slud
 StARS
 Supervized
+TMM
 TSS
 Trichoptera
 Typological
@@ -101,6 +108,7 @@ biom
 biomformat
 boldsymbol
 caddisflies
+calcFactorTMM
 caughts
 citEntry
 cloneable
@@ -119,6 +127,7 @@ distTObase
 distTOground
 distTOtrunk
 doi
+edgeR
 emph
 espèces
 et
@@ -154,6 +163,7 @@ les
 lm
 loadings
 loglik
+lr
 lumineux
 lyon
 mathbb
@@ -176,8 +186,11 @@ nlopt
 nloptr
 noLD
 normalisation
+num
+numepoch
 ofposterior
 optim
+optimisation
 optimizers
 ot
 overset
@@ -193,6 +206,7 @@ pln
 pmInfection
 poscounts
 pps
+pseudocount
 pseudocounts
 qquad
 rcl
