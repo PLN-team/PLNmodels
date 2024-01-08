@@ -88,6 +88,7 @@
 <li>improved interface for model initialization / optimisation parameters, which are now passed on to jackknife / bootstrap post-treatments</li>
 <li>better support of GPU when using torch backend</li>
 </ul></li>
+<li>Change behavior of <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> function for PLNfit model to (i) return fitted values if newdata is missing or (ii) perform one VE step to improve fit if responses are provided (fix issue <a href="https://github.com/pln-team/PLNmodels/issues/114" class="external-link">#114</a>)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.4" id="plnmodels-104-2023-08-24">PLNmodels 1.0.4 (2023-08-24)<small>2023-08-24</small><a class="anchor" aria-label="anchor" href="#plnmodels-104-2023-08-24"></a></h2>
