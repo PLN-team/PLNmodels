@@ -1,9 +1,11 @@
 library(PLNmodels)
 library(aricode)
 library(ClustOfVar)
+library(sbm)
 library(MASS)
 library(tidyverse)
 library(viridis)
+library(sbm)
 theme_set(theme_bw())
 
 rPLNblock <- function(
@@ -93,15 +95,22 @@ one_simu <- function(i) {
       ari = ARI(myPLNblock$membership, sim$membership)
     )
 
+    mySBM <- myPLN$model_par$Sigma %>%
+      estimateSimpleSBM("gaussian", estimOption=list(verbosity=0, exploreMin=q))
+    mySBM$setModel(q)
+    err_PLN_SBM <- c(rmse_B = NA, rmse_Sigma = NA,
+                      ari = ARI(mySBM$memberships, sim$membership)
+    )
+
     data.frame(
-      rbind(t(err_PLNblock), t(err_PLN), t(err_baseline)),
-      method = c("PLNblock","PLN + kmeans", "glm/logLM+kmeans"),
+      rbind(t(err_PLNblock), t(err_PLN), t(err_baseline), t(err_PLN_SBM)),
+      method = c("PLNblock","PLN + kmeans", "init (glm + kmeans)", "PLN + SBM"),
       n = n_, simu = i)
 
   }))
 }
 
-res <- do.call(rbind, lapply(1:100, one_simu))
+res <- do.call(rbind, lapply(1:20, one_simu))
 
 p_B <- ggplot(res) + aes(x = factor(n), y = rmse_B, fill = method) + geom_boxplot() + ylim(c(0,0.3)) +
   scale_fill_viridis_d() + ggtitle(paste("RMSE Beta (R2 =", R2_target, " p =", p, "q =",q,")"))
