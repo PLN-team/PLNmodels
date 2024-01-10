@@ -38,31 +38,55 @@ rPLNblock <- function(
   offsets <- matrix(log(depths %o% rep(1, p)) - log(exp_depths), n, p)
   Z <- mvrnorm(n, rep(0, q), as.matrix(Sigma))
   Y <- matrix(rpois(n * p, as.vector(exp(mu + Z %*% t(blocks) + offsets))), n, p)
-  dimnames(Y) <- list(paste0("S", 1:n), paste0("Y", 1:p))
+
+  if (is.null(rownames(mu))) rownames(Y) <- paste0("S", 1:n) else rownames(Y) <- rownames(mu)
+  colnames(Y) <- paste0("Y", 1:p)
   rownames(offsets) <- rownames(Y)
 
   list(Y = Y, O = offsets, membership = membership, blocks = blocks, Sigma = Sigma)
 }
 
+use_stoc <- TRUE
+
+if (!use_stoc) {
+### -------------------------------------------------------------
 ### SIMULATED DATA
 n <- 200
 p <- 40
 q <- 5
 d <- 1
-# R2 balance the part of variance due to XB o Sigma
-# High R2 -> part of variance due to B is important comapre to Sigma so group are harder to find
-R2_target <- 0.95
+## Covariance with Toeplitz structure
 params <- PLNmodels:::create_parameters(n = n, p = p, q = q, d = d, depths = 1e3)
 D <- diag(c(1:q), q)
 Sigma <- D^.5 %*% toeplitz(0.75^(1:q - 1)) %*% D^.5
+# R2 balance the part of variance due to XB o Sigma
+# High R2 -> part of variance due to B is important comapre to Sigma so group are harder to find
+R2_target <- 0.95
 ##  Adjusting Sigma to get a specified R2/SNR
 SNR_hat <- sum(diag(cov(params$X %*% params$B))) / sum(diag(Sigma))
 SNR_target <- R2_target / (1 - R2_target)
 sigma2 <- SNR_hat / SNR_target
 Sigma <- sigma2 * Sigma
 
+} else {
+### -------------------------------------------------------------
+## Use STOC data to generate model parameters
+##
+data(stoc)
+stoc_blocks <- PLNblock(Abundance ~ 1 + temp + precip, nb_blocks = 5, data = stoc)$models[[1]]
+Sigma <- stoc_blocks$model_par$Sigma
+params <- list(B = stoc_blocks$model_par$B,
+               X = model.matrix(Abundance ~ 1 + temp + precip,data = stoc),
+               depths = rowSums(stoc$Abundance))
+d <- ncol(params$X)
+n <- nrow(stoc$Abundance)
+p <- ncol(params$B)
+q <- 5
+}
+
 ## total number of samples should exceed max vec_n if some a drops due to lacks of count
-vec_n <- c(25, 50, 75, 100)
+vec_n <- c(100)
+
 one_simu <- function(i) {
   cat(i)
   sim <- rPLNblock(n, p, q, mu = params$X %*% params$B, Sigma = Sigma, depths = params$depths)
@@ -76,8 +100,8 @@ one_simu <- function(i) {
       Y = sim$Y[1:n_,],
       X = params$X[1:n_, , drop=FALSE],
       O = matrix(logO[1:n_,], n_, p),
-      w = rep(1,n_), type = "lm")
-    cl <- kmeans(t(glm$M), q)$cl
+      w = rep(1,n_), type = "mix")
+    cl <- kmeans(t(init$M), q)$cl
     blocks <- PLNmodels:::as_indicator(cl)
     err_baseline <- c(rmse_B = sqrt(mean((init$B - params$B)^2)),
       rmse_Sigma = sqrt(mean((cov(init$M) - blocks %*% Sigma %*% t(blocks))^2)),
@@ -102,7 +126,7 @@ one_simu <- function(i) {
     mySBM <- myPLN$model_par$Sigma %>%
       estimateSimpleSBM("gaussian", estimOption=list(verbosity=0, exploreMin=q))
     mySBM$setModel(q)
-    err_PLN_SBM <- c(rmse_B = NA, rmse_Sigma = NA,
+    err_PLN_SBM <- c(rmse_B = sqrt(mean((myPLN$model_par$B - params$B)^2)), rmse_Sigma = NA,
                       ari = ARI(mySBM$memberships, sim$membership)
     )
 
@@ -116,17 +140,13 @@ one_simu <- function(i) {
 
 res <- do.call(rbind, lapply(1:40, one_simu))
 
-p_B <- ggplot(res) + aes(x = factor(n), y = rmse_B, fill = method) + geom_boxplot() + ylim(c(0,0.3)) +
+p_B <- ggplot(res) + aes(x = method, y = rmse_B, fill = method) +
+  facet_grid(~ n) + geom_boxjitter(jitter.alpha=0.5, jitter.size = .75) + ylim(c(0,5))  +
   scale_fill_viridis_d() + ggtitle(paste("RMSE Beta (R2 =", R2_target, " p =", p, "q =",q,")"))
 p_B
 
-p_Sigma <- ggplot(res) + aes(x = factor(n), y = rmse_Sigma, fill = method) + geom_boxplot()  +
-  scale_fill_viridis_d() + ylim(c(0.025,0.25)) +
-  ggtitle(paste("RMSE Sigma (R2 =", R2_target, " p =", p, "q =",q,")"))
-p_Sigma
-
-p_ARI <- ggplot(res) + aes(x = factor(n), y = ari, fill = method) + geom_point(alpha=0.8) +
-  geom_boxplot() + ylim(c(0,1))  + scale_fill_viridis_d() +
-  ggtitle(paste("ARI (R2 =", R2_target, " p =", p, "q =",q,")"))
+p_ARI <- ggplot(res) + aes(x = method, y = ari, fill = method) + geom_point(alpha=0.8) +
+  facet_grid(~ n) + geom_boxjitter(jitter.alpha=0.5, jitter.size = .75) + ylim(c(0,1))  + scale_fill_viridis_d() +
+  ggtitle(paste("ARI (p =", p, "q =",q,")"))
 p_ARI
 
