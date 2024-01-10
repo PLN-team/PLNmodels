@@ -73,7 +73,8 @@ Sigma <- sigma2 * Sigma
 ## Use STOC data to generate model parameters
 ##
 data(stoc)
-stoc_blocks <- PLNblock(Abundance ~ 1 + temp + precip, nb_blocks = 5, data = stoc)$models[[1]]
+stoc_blocks <- PLNblock(Abundance ~ 1 + temp + precip, nb_blocks = 5,
+                        data = stoc, control = PLNblock_param(trace = 0))$models[[1]]
 Sigma <- stoc_blocks$model_par$Sigma
 params <- list(B = stoc_blocks$model_par$B,
                X = model.matrix(Abundance ~ 1 + temp + precip,data = stoc),
@@ -107,34 +108,38 @@ one_simu <- function(i) {
       rmse_Sigma = sqrt(mean((cov(init$M) - blocks %*% Sigma %*% t(blocks))^2)),
       ari = ARI(cl, sim$membership)
     )
+    tryCatch({
+      myPLN <- PLN(Abundance ~ 0 + . + offset(logO), data = data, , subset = 1:n_, control = PLN_param(trace = 0))
+      cl <- kmeans(t(myPLN$var_par$M), q)$cl
+      blocks <- PLNmodels:::as_indicator(cl)
+      err_PLN <- c(rmse_B = sqrt(mean((myPLN$model_par$B - params$B)^2)),
+                   rmse_Sigma = sqrt(mean((myPLN$model_par$Sigma - blocks %*% Sigma %*% t(blocks))^2)),
+                   ari = ARI(cl, sim$membership)
+      )
 
-    myPLN <- PLN(Abundance ~ 0 + . + offset(logO), data = data, , subset = 1:n_, control = PLN_param(trace = 0))
-    cl <- kmeans(t(myPLN$var_par$M), q)$cl
-    blocks <- PLNmodels:::as_indicator(cl)
-    err_PLN <- c(rmse_B = sqrt(mean((myPLN$model_par$B - params$B)^2)),
-      rmse_Sigma = sqrt(mean((myPLN$model_par$Sigma - blocks %*% Sigma %*% t(blocks))^2)),
-      ari = ARI(cl, sim$membership)
-    )
+      myPLNblock <- PLNblock(Abundance ~ 0 + . + offset(logO), data = data, , subset = 1:n_, nb_blocks = q,
+                             control = PLNblock_param(trace = 0, inception = myPLN))$models[[1]]
+      err_PLNblock <- c(rmse_B = sqrt(mean((myPLNblock$model_par$B - params$B)^2)),
+                        rmse_Sigma = sqrt(mean((myPLNblock$model_par$Sigma - Sigma)^2)),
+                        ari = ARI(myPLNblock$membership, sim$membership)
+      )
 
-    myPLNblock <- PLNblock(Abundance ~ 0 + . + offset(logO), data = data, , subset = 1:n_, nb_blocks = q,
-                           control = PLNblock_param(trace = 0, inception = myPLN))$models[[1]]
-    err_PLNblock <- c(rmse_B = sqrt(mean((myPLNblock$model_par$B - params$B)^2)),
-      rmse_Sigma = sqrt(mean((myPLNblock$model_par$Sigma - Sigma)^2)),
-      ari = ARI(myPLNblock$membership, sim$membership)
-    )
-
-    mySBM <- myPLN$model_par$Sigma %>%
-      estimateSimpleSBM("gaussian", estimOption=list(verbosity=0, exploreMin=q))
-    mySBM$setModel(q)
-    err_PLN_SBM <- c(rmse_B = sqrt(mean((myPLN$model_par$B - params$B)^2)), rmse_Sigma = NA,
-                      ari = ARI(mySBM$memberships, sim$membership)
-    )
-
-    data.frame(
-      rbind(t(err_PLNblock), t(err_PLN), t(err_baseline), t(err_PLN_SBM)),
-      method = c("PLNblock","PLN + kmeans", "initialization", "PLN + SBM"),
-      n = n_, simu = i)
-
+      mySBM <- myPLN$model_par$Sigma %>%
+        estimateSimpleSBM("gaussian", estimOption=list(verbosity=0, exploreMin=q))
+      mySBM$setModel(q)
+      err_PLN_SBM <- c(rmse_B = sqrt(mean((myPLN$model_par$B - params$B)^2)), rmse_Sigma = NA,
+                       ari = ARI(mySBM$memberships, sim$membership))
+      data.frame(
+        rbind(t(err_PLNblock), t(err_PLN), t(err_baseline), t(err_PLN_SBM)),
+        method = c("PLNblock","PLN + kmeans", "initialization", "PLN + SBM"),
+        n = n_, simu = i)
+      }, error = function(e) {e}
+    ) -> res
+    if (is(res, "error")) {
+      return(NULL)
+    } else {
+      return(res)
+    }
   }))
 }
 
