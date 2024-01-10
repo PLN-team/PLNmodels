@@ -12,7 +12,7 @@ PLNmixture_param(
   smoothing = "both",
   config_optim = list(),
   config_post = list(),
-  inception = NULL
+  inception = "lm"
 )
 }
 \arguments{

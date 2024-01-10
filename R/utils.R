@@ -293,6 +293,7 @@ create_parameters <- function(
 #' @param O Offset matrix (in log-scale)
 #' @param w Weight vector (defaults to 1)
 #' @param s Scale parameter for S (defaults to 0.1)
+#' @param type Type of initialisation, either log transformation + lm fit or glm Poisson. Default to "glm".
 #' @return a named list of starting values for model parameter B and variational parameters M and S used in the iterative optimization algorithm of [PLN()]
 #'
 #' @details The default strategy to estimate B and M is to fit a linear model with covariates `X` to the response count matrix (after adding a pseudocount of 1, scaling by the offset and taking the log). The regression matrix is used to initialize `B` and the residuals to initialize `M`. `S` is initialized as a constant conformable matrix with value `s`.
@@ -304,42 +305,40 @@ create_parameters <- function(
 #' Y <- barents$Abundance
 #' X <- model.matrix(Abundance ~ Latitude + Longitude + Depth + Temperature, data = barents)
 #' O <- log(barents$Offset)
-#' w <-- rep(1, nrow(Y))
+#' w <- rep(1, nrow(Y))
 #' compute_PLN_starting_point(Y, X, O, w)
 #' }
 #'
 #' @importFrom stats lm.fit glm.fit coefficients
 #' @importFrom fastglm fastglm
 #' @export
-compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
+compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1, type = c("lm", "glm", "mix")) {
   # Y = responses, X = covariates, O = offsets (in log scale), w = weights
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-  lm_fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
   glm_func <- ifelse(d > 0,  fastglm, glm.fit)
-  B_list <- tryCatch(
-    future_map(1:p, function(j) {
-      suppressWarnings(coefficients(glm_func(X, Y[, j], weights = w, offset = O[, j], family = stats::poisson())))
-    }), error = function(e) {e}
-  )
-  if (is(B_list, "error")) {
-    warning(paste("glm_fit failed: using log-lm to initialize model parameters"))
-    B <- matrix(lm_fits, coefficients, d, p)
-  } else {
-    B <- do.call(cbind, B_list)
+  type <- match.arg(type)
+  failed <- FALSE
+  if (type %in% c("glm", "mix")) {
+    glm_fits <- tryCatch(
+      future_map(1:p, function(j) {
+        suppressWarnings(glm_func(X, Y[, j], weights = w, offset = O[, j], family = stats::poisson()))
+      }), error = function(e) {e}
+    )
+    if (is(glm_fits, "error")) {
+      warning(paste("glm_fit failed: using log-lm to initialize model parameters"))
+      lm_fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
+      B_glm <- coefficients(lm_fits)
+    } else {
+      B_glm <- matrix(do.call(cbind, lapply(glm_fits, coefficients)), d, p)
+    }
+  }
+  if (type %in% c("lm", "mix")) {
+    lm_fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
+    B_lm <- matrix(coefficients(lm_fits), d, p)
   }
   list(
-    B = B,
-    M = matrix(lm_fits$residuals, n, p),
-    S = matrix(s, n, p)
-  )
-}
-
-.compute_PLN_starting_point_var_par <- function(Y, X, O, w, s = 0.1) {
-  # Y = responses, X = covariates, O = offsets (in log scale), w = weights
-  n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-  lm_fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
-  list(
-    M = matrix(lm_fits$residuals, n, p),
+    B = switch(type, "lm"  = B_lm, B_glm),
+    M = switch(type, "glm" = w * log((1 + Y)/exp(O + w * X %*% B_glm)), w * log((1 + Y)/exp(O + w * X %*% B_lm))),
     S = matrix(s, n, p)
   )
 }

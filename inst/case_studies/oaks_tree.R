@@ -85,7 +85,7 @@ factoextra::fviz_pca_biplot(
   labs(col = "distance (cm)") + scale_color_viridis_c()
 
 ## Network inference with sparce covariance estimation
-system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.05)))
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.01)))
 plot(myPLNnets)
 plot(getBestModel(myPLNnets, "EBIC"))
 # stability_selection(myPLNnets)

@@ -11,7 +11,7 @@ PLNblock_param(
   fixed_cl = FALSE,
   config_optim = list(),
   config_post = list(),
-  inception = NULL
+  inception = "lm"
 )
 }
 \arguments{
@@ -27,8 +27,10 @@ PLNblock_param(
 
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
-\item{inception}{Set up the parameters initialization: by default, the model is initialized by fitting a fully parametrized PLN covariance.
-However, the user can provide a previously fitted PLNfit to speed up the inference.}
+\item{inception}{Set up the parameters initialization, either a character in "glm" or "lm", or a PLNfit object: the model
+can be initialized with a Poisson generalized linear model applied on the same formula as the one provided by the user. Another possibility is
+to log-transform the counts and then apply a liner model, which is the default. Finally, the user can provide a PLNfit (typically obtained from a previous fit),
+which sometimes speeds up the inference and enhance the numerical stability.}
 }
 \value{
 list of parameters configuring the fit.

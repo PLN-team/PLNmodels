@@ -82,10 +82,11 @@ PLNnetwork_param <- function(
     penalty_weights   = NULL  ,
     config_post       = list(),
     config_optim      = list(),
-    inception         = NULL
+    inception         = "lm"
 ) {
 
-  if (!is.null(inception)) stopifnot(isPLNfit(inception))
+  if (!is.character(inception)) stopifnot(isPLNfit(inception))
+  if (is.character(inception)) stopifnot(inception %in% c("mix", "glm", "lm"))
 
   ## post-treatment config
   config_pst <- config_post_default_PLNnetwork
@@ -117,9 +118,6 @@ PLNnetwork_param <- function(
     min_ratio         = min_ratio        ,
     penalize_diagonal = penalize_diagonal,
     penalty_weights   = penalty_weights  ,
-    jackknife         = FALSE            ,
-    bootstrap         = 0                ,
-    variance          = TRUE             ,
     config_post       = config_pst       ,
     config_optim      = config_opt       ,
     inception         = inception       ), class = "PLNmodels_param")

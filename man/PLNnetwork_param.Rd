@@ -14,7 +14,7 @@ PLNnetwork_param(
   penalty_weights = NULL,
   config_post = list(),
   config_optim = list(),
-  inception = NULL
+  inception = "lm"
 )
 }
 \arguments{

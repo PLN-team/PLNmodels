@@ -10,7 +10,7 @@ PLNLDA_param(
   covariance = c("full", "diagonal", "spherical"),
   config_post = list(),
   config_optim = list(),
-  inception = NULL
+  inception = "lm"
 )
 }
 \arguments{

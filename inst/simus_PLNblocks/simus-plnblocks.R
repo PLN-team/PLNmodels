@@ -36,8 +36,8 @@ rPLNblock <- function(
   ## adjust depths
   exp_depths <- rowSums(exp(rep(1, n) %o% diag(Sigma)[membership]/2 + mu)) ## sample-wise expected depths
   offsets <- matrix(log(depths %o% rep(1, p)) - log(exp_depths), n, p)
-  Z <- mu + mvrnorm(n, rep(0, q), as.matrix(Sigma)) %*% t(blocks) + offsets
-  Y <- matrix(rpois(n * p, as.vector(exp(Z))), n, p)
+  Z <- mvrnorm(n, rep(0, q), as.matrix(Sigma))
+  Y <- matrix(rpois(n * p, as.vector(exp(mu + Z %*% t(blocks) + offsets))), n, p)
   dimnames(Y) <- list(paste0("S", 1:n), paste0("Y", 1:p))
   rownames(offsets) <- rownames(Y)
 
@@ -49,11 +49,12 @@ n <- 200
 p <- 40
 q <- 5
 d <- 1
-# R2 blanace the part of variance due to XB o Sigma
+# R2 balance the part of variance due to XB o Sigma
 # High R2 -> part of variance due to B is important comapre to Sigma so group are harder to find
 R2_target <- 0.95
 params <- PLNmodels:::create_parameters(n = n, p = p, q = q, d = d, depths = 1e3)
-Sigma <- toeplitz(0.75^(1:q - 1))
+D <- diag(c(1:q), q)
+Sigma <- D^.5 %*% toeplitz(0.75^(1:q - 1)) %*% D^.5
 ##  Adjusting Sigma to get a specified R2/SNR
 SNR_hat <- sum(diag(cov(params$X %*% params$B))) / sum(diag(Sigma))
 SNR_target <- R2_target / (1 - R2_target)
@@ -70,13 +71,16 @@ one_simu <- function(i) {
 
   do.call(rbind, lapply(vec_n,  function(n_) {
 
-    ## revoie l'initialisation (glm  + log trasnformation)
-    glm <- PLN(Abundance ~ 0 + . + offset(logO), data = data, , subset = 1:n_,
-               control = PLN_param(trace = 0, config_optim = list(maxeval = 1)))
-    cl <- kmeans(t(glm$var_par$M), q)$cl
+    ## renvoie l'initialisation
+    init <- compute_PLN_starting_point(
+      Y = sim$Y[1:n_,],
+      X = params$X[1:n_, , drop=FALSE],
+      O = matrix(logO[1:n_,], n_, p),
+      w = rep(1,n_), type = "lm")
+    cl <- kmeans(t(glm$M), q)$cl
     blocks <- PLNmodels:::as_indicator(cl)
-    err_baseline <- c(rmse_B = sqrt(mean((glm$model_par$B - params$B)^2)),
-      rmse_Sigma = sqrt(mean((glm$model_par$Sigma - blocks %*% Sigma %*% t(blocks))^2)),
+    err_baseline <- c(rmse_B = sqrt(mean((init$B - params$B)^2)),
+      rmse_Sigma = sqrt(mean((cov(init$M) - blocks %*% Sigma %*% t(blocks))^2)),
       ari = ARI(cl, sim$membership)
     )
 
@@ -104,25 +108,25 @@ one_simu <- function(i) {
 
     data.frame(
       rbind(t(err_PLNblock), t(err_PLN), t(err_baseline), t(err_PLN_SBM)),
-      method = c("PLNblock","PLN + kmeans", "init (glm + kmeans)", "PLN + SBM"),
+      method = c("PLNblock","PLN + kmeans", "initialization", "PLN + SBM"),
       n = n_, simu = i)
 
   }))
 }
 
-res <- do.call(rbind, lapply(1:20, one_simu))
+res <- do.call(rbind, lapply(1:40, one_simu))
 
 p_B <- ggplot(res) + aes(x = factor(n), y = rmse_B, fill = method) + geom_boxplot() + ylim(c(0,0.3)) +
   scale_fill_viridis_d() + ggtitle(paste("RMSE Beta (R2 =", R2_target, " p =", p, "q =",q,")"))
 p_B
 
 p_Sigma <- ggplot(res) + aes(x = factor(n), y = rmse_Sigma, fill = method) + geom_boxplot()  +
-  scale_fill_viridis_d() + ylim(c(0.025,0.15)) +
+  scale_fill_viridis_d() + ylim(c(0.025,0.25)) +
   ggtitle(paste("RMSE Sigma (R2 =", R2_target, " p =", p, "q =",q,")"))
 p_Sigma
 
 p_ARI <- ggplot(res) + aes(x = factor(n), y = ari, fill = method) + geom_point(alpha=0.8) +
-  geom_boxplot() + ylim(c(0.25,1))  + scale_fill_viridis_d() +
+  geom_boxplot() + ylim(c(0,1))  + scale_fill_viridis_d() +
   ggtitle(paste("ARI (R2 =", R2_target, " p =", p, "q =",q,")"))
 p_ARI
 

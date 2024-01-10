@@ -44,7 +44,7 @@ PLNnetworkfamily <- R6Class(
 
       ## A basic model for inception, useless one is defined by the user
 ### TODO check if it is useful
-      if (is.null(control$inception)) {
+      if (is.null(control$inception) | is.character(control$inception)) {
         myPLN <- switch(
           control$inception_cov,
           "spherical" = PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control),

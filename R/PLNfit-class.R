@@ -264,9 +264,6 @@ PLNfit <- R6Class(
                      O = O[-i, , drop = FALSE],
                      w = w[-i])
         args <- list(data = data,
-                     # params = list(B = private$B,
-                     #               M = matrix(0, self$n-1, self$p),
-                     #               S = private$S[-i, , drop = FALSE]),
                      params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
@@ -377,7 +374,8 @@ PLNfit <- R6Class(
           Y = responses,
           X = covariates,
           O = offsets,
-          w = weights)
+          w = weights,
+          type = control$inception)
         private$B <- start_point$B
         private$M <- start_point$M
         private$S <- start_point$S
@@ -440,7 +438,8 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses)
       ## initialize variational parameters with current value if dimension is the same
       if ((p != self$p) || (n != self$n)) {
-        params0 <- .compute_PLN_starting_point_var_par(responses, covariates, offsets, weights, s = 0.1)
+        params0 <- compute_PLN_starting_point(responses, covariates, offsets, weights, s = 0.1)
+        params0$B <- NULL
       } else {
         params0 <- list(M = self$var_par$M, S = self$var_par$S)
       }
@@ -979,7 +978,6 @@ PLNfit_fixedcov <- R6Class(
                      O = O[-i, , drop = FALSE],
                      w = w[-i])
         args <- list(data = data,
-                     # params = list(B = private$B, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
                      params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)

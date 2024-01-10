@@ -96,9 +96,10 @@ PLNmixture_param <- function(
     smoothing     = "both"     ,
     config_optim  = list()     ,
     config_post   = list()     ,
-    inception     = NULL # pretrained PLNfit used as initialization
+    inception     = "lm" # pretrained PLNfit used as initialization
 ) {
-  if (!is.null(inception)) stopifnot(isPLNfit(inception))
+  if (!is.character(inception)) stopifnot(isPLNfit(inception))
+  if (is.character(inception)) stopifnot(inception %in% c("mix", "glm", "lm"))
 
   ## post-treatment config
   config_pst <- config_post_default_PLNmixture

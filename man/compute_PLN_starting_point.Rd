@@ -4,7 +4,7 @@
 \alias{compute_PLN_starting_point}
 \title{Helper function for PLN initialization.}
 \usage{
-compute_PLN_starting_point(Y, X, O, w, s = 0.1)
+compute_PLN_starting_point(Y, X, O, w, s = 0.1, type = c("lm", "glm", "mix"))
 }
 \arguments{
 \item{Y}{Response count matrix}
@@ -16,6 +16,8 @@ compute_PLN_starting_point(Y, X, O, w, s = 0.1)
 \item{w}{Weight vector (defaults to 1)}
 
 \item{s}{Scale parameter for S (defaults to 0.1)}
+
+\item{type}{Type of initialisation, either log transformation + lm fit or glm Poisson. Default to "glm".}
 }
 \value{
 a named list of starting values for model parameter B and variational parameters M and S used in the iterative optimization algorithm of \code{\link[=PLN]{PLN()}}
@@ -32,7 +34,7 @@ data(barents)
 Y <- barents$Abundance
 X <- model.matrix(Abundance ~ Latitude + Longitude + Depth + Temperature, data = barents)
 O <- log(barents$Offset)
-w <-- rep(1, nrow(Y))
+w <- rep(1, nrow(Y))
 compute_PLN_starting_point(Y, X, O, w)
 }
 

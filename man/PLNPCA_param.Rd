@@ -9,7 +9,7 @@ PLNPCA_param(
   trace = 1,
   config_optim = list(),
   config_post = list(),
-  inception = NULL
+  inception = "lm"
 )
 }
 \arguments{

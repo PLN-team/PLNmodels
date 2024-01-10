@@ -59,8 +59,6 @@ PLNblock <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, weigh
 #' @inheritParams PLN_param
 #' @param init_cl either a string indicating how initial clusters are computed ("clustofvar", "kmeans" or "hclust"), or a list of vectors of membership, where the list has as many element as in nb_blocks. Default is "clustofvar"
 #' @param fixed_cl should the clustering be fixed once for all after initialization or, by let free along the optimization. Default is FALSE.
-#' @param inception Set up the parameters initialization: by default, the model is initialized by fitting a fully parametrized PLN covariance.
-#'  However, the user can provide a previously fitted PLNfit to speed up the inference.
 #' @return list of parameters configuring the fit.
 #' @inherit PLN_param details
 #' @details See [PLN_param()] for a full description of the generic optimization parameters. PLNnetwork_param() also has two additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:
@@ -76,10 +74,11 @@ PLNblock_param <- function(
     fixed_cl      = FALSE,
     config_optim  = list(),
     config_post   = list(),
-    inception     = NULL     # pretrained PLNfit used as initialization
+    inception     = "lm"     # pretrained PLNfit used as initialization
 ) {
 
-  if (!is.null(inception)) stopifnot(isPLNfit(inception))
+  if (!is.character(inception)) stopifnot(isPLNfit(inception))
+  if (is.character(inception)) stopifnot(inception %in% c("mix", "glm", "lm"))
 
   ## post-treatment config
   config_pst <- config_post_default_PLNblock

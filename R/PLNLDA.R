@@ -92,11 +92,12 @@ PLNLDA_param <- function(
     covariance    = c("full", "diagonal", "spherical"),
     config_post   = list(),
     config_optim  = list(),
-    inception     = NULL     # pretrained PLNfit used as initialization
+    inception     = "lm"     # pretrained PLNfit used as initialization
 ) {
   backend <- match.arg(backend)
   covariance <- match.arg(covariance)
-  if (!is.null(inception)) stopifnot(isPLNfit(inception))
+  if (!is.character(inception)) stopifnot(isPLNfit(inception))
+  if (is.character(inception)) stopifnot(inception %in% c("mix", "glm", "lm"))
 
   ## post-treatment config
   config_pst <- config_post_default_PLNLDA
