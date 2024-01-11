@@ -4,12 +4,23 @@
 \alias{predict.PLNfit}
 \title{Predict counts of a new sample}
 \usage{
-\method{predict}{PLNfit}(object, newdata, type = c("link", "response"), ...)
+\method{predict}{PLNfit}(
+  object,
+  newdata,
+  responses = NULL,
+  level = 1,
+  type = c("link", "response"),
+  ...
+)
 }
 \arguments{
 \item{object}{an R6 object with class \code{\link{PLNfit}}}
 
 \item{newdata}{A data frame in which to look for variables and offsets with which to predict}
+
+\item{responses}{Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.}
+
+\item{level}{Optional integer value the level to be used in obtaining the predictions. Level zero corresponds to the population predictions (default if \code{responses} is not provided) while level one (default) corresponds to predictions after evaluating the variational parameters for the new data.}
 
 \item{type}{The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)}
 

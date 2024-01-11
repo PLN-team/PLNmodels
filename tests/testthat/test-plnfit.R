@@ -78,24 +78,40 @@ capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names 
 
 test_that("PLN fit: Check prediction",  {
 
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, subset = 1:30)
-  model2 <- PLN(Abundance ~ Pressure, data = trichoptera, subset = 1:30)
+  model1     <- PLN(Abundance ~ 1, data = trichoptera, subset = 1:30)
+  model1_off <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, subset = 1:30)
+  model2     <- PLN(Abundance ~ Pressure, data = trichoptera, subset = 1:30)
 
   newdata <- trichoptera[31:49, ]
-  newdata$Abundance <- NULL
+  # newdata$Abundance <- NULL
 
+  pred1     <- predict(model1, newdata = newdata, type = "response")
+  pred1_off <- predict(model1_off, newdata = newdata, type = "response")
+  pred2     <- predict(model2, newdata = newdata, type = "response")
+  pred2_ve  <- predict(model2, newdata = newdata, type = "response",
+                      responses = newdata$Abundance)
+
+  ## predict returns fitted values if no data is provided
+  expect_equal(model2$predict(), model2$fitted)
+
+  ## Adding covariates improves fit
   expect_gt(
-    mean((trichoptera$Abundance[31:49, ] - predict(model1, newdata = newdata, type = "response"))^2),
-    mean((trichoptera$Abundance[31:49, ] - predict(model2, newdata = newdata, type = "response"))^2)
+    mean((newdata$Abundance - pred1)^2),
+    mean((newdata$Abundance - pred2)^2)
+  )
+
+  ## Doing one VE step improves fit
+  expect_gt(
+    mean((newdata$Abundance - pred2)^2),
+    mean((newdata$Abundance - pred2_ve)^2)
   )
 
   ## R6 methods
-  predictions <- model1$predict(newdata = newdata, type = "response")
   ## with offset, predictions should vary across samples
-  expect_gte(min(apply(predictions, 2, sd)), 0)
+  expect_gte(min(apply(pred1_off, 2, sd)), .Machine$double.eps)
   newdata$Offset <- NULL
   ## without offsets, predictions should be the same for all samples
-  expect_equal(unname(apply(predictions, 2, sd)), rep(0, ncol(predictions)))
+  expect_equal(unname(apply(pred1, 2, sd)), rep(0, ncol(pred1)))
 
   ## Unequal factor levels in train and prediction datasets
   suppressWarnings(
