@@ -11,22 +11,6 @@ See the documentation for \code{\link[=coef]{coef()}}, \code{\link[=sigma]{sigma
 
 Fields are accessed via active binding and cannot be changed by the user.
 }
-\details{
-The parameter \code{control} is a list controlling the optimization with the following entries:
-\itemize{
-\item covariance a character setting the model for the covariance matrix: either "full", "diagonal", "spherical" or "sparse". Default is "full", automatically set to sparse if rho > 0.
-\item "trace" integer for verbosity.
-\item "maxiter_out" control outer optimization (VEM) maximum number of iterations in the variational E-M algorithm. Default is 100.
-\item "ftol_out" control outer optimization (VEM) stop when an full V-EM iteration  changes the ELBO by less than ftol_out. Default is 1e-4.
-\item "ftol_rel" control inner optimization (VE step) stop when an optimization step changes in the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6 when n < p, 1e-8 otherwise.
-\item "ftol_abs" control inner optimization (VE step) stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 0
-\item "xtol_rel" control inner optimization (VE step) stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-4
-\item "xtol_abs" control inner optimization (VE step) stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 0
-\item "maxeval" control inner optimization (VE step) stop when the number of iteration exceeds maxeval. Default is 1000
-\item "maxtime" control inner optimization (VE step) stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (no restriction)
-\item "algorithm" control inner optimization (VE step): the optimization method used by NLOPT among LD type, i.e. "CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2". See NLOPT documentation for further details. Default is "CCSAQ".
-}
-}
 \examples{
 \dontrun{
 data(scRNA)

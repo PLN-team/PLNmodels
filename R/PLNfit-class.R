@@ -907,7 +907,7 @@ PLNfit_fixedcov <- R6Class(
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$optimizer$main <- ifelse(control$backend == "nlopt", nlopt_optimize_fixed, private$torch_optimize)
-      ## ve step is the same as in the fullly parameterized covariance
+      ## ve step is the same as in the fully parameterized covariance
       private$Omega <- control$Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields

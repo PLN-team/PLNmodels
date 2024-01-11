@@ -214,9 +214,17 @@ extract_model_zi <- function(call, envir, xlev = NULL) {
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
   if (is.vector(O)) O <- O %o% rep(1, ncol(Y))
 
-  ## Save encoutered levels for predict methods
-  xlevels <- .getXlevels(terms(frame), frame)
-  list(Y = Y, X = X, X0 = X0, O = O, formula = call$formula, ziparam = ziparam, xlevels = xlevels)
+  # Model weights
+  w <- model.weights(frame)
+  if (is.null(w)) {
+    w <- rep(1.0, nrow(Y))
+  } else {
+    stopifnot(all(w > 0) && length(w) == nrow(Y))
+  }
+
+  ## Save encountered levels for predict methods as attribute of the formula
+  attr(call$formula, "xlevels") <- .getXlevels(terms(frame), frame)
+  list(Y = Y, X = X, X0 = X0, O = O, w = w, formula = call$formula, ziparam = ziparam)
 }
 
 edge_to_node <- function(x, n = max(x)) {

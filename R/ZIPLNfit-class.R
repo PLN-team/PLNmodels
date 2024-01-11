@@ -66,18 +66,18 @@ ZIPLNfit <- R6Class(
     #' @description Initialize a [`ZIPLNfit`] model
     #' @importFrom stats glm.fit residuals poisson fitted coef
     #' @importFrom pscl zeroinfl
-    initialize = function(responses, covariates, offsets, formula, xlevels, control) {
+    initialize = function(responses, covariates, covariates0, offsets, weights, formula, control) {
       ## problem dimensions
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
 
       ## save the formula call as specified by the user
       private$formula <- formula
-      private$xlevels <- xlevels
       private$X       <- covariates
+      private$X0      <- covariates0
       ## initialize the covariance model
       private$covariance <- control$covariance
       private$ziparam <- control$ziparam
-      
+
       R  <- matrix(0, n, p)
       M  <- matrix(0, n, p)
       B  <- matrix(0, d, p)
@@ -87,9 +87,9 @@ ZIPLNfit <- R6Class(
         y = responses[, j]
         if (min(y == 0)) {
           zip_out <- switch(control$ziparam,
-            "single" = pscl::zeroinfl(y ~ 0 + covariates | 1  , offset = offsets[, j]),  
-            "row"    = pscl::zeroinfl(y ~ 0 + covariates | 1:n, offset = offsets[, j]),  
-            "col"    = pscl::zeroinfl(y ~ 0 + covariates | 1  , offset = offsets[, j]),  
+            "single" = pscl::zeroinfl(y ~ 0 + covariates | 1  , offset = offsets[, j]),
+            "row"    = pscl::zeroinfl(y ~ 0 + covariates | 1:n, offset = offsets[, j]),
+            "col"    = pscl::zeroinfl(y ~ 0 + covariates | 1  , offset = offsets[, j]),
             "covar"  = pscl::zeroinfl(y ~ 0 + covariates      , offset = offsets[, j])) # offset only for the count model
           B0[,j] <- coef(zip_out, "zero")
           B[,j]  <- coef(zip_out, "count")
@@ -103,51 +103,141 @@ ZIPLNfit <- R6Class(
           M[,j]  <- residuals(p_out) + covariates %*% coef(p_out)
         }
       }
-      
+
       ## Initialization of the ZI component
       private$R  <- R
-      private$Pi <- switch(control$ziparam, 
+      private$Pi <- switch(control$ziparam,
         "single" = matrix(    mean(R), n, p)              ,
         "row"    = matrix(rowMeans(R), n, p)              ,
         "col"    = matrix(colMeans(R), n, p, byrow = TRUE),
         "covar"  = R)
       private$B0 <- B0
-      delta <- 1 * (responses == 0)
-      private$zeros <- delta
-      
+      private$zeros <- 1 * (responses == 0)
+
       ## Initialization of the PLN component
       private$B <- B
       private$M <- M
       private$S <- matrix(.1, n, p)
+
+      ## Link to functions performing the optimization
+      private$optimizer$main  <- optimize_zi
+      private$optimizer$zi <- switch(
+        control$ziparam,
+        "single" = function(init_B0, X, R, config) list(Pi = matrix(    mean(R), n, p)              , B0 = matrix(NA, d, p)),
+        "row"    = function(init_B0, X, R, config) list(Pi = matrix(rowMeans(R), n, p)              , B0 = matrix(NA, d, p)),
+        "col"    = function(init_B0, X, R, config) list(Pi = matrix(colMeans(R), n, p, byrow = TRUE), B0 = matrix(NA, d, p)),
+        "covar"  = optim_zipln_zipar_covar
+      )
+      private$optimizer$Omega <- optim_zipln_Omega_full
+      private$optimizer$B     <- function(M, X, Omega, control) optim_zipln_B_dense(M, X)
+      # private$optimizer$vestep <- xxxx
+
     },
 
     #' @description Call to the Cpp optimizer and update of the relevant fields
     #' @param control a list for controlling the optimization. See details.
-    optimize = function(responses, covariates, offsets, control) {
+    optimize = function(responses, covariates, offsets, weights, control) {
 
-      args <- list(Y = responses, X = covariates, O = offsets, configuration = control)
-      args$init_parameters <- 
+      data <- list(Y = responses, X = covariates, O = offsets)
+      parameters <-
         list(Omega = NA, B0 = private$B0, B = private$B, Pi = private$Pi,
              M = private$M, S = private$S, R = private$R)
-      optim_out <- do.call(optimize_zi, args)
-      
+
+      # Main loop
+      nb_iter <- 0
+      criterion <- vector("numeric", control$maxit_out)
+      vloglik <- -Inf; objective <- Inf
+      repeat {
+
+        # Check maxeval
+        if(control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
+          stop_reason = "maximum number of iterations reached"
+          criterion = criterion[1:nb_iter]
+          break
+        }
+
+        # M Step
+        new_Omega <- private$optimizer$Omega(
+          M = parameters$M, X = data$X, B = parameters$B, S = parameters$S
+        )
+        new_B <- private$optimizer$B(
+          M = parameters$M, X = data$X, Omega = new_Omega, control
+        )
+
+        optim_new_zipar <- private$optimizer$zi(
+          init_B0 = parameters$B0, X = data$X, R = parameters$R, config = control
+        )
+        new_B0 <- optim_new_zipar$B0
+        new_Pi <- optim_new_zipar$Pi
+
+        # VE Step
+        new_R <- optim_zipln_R(
+          Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = new_Pi
+        )
+        optim_new_M <- optim_zipln_M(
+          init_M = parameters$M,
+          Y = data$Y, X = data$X, O = data$O, R = new_R, S = parameters$S, B = new_B, Omega = new_Omega,
+          configuration = control
+        )
+        new_M <- optim_new_M$M
+        optim_new_S <- optim_zipln_S(
+          init_S = parameters$S,
+          O = data$O, M = new_M, R = new_R, B = new_B, diag_Omega = diag(new_Omega),
+          configuration = control
+        )
+        new_S <- optim_new_S$S
+
+        # Check convergence
+        new_parameters <- list(
+          Omega = new_Omega, B = new_B, B0 = new_B0, Pi = new_Pi,
+          R = new_R, M = new_M, S = new_S
+        )
+        nb_iter <- nb_iter + 1
+
+        vloglik <- zipln_vloglik(
+          data$Y, data$X, data$O, new_Pi, new_Omega, new_B, new_R, new_M, new_S
+        )
+
+        criterion[nb_iter] <- new_objective <- -sum(vloglik)
+
+        objective_converged <-
+          (objective - new_objective) <= control$ftol_out |
+          (objective - new_objective)/abs(new_objective) <= control$ftol_out
+
+        parameters_converged <- parameter_list_converged(
+          parameters, new_parameters,
+          xtol_abs = control$xtol_abs, xtol_rel = control$xtol_rel
+        )
+
+        if (parameters_converged | objective_converged) {
+          parameters <- new_parameters
+          stop_reason <- "converged"
+          criterion <- criterion[1:nb_iter]
+          break
+        }
+
+        parameters <- new_parameters
+        objective  <- new_objective
+      }
+
       self$update(
-        B      = optim_out$parameters$B,
-        B0     = optim_out$parameters$B0,
-        Pi     = optim_out$parameters$Pi,
-        Omega  = optim_out$parameters$Omega,
-        M      = optim_out$parameters$M,
-        S      = optim_out$parameters$S,
-        R      = optim_out$parameters$R,
-        Z      = offsets + optim_out$parameters$M,
-        A      = exp(offsets + optim_out$parameters$M + .5 * optim_out$parameters$S^2),
-        Ji     = optim_out$vloglik,
+        B      = parameters$B,
+        B0     = parameters$B0,
+        Pi     = parameters$Pi,
+        Omega  = parameters$Omega,
+        M      = parameters$M,
+        S      = parameters$S,
+        R      = parameters$R,
+        Z      = offsets + parameters$M,
+        A      = exp(offsets + parameters$M + .5 * parameters$S^2),
+        Ji     = vloglik,
         monitoring = list(
-          iterations = optim_out$nb_iter,
-          message    = optim_out$stop_reason,
-          objective  = optim_out$criterion)
+          iterations = nb_iter,
+          message    = stop_reason,
+          objective  = criterion)
       )
 
+      ### TODO: Should be in post-treatment
       if (is.null(colnames(responses))) colnames(responses) <- paste0("Y", 1:self$p)
       colnames(private$B0) <- colnames(private$B) <- colnames(responses)
       rownames(private$B0) <- rownames(private$B) <- colnames(covariates)
@@ -155,74 +245,6 @@ ZIPLNfit <- R6Class(
       rownames(private$M) <- rownames(private$S) <- rownames(private$R) <- rownames(private$Pi) <- rownames(responses)
 
     },
-
-    # #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
-    # #' @return A list with three components:
-    # #'  * the matrix `M` of variational means,
-    # #'  * the matrix `S2` of variational variances
-    # #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
-    # VEstep = function(covariates, offsets, responses, control = list()) {
-    #
-    #   # problem dimension
-    #   n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
-    #
-    #   ## define default control parameters for optim and overwrite by user defined parameters
-    #   control$covariance <- self$vcov_model
-    #   control <- ZIPLN_param(control, n, p)
-    #
-    #   VEstep_optimizer  <-
-    #     switch(control$covariance,
-    #            "spherical" = cpp_optimize_vestep_spherical,
-    #            "diagonal"  = cpp_optimize_vestep_diagonal,
-    #            "full"      = cpp_optimize_vestep_full,
-    #            "genetic"   = cpp_optimize_vestep_full
-    #     )
-    #
-    #   ## Initialize the variational parameters with the appropriate new dimension of the data
-    #   optim_out <- VEstep_optimizer(
-    #     list(M = matrix(0, n, p), S = matrix(sqrt(0.1), n, p)),
-    #     responses,
-    #     covariates,
-    #     offsets,
-    #     weights,
-    #     B = self$model_par$B,
-    #     ## Robust inversion using Matrix::solve instead of solve.default
-    #     Omega = as(Matrix::solve(Matrix::Matrix(self$model_par$Sigma)), 'matrix'),
-    #     control
-    #   )
-    #
-    #   Ji <- optim_out$loglik
-    #   attr(Ji, "weights") <- weights
-    #
-    #   ## output
-    #   list(M       = optim_out$M,
-    #        S2      = (optim_out$S)**2,
-    #        log.lik = setNames(Ji, rownames(responses)))
-    # },
-
-    # #' @description Predict position, scores or observations of new data.
-    # #' @param newdata A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.
-    # #' @param type Scale used for the prediction. Either `link` (default, predicted positions in the latent space) or `response` (predicted counts).
-    # #' @param envir Environment in which the prediction is evaluated
-    # #' @return A matrix with predictions scores or counts.
-    # predict = function(newdata, type = c("link", "response"), envir = parent.frame()) {
-    #   type = match.arg(type)
-    #
-    #   ## Extract the model matrices from the new data set with initial formula
-    #   X <- model.matrix(formula(private$formula)[-2], newdata, xlev = private$xlevels)
-    #   O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
-    #
-    #   ## mean latent positions in the parameter space
-    #   EZ <- X %*% private$B
-    #   if (!is.null(O)) EZ <- EZ + O
-    #   EZ <- sweep(EZ, 2, .5 * diag(self$model_par$Sigma), "+")
-    #   colnames(EZ) <- colnames(private$Sigma)
-    #
-    #   results <- switch(type, link = EZ, response = exp(EZ))
-    #
-    #   attr(results, "type") <- type
-    #   results
-    # },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Print functions -----------------------
@@ -252,8 +274,8 @@ ZIPLNfit <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
     formula    = NA, # the formula call for the model as specified by the user
-    xlevels    = NA, # factor levels present in the original data, useful for predict() methods.
-    X          = NA, # design matrix
+    X          = NA, # design matrix for the PLN component
+    X0         = NA, # design matrix for the ZI component
     B          = NA, # the model parameters for the covariable effect (PLN part)
     B0         = NA, # the model parameters for the covariate effects ('0'/Bernoulli part)
     Pi         = NA, # the probability parameters for the '0'/Bernoulli part
@@ -268,7 +290,8 @@ ZIPLNfit <- R6Class(
     Ji         = NA, # element-wise approximated loglikelihood
     covariance = NA, # a string describing the covariance model
     ziparam    = NA, # a string describing the ZI parametrisation
-    monitoring = NA  # a list with optimization monitoring quantities
+    optimizer  = list(), # list of links to the functions doing the optimization
+    monitoring = list()  # list with optimization monitoring quantities
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  ACTIVE BINDINGS ----
@@ -297,7 +320,7 @@ ZIPLNfit <- R6Class(
                "single" = 1,
                "row"    = self$n,
                "col"    =  self$p,
-               "covar"  =  self$p * self$d) + 
+               "covar"  =  self$p * self$d) +
         switch(private$covariance,
           "full" = self$p * (self$p + 1)/2,
           "diagonal" = self$p,
