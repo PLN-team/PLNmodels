@@ -43,16 +43,16 @@ ZIPLN <- function(formula, data, subset, rho = 0, lambda = 0, control = ZIPLN_pa
   ## initialization
   if (control$trace > 0) cat("\n Initialization...")
   myPLN <- switch(control$covariance,
-                  "diagonal"  = ZIPLNfit_diagonal$new(args$Y, args$X, args$X0, args$O, args$w, args$formula, control),
-                  "spherical" = ZIPLNfit_spherical$new(args$Y, args$X, args$X0, args$O, args$w, args$formula, control),
-                  "fixed"     = ZIPLNfit_fixedcov$new(args$Y, args$X, args$X0, args$O, args$w, args$formula, control),
-                  ZIPLNfit$new(args$Y, args$X, args$X0, args$O, args$w, args$formula, control)) # default: full covariance
+                  "diagonal"  = ZIPLNfit_diagonal$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
+                  "spherical" = ZIPLNfit_spherical$new(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
+                  "fixed"     = ZIPLNfit_fixedcov$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
+                  ZIPLNfit$new(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control)) # default: full covariance
 
   ## optimization
   if (control$trace > 0) cat("\n Adjusting a ZI-PLN model with",
                   control$covariance,"covariance model and",
                   control$ziparam, "specific parameter(s) in Zero inflation component.")
-  myPLN$optimize(args$Y, args$X, args$O, args$w, control$config_optim)
+  myPLN$optimize(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN

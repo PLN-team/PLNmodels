@@ -31,6 +31,7 @@
 #' @rdname PLNfit
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
+#' @import torch
 #'
 #' @examples
 #' \dontrun{
@@ -96,7 +97,6 @@ PLNfit <- R6Class(
       Ji
     },
 
-    #' @import torch
     torch_optimize = function(data, params, config) {
 
       #config$device = "mps"
@@ -774,6 +774,7 @@ PLNfit_diagonal <- R6Class(
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## END OF TORCH METHODS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -854,6 +855,7 @@ PLNfit_spherical <- R6Class(
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## END OF TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -207,7 +207,7 @@ extract_model_zi <- function(call, envir, xlev = NULL) {
 
   ## Extract the design matrices for ZI and PLN components
   X  <- model.matrix(tt_pln, frame, xlev = xlev$pln)
-  X0 <- switch(ziparam, "covar" = model.matrix(tt_zi, frame, xlev = xlev$zi), NULL)
+  X0 <- switch(ziparam, "covar" = model.matrix(tt_zi, frame, xlev = xlev$zi), matrix(NA,0,0))
 
   # Offsets are only considered for the PLN component
   O <- model.offset(frame)
@@ -222,8 +222,6 @@ extract_model_zi <- function(call, envir, xlev = NULL) {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
 
-  ## Save encountered levels for predict methods as attribute of the formula
-  attr(call$formula, "xlevels") <- .getXlevels(terms(frame), frame)
   list(Y = Y, X = X, X0 = X0, O = O, w = w, formula = call$formula, ziparam = ziparam)
 }
 
@@ -344,6 +342,42 @@ create_parameters <- function(
 #' @importFrom stats lm.fit
 #' @export
 compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
+  # Y = responses, X = covariates, O = offsets (in log scale), w = weights
+  n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
+  fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
+  list(B = matrix(fits$coefficients, d, p),
+       M = matrix(fits$residuals, n, p),
+       S = matrix(s, n, p))
+}
+
+#' Helper function for PLN initialization.
+#'
+#' @description
+#' Barebone function to compute starting points for B, M and S when fitting a PLN. Mostly intended for internal use.
+#'
+#' @param Y Response count matrix
+#' @param X Covariate matrix
+#' @param O Offset matrix (in log-scale)
+#' @param w Weight vector (defaults to 1)
+#' @param s Scale parameter for S (defaults to 0.1)
+#' @return a named list of starting values for model parameter B and variational parameters M and S used in the iterative optimization algorithm of [PLN()]
+#'
+#' @details The default strategy to estimate B and M is to fit a linear model with covariates `X` to the response count matrix (after adding a pseudocount of 1, scaling by the offset and taking the log). The regression matrix is used to initialize `B` and the residuals to initialize `M`. `S` is initialized as a constant conformable matrix with value `s`.
+#'
+#' @rdname compute_ZIPLN_starting_point
+#' @examples
+#' \dontrun{
+#' data(barents)
+#' Y <- barents$Abundance
+#' X <- model.matrix(Abundance ~ Latitude + Longitude + Depth + Temperature, data = barents)
+#' O <- log(barents$Offset)
+#' w <-- rep(1, nrow(Y))
+#' compute_ZIPLN_starting_point(Y, X, O, w)
+#' }
+#'
+#' @importFrom stats lm.fit
+#' @export
+compute_ZIPLN_starting_point <- function(Y, X, X0, O, w, s = 0.1) {
   # Y = responses, X = covariates, O = offsets (in log scale), w = weights
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
   fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))

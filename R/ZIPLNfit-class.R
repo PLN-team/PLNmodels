@@ -12,7 +12,6 @@
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
-#' @param xlevels named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.
 #'
 #' @inherit ZIPLN details
 #'
@@ -66,41 +65,39 @@ ZIPLNfit <- R6Class(
     #' @description Initialize a [`ZIPLNfit`] model
     #' @importFrom stats glm.fit residuals poisson fitted coef
     #' @importFrom pscl zeroinfl
-    initialize = function(responses, covariates, covariates0, offsets, weights, formula, control) {
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
       ## problem dimensions
-      n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
+      n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates$PLN); d0 <- ncol(covariates$ZI)
 
       ## save the formula call as specified by the user
       private$formula <- formula
-      private$X       <- covariates
-      private$X0      <- covariates0
+      private$X       <- covariates$PLN
       ## initialize the covariance model
       private$covariance <- control$covariance
       private$ziparam <- control$ziparam
 
       R  <- matrix(0, n, p)
       M  <- matrix(0, n, p)
-      B  <- matrix(0, d, p)
-      B0 <- matrix(0, d, p)
-      Pi <- matrix(0, n, p)
+      B  <- matrix(0, d , p)
+      B0 <- matrix(0, d0, p)
       for (j in 1:p) {
         y = responses[, j]
-        if (min(y == 0)) {
+        if (min(y) == 0) {
           zip_out <- switch(control$ziparam,
-            "single" = pscl::zeroinfl(y ~ 0 + covariates | 1  , offset = offsets[, j]),
-            "row"    = pscl::zeroinfl(y ~ 0 + covariates | 1:n, offset = offsets[, j]),
-            "col"    = pscl::zeroinfl(y ~ 0 + covariates | 1  , offset = offsets[, j]),
-            "covar"  = pscl::zeroinfl(y ~ 0 + covariates      , offset = offsets[, j])) # offset only for the count model
+            "single" = pscl::zeroinfl(y ~ 0 + covariates$PLN |             1, offset = offsets[, j]),
+            "row"    = pscl::zeroinfl(y ~ 0 + covariates$PLN |           1:n, offset = offsets[, j]),
+            "col"    = pscl::zeroinfl(y ~ 0 + covariates$PLN |             1, offset = offsets[, j]),
+            "covar"  = pscl::zeroinfl(y ~ 0 + covariates$PLN | covariates$ZI, offset = offsets[, j])) # offset only for the count model
           B0[,j] <- coef(zip_out, "zero")
           B[,j]  <- coef(zip_out, "count")
           R[, j] <- predict(zip_out, type = "zero")
-          M[,j]  <- residuals(zip_out, type = "pearson") + covariates %*% coef(zip_out, "count")
+          M[,j]  <- residuals(zip_out) + covariates$PLN %*% coef(zip_out, "count")
         } else {
-          p_out <- glm(y ~ 0 + covariates, family = 'poisson', offset = offsets[, j])
+          p_out <- glm(y ~ 0 + covariates$PLN, family = 'poisson', offset = offsets[, j])
           B0[,j] <- rep(-10, d)
           B[,j]  <- coef(p_out)
           R[, j] <- 0
-          M[,j]  <- residuals(p_out) + covariates %*% coef(p_out)
+          M[,j]  <- residuals(p_out) + covariates$PLN %*% coef(p_out)
         }
       }
 
@@ -121,15 +118,15 @@ ZIPLNfit <- R6Class(
 
       ## Link to functions performing the optimization
       private$optimizer$main  <- optimize_zi
-      private$optimizer$zi <- switch(
+      private$optimizer$B     <- function(M, X, Omega, control) optim_zipln_B_dense(M, X)
+      private$optimizer$zi    <- switch(
         control$ziparam,
-        "single" = function(init_B0, X, R, config) list(Pi = matrix(    mean(R), n, p)              , B0 = matrix(NA, d, p)),
-        "row"    = function(init_B0, X, R, config) list(Pi = matrix(rowMeans(R), n, p)              , B0 = matrix(NA, d, p)),
-        "col"    = function(init_B0, X, R, config) list(Pi = matrix(colMeans(R), n, p, byrow = TRUE), B0 = matrix(NA, d, p)),
+        "single" = function(init_B0, X, R, config) list(Pi = matrix(    mean(R), n, p)              , B0 = matrix(NA, d0, p)),
+        "row"    = function(init_B0, X, R, config) list(Pi = matrix(rowMeans(R), n, p)              , B0 = matrix(NA, d0, p)),
+        "col"    = function(init_B0, X, R, config) list(Pi = matrix(colMeans(R), n, p, byrow = TRUE), B0 = matrix(NA, d0, p)),
         "covar"  = optim_zipln_zipar_covar
       )
       private$optimizer$Omega <- optim_zipln_Omega_full
-      private$optimizer$B     <- function(M, X, Omega, control) optim_zipln_B_dense(M, X)
       # private$optimizer$vestep <- xxxx
 
     },
@@ -138,7 +135,7 @@ ZIPLNfit <- R6Class(
     #' @param control a list for controlling the optimization. See details.
     optimize = function(responses, covariates, offsets, weights, control) {
 
-      data <- list(Y = responses, X = covariates, O = offsets)
+      data <- list(Y = responses, X = covariates$PLN, X0 = covariates$ZI, O = offsets)
       parameters <-
         list(Omega = NA, B0 = private$B0, B = private$B, Pi = private$Pi,
              M = private$M, S = private$S, R = private$R)
@@ -150,9 +147,9 @@ ZIPLNfit <- R6Class(
       repeat {
 
         # Check maxeval
-        if(control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
-          stop_reason = "maximum number of iterations reached"
-          criterion = criterion[1:nb_iter]
+        if (control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
+          stop_reason <- "maximum number of iterations reached"
+          criterion <- criterion[1:nb_iter]
           break
         }
 
@@ -301,6 +298,8 @@ ZIPLNfit <- R6Class(
     n = function() {nrow(private$M)},
     #' @field p number of species
     p = function() {ncol(private$M)},
+    #' @field q number of dimensions of the latent space
+    q = function() {ncol(private$M)},
     #' @field d number of covariates
     d = function() {nrow(private$B)},
     #' @field latent a matrix: values of the latent vector (Z in the model)
@@ -310,26 +309,24 @@ ZIPLNfit <- R6Class(
     #' @field model_par a list with the matrices of parameters found in the model (B, Sigma, plus some others depending on the variant)
     model_par  = function() {list(B = private$B, B0 = private$B0, Pi = private$Pi, Omega = private$Omega)},
     #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
-    var_par    = function() {list(M = private$M, S2 = private$S^2, R = private$R)},
+    var_par    = function() {list(M = private$M, S2 = private$S^2, S = private$S, R = private$R)},
     #' @field fitted a matrix: fitted values of the observations (A in the model)
     fitted     = function() {private$R * private$zeros + (1 - private$R) * private$A},
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {
-      res <-  self$p * self$d +
-        switch(private$ziparam,
+      as.integer(
+        self$p * self$d + self$p * (self$p + 1)/2 +
+          switch(private$ziparam,
                "single" = 1,
                "row"    = self$n,
                "col"    =  self$p,
-               "covar"  =  self$p * self$d) +
-        switch(private$covariance,
-          "full" = self$p * (self$p + 1)/2,
-          "diagonal" = self$p,
-          "spherical" = 1,
-          "sparse"    = (sum(private$Omega != 0) - self$p)/2L)
-      as.integer(res)
+               "covar"  =  self$p * self$d)
+      )
     },
     #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal" or "full")
     vcov_model  = function() {private$covariance},
+    #' @field zi_model character: the model used for the zero inflation (either "single", "row", "col" or "covar")
+    zi_model  = function() {private$ziparam},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par   = function() {private$monitoring},
     #' @field loglik (weighted) variational lower bound of the loglikelihood
@@ -351,8 +348,172 @@ ZIPLNfit <- R6Class(
   )
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  ##  END OF THE CLASS ----
+  ##  END OF THE CLASS ZIPLNfit
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 )
 
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS ZIPLNfit_diagonal ############################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' An R6 Class to represent a ZIPLNfit in a standard, general framework, with diagonal residual covariance
+#'
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#'
+#' @rdname ZIPLNfit_diagonal
+#' @importFrom R6 R6Class
+#'
+#' @examples
+#' \dontrun{
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "diagonal"))
+#' class(myPLN)
+#' print(myPLN)
+#' }
+ZIPLNfit_diagonal <- R6Class(
+  classname = "ZIPLNfit_diagonal",
+  inherit = ZIPLNfit,
+  public  = list(
+    #' @description Initialize a [`PLNfit`] model
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
+      super$initialize(responses, covariates, offsets, weights, formula, control)
+      private$optimizer$Omega <- optim_zipln_Omega_diagonal
+    }
+  ),
+  active = list(
+    #' @field nb_param number of parameters in the current PLN model
+    nb_param   = function() {
+      res <-  self$p * self$d + self$p +
+        switch(private$ziparam,
+               "single" = 1,
+               "row"    = self$n,
+               "col"    =  self$p,
+               "covar"  =  self$p * self$d)
+      as.integer(res)
+    },
+    #' @field vcov_model character: the model used for the residual covariance
+    vcov_model = function() {"diagonal"}
+  )
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  END OF THE CLASS ZIPLNfit_diagonal
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+)
+
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS ZIPLNfit_spherical  ##########################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' An R6 Class to represent a ZIPLNfit in a standard, general framework, with spherical residual covariance
+#'
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#'
+#' @rdname ZIPLNfit_spherical
+#' @importFrom R6 R6Class
+#'
+#' @examples
+#' \dontrun{
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "spherical))
+#' class(myPLN)
+#' print(myPLN)
+#' }
+ZIPLNfit_spherical <- R6Class(
+  classname = "ZIPLNfit_spherical",
+  inherit = ZIPLNfit,
+  public  = list(
+    #' @description Initialize a [`PLNfit`] model
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
+      super$initialize(responses, covariates, offsets, weights, formula, control)
+      private$optimizer$Omega <- optim_zipln_Omega_spherical
+    }
+  ),
+  active = list(
+    #' @field nb_param number of parameters in the current PLN model
+    nb_param   = function() {
+      res <-  self$p * self$d + 1 +
+        switch(private$ziparam,
+               "single" = 1,
+               "row"    = self$n,
+               "col"    =  self$p,
+               "covar"  =  self$p * self$d)
+      as.integer(res)
+    },
+    #' @field vcov_model character: the model used for the residual covariance
+    vcov_model = function() {"spherical"}
+  )
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  END OF THE CLASS PLNfit_spherical
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+)
+
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS ZIPLNfit_fixedcov  #############################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' An R6 Class to represent a ZIPLNfit in a standard, general framework, with fixed (inverse) residual covariance
+#'
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#' @param config part of the \code{control} argument which configures the optimizer
+#'
+#' @rdname ZIPLNfit_fixedcov
+#' @importFrom R6 R6Class
+#'
+#' @examples
+#' \dontrun{
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera)
+#' class(myPLN)
+#' print(myPLN)
+#' }
+ZIPLNfit_fixedcov <- R6Class(
+  classname = "ZIPLNfit_fixedcov",
+  inherit = ZIPLNfit,
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PUBLIC MEMBERS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  public  = list(
+    #' @description Initialize a [`ZIPLNfit_fixedcov`] model
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
+      super$initialize(responses, covariates, offsets, weights, formula, control)
+      private$Omega <- control$Omega
+    }
+  ),
+  active = list(
+    #' @field nb_param number of parameters in the current PLN model
+    nb_param   = function() {
+      res <-  self$p * self$d +
+        switch(private$ziparam,
+               "single" = 1,
+               "row"    = self$n,
+               "col"    =  self$p,
+               "covar"  =  self$p * self$d)
+      as.integer(res)
+    },
+    #' @field vcov_model character: the model used for the residual covariance
+    vcov_model = function() {"fixed"}
+  )
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  END OF THE CLASS ZIPLNfit_fixedcov
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+)
