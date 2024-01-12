@@ -184,19 +184,19 @@ extract_model_zi <- function(call, envir, xlev = NULL) {
 
   ## Check if a ZI specific formula has been
   if (length(ff[[3]]) > 1 && identical(ff[[3]][[1]], as.name("|"))) {
+    zicovar <- TRUE
     ff_zi <-  ~. ; ff_zi[[3]]  <- ff[[3]][[3]] ; ff_zi[[2]]  <- NULL
     ff_pln <- ~. ; ff_pln[[3]] <- ff[[3]][[2]] ; ff_pln[[2]] <- NULL
     tt_zi  <- terms(ff_zi)  ; attr(tt_zi , "offset") <- NULL
     tt_pln <- terms(ff_pln) ; attr(tt_pln, "offset") <- NULL
     formula[[3]][1] <- call("+")
-    ziparam <- "covar"
     if (tt_zi[[2]] == "row") {ziparam <- "row"; formula[[3]][[3]] <- NULL}
     if (tt_zi[[2]] == "col") {ziparam <- "col"; formula[[3]][[3]] <- NULL}
     call_frame$formula <- formula
   } else {
     ff_pln <- ff
     tt_pln <- terms(ff_pln) ; attr(tt_pln, "offset") <- NULL
-    ziparam <- "single"
+    zicovar <- FALSE
   }
 
   ## eval the call in the parent environment
@@ -207,7 +207,7 @@ extract_model_zi <- function(call, envir, xlev = NULL) {
 
   ## Extract the design matrices for ZI and PLN components
   X  <- model.matrix(tt_pln, frame, xlev = xlev$pln)
-  X0 <- switch(ziparam, "covar" = model.matrix(tt_zi, frame, xlev = xlev$zi), matrix(NA,0,0))
+  if (zicovar) X0 <- model.matrix(tt_zi, frame, xlev = xlev$zi) else X0 <- matrix(NA,0,0)
 
   # Offsets are only considered for the PLN component
   O <- model.offset(frame)
@@ -222,7 +222,7 @@ extract_model_zi <- function(call, envir, xlev = NULL) {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
 
-  list(Y = Y, X = X, X0 = X0, O = O, w = w, formula = call$formula, ziparam = ziparam)
+  list(Y = Y, X = X, X0 = X0, O = O, w = w, formula = call$formula, zicovar = zicovar)
 }
 
 edge_to_node <- function(x, n = max(x)) {

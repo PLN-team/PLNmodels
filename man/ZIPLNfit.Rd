@@ -26,6 +26,8 @@ myPLN  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), subset = subset,
 
 \item{\code{p}}{number of species}
 
+\item{\code{q}}{number of dimensions of the latent space}
+
 \item{\code{d}}{number of covariates}
 
 \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
@@ -41,6 +43,8 @@ myPLN  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), subset = subset,
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
 \item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
+
+\item{\code{zi_model}}{character: the model used for the zero inflation (either "single", "row", "col" or "covar")}
 
 \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
@@ -134,7 +138,7 @@ Update the current \code{\link{ZIPLNfit}} object
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{ZIPLNfit}} model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$new(responses, covariates, offsets, formula, xlevels, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -148,8 +152,6 @@ Initialize a \code{\link{ZIPLNfit}} model
 
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
-\item{\code{xlevels}}{named listed of factor levels included in the models, extracted from the formula in the upper-level call and used for predictions.}
-
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
 \if{html}{\out{</div>}}
@@ -161,7 +163,7 @@ Initialize a \code{\link{ZIPLNfit}} model
 \subsection{Method \code{optimize()}}{
 Call to the Cpp optimizer and update of the relevant fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$optimize(responses, covariates, offsets, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

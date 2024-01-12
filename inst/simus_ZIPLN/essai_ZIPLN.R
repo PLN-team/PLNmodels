@@ -53,7 +53,7 @@ one_simu <- function(i) {
   X <- X[rowSums(Y) > 0]
   err_ZIPLN <- sapply(vec_n,  function(n_) {
     Y_ <- Y[1:n_, ]; X_ <- X[1:n_]
-    myZIPLN <- ZIPLN(Y_ ~ 1 + X_ + offset(log(rowSums(Y_))), control = ZIPLN_param(trace = 0))
+    myZIPLN <- ZIPLN(Y_ ~ 0 + X_ + offset(log(rowSums(Y_))) | X_ , control = ZIPLN_param(trace = 0))
     c(pred_Y = sqrt(mean((myZIPLN$fitted - Y_)^2)),
       rmse_B = sqrt(mean((myZIPLN$model_par$B[2, ] - B_star)^2)),
       rmse_Omega = sqrt(mean((myZIPLN$model_par$Omega - Omega_star)^2)))

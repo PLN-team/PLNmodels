@@ -4,7 +4,15 @@
 \alias{ZIPLN}
 \title{Zero Inflated Poisson lognormal model}
 \usage{
-ZIPLN(formula, data, subset, rho = 0, lambda = 0, control = ZIPLN_param())
+ZIPLN(
+  formula,
+  data,
+  subset,
+  zi = c("single", "row", "col"),
+  rho = 0,
+  lambda = 0,
+  control = ZIPLN_param()
+)
 }
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
@@ -12,6 +20,10 @@ ZIPLN(formula, data, subset, rho = 0, lambda = 0, control = ZIPLN_param())
 \item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.}
 
 \item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
+
+\item{zi}{a character describing the model for zero inflation in "single" (one global parameter, the default), "col" (one parameter per variable)
+and "row" (one parameter per individuals). If covariates are specified in the formula RHS, after bar pipe like "~ PLN effect | ZI effect", \code{zi}
+is ignored and the covariates extracted by model matrix will be used to account for the ZI effect.}
 
 \item{rho}{a positive number controlling the level of sparsity in the inverse covariance matrix. Default to 0 (no sparsity).}
 
@@ -31,7 +43,7 @@ data(scRNA)
 # data subsample: only 100 random cell and the 50 most varying transcript
 scRNA        <- scRNA[sample.int(nrow(scRNA), 100), ]
 scRNA$counts <- scRNA$counts[, 1:50]
-myPLN_full   <- ZIPLN(counts ~ 1 + cell_line + offset(log(total_counts)) | 1, data = scRNA)
+myPLN_full   <- ZIPLN(counts ~ 1 + cell_line + offset(log(total_counts)), data = scRNA)
 myPLN_sparse <- ZIPLN(counts ~ 1 + offset(log(total_counts)), rho = .5, data = scRNA)
 myPLN_full$criteria    # better BIC with sparse version
 myPLN_sparse$criteria

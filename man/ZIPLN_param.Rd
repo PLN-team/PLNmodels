@@ -11,7 +11,6 @@ ZIPLN_param(
   Omega = NULL,
   config_post = list(),
   config_optim = list(),
-  penalize_intercept = FALSE,
   inception = NULL
 )
 }

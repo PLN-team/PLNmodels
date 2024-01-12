@@ -22,7 +22,8 @@
 #' data(scRNA)
 #' # data subsample: only 100 random cell and the 50 most varying transcript
 #' subset <- sample.int(nrow(scRNA), 100)
-#' myPLN  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), subset = subset, data = scRNA)
+#' myZIPLN_1  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), zi = "single", subset = subset, data = scRNA)
+#' myZIPLN_2  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), zi = "row", subset = subset, data = scRNA)
 #' }
 ZIPLNfit <- R6Class(
   classname = "ZIPLNfit",
@@ -83,11 +84,12 @@ ZIPLNfit <- R6Class(
       for (j in 1:p) {
         y = responses[, j]
         if (min(y) == 0) {
-          zip_out <- switch(control$ziparam,
-            "single" = pscl::zeroinfl(y ~ 0 + covariates$PLN |             1, offset = offsets[, j]),
-            "row"    = pscl::zeroinfl(y ~ 0 + covariates$PLN |           1:n, offset = offsets[, j]),
-            "col"    = pscl::zeroinfl(y ~ 0 + covariates$PLN |             1, offset = offsets[, j]),
-            "covar"  = pscl::zeroinfl(y ~ 0 + covariates$PLN | covariates$ZI, offset = offsets[, j])) # offset only for the count model
+          suppressWarnings(
+            zip_out <- switch(control$ziparam,
+              "row"    = pscl::zeroinfl(y ~ 0 + covariates$PLN | 0 + factor(1:n), offset = offsets[, j]),
+              "covar"  = pscl::zeroinfl(y ~ 0 + covariates$PLN | covariates$ZI  , offset = offsets[, j]),
+                         pscl::zeroinfl(y ~ 0 + covariates$PLN |               1, offset = offsets[, j])) # offset only for the count model
+          )
           B0[,j] <- coef(zip_out, "zero")
           B[,j]  <- coef(zip_out, "count")
           R[, j] <- predict(zip_out, type = "zero")
