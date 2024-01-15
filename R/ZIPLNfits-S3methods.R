@@ -48,8 +48,8 @@ isZIPLNfit <- function(Robject) {inherits(Robject, "ZIPLNfit")}
 coef.ZIPLNfit <- function(object, type = c("mainPLN", "mainZI", "precision"), ...) {
   stopifnot(isZIPLNfit(object))
   switch(match.arg(type),
-         mainPLN   = object$model_par$Theta,
-         mainZI    = object$model_par$Theta0,
+         mainPLN   = object$model_par$B,
+         mainZI    = object$model_par$B0,
          precision = object$model_par$Omega)
 }
 
