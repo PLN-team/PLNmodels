@@ -16,7 +16,8 @@ Fields are accessed via active binding and cannot be changed by the user.
 data(scRNA)
 # data subsample: only 100 random cell and the 50 most varying transcript
 subset <- sample.int(nrow(scRNA), 100)
-myPLN  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), subset = subset, data = scRNA)
+myZIPLN_1  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), zi = "single", subset = subset, data = scRNA)
+myZIPLN_2  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), zi = "row", subset = subset, data = scRNA)
 }
 }
 \section{Active bindings}{
@@ -42,7 +43,7 @@ myPLN  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), subset = subset,
 
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
+\item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal", "full" or "sparse")}
 
 \item{\code{zi_model}}{character: the model used for the zero inflation (either "single", "row", "col" or "covar")}
 

@@ -5,14 +5,7 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
 test_that("ZIPLN fit: check classes, getters and field access",  {
 
-  expect_output(model <- ZIPLN(Abundance ~ 1, data = trichoptera,
-                             control = ZIPLN_param(trace = 1)),
-"
- Initialization...
- Adjusting a ZI-PLN model with full covariance model and single specific parameter(s) in Zero inflation component.
- DONE!"
-  )
-
+  model <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(trace = 1))
   expect_is(model, "ZIPLNfit")
 
   expect_equal(model$n, nrow(trichoptera$Abundance))
@@ -21,17 +14,15 @@ test_that("ZIPLN fit: check classes, getters and field access",  {
 
   ## S3 methods: values
   expect_equal(coef(model), model$model_par$B)
-  expect_equal(coef(model, type = "covariance"), sigma(model))
+  expect_equal(coef(model, type = "mainPLN"), model$model_par$B)
+  expect_equal(coef(model, type = "mainZI"), model$model_par$B0)
+  expect_equal(coef(model, type = "precision"), model$model_par$Omega)
+  expect_equal(coef(model, type = "covariance"), model$model_par$Sigma)
   expect_equal(sigma(model), model$model_par$Sigma)
-  # expect_equal(vcov(model), model$vcov_coef)
 
   ## S3 methods: class
   expect_true(inherits(coef(model), "matrix"))
   expect_true(inherits(sigma(model), "matrix"))
-  # expect_true(inherits(vcov(model), "dsCMatrix"))
-
-  ## S3 methods: dimensions
-  ## expect_equal(dim(vcov(model)), c(model$d * model$p, model$d * model$p))
 
   ## R6 bindings
   expect_is(model$latent, "matrix")
@@ -40,26 +31,10 @@ test_that("ZIPLN fit: check classes, getters and field access",  {
 
 })
 
-test_that("PLN fit: check print message",  {
+test_that("ZIPLN fit: check print message",  {
 
-  expect_output(model <- PLN(Abundance ~ 1, data = trichoptera))
+  expect_output(model <- ZIPLN(Abundance ~ 1, data = trichoptera))
 
-  output <- paste(
-"A multivariate Poisson Lognormal fit with full covariance model.
-==================================================================",
-capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names = ""))),
-"==================================================================
-* Useful fields
-    $model_par, $latent, $latent_pos, $var_par, $optim_par
-    $loglik, $BIC, $ICL, $loglik_vec, $nb_param, $criteria
-* Useful S3 methods
-    print(), coef(), sigma(), vcov(), fitted()
-    predict(), predict_cond(), standard_error()",
-    sep = "\n")
-
-  expect_output(model$show(),
-                output,
-                fixed = TRUE)
   ## show and print are equivalent
   expect_equal(capture_output(model$show()),
                capture_output(model$print()))
@@ -67,9 +42,9 @@ capture_output(print(as.data.frame(round(model$criteria, digits = 3), row.names 
 
 test_that("PLN fit: Check prediction",  {
 
-  model1     <- PLN(Abundance ~ 1, data = trichoptera, subset = 1:30)
-  model1_off <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, subset = 1:30)
-  model2     <- PLN(Abundance ~ Pressure, data = trichoptera, subset = 1:30)
+  model1     <- ZIPLN(Abundance ~ 1, data = trichoptera, subset = 1:30)
+  model1_off <- ZIPLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, subset = 1:30)
+  model2     <- ZIPLN(Abundance ~ Pressure, data = trichoptera, subset = 1:30)
 
   newdata <- trichoptera[31:49, ]
   # newdata$Abundance <- NULL
@@ -115,59 +90,30 @@ test_that("PLN fit: Check prediction",  {
 
 
 
-test_that("PLN fit: Check conditional prediction",  {
-
-  n_cond = 10
-  p_cond = 2
-  p <- ncol(trichoptera$Abundance)
-
-  myPLN <- PLN(Abundance ~ Temperature, trichoptera)
-  Yc <- trichoptera$Abundance[1:n_cond, 1:p_cond, drop=FALSE]
-
-  newX <- data.frame(1, Temperature = trichoptera$Temperature[1:n_cond])
-
-  pred <- predict_cond(myPLN, newX, Yc, type = "response")
-
-  # check dimensions of the predictions (#TODO: modify pred$pred if we decide not to return M,S)
-  expect_equal(dim(pred), c(n_cond,p-p_cond))
-
-  # check if the RMSE of conditional predictions are greater than the marginal ones
-  expect_gt(
-    mean((trichoptera$Abundance[1:n_cond, (p_cond+1):p] -
-            predict(myPLN, newdata = newX, type = "response")[1:n_cond, (p_cond+1):p])^2),
-    mean((trichoptera$Abundance[1:n_cond, (p_cond+1):p] - pred)^2)
-  )
-
-  # check the dimension of the variational parameters when sent back
-  pred <- predict_cond(myPLN, newX, Yc, type = "response", var_par = TRUE)
-  expect_equal(dim(attr(pred, "M")), dim(pred))
-  expect_equal(dim(attr(pred, "S")), c(p-p_cond, p-p_cond, n_cond))
-
-})
-
-test_that("PLN fit: Check number of parameters",  {
+test_that("ZIPLN fit: Check number of parameters",  {
 
   p <- ncol(trichoptera$Abundance)
 
-  model <- PLN(Abundance ~ 1, data = trichoptera)
-  expect_equal(model$nb_param, p*(p+1)/2 + p * 1)
+  model <- ZIPLN(Abundance ~ 1, data = trichoptera)
+  expect_equal(model$nb_param, p*(p+1)/2 + p * 1 + 1)
 
-  model <- PLN(Abundance ~ 1 + Wind, data = trichoptera)
-  expect_equal(model$nb_param, p*(p+1)/2 + p * 2)
+  model <- ZIPLN(Abundance ~ 1 + Wind, data = trichoptera)
+  expect_equal(model$nb_param, p*(p+1)/2 + p * 2 + 1)
 
-  model <- PLN(Abundance ~ Group + 0 , data = trichoptera)
-  expect_equal(model$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
+  model <- ZIPLN(Abundance ~ Group + 0 , data = trichoptera)
+  expect_equal(model$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group) + 1)
 
-  modelS <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "spherical"))
-  expect_equal(modelS$nb_param, 1 + p * 1)
+  modelS <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "spherical"))
+  expect_equal(modelS$nb_param, 1 + p * 1 + 1)
   expect_equal(modelS$vcov_model, "spherical")
 
-  modelD <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "diagonal"))
-  expect_equal(modelD$nb_param, p + p * 1)
+  modelD <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "diagonal"))
+  expect_equal(modelD$nb_param, p + p * 1 + 1)
   expect_equal(modelD$vcov_model, "diagonal")
 
-  model <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "fixed", Omega = as.matrix(modelD$model_par$Omega)))
-  expect_equal(model$nb_param, 0 + p * 1)
+  model <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "fixed", Omega = as.matrix(modelD$model_par$Omega)))
+  expect_equal(model$nb_param, 0 + p * 1 + 1)
+  expect_equal(model$model_par$Omega, modelD$model_par$Omega)
   expect_equal(model$vcov_model, "fixed")
 
 })

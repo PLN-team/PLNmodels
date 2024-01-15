@@ -4,13 +4,13 @@
 \alias{coef.ZIPLNfit}
 \title{Extract model coefficients}
 \usage{
-\method{coef}{ZIPLNfit}(object, type = c("mainPLN", "mainZI", "precision"), ...)
+\method{coef}{ZIPLNfit}(object, type = c("mainPLN", "mainZI", "precision", "covariance"), ...)
 }
 \arguments{
 \item{object}{an R6 object with class \code{\link{ZIPLNfit}}}
 
-\item{type}{type of parameter that should be extracted. Either "mainPLN" (default) for \deqn{\Theta},
-"mainZI" (default) for \deqn{\Theta0} or "precision" for \deqn{\Omega}}
+\item{type}{type of parameter that should be extracted. Either "mainPLN" (default) for \deqn{B},
+"mainZI" (default) for \deqn{B0}, "precision" for \deqn{\Omega}, "covariance" for \deqn{\Sigma}}
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }

@@ -144,14 +144,17 @@ ZIPLNfit <- R6Class(
 
       # Main loop
       nb_iter <- 0
-      criterion <- vector("numeric", control$maxit_out)
+      criterion   <- numeric(control$maxit_out)
+      convergence <- numeric(control$maxit_out)
+
       vloglik <- -Inf; objective <- Inf
       repeat {
 
         # Check maxeval
         if (control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
           stop_reason <- "maximum number of iterations reached"
-          criterion <- criterion[1:nb_iter]
+          criterion   <- criterion[1:nb_iter]
+          convergence <- convergence[nb_iter]
           break
         }
 
@@ -198,6 +201,7 @@ ZIPLNfit <- R6Class(
         )
 
         criterion[nb_iter] <- new_objective <- -sum(vloglik)
+        convergence[nb_iter]  <- abs(new_objective - objective)/abs(new_objective)
 
         objective_converged <-
           (objective - new_objective) <= control$ftol_out |
@@ -211,7 +215,8 @@ ZIPLNfit <- R6Class(
         if (parameters_converged | objective_converged) {
           parameters <- new_parameters
           stop_reason <- "converged"
-          criterion <- criterion[1:nb_iter]
+          criterion   <- criterion[1:nb_iter]
+          convergence <- convergence[1:nb_iter]
           break
         }
 
@@ -224,6 +229,7 @@ ZIPLNfit <- R6Class(
         B0     = parameters$B0,
         Pi     = parameters$Pi,
         Omega  = parameters$Omega,
+        Sigma =  solve(parameters$Omega),
         M      = parameters$M,
         S      = parameters$S,
         R      = parameters$R,
@@ -231,9 +237,10 @@ ZIPLNfit <- R6Class(
         A      = exp(offsets + parameters$M + .5 * parameters$S^2),
         Ji     = vloglik,
         monitoring = list(
-          iterations = nb_iter,
-          message    = stop_reason,
-          objective  = criterion)
+          iterations  = nb_iter,
+          message     = stop_reason,
+          objective   = criterion,
+          convergence = convergence)
       )
 
       ### TODO: Should be in post-treatment
@@ -241,6 +248,7 @@ ZIPLNfit <- R6Class(
       colnames(private$B0) <- colnames(private$B) <- colnames(responses)
       rownames(private$B0) <- rownames(private$B) <- colnames(covariates)
       rownames(private$Omega)  <- colnames(private$Omega) <- colnames(private$Pi) <- colnames(responses)
+      dimnames(private$Sigma)  <- dimnames(private$Omega)
       rownames(private$M) <- rownames(private$S) <- rownames(private$R) <- rownames(private$Pi) <- rownames(responses)
 
     },
@@ -279,6 +287,7 @@ ZIPLNfit <- R6Class(
     B0         = NA, # the model parameters for the covariate effects ('0'/Bernoulli part)
     Pi         = NA, # the probability parameters for the '0'/Bernoulli part
     Omega      = NA, # the precision matrix
+    Sigma      = NA, # the covariance matrix
     S          = NA, # the variational parameters for the variances
     M          = NA, # the variational parameters for the means
     Z          = NA, # the matrix of latent variable
@@ -309,7 +318,7 @@ ZIPLNfit <- R6Class(
     #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
     latent_pos  = function() {private$M - private$X %*% private$B},
     #' @field model_par a list with the matrices of parameters found in the model (B, Sigma, plus some others depending on the variant)
-    model_par  = function() {list(B = private$B, B0 = private$B0, Pi = private$Pi, Omega = private$Omega)},
+    model_par  = function() {list(B = private$B, B0 = private$B0, Pi = private$Pi, Omega = private$Omega, Sigma = private$Sigma)},
     #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
     var_par    = function() {list(M = private$M, S2 = private$S^2, S = private$S, R = private$R)},
     #' @field fitted a matrix: fitted values of the observations (A in the model)
@@ -325,7 +334,7 @@ ZIPLNfit <- R6Class(
                "covar"  =  self$p * self$d)
       )
     },
-    #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal" or "full")
+    #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal", "full" or "sparse")
     vcov_model  = function() {private$covariance},
     #' @field zi_model character: the model used for the zero inflation (either "single", "row", "col" or "covar")
     zi_model  = function() {private$ziparam},
@@ -499,6 +508,7 @@ ZIPLNfit_fixedcov <- R6Class(
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$Omega <- control$Omega
+### TODO handled fixed cov
     }
   ),
   active = list(
