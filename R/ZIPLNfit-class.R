@@ -10,6 +10,7 @@
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param weights an optional vector of observation weights to be used in the fitting process.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #'
@@ -437,7 +438,7 @@ ZIPLNfit_diagonal <- R6Class(
 #' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "spherical))
+#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "spherical"))
 #' class(myPLN)
 #' print(myPLN)
 #' }
@@ -471,10 +472,70 @@ ZIPLNfit_spherical <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##  CLASS ZIPLNfit_fixedcov  #############################
+##  CLASS ZIPLNfit_fixed  #############################
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' An R6 Class to represent a ZIPLNfit in a standard, general framework, with fixed (inverse) residual covariance
+#'
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization. See details.
+#' @param config part of the \code{control} argument which configures the optimizer
+#'
+#' @rdname ZIPLNfit_fixed
+#' @importFrom R6 R6Class
+#'
+#' @examples
+#' \dontrun{
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, contro = ZIPLN_param(Omega = diag(ncol(trichoptera$Abundance))))
+#' class(myPLN)
+#' print(myPLN)
+#' }
+ZIPLNfit_fixed <- R6Class(
+  classname = "ZIPLNfit_fixed",
+  inherit = ZIPLNfit,
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PUBLIC MEMBERS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  public  = list(
+    #' @description Initialize a [`ZIPLNfit_fixedcov`] model
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
+      super$initialize(responses, covariates, offsets, weights, formula, control)
+      private$Omega <- control$Omega
+      private$optimizer$Omega <- function(M, X, B, S) {private$Omega}
+    }
+  ),
+  active = list(
+    #' @field nb_param number of parameters in the current PLN model
+    nb_param   = function() {
+      res <-  self$p * self$d +
+        switch(private$ziparam,
+               "single" = 1,
+               "row"    = self$n,
+               "col"    =  self$p,
+               "covar"  =  self$p * self$d)
+      as.integer(res)
+    },
+    #' @field vcov_model character: the model used for the residual covariance
+    vcov_model = function() {"fixed"}
+  )
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  END OF THE CLASS ZIPLNfit_fixed
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+)
+
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS ZIPLNfit_sparse  #############################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' An R6 Class to represent a ZIPLNfit in a standard, general framework, with sparse inverse residual covariance
 #'
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
@@ -493,28 +554,31 @@ ZIPLNfit_spherical <- R6Class(
 #' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera)
+#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control=  ZIPLN_param(penalty = 0.2))
 #' class(myPLN)
 #' print(myPLN)
 #' }
-ZIPLNfit_fixedcov <- R6Class(
-  classname = "ZIPLNfit_fixedcov",
+ZIPLNfit_sparse <- R6Class(
+  classname = "ZIPLNfit_sparse",
   inherit = ZIPLNfit,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
     #' @description Initialize a [`ZIPLNfit_fixedcov`] model
+    #' @importFrom glassoFast glassoFast
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$Omega <- control$Omega
-### TODO handled fixed cov
+      private$optimizer$Omega <-
+        function(M, X, B, S) {
+          glassoFast( crossprod(M - X %*% B)/self$n + diag(colMeans(S * S), self$p, self$p), rho = control$penalty )$wi
+        }
     }
   ),
   active = list(
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {
-      res <-  self$p * self$d +
+      res <-  self$p * self$d + (sum(private$Omega != 0) - self$p)/2L +
         switch(private$ziparam,
                "single" = 1,
                "row"    = self$n,
@@ -523,9 +587,41 @@ ZIPLNfit_fixedcov <- R6Class(
       as.integer(res)
     },
     #' @field vcov_model character: the model used for the residual covariance
-    vcov_model = function() {"fixed"}
+    vcov_model = function() {"sparse"}
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  ##  END OF THE CLASS ZIPLNfit_fixedcov
+  ##  END OF THE CLASS ZIPLNfit_sparse
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 )
+
+
+# Test convergence for a named list of parameters
+# oldp, newp: named list of parameters
+# xtol_rel: double ; negative or NULL = disabled
+# xtol_abs: double ; negative or NULL = disabled
+# Returns boolean
+parameter_list_converged <- function(oldp, newp, xtol_abs = NULL, xtol_rel = NULL) {
+  # Strategy is to compare each pair of list elements with matching names.
+  stopifnot(is.list(oldp), is.list(newp))
+  oldp <- oldp[order(names(oldp))]
+  newp <- newp[order(names(newp))]
+  stopifnot(all(names(oldp) == names(newp)))
+
+  # Check convergence with xtol_rel if enabled
+  if(is.double(xtol_rel) && xtol_rel > 0) {
+    if(all(mapply(function(o, n) { all(abs(n - o) <= xtol_rel * abs(o)) }, oldp, newp))) {
+      return(TRUE)
+    }
+  }
+
+  # Check convergence with xtol_abs (homogeneous) if enabled
+  if(is.double(xtol_abs) && xtol_abs > 0) {
+    if(all(mapply(function(o, n) { all(abs(n - o) <= xtol_abs) }, oldp, newp))) {
+      return(TRUE)
+    }
+  }
+
+  # If no criteria has triggered, indicate no convergence
+  FALSE
+}
+

@@ -14,12 +14,13 @@
 #' @rdname ZIPLN
 #' @include ZIPLNfit-class.R
 #' @examples
-#' data(scRNA)
-#' # data subsample: only 100 random cell and the 50 most varying transcript
-#' scRNA        <- scRNA[sample.int(nrow(scRNA), 100), ]
-#' scRNA$counts <- scRNA$counts[, 1:50]
-#' myPLN_full   <- ZIPLN(counts ~ 1 + cell_line + offset(log(total_counts)), data = scRNA)
-#' myPLN_sparse <- ZIPLN(counts ~ 1 + offset(log(total_counts)), rho = .5, data = scRNA)
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- PLN(Abundance ~ 1, data = trichoptera)
+#' myZIPLN_1  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "single")
+#' myZIPLN_2  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "row")
+#' myZIPLN_3  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "col")
+#' myZIPLN_3  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "col")
 #' myPLN_full$criteria    # better BIC with sparse version
 #' myPLN_sparse$criteria
 #' @seealso The class [`ZIPLNfit`]
@@ -31,7 +32,6 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
   args <- extract_model_zi(match.call(expand.dots = FALSE), parent.frame())
 
   ## define default control parameters for optim and eventually overwrite them by user-defined parameters
-  control$lambda  <- 0
   control$rho     <- 0
   control$ziparam <- ifelse((args$zicovar), "covar", match.arg(zi))
   control$penalize_intercept <- FALSE
@@ -46,7 +46,8 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
   myPLN <- switch(control$covariance,
                   "diagonal"  = ZIPLNfit_diagonal$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
                   "spherical" = ZIPLNfit_spherical$new(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
-                  "fixed"     = ZIPLNfit_fixedcov$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
+                  "fixed"     = ZIPLNfit_fixed$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
+                  "sparse"    = ZIPLNfit_sparse$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
                   ZIPLNfit$new(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control)) # default: full covariance
 
   ## optimization
@@ -62,13 +63,12 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 ## -----------------------------------------------------------------
 ##  Series of setter to default parameters for user's main functions
 
-available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2", "TNEWTON", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART")
-
 #' Control of a PLN fit
 #'
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
 #' @inheritParams PLN_param
+#' @param penalty a user defined penalty for sparsifying the residual covariance. Default is 0 (no sparsity).
 #' @return list of parameters configuring the fit.
 #'
 #' @inherit PLN_param details
@@ -81,15 +81,19 @@ available_algorithms <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2", "TNEWTON", "T
 ZIPLN_param <- function(
     backend       = c("nlopt"),
     trace         = 1,
-    covariance    = c("full", "diagonal", "spherical", "fixed"),
+    covariance    = c("full", "diagonal", "spherical", "fixed", "sparse"),
     Omega         = NULL,
+    penalty       = 0,
     config_post   = list(),
     config_optim  = list(),
     inception     = NULL     # pretrained ZIPLNfit used as initialization
 ) {
 
   covariance <- match.arg(covariance)
-  if (covariance == "fixed") stopifnot(inherits(Omega, "matrix") | inherits(Omega, "Matrix"))
+  if (covariance == "fixed") stopifnot("Omega must be provied for fixed covariance" = inherits(Omega, "matrix") | inherits(Omega, "Matrix")) |> try()
+  if (inherits(Omega, "matrix") | inherits(Omega, "Matrix")) covariance <- "fixed"
+  if (covariance == "sparse") stopifnot("You should provide a positive penalty when chosing 'sparse' covariance" = penalty > 0) |> try()
+  if (penalty > 0) covariance <- "sparse"
   if (!is.null(inception)) stopifnot(isZIPLNfit(inception))
 
   ## post-treatment config
@@ -111,6 +115,7 @@ ZIPLN_param <- function(
     trace         = trace     ,
     covariance    = covariance,
     Omega         = Omega     ,
+    penalty       = penalty   ,
     config_post   = config_pst,
     config_optim  = config_opt,
     inception     = inception), class = "PLNmodels_param")

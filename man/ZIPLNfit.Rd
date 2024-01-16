@@ -151,6 +151,8 @@ Initialize a \code{\link{ZIPLNfit}} model
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
@@ -175,6 +177,8 @@ Call to the Cpp optimizer and update of the relevant fields
 \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
 
 \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }

@@ -19,7 +19,7 @@
 optimize_zi <- function(init_parameters, Y, X, O, configuration) {
 
     n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-    
+
     # Link to the approximate function to optimize Omega ,depending on the target structure
     optim_zipln_Omega <- switch(
       configuration$covariance,
@@ -36,7 +36,7 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
       "col"    = function(init_B0, X, R, config) list(Pi = matrix(colMeans(R), n, p, byrow = TRUE), B0 = matrix(NA, d, p)),
       "covar"  = optim_zipln_zipar_covar
     )
-    
+
     maxit_out <- if("maxit_out" %in% names(configuration)) { configuration$maxit_out } else { 50 }
 
     # Main loop
@@ -63,7 +63,7 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
         new_B <- optim_zipln_B(
           M = parameters$M, X = X, Omega = new_Omega, configuration
         )
-        
+
         optim_new_zipar <- optim_zipln_zipar(
           init_B0 = parameters$B0, X = X, R = parameters$R, config = configuration
         )
@@ -125,11 +125,11 @@ optimize_zi <- function(init_parameters, Y, X, O, configuration) {
     }
 }
 
-#' @importFrom glassoFast glassoFast
-optim_zipln_Omega_sparse <- function(M, X, B, S, rho) {
-  n <- nrow(M); p <- ncol(M)
-  glassoFast::glassoFast( crossprod(M - X %*% B)/n + diag(colMeans(S * S), p, p), rho = rho )$wi
-}
+#' #' @importFrom glassoFast glassoFast
+#' optim_zipln_Omega_sparse <- function(M, X, B, S, rho) {
+#'   n <- nrow(M); p <- ncol(M)
+#'   glassoFast::glassoFast( crossprod(M - X %*% B)/n + diag(colMeans(S * S), p, p), rho = rho )$wi
+#' }
 
 #' @importFrom glmnet glmnet
 optim_zipln_B <- function(M, X, Omega, config) {
@@ -161,57 +161,5 @@ optim_zipln_B <- function(M, X, Omega, config) {
     B <- optim_zipln_B_dense(M, X)
   }
   B
-}
-
-# Test convergence for a named list of parameters
-# oldp, newp: named list of parameters
-# xtol_rel: double ; negative or NULL = disabled
-# xtol_abs: double ; negative or NULL = disabled
-# Returns boolean
-parameter_list_converged <- function(oldp, newp, xtol_abs = NULL, xtol_rel = NULL) {
-    # Strategy is to compare each pair of list elements with matching names.
-    # Named lists are just vectors (T,str) using order of insertion.
-    # mapply() is handy to do the pair tests, but it works on the underlying vector order (ignoring names).
-    # So reorder lists by their names to use mapply.
-    stopifnot(is.list(oldp), is.list(newp))
-    oldp <- oldp[order(names(oldp))]
-    newp <- newp[order(names(newp))]
-    stopifnot(all(names(oldp) == names(newp)))
-
-    # Check convergence with xtol_rel if enabled
-    if(is.double(xtol_rel) && xtol_rel > 0) {
-        if(all(mapply(function(o, n) { all(abs(n - o) <= xtol_rel * abs(o)) }, oldp, newp))) {
-            return(TRUE)
-        }
-    }
-
-    # Check convergence with xtol_abs (homogeneous) if enabled
-    if(is.double(xtol_abs) && xtol_abs > 0) {
-        if(all(mapply(function(o, n) { all(abs(n - o) <= xtol_abs) }, oldp, newp))) {
-            return(TRUE)
-        }
-    }
-
-    # Check convergence with xtol_abs as list(xtol_abs for each param_name)
-    if(is.list(xtol_abs)) {
-        xtol_abs <- xtol_abs[order(names(xtol_abs))]
-        stopifnot(all(names(oldp) == names(xtol_abs)))
-        # Due to the possible presence of NULLs, mapply may return a list. unlist allows all() to operate anyway.
-        if(all(unlist(mapply(
-            function(o, n, tol) {
-                if((is.double(tol) && tol > 0) || is.matrix(tol)) {
-                    all(abs(n - o) <= tol)
-                } else {
-                    NULL # Ignore comparison in outer all()
-                }
-            },
-            oldp, newp, xtol_abs
-        )))) {
-            return(TRUE)
-        }
-    }
-
-    # If no criteria has triggered, indicate no convergence
-    FALSE
 }
 

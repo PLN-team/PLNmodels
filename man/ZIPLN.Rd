@@ -33,12 +33,13 @@ an R6 object with class \code{\link{ZIPLNfit}}
 Fit the multivariate Zero Inflated Poisson lognormal model with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets, subset).
 }
 \examples{
-data(scRNA)
-# data subsample: only 100 random cell and the 50 most varying transcript
-scRNA        <- scRNA[sample.int(nrow(scRNA), 100), ]
-scRNA$counts <- scRNA$counts[, 1:50]
-myPLN_full   <- ZIPLN(counts ~ 1 + cell_line + offset(log(total_counts)), data = scRNA)
-myPLN_sparse <- ZIPLN(counts ~ 1 + offset(log(total_counts)), rho = .5, data = scRNA)
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPLN <- PLN(Abundance ~ 1, data = trichoptera)
+myZIPLN_1  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "single")
+myZIPLN_2  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "row")
+myZIPLN_3  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "col")
+myZIPLN_3  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "col")
 myPLN_full$criteria    # better BIC with sparse version
 myPLN_sparse$criteria
 }

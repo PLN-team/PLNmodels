@@ -7,8 +7,9 @@
 ZIPLN_param(
   backend = c("nlopt"),
   trace = 1,
-  covariance = c("full", "diagonal", "spherical", "fixed"),
+  covariance = c("full", "diagonal", "spherical", "fixed", "sparse"),
   Omega = NULL,
+  penalty = 0,
   config_post = list(),
   config_optim = list(),
   inception = NULL
@@ -22,6 +23,8 @@ ZIPLN_param(
 \item{covariance}{character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "fixed". Default is "full".}
 
 \item{Omega}{precision matrix of the latent variables. Inverse of Sigma. Must be specified if \code{covariance} is "fixed"}
+
+\item{penalty}{a user defined penalty for sparsifying the residual covariance. Default is 0 (no sparsity).}
 
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 

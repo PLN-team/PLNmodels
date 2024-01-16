@@ -1,12 +1,20 @@
 context("test-pln")
 require(purrr)
 
+
+#### TODO
+#### Should work without intercept
+#### Should work with covariates
+
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance[1:20, 1:5], trichoptera$Covariate[1:20, ])
 
 test_that("ZIPLN: Check that ZIPLN is running and robust",  {
 
-  expect_is(ZIPLN(Abundance ~ 1, data = trichoptera), "ZIPLNfit")
+  expect_is(zi_single <- ZIPLN(Abundance ~ 1, data = trichoptera), "ZIPLNfit")
+  expect_is(zi_row <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "row"), "ZIPLNfit")
+  expect_is(zi_col <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "col"), "ZIPLNfit")
+  expect_is(zi_covar  <- ZIPLN(Abundance ~ 1 | Wind, data = trichoptera), "ZIPLNfit")
 
   expect_is(ZIPLN(Abundance ~ 0, data = trichoptera), "ZIPLNfit")
 
@@ -16,7 +24,7 @@ test_that("ZIPLN: Check that ZIPLN is running and robust",  {
                ZIPLN(Abundance ~ Wind, data = trichoptera)$fitted)
 })
 
-test_that("PLN: Routine comparison between the different covariance models",  {
+test_that("ZIPLN: Routine comparison between the different covariance models",  {
   model_full      <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "full"     , trace = 0))
   model_diagonal  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "diagonal" , trace = 0))
   model_spherical <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "spherical", trace = 0))
