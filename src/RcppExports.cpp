@@ -237,16 +237,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // optim_zipln_zipar_covar
-Rcpp::List optim_zipln_zipar_covar(const arma::mat& init_B0, const arma::mat& X, const arma::mat& R, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_optim_zipln_zipar_covar(SEXP init_B0SEXP, SEXP XSEXP, SEXP RSEXP, SEXP configurationSEXP) {
+Rcpp::List optim_zipln_zipar_covar(const arma::mat& init_B0, const arma::mat& X0, const arma::mat& R, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_optim_zipln_zipar_covar(SEXP init_B0SEXP, SEXP X0SEXP, SEXP RSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type init_B0(init_B0SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X0(X0SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type R(RSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_zipln_zipar_covar(init_B0, X, R, configuration));
+    rcpp_result_gen = Rcpp::wrap(optim_zipln_zipar_covar(init_B0, X0, R, configuration));
     return rcpp_result_gen;
 END_RCPP
 }

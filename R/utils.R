@@ -203,6 +203,8 @@ extract_model_zi <- function(call, envir, xlev = NULL) {
   frame <- eval(call_frame, envir)
   ## create the set of matrices to fit the PLN model
   Y <- frame[[1L]] ## model.response oversimplifies into a numeric when a single variable is involved
+  ## model.response oversimplifies into a numeric when a single variable is involved
+  if (is.null(dim(Y))) Y <- matrix(Y, nrow = length(Y), ncol = 1)
   if (ncol(Y) == 1 & is.null(colnames(Y))) colnames(Y) <- "Y"
 
   ## Extract the design matrices for ZI and PLN components

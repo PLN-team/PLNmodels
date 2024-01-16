@@ -19,13 +19,16 @@
 #' @importFrom R6 R6Class
 #'
 #' @examples
+#' @examples
 #' \dontrun{
-#' data(scRNA)
-#' # data subsample: only 100 random cell and the 50 most varying transcript
-#' subset <- sample.int(nrow(scRNA), 100)
-#' myZIPLN_1  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), zi = "single", subset = subset, data = scRNA)
-#' myZIPLN_2  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), zi = "row", subset = subset, data = scRNA)
+#' # See other examples in function ZIPLN
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera)
+#' class(myPLN)
+#' print(myPLN)
 #' }
+#'
 ZIPLNfit <- R6Class(
   classname = "ZIPLNfit",
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -74,6 +77,7 @@ ZIPLNfit <- R6Class(
       ## save the formula call as specified by the user
       private$formula <- formula
       private$X       <- covariates$PLN
+      private$X0      <- covariates$ZI
       ## initialize the covariance model
       private$covariance <- control$covariance
       private$ziparam <- control$ziparam
@@ -88,7 +92,7 @@ ZIPLNfit <- R6Class(
           suppressWarnings(
             zip_out <- switch(control$ziparam,
               "row"    = pscl::zeroinfl(y ~ 0 + covariates$PLN | 0 + factor(1:n), offset = offsets[, j]),
-              "covar"  = pscl::zeroinfl(y ~ 0 + covariates$PLN | covariates$ZI  , offset = offsets[, j]),
+              "covar"  = pscl::zeroinfl(y ~ 0 + covariates$PLN | 0 + covariates$ZI  , offset = offsets[, j]),
                          pscl::zeroinfl(y ~ 0 + covariates$PLN |               1, offset = offsets[, j])) # offset only for the count model
           )
           B0[,j] <- coef(zip_out, "zero")
@@ -120,13 +124,12 @@ ZIPLNfit <- R6Class(
       private$S <- matrix(.1, n, p)
 
       ## Link to functions performing the optimization
-      private$optimizer$main  <- optimize_zi
       private$optimizer$B     <- function(M, X, Omega, control) optim_zipln_B_dense(M, X)
       private$optimizer$zi    <- switch(
         control$ziparam,
-        "single" = function(init_B0, X, R, config) list(Pi = matrix(    mean(R), n, p)              , B0 = matrix(NA, d0, p)),
-        "row"    = function(init_B0, X, R, config) list(Pi = matrix(rowMeans(R), n, p)              , B0 = matrix(NA, d0, p)),
-        "col"    = function(init_B0, X, R, config) list(Pi = matrix(colMeans(R), n, p, byrow = TRUE), B0 = matrix(NA, d0, p)),
+        "single" = function(init_B0, X0, R, config) list(Pi = matrix(    mean(R), n, p)              , B0 = matrix(NA, d0, p)),
+        "row"    = function(init_B0, X0, R, config) list(Pi = matrix(rowMeans(R), n, p)              , B0 = matrix(NA, d0, p)),
+        "col"    = function(init_B0, X0, R, config) list(Pi = matrix(colMeans(R), n, p, byrow = TRUE), B0 = matrix(NA, d0, p)),
         "covar"  = optim_zipln_zipar_covar
       )
       private$optimizer$Omega <- optim_zipln_Omega_full
@@ -168,7 +171,7 @@ ZIPLNfit <- R6Class(
         )
 
         optim_new_zipar <- private$optimizer$zi(
-          init_B0 = parameters$B0, X = data$X, R = parameters$R, config = control
+          init_B0 = parameters$B0, X0 = data$X0, R = parameters$R, config = control
         )
         new_B0 <- optim_new_zipar$B0
         new_Pi <- optim_new_zipar$Pi
@@ -383,6 +386,7 @@ ZIPLNfit <- R6Class(
 #'
 #' @examples
 #' \dontrun{
+#' # See other examples in function ZIPLN
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "diagonal"))
@@ -436,6 +440,7 @@ ZIPLNfit_diagonal <- R6Class(
 #'
 #' @examples
 #' \dontrun{
+#' # See other examples in function ZIPLN
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(covariance = "spherical"))
@@ -492,6 +497,7 @@ ZIPLNfit_spherical <- R6Class(
 #'
 #' @examples
 #' \dontrun{
+#' # See other examples in function ZIPLN
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, contro = ZIPLN_param(Omega = diag(ncol(trichoptera$Abundance))))
@@ -552,6 +558,7 @@ ZIPLNfit_fixed <- R6Class(
 #'
 #' @examples
 #' \dontrun{
+#' # See other examples in function ZIPLN
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control=  ZIPLN_param(penalty = 0.2))
@@ -625,3 +632,35 @@ parameter_list_converged <- function(oldp, newp, xtol_abs = NULL, xtol_rel = NUL
   FALSE
 }
 
+#' #' @importFrom glmnet glmnet
+#' optim_zipln_B <- function(M, X, Omega, config) {
+#'
+#'   if(config$lambda > 0) {
+#'     if (!is.null(config$ind_intercept)) {
+#'       m_bar <- colMeans(M)
+#'       x_bar <- colMeans(X[, -config$ind_intercept])
+#'       X <- scale(X[, -config$ind_intercept], x_bar, FALSE)
+#'       M <- scale(M, m_bar, FALSE)
+#'     }
+#'     p <- ncol(M); d <- ncol(X)
+#'     if (d > 0) {
+#'       Omega12 <- chol(Omega)
+#'       y <- as.vector(M %*% t(Omega12))
+#'       x <- kronecker(Omega12, X)
+#'       glmnet_out <- glmnet(x, y, lambda = config$lambda, intercept = FALSE, standardize = FALSE)
+#'       B <- matrix(as.numeric(glmnet_out$beta), nrow = d, ncol = p)
+#'     } else {
+#'       B <- matrix(0, nrow = d, ncol = p)
+#'     }
+#'
+#'     if (!is.null(config$ind_intercept)) {
+#'       mu0 <- m_bar - as.vector(crossprod(B, x_bar))
+#'       B <- rbind(mu0, B)
+#'     }
+#'
+#'   } else {
+#'     B <- optim_zipln_B_dense(M, X)
+#'   }
+#'   B
+#' }
+#'

@@ -65,8 +65,8 @@ optim_zipln_B_dense <- function(M, X) {
     .Call('_PLNmodels_optim_zipln_B_dense', PACKAGE = 'PLNmodels', M, X)
 }
 
-optim_zipln_zipar_covar <- function(init_B0, X, R, configuration) {
-    .Call('_PLNmodels_optim_zipln_zipar_covar', PACKAGE = 'PLNmodels', init_B0, X, R, configuration)
+optim_zipln_zipar_covar <- function(init_B0, X0, R, configuration) {
+    .Call('_PLNmodels_optim_zipln_zipar_covar', PACKAGE = 'PLNmodels', init_B0, X0, R, configuration)
 }
 
 optim_zipln_R <- function(Y, X, O, M, S, Pi) {

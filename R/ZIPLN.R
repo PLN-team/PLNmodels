@@ -17,12 +17,17 @@
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLN(Abundance ~ 1, data = trichoptera)
-#' myZIPLN_1  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "single")
-#' myZIPLN_2  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "row")
-#' myZIPLN_3  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "col")
-#' myZIPLN_3  <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "col")
-#' myPLN_full$criteria    # better BIC with sparse version
-#' myPLN_sparse$criteria
+#' myZIPLN_single <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "single")
+#' myZIPLN_row    <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "row")
+#' myZIPLN_col    <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "col")
+#' myZIPLN_covar  <- ZIPLN(Abundance ~ 1 | 1 + Wind, data = trichoptera)
+#' dplyr::bind_rows(
+#'   myPLN$criteria,
+#'   myZIPLN_single$criteria,
+#'   myZIPLN_row$criteria,
+#'   myZIPLN_col$criteria,
+#'   myZIPLN_covar$criteria
+#' )
 #' @seealso The class [`ZIPLNfit`]
 #' @importFrom stats model.frame model.matrix model.response model.offset terms as.formula
 #' @export

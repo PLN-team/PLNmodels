@@ -38,7 +38,6 @@ Imports:
   R6,
   glassoFast,
   pscl,
-  glmnet,
   Matrix,
   Rcpp,
   nloptr,
@@ -95,7 +94,6 @@ Collate:
     'import_utils.R'
     'mollusk.R'
     'oaks.R'
-    'optim-zipln.R'
     'plot_utils.R'
     'scRNA.R'
     'trichoptera.R'

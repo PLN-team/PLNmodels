@@ -1,10 +1,5 @@
-context("test-pln")
+context("test-zipln")
 require(purrr)
-
-
-#### TODO
-#### Should work without intercept
-#### Should work with covariates
 
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance[1:20, 1:5], trichoptera$Covariate[1:20, ])
@@ -15,13 +10,19 @@ test_that("ZIPLN: Check that ZIPLN is running and robust",  {
   expect_is(zi_row <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "row"), "ZIPLNfit")
   expect_is(zi_col <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "col"), "ZIPLNfit")
   expect_is(zi_covar  <- ZIPLN(Abundance ~ 1 | Wind, data = trichoptera), "ZIPLNfit")
+  expect_is(zi_covar  <- ZIPLN(Abundance ~ 0 + Wind | Wind, data = trichoptera), "ZIPLNfit")
 
-  expect_is(ZIPLN(Abundance ~ 0, data = trichoptera), "ZIPLNfit")
+  ## initialization could not work without any regressor...
+  expect_error(ZIPLN(Abundance ~ 0, data = trichoptera))
 
   expect_is(ZIPLN(trichoptera$Abundance ~ 1), "ZIPLNfit")
 
   expect_equal(ZIPLN(trichoptera$Abundance ~ 1 + trichoptera$Wind)$fitted,
                ZIPLN(Abundance ~ Wind, data = trichoptera)$fitted)
+
+  expect_is(model_sparse <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(penalty = 0.2, trace = 0)), "ZIPLNfit_sparse")
+  expect_is(model_fixed <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(Omega = zi_single$model_par$Omega, trace = 0)), "ZIPLNfit_fixed")
+
 })
 
 test_that("ZIPLN: Routine comparison between the different covariance models",  {
@@ -52,7 +53,7 @@ test_that("PLN is working with unnamed data matrix",  {
 
     MMA    <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "MMA")))
     CCSAQ  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "CCSAQ")))
-    LBFGS  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "LBFGS")))
+    LBFGS  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "LBFGS_NOCEDAL")))
 
     expect_equal(MMA$loglik, CCSAQ$loglik, tolerance = 1e-1) ## Almost equivalent, CCSAQ faster
 

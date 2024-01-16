@@ -10,9 +10,10 @@ An R6 Class to represent a ZIPLNfit in a standard, general framework, with fixed
 }
 \examples{
 \dontrun{
+# See other examples in function ZIPLN
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera)
+myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, contro = ZIPLN_param(Omega = diag(ncol(trichoptera$Abundance))))
 class(myPLN)
 print(myPLN)
 }

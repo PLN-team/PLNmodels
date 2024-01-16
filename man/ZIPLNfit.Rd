@@ -13,12 +13,14 @@ Fields are accessed via active binding and cannot be changed by the user.
 }
 \examples{
 \dontrun{
-data(scRNA)
-# data subsample: only 100 random cell and the 50 most varying transcript
-subset <- sample.int(nrow(scRNA), 100)
-myZIPLN_1  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), zi = "single", subset = subset, data = scRNA)
-myZIPLN_2  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), zi = "row", subset = subset, data = scRNA)
+# See other examples in function ZIPLN
+data(trichoptera)
+trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera)
+class(myPLN)
+print(myPLN)
 }
+
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}

@@ -19,7 +19,6 @@ arma::vec zipln_vloglik(
     const arma::mat & M,      // (n,p)
     const arma::mat & S       // (n,p)
 ) {
-    const arma::uword n = Y.n_rows;
     const arma::uword p = Y.n_cols;
 
     const arma::mat S2 = S % S ;
@@ -69,7 +68,6 @@ arma::mat optim_zipln_Omega_diagonal(
     const arma::mat & S  // (n,p)
 ) {
     const arma::uword n = M.n_rows;
-    const arma::uword p = M.n_cols;
     return arma::diagmat(double(n) / sum( pow(M - X * B, 2) + S % S, 0)) ;
 }
 
@@ -84,8 +82,8 @@ arma::mat optim_zipln_B_dense(
 
 // [[Rcpp::export]]
 Rcpp::List optim_zipln_zipar_covar(
-    const arma::mat & init_B0,  // (d,p)
-    const arma::mat & X,        // covariates (n,d)
+    const arma::mat & init_B0,  // (d0,p)
+    const arma::mat & X0,       // covariates (n,d0)
     const arma::mat & R,        // (n,p)
     const Rcpp::List & configuration // List of config values ; xtol_abs is B0 only (double or mat)
 ) {
@@ -96,26 +94,17 @@ Rcpp::List optim_zipln_zipar_covar(
     metadata.map<B0_ID>(parameters.data()) = init_B0;
 
     auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-    if(configuration.containsElementNamed("xtol_abs")) {
-        SEXP value = configuration["xtol_abs"];
-        if(Rcpp::is<double>(value)) {
-            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
-        } else {
-            auto packed = std::vector<double>(metadata.packed_size);
-            metadata.map<B0_ID>(packed.data()) = Rcpp::as<arma::mat>(value);
-            set_per_value_xtol_abs(optimizer.get(), packed);
-        }
-    }
+    set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
 
-    const arma::mat Xt_R = X.t() * R;
+    const arma::mat Xt_R = X0.t() * R;
 
     // Optimize
-    auto objective_and_grad = [&metadata, &X, &R, &Xt_R](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &X0, &R, &Xt_R](const double * params, double * grad) -> double {
         const arma::mat B0 = metadata.map<B0_ID>(params);
 
-        arma::mat e_mu0 = exp(X * B0);
+        arma::mat e_mu0 = exp(X0 * B0);
         double objective = -trace(Xt_R.t() * B0) + accu(log(1. + e_mu0));
-        metadata.map<B0_ID>(grad) = -Xt_R + X.t() * (e_mu0 % pow(1. + e_mu0, -1)) ;
+        metadata.map<B0_ID>(grad) = -Xt_R + X0.t() * (e_mu0 % pow(1. + e_mu0, -1)) ;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -125,7 +114,7 @@ Rcpp::List optim_zipln_zipar_covar(
         Rcpp::Named("status") = static_cast<int>(result.status),
         Rcpp::Named("iterations") = result.nb_iterations,
         Rcpp::Named("B0") = B0,
-        Rcpp::Named("Pi") = logistic(X * B0));
+        Rcpp::Named("Pi") = logistic(X0 * B0));
 }
 
 // [[Rcpp::export]]
@@ -174,16 +163,7 @@ Rcpp::List optim_zipln_M(
     metadata.map<M_ID>(parameters.data()) = init_M;
 
     auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-    if(configuration.containsElementNamed("xtol_abs")) {
-        SEXP value = configuration["xtol_abs"];
-        if(Rcpp::is<double>(value)) {
-            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
-        } else {
-            auto packed = std::vector<double>(metadata.packed_size);
-            metadata.map<M_ID>(packed.data()) = Rcpp::as<arma::mat>(value);
-            set_per_value_xtol_abs(optimizer.get(), packed);
-        }
-    }
+    set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
 
     const arma::mat X_B = X * B; // (n,p)
     const arma::mat O_S2 = O + 0.5 * S % S; // (n,p)
@@ -226,16 +206,7 @@ Rcpp::List optim_zipln_S(
     metadata.map<S_ID>(parameters.data()) = init_S;
 
     auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-    if(configuration.containsElementNamed("xtol_abs")) {
-        SEXP value = configuration["xtol_abs"];
-        if(Rcpp::is<double>(value)) {
-            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
-        } else {
-            auto packed = std::vector<double>(metadata.packed_size);
-            metadata.map<S_ID>(packed.data()) = Rcpp::as<arma::mat>(value);
-            set_per_value_xtol_abs(optimizer.get(), packed);
-        }
-    }
+    set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
 
     const arma::mat O_M = O + M;
 
@@ -243,7 +214,6 @@ Rcpp::List optim_zipln_S(
     auto objective_and_grad = [&metadata, &O_M, &R, &diag_Omega](const double * params, double * grad) -> double {
         const arma::mat S = metadata.map<S_ID>(params);
 
-        arma::uword n = S.n_rows;
         arma::mat A = exp(O_M + 0.5 * S % S); // (n,p)
 
         // trace(1^T log(S)) == accu(log(S)).
