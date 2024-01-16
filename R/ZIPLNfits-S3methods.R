@@ -30,8 +30,8 @@ isZIPLNfit <- function(Robject) {inherits(Robject, "ZIPLNfit")}
 #' @name coef.ZIPLNfit
 #'
 #' @param object an R6 object with class [`ZIPLNfit`]
-#' @param type type of parameter that should be extracted. Either "mainPLN" (default) for \deqn{B},
-#' "mainZI" (default) for \deqn{B0}, "precision" for \deqn{\Omega}, "covariance" for \deqn{\Sigma}
+#' @param type type of parameter that should be extracted. Either "count" (default) for \deqn{B},
+#' "zero" for \deqn{B0}, "precision" for \deqn{\Omega}, "covariance" for \deqn{\Sigma}
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of coefficients extracted from the ZIPLNfit model.
 #'
@@ -45,11 +45,11 @@ isZIPLNfit <- function(Robject) {inherits(Robject, "ZIPLNfit")}
 #' myPLN  <- ZIPLN(counts[, 1:50] ~ 1 + offset(log(total_counts)), subset = subset, data = scRNA)
 #'
 #' @export
-coef.ZIPLNfit <- function(object, type = c("mainPLN", "mainZI", "precision", "covariance"), ...) {
+coef.ZIPLNfit <- function(object, type = c("count", "zero", "precision", "covariance"), ...) {
   stopifnot(isZIPLNfit(object))
   switch(match.arg(type),
-         mainPLN    = object$model_par$B,
-         mainZI     = object$model_par$B0,
+         count    = object$model_par$B,
+         zero     = object$model_par$B0,
          precision  = object$model_par$Omega,
          covariance = object$model_par$Sigma)
 }
