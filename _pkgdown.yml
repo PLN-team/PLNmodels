@@ -68,7 +68,7 @@ reference:
     - '`coef.ZIPLNfit`'
     - '`sigma.ZIPLNfit`'
     - '`fitted.ZIPLNfit`'
-=- title: 'Linear discriminant analysis via a Poisson lognormal fit'
+- title: 'Linear discriminant analysis via a Poisson lognormal fit'
   desc: >
     Description of the PLNLDAfit object and methods for its manipulation.
   contents:
