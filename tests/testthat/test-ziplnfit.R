@@ -14,8 +14,8 @@ test_that("ZIPLN fit: check classes, getters and field access",  {
 
   ## S3 methods: values
   expect_equal(coef(model), model$model_par$B)
-  expect_equal(coef(model, type = "mainPLN"), model$model_par$B)
-  expect_equal(coef(model, type = "mainZI"), model$model_par$B0)
+  expect_equal(coef(model, type = "count"), model$model_par$B)
+  expect_equal(coef(model, type = "zero"), model$model_par$B0)
   expect_equal(coef(model, type = "precision"), model$model_par$Omega)
   expect_equal(coef(model, type = "covariance"), model$model_par$Sigma)
   expect_equal(sigma(model), model$model_par$Sigma)
