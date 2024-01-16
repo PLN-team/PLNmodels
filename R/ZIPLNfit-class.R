@@ -512,7 +512,7 @@ ZIPLNfit_fixed <- R6Class(
   ## PUBLIC MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
-    #' @description Initialize a [`ZIPLNfit_fixedcov`] model
+    #' @description Initialize a [`ZIPLNfit_fixed`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$Omega <- control$Omega
@@ -554,7 +554,7 @@ ZIPLNfit_fixed <- R6Class(
 #' @param control a list for controlling the optimization. See details.
 #' @param config part of the \code{control} argument which configures the optimizer
 #'
-#' @rdname ZIPLNfit_fixedcov
+#' @rdname ZIPLNfit_fixed
 #' @importFrom R6 R6Class
 #'
 #' @examples
@@ -573,7 +573,7 @@ ZIPLNfit_sparse <- R6Class(
   ## PUBLIC MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
-    #' @description Initialize a [`ZIPLNfit_fixedcov`] model
+    #' @description Initialize a [`ZIPLNfit_fixed`] model
     #' @importFrom glassoFast glassoFast
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
