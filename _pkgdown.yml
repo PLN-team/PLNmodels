@@ -67,6 +67,7 @@ reference:
     - '`ZIPLN_param`'
     - '`coef.ZIPLNfit`'
     - '`sigma.ZIPLNfit`'
+    - '`predict.ZIPLNfit`'
     - '`fitted.ZIPLNfit`'
 - title: 'Linear discriminant analysis via a Poisson lognormal fit'
   desc: >
