@@ -38,9 +38,11 @@ print(myPLN)
 }
 }
 \if{html}{\out{
-<details open><summary>Inherited methods</summary>
+<details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="optimize"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-optimize'><code>PLNmodels::ZIPLNfit$optimize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-optimize_vestep'><code>PLNmodels::ZIPLNfit$optimize_vestep()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="predict"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-predict'><code>PLNmodels::ZIPLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="print"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-print'><code>PLNmodels::ZIPLNfit$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="show"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-show'><code>PLNmodels::ZIPLNfit$show()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="update"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-update'><code>PLNmodels::ZIPLNfit$update()</code></a></span></li>

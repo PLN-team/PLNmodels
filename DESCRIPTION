@@ -98,6 +98,7 @@ Collate:
     'scRNA.R'
     'trichoptera.R'
     'utils-pipe.R'
+    'utils-zipln.R'
     'utils.R'
     'zzz.R'
 Language: en-US

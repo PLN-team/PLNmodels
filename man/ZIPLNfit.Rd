@@ -25,31 +25,33 @@ print(myPLN)
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{n}}{number of samples}
-
-\item{\code{p}}{number of species}
+\item{\code{n}}{number of samples/sites}
 
 \item{\code{q}}{number of dimensions of the latent space}
 
-\item{\code{d}}{number of covariates}
+\item{\code{p}}{number of variables/species}
 
-\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+\item{\code{d}}{number of covariates in the PLN componente}
 
-\item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
+\item{\code{d0}}{number of covariates in the ZI componente}
+
+\item{\code{nb_param}}{number of parameters in the current PLN model}
 
 \item{\code{model_par}}{a list with the matrices of parameters found in the model (B, Sigma, plus some others depending on the variant)}
 
 \item{\code{var_par}}{a list with two matrices, M and S2, which are the estimated parameters in the variational approximation}
 
-\item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
+\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
-\item{\code{nb_param}}{number of parameters in the current PLN model}
+\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+
+\item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
+
+\item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 
 \item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal", "full" or "sparse")}
 
 \item{\code{zi_model}}{character: the model used for the zero inflation (either "single", "row", "col" or "covar")}
-
-\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
 \item{\code{loglik}}{(weighted) variational lower bound of the loglikelihood}
 
@@ -75,6 +77,8 @@ print(myPLN)
 \item \href{#method-ZIPLNfit-update}{\code{ZIPLNfit$update()}}
 \item \href{#method-ZIPLNfit-new}{\code{ZIPLNfit$new()}}
 \item \href{#method-ZIPLNfit-optimize}{\code{ZIPLNfit$optimize()}}
+\item \href{#method-ZIPLNfit-optimize_vestep}{\code{ZIPLNfit$optimize_vestep()}}
+\item \href{#method-ZIPLNfit-predict}{\code{ZIPLNfit$predict()}}
 \item \href{#method-ZIPLNfit-show}{\code{ZIPLNfit$show()}}
 \item \href{#method-ZIPLNfit-print}{\code{ZIPLNfit$print()}}
 \item \href{#method-ZIPLNfit-clone}{\code{ZIPLNfit$clone()}}
@@ -185,6 +189,91 @@ Call to the Cpp optimizer and update of the relevant fields
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ZIPLNfit-optimize_vestep"></a>}}
+\if{latex}{\out{\hypertarget{method-ZIPLNfit-optimize_vestep}{}}}
+\subsection{Method \code{optimize_vestep()}}{
+Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$optimize_vestep(
+  covariates,
+  offsets,
+  responses,
+  weights,
+  B = self$model_par$B,
+  B0 = self$model_par$B0,
+  Omega = self$model_par$Omega,
+  control = ZIPLN_param(backend = "nlopt")
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+
+\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+
+\item{\code{B}}{Optional fixed value of the regression parameters}
+
+\item{\code{control}}{a list for controlling the optimization. See details.}
+
+\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list with three components:
+\itemize{
+\item the matrix \code{M} of variational means,
+\item the matrix \code{S2} of variational variances
+\item the vector \code{log.lik} of (variational) log-likelihood of each new observation
+}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ZIPLNfit-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-ZIPLNfit-predict}{}}}
+\subsection{Method \code{predict()}}{
+Predict position, scores or observations of new data.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$predict(
+  newdata,
+  responses = NULL,
+  type = c("link", "response"),
+  level = 1,
+  envir = parent.frame()
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{newdata}}{A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.}
+
+\item{\code{responses}}{Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.}
+
+\item{\code{type}}{Scale used for the prediction. Either \code{link} (default, predicted positions in the latent space) or \code{response} (predicted counts).}
+
+\item{\code{level}}{Optional integer value the level to be used in obtaining the predictions. Level zero corresponds to the population predictions (default if \code{responses} is not provided) while level one (default) corresponds to predictions after evaluating the variational parameters for the new data.}
+
+\item{\code{envir}}{Environment in which the prediction is evaluated}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Note that \code{level = 1} can only be used if responses are provided,
+as the variational parameters can't be estimated otherwise. In the absence of responses, \code{level} is ignored and the fitted values are returned
+}
+
+\subsection{Returns}{
+A matrix with predictions scores or counts.
 }
 }
 \if{html}{\out{<hr>}}

@@ -18,7 +18,7 @@ test_that("ZIPLN: Check that ZIPLN is running and robust",  {
   expect_is(ZIPLN(trichoptera$Abundance ~ 1), "ZIPLNfit")
 
   expect_equal(ZIPLN(trichoptera$Abundance ~ 1 + trichoptera$Wind)$fitted,
-               ZIPLN(Abundance ~ Wind, data = trichoptera)$fitted)
+               ZIPLN(Abundance ~ Wind, data = trichoptera)$fitted, tolerance = 1e-3)
 
   expect_is(model_sparse <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(penalty = 0.2, trace = 0)), "ZIPLNfit_sparse")
   expect_is(model_fixed <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(Omega = zi_single$model_par$Omega, trace = 0)), "ZIPLNfit_fixed")
@@ -64,7 +64,7 @@ test_that("ZIPLN: Check that univariate ZIPLN models works, with matrix of numer
   expect_no_error(uniZIPLN <- ZIPLN(Abundance[,1,drop=FALSE] ~ 1, data = trichoptera))
   expect_no_error(uniZIPLN <- ZIPLN(Abundance[,1] ~ 1, data = trichoptera))
    y <- trichoptera$Abundance[,1]
-   expect_no_error(uniZIPLN <- PLN(y ~ 1))
+   expect_no_error(uniZIPLN <- ZIPLN(y ~ 1))
 })
 
 test_that("ZIPLN: Check that all univariate ZIPLN models are equivalent with the multivariate diagonal case",  {

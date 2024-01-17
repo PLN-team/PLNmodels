@@ -19,7 +19,6 @@
 #' @importFrom R6 R6Class
 #'
 #' @examples
-#' @examples
 #' \dontrun{
 #' # See other examples in function ZIPLN
 #' data(trichoptera)
@@ -127,13 +126,12 @@ ZIPLNfit <- R6Class(
       private$optimizer$B     <- function(M, X, Omega, control) optim_zipln_B_dense(M, X)
       private$optimizer$zi    <- switch(
         control$ziparam,
-        "single" = function(init_B0, X0, R, config) list(Pi = matrix(    mean(R), n, p)              , B0 = matrix(NA, d0, p)),
-        "row"    = function(init_B0, X0, R, config) list(Pi = matrix(rowMeans(R), n, p)              , B0 = matrix(NA, d0, p)),
-        "col"    = function(init_B0, X0, R, config) list(Pi = matrix(colMeans(R), n, p, byrow = TRUE), B0 = matrix(NA, d0, p)),
+        "single" = function(init_B0, X0, R, config) list(Pi = matrix(    mean(R), nrow(R), p)              , B0 = matrix(NA, d0, p)),
+        "row"    = function(init_B0, X0, R, config) list(Pi = matrix(rowMeans(R), nrow(R), p)              , B0 = matrix(NA, d0, p)),
+        "col"    = function(init_B0, X0, R, config) list(Pi = matrix(colMeans(R), nrow(R), p, byrow = TRUE), B0 = matrix(NA, d0, p)),
         "covar"  = optim_zipln_zipar_covar
       )
       private$optimizer$Omega <- optim_zipln_Omega_full
-      # private$optimizer$vestep <- xxxx
 
     },
 
@@ -257,6 +255,173 @@ ZIPLNfit <- R6Class(
 
     },
 
+    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
+    #' @param B Optional fixed value of the regression parameters
+    #' @param Sigma variance-covariance matrix of the latent variables
+    #' @return A list with three components:
+    #'  * the matrix `M` of variational means,
+    #'  * the matrix `S2` of variational variances
+    #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
+    optimize_vestep = function(covariates, offsets, responses, weights,
+                               B = self$model_par$B,
+                               B0 = self$model_par$B0,
+                               Omega = self$model_par$Omega,
+                               control = ZIPLN_param(backend = "nlopt")$config_optim) {
+
+      n <- nrow(responses)
+      data <- list(Y = responses, X = covariates$PLN, X0 = covariates$ZI, O = offsets)
+      parameters <-
+        list(M = matrix(0, n, self$p), S = matrix(0.1, n, self$p), R = matrix(0, n, self$p))
+
+      # Main loop
+      nb_iter <- 0
+      criterion   <- numeric(control$maxit_out)
+      convergence <- numeric(control$maxit_out)
+
+      vloglik <- -Inf; objective <- Inf
+
+      repeat {
+
+        # Check maxeval
+        if (control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
+          stop_reason <- "maximum number of iterations reached"
+          criterion   <- criterion[1:nb_iter]
+          convergence <- convergence[nb_iter]
+          break
+        }
+
+        Pi <- private$optimizer$zi(
+          init_B0 = B0, X0 = data$X0, R = parameters$R, config = config_default_nlopt
+        )$Pi
+
+        # VE Step
+        new_R <- optim_zipln_R(
+          Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = Pi
+        )
+        optim_new_M <- optim_zipln_M(
+          init_M = parameters$M,
+          Y = data$Y, X = data$X, O = data$O, R = new_R, S = parameters$S, B = B, Omega = Omega,
+          configuration = control
+        )
+        new_M <- optim_new_M$M
+        optim_new_S <- optim_zipln_S(
+          init_S = parameters$S,
+          O = data$O, M = new_M, R = new_R, B = B, diag_Omega = diag(Omega),
+          configuration = control
+        )
+        new_S <- optim_new_S$S
+        # Check convergence
+        new_parameters <- list(R = new_R, M = new_M, S = new_S)
+        nb_iter <- nb_iter + 1
+
+        vloglik <- zipln_vloglik(
+          data$Y, data$X, data$O, Pi, Omega, B, new_R, new_M, new_S
+        )
+
+        criterion[nb_iter] <- new_objective <- -sum(vloglik)
+        convergence[nb_iter]  <- abs(new_objective - objective)/abs(new_objective)
+
+        objective_converged <-
+          (objective - new_objective) <= control$ftol_out |
+          (objective - new_objective)/abs(new_objective) <= control$ftol_out
+
+        parameters_converged <- parameter_list_converged(
+          parameters, new_parameters,
+          xtol_abs = control$xtol_abs, xtol_rel = control$xtol_rel
+        )
+
+        if (parameters_converged | objective_converged) {
+          parameters <- new_parameters
+          stop_reason <- "converged"
+          criterion   <- criterion[1:nb_iter]
+          convergence <- convergence[1:nb_iter]
+          break
+        }
+      }
+
+      list(
+        M      = parameters$M,
+        S      = parameters$S,
+        R      = parameters$R,
+        Ji     = vloglik,
+        monitoring = list(
+          iterations  = nb_iter,
+          message     = stop_reason,
+          objective   = criterion,
+          convergence = convergence)
+      )
+    },
+
+    #' @description Predict position, scores or observations of new data.
+    #' @param newdata A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.
+    #' @param responses Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.
+    #' @param type Scale used for the prediction. Either `link` (default, predicted positions in the latent space) or `response` (predicted counts).
+    #' @param level Optional integer value the level to be used in obtaining the predictions. Level zero corresponds to the population predictions (default if `responses` is not provided) while level one (default) corresponds to predictions after evaluating the variational parameters for the new data.
+    #' @param envir Environment in which the prediction is evaluated
+    #'
+    #' @details
+    #' Note that `level = 1` can only be used if responses are provided,
+    #' as the variational parameters can't be estimated otherwise. In the absence of responses, `level` is ignored and the fitted values are returned
+    #' @return A matrix with predictions scores or counts.
+    predict = function(newdata, responses = NULL, type = c("link", "response"), level = 1, envir = parent.frame()) {
+
+      ## Ignore everything if newdata is not provided
+      if (missing(newdata)) {
+        return(self$fitted)
+      }
+
+      n_new <- nrow(newdata)
+      ## Set level to 0 (to bypass VE step) if responses are not provided
+      if (is.null(responses)) {
+        level <- 0
+      }
+
+      terms <- .extract_terms_zi(as.formula(private$formula))
+
+      ## Extract the model matrices from the new data set with initial formula
+      X <- model.matrix(terms$PLN, newdata, xlev = attr(private$formula, "xlevels")$PLN)
+      if (!is.null(terms$ZI)) X0 <- model.matrix(terms$ZI, frame, xlev = attr(private$formula, "xlevels")$ZI) else X0 <- matrix(NA,0,0)
+
+      O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
+      if (is.null(O)) O <- matrix(0, n_new, self$p)
+
+      ## Optimize M and S if responses are provided,
+      if (level == 1) {
+        VE <- self$optimize_vestep(
+          covariates = list(PLN = X, ZI = X0),
+          offsets    = O,
+          responses  = as.matrix(responses),
+          weights    = rep(1, n_new),
+          B          = private$B,
+          B0         = private$B0,
+          Omega      = private$Omega
+        )
+        R <- VE$R
+        M <- VE$M
+        S <- VE$S
+      } else {
+        # otherwise set R to Pi, M to 0 and S to diag(Sigma)
+        R <- private$Pi[1:nrow(newdata), ]
+        M <- X %*% private$B
+        S <- matrix(diag(private$Sigma), nrow = n_new, ncol = self$p, byrow = TRUE)
+      }
+
+      ## mean latent positions in the parameter space (covariates/offset only)
+      EZ <- O + M
+      rownames(EZ) <- rownames(newdata)
+      colnames(EZ) <- colnames(private$Sigma)
+
+      type <- match.arg(type)
+      results <- switch(
+        type,
+        link = EZ,
+        response = R + (1 - R) * exp(EZ + .5 * S^2),
+
+      )
+      attr(results, "type") <- type
+      results
+    },
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Print functions -----------------------
     #' @description User friendly print method
@@ -309,41 +474,43 @@ ZIPLNfit <- R6Class(
   ##  ACTIVE BINDINGS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   active = list(
-    #' @field n number of samples
+    #' @field n number of samples/sites
     n = function() {nrow(private$M)},
-    #' @field p number of species
-    p = function() {ncol(private$M)},
     #' @field q number of dimensions of the latent space
     q = function() {ncol(private$M)},
-    #' @field d number of covariates
+    #' @field p number of variables/species
+    p = function() {ncol(private$B)},
+    #' @field d number of covariates in the PLN componente
     d = function() {nrow(private$B)},
-    #' @field latent a matrix: values of the latent vector (Z in the model)
-    latent  = function() {private$Z},
-    #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
-    latent_pos  = function() {private$M - private$X %*% private$B},
-    #' @field model_par a list with the matrices of parameters found in the model (B, Sigma, plus some others depending on the variant)
-    model_par  = function() {list(B = private$B, B0 = private$B0, Pi = private$Pi, Omega = private$Omega, Sigma = private$Sigma)},
-    #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
-    var_par    = function() {list(M = private$M, S2 = private$S^2, S = private$S, R = private$R)},
-    #' @field fitted a matrix: fitted values of the observations (A in the model)
-    fitted     = function() {private$R * private$zeros + (1 - private$R) * private$A},
+    #' @field d0 number of covariates in the ZI componente
+    d0 = function() {nrow(private$B0)},
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {
       as.integer(
         self$p * self$d + self$p * (self$p + 1)/2 +
           switch(private$ziparam,
-               "single" = 1,
-               "row"    = self$n,
-               "col"    =  self$p,
-               "covar"  =  self$p * self$d)
+                 "single" = 1,
+                 "row"    = self$n,
+                 "col"    =  self$p,
+                 "covar"  =  self$p * self$d)
       )
     },
+    #' @field model_par a list with the matrices of parameters found in the model (B, Sigma, plus some others depending on the variant)
+    model_par  = function() {list(B = private$B, B0 = private$B0, Pi = private$Pi, Omega = private$Omega, Sigma = private$Sigma)},
+    #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
+    var_par    = function() {list(M = private$M, S2 = private$S^2, S = private$S, R = private$R)},
+    #' @field optim_par a list with parameters useful for monitoring the optimization
+    optim_par   = function() {private$monitoring},
+    #' @field latent a matrix: values of the latent vector (Z in the model)
+    latent  = function() {private$Z},
+    #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
+    latent_pos  = function() {private$M - private$X %*% private$B},
+    #' @field fitted a matrix: fitted values of the observations (A in the model)
+    fitted     = function() {private$R * private$zeros + (1 - private$R) * private$A},
     #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal", "full" or "sparse")
     vcov_model  = function() {private$covariance},
     #' @field zi_model character: the model used for the zero inflation (either "single", "row", "col" or "covar")
     zi_model  = function() {private$ziparam},
-    #' @field optim_par a list with parameters useful for monitoring the optimization
-    optim_par   = function() {private$monitoring},
     #' @field loglik (weighted) variational lower bound of the loglikelihood
     loglik      = function() {sum(private$Ji) },
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
@@ -381,7 +548,6 @@ ZIPLNfit <- R6Class(
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #'
-#' @rdname ZIPLNfit_diagonal
 #' @importFrom R6 R6Class
 #'
 #' @examples
@@ -435,7 +601,6 @@ ZIPLNfit_diagonal <- R6Class(
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #'
-#' @rdname ZIPLNfit_spherical
 #' @importFrom R6 R6Class
 #'
 #' @examples
@@ -492,7 +657,6 @@ ZIPLNfit_spherical <- R6Class(
 #' @param control a list for controlling the optimization. See details.
 #' @param config part of the \code{control} argument which configures the optimizer
 #'
-#' @rdname ZIPLNfit_fixed
 #' @importFrom R6 R6Class
 #'
 #' @examples
@@ -554,7 +718,6 @@ ZIPLNfit_fixed <- R6Class(
 #' @param control a list for controlling the optimization. See details.
 #' @param config part of the \code{control} argument which configures the optimizer
 #'
-#' @rdname ZIPLNfit_fixed
 #' @importFrom R6 R6Class
 #'
 #' @examples

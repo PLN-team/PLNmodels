@@ -546,7 +546,7 @@ PLNfit <- R6Class(
         S <- VE$S
       } else {
         # otherwise set M = 0 and S = diag(Sigma)
-        M <- matrix(1, nrow = n_new, ncol = self$p)
+        M <- matrix(0, nrow = n_new, ncol = self$p)
         S <- matrix(diag(private$Sigma), nrow = n_new, ncol = self$p, byrow = TRUE)
       }
 

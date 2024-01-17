@@ -172,61 +172,6 @@ extract_model <- function(call, envir) {
   list(Y = Y, X = X, O = O, miss = is.na(Y), w = w, formula = call$formula)
 }
 
-#' @importFrom stats .getXlevels
-extract_model_zi <- function(call, envir, xlev = NULL) {
-
-  ## create the call for the model frame
-  call_frame <- call[c(1L, match(c("formula", "data", "subset"), names(call), 0L))]
-  call_frame[[1]] <- quote(stats::model.frame)
-
-  formula <- as.formula(call$formula)
-  ff <- formula
-
-  ## Check if a ZI specific formula has been
-  if (length(ff[[3]]) > 1 && identical(ff[[3]][[1]], as.name("|"))) {
-    zicovar <- TRUE
-    ff_zi <-  ~. ; ff_zi[[3]]  <- ff[[3]][[3]] ; ff_zi[[2]]  <- NULL
-    ff_pln <- ~. ; ff_pln[[3]] <- ff[[3]][[2]] ; ff_pln[[2]] <- NULL
-    tt_zi  <- terms(ff_zi)  ; attr(tt_zi , "offset") <- NULL
-    tt_pln <- terms(ff_pln) ; attr(tt_pln, "offset") <- NULL
-    formula[[3]][1] <- call("+")
-    if (tt_zi[[2]] == "row") {ziparam <- "row"; formula[[3]][[3]] <- NULL}
-    if (tt_zi[[2]] == "col") {ziparam <- "col"; formula[[3]][[3]] <- NULL}
-    call_frame$formula <- formula
-  } else {
-    ff_pln <- ff
-    tt_pln <- terms(ff_pln) ; attr(tt_pln, "offset") <- NULL
-    zicovar <- FALSE
-  }
-
-  ## eval the call in the parent environment
-  frame <- eval(call_frame, envir)
-  ## create the set of matrices to fit the PLN model
-  Y <- frame[[1L]] ## model.response oversimplifies into a numeric when a single variable is involved
-  ## model.response oversimplifies into a numeric when a single variable is involved
-  if (is.null(dim(Y))) Y <- matrix(Y, nrow = length(Y), ncol = 1)
-  if (ncol(Y) == 1 & is.null(colnames(Y))) colnames(Y) <- "Y"
-
-  ## Extract the design matrices for ZI and PLN components
-  X  <- model.matrix(tt_pln, frame, xlev = xlev$pln)
-  if (zicovar) X0 <- model.matrix(tt_zi, frame, xlev = xlev$zi) else X0 <- matrix(NA,0,0)
-
-  # Offsets are only considered for the PLN component
-  O <- model.offset(frame)
-  if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
-  if (is.vector(O)) O <- O %o% rep(1, ncol(Y))
-
-  # Model weights
-  w <- model.weights(frame)
-  if (is.null(w)) {
-    w <- rep(1.0, nrow(Y))
-  } else {
-    stopifnot(all(w > 0) && length(w) == nrow(Y))
-  }
-
-  list(Y = Y, X = X, X0 = X0, O = O, w = w, formula = call$formula, zicovar = zicovar)
-}
-
 edge_to_node <- function(x, n = max(x)) {
   x <- x - 1 ## easier for arithmetic to number edges starting from 0
   n.node <- round((1 + sqrt(1 + 8*n)) / 2) ## n.node * (n.node -1) / 2 = n (if integer)
@@ -351,41 +296,3 @@ compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
        M = matrix(fits$residuals, n, p),
        S = matrix(s, n, p))
 }
-
-#' #' Helper function for PLN initialization.
-#' #'
-#' #' @description
-#' #' Barebone function to compute starting points for B, M and S when fitting a PLN. Mostly intended for internal use.
-#' #'
-#' #' @param Y Response count matrix
-#' #' @param X Design matrix for the count (PLN) component
-#' #' @param X0 Design matrix for the zero (Bernoulli) component
-#' #' @param O Offset matrix (in log-scale)
-#' #' @param w Weight vector (defaults to 1)
-#' #' @param s Scale parameter for S (defaults to 0.1)
-#' #' @return a named list of starting values for model parameter B and variational parameters M and S used in the iterative optimization algorithm of [PLN()]
-#' #'
-#' #' @details The default strategy to estimate B and M is to fit a linear model with covariates `X` to the response count matrix (after adding a pseudocount of 1, scaling by the offset and taking the log). The regression matrix is used to initialize `B` and the residuals to initialize `M`. `S` is initialized as a constant conformable matrix with value `s`.
-#' #'
-#' #' @rdname compute_ZIPLN_starting_point
-#' #' @examples
-#' #' \dontrun{
-#' #' data(barents)
-#' #' Y <- barents$Abundance
-#' #' X  <- model.matrix(Abundance ~ 1 + Temperature, data = barents)
-#' #' X0 <- model.matrix(Abundance ~ 0 + Longitude, data = barents)
-#' #' O <- log(barents$Offset)
-#' #' w <-- rep(1, nrow(Y))
-#' #' compute_ZIPLN_starting_point(Y, X, O, w)
-#' #' }
-#' #'
-#' #' @importFrom stats lm.fit
-#' #' @export
-#' compute_ZIPLN_starting_point <- function(Y, X, X0, O, w, s = 0.1) {
-#'   # Y = responses, X = covariates, O = offsets (in log scale), w = weights
-#'   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-#'   fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
-#'   list(B = matrix(fits$coefficients, d, p),
-#'        M = matrix(fits$residuals, n, p),
-#'        S = matrix(s, n, p))
-#' }
