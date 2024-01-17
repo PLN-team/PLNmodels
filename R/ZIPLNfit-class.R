@@ -256,8 +256,9 @@ ZIPLNfit <- R6Class(
     },
 
     #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
-    #' @param B Optional fixed value of the regression parameters
-    #' @param Sigma variance-covariance matrix of the latent variables
+    #' @param B Optional fixed value of the regression parameters in the PLN component
+    #' @param B0 Optional fixed value of the regression parameters in the ZI component
+    #' @param Omega inverse variance-covariance matrix of the latent variables
     #' @return A list with three components:
     #'  * the matrix `M` of variational means,
     #'  * the matrix `S2` of variational variances

@@ -205,7 +205,7 @@ Result of one call to the VE step of the optimization procedure: optimal variati
   B = self$model_par$B,
   B0 = self$model_par$B0,
   Omega = self$model_par$Omega,
-  control = ZIPLN_param(backend = "nlopt")
+  control = ZIPLN_param(backend = "nlopt")$config_optim
 )}\if{html}{\out{</div>}}
 }
 
@@ -220,11 +220,13 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 
 \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
 
-\item{\code{B}}{Optional fixed value of the regression parameters}
+\item{\code{B}}{Optional fixed value of the regression parameters in the PLN component}
+
+\item{\code{B0}}{Optional fixed value of the regression parameters in the ZI component}
+
+\item{\code{Omega}}{inverse variance-covariance matrix of the latent variables}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
-
-\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
 }
 \if{html}{\out{</div>}}
 }

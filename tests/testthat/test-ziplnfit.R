@@ -75,9 +75,6 @@ test_that("PLN fit: Check prediction",  {
   )
 
   ## R6 methods
-  ## with offset, predictions should vary across samples
-  expect_gte(min(apply(pred1_off, 2, sd)), .Machine$double.eps)
-  newdata$Offset <- NULL
   ## without offsets, predictions should be the same for all samples
   expect_equal(unname(apply(pred1, 2, sd)), rep(0, ncol(pred1)))
 

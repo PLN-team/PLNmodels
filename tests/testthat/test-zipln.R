@@ -71,24 +71,25 @@ test_that("ZIPLN: Check that all univariate ZIPLN models are equivalent with the
 
   p <- ncol(trichoptera$Abundance)
   Offset <- trichoptera$Offset
+  Wind <- trichoptera$Wind
 
   univariate_full <- lapply(1:p, function(j) {
     Abundance <- trichoptera$Abundance[, j, drop = FALSE]
-    ZIPLN(Abundance ~ 1 + offset(log(Offset)), control = ZIPLN_param(trace = 0))
+    ZIPLN(Abundance ~ 1 + offset(log(Offset)) | Wind, control = ZIPLN_param(trace = 0))
   })
 
   univariate_diagonal <- lapply(1:p, function(j) {
     Abundance <- trichoptera$Abundance[, j, drop = FALSE]
-    ZIPLN(Abundance ~ 1 + offset(log(Offset)), control = ZIPLN_param(covariance = "diagonal", trace = 0))
+    ZIPLN(Abundance ~ 1 + offset(log(Offset)) | Wind, control = ZIPLN_param(covariance = "diagonal", trace = 0))
   })
 
   univariate_spherical <- lapply(1:p, function(j) {
     Abundance <- trichoptera$Abundance[, j, drop = FALSE]
-    ZIPLN(Abundance ~ 1 + offset(log(Offset)), control = ZIPLN_param(covariance = "spherical", trace = 0))
+    ZIPLN(Abundance ~ 1 + offset(log(Offset)) | Wind, control = ZIPLN_param(covariance = "spherical", trace = 0))
   })
 
   multivariate_diagonal <-
-    ZIPLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, control = ZIPLN_param(covariance = "diagonal", trace = 0))
+    ZIPLN(Abundance ~ 1 + offset(log(Offset)) | Wind, data = trichoptera, control = ZIPLN_param(covariance = "diagonal", trace = 0))
 
   expect_true(all.equal(
     map_dbl(univariate_spherical, "nb_param"),

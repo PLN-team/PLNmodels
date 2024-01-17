@@ -8,38 +8,38 @@
     tt_zi  <- terms(ff_zi)  ; attr(tt_zi , "offset") <- NULL
     tt_pln <- terms(ff_pln) ; attr(tt_pln, "offset") <- NULL
     formula[[3]][1] <- call("+")
-    xlevels <- list(PLN = .getXlevels(tt_pln, ff_pln), ZI = .getXlevels(tt_zi, ff_zi))
   } else {
     ff_pln <- formula
     ff_zi <- NULL
     tt_pln <- terms(ff_pln) ; attr(tt_pln, "offset") <- NULL
     tt_zi  <- NULL
     zicovar <- FALSE
-    xlevels <- list(PLN = .getXlevels(tt_pln, ff_pln), ZI = NULL)
   }
 
-  list(ZI = tt_zi, PLN = tt_pln, formula = formula, xlevels = xlevels, zicovar = zicovar)
+  list(ZI = tt_zi, PLN = tt_pln, formula = formula, zicovar = zicovar)
 }
 
 #' @importFrom stats .getXlevels
-extract_model_zi <- function(call, envir, xlev = NULL) {
+extract_model_zi <- function(call, envir) {
 
   ## create the call for the model frame
   call_args  <- call[match(c("formula", "data", "subset", "weights"), names(call), 0L)]
   call_args <- c(as.list(call_args), list(xlev = attr(call$formula, "xlevels"), na.action = NULL))
 
   ## Extract terms for ZI and PLN components
-  terms <- .extract_terms_zi(as.formula(call$formula))
-
+  terms <- .extract_terms_zi(as.formula(call$formula, env = envir))
   ## eval the call in the parent environment with adjustement due to ZI terms
   call_args$formula <- terms$formula
-  attr(call$formula, "xlevels") <- terms$xlevels
   frame <- do.call(stats::model.frame, call_args, envir = envir)
 
-  ## Create the set of matrices to fit the PLN model
+  ## Save level for predict function
+  xlevels <- list(PLN = .getXlevels(terms$PLN, frame))
+  if (!is.null(terms$ZI)) xlevels$ZI = .getXlevels(terms$ZI, frame)
+  attr(call$formula, "xlevels") <- xlevels
 
-  X  <- model.matrix(terms$PLN, frame, xlev = terms$xlevel$PLN)
-  if (terms$zicovar) X0 <- model.matrix(terms$ZI, frame, xlev = terms$xlevel$ZI) else X0 <- matrix(NA,0,0)
+  ## Create the set of matrices to fit the PLN model
+  X  <- model.matrix(terms$PLN, frame, xlev = xlevels$PLN)
+  if (terms$zicovar) X0 <- model.matrix(terms$ZI, frame, xlev = xlevels$ZI) else X0 <- matrix(NA,0,0)
 
   Y <- model.response(frame)
   ## model.response oversimplifies into a numeric when a single variable is involved

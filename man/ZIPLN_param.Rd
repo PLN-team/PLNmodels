@@ -2,7 +2,7 @@
 % Please edit documentation in R/ZIPLN.R
 \name{ZIPLN_param}
 \alias{ZIPLN_param}
-\title{Control of a PLN fit}
+\title{Control of a ZIPLN fit}
 \usage{
 ZIPLN_param(
   backend = c("nlopt"),

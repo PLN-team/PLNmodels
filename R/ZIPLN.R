@@ -35,16 +35,7 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 
   ## extract the data matrices and weights
   args <- extract_model_zi(match.call(expand.dots = FALSE), parent.frame())
-
-  ## define default control parameters for optim and eventually overwrite them by user-defined parameters
-  control$rho     <- 0
   control$ziparam <- ifelse((args$zicovar), "covar", match.arg(zi))
-  control$penalize_intercept <- FALSE
-  if (control$rho > 0) control$covariance <- "sparse"
-
-  ## handling intercept term for penalized regression
-  if (attr(terms(as.formula(args$formula)), "intercept") > 0 & !control$penalize_intercept)
-    control$ind_intercept <- match("(Intercept)", colnames(args$X))
 
   ## initialization
   if (control$trace > 0) cat("\n Initialization...")
@@ -68,7 +59,7 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 ## -----------------------------------------------------------------
 ##  Series of setter to default parameters for user's main functions
 
-#' Control of a PLN fit
+#' Control of a ZIPLN fit
 #'
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
