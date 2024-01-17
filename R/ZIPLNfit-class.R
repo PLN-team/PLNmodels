@@ -379,10 +379,10 @@ ZIPLNfit <- R6Class(
       terms <- .extract_terms_zi(as.formula(private$formula))
 
       ## Extract the model matrices from the new data set with initial formula
-      X <- model.matrix(terms$PLN, newdata, xlev = attr(private$formula, "xlevels")$PLN)
-      if (!is.null(terms$ZI)) X0 <- model.matrix(terms$ZI, frame, xlev = attr(private$formula, "xlevels")$ZI) else X0 <- matrix(NA,0,0)
+      X <- model.matrix(terms$PLN[-2], newdata, xlev = attr(private$formula, "xlevels")$PLN)
+      if (!is.null(terms$ZI)) X0 <- model.matrix(terms$ZI, newdata, xlev = attr(private$formula, "xlevels")$ZI) else X0 <- matrix(NA,0,0)
 
-      O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
+      O <- model.offset(model.frame(terms$PLN[-2], newdata))
       if (is.null(O)) O <- matrix(0, n_new, self$p)
 
       ## Optimize M and S if responses are provided,
