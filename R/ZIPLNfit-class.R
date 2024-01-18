@@ -231,7 +231,7 @@ ZIPLNfit <- R6Class(
         B0     = parameters$B0,
         Pi     = parameters$Pi,
         Omega  = parameters$Omega,
-        Sigma =  solve(parameters$Omega),
+        Sigma =  tryCatch(Matrix::solve(symmpart(parameters$Omega)), error = function(e) {e}),
         M      = parameters$M,
         S      = parameters$S,
         R      = parameters$R,
