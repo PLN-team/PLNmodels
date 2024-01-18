@@ -29,6 +29,32 @@ rbind(
   as.data.frame(row.names = c("full", "diagonal", "spherical")) %>%
   knitr::kable()
 
+## ZIPLN
+system.time(myZIPLN_full_covar  <- ZIPLN(Abundance ~ 0 + tree + offset(log(Offset)) | 0 + tree, data = oaks, control = ZIPLN_param(covariance = "full")))
+system.time(myZIPLN_full_row    <- ZIPLN(Abundance ~ 0 + tree + offset(log(Offset)), zi = "row", data = oaks, control = ZIPLN_param(covariance = "full")))
+system.time(myZIPLN_full_col    <- ZIPLN(Abundance ~ 0 + tree + offset(log(Offset)), zi = "col", data = oaks, control = ZIPLN_param(covariance = "full")))
+system.time(myZIPLN_full_single <- ZIPLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = ZIPLN_param(covariance = "full")))
+system.time(myZIPLN_diagonal_covar  <- ZIPLN(Abundance ~ 0 + tree + offset(log(Offset)) | 0 + tree, data = oaks, control = ZIPLN_param(covariance = "diagonal")))
+system.time(myZIPLN_diagonal_row    <- ZIPLN(Abundance ~ 0 + tree + offset(log(Offset)), zi = "row", data = oaks, control = ZIPLN_param(covariance = "diagonal")))
+system.time(myZIPLN_diagonal_col    <- ZIPLN(Abundance ~ 0 + tree + offset(log(Offset)), zi = "col", data = oaks, control = ZIPLN_param(covariance = "diagonal")))
+system.time(myZIPLN_diagonal_single <- ZIPLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = ZIPLN_param(covariance = "diagonal")))
+
+rbind(
+  myZIPLN_full_single$criteria,
+  myZIPLN_full_row$criteria,
+  myZIPLN_full_col$criteria,
+  myZIPLN_full_covar$criteria,
+  myZIPLN_diagonal_single$criteria,
+  myZIPLN_diagonal_row$criteria,
+  myZIPLN_diagonal_col$criteria,
+  myZIPLN_diagonal_covar$criteria
+) %>%
+  as.data.frame(row.names = c("ZIPLN full single", "ZIPLN full column prob", "ZIPLN full row prob", "ZIPLN full covar prob",
+                              "ZIPLN diagonal single", "ZIPLN diagonal column prob", "ZIPLN diagonal row prob", "ZIPLN diagonal covar prob")) %>%
+  knitr::kable()
+
+
+
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks)
 plot(myLDA_tree)
