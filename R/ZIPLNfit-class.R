@@ -1,8 +1,8 @@
 #' An R6 Class to represent a ZIPLNfit
 #'
-#' @description The function [ZIPLN()] fit a model which is an instance of a object with class [`ZIPLNfit`].
+#' @description The function [ZIPLN()] fits a model which is an instance of an object with class [`ZIPLNfit`].
 #'
-#' This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
+#' This class comes with a set of R6 methods, some of which are useful for the end-user and exported as S3 methods.
 #' See the documentation for [coef()], [sigma()], [predict()].
 #'
 #' Fields are accessed via active binding and cannot be changed by the user.
@@ -40,11 +40,11 @@ ZIPLNfit <- R6Class(
     #' Update a [`ZIPLNfit`] object
     #' @param B     matrix of regression parameters in the Poisson lognormal component
     #' @param B0    matrix of regression parameters in the zero inflated component
-    #' @param Pi    Zero inflated probability parameter (either scalar, row-vector, col-vector of matrix)
+    #' @param Pi    Zero inflated probability parameter (either scalar, row-vector, col-vector or matrix)
     #' @param Omega precision matrix of the latent variables
     #' @param Sigma covariance matrix of the latent variables
     #' @param M     matrix of mean vectors for the variational approximation
-    #' @param S     matrix of variance parameters for the variational approximation
+    #' @param S     matrix of standard deviation parameters for the variational approximation
     #' @param R     matrix of probabilities for the variational approximation
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
     #' @param Z     matrix of latent vectors (includes covariates and offset effects)
@@ -85,6 +85,7 @@ ZIPLNfit <- R6Class(
       M  <- matrix(0, n, p)
       B  <- matrix(0, d , p)
       B0 <- matrix(0, d0, p)
+      ## Feature-wise univariate (ZI)poisson regression as starting point for ZIPLN
       for (j in 1:p) {
         y = responses[, j]
         if (min(y) == 0) {
@@ -144,7 +145,7 @@ ZIPLNfit <- R6Class(
         list(Omega = NA, B0 = private$B0, B = private$B, Pi = private$Pi,
              M = private$M, S = private$S, R = private$R)
 
-      # Main loop
+      # Outer loop
       nb_iter <- 0
       criterion   <- numeric(control$maxit_out)
       convergence <- numeric(control$maxit_out)
@@ -160,24 +161,32 @@ ZIPLNfit <- R6Class(
           break
         }
 
-        # M Step
+        ### M Step
+        # PLN part
         new_Omega <- private$optimizer$Omega(
           M = parameters$M, X = data$X, B = parameters$B, S = parameters$S
         )
+        ## can possibly be simplified to if we change the prototype of optimizer$B to keep only relevant arguments
+        # new_B <- private$optimizer$B(
+        #   M = parameters$M, X = data$X
+        # )
         new_B <- private$optimizer$B(
           M = parameters$M, X = data$X, Omega = new_Omega, control
         )
 
+        # ZI part
         optim_new_zipar <- private$optimizer$zi(
           init_B0 = parameters$B0, X0 = data$X0, R = parameters$R, config = control
         )
         new_B0 <- optim_new_zipar$B0
         new_Pi <- optim_new_zipar$Pi
 
-        # VE Step
+        ### VE Step
+        # ZI part
         new_R <- optim_zipln_R(
           Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = new_Pi
         )
+        # PLN part
         optim_new_M <- optim_zipln_M(
           init_M = parameters$M,
           Y = data$Y, X = data$X, O = data$O, R = new_R, S = parameters$S, B = new_B, Omega = new_Omega,
@@ -255,14 +264,16 @@ ZIPLNfit <- R6Class(
 
     },
 
-    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
+    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S, R) and corresponding log likelihood values for fixed model parameters (Sigma, B, B0). Intended to position new data in the latent space.
     #' @param B Optional fixed value of the regression parameters in the PLN component
     #' @param B0 Optional fixed value of the regression parameters in the ZI component
     #' @param Omega inverse variance-covariance matrix of the latent variables
     #' @return A list with three components:
     #'  * the matrix `M` of variational means,
-    #'  * the matrix `S2` of variational variances
-    #'  * the vector `log.lik` of (variational) log-likelihood of each new observation
+    #'  * the matrix `S` of variational standard deviations
+    #'  * the matrix `R` of variational ZI probabilities
+    #'  * the vector `Ji` of (variational) log-likelihood of each new observation
+    #'  * a list `monitoring` with information about convergence status
     optimize_vestep = function(covariates, offsets, responses, weights,
                                B = self$model_par$B,
                                B0 = self$model_par$B0,
@@ -274,7 +285,7 @@ ZIPLNfit <- R6Class(
       parameters <-
         list(M = matrix(0, n, self$p), S = matrix(0.1, n, self$p), R = matrix(0, n, self$p))
 
-      # Main loop
+      # Outer loop
       nb_iter <- 0
       criterion   <- numeric(control$maxit_out)
       convergence <- numeric(control$maxit_out)
@@ -354,8 +365,8 @@ ZIPLNfit <- R6Class(
     },
 
     #' @description Predict position, scores or observations of new data.
-    #' @param newdata A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.
-    #' @param responses Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.
+    #' @param newdata A data frame in which to look for variables with which to predict. If omitted, the fitted values are returned.
+    #' @param responses Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest is in testing the model.
     #' @param type Scale used for the prediction. Either `link` (default, predicted positions in the latent space) or `response` (predicted counts).
     #' @param level Optional integer value the level to be used in obtaining the predictions. Level zero corresponds to the population predictions (default if `responses` is not provided) while level one (default) corresponds to predictions after evaluating the variational parameters for the new data.
     #' @param envir Environment in which the prediction is evaluated
@@ -380,8 +391,14 @@ ZIPLNfit <- R6Class(
       terms <- .extract_terms_zi(as.formula(private$formula))
 
       ## Extract the model matrices from the new data set with initial formula
+      # PLN part
       X <- model.matrix(terms$PLN[-2], newdata, xlev = attr(private$formula, "xlevels")$PLN)
-      if (!is.null(terms$ZI)) X0 <- model.matrix(terms$ZI, newdata, xlev = attr(private$formula, "xlevels")$ZI) else X0 <- matrix(NA,0,0)
+      # ZI part
+      if (!is.null(terms$ZI)) {
+        X0 <- model.matrix(terms$ZI, newdata, xlev = attr(private$formula, "xlevels")$ZI)
+      } else {
+        X0 <- matrix(NA,0,0)
+      }
 
       O <- model.offset(model.frame(terms$PLN[-2], newdata))
       if (is.null(O)) O <- matrix(0, n_new, self$p)
@@ -401,7 +418,7 @@ ZIPLNfit <- R6Class(
         M <- VE$M
         S <- VE$S
       } else {
-        # otherwise set R to Pi, M to 0 and S to diag(Sigma)
+        # otherwise set R to Pi, M to XB and S to sqrt(diag(Sigma))
         R <- private$Pi[1:nrow(newdata), ]
         M <- X %*% private$B
         S <- matrix(diag(private$Sigma), nrow = n_new, ncol = self$p, byrow = TRUE)
@@ -453,12 +470,12 @@ ZIPLNfit <- R6Class(
     formula    = NA, # the formula call for the model as specified by the user
     X          = NA, # design matrix for the PLN component
     X0         = NA, # design matrix for the ZI component
-    B          = NA, # the model parameters for the covariable effect (PLN part)
-    B0         = NA, # the model parameters for the covariate effects ('0'/Bernoulli part)
-    Pi         = NA, # the probability parameters for the '0'/Bernoulli part
+    B          = NA, # the model parameters for the covariate effects (PLN part)
+    B0         = NA, # the model parameters for the covariate effects (ZI part)
+    Pi         = NA, # the probability parameters for the ZI part
     Omega      = NA, # the precision matrix
     Sigma      = NA, # the covariance matrix
-    S          = NA, # the variational parameters for the variances
+    S          = NA, # the variational parameters for the standard deviations
     M          = NA, # the variational parameters for the means
     Z          = NA, # the matrix of latent variable
     P          = NA, # the matrix of latent variable without covariates effect
@@ -467,7 +484,7 @@ ZIPLNfit <- R6Class(
     R          = NA, # probabilities for being observed
     Ji         = NA, # element-wise approximated loglikelihood
     covariance = NA, # a string describing the covariance model
-    ziparam    = NA, # a string describing the ZI parametrisation
+    ziparam    = NA, # a string describing the ZI model (single, col, row, covar)
     optimizer  = list(), # list of links to the functions doing the optimization
     monitoring = list()  # list with optimization monitoring quantities
   ),
@@ -481,16 +498,16 @@ ZIPLNfit <- R6Class(
     q = function() {ncol(private$M)},
     #' @field p number of variables/species
     p = function() {ncol(private$B)},
-    #' @field d number of covariates in the PLN componente
+    #' @field d number of covariates in the PLN part
     d = function() {nrow(private$B)},
-    #' @field d0 number of covariates in the ZI componente
+    #' @field d0 number of covariates in the ZI part
     d0 = function() {nrow(private$B0)},
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {
       as.integer(
-        self$p * self$d + self$p * (self$p + 1)/2 +
+        self$p * self$d + self$p * (self$p + 1L)/2L +
           switch(private$ziparam,
-                 "single" = 1,
+                 "single" = 1L,
                  "row"    = self$n,
                  "col"    =  self$p,
                  "covar"  =  self$p * self$d)
@@ -564,7 +581,7 @@ ZIPLNfit_diagonal <- R6Class(
   classname = "ZIPLNfit_diagonal",
   inherit = ZIPLNfit,
   public  = list(
-    #' @description Initialize a [`PLNfit`] model
+    #' @description Initialize a [`ZIPLNfit_diagonal`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$optimizer$Omega <- optim_zipln_Omega_diagonal
@@ -575,7 +592,7 @@ ZIPLNfit_diagonal <- R6Class(
     nb_param   = function() {
       res <-  self$p * self$d + self$p +
         switch(private$ziparam,
-               "single" = 1,
+               "single" = 1L,
                "row"    = self$n,
                "col"    =  self$p,
                "covar"  =  self$p * self$d)
@@ -617,7 +634,7 @@ ZIPLNfit_spherical <- R6Class(
   classname = "ZIPLNfit_spherical",
   inherit = ZIPLNfit,
   public  = list(
-    #' @description Initialize a [`PLNfit`] model
+    #' @description Initialize a [`ZIPLNfit_spherical`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$optimizer$Omega <- optim_zipln_Omega_spherical
@@ -626,9 +643,9 @@ ZIPLNfit_spherical <- R6Class(
   active = list(
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {
-      res <-  self$p * self$d + 1 +
+      res <-  self$p * self$d + 1L +
         switch(private$ziparam,
-               "single" = 1,
+               "single" = 1L,
                "row"    = self$n,
                "col"    =  self$p,
                "covar"  =  self$p * self$d)
@@ -651,12 +668,9 @@ ZIPLNfit_spherical <- R6Class(
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
 #' @param weights an optional vector of observation weights to be used in the fitting process.
-#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
-#' @param config part of the \code{control} argument which configures the optimizer
 #'
 #' @importFrom R6 R6Class
 #'
@@ -674,7 +688,7 @@ ZIPLNfit_fixed <- R6Class(
   classname = "ZIPLNfit_fixed",
   inherit = ZIPLNfit,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  ## PUBLIC MEMBERS ----
+  ## PUBLIC MEMBERS
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
     #' @description Initialize a [`ZIPLNfit_fixed`] model
@@ -689,7 +703,7 @@ ZIPLNfit_fixed <- R6Class(
     nb_param   = function() {
       res <-  self$p * self$d +
         switch(private$ziparam,
-               "single" = 1,
+               "single" = 1L,
                "row"    = self$n,
                "col"    =  self$p,
                "covar"  =  self$p * self$d)
@@ -712,12 +726,9 @@ ZIPLNfit_fixed <- R6Class(
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which PLN is called.
 #' @param weights an optional vector of observation weights to be used in the fitting process.
-#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
-#' @param config part of the \code{control} argument which configures the optimizer
 #'
 #' @importFrom R6 R6Class
 #'
@@ -734,7 +745,7 @@ ZIPLNfit_sparse <- R6Class(
   classname = "ZIPLNfit_sparse",
   inherit = ZIPLNfit,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  ## PUBLIC MEMBERS ----
+  ## PUBLIC MEMBERS
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
     #' @description Initialize a [`ZIPLNfit_fixed`] model
@@ -752,7 +763,7 @@ ZIPLNfit_sparse <- R6Class(
     nb_param   = function() {
       res <-  self$p * self$d + (sum(private$Omega != 0) - self$p)/2L +
         switch(private$ziparam,
-               "single" = 1,
+               "single" = 1L,
                "row"    = self$n,
                "col"    =  self$p,
                "covar"  =  self$p * self$d)
@@ -766,6 +777,10 @@ ZIPLNfit_sparse <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 )
 
+
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  UTILS                  #############################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Test convergence for a named list of parameters
 # oldp, newp: named list of parameters
