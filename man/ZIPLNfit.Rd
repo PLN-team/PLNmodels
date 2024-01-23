@@ -250,12 +250,12 @@ A list with three components:
 \if{html}{\out{<a id="method-ZIPLNfit-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-ZIPLNfit-predict}{}}}
 \subsection{Method \code{predict()}}{
-Predict position, scores or observations of new data.
+Predict position, scores or observations of new data. See \code{\link[=predict.ZIPLNfit]{predict.ZIPLNfit()}} for the S3 method and additional details
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$predict(
   newdata,
   responses = NULL,
-  type = c("link", "response"),
+  type = c("link", "response", "deflated"),
   level = 1,
   envir = parent.frame()
 )}\if{html}{\out{</div>}}
@@ -264,11 +264,11 @@ Predict position, scores or observations of new data.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{newdata}}{A data frame in which to look for variables with which to predict. If omitted, the fitted values are returned.}
+\item{\code{newdata}}{A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.}
 
-\item{\code{responses}}{Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest is in testing the model.}
+\item{\code{responses}}{Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.}
 
-\item{\code{type}}{Scale used for the prediction. Either \code{link} (default, predicted positions in the latent space) or \code{response} (predicted counts).}
+\item{\code{type}}{Scale used for the prediction. Either \code{"link"} (default, predicted positions in the latent space), \code{"response"} (predicted average counts, accounting for zero-inflation) or \code{"deflated"} (predicted average counts, not accounting for zero-inflation and using only the PLN part of the model).}
 
 \item{\code{level}}{Optional integer value the level to be used in obtaining the predictions. Level zero corresponds to the population predictions (default if \code{responses} is not provided) while level one (default) corresponds to predictions after evaluating the variational parameters for the new data.}
 
@@ -276,11 +276,6 @@ Predict position, scores or observations of new data.
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Details}{
-Note that \code{level = 1} can only be used if responses are provided,
-as the variational parameters can't be estimated otherwise. In the absence of responses, \code{level} is ignored and the fitted values are returned
-}
-
 \subsection{Returns}{
 A matrix with predictions scores or counts.
 }
