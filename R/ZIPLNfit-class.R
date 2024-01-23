@@ -345,8 +345,6 @@ ZIPLNfit <- R6Class(
           break
         }
 
-        parameters <- new_parameters
-        objective  <- new_objective
       }
 
       list(
@@ -401,7 +399,6 @@ ZIPLNfit <- R6Class(
       O <- model.offset(model.frame(terms$PLN[-2], newdata))
       if (is.null(O)) O <- matrix(0, n_new, self$p)
 
-      browser()
       ## Optimize M and S if responses are provided,
       if (level == 1) {
         VE <- self$optimize_vestep(
