@@ -54,10 +54,9 @@ test_that("PLN fit: Check prediction",  {
   pred1     <- predict(model1, newdata = newdata, type = "response")
   pred1_off <- predict(model1_off, newdata = newdata, type = "response")
   pred2     <- predict(model2, newdata = newdata, type = "response")
+  pred2_def <- predict(model2, newdata = newdata, type = "deflated")
   pred2_ve  <- predict(model2, newdata = newdata, type = "response",
                       responses = newdata$Abundance)
-  pred3_ve  <- predict(model3, newdata = newdata, type = "response",
-                       responses = newdata$Abundance)
 
   ## predict returns fitted values if no data is provided
   expect_equal(model2$predict(), model2$fitted)
@@ -73,6 +72,9 @@ test_that("PLN fit: Check prediction",  {
     mean((newdata$Abundance - pred2)^2),
     mean((newdata$Abundance - pred2_ve)^2)
   )
+
+  ## Removing zero-inflation leads to higher predicted values
+  expect_gt(min(pred2_ve, pred2_def), 0)
 
   ## R6 methods
   ## without offsets, predictions should be the same for all samples
