@@ -112,6 +112,27 @@
     <loc>https://pln-team.github.io/PLNmodels/reference/PLNnetworkfit.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLN.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLN_param.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLNfit.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLNfit_diagonal.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLNfit_fixed.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLNfit_sparse.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLNfit_spherical.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/barents.html</loc>
   </url>
   <url>
@@ -122,6 +143,9 @@
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/coef.PLNmixturefit.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/coef.ZIPLNfit.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/coefficient_path.html</loc>
@@ -140,6 +164,9 @@
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/fitted.PLNmixturefit.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/fitted.ZIPLNfit.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/getBestModel.html</loc>
@@ -193,6 +220,9 @@
     <loc>https://pln-team.github.io/PLNmodels/reference/predict.PLNmixturefit.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/predict.ZIPLNfit.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/predict_cond.html</loc>
   </url>
   <url>
@@ -202,10 +232,16 @@
     <loc>https://pln-team.github.io/PLNmodels/reference/rPLN.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/scRNA.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/sigma.PLNfit.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/sigma.PLNmixturefit.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/sigma.ZIPLNfit.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/stability_selection.html</loc>

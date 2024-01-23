@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.0</span>
       </span>
     </div>
 
@@ -90,6 +90,10 @@
         </td>
         <td><p>Poisson lognormal model</p></td>
       </tr><tr><td>
+          <p><code><a href="ZIPLN.html">ZIPLN()</a></code> </p>
+        </td>
+        <td><p>Zero Inflated Poisson lognormal model</p></td>
+      </tr><tr><td>
           <p><code><a href="PLNLDA.html">PLNLDA()</a></code> </p>
         </td>
         <td><p>Poisson lognormal model towards Linear Discriminant Analysis</p></td>
@@ -157,6 +161,50 @@
           <p><code><a href="standard_error.html">standard_error()</a></code> </p>
         </td>
         <td><p>Component-wise standard errors of B</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="zero-inflated-poisson-lognormal-fit">Zero Inflated Poisson lognormal fit <a href="#zero-inflated-poisson-lognormal-fit" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Description of the ZIPLNfit object and methods for its manipulation.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="ZIPLNfit.html">ZIPLNfit</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a ZIPLNfit</p></td>
+      </tr><tr><td>
+          <p><code><a href="ZIPLNfit_diagonal.html">ZIPLNfit_diagonal</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a ZIPLNfit in a standard, general framework, with diagonal residual covariance</p></td>
+      </tr><tr><td>
+          <p><code><a href="ZIPLNfit_fixed.html">ZIPLNfit_fixed</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a ZIPLNfit in a standard, general framework, with fixed (inverse) residual covariance</p></td>
+      </tr><tr><td>
+          <p><code><a href="ZIPLNfit_sparse.html">ZIPLNfit_sparse</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a ZIPLNfit in a standard, general framework, with sparse inverse residual covariance</p></td>
+      </tr><tr><td>
+          <p><code><a href="ZIPLNfit_spherical.html">ZIPLNfit_spherical</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a ZIPLNfit in a standard, general framework, with spherical residual covariance</p></td>
+      </tr><tr><td>
+          <p><code><a href="ZIPLN_param.html">ZIPLN_param()</a></code> </p>
+        </td>
+        <td><p>Control of a ZIPLN fit</p></td>
+      </tr><tr><td>
+          <p><code><a href="coef.ZIPLNfit.html">coef(<i>&lt;ZIPLNfit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Extract model coefficients</p></td>
+      </tr><tr><td>
+          <p><code><a href="sigma.ZIPLNfit.html">sigma(<i>&lt;ZIPLNfit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Extract variance-covariance of residuals 'Sigma'</p></td>
+      </tr><tr><td>
+          <p><code><a href="predict.ZIPLNfit.html">predict(<i>&lt;ZIPLNfit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Predict counts of a new sample</p></td>
+      </tr><tr><td>
+          <p><code><a href="fitted.ZIPLNfit.html">fitted(<i>&lt;ZIPLNfit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Extracts model fitted values from objects returned by <code><a href="../reference/ZIPLN.html">ZIPLN()</a></code> and its variants</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="linear-discriminant-analysis-via-a-poisson-lognormal-fit">Linear discriminant analysis via a Poisson lognormal fit <a href="#linear-discriminant-analysis-via-a-poisson-lognormal-fit" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Description of the PLNLDAfit object and methods for its manipulation.</p>
@@ -361,6 +409,10 @@
           <p><code><a href="mollusk.html">mollusk</a></code> </p>
         </td>
         <td><p>Mollusk data set</p></td>
+      </tr><tr><td>
+          <p><code><a href="scRNA.html">scRNA</a></code> </p>
+        </td>
+        <td><p>Single cell RNA-seq data</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
