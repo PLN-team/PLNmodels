@@ -85,3 +85,7 @@ cpp_test_packing <- function() {
     .Call('_PLNmodels_cpp_test_packing', PACKAGE = 'PLNmodels')
 }
 
+# Register entry points for exported C++ functions
+methods::setLoadAction(function(ns) {
+    .Call('_PLNmodels_RcppExport_registerCCallable', PACKAGE = 'PLNmodels')
+})

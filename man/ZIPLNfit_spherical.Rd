@@ -53,7 +53,7 @@ print(myPLN)
 \if{html}{\out{<a id="method-ZIPLNfit_spherical-new"></a>}}
 \if{latex}{\out{\hypertarget{method-ZIPLNfit_spherical-new}{}}}
 \subsection{Method \code{new()}}{
-Initialize a \code{\link{PLNfit}} model
+Initialize a \code{\link{ZIPLNfit_spherical}} model
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_spherical$new(
   responses,

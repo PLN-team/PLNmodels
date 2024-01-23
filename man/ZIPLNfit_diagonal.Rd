@@ -53,7 +53,7 @@ print(myPLN)
 \if{html}{\out{<a id="method-ZIPLNfit_diagonal-new"></a>}}
 \if{latex}{\out{\hypertarget{method-ZIPLNfit_diagonal-new}{}}}
 \subsection{Method \code{new()}}{
-Initialize a \code{\link{PLNfit}} model
+Initialize a \code{\link{ZIPLNfit_diagonal}} model
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_diagonal$new(
   responses,

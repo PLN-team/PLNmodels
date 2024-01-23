@@ -24,7 +24,7 @@ ZIPLN_param(
 
 \item{Omega}{precision matrix of the latent variables. Inverse of Sigma. Must be specified if \code{covariance} is "fixed"}
 
-\item{penalty}{a user defined penalty for sparsifying the residual covariance. Default is 0 (no sparsity).}
+\item{penalty}{a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).}
 
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
@@ -35,7 +35,7 @@ log-transformed data, and with the same formula as the one provided by the user.
 which sometimes speeds up the inference.}
 }
 \value{
-list of parameters configuring the fit.
+list of parameters used during the fit and post-processing steps
 }
 \description{
 Helper to define list of parameters to control the PLN fit. All arguments have defaults.
@@ -44,7 +44,7 @@ Helper to define list of parameters to control the PLN fit. All arguments have d
 See \code{\link[=PLN_param]{PLN_param()}} for a full description of the generic optimization parameters. ZIPLN_param() also has two additional parameters controlling the optimization due
 the inner-outer loop structure of the optimizer:
 \itemize{
-\item "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-8
-\item "maxit_out" outer solver stops when the number of iteration exceeds maxit_out. Default is 100
+\item "ftol_out" outer solver stops when an optimization step changes the objective function by less than \code{ftol_out} multiplied by the absolute value of the parameter. Default is 1e-8
+\item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 100
 }
 }

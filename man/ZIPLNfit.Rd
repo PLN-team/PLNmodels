@@ -4,12 +4,17 @@
 \alias{ZIPLNfit}
 \title{An R6 Class to represent a ZIPLNfit}
 \description{
-The function \code{\link[=ZIPLN]{ZIPLN()}} fit a model which is an instance of a object with class \code{\link{ZIPLNfit}}.
+The function \code{\link[=ZIPLN]{ZIPLN()}} fits a model which is an instance of an object with class \code{\link{ZIPLNfit}}.
 
-This class comes with a set of R6 methods, some of them being useful for the user and exported as S3 methods.
+This class comes with a set of R6 methods, some of which are useful for the end-user and exported as S3 methods.
 See the documentation for \code{\link[=coef]{coef()}}, \code{\link[=sigma]{sigma()}}, \code{\link[=predict]{predict()}}.
 
 Fields are accessed via active binding and cannot be changed by the user.
+}
+\details{
+Covariates for the Zero-Inflation parameter (using a logistic regression model) can be specified in the formula RHS using the pipe
+(\verb{~ PLN effect | ZI effect}) to separate covariates for the PLN part of the model from those for the Zero-Inflation part.
+Note that different covariates can be used for each part.
 }
 \examples{
 \dontrun{
@@ -31,9 +36,9 @@ print(myPLN)
 
 \item{\code{p}}{number of variables/species}
 
-\item{\code{d}}{number of covariates in the PLN componente}
+\item{\code{d}}{number of covariates in the PLN part}
 
-\item{\code{d0}}{number of covariates in the ZI componente}
+\item{\code{d0}}{number of covariates in the ZI part}
 
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
@@ -113,7 +118,7 @@ Update a \code{\link{ZIPLNfit}} object
 
 \item{\code{B0}}{matrix of regression parameters in the zero inflated component}
 
-\item{\code{Pi}}{Zero inflated probability parameter (either scalar, row-vector, col-vector of matrix)}
+\item{\code{Pi}}{Zero inflated probability parameter (either scalar, row-vector, col-vector or matrix)}
 
 \item{\code{Omega}}{precision matrix of the latent variables}
 
@@ -121,7 +126,7 @@ Update a \code{\link{ZIPLNfit}} object
 
 \item{\code{M}}{matrix of mean vectors for the variational approximation}
 
-\item{\code{S}}{matrix of variance parameters for the variational approximation}
+\item{\code{S}}{matrix of standard deviation parameters for the variational approximation}
 
 \item{\code{R}}{matrix of probabilities for the variational approximation}
 
@@ -195,7 +200,7 @@ Call to the Cpp optimizer and update of the relevant fields
 \if{html}{\out{<a id="method-ZIPLNfit-optimize_vestep"></a>}}
 \if{latex}{\out{\hypertarget{method-ZIPLNfit-optimize_vestep}{}}}
 \subsection{Method \code{optimize_vestep()}}{
-Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
+Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S, R) and corresponding log likelihood values for fixed model parameters (Sigma, B, B0). Intended to position new data in the latent space.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$optimize_vestep(
   covariates,
@@ -234,8 +239,10 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 A list with three components:
 \itemize{
 \item the matrix \code{M} of variational means,
-\item the matrix \code{S2} of variational variances
-\item the vector \code{log.lik} of (variational) log-likelihood of each new observation
+\item the matrix \code{S} of variational standard deviations
+\item the matrix \code{R} of variational ZI probabilities
+\item the vector \code{Ji} of (variational) log-likelihood of each new observation
+\item a list \code{monitoring} with information about convergence status
 }
 }
 }
@@ -257,9 +264,9 @@ Predict position, scores or observations of new data.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{newdata}}{A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.}
+\item{\code{newdata}}{A data frame in which to look for variables with which to predict. If omitted, the fitted values are returned.}
 
-\item{\code{responses}}{Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.}
+\item{\code{responses}}{Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest is in testing the model.}
 
 \item{\code{type}}{Scale used for the prediction. Either \code{link} (default, predicted positions in the latent space) or \code{response} (predicted counts).}
 
