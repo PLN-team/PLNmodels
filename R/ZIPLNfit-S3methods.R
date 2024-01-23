@@ -10,14 +10,9 @@ isZIPLNfit <- function(Robject) {inherits(Robject, "ZIPLNfit")}
 #' Predict counts of a new sample
 #'
 #' @name predict.ZIPLNfit
+#' @inheritParams predict.PLNfit
 #'
 #' @param object an R6 object with class [`ZIPLNfit`]
-#' @param newdata A data frame in which to look for variables and offsets with which to predict
-#' @param responses Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.
-#' @param type The type of prediction required. The default is on the scale of the linear predictors (i.e. log average count)
-#' @param level Optional integer value the level to be used in obtaining the predictions. Level zero corresponds to the population predictions (default if `responses` is not provided) while level one (default) corresponds to predictions after evaluating the variational parameters for the new data.
-#' @param ... additional parameters for S3 compatibility. Not used
-#' @return A matrix of predicted log-counts (if `type = "link"`) or predicted counts (if `type = "response"`).
 #' @export
 predict.ZIPLNfit <- function(object, newdata, responses = NULL, level = 1, type = c("link", "response"), ...) {
   stopifnot(isZIPLNfit(object))
@@ -33,8 +28,8 @@ predict.ZIPLNfit <- function(object, newdata, responses = NULL, level = 1, type 
 #' @name coef.ZIPLNfit
 #'
 #' @param object an R6 object with class [`ZIPLNfit`]
-#' @param type type of parameter that should be extracted. Either "count" (default) for \deqn{B},
-#' "zero" for \deqn{B0}, "precision" for \deqn{\Omega}, "covariance" for \deqn{\Sigma}
+#' @param type type of parameter that should be extracted. Either "count" (default) for \eqn{B},
+#' "zero" for \eqn{B0}, "precision" for \eqn{\Omega}, "covariance" for \eqn{\Sigma}
 #' @param ... additional parameters for S3 compatibility. Not used
 #' @return A matrix of coefficients extracted from the ZIPLNfit model.
 #'
@@ -74,13 +69,14 @@ fitted.ZIPLNfit <- function(object, ...) {
 #' Extract variance-covariance of residuals 'Sigma'
 #'
 #' @name sigma.ZIPLNfit
-#' @description Extract the variance-covariance matrix of the residuals, usually noted \deqn{\Sigma} in ZIPLN models.
+#' @description Extract the variance-covariance matrix of the residuals, usually noted \eqn{\Sigma} in ZIPLN models.
 #'
 #' @inheritParams coef.ZIPLNfit
 #'
 #' @return A semi definite positive matrix of size p, assuming there are p species in the model.
 #'
 #' @export
+#' @seealso [coef.ZIPLNfit()]
 #'
 #' @importFrom stats sigma
 sigma.ZIPLNfit <- function(object, ...) {
