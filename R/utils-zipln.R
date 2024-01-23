@@ -1,6 +1,6 @@
 .extract_terms_zi <- function(formula) {
 
-  ## Check if a ZI specific formula has been
+  ## Check if a ZI specific formula has been provided
   if (length(formula[[3]]) > 1 && identical(formula[[3]][[1]], as.name("|"))) {
     zicovar <- TRUE
     ff_zi <-  ~. ; ff_zi[[3]]  <- formula[[3]][[3]] ; ff_zi[[2]]  <- NULL
@@ -86,7 +86,7 @@ extract_model_zi <- function(call, envir) {
 #' #' X  <- model.matrix(Abundance ~ 1 + Temperature, data = barents)
 #' #' X0 <- model.matrix(Abundance ~ 0 + Longitude, data = barents)
 #' #' O <- log(barents$Offset)
-#' #' w <-- rep(1, nrow(Y))
+#' #' w <- rep(1, nrow(Y))
 #' #' compute_ZIPLN_starting_point(Y, X, O, w)
 #' #' }
 #' #'
