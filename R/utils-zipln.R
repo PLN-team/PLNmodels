@@ -62,6 +62,68 @@ extract_model_zi <- function(call, envir) {
   list(Y = Y, X = X, X0 = X0, O = O, w = w, formula = call$formula, zicovar = terms$zicovar)
 }
 
+# Test convergence for a named list of parameters
+# oldp, newp: named list of parameters
+# xtol_rel: double ; negative or NULL = disabled
+# xtol_abs: double ; negative or NULL = disabled
+# Returns boolean
+parameter_list_converged <- function(oldp, newp, xtol_abs = NULL, xtol_rel = NULL) {
+  # Strategy is to compare each pair of list elements with matching names.
+  stopifnot(is.list(oldp), is.list(newp))
+  oldp <- oldp[order(names(oldp))]
+  newp <- newp[order(names(newp))]
+  stopifnot(all(names(oldp) == names(newp)))
+
+  # Check convergence with xtol_rel if enabled
+  if(is.double(xtol_rel) && xtol_rel > 0) {
+    if(all(mapply(function(o, n) { all(abs(n - o) <= xtol_rel * abs(o)) }, oldp, newp))) {
+      return(TRUE)
+    }
+  }
+
+  # Check convergence with xtol_abs (homogeneous) if enabled
+  if(is.double(xtol_abs) && xtol_abs > 0) {
+    if(all(mapply(function(o, n) { all(abs(n - o) <= xtol_abs) }, oldp, newp))) {
+      return(TRUE)
+    }
+  }
+
+  # If no criteria has triggered, indicate no convergence
+  FALSE
+}
+
+#' #' @importFrom glmnet glmnet
+#' optim_zipln_B <- function(M, X, Omega, config) {
+#'
+#'   if(config$lambda > 0) {
+#'     if (!is.null(config$ind_intercept)) {
+#'       m_bar <- colMeans(M)
+#'       x_bar <- colMeans(X[, -config$ind_intercept])
+#'       X <- scale(X[, -config$ind_intercept], x_bar, FALSE)
+#'       M <- scale(M, m_bar, FALSE)
+#'     }
+#'     p <- ncol(M); d <- ncol(X)
+#'     if (d > 0) {
+#'       Omega12 <- chol(Omega)
+#'       y <- as.vector(M %*% t(Omega12))
+#'       x <- kronecker(Omega12, X)
+#'       glmnet_out <- glmnet(x, y, lambda = config$lambda, intercept = FALSE, standardize = FALSE)
+#'       B <- matrix(as.numeric(glmnet_out$beta), nrow = d, ncol = p)
+#'     } else {
+#'       B <- matrix(0, nrow = d, ncol = p)
+#'     }
+#'
+#'     if (!is.null(config$ind_intercept)) {
+#'       mu0 <- m_bar - as.vector(crossprod(B, x_bar))
+#'       B <- rbind(mu0, B)
+#'     }
+#'
+#'   } else {
+#'     B <- optim_zipln_B_dense(M, X)
+#'   }
+#'   B
+#' }
+#'
 
 #' #' Helper function for ZIPLN initialization.
 #' #'
