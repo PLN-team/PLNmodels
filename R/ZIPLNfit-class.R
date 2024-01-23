@@ -273,7 +273,6 @@ ZIPLNfit <- R6Class(
                                B0 = self$model_par$B0,
                                Omega = self$model_par$Omega,
                                control = ZIPLN_param(backend = "nlopt")$config_optim) {
-
       n <- nrow(responses)
       data <- list(Y = responses, X = covariates$PLN, X0 = covariates$ZI, O = offsets)
       parameters <-
@@ -334,8 +333,12 @@ ZIPLNfit <- R6Class(
           xtol_abs = control$xtol_abs, xtol_rel = control$xtol_rel
         )
 
+        ## Update parameters
+        parameters <- new_parameters
+        objective <- new_objective
+
+        ## End outer loop in case of convergence
         if (parameters_converged | objective_converged) {
-          parameters <- new_parameters
           stop_reason <- "converged"
           criterion   <- criterion[1:nb_iter]
           convergence <- convergence[1:nb_iter]
@@ -398,6 +401,7 @@ ZIPLNfit <- R6Class(
       O <- model.offset(model.frame(terms$PLN[-2], newdata))
       if (is.null(O)) O <- matrix(0, n_new, self$p)
 
+      browser()
       ## Optimize M and S if responses are provided,
       if (level == 1) {
         VE <- self$optimize_vestep(
