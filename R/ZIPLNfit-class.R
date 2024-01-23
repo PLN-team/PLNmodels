@@ -341,6 +341,9 @@ ZIPLNfit <- R6Class(
           convergence <- convergence[1:nb_iter]
           break
         }
+
+        parameters <- new_parameters
+        objective  <- new_objective
       }
 
       list(
