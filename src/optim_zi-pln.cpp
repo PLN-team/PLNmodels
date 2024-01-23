@@ -82,9 +82,9 @@ arma::mat optim_zipln_B_dense(
 
 // [[Rcpp::export]]
 Rcpp::List optim_zipln_zipar_covar(
+    const arma::mat & R,        // (n,p)
     const arma::mat & init_B0,  // (d0,p)
     const arma::mat & X0,       // covariates (n,d0)
-    const arma::mat & R,        // (n,p)
     const Rcpp::List & configuration // List of config values ; xtol_abs is B0 only (double or mat)
 ) {
     const auto metadata = tuple_metadata(init_B0);

@@ -124,12 +124,12 @@ ZIPLNfit <- R6Class(
       private$S <- matrix(.1, n, p)
 
       ## Link to functions performing the optimization
-      private$optimizer$B     <- function(M, X, Omega, control) optim_zipln_B_dense(M, X)
+      private$optimizer$B     <- function(M, X) optim_zipln_B_dense(M, X)
       private$optimizer$zi    <- switch(
         control$ziparam,
-        "single" = function(init_B0, X0, R, config) list(Pi = matrix(    mean(R), nrow(R), p)              , B0 = matrix(NA, d0, p)),
-        "row"    = function(init_B0, X0, R, config) list(Pi = matrix(rowMeans(R), nrow(R), p)              , B0 = matrix(NA, d0, p)),
-        "col"    = function(init_B0, X0, R, config) list(Pi = matrix(colMeans(R), nrow(R), p, byrow = TRUE), B0 = matrix(NA, d0, p)),
+        "single" = function(R, ...) list(Pi = matrix(    mean(R), nrow(R), p)              , B0 = matrix(NA, d0, p)),
+        "row"    = function(R, ...) list(Pi = matrix(rowMeans(R), nrow(R), p)              , B0 = matrix(NA, d0, p)),
+        "col"    = function(R, ...) list(Pi = matrix(colMeans(R), nrow(R), p, byrow = TRUE), B0 = matrix(NA, d0, p)),
         "covar"  = optim_zipln_zipar_covar
       )
       private$optimizer$Omega <- optim_zipln_Omega_full
@@ -166,17 +166,13 @@ ZIPLNfit <- R6Class(
         new_Omega <- private$optimizer$Omega(
           M = parameters$M, X = data$X, B = parameters$B, S = parameters$S
         )
-        ## can possibly be simplified to if we change the prototype of optimizer$B to keep only relevant arguments
-        # new_B <- private$optimizer$B(
-        #   M = parameters$M, X = data$X
-        # )
         new_B <- private$optimizer$B(
-          M = parameters$M, X = data$X, Omega = new_Omega, control
+          M = parameters$M, X = data$X
         )
 
         # ZI part
         optim_new_zipar <- private$optimizer$zi(
-          init_B0 = parameters$B0, X0 = data$X0, R = parameters$R, config = control
+          R = parameters$R, init_B0 = parameters$B0, X0 = data$X0, config = control
         )
         new_B0 <- optim_new_zipar$B0
         new_Pi <- optim_new_zipar$Pi
@@ -187,18 +183,16 @@ ZIPLNfit <- R6Class(
           Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = new_Pi
         )
         # PLN part
-        optim_new_M <- optim_zipln_M(
+        new_M <- optim_zipln_M(
           init_M = parameters$M,
           Y = data$Y, X = data$X, O = data$O, R = new_R, S = parameters$S, B = new_B, Omega = new_Omega,
           configuration = control
-        )
-        new_M <- optim_new_M$M
-        optim_new_S <- optim_zipln_S(
+        )$M
+        new_S <- optim_zipln_S(
           init_S = parameters$S,
           O = data$O, M = new_M, R = new_R, B = new_B, diag_Omega = diag(new_Omega),
           configuration = control
-        )
-        new_S <- optim_new_S$S
+        )$S
 
         # Check convergence
         new_parameters <- list(
@@ -303,25 +297,23 @@ ZIPLNfit <- R6Class(
         }
 
         Pi <- private$optimizer$zi(
-          init_B0 = B0, X0 = data$X0, R = parameters$R, config = config_default_nlopt
+          R = parameters$R, init_B0 = B0, X0 = data$X0, config = config_default_nlopt
         )$Pi
 
         # VE Step
         new_R <- optim_zipln_R(
           Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = Pi
         )
-        optim_new_M <- optim_zipln_M(
+        new_M <- optim_zipln_M(
           init_M = parameters$M,
           Y = data$Y, X = data$X, O = data$O, R = new_R, S = parameters$S, B = B, Omega = Omega,
           configuration = control
-        )
-        new_M <- optim_new_M$M
-        optim_new_S <- optim_zipln_S(
+        )$M
+        new_S <- optim_zipln_S(
           init_S = parameters$S,
           O = data$O, M = new_M, R = new_R, B = B, diag_Omega = diag(Omega),
           configuration = control
-        )
-        new_S <- optim_new_S$S
+        )$S
         # Check convergence
         new_parameters <- list(R = new_R, M = new_M, S = new_S)
         nb_iter <- nb_iter + 1
@@ -416,12 +408,12 @@ ZIPLNfit <- R6Class(
         )
         R <- VE$R
         M <- VE$M
-        S <- VE$S
+        S2 <- VE$S^2
       } else {
-        # otherwise set R to Pi, M to XB and S to sqrt(diag(Sigma))
+        # otherwise set R to Pi, M to XB and S2 to diag(Sigma)
         R <- private$Pi[1:nrow(newdata), ]
         M <- X %*% private$B
-        S <- matrix(diag(private$Sigma), nrow = n_new, ncol = self$p, byrow = TRUE)
+        S2 <- matrix(diag(private$Sigma), nrow = n_new, ncol = self$p, byrow = TRUE)
       }
 
       ## mean latent positions in the parameter space (covariates/offset only)
@@ -433,7 +425,7 @@ ZIPLNfit <- R6Class(
       results <- switch(
         type,
         link = EZ,
-        response = R + (1 - R) * exp(EZ + .5 * S^2),
+        response = R + (1 - R) * exp(EZ + .5 * S2),
 
       )
       attr(results, "type") <- type
