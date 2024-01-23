@@ -11,10 +11,21 @@ isZIPLNfit <- function(Robject) {inherits(Robject, "ZIPLNfit")}
 #'
 #' @name predict.ZIPLNfit
 #' @inheritParams predict.PLNfit
+#' @param type Scale used for the prediction. Either `"link"` (default, predicted positions in the latent space), `"response"` (predicted average counts, accounting for zero-inflation) or `"deflated"` (predicted average counts, not accounting for zero-inflation and using only the PLN part of the model).
+#'
+#' @details
+#' Note that `level = 1` can only be used if responses are provided,
+#' as the variational parameters can't be estimated otherwise. In the absence of responses, `level` is ignored and the fitted values are returned
+#'
+#' Note also that when `type = "response"` corresponds to predicting
+#' values with \eqn{(1 - \pi)A}, where \eqn{A} is the average count in
+#' the PLN part of the model and \eqn{\pi} the probability of zero-inflation,
+#' whereas `type = "deflated"` corresponds to \eqn{A}.
+
 #'
 #' @param object an R6 object with class [`ZIPLNfit`]
 #' @export
-predict.ZIPLNfit <- function(object, newdata, responses = NULL, level = 1, type = c("link", "response"), ...) {
+predict.ZIPLNfit <- function(object, newdata, responses = NULL, level = 1, type = c("link", "response", "deflated"), ...) {
   stopifnot(isZIPLNfit(object))
   object$predict(newdata = newdata, type = type, envir = parent.frame(), level = level, responses = responses)
 }

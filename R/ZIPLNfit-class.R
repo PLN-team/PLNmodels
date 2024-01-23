@@ -360,18 +360,15 @@ ZIPLNfit <- R6Class(
       )
     },
 
-    #' @description Predict position, scores or observations of new data.
-    #' @param newdata A data frame in which to look for variables with which to predict. If omitted, the fitted values are returned.
-    #' @param responses Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest is in testing the model.
-    #' @param type Scale used for the prediction. Either `link` (default, predicted positions in the latent space) or `response` (predicted counts).
+    #' @description Predict position, scores or observations of new data. See [predict.ZIPLNfit()] for the S3 method and additional details
+    #' @param newdata A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.
+    #' @param responses Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.
+    #' @param type Scale used for the prediction. Either `"link"` (default, predicted positions in the latent space), `"response"` (predicted average counts, accounting for zero-inflation) or `"deflated"` (predicted average counts, not accounting for zero-inflation and using only the PLN part of the model).
     #' @param level Optional integer value the level to be used in obtaining the predictions. Level zero corresponds to the population predictions (default if `responses` is not provided) while level one (default) corresponds to predictions after evaluating the variational parameters for the new data.
     #' @param envir Environment in which the prediction is evaluated
     #'
-    #' @details
-    #' Note that `level = 1` can only be used if responses are provided,
-    #' as the variational parameters can't be estimated otherwise. In the absence of responses, `level` is ignored and the fitted values are returned
     #' @return A matrix with predictions scores or counts.
-    predict = function(newdata, responses = NULL, type = c("link", "response"), level = 1, envir = parent.frame()) {
+    predict = function(newdata, responses = NULL, type = c("link", "response", "deflated"), level = 1, envir = parent.frame()) {
 
       ## Ignore everything if newdata is not provided
       if (missing(newdata)) {
@@ -428,9 +425,9 @@ ZIPLNfit <- R6Class(
       type <- match.arg(type)
       results <- switch(
         type,
-        link = EZ,
-        response = R + (1 - R) * exp(EZ + .5 * S2),
-
+        link     = EZ,
+        response = (1 - R) * exp(EZ + .5 * S2),
+        deflated = exp(EZ + .5 * S2),
       )
       attr(results, "type") <- type
       results
@@ -520,7 +517,7 @@ ZIPLNfit <- R6Class(
     #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
     latent_pos  = function() {private$M - private$X %*% private$B},
     #' @field fitted a matrix: fitted values of the observations (A in the model)
-    fitted     = function() {private$R * private$zeros + (1 - private$R) * private$A},
+    fitted     = function() {(1 - private$R) * private$A},
     #' @field vcov_model character: the model used for the covariance (either "spherical", "diagonal", "full" or "sparse")
     vcov_model  = function() {private$covariance},
     #' @field zi_model character: the model used for the zero inflation (either "single", "row", "col" or "covar")
