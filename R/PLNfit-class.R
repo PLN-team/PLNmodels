@@ -31,6 +31,7 @@
 #' @rdname PLNfit
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
+#' @import torch
 #'
 #' @examples
 #' \dontrun{
@@ -96,7 +97,6 @@ PLNfit <- R6Class(
       Ji
     },
 
-    #' @import torch
     torch_optimize = function(data, params, config) {
 
       #config$device = "mps"
@@ -183,7 +183,6 @@ PLNfit <- R6Class(
         )
       out
     },
-
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE METHODS FOR VARIANCE OF THE ESTIMATORS
@@ -345,7 +344,6 @@ PLNfit <- R6Class(
     ## END OF PRIVATE METHODS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS
@@ -373,10 +371,6 @@ PLNfit <- R6Class(
         private$S     <- control$inception$var_par$S
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-        # fits <- lm.fit(weights * covariates, weights * log((1 + responses)/exp(offsets)))
-        # private$B <- matrix(fits$coefficients, d, p)
-        # private$M <- matrix(fits$residuals, n, p)
-        # private$S <- matrix(.1, n, p)
         start_point <- compute_PLN_starting_point(Y = responses, X = covariates, O = offsets, w = weights)
         private$B <- start_point$B
         private$M <- start_point$M
@@ -552,7 +546,7 @@ PLNfit <- R6Class(
         S <- VE$S
       } else {
         # otherwise set M = 0 and S = diag(Sigma)
-        M <- matrix(1, nrow = n_new, ncol = self$p)
+        M <- matrix(0, nrow = n_new, ncol = self$p)
         S <- matrix(diag(private$Sigma), nrow = n_new, ncol = self$p, byrow = TRUE)
       }
 
@@ -780,6 +774,7 @@ PLNfit_diagonal <- R6Class(
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## END OF TORCH METHODS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -860,6 +855,7 @@ PLNfit_spherical <- R6Class(
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## END OF TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -913,7 +909,7 @@ PLNfit_fixedcov <- R6Class(
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$optimizer$main <- ifelse(control$backend == "nlopt", nlopt_optimize_fixed, private$torch_optimize)
-      ## ve step is the same as in the fullly parameterized covariance
+      ## ve step is the same as in the fully parameterized covariance
       private$Omega <- control$Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields

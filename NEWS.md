@@ -1,4 +1,8 @@
-# PLNmodels 1.1.0 (2023-08-24)
+# Current (2024-01-23)
+
+* Addition of ZIPLN() and ZIPLNfit-class to allow for zero-inflation in the (for now) standard PLN model (merge PR #116)
+
+# PLNmodels 1.1.0 (2024-01-08)
 
 * Update documentation of PLN*_param() functions to include torch optimization parameters
 * Add (somehow) explicit error message when torch convergence fails
