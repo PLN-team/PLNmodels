@@ -56,6 +56,9 @@ src/*.dll
 # Plot in testthat
 tests/testthat/Rplots.pdf
 
+# Raw data files
+data-raw/*.RData
+
 # Mac bullsh.
 .DS_Store
 

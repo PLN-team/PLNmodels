@@ -5,7 +5,11 @@ library(scater)   # bioManager::install("scater")
 library(ggplot2)  # install.packages("ggplot2")
 
 ## get data from "https://github.com/LuyiTian/sc_mixology/raw/master/data/sincell_with_class_5cl.RData")
-load("~/Downloads/sincell_with_class_5cl.RData")
+if (!file.exists("data-raw/sincell_with_class_5cl.RData")) {
+  download.file(url = "https://github.com/LuyiTian/sc_mixology/raw/master/data/sincell_with_class_5cl.RData",
+                destfile = "data-raw/sincell_with_class_5cl.RData")
+}
+load("data-raw/sincell_with_class_5cl.RData")
 
 
 sce_qc <- computeSumFactors(sce_sc_10x_5cl_qc)
