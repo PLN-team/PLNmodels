@@ -89,7 +89,7 @@ Collate:
     'RcppExports.R'
     'ZIPLNfit-class.R'
     'ZIPLN.R'
-    'ZIPLNfits-S3methods.R'
+    'ZIPLNfit-S3methods.R'
     'barents.R'
     'import_utils.R'
     'mollusk.R'
