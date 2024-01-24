@@ -36,17 +36,7 @@ Fritsch, F. N.; Shafer, R. E. & Crowley, W. P.
  1973, 16, 123-124
 */
 
-// [[Rcpp::depends(RcppParallel)]]
-// [[Rcpp::interfaces(r, cpp)]]
-#include <Rcpp.h>
-
-#define _USE_MATH_DEFINES
-#include <cmath>
-
-using namespace Rcpp;
-
-const double EPS = 2.2204460492503131e-16;
-const double M_1_E = 1.0 / M_E;
+#include "lambertW.h"
 
   /* Fritsch Iteration
   * W_{n+1} = W_n * (1 + e_n)

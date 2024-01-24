@@ -264,9 +264,9 @@ Predict position, scores or observations of new data. See \code{\link[=predict.Z
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{newdata}}{A data frame in which to look for variables with which to predict. If omitted, the fitted values are returned.}
+\item{\code{newdata}}{A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.}
 
-\item{\code{responses}}{Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest is in testing the model.}
+\item{\code{responses}}{Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.}
 
 \item{\code{type}}{Scale used for the prediction. Either \code{"link"} (default, predicted positions in the latent space), \code{"response"} (predicted average counts, accounting for zero-inflation) or \code{"deflated"} (predicted average counts, not accounting for zero-inflation and using only the PLN part of the model).}
 

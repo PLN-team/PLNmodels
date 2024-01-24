@@ -77,10 +77,12 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' @return list of parameters used during the fit and post-processing steps
 #'
 #' @inherit PLN_param details
-#' @details See [PLN_param()] for a full description of the generic optimization parameters. ZIPLN_param() also has two additional parameters controlling the optimization due
-#' the inner-outer loop structure of the optimizer:
+#' @details See [PLN_param()] for a full description of the generic optimization parameters. ZIPLN_param() also
+#' has two additional parameters controlling the optimization due the inner-outer loop structure of the optimizer,
+#' and additional parameter controlling the form of the variational approximation of the zero inflation:
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than `ftol_out` multiplied by the absolute value of the parameter. Default is 1e-8
 #' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 100
+#' * "approx_ZI" either use an exact or approximated conditional distribution for the zero inflantion. Default is FALSE
 #'
 #' @export
 ZIPLN_param <- function(
@@ -113,6 +115,7 @@ ZIPLN_param <- function(
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-6
   config_opt$maxit_out <- 100
+  config_opt$approx_ZI <- FALSE
   config_opt[names(config_optim)] <- config_optim
 
   structure(list(

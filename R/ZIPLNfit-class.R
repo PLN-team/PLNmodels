@@ -132,6 +132,7 @@ ZIPLNfit <- R6Class(
         "col"    = function(R, ...) list(Pi = matrix(colMeans(R), nrow(R), p, byrow = TRUE), B0 = matrix(NA, d0, p)),
         "covar"  = optim_zipln_zipar_covar
       )
+      private$optimizer$R <- ifelse(control$config_optim$approx_ZI, optim_zipln_R_var, optim_zipln_R_exact)
       private$optimizer$Omega <- optim_zipln_Omega_full
 
     },
@@ -179,9 +180,8 @@ ZIPLNfit <- R6Class(
 
         ### VE Step
         # ZI part
-        new_R <- optim_zipln_R(
-          Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = new_Pi
-        )
+        new_R <- private$optimizer$R(Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = new_Pi, B = new_B)
+
         # PLN part
         new_M <- optim_zipln_M(
           init_M = parameters$M,
@@ -300,8 +300,8 @@ ZIPLNfit <- R6Class(
         )$Pi
 
         # VE Step
-        new_R <- optim_zipln_R(
-          Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = Pi
+        new_R <- private$optimizer$R(
+          Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = Pi, B = B
         )
         new_M <- optim_zipln_M(
           init_M = parameters$M,

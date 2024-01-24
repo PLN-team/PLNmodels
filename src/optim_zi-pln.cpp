@@ -6,6 +6,7 @@
 #include "nlopt_wrapper.h"
 #include "packing.h"
 #include "utils.h"
+#include "lambertW.h"
 
 // [[Rcpp::export]]
 arma::vec zipln_vloglik(
@@ -118,13 +119,14 @@ Rcpp::List optim_zipln_zipar_covar(
 }
 
 // [[Rcpp::export]]
-arma::mat optim_zipln_R(
+arma::mat optim_zipln_R_var(
     const arma::mat & Y, // responses (n,p)
     const arma::mat & X, // covariates (n,d)
     const arma::mat & O, // offsets (n,p)
     const arma::mat & M, // (n,p)
     const arma::mat & S, // (n,p)
-    const arma::mat & Pi // (d,p)
+    const arma::mat & Pi, // (d,p)
+    const arma::mat & B // covariates (n,d)
 ) {
     arma::mat A = exp(O + M + 0.5 * S % S);
     arma::mat R = pow(1. + exp(- (A + logit(Pi))), -1);
@@ -142,6 +144,39 @@ arma::mat optim_zipln_R(
         }
     }
     return R;
+}
+
+double phi (double mu, double sigma2) {
+  double W = lambertW0_CS(sigma2 * exp(mu)) ;
+  return(exp(-(pow(W, 2) + 2 * W) / (2 * sigma2)) / sqrt(1 + W)) ;
+}
+
+// [[Rcpp::export]]
+arma::mat optim_zipln_R_exact (
+    const arma::mat & Y, // covariates (n,d)
+    const arma::mat & X, // covariates (n,d)
+    const arma::mat & O, // offsets (n,p)
+    const arma::mat & M, // (n,p)
+    const arma::mat & S, // (n,p)
+    const arma::mat & Pi, // (n,p)
+    const arma::mat & B // covariates (n,d)
+) {
+
+  arma::mat XB = X * B;
+  arma::mat M_mu = M - XB;
+  arma::uword n = M.n_rows;
+  arma::uword p = M.n_cols;
+  arma::vec diag_Sigma = arma::diagvec((1./n) * (M_mu.t() * M_mu + diagmat(sum(S % S, 0)))) ;
+  arma::mat R = arma::zeros(n,p);
+  for(arma::uword i = 0; i < n; i += 1) {
+    for(arma::uword j = 0; j < p; j += 1) {
+      if(Y(i, j) < 0.5) {
+        double Phi = phi(O(i,j) + XB(i,j), diag_Sigma(j)) ;
+        R(i,j) = Pi(i,j) / (Phi * (1 - Pi(i,j)) + Pi(i,j)) ;
+      }
+    }
+  }
+  return R;
 }
 
 // [[Rcpp::export]]

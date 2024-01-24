@@ -41,10 +41,12 @@ list of parameters used during the fit and post-processing steps
 Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 }
 \details{
-See \code{\link[=PLN_param]{PLN_param()}} for a full description of the generic optimization parameters. ZIPLN_param() also has two additional parameters controlling the optimization due
-the inner-outer loop structure of the optimizer:
+See \code{\link[=PLN_param]{PLN_param()}} for a full description of the generic optimization parameters. ZIPLN_param() also
+has two additional parameters controlling the optimization due the inner-outer loop structure of the optimizer,
+and additional parameter controlling the form of the variational approximation of the zero inflation:
 \itemize{
 \item "ftol_out" outer solver stops when an optimization step changes the objective function by less than \code{ftol_out} multiplied by the absolute value of the parameter. Default is 1e-8
 \item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 100
+\item "approx_ZI" either use an exact or approximated conditional distribution for the zero inflantion. Default is FALSE
 }
 }
