@@ -1,3 +1,5 @@
+// BESOIN DE REVERIFIER TOUTES LES EXPRESSIONS D'ELBO ET ASSIMIL´E
+// AINSI QUE LES EXPRESSIONS DE GRADIENTS
 #include <RcppArmadillo.h>
 
 // [[Rcpp::depends(RcppArmadillo)]]
@@ -219,30 +221,32 @@ Rcpp::List optim_plnblockbis_VE(
     arma::mat A   = A1 % (A2 * T) ;
     arma::mat A_T = A2 % (A1 * T.t()) ;
     arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2);
-    arma::vec d = sum(Mu2 + Delta2 + XB - 2 * (Mu % XB) , 1);
+    // BESOIN D'INTEGRER w DANS LE CALCUL DE d
+    // PEUT-ETRE CONFUSION ENTRE d et d^{-1}
+    // SANS DOUTE BESOIN DE GERER LA DIVISION DE D PAR w_bar
+    arma::vec d = sum(Mu2 + Delta2 + XB - 2 * (Mu % XB), 0).t();
     arma::mat nD = diagmat(d);
+    //
+    std::cout << "nD dimensions: " << nD.n_rows << " x " << nD.n_cols << std::endl;
+    std::cout << "Mu dimensions: " << Mu.n_rows << " x " << Mu.n_cols << std::endl;
+    //
     double w_bar = accu(w);
     arma::mat nDm = diagmat(1./d);
     arma::mat Dm = diagmat((1./w_bar) * 1./d);
-    std::cout << "4!" << std::endl;
-    // C'est ici qu'il y a un problème
-    //Error: matrix multiplication: incompatible matrix dimensions: 17x17 and 49x49
-    // Q = 17 dans cette situation je pense
-    // Le problème vient du terme E
-    std::cout << "E" << std::endl;
-    double t5 = 0.5 * trace(Mu.t() * (Mu.each_col() % w) * nDm);
-    std::cout << "F" << std::endl;
-    double t6 = 0.5 * trace(diagmat(w.t() * S2) * nDm);
 
+    // verifier expression de la fonction objective
     double objective =
       accu(w.t() * (A - Y % (O + Mu + M * T))) - 0.5 * accu(w.t() * log(S2))
       - 0.5 * accu(w.t() * log(Delta2)) + .5 * trace(Omega * nSigma)
       + 0.5 * trace(Mu.t() * (Mu.each_col() % w) * nDm)
-      + 0.5 * trace(diagmat(w.t() * S2) * nDm);
-    std::cout << "5!" << std::endl;
+      + 0.5 * trace(diagmat(w.t() * Delta2) * nDm);
+
     metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A_T - Y * T.t());
     metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A_T - pow(S, -1));
-    metadata.map<Mu_ID>(grad) = Y - Mu * Omega - A_T;
+    std::cout << "7!" << std::endl;
+    // UNE ERREUR ICI : vérifier l'expression du gradient de Mu, pbm avec A_T
+    metadata.map<Mu_ID>(grad) = Y - Mu * nD ;//- A_T
+    std::cout << "8!" << std::endl;
     metadata.map<Delta_ID>(grad) = diagmat(w) * (Delta.each_row() % diagvec(Dm).t() + (A2 * T) % A1 % Delta - pow(Delta, -1));
 
     return objective;

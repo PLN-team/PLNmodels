@@ -49,7 +49,7 @@ PLNblockbisfamily <- R6Class(
 
       ## ==================================================
       ##
-      ## Common PLN (use as starting point for B, M, S)
+      ## Common PLN (use as starting point for B, M, S, Mu, Delta)
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
         myPLN_init <- control$inception
@@ -126,8 +126,8 @@ PLNblockbisfamily <- R6Class(
             S = self$models[[models_order[m]]]$var_par$S %*% blocks,
 
             ###
-            mu = self$models[[models_order[m]]]$var_par$M,
-            delta = self$models[[models_order[m]]]$var_par$S,
+            Mu = self$models[[models_order[m]]]$var_par$M,
+            Delta = self$models[[models_order[m]]]$var_par$S,
 
           )
         }

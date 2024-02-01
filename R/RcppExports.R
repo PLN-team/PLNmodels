@@ -65,6 +65,34 @@ optim_plnblock_VE <- function(data, params, configuration) {
     .Call('_PLNmodels_optim_plnblock_VE', PACKAGE = 'PLNmodels', data, params, configuration)
 }
 
+plnblockbis_vloglik <- function(data, params) {
+    .Call('_PLNmodels_plnblockbis_vloglik', PACKAGE = 'PLNmodels', data, params)
+}
+
+plnblockbis_loglik <- function(data, params) {
+    .Call('_PLNmodels_plnblockbis_loglik', PACKAGE = 'PLNmodels', data, params)
+}
+
+optim_plnblockbis_Omega <- function(M, S, w) {
+    .Call('_PLNmodels_optim_plnblockbis_Omega', PACKAGE = 'PLNmodels', M, S, w)
+}
+
+optim_plnblockbis_B <- function(data, params, w) {
+    .Call('_PLNmodels_optim_plnblockbis_B', PACKAGE = 'PLNmodels', data, params, w)
+}
+
+optim_plnblockbis_D <- function(X, B, Mu, Delta, w) {
+    .Call('_PLNmodels_optim_plnblockbis_D', PACKAGE = 'PLNmodels', X, B, Mu, Delta, w)
+}
+
+optim_plnblockbis_Tau <- function(data, params) {
+    .Call('_PLNmodels_optim_plnblockbis_Tau', PACKAGE = 'PLNmodels', data, params)
+}
+
+optim_plnblockbis_VE <- function(data, params, configuration) {
+    .Call('_PLNmodels_optim_plnblockbis_VE', PACKAGE = 'PLNmodels', data, params, configuration)
+}
+
 nlopt_optimize_rank <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_rank', PACKAGE = 'PLNmodels', data, params, config)
 }

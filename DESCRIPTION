@@ -102,6 +102,7 @@ Collate:
     'mollusk.R'
     'oaks.R'
     'optimize_plnblock.R'
+    'optimize_plnblockbis.R'
     'plot_utils.R'
     'trichoptera.R'
     'utils-pipe.R'

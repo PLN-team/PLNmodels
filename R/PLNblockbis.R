@@ -19,7 +19,7 @@
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLNblockbis(Abundance ~ 1, nb_blocks = 1:17, data = trichoptera)
+#' myPLN <- PLNblockbis(Abundance ~ 1, nb_blocks = 2:5, data = trichoptera, control = PLNblockbis_param(backend="nlopt-vem"))
 #' @seealso The classes [`PLNblockbisfamily`] and [`PLNblockbisfit`], and the and the configuration function [PLNblockbis_param()].
 #' @importFrom stats model.frame model.matrix model.response model.offset model.weights terms
 #' @export

@@ -42,6 +42,8 @@ PLNblockbisfit <- R6Class(
 
       ## Initial memberships/blocks
       ## Overwrite PLNfit Variational parameters (dimension q)
+      private$Delta   <- private$S
+      private$Mu   <- private$M
       private$M   <- private$M %*% blocks
       private$S   <- private$S %*% blocks
       private$Tau <- t(blocks)
@@ -51,39 +53,57 @@ PLNblockbisfit <- R6Class(
         switch(control$backend,
                "torch" = private$torch_optimize,
                "nlopt" =  nlopt_optimize_block,
-               "nlopt-vem" =  optimize_plnblock
+               "nlopt-vem" =  optimize_plnblockbis
         )
       private$optimizer$vestep <- nlopt_optimize_vestep_block
     },
     #' @description Update fields of a [`PLNnetworkfit`] object
     #' @param B matrix of regression matrix
-    #' @param Sigma variance-covariance matrix of the latent variables
-    #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
-    #' @param M     matrix of mean vectors for the variational approximation
-    #' @param S     matrix of variance vectors for the variational approximation
+    #' @param Sigma variance-covariance matrix of the latent variables (group scale)
+    #' @param Omega precision matrix of the latent variables. Inverse of Sigma.(group scale)
+    #' @param D variance-covariance matrix of the latent variables (species scale)
+    #' @param M     matrix of mean vectors for the variational approximation (group scale)
+    #' @param S     matrix of variance vectors for the variational approximation (group scale)
+    #' @param Mu     matrix of mean vectors for the variational approximation (species scale)
+    #' @param Delta     matrix of variance vectors for the variational approximation (species scale)
     #' @param Z     matrix of latent vectors (includes covariates and offset effects)
     #' @param A     matrix of fitted values
     #' @param Tau matrix of posterior probabilities for block belonging
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
     #' @param R2    approximate R^2 goodness-of-fit criterion
     #' @param monitoring a list with optimization monitoring quantities
-    update = function(Tau=NA, B=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-      super$update(B = B, Sigma = Sigma, Omega = Omega, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+    update = function(Tau=NA, B=NA, Sigma=NA, Omega=NA, D=NA, M=NA, S=NA, Mu=NA, Delta=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+      super$update(B = B, Sigma = Sigma, Omega = Omega, D=D, M=M, S = S, Mu=Mu, Delta=Delta, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
       if (!anyNA(Tau)) private$Tau <- Tau
     },
 
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
       args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                   params = list(B = private$B, M = private$M, S = private$S, Tau = private$Tau),
+                   params = list(B = private$B, M = private$M, S = private$S,
+                                 Mu = private$Mu, Delta = private$Delta, Tau = private$Tau),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
+      ####
+      # print("Y dimensions")
+      # print(nrow(responses))
+      # print(nrcol(responses))
+      # print("M dimensions")
+      # print(nrow(private$M))
+      # print(nrcol(private$M))
+      # print("Mu dimensions")
+      # print(nrow(private$Mu))
+      # print(nrcol(private$Mu))
+
+      browser()
       do.call(self$update, optim_out)
     }
 
   ),
   private = list(
     Tau = NA, # variational parameters for the block memberships
+    Mu = NA, # variational parameter for species mean
+    Delta = NA, # variational parameter for species variance - covariance
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
@@ -300,7 +320,7 @@ PLNblockbisfit_sparse <- R6Class(
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
       args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                   params = list(B = private$B, M = private$M, S = private$S, Tau = private$Tau, rho = private$lambda * private$rho),
+                   params = list(B = private$B, M = private$M, S = private$S,  Mu = private$Mu, Delta = private$Delta, Tau = private$Tau, rho = private$lambda * private$rho),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
