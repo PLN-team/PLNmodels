@@ -238,7 +238,7 @@ PLNblockbisfit <- R6Class(
     ####################################
 
     #' @field nb_param number of parameters in the current PLN model
-    nb_param   = function() {as.integer(self$p * self$d + .5 * self$q * (self$q + 1) + self$q - 1)},
+    nb_param   = function() {as.integer(self$p * self$d + .5 * self$q * (self$q + 1) + self$q - 1) + self$p},
     #' @field nb_block number blocks of variables (dimension of the residual covariance)
     nb_block   = function() {as.integer(self$q)},
     #' @field vcov_model character: the model used for the residual covariance

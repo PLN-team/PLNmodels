@@ -144,7 +144,7 @@ PLNblockbisfamily <- R6Class(
     #' @importFrom purrr pluck
     #' @importFrom furrr future_map
     optimize = function(config) {
-      self$models <- furrr::future_map(self$models, function(model) {
+      self$models <- lapply(self$models, function(model) {
         if (config$trace >= 1) {
           cat("\tnumber of blocks =", model$nb_block, "\r")
           flush.console()
