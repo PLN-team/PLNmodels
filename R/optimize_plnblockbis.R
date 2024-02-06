@@ -26,6 +26,7 @@ optimize_plnblockbis <- function(data, params, config) {
   # Main loop
   nb_iter <- 0
   parameters <- params; parameters$Omega <- diag(1, ncol(params$M), ncol(params$M))
+  parameters$D <- diag(1, ncol(params$Mu), ncol(params$Mu))
   parameters$T <- parameters$Tau; parameters$Tau <- NULL
   new_parameters <- parameters
   posteriorProb <- list(new_parameters$T)
@@ -46,14 +47,17 @@ optimize_plnblockbis <- function(data, params, config) {
     new_parameters$Mu <- optim_VE$Mu
     new_parameters$Delta <- optim_VE$Delta
     if (!config$fixed_cl) new_parameters$T <- optim_plnblockbis_Tau(data, new_parameters)
+    #print("reached Tau optim")
 
     # M Step
     optim_B <- optim_plnblockbis_B(data, new_parameters, config)
+    #print("reached B optim")
     new_parameters$B <- optim_B$B
 
     # Going next step and assessing convergence
     nb_iter <- nb_iter + 1
     criterion[nb_iter] <- new_objective <- - plnblockbis_loglik(data, new_parameters)
+    #print("reached loglik computation")
 
     objective_converged <-
       abs(new_objective - objective)/abs(new_objective) < config$ftol_out
@@ -77,6 +81,7 @@ optimize_plnblockbis <- function(data, params, config) {
   out$A <- exp(data$O + data$X %*% out$B) * (exp(out$M + .5 * out$S**2) %*% out$T)
   out$Z <- data$O + data$X %*% out$B + out$M %*% out$T
   out$Sigma <- optim_Omega$Sigma
+  ## J'ai remplacé vloglik par loglik ici
   out$Ji <- plnblockbis_vloglik(data, new_parameters)
   attr(out$Ji, "weights") <- data$w
   out$monitoring <- list(

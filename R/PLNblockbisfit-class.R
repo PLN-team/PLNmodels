@@ -73,8 +73,11 @@ PLNblockbisfit <- R6Class(
     #' @param R2    approximate R^2 goodness-of-fit criterion
     #' @param monitoring a list with optimization monitoring quantities
     update = function(Tau=NA, B=NA, Sigma=NA, Omega=NA, D=NA, M=NA, S=NA, Mu=NA, Delta=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-      super$update(B = B, Sigma = Sigma, Omega = Omega, D=D, M=M, S = S, Mu=Mu, Delta=Delta, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+      super$update(B = B, Sigma = Sigma, Omega = Omega, M=M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
       if (!anyNA(Tau)) private$Tau <- Tau
+      private$Mu <- Mu
+      private$Delta <- Delta
+      private$D <- D
     },
 
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
@@ -84,23 +87,14 @@ PLNblockbisfit <- R6Class(
                                  Mu = private$Mu, Delta = private$Delta, Tau = private$Tau),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
-      ####
-      # print("Y dimensions")
-      # print(nrow(responses))
-      # print(nrcol(responses))
-      # print("M dimensions")
-      # print(nrow(private$M))
-      # print(nrcol(private$M))
-      # print("Mu dimensions")
-      # print(nrow(private$Mu))
-      # print(nrcol(private$Mu))
 
-      browser()
+      # browser()
       do.call(self$update, optim_out)
     }
 
   ),
   private = list(
+    D = NA,
     Tau = NA, # variational parameters for the block memberships
     Mu = NA, # variational parameter for species mean
     Delta = NA, # variational parameter for species variance - covariance
@@ -236,6 +230,13 @@ PLNblockbisfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ),
   active = list(
+    ####################################
+    #' @field blockbis_model_par to add D as a model par
+    blockbis_model_par  = function() {list(D = private$D)},
+    #' @field blockbis_var_par to add Mu, Delta as var par
+    blockbis_var_par  = function() {list(Mu = private$Mu, Delta = private$Delta)},
+    ####################################
+
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {as.integer(self$p * self$d + .5 * self$q * (self$q + 1) + self$q - 1)},
     #' @field nb_block number blocks of variables (dimension of the residual covariance)

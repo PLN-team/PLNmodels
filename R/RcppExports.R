@@ -77,8 +77,8 @@ optim_plnblockbis_Omega <- function(M, S, w) {
     .Call('_PLNmodels_optim_plnblockbis_Omega', PACKAGE = 'PLNmodels', M, S, w)
 }
 
-optim_plnblockbis_B <- function(data, params, w) {
-    .Call('_PLNmodels_optim_plnblockbis_B', PACKAGE = 'PLNmodels', data, params, w)
+optim_plnblockbis_B <- function(data, params, configuration) {
+    .Call('_PLNmodels_optim_plnblockbis_B', PACKAGE = 'PLNmodels', data, params, configuration)
 }
 
 optim_plnblockbis_D <- function(X, B, Mu, Delta, w) {
