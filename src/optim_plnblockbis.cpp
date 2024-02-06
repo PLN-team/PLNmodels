@@ -45,13 +45,14 @@ arma::vec plnblockbis_vloglik(
   // Element-wise log-likelihood
   // rq: j'ai laissé tomber les constantes
   return( 0.5 * real(log_det(Omega)) - logfact(Y) + sum(Y % Z - A, 1)
-            - n * 0.5 * real(log_det(D))
-            + 0.5 * sum(log(S2), 1) + 0.5 * sum(log(Delta2), 1)
-            - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1)
-            - 0.5 * sum( (Mu * Dm) % Mu + Delta2 * Dm, 1)
-            - 0.5 * sum(XB * Dm * XB.t(), 1)
-            + sum(Mu * Dm * (XB.t()), 1)+ accu(log_pi.t() * T)
-            - accu(T % arma::trunc_log(T))
+          - 0.5 * real(log_det(D))
+          + 0.5 * sum(log(S2), 1) + 0.5 * sum(log(Delta2), 1)
+          - 0.5 * sum( (M * Omega) % M - S2 * diagmat(Omega), 1)
+          - 0.5 * sum( (Mu * Dm) % Mu + Delta2 * Dm, 1)
+          - 0.5 * sum(XB * Dm * XB.t(), 1)
+          + sum(Mu * Dm * (XB.t()), 1)
+          + accu(log_pi.t() * T)
+          - accu(T % arma::trunc_log(T))
 
   ) ;
 
@@ -91,14 +92,13 @@ arma::vec plnblockbis_loglik(
   // Element-wise log-likelihood
   // rq: j'ai laissé tomber les constantes
   return (w.t() * (0.5 * real(log_det(Omega)) - logfact(Y) + sum(Y % Z - A, 1)
-    - n * 0.5 * real(log_det(D))
-    + 0.5 * sum(log(S2), 1) + 0.5 * sum(log(Delta2), 1)
-    - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1)
-    - 0.5 * sum( (Mu * Dm) % Mu + Delta2 * Dm, 1)
-    - 0.5 * sum(XB * Dm * XB.t(), 1)
-    + sum(Mu * Dm * (XB.t()), 1))
-    + accu(log_pi.t() * T)
-    - accu(T % arma::trunc_log(T)));
+                     - 0.5 * real(log_det(D))
+                     + 0.5 * sum(log(S2), 1) + 0.5 * sum(log(Delta2), 1)
+                     - 0.5 * sum( (M * Omega) % M - S2 * diagmat(Omega), 1)
+                     - 0.5 * sum( (Mu * Dm) % Mu + Delta2 * Dm, 1)
+                     - 0.5 * sum(XB * Dm * XB.t(), 1)
+                     + sum(Mu * Dm * (XB.t()), 1))
+                  + accu(log_pi.t() * T) - accu(T % arma::trunc_log(T)));
 }
 
 // [[Rcpp::export]]
@@ -108,7 +108,6 @@ Rcpp::List  optim_plnblockbis_Omega(
   const arma::vec & w  // (n)
 ) {
   double w_bar = accu(w);
-  // Expression below TO CHECK
   arma::mat nSigma = (M.t() * (M.each_col() % w) + diagmat(w.t() * (S % S)))  ;
 
   //std::cout << "inv_sympd 2" << std::endl;
@@ -126,13 +125,13 @@ Rcpp::List  optim_plnblockbis_B(
     const Rcpp::List & configuration // (n)
 ) {
   //std::cout << "optim_plnblockbis_B" << std::endl;
-  // const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
+  const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
   const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
   const arma::mat & Mu = Rcpp::as<arma::mat>(params["Mu"]); // (n,p)
   //double w_bar = accu(w);
 
   //std::cout<< "inv_sympd 3" << std::endl;
-  arma::mat B = inv_sympd((X.t() * X)) * X.t()  * Mu;
+  arma::mat B = inv_sympd((X.t() * diagmat(w) * X)) * X.t()  * diagmat(w) * Mu;
   return Rcpp::List::create(
     Rcpp::Named("B") = B);
 }
@@ -146,17 +145,18 @@ Rcpp::List  optim_plnblockbis_D(
     const arma::vec & w  // (n)
 ) {
   //std::cout << "optim_plnblockbis_D" << std::endl;
-  const arma::mat Mu2 = Mu % Mu ;
-  const arma::mat Delta2 = Delta % Delta ;
+  const arma::mat Mu2t = Mu.t() % Mu.t() ;
+  const arma::mat Delta2t = Delta.t() % Delta.t() ;
   const arma::mat XB = X * B ;
+  double w_bar = accu(w);
 
   //double w_bar = accu(w);
-  arma::vec d = sum(Mu2 + Delta2 + XB - 2 * (Mu % XB) , 0).t();
+  arma::vec d = (Mu2t + Delta2t + XB.t() % XB.t() - 2 * (Mu.t() % XB.t())) * w;
   arma::mat nD = diagmat(d);
 
   const arma::uword n = X.n_rows;
   return Rcpp::List::create(
-    Rcpp::Named("D") = (1./n) * nD);
+    Rcpp::Named("D") = (1./w_bar) * nD);
 }
 
 // [[Rcpp::export]]
