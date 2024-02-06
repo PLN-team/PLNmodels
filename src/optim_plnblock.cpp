@@ -39,7 +39,7 @@ arma::vec plnblock_vloglik(
 }
 
 // [[Rcpp::export]]
-arma::vec plnblock_loglik(
+double plnblock_loglik(
     const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params  // List(M, S, T, B, Omega)
 ) {
@@ -62,7 +62,7 @@ arma::vec plnblock_loglik(
 
   // Element-wise log-likehood
   return(
-   (w.t() * (
+   as_scalar(w.t() * (
     0.5 * real(log_det(Omega)) + 0.5 * double(q) - logfact(Y)
     + sum(Y % Z - A, 1) + 0.5 * sum(log(S2), 1)
     - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1)

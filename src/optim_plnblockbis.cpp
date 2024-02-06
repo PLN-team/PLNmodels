@@ -31,35 +31,29 @@ arma::vec plnblockbis_vloglik(
   const arma::mat & D = Rcpp::as<arma::mat>(params["D"]); // (p,p)
   const arma::vec log_pi = arma::trunc_log(mean(T,1));
 
+  const arma::uword p = Y.n_cols;
   const arma::uword q = M.n_cols;
   const arma::uword n = M.n_rows;
   const arma::mat S2 = S % S ;
-  const arma::mat XB = X * B ;
+  const arma::mat Mu_XB = Mu - X * B ;
   const arma::mat Delta2 = Delta % Delta ;
-  const arma::mat mr = O + Mu ;
-  const arma::mat Z = mr + M * T;
-  const arma::mat A = trunc_exp(mr + .5 * Delta) % (trunc_exp(M + .5 * S2) * T) ;
-  // //std::cout<< "inv_sympd 1" << std::endl;
-  const arma::mat Dm = arma::diagmat(1. / arma::diagvec(D));;
+  const arma::mat Z = O + Mu + M * T;
+  const arma::mat A = trunc_exp(O + Mu + .5 * Delta2) % (trunc_exp(M + .5 * S2) * T) ;
+  const arma::vec Dm = 1. / arma::diagvec(D) ;
 
   // Element-wise log-likelihood
-  // rq: j'ai laissé tomber les constantes
-  return( 0.5 * real(log_det(Omega)) - logfact(Y) + sum(Y % Z - A, 1)
-          - 0.5 * real(log_det(D))
-          + 0.5 * sum(log(S2), 1) + 0.5 * sum(log(Delta2), 1)
-          - 0.5 * sum( (M * Omega) % M - S2 * diagmat(Omega), 1)
-          - 0.5 * sum( (Mu * Dm) % Mu + Delta2 * Dm, 1)
-          - 0.5 * sum(XB * Dm * XB.t(), 1)
-          + sum(Mu * Dm * (XB.t()), 1)
-          + accu(log_pi.t() * T)
-          - accu(T % arma::trunc_log(T))
-
+  return(
+         sum(Y % Z - A, 1) - logfact(Y)                                      // Poisson term
+      + 0.5 * real(log_det(Omega)) + 0.5 * sum(log(S2), 1) + 0.5 * double(q) // Gaussian-block term
+      - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1)                 // ...
+      - 0.5 * real(log_det(D)) + 0.5 * sum(log(Delta2), 1) + 0.5 * double(p) // Gaussian-species term
+      - 0.5 * (pow(Mu_XB, 2) + Delta2) * Dm                                  // ...
+      + accu(log_pi.t() * T) - accu(T % arma::trunc_log(T))                  // Multinomial-block term
   ) ;
-
 }
 
 // [[Rcpp::export]]
-arma::vec plnblockbis_loglik(
+double plnblockbis_loglik(
     const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params  // List(M, S, T, B, Omega)
 ) {
@@ -73,32 +67,30 @@ arma::vec plnblockbis_loglik(
   const arma::mat & S = Rcpp::as<arma::mat>(params["S"]); // (n,q)
   const arma::mat & Mu = Rcpp::as<arma::mat>(params["Mu"]); // (n,p)
   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
-  const arma::mat &T  = Rcpp::as<arma::mat>(params["T"]); // (n,p)
+  const arma::mat & T = Rcpp::as<arma::mat>(params["T"]); // (n,p)
   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
   const arma::mat & D = Rcpp::as<arma::mat>(params["D"]); // (p,p)
   const arma::vec log_pi = arma::trunc_log(mean(T,1));
 
+  const arma::uword p = Y.n_cols;
   const arma::uword q = M.n_cols;
   const arma::uword n = M.n_rows;
   const arma::mat S2 = S % S ;
-  const arma::mat XB = X * B ;
+  const arma::mat MumXB = Mu - X * B ;
   const arma::mat Delta2 = Delta % Delta ;
-  const arma::mat mr = O + Mu ;
-  const arma::mat Z = mr + M * T;
-  const arma::mat A = trunc_exp(mr + .5 * Delta2) % (trunc_exp(M + .5 * S2) * T) ;
-  const arma::mat Dm = arma::diagmat(1. / arma::diagvec(D));
-
+  const arma::mat Z = O + Mu + M * T;
+  const arma::mat A = trunc_exp(O + Mu + .5 * Delta2) % (trunc_exp(M + .5 * S2) * T) ;
+  const arma::vec Dm = 1. / arma::diagvec(D) ;
 
   // Element-wise log-likelihood
-  // rq: j'ai laissé tomber les constantes
-  return (w.t() * (0.5 * real(log_det(Omega)) - logfact(Y) + sum(Y % Z - A, 1)
-                     - 0.5 * real(log_det(D))
-                     + 0.5 * sum(log(S2), 1) + 0.5 * sum(log(Delta2), 1)
-                     - 0.5 * sum( (M * Omega) % M - S2 * diagmat(Omega), 1)
-                     - 0.5 * sum( (Mu * Dm) % Mu + Delta2 * Dm, 1)
-                     - 0.5 * sum(XB * Dm * XB.t(), 1)
-                     + sum(Mu * Dm * (XB.t()), 1))
-                  + accu(log_pi.t() * T) - accu(T % arma::trunc_log(T)));
+  return (as_scalar(w.t() *
+          (sum(Y % Z - A, 1) - logfact(Y)
+            + 0.5 * real(log_det(Omega)) + 0.5 * sum(log(S2), 1) + 0.5 * double(q)
+            - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1)
+            - 0.5 * real(log_det(D)) + 0.5 * sum(log(Delta2), 1) + 0.5 * double(p)
+            - 0.5 * (pow(MumXB, 2) + Delta2) * Dm
+          )) + accu(log_pi.t() * T) - accu(T % arma::trunc_log(T))
+    );
 }
 
 // [[Rcpp::export]]
@@ -113,8 +105,8 @@ Rcpp::List  optim_plnblockbis_Omega(
   //std::cout << "inv_sympd 2" << std::endl;
   const arma::uword n = M.n_rows;
   return Rcpp::List::create(
-    Rcpp::Named("Sigma") = (1./n) * nSigma,
-    Rcpp::Named("Omega") = (1. / n) * inv_sympd(nSigma));
+    Rcpp::Named("Sigma") = (1./w_bar) * nSigma,
+    Rcpp::Named("Omega") = w_bar * inv_sympd(nSigma));
 }
 
 
@@ -145,18 +137,16 @@ Rcpp::List  optim_plnblockbis_D(
     const arma::vec & w  // (n)
 ) {
   //std::cout << "optim_plnblockbis_D" << std::endl;
-  const arma::mat Mu2t = Mu.t() % Mu.t() ;
-  const arma::mat Delta2t = Delta.t() % Delta.t() ;
-  const arma::mat XB = X * B ;
-  double w_bar = accu(w);
+  // const arma::mat Mu2t = Mu.t() % Mu.t() ;
+  // const arma::mat Delta2t = Delta.t() % Delta.t() ;
+  // arma::vec d = (Mu2t + Delta2t + XB.t() % XB.t() - 2 * (Mu.t() % XB.t())) * w;
 
-  //double w_bar = accu(w);
-  arma::vec d = (Mu2t + Delta2t + XB.t() % XB.t() - 2 * (Mu.t() % XB.t())) * w;
-  arma::mat nD = diagmat(d);
+  const arma::mat MumXB = Mu - X * B ;
+  arma::rowvec d = w.t() * (MumXB % MumXB + Delta % Delta) / accu(w);
 
-  const arma::uword n = X.n_rows;
   return Rcpp::List::create(
-    Rcpp::Named("D") = (1./w_bar) * nD);
+    Rcpp::Named("D") = diagmat(d.t())
+  ) ;
 }
 
 // [[Rcpp::export]]
@@ -228,34 +218,34 @@ Rcpp::List optim_plnblockbis_VE(
     const arma::mat Mu = metadata.map<Mu_ID>(params);
     const arma::mat Delta = metadata.map<Delta_ID>(params);
 
+    double w_bar = accu(w);
     arma::mat Delta2 = Delta % Delta ;
+    arma::mat MumXB = Mu - XB ;
     arma::mat S2 = S % S ;
-    arma::mat Mu2 = Mu % Mu ;
     arma::mat A1  = trunc_exp(O + Mu + .5 * Delta2) ;
     arma::mat A2  = trunc_exp(M + .5 * S2) ;
     arma::mat A   = A1 % (A2 * T) ;
     arma::mat A_T = A2 % (A1 * T.t()) ;
-    arma::mat nSigma = (M.t() * (M.each_col() % w) + diagmat(w.t() * (S % S))) ;
-    // BESOIN D'INTEGRER w DANS LE CALCUL DE d
-    // PEUT-ETRE CONFUSION ENTRE d et d^{-1}
-    // SANS DOUTE BESOIN DE GERER LA DIVISION DE D PAR w_bar
-    arma::vec d = sum(Mu2 + Delta2 + XB - 2 * (Mu % XB), 0).t();
-    arma::mat nD = diagmat(d);
-    double w_bar = accu(w);
-    arma::mat nDm = diagmat(1./d);
-    arma::mat Dm = diagmat((1./w_bar) * 1./d);
+    arma::mat nSigma = (M.t() * (M.each_col() % w) + diagmat(w.t() * S2)) ;
+    arma::rowvec d = w.t() * (MumXB % MumXB + Delta2) / w_bar;
+    // arma::mat nD = diagmat(d);
+    // arma::mat nDm = diagmat(1./d);
+    // arma::mat Dm = diagmat((1./w_bar) * 1./d);
 
     // verifier expression de la fonction objective
     double objective =
-      accu((A - Y % (O + Mu + M * T))) - 0.5 * accu(log(S2))
-      - 0.5 * accu(log(Delta2)) + .5 * trace(Omega * nSigma)
-      + 0.5 * trace(Mu.t() * Mu * nDm)
-      + 0.5 * trace(diagmat(Delta2) * nDm);
+      accu(w.t() * (A - Y % (O + Mu + M * T)))    // ELBO term for Poisson
+      - 0.5 * accu(w.t() * log(S2))               // ELBO term for blocks
+      + .5 * trace(Omega * nSigma)                // ...
+      - 0.5 * accu(w.t() * log(Delta2))           // ELBO term for species
+      + 0.5 * w_bar * accu(log(d)) ;              // ...
 
-    metadata.map<M_ID>(grad) =  (M * Omega + A_T - Y * T.t());
-    metadata.map<S_ID>(grad) = (S.each_row() % diagvec(Omega).t() + S % A_T - pow(S, -1));
-    metadata.map<Mu_ID>(grad) = - Y + Mu * Dm - XB * Dm + (A2 * T) % A1;
-    metadata.map<Delta_ID>(grad) = (Delta.each_row() % diagvec(Dm).t() + (A2 * T) % A1 % Delta - pow(Delta, -1));
+    metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A_T - Y * T.t());
+    metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A_T - pow(S, -1));
+    // metadata.map<Mu_ID>(grad) = - Y + Mu * Dm - XB * Dm + (A2 * T) % A1;
+    metadata.map<Mu_ID>(grad) = diagmat(w) * ((MumXB.each_row() / d) + A - Y);
+    // metadata.map<Delta_ID>(grad) = (Delta.each_row() % diagvec(Dm).t() + (A2 * T) % A1 % Delta - pow(Delta, -1));
+    metadata.map<Delta_ID>(grad) = diagmat(w) * (Delta.each_row() % pow(d, -1) + Delta % A - pow(Delta, -1));
 
     return objective;
   };

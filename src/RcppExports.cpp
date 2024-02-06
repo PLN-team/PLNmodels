@@ -161,7 +161,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // plnblock_loglik
-arma::vec plnblock_loglik(const Rcpp::List& data, const Rcpp::List& params);
+double plnblock_loglik(const Rcpp::List& data, const Rcpp::List& params);
 RcppExport SEXP _PLNmodels_plnblock_loglik(SEXP dataSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -236,7 +236,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // plnblockbis_loglik
-arma::vec plnblockbis_loglik(const Rcpp::List& data, const Rcpp::List& params);
+double plnblockbis_loglik(const Rcpp::List& data, const Rcpp::List& params);
 RcppExport SEXP _PLNmodels_plnblockbis_loglik(SEXP dataSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
