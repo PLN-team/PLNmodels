@@ -166,11 +166,10 @@ arma::mat optim_plnblockbis_Tau(
   const arma::vec log_pi = arma::trunc_log(mean(T,1));
   const arma::mat & Mu = Rcpp::as<arma::mat>(params["Mu"]); // (n,p)
   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
-  const arma::mat mu = O + Mu + .5* Delta % Delta ;
-  const arma::mat A1 = trunc_exp(M + .5 * S % S ) ;
-  const arma::mat A2 = trunc_exp(mu) ;
+  const arma::mat A1 = trunc_exp(O + Mu + .5* Delta % Delta) ;
+  const arma::mat A2 = trunc_exp(M + .5 * S % S ) ;
 
-  arma::mat Tau = M.t() * Y - A1.t() * A2  ;
+  arma::mat Tau = M.t() * Y - A2.t() * A1  ;
   Tau.each_col() += log_pi ;
   Tau.each_col( [](arma::vec& x){
     x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;
@@ -207,12 +206,10 @@ Rcpp::List optim_plnblockbis_VE(
   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
   set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
 
-  const arma::mat mr = O + X * B ;
-  const arma::mat A2 = trunc_exp(mr) ;
   const arma::mat XB = X * B ;
 
   // Optimize
-  auto objective_and_grad = [&metadata, &Y, &X, &O, &mr, &A2,  &T, &Omega, &w, &XB](const double * params, double * grad) -> double {
+  auto objective_and_grad = [&metadata, &Y, &X, &O, &T, &Omega, &w, &XB](const double * params, double * grad) -> double {
     const arma::mat M = metadata.map<M_ID>(params);
     const arma::mat S = metadata.map<S_ID>(params);
     const arma::mat Mu = metadata.map<Mu_ID>(params);
@@ -222,30 +219,25 @@ Rcpp::List optim_plnblockbis_VE(
     arma::mat Delta2 = Delta % Delta ;
     arma::mat MumXB = Mu - XB ;
     arma::mat S2 = S % S ;
-    arma::mat A1  = trunc_exp(O + Mu + .5 * Delta2) ;
-    arma::mat A2  = trunc_exp(M + .5 * S2) ;
-    arma::mat A   = A1 % (A2 * T) ;
+    arma::mat A1 = trunc_exp(O + Mu + .5 * Delta2) ;
+    arma::mat A2 = trunc_exp(M + .5 * S2) ;
+    arma::mat A  = A1 % (A2 * T) ;
     arma::mat A_T = A2 % (A1 * T.t()) ;
     arma::mat nSigma = (M.t() * (M.each_col() % w) + diagmat(w.t() * S2)) ;
     arma::rowvec d = w.t() * (MumXB % MumXB + Delta2) / w_bar;
-    // arma::mat nD = diagmat(d);
-    // arma::mat nDm = diagmat(1./d);
-    // arma::mat Dm = diagmat((1./w_bar) * 1./d);
+    arma::rowvec omega = diagvec(Omega).t() ;
 
-    // verifier expression de la fonction objective
     double objective =
-      accu(w.t() * (A - Y % (O + Mu + M * T)))    // ELBO term for Poisson
-      - 0.5 * accu(w.t() * log(S2))               // ELBO term for blocks
-      + .5 * trace(Omega * nSigma)                // ...
-      - 0.5 * accu(w.t() * log(Delta2))           // ELBO term for species
-      + 0.5 * w_bar * accu(log(d)) ;              // ...
+      accu(w.t() * (A - Y % (O + Mu + M * T)))  // ELBO term for Poisson
+      - 0.5 * accu(w.t() * log(S2))             // ELBO term for blocks
+      + .5 * trace(Omega * nSigma)              // ...
+      - 0.5 * accu(w.t() * log(Delta2))         // ELBO term for species
+      + 0.5 * w_bar * accu(log(d)) ;            // ...
 
-    metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A_T - Y * T.t());
-    metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A_T - pow(S, -1));
-    // metadata.map<Mu_ID>(grad) = - Y + Mu * Dm - XB * Dm + (A2 * T) % A1;
-    metadata.map<Mu_ID>(grad) = diagmat(w) * ((MumXB.each_row() / d) + A - Y);
-    // metadata.map<Delta_ID>(grad) = (Delta.each_row() % diagvec(Dm).t() + (A2 * T) % A1 % Delta - pow(Delta, -1));
-    metadata.map<Delta_ID>(grad) = diagmat(w) * (Delta.each_row() % pow(d, -1) + Delta % A - pow(Delta, -1));
+    metadata.map<S_ID>(grad)     = diagmat(w) *  (S.each_row() / omega + S % A_T - pow(S, -1)) ;
+    metadata.map<Delta_ID>(grad) = diagmat(w) * ((Delta.each_row() / d) + Delta % A - pow(Delta, -1)) ;
+    metadata.map<M_ID>(grad)  = diagmat(w) *  (M * Omega + A_T - Y * T.t()) ;
+    metadata.map<Mu_ID>(grad) = diagmat(w) * ((MumXB.each_row() / d) + A - Y) ;
 
     return objective;
   };
