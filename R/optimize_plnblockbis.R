@@ -46,7 +46,7 @@ optimize_plnblockbis <- function(data, params, config) {
     new_parameters$S <- optim_VE$S
     new_parameters$Mu <- optim_VE$Mu
     new_parameters$Delta <- optim_VE$Delta
-    if (!config$fixed_cl) new_parameters$T <- optim_plnblockbis_Tau(data, new_parameters)
+    if (!config$fixed_cl) new_parameters$T <- optim_plnblockbis_Tau(data, new_parameters, w = data$w)
     #print("reached Tau optim")
 
     # M Step
