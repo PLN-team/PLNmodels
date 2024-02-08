@@ -34,6 +34,8 @@ print(myPLN)
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-ZIPLNfit_sparse-new}{\code{ZIPLNfit_sparse$new()}}
+\item \href{#method-ZIPLNfit_sparse-latent_network}{\code{ZIPLNfit_sparse$latent_network()}}
+\item \href{#method-ZIPLNfit_sparse-plot_network}{\code{ZIPLNfit_sparse$plot_network()}}
 \item \href{#method-ZIPLNfit_sparse-clone}{\code{ZIPLNfit_sparse$clone()}}
 }
 }
@@ -72,6 +74,63 @@ Initialize a \code{\link{ZIPLNfit_fixed}} model
 \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ZIPLNfit_sparse-latent_network"></a>}}
+\if{latex}{\out{\hypertarget{method-ZIPLNfit_sparse-latent_network}{}}}
+\subsection{Method \code{latent_network()}}{
+Extract interaction network in the latent space
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_sparse$latent_network(type = c("partial_cor", "support", "precision"))}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{edge value in the network. Can be "support" (binary edges), "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a square matrix of size \code{PLNnetworkfit$n}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ZIPLNfit_sparse-plot_network"></a>}}
+\if{latex}{\out{\hypertarget{method-ZIPLNfit_sparse-plot_network}{}}}
+\subsection{Method \code{plot_network()}}{
+plot the latent network.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_sparse$plot_network(
+  type = c("partial_cor", "support"),
+  output = c("igraph", "corrplot"),
+  edge.color = c("#F8766D", "#00BFC4"),
+  remove.isolated = FALSE,
+  node.labels = NULL,
+  layout = layout_in_circle,
+  plot = TRUE
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{edge value in the network. Either "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species).}
+
+\item{\code{output}}{Output type. Either \code{igraph} (for the network) or \code{corrplot} (for the adjacency matrix)}
+
+\item{\code{edge.color}}{Length 2 color vector. Color for positive/negative edges. Default is \code{c("#F8766D", "#00BFC4")}. Only relevant for igraph output.}
+
+\item{\code{remove.isolated}}{if \code{TRUE}, isolated node are remove before plotting. Only relevant for igraph output.}
+
+\item{\code{node.labels}}{vector of character. The labels of the nodes. The default will use the column names ot the response matrix.}
+
+\item{\code{layout}}{an optional igraph layout. Only relevant for igraph output.}
+
+\item{\code{plot}}{logical. Should the final network be displayed or only sent back to the user. Default is \code{TRUE}.}
 }
 \if{html}{\out{</div>}}
 }
