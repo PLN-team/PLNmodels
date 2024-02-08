@@ -730,9 +730,10 @@ ZIPLNfit_fixed <- R6Class(
 #' # See other examples in function ZIPLN
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control=  ZIPLN_param(penalty = 0.2))
+#' myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control=  ZIPLN_param(penalty = 1))
 #' class(myPLN)
 #' print(myPLN)
+#' plot(myPLN)
 #' }
 ZIPLNfit_sparse <- R6Class(
   classname = "ZIPLNfit_sparse",
