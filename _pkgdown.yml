@@ -69,6 +69,7 @@ reference:
     - '`sigma.ZIPLNfit`'
     - '`predict.ZIPLNfit`'
     - '`fitted.ZIPLNfit`'
+    - '`plot.ZIPLNfit_sparse`'
 - title: 'Linear discriminant analysis via a Poisson lognormal fit'
   desc: >
     Description of the PLNLDAfit object and methods for its manipulation.
