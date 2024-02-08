@@ -85,8 +85,16 @@ optim_plnblockbis_D <- function(X, B, Mu, Delta, w) {
     .Call('_PLNmodels_optim_plnblockbis_D', PACKAGE = 'PLNmodels', X, B, Mu, Delta, w)
 }
 
-optim_plnblockbis_Tau <- function(data, params, w) {
-    .Call('_PLNmodels_optim_plnblockbis_Tau', PACKAGE = 'PLNmodels', data, params, w)
+optim_plnblockbis_Tau <- function(data, params) {
+    .Call('_PLNmodels_optim_plnblockbis_Tau', PACKAGE = 'PLNmodels', data, params)
+}
+
+optim_plnblockbis_VE_blocks <- function(data, params, configuration) {
+    .Call('_PLNmodels_optim_plnblockbis_VE_blocks', PACKAGE = 'PLNmodels', data, params, configuration)
+}
+
+optim_plnblockbis_VE_species <- function(data, params, configuration) {
+    .Call('_PLNmodels_optim_plnblockbis_VE_species', PACKAGE = 'PLNmodels', data, params, configuration)
 }
 
 optim_plnblockbis_VE <- function(data, params, configuration) {
