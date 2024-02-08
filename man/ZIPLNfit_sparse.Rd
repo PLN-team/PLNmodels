@@ -13,9 +13,10 @@ An R6 Class to represent a ZIPLNfit in a standard, general framework, with spars
 # See other examples in function ZIPLN
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control=  ZIPLN_param(penalty = 0.2))
+myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control=  ZIPLN_param(penalty = 1))
 class(myPLN)
 print(myPLN)
+plot(myPLN)
 }
 }
 \section{Super class}{

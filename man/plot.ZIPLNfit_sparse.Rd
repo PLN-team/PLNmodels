@@ -44,9 +44,8 @@ Extract and plot the network (partial correlation, support or inverse covariance
 \examples{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-fits <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(penalty = 0.1))
-myNet <- getBestModel(fits)
+fit <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(penalty = 0.1))
 \dontrun{
-plot(myNet)
+plot(fit)
 }
 }
