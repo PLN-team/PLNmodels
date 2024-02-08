@@ -186,6 +186,7 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
   g
 }
 
+#' @importFrom grDevices rgb
 .plot_network = function(net            ,
                         type            ,
                         output          ,
