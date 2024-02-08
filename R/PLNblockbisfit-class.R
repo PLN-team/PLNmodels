@@ -43,7 +43,7 @@ PLNblockbisfit <- R6Class(
       ## Initial memberships/blocks
       ## Overwrite PLNfit Variational parameters (dimension q)
       private$Delta   <- private$S
-      private$Mu   <- private$M
+      private$Mu   <- private$M + covariates %*% private$B
       private$M   <- private$M %*% blocks
       private$S   <- private$S %*% blocks
       private$Tau <- t(blocks)

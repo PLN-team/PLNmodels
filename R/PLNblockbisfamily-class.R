@@ -57,6 +57,7 @@ PLNblockbisfamily <- R6Class(
         control_init <- control
         control_init$config_optim <- config_default_nlopt
         control_init$backend <- "nlopt"
+        control_init$covariance <- "diagonal"
         myPLN_init <- PLNfit$new(responses, covariates, offsets, weights, formula, control_init)
         myPLN_init$optimize(responses, covariates, offsets, weights, control_init$config_optim)
         control$inception <- myPLN_init
