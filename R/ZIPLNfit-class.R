@@ -81,47 +81,54 @@ ZIPLNfit <- R6Class(
       private$covariance <- control$covariance
       private$ziparam <- control$ziparam
 
-      R  <- matrix(0, n, p)
-      M  <- matrix(0, n, p)
-      B  <- matrix(0, d , p)
-      B0 <- matrix(0, d0, p)
-      ## Feature-wise univariate (ZI)poisson regression as starting point for ZIPLN
-      for (j in 1:p) {
-        y = responses[, j]
-        if (min(y) == 0) {
-          suppressWarnings(
-            zip_out <- switch(control$ziparam,
-              "row"    = pscl::zeroinfl(y ~ 0 + covariates$PLN | 0 + factor(1:n), offset = offsets[, j]),
-              "covar"  = pscl::zeroinfl(y ~ 0 + covariates$PLN | 0 + covariates$ZI  , offset = offsets[, j]),
-                         pscl::zeroinfl(y ~ 0 + covariates$PLN |               1, offset = offsets[, j])) # offset only for the count model
-          )
-          B0[,j] <- coef(zip_out, "zero")
-          B[,j]  <- coef(zip_out, "count")
-          R[, j] <- predict(zip_out, type = "zero")
-          M[,j]  <- residuals(zip_out) + covariates$PLN %*% coef(zip_out, "count")
-        } else {
-          p_out <- glm(y ~ 0 + covariates$PLN, family = 'poisson', offset = offsets[, j])
-          B0[,j] <- rep(-10, d)
-          B[,j]  <- coef(p_out)
-          R[, j] <- 0
-          M[,j]  <- residuals(p_out) + covariates$PLN %*% coef(p_out)
+      if (isZIPLNfit(control$inception)) {
+        private$R  <- control$inception$var_par$R
+        private$M  <- control$inception$var_par$R
+        private$S  <- control$inception$var_par$R
+        private$B  <- control$inception$model_par$B
+        private$B0 <- control$inception$model_par$B0
+      } else {
+        R  <- matrix(0, n, p)
+        M  <- matrix(0, n, p)
+        B  <- matrix(0, d , p)
+        B0 <- matrix(0, d0, p)
+        ## Feature-wise univariate (ZI)poisson regression as starting point for ZIPLN
+        for (j in 1:p) {
+          y = responses[, j]
+          if (min(y) == 0) {
+            suppressWarnings(
+              zip_out <- switch(control$ziparam,
+                                "row"    = pscl::zeroinfl(y ~ 0 + covariates$PLN | 0 + factor(1:n), offset = offsets[, j]),
+                                "covar"  = pscl::zeroinfl(y ~ 0 + covariates$PLN | 0 + covariates$ZI  , offset = offsets[, j]),
+                                pscl::zeroinfl(y ~ 0 + covariates$PLN |               1, offset = offsets[, j])) # offset only for the count model
+            )
+            B0[,j] <- coef(zip_out, "zero")
+            B[,j]  <- coef(zip_out, "count")
+            R[, j] <- predict(zip_out, type = "zero")
+            M[,j]  <- residuals(zip_out) + covariates$PLN %*% coef(zip_out, "count")
+          } else {
+            p_out <- glm(y ~ 0 + covariates$PLN, family = 'poisson', offset = offsets[, j])
+            B0[,j] <- rep(-10, d)
+            B[,j]  <- coef(p_out)
+            R[, j] <- 0
+            M[,j]  <- residuals(p_out) + covariates$PLN %*% coef(p_out)
+          }
         }
+
+        ## Initialization of the ZI component
+        private$R  <- R
+        private$B0 <- B0
+        ## Initialization of the PLN component
+        private$B <- B
+        private$M <- M
+        private$S <- matrix(.1, n, p)
       }
-
-      ## Initialization of the ZI component
-      private$R  <- R
       private$Pi <- switch(control$ziparam,
-        "single" = matrix(    mean(R), n, p)              ,
-        "row"    = matrix(rowMeans(R), n, p)              ,
-        "col"    = matrix(colMeans(R), n, p, byrow = TRUE),
-        "covar"  = R)
-      private$B0 <- B0
+                           "single" = matrix(    mean(private$R), n, p)              ,
+                           "row"    = matrix(rowMeans(private$R), n, p)              ,
+                           "col"    = matrix(colMeans(private$R), n, p, byrow = TRUE),
+                           "covar"  = private$R)
       private$zeros <- 1 * (responses == 0)
-
-      ## Initialization of the PLN component
-      private$B <- B
-      private$M <- M
-      private$S <- matrix(.1, n, p)
 
       ## Link to functions performing the optimization
       private$optimizer$B     <- function(M, X) optim_zipln_B_dense(M, X)
@@ -738,6 +745,15 @@ ZIPLNfit_fixed <- R6Class(
 ZIPLNfit_sparse <- R6Class(
   classname = "ZIPLNfit_sparse",
   inherit = ZIPLNfit,
+
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PRIVATE MEMBERS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  private = list(
+    lambda = NA, # the sparsity tuning parameter
+    rho    = NA  # the p x p penalty weight
+  ),
+
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -746,9 +762,13 @@ ZIPLNfit_sparse <- R6Class(
     #' @importFrom glassoFast glassoFast
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
+      private$lambda <- control$penalty
+      private$rho    <- control$penalty_weights
+      if (!control$penalize_diagonal) diag(private$rho) <- 0
       private$optimizer$Omega <-
         function(M, X, B, S) {
-          glassoFast( crossprod(M - X %*% B)/self$n + diag(colMeans(S * S), self$p, self$p), rho = control$penalty )$wi
+          glassoFast( crossprod(M - X %*% B)/self$n + diag(colMeans(S * S), self$p, self$p),
+                      rho = private$lambda * private$rho )$wi
         }
     },
 
@@ -801,9 +821,15 @@ ZIPLNfit_sparse <- R6Class(
     }
   ),
   active = list(
+    #' @field penalty the global level of sparsity in the current model
+    penalty         = function() {private$lambda},
+    #' @field penalty_weights a matrix of weights controlling the amount of penalty element-wise.
+    penalty_weights = function() {private$rho},
+    #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
+    n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {
-      res <-  self$p * self$d + (sum(private$Omega != 0) - self$p)/2L +
+      res <-  self$p * self$d + self$n_edges +
         switch(private$ziparam,
                "single" = 1L,
                "row"    = self$n,
@@ -812,7 +838,15 @@ ZIPLNfit_sparse <- R6Class(
       as.integer(res)
     },
     #' @field vcov_model character: the model used for the residual covariance
-    vcov_model = function() {"sparse"}
+    vcov_model = function() {"sparse"},
+    #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood
+    pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
+    #' @field EBIC variational lower bound of the EBIC
+    EBIC      = function() {self$BIC - .5 * ifelse(self$n_edges > 0, self$n_edges * log(.5 * self$p*(self$p - 1)/self$n_edges), 0)},
+    #' @field density proportion of non-null edges in the network
+    density   = function() {mean(self$latent_network("support"))},
+    #' @field criteria a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges and graph density
+    criteria  = function() {data.frame(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik, density = self$density)}
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  END OF THE CLASS ZIPLNfit_sparse

@@ -31,7 +31,8 @@ an R6 object with class \code{\link{PLNnetworkfamily}}, which contains
 a collection of models with class \code{\link{PLNnetworkfit}}
 }
 \description{
-Fit the sparse inverse covariance variant of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
+Fit the sparse inverse covariance variant of the Poisson lognormal with a variational algorithm
+for a collection of sparsity parameter values distributed on a log scale. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \examples{
 data(trichoptera)

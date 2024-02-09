@@ -10,6 +10,8 @@ ZIPLN_param(
   covariance = c("full", "diagonal", "spherical", "fixed", "sparse"),
   Omega = NULL,
   penalty = 0,
+  penalize_diagonal = TRUE,
+  penalty_weights = NULL,
   config_post = list(),
   config_optim = list(),
   inception = NULL
@@ -25,6 +27,10 @@ ZIPLN_param(
 \item{Omega}{precision matrix of the latent variables. Inverse of Sigma. Must be specified if \code{covariance} is "fixed"}
 
 \item{penalty}{a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).}
+
+\item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Only relevant with sparse covariance. Default is \code{TRUE}}
+
+\item{penalty_weights}{p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values. Only relevant with sparse covariance.}
 
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 

@@ -74,6 +74,8 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #'
 #' @inheritParams PLN_param
 #' @param penalty a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).
+#' @param penalize_diagonal boolean: should the diagonal terms be penalized in the graphical-Lasso? Only relevant with sparse covariance. Default is \code{TRUE}
+#' @param penalty_weights p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values. Only relevant with sparse covariance.
 #' @return list of parameters used during the fit and post-processing steps
 #'
 #' @inherit PLN_param details
@@ -91,6 +93,8 @@ ZIPLN_param <- function(
     covariance    = c("full", "diagonal", "spherical", "fixed", "sparse"),
     Omega         = NULL,
     penalty       = 0,
+    penalize_diagonal = TRUE   ,
+    penalty_weights   = NULL   ,
     config_post   = list(),
     config_optim  = list(),
     inception     = NULL     # pretrained ZIPLNfit used as initialization
@@ -124,6 +128,8 @@ ZIPLN_param <- function(
     covariance    = covariance,
     Omega         = Omega     ,
     penalty       = penalty   ,
+    penalize_diagonal = penalize_diagonal,
+    penalty_weights   = penalty_weights  ,
     config_post   = config_pst,
     config_optim  = config_opt,
     inception     = inception), class = "PLNmodels_param")

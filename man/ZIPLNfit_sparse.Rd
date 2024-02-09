@@ -25,9 +25,23 @@ plot(myPLN)
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
+\item{\code{penalty}}{the global level of sparsity in the current model}
+
+\item{\code{penalty_weights}}{a matrix of weights controlling the amount of penalty element-wise.}
+
+\item{\code{n_edges}}{number of edges if the network (non null coefficient of the sparse precision matrix)}
+
 \item{\code{nb_param}}{number of parameters in the current PLN model}
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
+
+\item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood}
+
+\item{\code{EBIC}}{variational lower bound of the EBIC}
+
+\item{\code{density}}{proportion of non-null edges in the network}
+
+\item{\code{criteria}}{a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges and graph density}
 }
 \if{html}{\out{</div>}}
 }
