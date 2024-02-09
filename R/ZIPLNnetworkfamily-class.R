@@ -302,7 +302,7 @@ ZIPLNnetworkfamily <- R6Class(
   #' @return a [`ggplot`] graph
   plot_objective = function() {
     objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
-    changes <- cumsum(unlist(lapply(self$models, function(model) model$optim_par$outer_iterations)))
+    changes <- cumsum(unlist(lapply(self$models, function(model) model$optim_par$iterations)))
     dplot <- data.frame(iteration = 1:length(objective), objective = objective)
     p <- ggplot(dplot, aes(x = iteration, y = objective)) + geom_line() +
       geom_vline(xintercept = changes, linetype="dashed", alpha = 0.25) +
