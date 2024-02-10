@@ -6,7 +6,7 @@
 \alias{getBestModel.PLNPCAfamily}
 \alias{getBestModel}
 \alias{getBestModel.PLNmixturefamily}
-\alias{getBestModel.PLNnetworkfamily}
+\alias{getBestModel.PLNnetworkfamilyvirtual}
 \title{Best model extraction from a collection of models}
 \usage{
 \method{getBestModel}{PLNPCAfamily}(Robject, crit = c("ICL", "BIC"), ...)
@@ -15,7 +15,7 @@ getBestModel(Robject, crit, ...)
 
 \method{getBestModel}{PLNmixturefamily}(Robject, crit = c("ICL", "BIC"), ...)
 
-\method{getBestModel}{PLNnetworkfamily}(Robject, crit = c("BIC", "EBIC", "StARS"), ...)
+\method{getBestModel}{PLNnetworkfamilyvirtual}(Robject, crit = c("BIC", "EBIC", "StARS"), ...)
 }
 \arguments{
 \item{Robject}{an object with class PLNPCAfamilly ot PLNnetworkfamily}
@@ -39,7 +39,7 @@ Best model extraction from a collection of models
 
 \item \code{getBestModel(PLNmixturefamily)}: Model extraction for \code{\link{PLNmixturefamily}}
 
-\item \code{getBestModel(PLNnetworkfamily)}: Model extraction for \code{\link{PLNnetworkfamily}}
+\item \code{getBestModel(PLNnetworkfamilyvirtual)}: Model extraction for \code{\link{PLNnetworkfamily}}
 
 }}
 \examples{

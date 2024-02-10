@@ -20,7 +20,7 @@ class(fits)
 The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNnetworkfit}}
 }
 \section{Super classes}{
-\code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{PLNmodels::PLNnetworkfamilyvirtual} -> \code{PLNnetworkfamily}
+\code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{\link[PLNmodels:PLNnetworkfamilyvirtual]{PLNmodels::PLNnetworkfamilyvirtual}} -> \code{PLNnetworkfamily}
 }
 \section{Methods}{
 \subsection{Public methods}{

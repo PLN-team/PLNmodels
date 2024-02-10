@@ -20,7 +20,7 @@ class(fits)
 The function \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}}, the class \code{\link{ZIPLNfit_sparse}}
 }
 \section{Super classes}{
-\code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{PLNmodels::PLNnetworkfamilyvirtual} -> \code{ZIPLNnetworkfamily}
+\code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{\link[PLNmodels:PLNnetworkfamilyvirtual]{PLNmodels::PLNnetworkfamilyvirtual}} -> \code{ZIPLNnetworkfamily}
 }
 \section{Methods}{
 \subsection{Public methods}{
