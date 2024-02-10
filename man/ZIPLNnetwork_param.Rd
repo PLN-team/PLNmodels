@@ -2,7 +2,7 @@
 % Please edit documentation in R/ZIPLNnetwork.R
 \name{ZIPLNnetwork_param}
 \alias{ZIPLNnetwork_param}
-\title{Control of PLNnetwork fit}
+\title{Control of ZIPLNnetwork fit}
 \usage{
 ZIPLNnetwork_param(
   backend = c("nlopt"),

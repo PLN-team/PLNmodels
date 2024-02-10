@@ -69,7 +69,6 @@ getBestModel.PLNnetworkfamily <- function(Robject, crit = c("BIC", "EBIC", "StAR
   Robject$getBestModel(match.arg(crit), stability)
 }
 
-
 #' Extract the regularization path of a PLNnetwork fit
 #'
 #' @name coefficient_path
@@ -119,8 +118,6 @@ stability_selection <- function(Robject, subsamples = NULL, control = PLNnetwork
     message("Previous stability selection detected. Use \"force = TRUE\" to recompute it.")
   }
 }
-
-
 
 #' Extract edge selection frequency in bootstrap subsamples
 #'

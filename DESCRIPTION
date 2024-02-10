@@ -90,7 +90,6 @@ Collate:
     'ZIPLNfit-class.R'
     'ZIPLN.R'
     'ZIPLNfit-S3methods.R'
-    'ZIPLNnetworkfamily-class.R'
     'ZIPLNnetwork.R'
     'barents.R'
     'import_utils.R'

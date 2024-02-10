@@ -42,11 +42,9 @@ PLNnetworkfit <- R6Class(
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
     initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control) {
-      stopifnot(isSymmetric(penalty_weights), all(penalty_weights >= 0))
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$lambda <- penalty
       private$rho    <- penalty_weights
-      if (!control$penalize_diagonal) diag(private$rho) <- 0
     },
     #' @description Update fields of a [`PLNnetworkfit`] object
     #' @param B matrix of regression matrix

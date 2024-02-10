@@ -1,4 +1,4 @@
-#' An R6 Class to represent a collection of PLNnetworkfit
+#' An R6 Class to virtually represent a collection of PLNnetworkfit (either standard or ZI)
 #'
 #' @description The function [PLNnetwork()] produces an instance of this class.
 #'
@@ -20,14 +20,9 @@
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom glassoFast glassoFast
-#' @examples
-#' data(trichoptera)
-#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
-#' class(fits)
 #' @seealso The function [PLNnetwork()], the class [`PLNnetworkfit`]
-PLNnetworkfamily <- R6Class(
-  classname = "PLNnetworkfamily",
+PLNnetworkfamilyvirtual <- R6Class(
+  classname = "PLNnetworkfamilyvirtual",
   inherit = PLNfamily,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ------
@@ -41,25 +36,6 @@ PLNnetworkfamily <- R6Class(
 
       ## Initialize fields shared by the super class
       super$initialize(responses, covariates, offsets, weights, control)
-
-      ## A basic model for inception, useless one is defined by the user
-### TODO check if it is useful
-      if (is.null(control$inception)) {
-
-        # CHECK_ME_TORCH_GPU
-        # This appears to be in torch_gpu only. The commented out line below is
-        # in both PLNmodels/master and PLNmodels/dev.
-        myPLN <- switch(
-          control$inception_cov,
-          "spherical" = PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control),
-          "diagonal" = PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control),
-          PLNfit$new(responses, covariates, offsets, weights, formula, control) # defaults to full
-        )
-        ## Allow inception with spherical / diagonal / full PLNfit before switching back to PLNfit_fixedcov
-        ## for the inner-outer loop of PLNnetwork.
-        myPLN$optimize(responses, covariates, offsets, weights, control$config_optim)
-        control$inception <- myPLN
-      }
 
       if (is.null(control$penalty_weights))
         control$penalty_weights <- matrix(1, ncol(responses), ncol(responses))
@@ -76,16 +52,19 @@ PLNnetworkfamily <- R6Class(
       else
         list_penalty_weights <- control$penalty_weights
 
+      ## Check consistency of weights and optionnaly silent diagonal penalties
+      list_penalty_weights <-
+        map(list_penalty_weights, function(penalty_weights) {
+          stopifnot(isSymmetric(penalty_weights), all(penalty_weights >= 0))
+          if (!control$penalize_diagonal) diag(penalty_weights) <- 0
+          penalty_weights
+        })
+
       ## Get an appropriate grid of penalties
       if (is.null(penalties)) {
         if (control$trace > 1) cat("\n Recovering an appropriate grid of penalties.")
-        # CHECK_ME_TORCH_GPU
-        # This appears to be in torch_gpu only. The commented out line below is
-        # in both PLNmodels/master and PLNmodels/dev.
-        # changed it to other one
         max_pen <- list_penalty_weights %>%
-          map(~ as.matrix(myPLN$model_par$Sigma) / .x) %>%
-          # map(~ control$inception$model_par$Sigma / .x) %>%
+          map(~ as.matrix(control$inception$model_par$Sigma) / .x) %>%
           map_dbl(~ max(abs(.x[upper.tri(.x, diag = control$penalize_diagonal)]))) %>%
           max()
         penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min_ratio), len = control$n_penalties)
@@ -96,14 +75,7 @@ PLNnetworkfamily <- R6Class(
       ## Sort the penalty in decreasing order
       o <- order(penalties, decreasing = TRUE)
       private$params <- penalties[o]
-      list_penalty_weights <- list_penalty_weights[o]
-
-      ## instantiate as many models as penalties
-      control$trace <- 0
-      self$models <- map2(private$params, list_penalty_weights, function(penalty, penalty_weights) {
-        PLNnetworkfit$new(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control)
-      })
-
+      private$penalties_weights <- list_penalty_weights[o]
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,68 +109,6 @@ PLNnetworkfamily <- R6Class(
 
       }
 
-    },
-
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## Stability -------------------------
-    #' @description Compute the stability path by stability selection
-    #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
-    #' @param control a list controlling the main optimization process in each call to PLNnetwork. See [PLNnetwork()] for details.
-    stability_selection = function(subsamples = NULL, control = PLNnetwork_param()) {
-
-      ## select default subsamples according
-      if (is.null(subsamples)) {
-        subsample.size <- round(ifelse(private$n >= 144, 10*sqrt(private$n), 0.8*private$n))
-        subsamples <- replicate(20, sample.int(private$n, subsample.size), simplify = FALSE)
-      }
-
-      ## got for stability selection
-      cat("\nStability Selection for PLNnetwork: ")
-      cat("\nsubsampling: ")
-
-      stabs_out <- future.apply::future_lapply(subsamples, function(subsample) {
-        cat("+")
-        inception_ <- self$getModel(self$penalties[1])
-        inception_$update(
-          M  = inception_$var_par$M[subsample, ],
-          S  = inception_$var_par$S[subsample, ]
-        )
-
-        ## force some control parameters
-        control$inception = inception_
-        control$penalty_weights = map(self$models, "penalty_weights")
-        control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
-        control$trace <- 0
-        control$config_optim$trace <- 0
-
-        myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
-                                      responses  = self$responses [subsample, , drop = FALSE],
-                                      covariates = self$covariates[subsample, , drop = FALSE],
-                                      offsets    = self$offsets   [subsample, , drop = FALSE],
-                                      formula    = private$formula,
-                                      weights    = self$weights   [subsample], control = control)
-
-        myPLN$optimize(control$config_optim)
-        nets <- do.call(cbind, lapply(myPLN$models, function(model) {
-          as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
-        }))
-        nets
-      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
-
-      prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
-      ## formatting/tyding
-      node_set <- colnames(self$getModel(index = 1)$model_par$B)
-      colnames(prob) <- self$penalties
-      private$stab_path <- prob %>%
-        as.data.frame() %>%
-        mutate(Edge = 1:n()) %>%
-        gather(key = "Penalty", value = "Prob", -Edge) %>%
-        mutate(Penalty = as.numeric(Penalty),
-               Node1   = node_set[edge_to_node(Edge)$node1],
-               Node2   = node_set[edge_to_node(Edge)$node2],
-               Edge    = paste0(Node1, "|", Node2))
-
-      invisible(subsamples)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -269,61 +179,61 @@ PLNnetworkfamily <- R6Class(
       p
     },
 
-  #' @description Plot stability path
-  #' @param stability scalar: the targeted level of stability in stability plot. Default is `0.9`.
-  #' @param log.x logical: should the x-axis be represented in log-scale? Default is `TRUE`.
-  #' @return a [`ggplot`] graph
-  plot_stars = function(stability = 0.9, log.x = TRUE) {
-    if (anyNA(self$stability)) stop("stability selection has not yet been performed! Use stability_selection()")
-    dplot <- self$criteria %>% select(param, density, stability) %>%
-      rename(Penalty = param) %>%
-      gather(key = "Metric", value = "Value", stability:density)
-    penalty_stars <- dplot %>% filter(Metric == "stability" & Value >= stability) %>%
-      pull(Penalty) %>% min()
+    #' @description Plot stability path
+    #' @param stability scalar: the targeted level of stability in stability plot. Default is `0.9`.
+    #' @param log.x logical: should the x-axis be represented in log-scale? Default is `TRUE`.
+    #' @return a [`ggplot`] graph
+    plot_stars = function(stability = 0.9, log.x = TRUE) {
+      if (anyNA(self$stability)) stop("stability selection has not yet been performed! Use stability_selection()")
+      dplot <- self$criteria %>% select(param, density, stability) %>%
+        rename(Penalty = param) %>%
+        gather(key = "Metric", value = "Value", stability:density)
+      penalty_stars <- dplot %>% filter(Metric == "stability" & Value >= stability) %>%
+        pull(Penalty) %>% min()
 
-    p <- ggplot(dplot, aes(x = Penalty, y = Value, group = Metric, color = Metric)) +
-      geom_point() +  geom_line() + theme_bw() +
-      ## Add information correspinding to best lambda
-      geom_vline(xintercept = penalty_stars, linetype = 2) +
-      geom_hline(yintercept = stability, linetype = 2) +
-      annotate(x = penalty_stars, y = 0,
-               label = paste("lambda == ", round(penalty_stars, 5)),
-               parse = TRUE, hjust = -0.05, vjust = 0, geom = "text") +
-      annotate(x = penalty_stars, y = stability,
-               label = paste("stability == ", stability),
-               parse = TRUE, hjust = -0.05, vjust = 1.5, geom = "text")
-    if (log.x) p <- p + ggplot2::scale_x_log10() + annotation_logticks(sides = "b")
-    p
-  },
+      p <- ggplot(dplot, aes(x = Penalty, y = Value, group = Metric, color = Metric)) +
+        geom_point() +  geom_line() + theme_bw() +
+        ## Add information correspinding to best lambda
+        geom_vline(xintercept = penalty_stars, linetype = 2) +
+        geom_hline(yintercept = stability, linetype = 2) +
+        annotate(x = penalty_stars, y = 0,
+                 label = paste("lambda == ", round(penalty_stars, 5)),
+                 parse = TRUE, hjust = -0.05, vjust = 0, geom = "text") +
+        annotate(x = penalty_stars, y = stability,
+                 label = paste("stability == ", stability),
+                 parse = TRUE, hjust = -0.05, vjust = 1.5, geom = "text")
+      if (log.x) p <- p + ggplot2::scale_x_log10() + annotation_logticks(sides = "b")
+      p
+    },
 
-  #' @description Plot objective value of the optimization problem along the penalty path
-  #' @return a [`ggplot`] graph
-  plot_objective = function() {
-    objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
-    changes <- cumsum(unlist(lapply(self$models, function(model) model$optim_par$outer_iterations)))
-    dplot <- data.frame(iteration = 1:length(objective), objective = objective)
-    p <- ggplot(dplot, aes(x = iteration, y = objective)) + geom_line() +
-      geom_vline(xintercept = changes, linetype="dashed", alpha = 0.25) +
-      ggtitle("Objective along the alternate algorithm") + xlab("iteration (+ changes of model)") +
-      annotate("text", x = changes, y = min(dplot$objective), angle = 90,
-               label = paste("penalty=",format(self$criteria$param, digits = 1)), hjust = -.1, size = 3, alpha = 0.7) + theme_bw()
-    p
-  },
+    #' @description Plot objective value of the optimization problem along the penalty path
+    #' @return a [`ggplot`] graph
+    plot_objective = function() {
+      objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
+      changes <- cumsum(unlist(lapply(self$models, function(model) model$optim_par$iterations)))
+      dplot <- data.frame(iteration = 1:length(objective), objective = objective)
+      p <- ggplot(dplot, aes(x = iteration, y = objective)) + geom_line() +
+        geom_vline(xintercept = changes, linetype = "dashed", alpha = 0.25) +
+        ggtitle("Objective along the alternate algorithm") + xlab("iteration (+ changes of model)") +
+        annotate("text", x = changes, y = min(dplot$objective), angle = 90,
+                 label = paste("penalty=",format(self$criteria$param, digits = 1)), hjust = -.1, size = 3, alpha = 0.7) + theme_bw()
+      p
+    },
 
 
-  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  ## Print methods ---------------------
-  #' @description User friendly print method
-  show = function() {
-    super$show()
-    cat(" Task: Network Inference \n")
-    cat("========================================================\n")
-    cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties), "\n")
-    cat(" - Best model (greater BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
-    cat(" - Best model (greater EBIC): lambda =", format(self$getBestModel("EBIC")$penalty, digits = 3), "\n")
-    if (!anyNA(self$criteria$stability))
-    cat(" - Best model (regarding StARS): lambda =", format(self$getBestModel("StARS")$penalty, digits = 3), "\n")
-  }
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Print methods ---------------------
+    #' @description User friendly print method
+    show = function() {
+      super$show()
+      cat(" Task: Network Inference \n")
+      cat("========================================================\n")
+      cat(" -", length(self$penalties) , "penalties considered: from", min(self$penalties), "to", max(self$penalties), "\n")
+      cat(" - Best model (greater BIC): lambda =", format(self$getBestModel("BIC")$penalty, digits = 3), "\n")
+      cat(" - Best model (greater EBIC): lambda =", format(self$getBestModel("EBIC")$penalty, digits = 3), "\n")
+      if (!anyNA(self$criteria$stability))
+        cat(" - Best model (regarding StARS): lambda =", format(self$getBestModel("StARS")$penalty, digits = 3), "\n")
+    }
   ),
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -331,6 +241,7 @@ PLNnetworkfamily <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   private = list(
+    penalties_weights = NULL, # a field to store the weights for each penalty,
     stab_path = NULL # a field to store the stability path,
   ),
 
@@ -366,3 +277,272 @@ PLNnetworkfamily <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 )
 
+#' An R6 Class to represent a collection of PLNnetworkfit
+#'
+#' @description The function [PLNnetwork()] produces an instance of this class.
+#'
+#' This class comes with a set of methods, some of them being useful for the user:
+#' See the documentation for [getBestModel()],
+#' [getModel()] and [plot()][plot.PLNnetworkfamily()]
+#'
+## Parameters shared by many methods
+#' @param penalties a vector of positive real number controlling the level of sparsity of the underlying network.
+#' @param responses the matrix of responses common to every models
+#' @param covariates the matrix of covariates common to every models
+#' @param offsets the matrix of offsets common to every models
+#' @param weights the vector of observation weights
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization.
+#' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
+#' @param index Integer index of the model to be returned. Only the first value is taken into account
+#'
+#' @include PLNfamily-class.R
+#' @importFrom R6 R6Class
+#' @importFrom glassoFast glassoFast
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+#' class(fits)
+#' @seealso The function [PLNnetwork()], the class [`PLNnetworkfit`]
+PLNnetworkfamily <- R6Class(
+  classname = "PLNnetworkfamily",
+  inherit = PLNnetworkfamilyvirtual,
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PUBLIC MEMBERS ------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  public = list(
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Creation functions ----------------
+    #' @description Initialize all models in the collection
+    #' @return Update current [`PLNnetworkfit`] with smart starting values
+    initialize = function(penalties, responses, covariates, offsets, weights, formula, control) {
+
+      ## A basic model for inception, useless one is defined by the user
+      if (is.null(control$inception)) {
+        ## Allow inception with spherical / diagonal / full PLNfit before switching back to PLNfit_fixedcov
+        ## for the inner-outer loop of PLNnetwork.
+        myPLN <- switch(
+          control$inception_cov,
+          "spherical" = PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control),
+          "diagonal" = PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control),
+          PLNfit$new(responses, covariates, offsets, weights, formula, control) # defaults to full
+        )
+        myPLN$optimize(responses, covariates, offsets, weights, control$config_optim)
+        control$inception <- myPLN
+      }
+
+      ## Initialize fields shared by the super class
+      super$initialize(penalties, responses, covariates, offsets, weights, formula, control)
+
+      ## instantiate as many models as penalties
+      control$trace <- 0
+      self$models <- map2(private$params, private$penalties_weights, function(penalty, penalty_weights) {
+        PLNnetworkfit$new(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control)
+      })
+
+    },
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Stability -------------------------
+    #' @description Compute the stability path by stability selection
+    #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
+    #' @param control a list controlling the main optimization process in each call to PLNnetwork. See [PLNnetwork()] for details.
+    stability_selection = function(subsamples = NULL, control = PLNnetwork_param()) {
+
+      ## select default subsamples according
+      if (is.null(subsamples)) {
+        subsample.size <- round(ifelse(private$n >= 144, 10*sqrt(private$n), 0.8*private$n))
+        subsamples <- replicate(20, sample.int(private$n, subsample.size), simplify = FALSE)
+      }
+
+      ## got for stability selection
+      cat("\nStability Selection for PLNnetwork: ")
+      cat("\nsubsampling: ")
+
+      stabs_out <- future.apply::future_lapply(subsamples, function(subsample) {
+        cat("+")
+        inception_ <- self$getModel(self$penalties[1])
+        inception_$update(
+          M  = inception_$var_par$M[subsample, ],
+          S  = inception_$var_par$S[subsample, ]
+        )
+
+        ## force some control parameters
+        control$inception = inception_
+        control$penalty_weights = map(self$models, "penalty_weights")
+        control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
+        control$trace <- 0
+        control$config_optim$trace <- 0
+
+        myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
+                                      responses  = self$responses [subsample, , drop = FALSE],
+                                      covariates = self$covariates[subsample, , drop = FALSE],
+                                      offsets    = self$offsets   [subsample, , drop = FALSE],
+                                      formula    = private$formula,
+                                      weights    = self$weights   [subsample], control = control)
+
+        myPLN$optimize(control$config_optim)
+        nets <- do.call(cbind, lapply(myPLN$models, function(model) {
+          as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
+        }))
+        nets
+      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+
+      prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
+      ## formatting/tyding
+      node_set <- colnames(self$getModel(index = 1)$model_par$B)
+      colnames(prob) <- self$penalties
+      private$stab_path <- prob %>%
+        as.data.frame() %>%
+        mutate(Edge = 1:n()) %>%
+        gather(key = "Penalty", value = "Prob", -Edge) %>%
+        mutate(Penalty = as.numeric(Penalty),
+               Node1   = node_set[edge_to_node(Edge)$node1],
+               Node2   = node_set[edge_to_node(Edge)$node2],
+               Edge    = paste0(Node1, "|", Node2))
+
+      invisible(subsamples)
+    }
+  )
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## END OF CLASS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+)
+
+#' An R6 Class to represent a collection of ZIPLNnetwork
+#'
+#' @description The function [ZIPLNnetwork()] produces an instance of this class.
+#'
+#' This class comes with a set of methods, some of them being useful for the user:
+#' See the documentation for [getBestModel()],
+#' [getModel()] and [plot()][plot.ZIPLNnetworkfamily()]
+#'
+## Parameters shared by many methods
+#' @param penalties a vector of positive real number controlling the level of sparsity of the underlying network.
+#' @param responses the matrix of responses common to every models
+#' @param covariates the matrix of covariates common to every models
+#' @param offsets the matrix of offsets common to every models
+#' @param weights the vector of observation weights
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization.
+#' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
+#' @param index Integer index of the model to be returned. Only the first value is taken into account
+#'
+#' @include PLNfamily-class.R
+#' @importFrom R6 R6Class
+#' @importFrom glassoFast glassoFast
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' fits <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+#' class(fits)
+#' @seealso The function [ZIPLNnetwork()], the class [`ZIPLNfit_sparse`]
+ZIPLNnetworkfamily <- R6Class(
+  classname = "ZIPLNnetworkfamily",
+  inherit = PLNnetworkfamilyvirtual,
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PUBLIC MEMBERS ------
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  public = list(
+    covariates_ZI = NULL, # a field to store the covariates of the ZI
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Creation functions ----------------
+    #' @description Initialize all models in the collection
+    #' @return Update current [`PLNnetworkfit`] with smart starting values
+    initialize = function(penalties, responses, covariates, offsets, weights, formula, control) {
+
+      ## A basic model for inception, useless one is defined by the user
+      if (is.null(control$inception)) {
+        ## Allow inception with spherical / diagonal / full PLNfit before switching back to PLNfit_fixedcov
+        ## for the inner-outer loop of PLNnetwork.
+        myPLN <- switch(
+          control$inception_cov,
+          "spherical" = ZIPLNfit_spherical$new(responses, covariates, offsets, weights, formula, control),
+          "diagonal" = ZIPLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control),
+          ZIPLNfit$new(responses, covariates, offsets, weights, formula, control) # defaults to full
+        )
+        myPLN$optimize(responses, covariates, offsets, weights, control$config_optim)
+        control$inception <- myPLN
+      }
+
+      ## Initialize fields shared by the super class
+      super$initialize(penalties, responses, covariates$PLN, offsets, weights, formula, control)
+      self$covariates_ZI <- covariates$ZI
+      self$covariates <- list(PLN = self$covariates, ZI = self$covariates_ZI)
+
+      ## instantiate as many models as penalties
+      control$trace <- 0
+      self$models <- map2(private$params, private$penalties_weights, function(penalty, penalty_weights) {
+        control$penalty <- penalty
+        control$penalty_weights <- penalty_weights
+        ZIPLNfit_sparse$new(responses, covariates, offsets, weights, formula, control)
+      })
+    },
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Stability -------------------------
+    #' @description Compute the stability path by stability selection
+    #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
+    #' @param control a list controlling the main optimization process in each call to PLNnetwork. See [PLNnetwork()] for details.
+    stability_selection = function(subsamples = NULL, control = PLNnetwork_param()) {
+
+      ## select default subsamples according
+      if (is.null(subsamples)) {
+        subsample.size <- round(ifelse(private$n >= 144, 10*sqrt(private$n), 0.8*private$n))
+        subsamples <- replicate(20, sample.int(private$n, subsample.size), simplify = FALSE)
+      }
+
+      ## got for stability selection
+      cat("\nStability Selection for PLNnetwork: ")
+      cat("\nsubsampling: ")
+
+      stabs_out <- future.apply::future_lapply(subsamples, function(subsample) {
+        cat("+")
+        inception_ <- self$getModel(self$penalties[1])
+        inception_$update(
+          M  = inception_$var_par$M[subsample, ],
+          S  = inception_$var_par$S[subsample, ]
+        )
+
+        ## force some control parameters
+        control$inception = inception_
+        control$penalty_weights = map(self$models, "penalty_weights")
+        control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
+        control$trace <- 0
+        control$config_optim$trace <- 0
+
+        myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
+                                      responses  = self$responses [subsample, , drop = FALSE],
+                                      covariates = self$covariates[subsample, , drop = FALSE],
+                                      offsets    = self$offsets   [subsample, , drop = FALSE],
+                                      formula    = private$formula,
+                                      weights    = self$weights   [subsample], control = control)
+
+        myPLN$optimize(control$config_optim)
+        nets <- do.call(cbind, lapply(myPLN$models, function(model) {
+          as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
+        }))
+        nets
+      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+
+      prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
+      ## formatting/tyding
+      node_set <- colnames(self$getModel(index = 1)$model_par$B)
+      colnames(prob) <- self$penalties
+      private$stab_path <- prob %>%
+        as.data.frame() %>%
+        mutate(Edge = 1:n()) %>%
+        gather(key = "Penalty", value = "Prob", -Edge) %>%
+        mutate(Penalty = as.numeric(Penalty),
+               Node1   = node_set[edge_to_node(Edge)$node1],
+               Node2   = node_set[edge_to_node(Edge)$node2],
+               Edge    = paste0(Node1, "|", Node2))
+
+      invisible(subsamples)
+    }
+  )
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## END OF CLASS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+)

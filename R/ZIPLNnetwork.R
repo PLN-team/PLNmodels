@@ -46,7 +46,7 @@ ZIPLNnetwork <- function(formula, data, subset, weights, zi = c("single", "row",
   myPLN
 }
 
-#' Control of PLNnetwork fit
+#' Control of ZIPLNnetwork fit
 #'
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
