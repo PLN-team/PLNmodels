@@ -19,7 +19,7 @@
 #'
 #' @return an R6 object with class [`ZIPLNnetworkfamily`]
 #'
-#' @include ZIPLNnetworkfamily-class.R
+#' @include PLNnetworkfamily-class.R
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)

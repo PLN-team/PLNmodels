@@ -6,7 +6,7 @@
 
 
 ## Auxiliary functions to check the given class of an objet
-isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamilyvirtual")}
+isPLNnetworkfamily <- function(Robject) {inherits(Robject, "Networkfamily")}
 
 #' Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a [`PLNnetworkfamily`])
 #'
@@ -32,7 +32,7 @@ isPLNnetworkfamily <- function(Robject) {inherits(Robject, "PLNnetworkfamilyvirt
 #' (with \code{type = 'stability'}) or the evolution of the criteria of the different models considered
 #' (with \code{type = 'criteria'}, the default).
 #' @export
-plot.PLNnetworkfamilyvirtual <-
+plot.Networkfamily <-
   function(x,
            type     = c("criteria", "stability", "diagnostic"),
            criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
@@ -53,14 +53,14 @@ plot.PLNnetworkfamilyvirtual <-
 
 #' @describeIn getModel Model extraction for [`PLNnetworkfamily`]
 #' @export
-getModel.PLNnetworkfamilyvirtual <- function(Robject, var, index = NULL) {
+getModel.Networkfamily <- function(Robject, var, index = NULL) {
   stopifnot(isPLNnetworkfamily(Robject))
   Robject$getModel(var, index)
 }
 
 #' @describeIn getBestModel Model extraction for [`PLNnetworkfamily`]
 #' @export
-getBestModel.PLNnetworkfamilyvirtual <- function(Robject, crit = c("BIC", "EBIC", "StARS"), ...) {
+getBestModel.Networkfamily <- function(Robject, crit = c("BIC", "EBIC", "StARS"), ...) {
   stopifnot(isPLNnetworkfamily(Robject))
   stability <- list(...)[["stability"]]
   if (is.null(stability)) stability <- 0.9

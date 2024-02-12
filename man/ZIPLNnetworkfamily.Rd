@@ -20,7 +20,7 @@ class(fits)
 The function \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}}, the class \code{\link{ZIPLNfit_sparse}}
 }
 \section{Super classes}{
-\code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{\link[PLNmodels:PLNnetworkfamilyvirtual]{PLNmodels::PLNnetworkfamilyvirtual}} -> \code{ZIPLNnetworkfamily}
+\code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{\link[PLNmodels:Networkfamily]{PLNmodels::Networkfamily}} -> \code{ZIPLNnetworkfamily}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -36,13 +36,13 @@ The function \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}}, the class \code{\link{
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-getModel'><code>PLNmodels::PLNfamily$getModel()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-print'><code>PLNmodels::PLNfamily$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNnetworkfamilyvirtual" data-id="coefficient_path"><a href='../../PLNmodels/html/PLNnetworkfamilyvirtual.html#method-PLNnetworkfamilyvirtual-coefficient_path'><code>PLNmodels::PLNnetworkfamilyvirtual$coefficient_path()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNnetworkfamilyvirtual" data-id="getBestModel"><a href='../../PLNmodels/html/PLNnetworkfamilyvirtual.html#method-PLNnetworkfamilyvirtual-getBestModel'><code>PLNmodels::PLNnetworkfamilyvirtual$getBestModel()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNnetworkfamilyvirtual" data-id="optimize"><a href='../../PLNmodels/html/PLNnetworkfamilyvirtual.html#method-PLNnetworkfamilyvirtual-optimize'><code>PLNmodels::PLNnetworkfamilyvirtual$optimize()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNnetworkfamilyvirtual" data-id="plot"><a href='../../PLNmodels/html/PLNnetworkfamilyvirtual.html#method-PLNnetworkfamilyvirtual-plot'><code>PLNmodels::PLNnetworkfamilyvirtual$plot()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNnetworkfamilyvirtual" data-id="plot_objective"><a href='../../PLNmodels/html/PLNnetworkfamilyvirtual.html#method-PLNnetworkfamilyvirtual-plot_objective'><code>PLNmodels::PLNnetworkfamilyvirtual$plot_objective()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNnetworkfamilyvirtual" data-id="plot_stars"><a href='../../PLNmodels/html/PLNnetworkfamilyvirtual.html#method-PLNnetworkfamilyvirtual-plot_stars'><code>PLNmodels::PLNnetworkfamilyvirtual$plot_stars()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNnetworkfamilyvirtual" data-id="show"><a href='../../PLNmodels/html/PLNnetworkfamilyvirtual.html#method-PLNnetworkfamilyvirtual-show'><code>PLNmodels::PLNnetworkfamilyvirtual$show()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="coefficient_path"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-coefficient_path'><code>PLNmodels::Networkfamily$coefficient_path()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="getBestModel"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-getBestModel'><code>PLNmodels::Networkfamily$getBestModel()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="optimize"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-optimize'><code>PLNmodels::Networkfamily$optimize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot'><code>PLNmodels::Networkfamily$plot()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_objective"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot_objective'><code>PLNmodels::Networkfamily$plot_objective()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_stars"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot_stars'><code>PLNmodels::Networkfamily$plot_stars()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="show"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-show'><code>PLNmodels::Networkfamily$show()</code></a></span></li>
 </ul>
 </details>
 }}

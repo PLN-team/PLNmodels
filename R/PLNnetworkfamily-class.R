@@ -1,4 +1,4 @@
-#' An R6 Class to virtually represent a collection of PLNnetworkfit (either standard or ZI)
+#' An R6 Class to virtually represent a collection of Networkfit (either standard PLN or ZI-PLN)
 #'
 #' @description The function [PLNnetwork()] produces an instance of this class.
 #'
@@ -21,8 +21,8 @@
 #' @importFrom R6 R6Class
 #' @importFrom glassoFast glassoFast
 #' @seealso The function [PLNnetwork()], the class [`PLNnetworkfit`]
-PLNnetworkfamilyvirtual <- R6Class(
-  classname = "PLNnetworkfamilyvirtual",
+Networkfamily <- R6Class(
+  classname = "Networkfamily",
   inherit = PLNfamily,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ------
@@ -307,7 +307,7 @@ PLNnetworkfamilyvirtual <- R6Class(
 #' @seealso The function [PLNnetwork()], the class [`PLNnetworkfit`]
 PLNnetworkfamily <- R6Class(
   classname = "PLNnetworkfamily",
-  inherit = PLNnetworkfamilyvirtual,
+  inherit = Networkfamily,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ------
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -440,7 +440,7 @@ PLNnetworkfamily <- R6Class(
 #' @seealso The function [ZIPLNnetwork()], the class [`ZIPLNfit_sparse`]
 ZIPLNnetworkfamily <- R6Class(
   classname = "ZIPLNnetworkfamily",
-  inherit = PLNnetworkfamilyvirtual,
+  inherit = Networkfamily,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ------
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
