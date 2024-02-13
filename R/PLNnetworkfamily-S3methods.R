@@ -8,7 +8,7 @@
 ## Auxiliary functions to check the given class of an objet
 isPLNnetworkfamily <- function(Robject) {inherits(Robject, "Networkfamily")}
 
-#' Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a [`PLNnetworkfamily`])
+#' Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of network fits (either [`PLNnetworkfamily`] or [`ZIPLNnetworkfamily`])
 #'
 #' @inheritParams plot.PLNfamily
 #' @inherit plot.PLNfamily return details
@@ -19,7 +19,6 @@ isPLNnetworkfamily <- function(Robject) {inherits(Robject, "Networkfamily")}
 #' Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when `type = "criteria"`.
 #' @param log.x logical: should the x-axis be represented in log-scale? Default is `TRUE`.
 #' @param stability scalar: the targeted level of stability in stability plot. Default is .9.
-#'
 #'
 #' @examples
 #' data(trichoptera)
@@ -32,8 +31,7 @@ isPLNnetworkfamily <- function(Robject) {inherits(Robject, "Networkfamily")}
 #' (with \code{type = 'stability'}) or the evolution of the criteria of the different models considered
 #' (with \code{type = 'criteria'}, the default).
 #' @export
-plot.Networkfamily <-
-  function(x,
+plot.Networkfamily <- function(x,
            type     = c("criteria", "stability", "diagnostic"),
            criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
            reverse = FALSE,
@@ -50,6 +48,14 @@ plot.Networkfamily <-
 
   p
 }
+
+#' @describeIn plot.Networkfamily Display various outputs associated with a collection of network fits
+#' @export
+plot.PLNnetworkfamily <- plot.Networkfamily
+
+#' @describeIn plot.Networkfamily Display various outputs associated with a collection of network fits
+#' @export
+plot.ZIPLNnetworkfamily <- plot.Networkfamily
 
 #' @describeIn getModel Model extraction for [`PLNnetworkfamily`]
 #' @export

@@ -494,14 +494,15 @@ ZIPLNnetworkfamily <- R6Class(
         control$trace <- 0
         control$config_optim$trace <- 0
 
-        myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
-                                      responses  = self$responses [subsample, , drop = FALSE],
-                                      covariates = self$covariates[subsample, , drop = FALSE],
-                                      offsets    = self$offsets   [subsample, , drop = FALSE],
-                                      formula    = private$formula,
-                                      weights    = self$weights   [subsample], control = control)
+        data <- list(
+          Y  = self$responses [subsample, , drop = FALSE],
+          X = self$covariates[subsample, , drop = FALSE],
+          O = self$offsets   [subsample, , drop = FALSE],
+          w = self$weights   [subsample], formula    = private$formula)
 
-        myPLN$optimize(control$config_optim)
+        myPLN <- ZIPLNnetworkfamily$new(self$penalties, data, control)
+        myPLN$optimize(data, control$config_optim)
+
         nets <- do.call(cbind, lapply(myPLN$models, function(model) {
           as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
         }))

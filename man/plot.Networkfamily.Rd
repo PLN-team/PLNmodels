@@ -2,9 +2,31 @@
 % Please edit documentation in R/PLNnetworkfamily-S3methods.R
 \name{plot.Networkfamily}
 \alias{plot.Networkfamily}
-\title{Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a \code{\link{PLNnetworkfamily}})}
+\alias{plot.PLNnetworkfamily}
+\alias{plot.ZIPLNnetworkfamily}
+\title{Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of network fits (either \code{\link{PLNnetworkfamily}} or \code{\link{ZIPLNnetworkfamily}})}
 \usage{
 \method{plot}{Networkfamily}(
+  x,
+  type = c("criteria", "stability", "diagnostic"),
+  criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
+  reverse = FALSE,
+  log.x = TRUE,
+  stability = 0.9,
+  ...
+)
+
+\method{plot}{PLNnetworkfamily}(
+  x,
+  type = c("criteria", "stability", "diagnostic"),
+  criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
+  reverse = FALSE,
+  log.x = TRUE,
+  stability = 0.9,
+  ...
+)
+
+\method{plot}{ZIPLNnetworkfamily}(
   x,
   type = c("criteria", "stability", "diagnostic"),
   criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
@@ -38,12 +60,19 @@ Produces either a diagnostic plot (with \code{type = 'diagnostic'}), a stability
 (with \code{type = 'criteria'}, the default).
 }
 \description{
-Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a \code{\link{PLNnetworkfamily}})
+Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of network fits (either \code{\link{PLNnetworkfamily}} or \code{\link{ZIPLNnetworkfamily}})
 }
 \details{
 The BIC and ICL criteria have the form 'loglik - 1/2 * penalty'
 so that they are on the same scale as the model log-likelihood. You can change this direction and use the alternate form '-2*loglik + penalty', as some authors do, by setting \code{reverse = TRUE}.
 }
+\section{Functions}{
+\itemize{
+\item \code{plot(PLNnetworkfamily)}: Display various outputs associated with a collection of network fits
+
+\item \code{plot(ZIPLNnetworkfamily)}: Display various outputs associated with a collection of network fits
+
+}}
 \examples{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)

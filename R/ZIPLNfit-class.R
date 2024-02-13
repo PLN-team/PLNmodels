@@ -75,7 +75,7 @@ ZIPLNfit <- R6Class(
       private$X0      <- data$X0
       ## initialize the covariance model
       private$covariance <- control$covariance
-      private$ziparam <- control$ziparam
+      private$ziparam    <- control$ziparam
 
       if (isZIPLNfit(control$inception)) {
         private$R  <- control$inception$var_par$R
