@@ -41,10 +41,14 @@ PLNnetworkfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
-    initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control) {
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$lambda <- penalty
-      private$rho    <- penalty_weights
+      ## Default for penalty weights (if not already set)
+      if (is.null(control$penalty_weights)) control$penalty_weights <- matrix(1, self$p, self$p)
+      stopifnot(isSymmetric(control$penalty_weights), all(control$penalty_weights >= 0))
+      if (!control$penalize_diagonal) diag(control$penalty_weights) <- 0
+      private$lambda <- control$penalty
+      private$rho    <- control$penalty_weights
     },
     #' @description Update fields of a [`PLNnetworkfit`] object
     #' @param B matrix of regression matrix

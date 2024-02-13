@@ -762,9 +762,12 @@ ZIPLNfit_sparse <- R6Class(
     #' @importFrom glassoFast glassoFast
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
+      ## Default for penalty weights (if not already set)
+      if (is.null(control$penalty_weights)) control$penalty_weights <- matrix(1, self$p, self$p)
+      stopifnot(isSymmetric(control$penalty_weights), all(control$penalty_weights >= 0))
+      if (!control$penalize_diagonal) diag(control$penalty_weights) <- 0
       private$lambda <- control$penalty
       private$rho    <- control$penalty_weights
-      if (!control$penalize_diagonal) diag(private$rho) <- 0
       private$optimizer$Omega <-
         function(M, X, B, S) {
           glassoFast( crossprod(M - X %*% B)/self$n + diag(colMeans(S * S), self$p, self$p),
