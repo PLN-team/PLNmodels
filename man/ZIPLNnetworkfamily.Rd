@@ -78,7 +78,7 @@ Compute the stability path by stability selection
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ZIPLNnetworkfamily$stability_selection(
   subsamples = NULL,
-  control = PLNnetwork_param()
+  control = ZIPLNnetwork_param()
 )}\if{html}{\out{</div>}}
 }
 

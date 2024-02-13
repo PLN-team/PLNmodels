@@ -6,7 +6,7 @@
 
 
 ## Auxiliary functions to check the given class of an objet
-isPLNnetworkfamily <- function(Robject) {inherits(Robject, "Networkfamily")}
+isNetworkfamily <- function(Robject) {inherits(Robject, "Networkfamily")}
 
 #' Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of network fits (either [`PLNnetworkfamily`] or [`ZIPLNnetworkfamily`])
 #'
@@ -37,7 +37,7 @@ plot.Networkfamily <- function(x,
            reverse = FALSE,
            log.x    = TRUE,
            stability = 0.9, ...) {
-  stopifnot(isPLNnetworkfamily(x))
+  stopifnot(isNetworkfamily(x))
   type <- match.arg(type)
   if (type == "criteria")
     p <- x$plot(criteria, reverse)
@@ -60,7 +60,7 @@ plot.ZIPLNnetworkfamily <- plot.Networkfamily
 #' @describeIn getModel Model extraction for [`PLNnetworkfamily`] or [`ZIPLNnetworkfamily`]
 #' @export
 getModel.Networkfamily <- function(Robject, var, index = NULL) {
-  stopifnot(isPLNnetworkfamily(Robject))
+  stopifnot(isNetworkfamily(Robject))
   Robject$getModel(var, index)
 }
 
@@ -75,7 +75,7 @@ getModel.ZIPLNnetworkfamily <- getModel.Networkfamily
 #' @describeIn getBestModel Model extraction for [`PLNnetworkfamily`] or [`ZIPLNnetworkfamily`]
 #' @export
 getBestModel.Networkfamily <- function(Robject, crit = c("BIC", "EBIC", "StARS"), ...) {
-  stopifnot(isPLNnetworkfamily(Robject))
+  stopifnot(isNetworkfamily(Robject))
   stability <- list(...)[["stability"]]
   if (is.null(stability)) stability <- 0.9
   Robject$getBestModel(match.arg(crit), stability)
@@ -104,7 +104,7 @@ getBestModel.ZIPLNnetworkfamily <- getBestModel.Networkfamily
 #' head(coefficient_path(fits))
 #' @export
 coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
-  stopifnot(isPLNnetworkfamily(Robject))
+  stopifnot(isNetworkfamily(Robject))
   Robject$coefficient_path(precision, corr)
 }
 
@@ -131,7 +131,8 @@ coefficient_path <- function(Robject, precision = TRUE, corr = TRUE) {
 #' }
 #' @export
 stability_selection <- function(Robject, subsamples = NULL, control = PLNnetwork_param(), force = FALSE) {
-  stopifnot(isPLNnetworkfamily(Robject))
+  stopifnot(isNetworkfamily(Robject))
+  if (inherits(Robject, "ZIPLNnetworkfamily")) control <- ZIPLNnetwork_param()
   if (force || anyNA(Robject$stability)) {
     Robject$stability_selection(subsamples, control)
   } else {
@@ -179,7 +180,7 @@ extract_probs <- function(Robject, penalty = NULL, index = NULL,
                           crit = c("StARS", "BIC", "EBIC"),
                           format = c("matrix", "vector"),
                           tol = 1e-5) {
-  stopifnot(isPLNnetworkfamily(Robject))
+  stopifnot(isNetworkfamily(Robject))
   ## Check if stability selection has been performed
   stab_path <- Robject$stability_path
   if (is.null(stab_path)) {

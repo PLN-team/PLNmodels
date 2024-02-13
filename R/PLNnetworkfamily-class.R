@@ -370,7 +370,7 @@ PLNnetworkfamily <- R6Class(
           Y  = self$responses [subsample, , drop = FALSE],
           X = self$covariates[subsample, , drop = FALSE],
           O = self$offsets   [subsample, , drop = FALSE],
-          w = self$weights   [subsample], formula    = private$formula)
+          w = self$weights   [subsample])
 
         myPLN <- PLNnetworkfamily$new(self$penalties, data, control)
         myPLN$optimize(data, control$config_optim)
@@ -430,6 +430,7 @@ ZIPLNnetworkfamily <- R6Class(
   ## PUBLIC MEMBERS ------
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public = list(
+    covariates0 = NULL, # covariates used in the ZI component
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize all models in the collection
@@ -452,6 +453,7 @@ ZIPLNnetworkfamily <- R6Class(
 
       ## Initialize fields shared by the super class
       super$initialize(penalties, data, control)
+      self$covariates0 <- data$X0
 
       ## instantiate as many models as penalties
       control$trace <- 0
@@ -467,7 +469,7 @@ ZIPLNnetworkfamily <- R6Class(
     #' @description Compute the stability path by stability selection
     #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.
     #' @param control a list controlling the main optimization process in each call to PLNnetwork. See [PLNnetwork()] for details.
-    stability_selection = function(subsamples = NULL, control = PLNnetwork_param()) {
+    stability_selection = function(subsamples = NULL, control = ZIPLNnetwork_param()) {
 
       ## select default subsamples according
       if (is.null(subsamples)) {
@@ -476,13 +478,15 @@ ZIPLNnetworkfamily <- R6Class(
       }
 
       ## got for stability selection
-      cat("\nStability Selection for PLNnetwork: ")
+      cat("\nStability Selection for ZIPLNnetwork: ")
       cat("\nsubsampling: ")
 
-      stabs_out <- future.apply::future_lapply(subsamples, function(subsample) {
-        cat("+")
+      # stabs_out <- future.apply::future_lapply(subsamples, function(subsample) {
+      stabs_out <- lapply(subsamples, function(subsample) {
+          cat("+")
         inception_ <- self$getModel(self$penalties[1])
         inception_$update(
+          R  = inception_$var_par$R[subsample, ],
           M  = inception_$var_par$M[subsample, ],
           S  = inception_$var_par$S[subsample, ]
         )
@@ -493,12 +497,15 @@ ZIPLNnetworkfamily <- R6Class(
         control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
         control$trace <- 0
         control$config_optim$trace <- 0
-
+        control$ziparam <- inception_$zi_model
+        X0  <- self$covariates0
+        if (nrow(X0) > 0)  X0  <- X0[subsample, , drop = FALSE]
         data <- list(
-          Y  = self$responses [subsample, , drop = FALSE],
-          X = self$covariates[subsample, , drop = FALSE],
-          O = self$offsets   [subsample, , drop = FALSE],
-          w = self$weights   [subsample], formula    = private$formula)
+          Y  = self$responses  [subsample, , drop = FALSE],
+          X  = self$covariates [subsample, , drop = FALSE],
+          X0 = X0,
+          O  = self$offsets    [subsample, , drop = FALSE],
+          w  = self$weights    [subsample])
 
         myPLN <- ZIPLNnetworkfamily$new(self$penalties, data, control)
         myPLN$optimize(data, control$config_optim)
@@ -507,7 +514,8 @@ ZIPLNnetworkfamily <- R6Class(
           as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
         }))
         nets
-      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      # }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      })
 
       prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
       ## formatting/tyding

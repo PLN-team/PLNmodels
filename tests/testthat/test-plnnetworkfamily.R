@@ -36,7 +36,7 @@ test_that("PLNnetwork: main function, fields access and methods", {
   expect_equal(myPLN$criteria$BIC, models$criteria$BIC)
 
   ## S3 methods
-  expect_true(PLNmodels:::isPLNnetworkfamily(myPLN))
+  expect_true(PLNmodels:::isNetworkfamily(myPLN))
   expect_is(plot(myPLN), "ggplot")
   expect_is(plot(myPLN, reverse = TRUE), "ggplot")
   expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
@@ -94,7 +94,7 @@ test_that("PLNnetwork: matrix of penalties work", {
   myPLN <- PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = W))
 
   ## S3 methods
-  expect_true(PLNmodels:::isPLNnetworkfamily(myPLN))
+  expect_true(PLNmodels:::isNetworkfamily(myPLN))
   expect_is(plot(myPLN), "ggplot")
   expect_is(plot(myPLN, reverse = TRUE), "ggplot")
   expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
@@ -145,7 +145,7 @@ test_that("PLNnetwork: list of matrices of penalties work", {
   myPLN <- PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = list_W))
 
   ## S3 methods
-  expect_true(PLNmodels:::isPLNnetworkfamily(myPLN))
+  expect_true(PLNmodels:::isNetworkfamily(myPLN))
   expect_is(plot(myPLN), "ggplot")
   expect_is(plot(myPLN, reverse = TRUE), "ggplot")
   expect_is(plot(myPLN, type = "diagnostic"), "ggplot")

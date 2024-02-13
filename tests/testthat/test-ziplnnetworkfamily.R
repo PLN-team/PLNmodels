@@ -96,7 +96,7 @@ test_that("ZIPLNnetwork: matrix of penalties work", {
   expect_is(plot(myPLN), "ggplot")
   expect_is(plot(myPLN, reverse = TRUE), "ggplot")
   expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
-  expect_is(getBestModel(myPLN), "PLNnetworkfit")
+  expect_is(getBestModel(myPLN), "ZIPLNfit_sparse")
   expect_is(getModel(myPLN, myPLN$penalties[1]), "ZIPLNfit_sparse")
 
   ## Field access
@@ -109,7 +109,7 @@ test_that("ZIPLNnetwork: matrix of penalties work", {
   subs <- replicate(2,
                     sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
                     simplify = FALSE)
-  myPLN$stability_selection(subsamples = subs, control = PLNnetwork_param(penalty_weights = W))
+  myPLN$stability_selection(subsamples = subs, control = ZIPLNnetwork_param(penalty_weights = W))
   expect_is(plot(myPLN, type = "stability"), "ggplot")
   expect_true(!is.null(myPLN$stability_path))
   expect_true(inherits(myPLN$plot(), "ggplot"))
