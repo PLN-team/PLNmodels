@@ -50,21 +50,6 @@ PLNnetworkfit <- R6Class(
       private$lambda <- control$penalty
       private$rho    <- control$penalty_weights
     },
-    #' @description Update fields of a [`PLNnetworkfit`] object
-    #' @param B matrix of regression matrix
-    #' @param Sigma variance-covariance matrix of the latent variables
-    #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
-    #' @param M     matrix of mean vectors for the variational approximation
-    #' @param S     matrix of variance vectors for the variational approximation
-    #' @param Z     matrix of latent vectors (includes covariates and offset effects)
-    #' @param A     matrix of fitted values
-    #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
-    #' @param R2    approximate R^2 goodness-of-fit criterion
-    #' @param monitoring a list with optimization monitoring quantities
-    update = function(penalty=NA, B=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-      super$update(B = B, Sigma = Sigma, Omega = Omega, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
-      if (!anyNA(penalty)) private$lambda <- penalty
-    },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimization ----------------------
@@ -92,7 +77,7 @@ PLNnetworkfit <- R6Class(
         do.call(self$update, optim_out)
 
         ## Check convergence
-        objective[iter]   <- -self$loglik + self$penalty * sum(abs(private$Omega))
+        objective[iter]   <- -self$loglik # + self$penalty * sum(abs(private$Omega))
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
         if ((convergence[iter] < config$ftol_out) | (iter >= config$maxit_out)) cond <- TRUE
 
@@ -104,9 +89,9 @@ PLNnetworkfit <- R6Class(
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## OUTPUT
       private$Sigma <- Matrix::symmpart(glasso_out$w)
-      private$monitoring$objective        <- objective[1:iter]
-      private$monitoring$convergence      <- convergence[1:iter]
-      private$monitoring$outer_iterations <- iter
+      private$monitoring$objective   <- objective[1:iter]
+      private$monitoring$convergence <- convergence[1:iter]
+      private$monitoring$iterations  <- iter
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
