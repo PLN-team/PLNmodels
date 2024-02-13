@@ -430,6 +430,7 @@ ZIPLNnetworkfamily <- R6Class(
   ## PUBLIC MEMBERS ------
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public = list(
+    #' @field covariates0 the matrix of covariates included in the ZI component
     covariates0 = NULL, # covariates used in the ZI component
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------

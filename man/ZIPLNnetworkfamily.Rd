@@ -22,6 +22,13 @@ The function \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}}, the class \code{\link{
 \section{Super classes}{
 \code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{\link[PLNmodels:Networkfamily]{PLNmodels::Networkfamily}} -> \code{ZIPLNnetworkfamily}
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{covariates0}}{the matrix of covariates included in the ZI component}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
