@@ -8,14 +8,8 @@
 #'
 ## Parameters shared by many methods
 #' @param penalties a vector of positive real number controlling the level of sparsity of the underlying network.
-#' @param responses the matrix of responses common to every models
-#' @param covariates the matrix of covariates common to every models
-#' @param offsets the matrix of offsets common to every models
-#' @param weights the vector of observation weights
-#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param data a named list used internally to carry the data matrices
 #' @param control a list for controlling the optimization.
-#' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
-#' @param index Integer index of the model to be returned. Only the first value is taken into account
 #'
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
@@ -32,13 +26,13 @@ Networkfamily <- R6Class(
     ## Creation functions ----------------
     #' @description Initialize all models in the collection
     #' @return Update current [`PLNnetworkfit`] with smart starting values
-    initialize = function(penalties, responses, covariates, offsets, weights, formula, control) {
+    initialize = function(penalties, data, control) {
 
       ## Initialize fields shared by the super class
-      super$initialize(responses, covariates, offsets, weights, control)
+      super$initialize(data$Y, data$X, data$O, data$w, control)
 
       if (is.null(control$penalty_weights))
-        control$penalty_weights <- matrix(1, ncol(responses), ncol(responses))
+        control$penalty_weights <- matrix(1, private$p, private$p)
       ## Get the number of penalty
       if (is.null(penalties)) {
         if (is.list(control$penalty_weights))
@@ -82,7 +76,7 @@ Networkfamily <- R6Class(
     ## Optimization ----------------------
     #' @description Call to the C++ optimizer on all models of the collection
     #' @param config a list for controlling the optimization.
-    optimize = function(config) {
+    optimize = function(data, config) {
       ## Go along the penalty grid (i.e the models)
       for (m in seq_along(self$models))  {
 
@@ -93,7 +87,7 @@ Networkfamily <- R6Class(
         if (config$trace > 1) {
           cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
         }
-        self$models[[m]]$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
+        self$models[[m]]$optimize(data, config)
         ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
         if (m < length(self$penalties))
           self$models[[m + 1]]$update(
@@ -287,14 +281,9 @@ Networkfamily <- R6Class(
 #'
 ## Parameters shared by many methods
 #' @param penalties a vector of positive real number controlling the level of sparsity of the underlying network.
-#' @param responses the matrix of responses common to every models
-#' @param covariates the matrix of covariates common to every models
-#' @param offsets the matrix of offsets common to every models
-#' @param weights the vector of observation weights
+#' @param data a named list used internally to carry the data matrices
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization.
-#' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
-#' @param index Integer index of the model to be returned. Only the first value is taken into account
 #'
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
@@ -316,7 +305,7 @@ PLNnetworkfamily <- R6Class(
     ## Creation functions ----------------
     #' @description Initialize all models in the collection
     #' @return Update current [`PLNnetworkfit`] with smart starting values
-    initialize = function(penalties, responses, covariates, offsets, weights, formula, control) {
+    initialize = function(penalties, data, control) {
 
       ## A basic model for inception, useless one is defined by the user
       if (is.null(control$inception)) {
@@ -324,23 +313,23 @@ PLNnetworkfamily <- R6Class(
         ## for the inner-outer loop of PLNnetwork.
         myPLN <- switch(
           control$inception_cov,
-          "spherical" = PLNfit_spherical$new(responses, covariates, offsets, weights, formula, control),
-          "diagonal" = PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control),
-          PLNfit$new(responses, covariates, offsets, weights, formula, control) # defaults to full
+          "spherical" = PLNfit_spherical$new(data$Y, data$X, data$O, data$w, data$formula, control),
+          "diagonal" = PLNfit_diagonal$new(data$Y, data$X, data$O, data$w, data$formula, control),
+          PLNfit$new(data$Y, data$X, data$O, data$w, data$formula, control) # defaults to full
         )
-        myPLN$optimize(responses, covariates, offsets, weights, control$config_optim)
+        myPLN$optimize(data$Y, data$X, data$O, data$w, control$config_optim)
         control$inception <- myPLN
       }
 
       ## Initialize fields shared by the super class
-      super$initialize(penalties, responses, covariates, offsets, weights, formula, control)
+      super$initialize(penalties, data, control)
 
       ## instantiate as many models as penalties
       control$trace <- 0
       self$models <- map2(private$params, private$penalties_weights, function(penalty, penalty_weights) {
         control$penalty <- penalty
         control$penalty_weights <- penalty_weights
-        PLNnetworkfit$new(responses, covariates, offsets, weights, formula, control)
+        PLNnetworkfit$new(data, control)
       })
 
     },
@@ -377,14 +366,14 @@ PLNnetworkfamily <- R6Class(
         control$trace <- 0
         control$config_optim$trace <- 0
 
-        myPLN <- PLNnetworkfamily$new(penalties  = self$penalties,
-                                      responses  = self$responses [subsample, , drop = FALSE],
-                                      covariates = self$covariates[subsample, , drop = FALSE],
-                                      offsets    = self$offsets   [subsample, , drop = FALSE],
-                                      formula    = private$formula,
-                                      weights    = self$weights   [subsample], control = control)
+        data <- list(
+          Y  = self$responses [subsample, , drop = FALSE],
+          X = self$covariates[subsample, , drop = FALSE],
+          O = self$offsets   [subsample, , drop = FALSE],
+          w = self$weights   [subsample], formula    = private$formula)
 
-        myPLN$optimize(control$config_optim)
+        myPLN <- PLNnetworkfamily$new(self$penalties, data, control)
+        myPLN$optimize(data, control$config_optim)
         nets <- do.call(cbind, lapply(myPLN$models, function(model) {
           as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
         }))
@@ -422,14 +411,8 @@ PLNnetworkfamily <- R6Class(
 #'
 ## Parameters shared by many methods
 #' @param penalties a vector of positive real number controlling the level of sparsity of the underlying network.
-#' @param responses the matrix of responses common to every models
-#' @param covariates the matrix of covariates common to every models
-#' @param offsets the matrix of offsets common to every models
-#' @param weights the vector of observation weights
-#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param data a named list used internally to carry the data matrices
 #' @param control a list for controlling the optimization.
-#' @param var value of the parameter (`rank` for PLNPCA, `sparsity` for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.
-#' @param index Integer index of the model to be returned. Only the first value is taken into account
 #'
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
@@ -447,12 +430,11 @@ ZIPLNnetworkfamily <- R6Class(
   ## PUBLIC MEMBERS ------
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public = list(
-    covariates_ZI = NULL, # a field to store the covariates of the ZI
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize all models in the collection
     #' @return Update current [`PLNnetworkfit`] with smart starting values
-    initialize = function(penalties, responses, covariates, offsets, weights, formula, control) {
+    initialize = function(penalties, data, control) {
 
       ## A basic model for inception, useless one is defined by the user
       if (is.null(control$inception)) {
@@ -460,25 +442,23 @@ ZIPLNnetworkfamily <- R6Class(
         ## for the inner-outer loop of PLNnetwork.
         myPLN <- switch(
           control$inception_cov,
-          "spherical" = ZIPLNfit_spherical$new(responses, covariates, offsets, weights, formula, control),
-          "diagonal" = ZIPLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control),
-          ZIPLNfit$new(responses, covariates, offsets, weights, formula, control) # defaults to full
+          "spherical" = ZIPLNfit_spherical$new(data, control),
+          "diagonal" = ZIPLNfit_diagonal$new(data, control),
+          ZIPLNfit$new(data, control) # defaults to full
         )
-        myPLN$optimize(responses, covariates, offsets, weights, control$config_optim)
+        myPLN$optimize(data, control$config_optim)
         control$inception <- myPLN
       }
 
       ## Initialize fields shared by the super class
-      super$initialize(penalties, responses, covariates$PLN, offsets, weights, formula, control)
-      self$covariates_ZI <- covariates$ZI
-      self$covariates <- list(PLN = self$covariates, ZI = self$covariates_ZI)
+      super$initialize(penalties, data, control)
 
       ## instantiate as many models as penalties
       control$trace <- 0
       self$models <- map2(private$params, private$penalties_weights, function(penalty, penalty_weights) {
         control$penalty <- penalty
         control$penalty_weights <- penalty_weights
-        ZIPLNfit_sparse$new(responses, covariates, offsets, weights, formula, control)
+        ZIPLNfit_sparse$new(data, control)
       })
     },
 

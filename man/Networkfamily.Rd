@@ -59,15 +59,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 \subsection{Method \code{new()}}{
 Initialize all models in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Networkfamily$new(
-  penalties,
-  responses,
-  covariates,
-  offsets,
-  weights,
-  formula,
-  control
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Networkfamily$new(penalties, data, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -75,15 +67,7 @@ Initialize all models in the collection
 \describe{
 \item{\code{penalties}}{a vector of positive real number controlling the level of sparsity of the underlying network.}
 
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{weights}}{the vector of observation weights}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+\item{\code{data}}{a named list used internally to carry the data matrices}
 
 \item{\code{control}}{a list for controlling the optimization.}
 }
@@ -99,12 +83,14 @@ Update current \code{\link{PLNnetworkfit}} with smart starting values
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer on all models of the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Networkfamily$optimize(config)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Networkfamily$optimize(data, config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{data}}{a named list used internally to carry the data matrices}
+
 \item{\code{config}}{a list for controlling the optimization.}
 }
 \if{html}{\out{</div>}}

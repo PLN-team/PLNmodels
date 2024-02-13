@@ -43,23 +43,23 @@
 ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control = ZIPLN_param()) {
 
   ## extract the data matrices and weights
-  args <- extract_model_zi(match.call(expand.dots = FALSE), parent.frame())
-  control$ziparam <- ifelse((args$zicovar), "covar", match.arg(zi))
+  data_ <- extract_model_zi(match.call(expand.dots = FALSE), parent.frame())
+  control$ziparam <- ifelse((data_$zicovar), "covar", match.arg(zi))
 
   ## initialization
   if (control$trace > 0) cat("\n Initialization...")
   myPLN <- switch(control$covariance,
-                  "diagonal"  = ZIPLNfit_diagonal$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
-                  "spherical" = ZIPLNfit_spherical$new(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
-                  "fixed"     = ZIPLNfit_fixed$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
-                  "sparse"    = ZIPLNfit_sparse$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
-                  ZIPLNfit$new(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control)) # default: full covariance
+                  "diagonal"  = ZIPLNfit_diagonal$new(data_, control),
+                  "spherical" = ZIPLNfit_spherical$new(data_, control),
+                  "fixed"     = ZIPLNfit_fixed$new(data_, control),
+                  "sparse"    = ZIPLNfit_sparse$new(data_, control),
+                  ZIPLNfit$new(data_, control)) # default: full covariance
 
   ## optimization
   if (control$trace > 0) cat("\n Adjusting a ZI-PLN model with",
                   control$covariance,"covariance model and",
                   control$ziparam, "specific parameter(s) in Zero inflation component.")
-  myPLN$optimize(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, control$config_optim)
+  myPLN$optimize(data_, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN

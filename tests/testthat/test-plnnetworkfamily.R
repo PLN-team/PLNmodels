@@ -10,19 +10,23 @@ test_that("PLNnetwork: main function, fields access and methods", {
 
   expect_equal(getBestModel(models), getBestModel(models, "BIC"))
 
-  X <- model.matrix(Abundance ~ 1, data = trichoptera)
   Y <- as.matrix(trichoptera$Abundance)
-  O <- matrix(0, nrow(Y),ncol(Y))
-  w <- rep(1, nrow(Y))
+  data = list(
+    Y = Y,
+    X = model.matrix(Abundance ~ 1, data = trichoptera),
+    O = matrix(0, nrow(Y),ncol(Y)),
+    w = rep(1, nrow(Y)),
+    formula = Abundance ~ 1
+  )
 
   ## extract the data matrices and weights
   ctrl <- PLNmodels:::PLNnetwork_param(trace = 0)
 
   ## instantiate
-  myPLN <- PLNmodels:::PLNnetworkfamily$new(NULL, Y, X, O, w, Abundance ~ 1, ctrl)
+  myPLN <- PLNmodels:::PLNnetworkfamily$new(NULL, data, ctrl)
 
   ## optimize
-  myPLN$optimize(ctrl$config_optim)
+  myPLN$optimize(data, ctrl$config_optim)
 
   ## post-treatment
   config_post <- PLNmodels:::config_post_default_PLNnetwork

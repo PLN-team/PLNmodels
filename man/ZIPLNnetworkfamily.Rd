@@ -52,15 +52,7 @@ The function \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}}, the class \code{\link{
 \subsection{Method \code{new()}}{
 Initialize all models in the collection
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZIPLNnetworkfamily$new(
-  penalties,
-  responses,
-  covariates,
-  offsets,
-  weights,
-  formula,
-  control
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNnetworkfamily$new(penalties, data, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -68,15 +60,7 @@ Initialize all models in the collection
 \describe{
 \item{\code{penalties}}{a vector of positive real number controlling the level of sparsity of the underlying network.}
 
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{weights}}{the vector of observation weights}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+\item{\code{data}}{a named list used internally to carry the data matrices}
 
 \item{\code{control}}{a list for controlling the optimization.}
 }

@@ -29,18 +29,18 @@
 ZIPLNnetwork <- function(formula, data, subset, weights, zi = c("single", "row", "col"), penalties = NULL, control = ZIPLNnetwork_param()) {
 
   ## extract the data matrices and weights
-  args <- extract_model_zi(match.call(expand.dots = FALSE), parent.frame())
-  control$ziparam <- ifelse((args$zicovar), "covar", match.arg(zi))
+  data_ <- extract_model_zi(match.call(expand.dots = FALSE), parent.frame())
+  control$ziparam <- ifelse((data_$zicovar), "covar", match.arg(zi))
 
   ## initialization
   if (control$trace > 0) cat("\n Initialization...")
-  myPLN <- ZIPLNnetworkfamily$new(penalties, args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control)
+  myPLN <- ZIPLNnetworkfamily$new(penalties, data_, control)
 
   ## optimization
   if (control$trace > 0) cat("\n Adjusting",
                              length(myPLN$penalties), "ZI-PLN with sparse inverse covariance estimation and",
                              control$ziparam, "specific parameter(s) in Zero inflation component.\n")
-  myPLN$optimize(control$config_optim)
+  myPLN$optimize(data_, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN

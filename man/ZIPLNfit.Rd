@@ -150,21 +150,13 @@ Update the current \code{\link{ZIPLNfit}} object
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{ZIPLNfit}} model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$new(data, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+\item{\code{data}}{a named list used internally to carry the data matrices}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
@@ -177,19 +169,13 @@ Initialize a \code{\link{ZIPLNfit}} model
 \subsection{Method \code{optimize()}}{
 Call to the Cpp optimizer and update of the relevant fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$optimize(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$optimize(data, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+\item{\code{data}}{a named list used internally to carry the data matrices}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
@@ -203,10 +189,7 @@ Call to the Cpp optimizer and update of the relevant fields
 Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S, R) and corresponding log likelihood values for fixed model parameters (Sigma, B, B0). Intended to position new data in the latent space.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$optimize_vestep(
-  covariates,
-  offsets,
-  responses,
-  weights,
+  data,
   B = self$model_par$B,
   B0 = self$model_par$B0,
   Omega = self$model_par$Omega,
@@ -217,13 +200,7 @@ Result of one call to the VE step of the optimization procedure: optimal variati
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+\item{\code{data}}{a named list used internally to carry the data matrices}
 
 \item{\code{B}}{Optional fixed value of the regression parameters in the PLN component}
 

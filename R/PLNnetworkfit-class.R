@@ -5,11 +5,7 @@
 #' See the documentation for [`plot()`][plot.PLNnetworkfit()] and methods inherited from [`PLNfit`].
 #'
 ## Parameters common to all PLN-xx-fit methods (shared with PLNfit but inheritance does not work)
-#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param weights an optional vector of observation weights to be used in the fitting process.
-#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param data a named list used internally to carry the data matrices
 #' @param control a list for controlling the optimization.
 #' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
 #' @param B matrix of regression matrix
@@ -41,8 +37,8 @@ PLNnetworkfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
-    initialize = function(responses, covariates, offsets, weights, formula, control) {
-      super$initialize(responses, covariates, offsets, weights, formula, control)
+    initialize = function(data, control) {
+      super$initialize(data$Y, data$X, data$O, data$w, data$formula, control)
       ## Default for penalty weights (if not already set)
       if (is.null(control$penalty_weights)) control$penalty_weights <- matrix(1, self$p, self$p)
       stopifnot(isSymmetric(control$penalty_weights), all(control$penalty_weights >= 0))
@@ -55,13 +51,13 @@ PLNnetworkfit <- R6Class(
     ## Optimization ----------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
     #' @param config a list for controlling the optimization
-    optimize = function(responses, covariates, offsets, weights, config) {
+    optimize = function(data, config) {
       cond <- FALSE; iter <- 0
       objective   <- numeric(config$maxit_out)
       convergence <- numeric(config$maxit_out)
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
-      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
+      args <- list(data   = data,
                    params = list(B = private$B, M = private$M, S = private$S),
                    config = config)
       while (!cond) {

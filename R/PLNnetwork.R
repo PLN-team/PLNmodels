@@ -28,16 +28,16 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
     replace 'list(my_arg = xx)' by PLN_param(my_arg = xx) and see the documentation of PLNnetwork_param().")
 
   ## extract the data matrices and weights
-  args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
+  data_ <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
   ## Instantiate the collection of models
   if (control$trace > 0) cat("\n Initialization...")
-  myPLN <- PLNnetworkfamily$new(penalties, args$Y, args$X, args$O, args$w, args$formula, control)
+  myPLN <- PLNnetworkfamily$new(penalties, data_, control)
 
   ## Optimization
   if (control$trace > 0) cat("\n Adjusting", length(myPLN$penalties), "PLN with sparse inverse covariance estimation\n")
   if (control$trace) cat("\tJoint optimization alternating gradient descent and graphical-lasso\n")
-  myPLN$optimize(control$config_optim)
+  myPLN$optimize(data_, control$config_optim)
 
   ## Post-treatments
   if (control$trace > 0) cat("\n Post-treatments")
