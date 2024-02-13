@@ -44,8 +44,15 @@ PLNblockbisfit <- R6Class(
       ## Overwrite PLNfit Variational parameters (dimension q)
       private$Delta   <- private$S
       private$Mu   <- private$M + covariates %*% private$B
-      private$M   <- private$M %*% blocks
-      private$S   <- private$S %*% blocks
+      n = nrow(responses)
+      Q = ncol(blocks)
+
+      private$M <- control$inceptionnotdiag$var_par$M %*% blocks
+      private$S <- control$inceptionnotdiag$var_par$S %*% blocks
+      # private$M   <- private$M %*% blocks
+      # private$S   <- private$S %*% blocks
+
+
       private$Tau <- t(blocks)
 
       ## Setup of the optimization backend
@@ -98,6 +105,7 @@ PLNblockbisfit <- R6Class(
     Tau = NA, # variational parameters for the block memberships
     Mu = NA, # variational parameter for species mean
     Delta = NA, # variational parameter for species variance - covariance
+
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION

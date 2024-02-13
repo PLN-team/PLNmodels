@@ -132,7 +132,8 @@ trace <- function(x) sum(diag(x))
 }
 
 as_indicator <- function(clustering) {
-  K <- length(unique(clustering))
+  K <- max(clustering)
+  # K <- length(unique(clustering))
   N  <- length(clustering)
   Z <- matrix(0, N, K)
   Z[cbind(seq.int(N), clustering)] <- 1

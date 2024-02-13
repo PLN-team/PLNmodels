@@ -57,10 +57,15 @@ PLNblockbisfamily <- R6Class(
         control_init <- control
         control_init$config_optim <- config_default_nlopt
         control_init$backend <- "nlopt"
-        control_init$covariance <- "diagonal"
-        myPLN_init <- PLNfit$new(responses, covariates, offsets, weights, formula, control_init)
-        myPLN_init$optimize(responses, covariates, offsets, weights, control_init$config_optim)
+        control_here <- control_init
+        control_here$covariance <- "diagonal"
+        myPLN_init <- PLNfit$new(responses, covariates, offsets, weights, formula, control_here)
+        myPLN_init$optimize(responses, covariates, offsets, weights, control_here$config_optim)
         control$inception <- myPLN_init
+
+        myPLN_init_notdiag <- PLNfit$new(responses, covariates, offsets, weights, formula, control=PLN_param(backend="nlopt", inception="lm"))
+        myPLN_init_notdiag $optimize(responses, covariates, offsets, weights, control$config_optim)
+        control$inceptionnotdiag <- myPLN_init_notdiag
       }
 
       ## ==================================================
@@ -83,7 +88,16 @@ PLNblockbisfamily <- R6Class(
             })
           },
           "clustofvar" = hclustvar(myPLN_init$var_par$M) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list(),
-          "hclust" = hclust(as.dist(1 - cov2cor(myPLN_init$model_par$Sigma)), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
+          "hclust" = hclust(as.dist(1 - cov2cor(myPLN_init$model_par$Sigma)), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list(),
+          "sbm" = {
+            Sigma <- myPLN_init$model_par$Sigma
+            blocks <- lapply(nb_blocks, function(k) {
+              mySBM = Sigma %>%  estimateSimpleSBM("gaussian", estimOption=list(verbosity=0, exploreMin=k))
+              mySBM$setModel(k)
+              res <-  mySBM$memberships
+              res
+            })
+          }
         )
       }
       blocks <- blocks %>% map(as_indicator) %>% map(.check_boundaries)
