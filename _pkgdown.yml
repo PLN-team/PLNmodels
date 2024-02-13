@@ -44,6 +44,7 @@ reference:
     - '`PLNLDA`'
     - '`PLNPCA`'
     - '`PLNnetwork`'
+    - '`ZIPLNnetwork`'
     - '`PLNmixture`'
 - title: 'Poisson lognormal fit'
   desc: >
@@ -105,13 +106,17 @@ reference:
   - '`fitted.PLNmixturefit`'
   - '`getBestModel.PLNmixturefamily`'
   - '`getModel.PLNmixturefamily`'
-- title: 'Sparse Poisson lognormal fit and network'
+- title: 'Sparse Poisson lognormal fit and network, w/o Zero Inflated component'
   desc: >
-    Description of the PLNnetworkfit and PLNnetworkfamily objects and methods for their manipulation.
+    Description of the (ZI)PLNnetworkfit and (ZI)PLNnetworkfamily objects and methods for their manipulation.
   contents:
   - starts_with('PLNnetworkfit')
   - '`PLNnetwork_param`'
+  - '`ZIPLNnetwork_param`'
   - '`plot.PLNnetworkfit`'
+  - '`plot.ZIPLNfit_sparse`'
+  - '`Networkfamily`'
+  - '`ZIPLNnetworkfamily`'
   - '`PLNnetworkfamily`'
   - '`plot.PLNnetworkfamily`'
   - '`getBestModel.PLNnetworkfamily`'

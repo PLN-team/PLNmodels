@@ -57,14 +57,22 @@ plot.PLNnetworkfamily <- plot.Networkfamily
 #' @export
 plot.ZIPLNnetworkfamily <- plot.Networkfamily
 
-#' @describeIn getModel Model extraction for [`PLNnetworkfamily`]
+#' @describeIn getModel Model extraction for [`PLNnetworkfamily`] or [`ZIPLNnetworkfamily`]
 #' @export
 getModel.Networkfamily <- function(Robject, var, index = NULL) {
   stopifnot(isPLNnetworkfamily(Robject))
   Robject$getModel(var, index)
 }
 
-#' @describeIn getBestModel Model extraction for [`PLNnetworkfamily`]
+#' @describeIn getModel Model extraction for [`PLNnetworkfamily`]
+#' @export
+getModel.PLNnetworkfamily <- getModel.Networkfamily
+
+#' @describeIn getModel Model extraction for [`ZIPLNnetworkfamily`]
+#' @export
+getModel.ZIPLNnetworkfamily <- getModel.Networkfamily
+
+#' @describeIn getBestModel Model extraction for [`PLNnetworkfamily`] or [`ZIPLNnetworkfamily`]
 #' @export
 getBestModel.Networkfamily <- function(Robject, crit = c("BIC", "EBIC", "StARS"), ...) {
   stopifnot(isPLNnetworkfamily(Robject))
@@ -72,6 +80,14 @@ getBestModel.Networkfamily <- function(Robject, crit = c("BIC", "EBIC", "StARS")
   if (is.null(stability)) stability <- 0.9
   Robject$getBestModel(match.arg(crit), stability)
 }
+
+#' @describeIn getBestModel Model extraction for [`PLNnetworkfamily`]
+#' @export
+getBestModel.PLNnetworkfamily <- getBestModel.Networkfamily
+
+#' @describeIn getBestModel Model extraction for [`ZIPLNnetworkfamily`]
+#' @export
+getBestModel.ZIPLNnetworkfamily <- getBestModel.Networkfamily
 
 #' Extract the regularization path of a PLNnetwork fit
 #'
