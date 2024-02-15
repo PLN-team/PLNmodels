@@ -32,3 +32,4 @@
 ^\.github$
 ^data-raw$
 ^CRAN-SUBMISSION$
+^AUTHORS$
