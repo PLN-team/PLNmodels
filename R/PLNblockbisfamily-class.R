@@ -57,15 +57,14 @@ PLNblockbisfamily <- R6Class(
         control_init <- control
         control_init$config_optim <- config_default_nlopt
         control_init$backend <- "nlopt"
-        control_here <- control_init
-        control_here$covariance <- "diagonal"
-        myPLN_init <- PLNfit$new(responses, covariates, offsets, weights, formula, control_here)
-        myPLN_init$optimize(responses, covariates, offsets, weights, control_here$config_optim)
-        control$inception <- myPLN_init
 
-        myPLN_init_notdiag <- PLNfit$new(responses, covariates, offsets, weights, formula, control=PLN_param(backend="nlopt", inception="lm"))
-        myPLN_init_notdiag $optimize(responses, covariates, offsets, weights, control$config_optim)
-        control$inceptionnotdiag <- myPLN_init_notdiag
+        myPLN_init_diag <- PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control_init)
+        myPLN_init_diag$optimize(responses, covariates, offsets, weights, control_init$config_optim)
+        control$inception <- myPLN_init_diag
+
+        myPLN_init_full <- PLNfit$new(responses, covariates, offsets, weights, formula, control_init)
+        myPLN_init_full$optimize(responses, covariates, offsets, weights, control_init$config_optim)
+        control$inception_full <- myPLN_init_full
       }
 
       ## ==================================================
@@ -73,6 +72,7 @@ PLNblockbisfamily <- R6Class(
       ##
       ## Either user defined or obtained (the default)
       ## by kmeans on the variational parameters of the means of a fully parametrized PLN
+      Means <- myPLN_init_full$latent_pos # M
       if (is.list(control$init_cl)) {
         stopifnot(length(control$init_cl) == length(nb_blocks),
                   all(sapply(control$init_cl, length) == private$p))
@@ -80,19 +80,24 @@ PLNblockbisfamily <- R6Class(
       } else {
         blocks <- switch(control$init_cl,
           "kmeans" = {
-            Means <- t(myPLN_init$var_par$M)
             blocks <- lapply(nb_blocks, function(k) {
               if (k == private$p) res <- 1:private$p
-              else res <- kmeans(Means, centers = k, nstart = 30)$cl
+              else res <- kmeans(t(Means), centers = k, nstart = 30)$cl
               res
             })
           },
-          "clustofvar" = hclustvar(myPLN_init$var_par$M) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list(),
-          "hclust" = hclust(as.dist(1 - cov2cor(myPLN_init$model_par$Sigma)), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list(),
-          "sbm" = {
-            Sigma <- myPLN_init$model_par$Sigma
+          "kmeansvar" = {
             blocks <- lapply(nb_blocks, function(k) {
-              mySBM = Sigma %>%  estimateSimpleSBM("gaussian", estimOption=list(verbosity=0, exploreMin=k))
+              if (k == private$p) res <- 1:private$p
+              else res <- kmeansvar(Means, init = k, nstart = 30)$cl
+              res
+            })
+          },
+          "clustofvar" = hclustvar(Means) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list(),
+          "hclust" = hclust(as.dist(1 - cov2cor(crossprod(Means))), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list(),
+          "sbm" = {
+            mySBM = estimateSimpleSBM(cov(Means), "gaussian", estimOption=list(verbosity=0, exploreMin=max(nb_blocks)))
+            blocks <- lapply(nb_blocks, function(k) {
               mySBM$setModel(k)
               res <-  mySBM$memberships
               res
@@ -136,14 +141,12 @@ PLNblockbisfamily <- R6Class(
             kmeansvar(init = self$models[[models_order[m+1]]]$nb_block, nstart = 30) %>%
             pluck("cluster") %>% as_indicator() %>% .check_boundaries()
           self$models[[models_order[m+1]]]$update(
-            B = self$models[[models_order[m]]]$model_par$B,
-            M = self$models[[models_order[m]]]$var_par$M %*% blocks ,
-            S = self$models[[models_order[m]]]$var_par$S %*% blocks,
-
-            ###
-            Mu = self$models[[models_order[m]]]$var_par$M,
-            Delta = self$models[[models_order[m]]]$var_par$S,
-
+            B     = self$models[[models_order[m]]]$model_par$B,
+            D     = self$models[[models_order[m]]]$model_par$D,
+            Mu    = self$models[[models_order[m]]]$var_par$Mu,
+            Delta = self$models[[models_order[m]]]$var_par$Delta,
+            M     = self$models[[models_order[m]]]$var_par$M %*% blocks,
+            S     = self$models[[models_order[m]]]$var_par$S %*% blocks
           )
         }
         if (config$trace > 1) {

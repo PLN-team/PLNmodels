@@ -19,7 +19,7 @@
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLNblockbis(Abundance ~ 1, nb_blocks = 2:10, data = trichoptera, control = PLNblockbis_param(backend="nlopt-vem"))
+#' myPLN <- PLNblockbis(Abundance ~ 1, nb_blocks = 1:10, data = trichoptera)
 #' @seealso The classes [`PLNblockbisfamily`] and [`PLNblockbisfit`], and the and the configuration function [PLNblockbis_param()].
 #' @importFrom stats model.frame model.matrix model.response model.offset model.weights terms
 #' @export
@@ -70,8 +70,9 @@ PLNblockbis <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, we
 PLNblockbis_param <- function(
     backend       = c("nlopt-vem", "nlopt", "torch"),
     trace         = 1,
-    init_cl       = "clustofvar",
+    init_cl       = "kmeans",
     fixed_cl      = FALSE,
+    route         = c("flat", "sequential"),
     config_optim  = list(),
     config_post   = list(),
     inception     = "lm"     # pretrained PLNfit used as initialization
@@ -99,9 +100,10 @@ PLNblockbis_param <- function(
   }
 
   config_opt$trace <- trace
-  config_opt$ftol_out  <- 1e-4
+  config_opt$ftol_out  <- 1e-6
+  config_opt$xtol_rel  <- 1e-10
   config_opt$maxit_out <- 100
-  config_opt$route     <- "flat"
+  config_opt$route     <- match.arg(route)
   config_opt$fixed_cl  <- fixed_cl
   config_opt[names(config_optim)] <- config_optim
 

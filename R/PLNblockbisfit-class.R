@@ -42,16 +42,13 @@ PLNblockbisfit <- R6Class(
 
       ## Initial memberships/blocks
       ## Overwrite PLNfit Variational parameters (dimension q)
-      private$Delta   <- private$S
-      private$Mu   <- private$M + covariates %*% private$B
-      n = nrow(responses)
-      Q = ncol(blocks)
+      private$Delta <- control$inception$var_par$S
+      private$Mu    <- control$inception$var_par$M + covariates %*% control$inception$model_par$B
+      n <- nrow(responses)
+      Q <- ncol(blocks)
 
-      private$M <- control$inceptionnotdiag$var_par$M %*% blocks
-      private$S <- control$inceptionnotdiag$var_par$S %*% blocks
-      # private$M   <- private$M %*% blocks
-      # private$S   <- private$S %*% blocks
-
+      private$M <- control$inception$var_par$M %*% blocks
+      private$S <- control$inception$var_par$S %*% blocks
 
       private$Tau <- t(blocks)
 
@@ -239,12 +236,20 @@ PLNblockbisfit <- R6Class(
   ),
   active = list(
     ####################################
-    #' @field blockbis_model_par to add D as a model par
-    blockbis_model_par  = function() {list(D = private$D)},
-    #' @field blockbis_var_par to add Mu, Delta as var par
-    blockbis_var_par  = function() {list(Mu = private$Mu, Delta = private$Delta)},
-    ####################################
 
+    #' @field model_par a list with the matrices associated with the estimated parameters of the pPCA model: B (covariates), Sigma (covariance), Omega (precision) and C (loadings)
+    model_par = function() {
+      par <- super$model_par
+      par$D <- private$D
+      par
+    },
+    #' @field var_par a list with the matrices of the variational parameters: M and Mu (means) and S and Delta (sqrt(variances))
+    var_par = function() {
+      par <- super$var_par
+      par$Mu <- private$Mu
+      par$Delta <- private$Delta
+      par
+    },
     #' @field nb_param number of parameters in the current PLN model
     nb_param   = function() {as.integer(self$p * self$d + .5 * self$q * (self$q + 1) + self$q - 1) + self$p},
     #' @field nb_block number blocks of variables (dimension of the residual covariance)
@@ -310,7 +315,7 @@ PLNblockbisfit <- R6Class(
 #' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLN <- PLNblockbis(Abundance ~ 1, data = trichoptera, nb_blocks = 1:5, sparsity = 0.1)
+#' myPLN <- PLNblockbis(Abundance ~ 1, data = trichoptera, nb_blocks = 1:5)
 #' class(myPLN)
 #' print(myPLN)
 #' }

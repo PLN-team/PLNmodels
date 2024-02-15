@@ -34,11 +34,11 @@ optimize_plnblockbis <- function(data, params, config) {
   objective <- Inf
   repeat {
 
+    # M Step
+    optim_B <- optim_plnblockbis_B(data, new_parameters, config)
+    new_parameters$B <- optim_B$B
     optim_Omega <- optim_plnblockbis_Omega(M = new_parameters$M, S = new_parameters$S, w = data$w)
     new_parameters$Omega <- optim_Omega$Omega
-    optim_D <- optim_plnblockbis_D(X = data$X, B = new_parameters$B, Mu=new_parameters$Mu,
-                                   Delta=new_parameters$Delta, w = data$w)
-    new_parameters$D <- optim_D$D
 
     # VE Step
     optim_VE <- optim_plnblockbis_VE(data, new_parameters, config)
@@ -46,22 +46,8 @@ optimize_plnblockbis <- function(data, params, config) {
     new_parameters$S <- optim_VE$S
     new_parameters$Mu <- optim_VE$Mu
     new_parameters$Delta <- optim_VE$Delta
-
-    # Alternative
-    # optim_VE_blocks <- optim_plnblockbis_VE_blocks(data, new_parameters, config)
-    # new_parameters$M <- optim_VE_blocks$M
-    # new_parameters$S <- optim_VE_blocks$S
-    # optim_VE_species <- optim_plnblockbis_VE_species(data, new_parameters, config)
-    # new_parameters$Mu <- optim_VE_species$Mu
-    # new_parameters$Delta <- optim_VE_species$Delta
-
-    if (!config$fixed_cl) new_parameters$T <- optim_plnblockbis_Tau(data, new_parameters)
-    #print("reached Tau optim")
-
-    # M Step
-    optim_B <- optim_plnblockbis_B(data, new_parameters, config)
-    #print("reached B optim")
-    new_parameters$B <- optim_B$B
+    new_parameters$D <- optim_VE$D
+    new_parameters$T <- optim_VE$Tau
 
     # Going next step and assessing convergence
     nb_iter <- nb_iter + 1
@@ -87,8 +73,8 @@ optimize_plnblockbis <- function(data, params, config) {
     objective  <- new_objective
   }
   out   <- new_parameters
-  out$A <- exp(data$O + data$X %*% out$B) * (exp(out$M + .5 * out$S**2) %*% out$T)
-  out$Z <- data$O + data$X %*% out$B + out$M %*% out$T
+  out$A <- optim_VE$A
+  out$Z <- data$O + out$Mu + out$M %*% out$T
   out$Sigma <- optim_Omega$Sigma
   ## J'ai remplacé vloglik par loglik ici
   out$Ji <- plnblockbis_vloglik(data, new_parameters)
