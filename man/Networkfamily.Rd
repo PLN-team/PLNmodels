@@ -2,16 +2,18 @@
 % Please edit documentation in R/PLNnetworkfamily-class.R
 \name{Networkfamily}
 \alias{Networkfamily}
-\title{An R6 Class to virtually represent a collection of Networkfit (either standard PLN or ZI-PLN)}
+\title{An R6 Class to virtually represent a collection of network fits}
 \description{
-The function \code{\link[=PLNnetwork]{PLNnetwork()}} produces an instance of this class.
+The functions \code{\link[=PLNnetwork]{PLNnetwork()}} and \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}} both produce an instance of this class, which can be thought of as a vector of \code{\link{PLNnetworkfit}}s \code{\link{ZIPLNnetworkfit}}s (indexed by penalty parameter)
 
-This class comes with a set of methods, some of them being useful for the user:
+This class comes with a set of methods mostly used to compare
+network fits (in terms of goodness of fit) or extract one from
+the family (based on penalty parameter and/or goodness of it).
 See the documentation for \code{\link[=getBestModel]{getBestModel()}},
-\code{\link[=getModel]{getModel()}} and \link[=plot.PLNnetworkfamily]{plot()}
+\code{\link[=getModel]{getModel()}} and \link[=plot.Networkfamily]{plot()} for the user-facing ones.
 }
 \seealso{
-The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNnetworkfit}}
+The functions \code{\link[=PLNnetwork]{PLNnetwork()}}, \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}} and the classes \code{\link{PLNnetworkfit}}, \code{\link{ZIPLNnetworkfit}}
 }
 \section{Super class}{
 \code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{Networkfamily}
@@ -25,7 +27,7 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 
 \item{\code{stability}}{mean edge stability along the penalty path}
 
-\item{\code{criteria}}{a data frame with the values of some criteria (approximated log-likelihood, (E)BIC, ICL and R2, stability) for the collection of models / fits
+\item{\code{criteria}}{a data frame with the values of some criteria (variational log-likelihood, (E)BIC, ICL and R2, stability) for the collection of models / fits
 BIC, ICL and EBIC are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty}
 }
 \if{html}{\out{</div>}}
@@ -74,7 +76,7 @@ Initialize all models in the collection
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Update current \code{\link{PLNnetworkfit}} with smart starting values
+Update all network fits in the family with smart starting values
 }
 }
 \if{html}{\out{<hr>}}
@@ -100,7 +102,7 @@ Call to the C++ optimizer on all models of the collection
 \if{html}{\out{<a id="method-Networkfamily-coefficient_path"></a>}}
 \if{latex}{\out{\hypertarget{method-Networkfamily-coefficient_path}{}}}
 \subsection{Method \code{coefficient_path()}}{
-Extract the regularization path of a \code{\link{PLNnetworkfamily}}
+Extract the regularization path of a \code{\link{Networkfamily}}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Networkfamily$coefficient_path(precision = TRUE, corr = TRUE)}\if{html}{\out{</div>}}
 }
@@ -127,18 +129,22 @@ Extract the best network in the family according to some criteria
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{crit}}{character. Criterion used to perform the selection. Is "StARS" is chosen but \verb{$stability} field is empty, will compute stability path.}
+\item{\code{crit}}{character. Criterion used to perform the selection. If "StARS" is chosen but \verb{$stability} field is empty, will compute stability path.}
 
 \item{\code{stability}}{Only used for "StARS" criterion. A scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is \code{0.9}.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+For BIC and EBIC criteria, higher is better.
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Networkfamily-plot"></a>}}
 \if{latex}{\out{\hypertarget{method-Networkfamily-plot}{}}}
 \subsection{Method \code{plot()}}{
-Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a \code{\link{PLNnetworkfamily}})
+Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of network fits (a \code{\link{Networkfamily}})
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Networkfamily$plot(
   criteria = c("loglik", "pen_loglik", "BIC", "EBIC"),
@@ -154,7 +160,7 @@ Display various outputs (goodness-of-fit criteria, robustness, diagnostic) assoc
 
 \item{\code{reverse}}{A logical indicating whether to plot the value of the criteria in the "natural" direction
 (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
-natural direction, on the same scale as the log-likelihood..}
+natural direction, on the same scale as the log-likelihood.}
 
 \item{\code{log.x}}{logical: should the x-axis be represented in log-scale? Default is \code{TRUE}.}
 }
@@ -176,7 +182,7 @@ Plot stability path
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{stability}}{scalar: the targeted level of stability in stability plot. Default is \code{0.9}.}
+\item{\code{stability}}{scalar: the targeted level of stability using stability selection. Default is \code{0.9}.}
 
 \item{\code{log.x}}{logical: should the x-axis be represented in log-scale? Default is \code{TRUE}.}
 }

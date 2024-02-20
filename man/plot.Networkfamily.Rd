@@ -37,12 +37,13 @@
 )
 }
 \arguments{
-\item{x}{an R6 object with class \code{\link{PLNnetworkfamily}}}
+\item{x}{an R6 object with class \code{\link{PLNnetworkfamily}} or \code{\link{ZIPLNnetworkfamily}}}
 
 \item{type}{a character, either "criteria", "stability" or "diagnostic" for the type of plot.}
 
-\item{criteria}{vector of characters. The criteria to plot in c("loglik", "BIC", "ICL", "R_squared", "EBIC", "pen_loglik").
-Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only relevant when \code{type = "criteria"}.}
+\item{criteria}{Vector of criteria to plot, to be selected among "loglik" (log-likelihood),
+"BIC", "ICL", "R_squared", "EBIC" and "pen_loglik" (penalized log-likelihood).
+Default is  c("loglik", "pen_loglik", "BIC", "EBIC"). Only used when \code{type = "criteria"}.}
 
 \item{reverse}{A logical indicating whether to plot the value of the criteria in the "natural" direction
 (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the

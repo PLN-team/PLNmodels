@@ -40,7 +40,11 @@ print(myPLN)
 
 \item{\code{d0}}{number of covariates in the ZI part}
 
-\item{\code{nb_param}}{number of parameters in the current PLN model}
+\item{\code{nb_param_zi}}{number of parameters in the ZI part of the model}
+
+\item{\code{nb_param_pln}}{number of parameters in the PLN part of the model}
+
+\item{\code{nb_param}}{number of parameters in the ZIPLN model}
 
 \item{\code{model_par}}{a list with the matrices of parameters found in the model (B, Sigma, plus some others depending on the variant)}
 

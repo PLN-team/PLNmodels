@@ -94,7 +94,7 @@ Compute the stability path by stability selection
 \describe{
 \item{\code{subsamples}}{a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.}
 
-\item{\code{control}}{a list controlling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork()}} for details.}
+\item{\code{control}}{a list controlling the main optimization process in each call to \code{\link[=PLNnetwork]{PLNnetwork()}}. See \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}} and \code{\link[=ZIPLN_param]{ZIPLN_param()}} for details.}
 }
 \if{html}{\out{</div>}}
 }

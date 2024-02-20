@@ -17,7 +17,7 @@
 )
 }
 \arguments{
-\item{x}{an R6 object with class \code{\link{PLNnetworkfit}}}
+\item{x}{an R6 object with class \code{\link{ZIPLNfit_sparse}}}
 
 \item{type}{character. Value of the weight of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is \code{"partial_cor"}.}
 

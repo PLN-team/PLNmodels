@@ -25,7 +25,7 @@ print(myPLN)
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{nb_param}}{number of parameters in the current PLN model}
+\item{\code{nb_param_pln}}{number of parameters in the PLN part of the current model}
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 }

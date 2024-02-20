@@ -2,13 +2,15 @@
 % Please edit documentation in R/PLNnetworkfamily-class.R
 \name{PLNnetworkfamily}
 \alias{PLNnetworkfamily}
-\title{An R6 Class to represent a collection of PLNnetworkfit}
+\title{An R6 Class to represent a collection of \code{\link{PLNnetworkfit}}s}
 \description{
 The function \code{\link[=PLNnetwork]{PLNnetwork()}} produces an instance of this class.
 
-This class comes with a set of methods, some of them being useful for the user:
+This class comes with a set of methods mostly used to compare
+network fits (in terms of goodness of fit) or extract one from
+the family (based on penalty parameter and/or goodness of it).
 See the documentation for \code{\link[=getBestModel]{getBestModel()}},
-\code{\link[=getModel]{getModel()}} and \link[=plot.PLNnetworkfamily]{plot()}
+\code{\link[=getModel]{getModel()}} and \link[=plot.Networkfamily]{plot()} for the user-facing ones.
 }
 \examples{
 data(trichoptera)
@@ -87,7 +89,7 @@ Compute the stability path by stability selection
 \describe{
 \item{\code{subsamples}}{a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.}
 
-\item{\code{control}}{a list controlling the main optimization process in each call to PLNnetwork. See \code{\link[=PLNnetwork]{PLNnetwork()}} for details.}
+\item{\code{control}}{a list controlling the main optimization process in each call to \code{\link[=PLNnetwork]{PLNnetwork()}}. See \code{\link[=PLNnetwork]{PLNnetwork()}} and \code{\link[=PLN_param]{PLN_param()}} for details.}
 }
 \if{html}{\out{</div>}}
 }

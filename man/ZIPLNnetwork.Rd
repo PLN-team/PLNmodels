@@ -2,7 +2,7 @@
 % Please edit documentation in R/ZIPLNnetwork.R
 \name{ZIPLNnetwork}
 \alias{ZIPLNnetwork}
-\title{Zero Inflated Poisson lognormal model toward sparse network inference}
+\title{Zero Inflated Sparse Poisson lognormal model for network inference}
 \usage{
 ZIPLNnetwork(
   formula,
@@ -40,8 +40,9 @@ for details.}
 an R6 object with class \code{\link{ZIPLNnetworkfamily}}
 }
 \description{
-Fit the sparse inverse covariance variant of the Zero Inflated Poisson lognormal with a variational algorithm
-for a collection of sparsity parameter values distributed on a log scale. Use the (g)lm syntax for model specification (covariates, offsets).
+Perform sparse inverse covariance estimation for the Zero Inflated Poisson lognormal model
+using a variational algorithm. Iterate over a range of logarithmically spaced sparsity parameter values.
+Use the (g)lm syntax to specify the model (including covariates and offsets).
 }
 \details{
 Covariates for the Zero-Inflation parameter (using a logistic regression model) can be specified in the formula RHS using the pipe

@@ -31,7 +31,7 @@ plot(myPLN)
 
 \item{\code{n_edges}}{number of edges if the network (non null coefficient of the sparse precision matrix)}
 
-\item{\code{nb_param}}{number of parameters in the current PLN model}
+\item{\code{nb_param_pln}}{number of parameters in the PLN part of the current model}
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
@@ -102,7 +102,7 @@ Extract interaction network in the latent space
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-a square matrix of size \code{PLNnetworkfit$n}
+a square matrix of size \code{ZIPLNfit_sparse$n}
 }
 }
 \if{html}{\out{<hr>}}
