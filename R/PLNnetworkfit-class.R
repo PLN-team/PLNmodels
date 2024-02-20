@@ -7,14 +7,14 @@
 ## Parameters common to all PLN-xx-fit methods (shared with PLNfit but inheritance does not work)
 #' @param data a named list used internally to carry the data matrices
 #' @param control a list for controlling the optimization.
-#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
-#' @param B matrix of regression matrix
+#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but no latent variable.
+#' @param B matrix of regression coefficients
 #' @param Sigma variance-covariance matrix of the latent variables
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
 #'
 ## Parameters specific to PLNnetwork-fit methods
 #' @param penalty a positive real number controlling the level of sparsity of the underlying network.
-#' @param penalty_weights either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
+#' @param penalty_weights either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pair of node. Must be symmetric with positive values.
 #'
 #' @include PLNnetworkfit-class.R
 #' @examples
