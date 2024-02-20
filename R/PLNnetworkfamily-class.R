@@ -4,7 +4,7 @@
 
 #' An R6 Class to virtually represent a collection of network fits
 #'
-#' @description The functions [PLNnetwork()] and [ZIPLNnetwork()] both produce an instance of this class, which can be thought of as a vector of [`PLNnetworkfit`]s [`ZIPLNnetworkfit`]s (indexed by penalty parameter)
+#' @description The functions [PLNnetwork()] and [ZIPLNnetwork()] both produce an instance of this class, which can be thought of as a vector of [`PLNnetworkfit`]s [`ZIPLNfit_sparse`]s (indexed by penalty parameter)
 #'
 #' This class comes with a set of methods mostly used to compare
 #' network fits (in terms of goodness of fit) or extract one from
@@ -20,7 +20,7 @@
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @importFrom glassoFast glassoFast
-#' @seealso The functions [PLNnetwork()], [ZIPLNnetwork()] and the classes [`PLNnetworkfit`], [`ZIPLNnetworkfit`]
+#' @seealso The functions [PLNnetwork()], [ZIPLNnetwork()] and the classes [`PLNnetworkfit`], [`ZIPLNfit_sparse`]
 Networkfamily <- R6Class(
   classname = "Networkfamily",
   inherit = PLNfamily,

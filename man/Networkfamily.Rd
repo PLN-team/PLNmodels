@@ -4,7 +4,7 @@
 \alias{Networkfamily}
 \title{An R6 Class to virtually represent a collection of network fits}
 \description{
-The functions \code{\link[=PLNnetwork]{PLNnetwork()}} and \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}} both produce an instance of this class, which can be thought of as a vector of \code{\link{PLNnetworkfit}}s \code{\link{ZIPLNnetworkfit}}s (indexed by penalty parameter)
+The functions \code{\link[=PLNnetwork]{PLNnetwork()}} and \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}} both produce an instance of this class, which can be thought of as a vector of \code{\link{PLNnetworkfit}}s \code{\link{ZIPLNfit_sparse}}s (indexed by penalty parameter)
 
 This class comes with a set of methods mostly used to compare
 network fits (in terms of goodness of fit) or extract one from
@@ -13,7 +13,7 @@ See the documentation for \code{\link[=getBestModel]{getBestModel()}},
 \code{\link[=getModel]{getModel()}} and \link[=plot.Networkfamily]{plot()} for the user-facing ones.
 }
 \seealso{
-The functions \code{\link[=PLNnetwork]{PLNnetwork()}}, \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}} and the classes \code{\link{PLNnetworkfit}}, \code{\link{ZIPLNnetworkfit}}
+The functions \code{\link[=PLNnetwork]{PLNnetwork()}}, \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}} and the classes \code{\link{PLNnetworkfit}}, \code{\link{ZIPLNfit_sparse}}
 }
 \section{Super class}{
 \code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{Networkfamily}
