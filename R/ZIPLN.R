@@ -73,18 +73,16 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
 #' @inheritParams PLN_param
+#' @inheritParams PLNnetwork_param
 #' @param penalty a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).
-#' @param penalize_diagonal boolean: should the diagonal terms be penalized in the graphical-Lasso? Only relevant with sparse covariance. Default is \code{TRUE}
-#' @param penalty_weights p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values. Only relevant with sparse covariance.
 #' @return list of parameters used during the fit and post-processing steps
 #'
 #' @inherit PLN_param details
-#' @details See [PLN_param()] for a full description of the generic optimization parameters. ZIPLN_param() also
-#' has two additional parameters controlling the optimization due the inner-outer loop structure of the optimizer,
-#' and additional parameter controlling the form of the variational approximation of the zero inflation:
-#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than `ftol_out` multiplied by the absolute value of the parameter. Default is 1e-8
+#' @details See [PLN_param()] and [PLNnetwork_param()] for a full description of the generic optimization parameters. Like [PLNnetwork_param()], ZIPLN_param() has two parameters controlling the optimization due the inner-outer loop structure of the optimizer:
+#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than `ftol_out` multiplied by the absolute value of the parameter. Default is 1e-6
 #' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 100
-#' * "approx_ZI" either use an exact or approximated conditional distribution for the zero inflantion. Default is FALSE
+#' and one additional parameter controlling the form of the variational approximation of the zero inflation:
+#' * "approx_ZI" either uses an exact or approximated conditional distribution for the zero inflation. Default is FALSE
 #'
 #' @export
 ZIPLN_param <- function(

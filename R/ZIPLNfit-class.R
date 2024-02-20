@@ -1,3 +1,7 @@
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+## CLASS ZIPLNfit -----
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 #' An R6 Class to represent a ZIPLNfit
 #'
 #' @description The function [ZIPLN()] fits a model which is an instance of an object with class [`ZIPLNfit`].
@@ -759,7 +763,7 @@ ZIPLNfit_sparse <- R6Class(
     #' @description Extract interaction network in the latent space
     #' @param type edge value in the network. Can be "support" (binary edges), "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species)
     #' @importFrom Matrix Matrix
-    #' @return a square matrix of size `PLNnetworkfit$n`
+    #' @return a square matrix of size `ZIPLNfit_sparse$n`
     latent_network = function(type = c("partial_cor", "support", "precision")) {
       net <- switch(
         match.arg(type),

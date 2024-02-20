@@ -107,18 +107,11 @@ isZIPLNfit_sparse <- function(Robject) {inherits(Robject, "ZIPLNfit_sparse")}
 #' Extract and plot the network (partial correlation, support or inverse covariance) from a [`ZIPLNfit_sparse`] object
 #'
 #' @name plot.ZIPLNfit_sparse
+#' @inheritParams plot.PLNnetworkfit
+#' @param x an R6 object with class [`ZIPLNfit_sparse`]
 #'
-#' @param x an R6 object with class [`PLNnetworkfit`]
-#' @param type character. Value of the weight of the edges in the network, either "partial_cor" (partial correlation) or "support" (binary). Default is `"partial_cor"`.
-#' @param output the type of output used: either 'igraph' or 'corrplot'. Default is `'igraph'`.
-#' @param edge.color Length 2 color vector. Color for positive/negative edges. Default is `c("#F8766D", "#00BFC4")`. Only relevant for igraph output.
-#' @param node.labels vector of character. The labels of the nodes. The default will use the column names ot the response matrix.
-#' @param remove.isolated if `TRUE`, isolated node are remove before plotting. Only relevant for igraph output.
-#' @param layout an optional igraph layout. Only relevant for igraph output.
-#' @param plot logical. Should the final network be displayed or only sent back to the user. Default is `TRUE`.
-#' @param ... Not used (S3 compatibility).
+#' @inherit plot.PLNnetworkfit return
 #'
-#' @return Send back an invisible object (igraph or Matrix, depending on the output chosen) and optionally displays a graph (via igraph or corrplot for large ones)
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
