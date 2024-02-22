@@ -102,7 +102,73 @@ PLNblockbisfamily <- R6Class(
               res <-  mySBM$memberships
               res
             })
+          },
+
+          "all" = {
+            blocks_kmeans <- lapply(nb_blocks, function(k) {
+              if (k == private$p) res <- 1:private$p
+              else res <- kmeans(t(Means), centers = k, nstart = 30)$cl
+              res
+            })
+            blocks_kmeans1 <- blocks_kmeans %>% map(as_indicator) %>% map(.check_boundaries)
+            models_kmeans <- map2(blocks_kmeans1, sparsity, function(blocks_, sparsity_) {
+                  if (sparsity_ > 0) {
+                      model <- PLNblockbisfit_sparse$new(blocks_, sparsity_, responses, covariates, offsets, weights, formula, control)
+                    } else {
+                      model <- PLNblockbisfit$new(blocks_, responses, covariates, offsets, weights, formula, control)
+                    }
+                  })
+            likelihood_kmeans <- lapply(nb_blocks, function(k){models_kmeans[[k]]$loglik})
+
+            blocks_kmeansvar <- lapply(nb_blocks, function(k) {
+              if (k == private$p) res <- 1:private$p
+              else res <- kmeansvar(Means, init = k, nstart = 30)$cl
+              res
+            })
+            blocks_kmeansvar1 <- blocks_kmeansvar %>% map(as_indicator) %>% map(.check_boundaries)
+            models_kmeansvar <- map2(blocks_kmeansvar1, sparsity, function(blocks_, sparsity_) {
+              if (sparsity_ > 0) {
+                model <- PLNblockbisfit_sparse$new(blocks_, sparsity_, responses, covariates, offsets, weights, formula, control)
+              } else {
+                model <- PLNblockbisfit$new(blocks_, responses, covariates, offsets, weights, formula, control)
+              }
+            })
+            likelihood_kmeansvar <- lapply(nb_blocks, function(k){models_kmeansvar[[k]]$loglik})
+
+            blocks_clustvar <- hclustvar(Means) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
+            blocks_clustvar1 <- blocks_clustvar %>% map(as_indicator) %>% map(.check_boundaries)
+            models_clustvar <- map2(blocks_kmeansvar1, sparsity, function(blocks_, sparsity_) {
+              if (sparsity_ > 0) {
+                model <- PLNblockbisfit_sparse$new(blocks_, sparsity_, responses, covariates, offsets, weights, formula, control)
+              } else {
+                model <- PLNblockbisfit$new(blocks_, responses, covariates, offsets, weights, formula, control)
+              }
+            })
+            likelihood_clustvar <- lapply(nb_blocks, function(k){models_clustvar[[k]]$loglik})
+
+            blocks_hclust <- hclust(as.dist(1 - cov2cor(crossprod(Means))), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
+            blocks_hclust1 <- blocks_hclust %>% map(as_indicator) %>% map(.check_boundaries)
+            models_hclust <- map2(blocks_hclust1, sparsity, function(blocks_, sparsity_) {
+              if (sparsity_ > 0) {
+                model <- PLNblockbisfit_sparse$new(blocks_, sparsity_, responses, covariates, offsets, weights, formula, control)
+              } else {
+                model <- PLNblockbisfit$new(blocks_, responses, covariates, offsets, weights, formula, control)
+              }
+            })
+            likelihood_hclust <- lapply(nb_blocks, function(k){models_hclust[[k]]$loglik})
+
+            initializations <- c("models_kmeans", "blocks_kmeansvar", "blocks_clustvar", "blocks_hclust")
+            blocks <- list(blocks_kmeans, blocks_kmeansvar, blocks_clustvar, blocks_hclust)
+            likelihoods <- list(likelihood_kmeans, likelihood_kmeansvar, likelihood_clustvar, likelihood_hclust)
+            result <- lapply(nb_blocks, function(i) {
+              max_values <- sapply(likelihoods, `[[`, i)
+              which_max <- which.max(max_values)
+              return(blocks[[which_max]][[i]])
+            })
+
+
           }
+
         )
       }
       blocks <- blocks %>% map(as_indicator) %>% map(.check_boundaries)

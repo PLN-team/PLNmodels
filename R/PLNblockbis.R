@@ -70,6 +70,7 @@ PLNblockbis <- function(formula, nb_blocks = 1:5, sparsity = 0, data, subset, we
 PLNblockbis_param <- function(
     backend       = c("nlopt-vem", "nlopt", "torch"),
     trace         = 1,
+    g_resampling  = 0,
     init_cl       = "kmeans",
     fixed_cl      = FALSE,
     route         = c("flat", "sequential"),
@@ -106,6 +107,8 @@ PLNblockbis_param <- function(
   config_opt$route     <- match.arg(route)
   config_opt$fixed_cl  <- fixed_cl
   config_opt[names(config_optim)] <- config_optim
+  ####
+  config_opt$g_resampling = g_resampling
 
   structure(list(
     backend      = backend   ,

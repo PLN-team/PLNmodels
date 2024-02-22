@@ -30,30 +30,31 @@ Depends: R (>= 3.4)
 LazyData: true
 biocViews:
 Imports: 
-  methods,
-  stats,
-  MASS,
-  future,
-  future.apply,
-  furrr,
-  R6,
-  glassoFast,
-  Matrix,
-  Rcpp,
-  nloptr,
-  igraph,
-  grid,
-  gridExtra,
-  dplyr,
-  tidyr,
-  purrr,
-  ggplot2,
-  corrplot,
-  magrittr,
-  fastglm,
-  ClustOfVar,
-  torch,
-  rlang
+    methods,
+    stats,
+    MASS,
+    future,
+    future.apply,
+    furrr,
+    R6,
+    glassoFast,
+    Matrix,
+    Rcpp,
+    nloptr,
+    igraph,
+    grid,
+    gridExtra,
+    dplyr,
+    tidyr,
+    purrr,
+    ggplot2,
+    corrplot,
+    magrittr,
+    fastglm,
+    ClustOfVar,
+    torch,
+    rlang,
+    sbm
 Suggests: 
     knitr,
     rmarkdown,
@@ -77,6 +78,10 @@ Collate:
     'PLNPCAfit-class.R'
     'PLNblockfit-class.R'
     'PLNblock.R'
+    'PLNblockbisfit-class.R'
+    'PLNblockbis.R'
+    'PLNblockbisfamily-S3methods.R'
+    'PLNblockbisfamily-class.R'
     'PLNblockfamily-S3methods.R'
     'PLNblockfamily-class.R'
     'PLNfamily-S3methods.R'
@@ -92,10 +97,6 @@ Collate:
     'PLNnetworkfamily-class.R'
     'PLNnetworkfit-S3methods.R'
     'PLNnetworkfit-class.R'
-    'PLNblockbisfit-class.R'
-    'PLNblockbis.R'
-    'PLNblockbisfamily-S3methods.R'
-    'PLNblockbisfamily-class.R'
     'RcppExports.R'
     'barents.R'
     'import_utils.R'

@@ -47,7 +47,42 @@ optimize_plnblockbis <- function(data, params, config) {
     new_parameters$Mu <- optim_VE$Mu
     new_parameters$Delta <- optim_VE$Delta
     new_parameters$D <- optim_VE$D
+
     new_parameters$T <- optim_VE$Tau
+    ##########
+
+    if(config$g_resampling > 0){
+      max_values <- apply(new_parameters$T , 2, function(col) max(col, na.rm = TRUE))
+      if((nb_iter %% 1) == 0){
+        to_resample = which(max_values < 0.99)
+        for(q in to_resample){
+          probabilities = new_parameters$T[,q]
+          ##
+          init_group = which.max(probabilities)
+          ##
+          Q = length(probabilities)
+          new_group = sample(1:Q, size=1, prob=probabilities)
+          new_tau = rep(1e-16, Q)
+          new_tau[[new_group]] = 1
+          new_parameters$T[,q] = new_tau
+        }}
+      if(config$g_resampling > 1){
+        if((nb_iter %% 3) == 0){
+          alpha = rowMeans(new_parameters$T)
+          Q = length(alpha)
+          to_resample = which(max_values > 0.99)
+          if(length(to_resample) > 0){
+            chosen = sample(to_resample, size = max(2, floor(0.05 * ncol(new_parameters$T))))
+            for(c in chosen){
+              new_group = sample(1:Q, size=1, prob=alpha)
+              new_tau = rep(1e-16, Q)
+              new_tau[[new_group]] = 1
+              new_parameters$T[,chosen] = new_tau
+            }}
+        }
+      }
+    }
+
 
     # Going next step and assessing convergence
     nb_iter <- nb_iter + 1
