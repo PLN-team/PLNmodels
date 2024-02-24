@@ -501,8 +501,7 @@ ZIPLNnetworkfamily <- R6Class(
       cat("\nStability Selection for ZIPLNnetwork: ")
       cat("\nsubsampling: ")
 
-      # stabs_out <- future.apply::future_lapply(subsamples, function(subsample) {
-      stabs_out <- lapply(subsamples, function(subsample) {
+      stabs_out <- future.apply::future_lapply(subsamples, function(subsample) {
           cat("+")
         inception_ <- self$getModel(self$penalties[1])
         inception_$update(
@@ -534,8 +533,7 @@ ZIPLNnetworkfamily <- R6Class(
           as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
         }))
         nets
-      # }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
-      })
+      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
 
       prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
       ## formatting/tyding

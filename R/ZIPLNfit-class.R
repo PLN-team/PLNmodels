@@ -802,7 +802,7 @@ ZIPLNfit_sparse <- R6Class(
     n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param_pln number of parameters in the PLN part of the current model
     nb_param_pln   = function() {
-      as.integer(self$p * self$d + self$n_edges)
+      as.integer(self$p * self$d + self$n_edges + self$p)
     },
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"sparse"},

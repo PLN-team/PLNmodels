@@ -123,6 +123,5 @@ PLNnetwork_param <- function(
     variance          = TRUE             ,
     config_post       = config_pst       ,
     config_optim      = config_opt       ,
-### TODO CHECK: Why two inceptive model (cov and not ?)
     inception         = inception       ), class = "PLNmodels_param")
 }
