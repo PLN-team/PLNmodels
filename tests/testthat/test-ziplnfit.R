@@ -118,3 +118,16 @@ test_that("ZIPLN fit: Check number of parameters",  {
   expect_equal(model$vcov_model, "fixed")
 
 })
+
+test_that("ZIPLN fit: check sparse output and plot",  {
+
+  myPLNfit <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(trace = 1, penalty = 0.1))
+
+  expect_is(myPLNfit, "ZIPLNfit_sparse")
+  expect_is(myPLNfit, "ZIPLNfit")
+
+  expect_equal(myPLNfit$vcov_model, "sparse")
+  expect_true(igraph::is.igraph(myPLNfit$plot_network(output = "igraph", plot = FALSE)))
+  expect_true(inherits(myPLNfit$plot_network(output = "corrplot", plot = FALSE), "Matrix"))
+
+})

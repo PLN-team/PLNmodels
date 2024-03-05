@@ -13,9 +13,10 @@ An R6 Class to represent a ZIPLNfit in a standard, general framework, with spars
 # See other examples in function ZIPLN
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control=  ZIPLN_param(penalty = 0.2))
+myPLN <- ZIPLN(Abundance ~ 1, data = trichoptera, control=  ZIPLN_param(penalty = 1))
 class(myPLN)
 print(myPLN)
+plot(myPLN)
 }
 }
 \section{Super class}{
@@ -24,9 +25,23 @@ print(myPLN)
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{nb_param}}{number of parameters in the current PLN model}
+\item{\code{penalty}}{the global level of sparsity in the current model}
+
+\item{\code{penalty_weights}}{a matrix of weights controlling the amount of penalty element-wise.}
+
+\item{\code{n_edges}}{number of edges if the network (non null coefficient of the sparse precision matrix)}
+
+\item{\code{nb_param_pln}}{number of parameters in the PLN part of the current model}
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
+
+\item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood}
+
+\item{\code{EBIC}}{variational lower bound of the EBIC}
+
+\item{\code{density}}{proportion of non-null edges in the network}
+
+\item{\code{criteria}}{a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges and graph density}
 }
 \if{html}{\out{</div>}}
 }
@@ -34,6 +49,8 @@ print(myPLN)
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-ZIPLNfit_sparse-new}{\code{ZIPLNfit_sparse$new()}}
+\item \href{#method-ZIPLNfit_sparse-latent_network}{\code{ZIPLNfit_sparse$latent_network()}}
+\item \href{#method-ZIPLNfit_sparse-plot_network}{\code{ZIPLNfit_sparse$plot_network()}}
 \item \href{#method-ZIPLNfit_sparse-clone}{\code{ZIPLNfit_sparse$clone()}}
 }
 }
@@ -55,23 +72,72 @@ print(myPLN)
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{ZIPLNfit_fixed}} model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_sparse$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_sparse$new(data, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+\item{\code{data}}{a named list used internally to carry the data matrices}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ZIPLNfit_sparse-latent_network"></a>}}
+\if{latex}{\out{\hypertarget{method-ZIPLNfit_sparse-latent_network}{}}}
+\subsection{Method \code{latent_network()}}{
+Extract interaction network in the latent space
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_sparse$latent_network(type = c("partial_cor", "support", "precision"))}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{edge value in the network. Can be "support" (binary edges), "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a square matrix of size \code{ZIPLNfit_sparse$n}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ZIPLNfit_sparse-plot_network"></a>}}
+\if{latex}{\out{\hypertarget{method-ZIPLNfit_sparse-plot_network}{}}}
+\subsection{Method \code{plot_network()}}{
+plot the latent network.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_sparse$plot_network(
+  type = c("partial_cor", "support"),
+  output = c("igraph", "corrplot"),
+  edge.color = c("#F8766D", "#00BFC4"),
+  remove.isolated = FALSE,
+  node.labels = NULL,
+  layout = layout_in_circle,
+  plot = TRUE
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{edge value in the network. Either "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species).}
+
+\item{\code{output}}{Output type. Either \code{igraph} (for the network) or \code{corrplot} (for the adjacency matrix)}
+
+\item{\code{edge.color}}{Length 2 color vector. Color for positive/negative edges. Default is \code{c("#F8766D", "#00BFC4")}. Only relevant for igraph output.}
+
+\item{\code{remove.isolated}}{if \code{TRUE}, isolated node are remove before plotting. Only relevant for igraph output.}
+
+\item{\code{node.labels}}{vector of character. The labels of the nodes. The default will use the column names ot the response matrix.}
+
+\item{\code{layout}}{an optional igraph layout. Only relevant for igraph output.}
+
+\item{\code{plot}}{logical. Should the final network be displayed or only sent back to the user. Default is \code{TRUE}.}
 }
 \if{html}{\out{</div>}}
 }

@@ -5,20 +5,16 @@
 #' See the documentation for [`plot()`][plot.PLNnetworkfit()] and methods inherited from [`PLNfit`].
 #'
 ## Parameters common to all PLN-xx-fit methods (shared with PLNfit but inheritance does not work)
-#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
-#' @param weights an optional vector of observation weights to be used in the fitting process.
-#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param data a named list used internally to carry the data matrices
 #' @param control a list for controlling the optimization.
-#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.
-#' @param B matrix of regression matrix
+#' @param nullModel null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but no latent variable.
+#' @param B matrix of regression coefficients
 #' @param Sigma variance-covariance matrix of the latent variables
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
 #'
 ## Parameters specific to PLNnetwork-fit methods
 #' @param penalty a positive real number controlling the level of sparsity of the underlying network.
-#' @param penalty_weights either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
+#' @param penalty_weights either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pair of node. Must be symmetric with positive values.
 #'
 #' @include PLNnetworkfit-class.R
 #' @examples
@@ -41,40 +37,27 @@ PLNnetworkfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation functions ----------------
     #' @description Initialize a [`PLNnetworkfit`] object
-    initialize = function(penalty, penalty_weights, responses, covariates, offsets, weights, formula, control) {
-      stopifnot(isSymmetric(penalty_weights), all(penalty_weights >= 0))
-      super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$lambda <- penalty
-      private$rho    <- penalty_weights
-      if (!control$penalize_diagonal) diag(private$rho) <- 0
-    },
-    #' @description Update fields of a [`PLNnetworkfit`] object
-    #' @param B matrix of regression matrix
-    #' @param Sigma variance-covariance matrix of the latent variables
-    #' @param Omega precision matrix of the latent variables. Inverse of Sigma.
-    #' @param M     matrix of mean vectors for the variational approximation
-    #' @param S     matrix of variance vectors for the variational approximation
-    #' @param Z     matrix of latent vectors (includes covariates and offset effects)
-    #' @param A     matrix of fitted values
-    #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
-    #' @param R2    approximate R^2 goodness-of-fit criterion
-    #' @param monitoring a list with optimization monitoring quantities
-    update = function(penalty=NA, B=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-      super$update(B = B, Sigma = Sigma, Omega = Omega, M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
-      if (!anyNA(penalty)) private$lambda <- penalty
+    initialize = function(data, control) {
+      super$initialize(data$Y, data$X, data$O, data$w, data$formula, control)
+      ## Default for penalty weights (if not already set)
+      if (is.null(control$penalty_weights)) control$penalty_weights <- matrix(1, self$p, self$p)
+      stopifnot(isSymmetric(control$penalty_weights), all(control$penalty_weights >= 0))
+      if (!control$penalize_diagonal) diag(control$penalty_weights) <- 0
+      private$lambda <- control$penalty
+      private$rho    <- control$penalty_weights
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimization ----------------------
     #' @description Call to the C++ optimizer and update of the relevant fields
     #' @param config a list for controlling the optimization
-    optimize = function(responses, covariates, offsets, weights, config) {
+    optimize = function(data, config) {
       cond <- FALSE; iter <- 0
       objective   <- numeric(config$maxit_out)
       convergence <- numeric(config$maxit_out)
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
-      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
+      args <- list(data   = data,
                    params = list(B = private$B, M = private$M, S = private$S),
                    config = config)
       while (!cond) {
@@ -90,7 +73,7 @@ PLNnetworkfit <- R6Class(
         do.call(self$update, optim_out)
 
         ## Check convergence
-        objective[iter]   <- -self$loglik + self$penalty * sum(abs(private$Omega))
+        objective[iter]   <- -self$loglik # + self$penalty * sum(abs(private$Omega))
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
         if ((convergence[iter] < config$ftol_out) | (iter >= config$maxit_out)) cond <- TRUE
 
@@ -102,9 +85,9 @@ PLNnetworkfit <- R6Class(
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## OUTPUT
       private$Sigma <- Matrix::symmpart(glasso_out$w)
-      private$monitoring$objective        <- objective[1:iter]
-      private$monitoring$convergence      <- convergence[1:iter]
-      private$monitoring$outer_iterations <- iter
+      private$monitoring$objective   <- objective[1:iter]
+      private$monitoring$convergence <- convergence[1:iter]
+      private$monitoring$iterations  <- iter
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,51 +128,14 @@ PLNnetworkfit <- R6Class(
                             node.labels     = NULL,
                             layout          = layout_in_circle,
                             plot = TRUE) {
-
-      type <- match.arg(type)
-      output <- match.arg(output)
-
-      net <- self$latent_network(type)
-
-      if (output == "igraph") {
-
-        G <-  graph_from_adjacency_matrix(net, mode = "undirected", weighted = TRUE, diag = FALSE)
-
-        if (!is.null(node.labels)) {
-          igraph::V(G)$label <- node.labels
-        } else {
-          igraph::V(G)$label <- colnames(net)
-        }
-        ## Nice nodes
-        V.deg <- degree(G)/sum(degree(G))
-        igraph::V(G)$label.cex <- V.deg / max(V.deg) + .5
-        igraph::V(G)$size <- V.deg * 100
-        igraph::V(G)$label.color <- rgb(0, 0, .2, .8)
-        igraph::V(G)$frame.color <- NA
-        ## Nice edges
-        igraph::E(G)$color <- ifelse(igraph::E(G)$weight > 0, edge.color[1], edge.color[2])
-        if (type == "support")
-          igraph::E(G)$width <- abs(igraph::E(G)$weight)
-        else
-          igraph::E(G)$width <- 15*abs(igraph::E(G)$weight)
-
-        if (remove.isolated) {
-          G <- delete.vertices(G, which(degree(G) == 0))
-        }
-        if (plot) plot(G, layout = layout)
-      }
-      if (output == "corrplot") {
-        if (plot) {
-          if (ncol(net) > 100)
-            colnames(net) <- rownames(net) <- rep(" ", ncol(net))
-          G <- net
-          diag(net) <- 0
-          corrplot(as.matrix(net), method = "color", is.corr = FALSE, tl.pos = "td", cl.pos = "n", tl.cex = 0.5, type = "upper")
-        } else  {
-          G <- net
-        }
-      }
-      invisible(G)
+      .plot_network(self$latent_network(match.arg(type)),
+                   type            = match.arg(type),
+                   output          = match.arg(output),
+                   edge.color      = edge.color,
+                   remove.isolated = remove.isolated,
+                   node.labels     = node.labels,
+                   layout          = layout,
+                   plot            = plot)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

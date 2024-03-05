@@ -10,6 +10,8 @@ ZIPLN_param(
   covariance = c("full", "diagonal", "spherical", "fixed", "sparse"),
   Omega = NULL,
   penalty = 0,
+  penalize_diagonal = TRUE,
+  penalty_weights = NULL,
   config_post = list(),
   config_optim = list(),
   inception = NULL
@@ -26,6 +28,10 @@ ZIPLN_param(
 
 \item{penalty}{a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).}
 
+\item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{TRUE}}
+
+\item{penalty_weights}{either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
+
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
@@ -41,10 +47,11 @@ list of parameters used during the fit and post-processing steps
 Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 }
 \details{
-See \code{\link[=PLN_param]{PLN_param()}} for a full description of the generic optimization parameters. ZIPLN_param() also has two additional parameters controlling the optimization due
-the inner-outer loop structure of the optimizer:
+See \code{\link[=PLN_param]{PLN_param()}} and \code{\link[=PLNnetwork_param]{PLNnetwork_param()}} for a full description of the generic optimization parameters. Like \code{\link[=PLNnetwork_param]{PLNnetwork_param()}}, ZIPLN_param() has two parameters controlling the optimization due the inner-outer loop structure of the optimizer:
 \itemize{
-\item "ftol_out" outer solver stops when an optimization step changes the objective function by less than \code{ftol_out} multiplied by the absolute value of the parameter. Default is 1e-8
+\item "ftol_out" outer solver stops when an optimization step changes the objective function by less than \code{ftol_out} multiplied by the absolute value of the parameter. Default is 1e-6
 \item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 100
+and one additional parameter controlling the form of the variational approximation of the zero inflation:
+\item "approx_ZI" either uses an exact or approximated conditional distribution for the zero inflation. Default is FALSE
 }
 }

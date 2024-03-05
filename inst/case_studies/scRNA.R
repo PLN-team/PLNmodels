@@ -5,7 +5,7 @@ data(scRNA)
 # data subsample: only 500 random cell and the 200 most varying transcript
 scRNA        <- scRNA[sample.int(nrow(scRNA), 500), ]
 scRNA$counts <- scRNA$counts[, 1:200]
-myZIPLN <- ZIPLN(counts ~ 1 + offset(log(total_counts)), data = scRNA)
+myZIPLN <- ZIPLN(counts ~ 1 + offset(log(total_counts)), zi = "col", data = scRNA)
 myPLN   <- PLN(counts ~ 1 + offset(log(total_counts)), data = scRNA)
 
 data.frame(

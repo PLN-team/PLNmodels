@@ -95,3 +95,40 @@ sigma.ZIPLNfit <- function(object, ...) {
   object$model_par$Sigma
 }
 
+## =========================================================================================
+##
+## PUBLIC S3 METHODS FOR ZIPLNfit_sparse
+##
+## =========================================================================================
+
+## Auxiliary functions to check the given class of an objet
+isZIPLNfit_sparse <- function(Robject) {inherits(Robject, "ZIPLNfit_sparse")}
+
+#' Extract and plot the network (partial correlation, support or inverse covariance) from a [`ZIPLNfit_sparse`] object
+#'
+#' @name plot.ZIPLNfit_sparse
+#' @inheritParams plot.PLNnetworkfit
+#' @param x an R6 object with class [`ZIPLNfit_sparse`]
+#'
+#' @inherit plot.PLNnetworkfit return
+#'
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' fit <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(penalty = 0.1))
+#' \dontrun{
+#' plot(fit)
+#' }
+#' @export
+plot.ZIPLNfit_sparse <-
+  function(x,
+           type            = c("partial_cor", "support"),
+           output          = c("igraph", "corrplot"),
+           edge.color      = c("#F8766D", "#00BFC4"),
+           remove.isolated = FALSE,
+           node.labels     = NULL,
+           layout          = layout_in_circle,
+           plot            = TRUE, ...) {
+    stopifnot(isZIPLNfit_sparse(x))
+    invisible(x$plot_network(type, output, edge.color, remove.isolated, node.labels, layout, plot))
+  }

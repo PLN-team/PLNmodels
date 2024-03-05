@@ -42,7 +42,7 @@ test_that("PLNnetwork fit: check classes, getters and field access", {
   expect_equal(vcov(myPLNfit, "covariance"), myPLNfit$model_par$Sigma)
   expect_equal(vcov(myPLNfit, "covariance"), sigma(myPLNfit))
   expect_warning(standard_error(myPLNfit))
-  expect_true(igraph::is.igraph(myPLNfit$plot_network(output = "igraph", plot = FALSE)))
+  expect_true(igraph::is_igraph(myPLNfit$plot_network(output = "igraph", plot = FALSE)))
   expect_true(inherits(myPLNfit$plot_network(output = "corrplot", plot = FALSE), "Matrix"))
 
 })

@@ -185,3 +185,54 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
   }
   g
 }
+
+#' @importFrom grDevices rgb
+.plot_network = function(net            ,
+                        type            ,
+                        output          ,
+                        edge.color      = c("#F8766D", "#00BFC4"),
+                        remove.isolated = FALSE,
+                        node.labels     = NULL,
+                        layout          = layout_in_circle,
+                        plot = TRUE) {
+
+  if (output == "igraph") {
+
+    G <-  graph_from_adjacency_matrix(net, mode = "undirected", weighted = TRUE, diag = FALSE)
+
+    if (!is.null(node.labels)) {
+      igraph::V(G)$label <- node.labels
+    } else {
+      igraph::V(G)$label <- colnames(net)
+    }
+    ## Nice nodes
+    V.deg <- degree(G)/sum(degree(G))
+    igraph::V(G)$label.cex <- V.deg / max(V.deg) + .5
+    igraph::V(G)$size <- V.deg * 100
+    igraph::V(G)$label.color <- rgb(0, 0, .2, .8)
+    igraph::V(G)$frame.color <- NA
+    ## Nice edges
+    igraph::E(G)$color <- ifelse(igraph::E(G)$weight > 0, edge.color[1], edge.color[2])
+    if (type == "support")
+      igraph::E(G)$width <- abs(igraph::E(G)$weight)
+    else
+      igraph::E(G)$width <- 15*abs(igraph::E(G)$weight)
+
+    if (remove.isolated) {
+      G <- delete.vertices(G, which(degree(G) == 0))
+    }
+    if (plot) plot(G, layout = layout)
+  }
+  if (output == "corrplot") {
+    if (plot) {
+      if (ncol(net) > 100)
+        colnames(net) <- rownames(net) <- rep(" ", ncol(net))
+      G <- net
+      diag(net) <- 0
+      corrplot(as.matrix(net), method = "color", is.corr = FALSE, tl.pos = "td", cl.pos = "n", tl.cex = 0.5, type = "upper")
+    } else  {
+      G <- net
+    }
+  }
+  invisible(G)
+}

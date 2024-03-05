@@ -43,23 +43,23 @@
 ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control = ZIPLN_param()) {
 
   ## extract the data matrices and weights
-  args <- extract_model_zi(match.call(expand.dots = FALSE), parent.frame())
-  control$ziparam <- ifelse((args$zicovar), "covar", match.arg(zi))
+  data_ <- extract_model_zi(match.call(expand.dots = FALSE), parent.frame())
+  control$ziparam <- ifelse((data_$zicovar), "covar", match.arg(zi))
 
   ## initialization
   if (control$trace > 0) cat("\n Initialization...")
   myPLN <- switch(control$covariance,
-                  "diagonal"  = ZIPLNfit_diagonal$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
-                  "spherical" = ZIPLNfit_spherical$new(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
-                  "fixed"     = ZIPLNfit_fixed$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
-                  "sparse"    = ZIPLNfit_sparse$new(args$Y , list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control),
-                  ZIPLNfit$new(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, args$formula, control)) # default: full covariance
+                  "diagonal"  = ZIPLNfit_diagonal$new(data_, control),
+                  "spherical" = ZIPLNfit_spherical$new(data_, control),
+                  "fixed"     = ZIPLNfit_fixed$new(data_, control),
+                  "sparse"    = ZIPLNfit_sparse$new(data_, control),
+                  ZIPLNfit$new(data_, control)) # default: full covariance
 
   ## optimization
   if (control$trace > 0) cat("\n Adjusting a ZI-PLN model with",
                   control$covariance,"covariance model and",
                   control$ziparam, "specific parameter(s) in Zero inflation component.")
-  myPLN$optimize(args$Y, list(PLN = args$X, ZI = args$X0), args$O, args$w, control$config_optim)
+  myPLN$optimize(data_, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myPLN
@@ -73,14 +73,16 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
 #' @inheritParams PLN_param
+#' @inheritParams PLNnetwork_param
 #' @param penalty a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).
 #' @return list of parameters used during the fit and post-processing steps
 #'
 #' @inherit PLN_param details
-#' @details See [PLN_param()] for a full description of the generic optimization parameters. ZIPLN_param() also has two additional parameters controlling the optimization due
-#' the inner-outer loop structure of the optimizer:
-#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than `ftol_out` multiplied by the absolute value of the parameter. Default is 1e-8
+#' @details See [PLN_param()] and [PLNnetwork_param()] for a full description of the generic optimization parameters. Like [PLNnetwork_param()], ZIPLN_param() has two parameters controlling the optimization due the inner-outer loop structure of the optimizer:
+#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than `ftol_out` multiplied by the absolute value of the parameter. Default is 1e-6
 #' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 100
+#' and one additional parameter controlling the form of the variational approximation of the zero inflation:
+#' * "approx_ZI" either uses an exact or approximated conditional distribution for the zero inflation. Default is FALSE
 #'
 #' @export
 ZIPLN_param <- function(
@@ -89,6 +91,8 @@ ZIPLN_param <- function(
     covariance    = c("full", "diagonal", "spherical", "fixed", "sparse"),
     Omega         = NULL,
     penalty       = 0,
+    penalize_diagonal = TRUE   ,
+    penalty_weights   = NULL   ,
     config_post   = list(),
     config_optim  = list(),
     inception     = NULL     # pretrained ZIPLNfit used as initialization
@@ -113,6 +117,7 @@ ZIPLN_param <- function(
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-6
   config_opt$maxit_out <- 100
+  config_opt$approx_ZI <- FALSE
   config_opt[names(config_optim)] <- config_optim
 
   structure(list(
@@ -121,6 +126,8 @@ ZIPLN_param <- function(
     covariance    = covariance,
     Omega         = Omega     ,
     penalty       = penalty   ,
+    penalize_diagonal = penalize_diagonal,
+    penalty_weights   = penalty_weights  ,
     config_post   = config_pst,
     config_optim  = config_opt,
     inception     = inception), class = "PLNmodels_param")

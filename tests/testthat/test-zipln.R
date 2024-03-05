@@ -60,6 +60,17 @@ test_that("PLN is working with unnamed data matrix",  {
     expect_error(ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "nawak"))))
  })
 
+test_that("ZIPLN is working with exact and variational inference for the conditional distribution of the ZI component",  {
+
+   approx <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(approx_ZI = TRUE)))
+   exact  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(approx_ZI = FALSE)))
+
+   expect_equal(approx$loglik, exact$loglik, tolerance = 1e-1) ## Almost equivalent
+   expect_equal(approx$model_par$B, exact$model_par$B, tolerance = 1e-1) ## Almost equivalent
+   expect_equal(approx$model_par$Sigma, exact$model_par$Sigma, tolerance = 1e-1) ## Almost equivalent
+
+})
+
 test_that("ZIPLN: Check that univariate ZIPLN models works, with matrix of numeric format",  {
   expect_no_error(uniZIPLN <- ZIPLN(Abundance[,1,drop=FALSE] ~ 1, data = trichoptera))
   expect_no_error(uniZIPLN <- ZIPLN(Abundance[,1] ~ 1, data = trichoptera))

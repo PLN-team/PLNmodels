@@ -6,7 +6,9 @@
 \alias{getModel.PLNPCAfamily}
 \alias{getModel}
 \alias{getModel.PLNmixturefamily}
+\alias{getModel.Networkfamily}
 \alias{getModel.PLNnetworkfamily}
+\alias{getModel.ZIPLNnetworkfamily}
 \title{Model extraction from a collection of models}
 \usage{
 \method{getModel}{PLNPCAfamily}(Robject, var, index = NULL)
@@ -15,7 +17,11 @@ getModel(Robject, var, index)
 
 \method{getModel}{PLNmixturefamily}(Robject, var, index = NULL)
 
+\method{getModel}{Networkfamily}(Robject, var, index = NULL)
+
 \method{getModel}{PLNnetworkfamily}(Robject, var, index = NULL)
+
+\method{getModel}{ZIPLNnetworkfamily}(Robject, var, index = NULL)
 }
 \arguments{
 \item{Robject}{an R6 object with class \code{\link{PLNPCAfamily}} or \code{\link{PLNnetworkfamily}}}
@@ -36,7 +42,11 @@ Model extraction from a collection of models
 
 \item \code{getModel(PLNmixturefamily)}: Model extraction for \code{\link{PLNmixturefamily}}
 
+\item \code{getModel(Networkfamily)}: Model extraction for \code{\link{PLNnetworkfamily}} or \code{\link{ZIPLNnetworkfamily}}
+
 \item \code{getModel(PLNnetworkfamily)}: Model extraction for \code{\link{PLNnetworkfamily}}
+
+\item \code{getModel(ZIPLNnetworkfamily)}: Model extraction for \code{\link{ZIPLNnetworkfamily}}
 
 }}
 \examples{

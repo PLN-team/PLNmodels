@@ -7,7 +7,7 @@
 coefficient_path(Robject, precision = TRUE, corr = TRUE)
 }
 \arguments{
-\item{Robject}{an object with class \code{\link{PLNnetworkfamily}}, i.e. an output from \code{\link[=PLNnetwork]{PLNnetwork()}}}
+\item{Robject}{an object with class \code{\link{Networkfamily}}, i.e. an output from \code{\link[=PLNnetwork]{PLNnetwork()}}}
 
 \item{precision}{a logical, should the coefficients of the precision matrix Omega or the covariance matrix Sigma be sent back. Default is \code{TRUE}.}
 

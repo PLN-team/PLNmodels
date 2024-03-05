@@ -25,7 +25,7 @@ print(myPLN)
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{nb_param}}{number of parameters in the current PLN model}
+\item{\code{nb_param_pln}}{number of parameters in the PLN part of the current model}
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 }
@@ -56,21 +56,13 @@ print(myPLN)
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{ZIPLNfit_fixed}} model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_fixed$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_fixed$new(data, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+\item{\code{data}}{a named list used internally to carry the data matrices}
 
 \item{\code{control}}{a list for controlling the optimization. See details.}
 }
