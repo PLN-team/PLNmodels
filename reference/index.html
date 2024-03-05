@@ -104,7 +104,11 @@
       </tr><tr><td>
           <p><code><a href="PLNnetwork.html">PLNnetwork()</a></code> </p>
         </td>
-        <td><p>Poisson lognormal model towards sparse network inference</p></td>
+        <td><p>Sparse Poisson lognormal model for network inference</p></td>
+      </tr><tr><td>
+          <p><code><a href="ZIPLNnetwork.html">ZIPLNnetwork()</a></code> </p>
+        </td>
+        <td><p>Zero Inflated Sparse Poisson lognormal model for network inference</p></td>
       </tr><tr><td>
           <p><code><a href="PLNmixture.html">PLNmixture()</a></code> </p>
         </td>
@@ -205,6 +209,10 @@
           <p><code><a href="fitted.ZIPLNfit.html">fitted(<i>&lt;ZIPLNfit&gt;</i>)</a></code> </p>
         </td>
         <td><p>Extracts model fitted values from objects returned by <code><a href="../reference/ZIPLN.html">ZIPLN()</a></code> and its variants</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot.ZIPLNfit_sparse.html">plot(<i>&lt;ZIPLNfit_sparse&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Extract and plot the network (partial correlation, support or inverse covariance) from a <code>ZIPLNfit_sparse</code> object</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="linear-discriminant-analysis-via-a-poisson-lognormal-fit">Linear discriminant analysis via a Poisson lognormal fit <a href="#linear-discriminant-analysis-via-a-poisson-lognormal-fit" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Description of the PLNLDAfit object and methods for its manipulation.</p>
@@ -318,8 +326,8 @@
         </td>
         <td><p>Model extraction from a collection of models</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="sparse-poisson-lognormal-fit-and-network">Sparse Poisson lognormal fit and network <a href="#sparse-poisson-lognormal-fit-and-network" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Description of the PLNnetworkfit and PLNnetworkfamily objects and methods for their manipulation.</p>
+          <h2 id="sparse-poisson-lognormal-fit-and-network-w-o-zero-inflated-component">Sparse Poisson lognormal fit and network, w/o Zero Inflated component <a href="#sparse-poisson-lognormal-fit-and-network-w-o-zero-inflated-component" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Description of the (ZI)PLNnetworkfit and (ZI)PLNnetworkfamily objects and methods for their manipulation.</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code> </p>
@@ -330,17 +338,33 @@
         </td>
         <td><p>Control of PLNnetwork fit</p></td>
       </tr><tr><td>
+          <p><code><a href="ZIPLNnetwork_param.html">ZIPLNnetwork_param()</a></code> </p>
+        </td>
+        <td><p>Control of ZIPLNnetwork fit</p></td>
+      </tr><tr><td>
           <p><code><a href="plot.PLNnetworkfit.html">plot(<i>&lt;PLNnetworkfit&gt;</i>)</a></code> </p>
         </td>
         <td><p>Extract and plot the network (partial correlation, support or inverse covariance) from a <code>PLNnetworkfit</code> object</p></td>
       </tr><tr><td>
+          <p><code><a href="plot.ZIPLNfit_sparse.html">plot(<i>&lt;ZIPLNfit_sparse&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Extract and plot the network (partial correlation, support or inverse covariance) from a <code>ZIPLNfit_sparse</code> object</p></td>
+      </tr><tr><td>
+          <p><code><a href="Networkfamily.html">Networkfamily</a></code> </p>
+        </td>
+        <td><p>An R6 Class to virtually represent a collection of network fits</p></td>
+      </tr><tr><td>
+          <p><code><a href="ZIPLNnetworkfamily.html">ZIPLNnetworkfamily</a></code> </p>
+        </td>
+        <td><p>An R6 Class to represent a collection of ZIPLNnetwork</p></td>
+      </tr><tr><td>
           <p><code><a href="PLNnetworkfamily.html">PLNnetworkfamily</a></code> </p>
         </td>
-        <td><p>An R6 Class to represent a collection of PLNnetworkfit</p></td>
+        <td><p>An R6 Class to represent a collection of <code>PLNnetworkfit</code>s</p></td>
       </tr><tr><td>
-          <p><code><a href="plot.PLNnetworkfamily.html">plot(<i>&lt;PLNnetworkfamily&gt;</i>)</a></code> </p>
+          <p><code><a href="plot.Networkfamily.html">plot(<i>&lt;Networkfamily&gt;</i>)</a></code> <code><a href="plot.Networkfamily.html">plot(<i>&lt;PLNnetworkfamily&gt;</i>)</a></code> <code><a href="plot.Networkfamily.html">plot(<i>&lt;ZIPLNnetworkfamily&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of PLNnetwork fits (a <code>PLNnetworkfamily</code>)</p></td>
+        <td><p>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of network fits (either <code>PLNnetworkfamily</code> or <code>ZIPLNnetworkfamily</code>)</p></td>
       </tr><tr><td>
           <p><code><a href="getBestModel.html">getBestModel()</a></code> </p>
         </td>

@@ -92,8 +92,8 @@ An R6 Class to represent a ZIPLNfit in a standard, general framework, with spher
     </div>
     <div id="active-bindings">
     <h2>Active bindings</h2>
-    <p></p><div class="r6-active-bindings"><dl><dt><code>nb_param</code></dt>
-<dd><p>number of parameters in the current PLN model</p></dd>
+    <p></p><div class="r6-active-bindings"><dl><dt><code>nb_param_pln</code></dt>
+<dd><p>number of parameters in the PLN part of the current model</p></dd>
 
 
 <dt><code>vcov_model</code></dt>
@@ -120,36 +120,13 @@ An R6 Class to represent a ZIPLNfit in a standard, general framework, with spher
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialize a <code>ZIPLNfit_spherical</code> model</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/ZIPLNfit_spherical.html">ZIPLNfit_spherical</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
-<span>  <span class="va">responses</span>,</span>
-<span>  <span class="va">covariates</span>,</span>
-<span>  <span class="va">offsets</span>,</span>
-<span>  <span class="va">weights</span>,</span>
-<span>  <span class="va">formula</span>,</span>
-<span>  <span class="va">control</span></span>
-<span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/ZIPLNfit_spherical.html">ZIPLNfit_spherical</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">data</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>responses</code></dt>
-<dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-
-<dt><code>covariates</code></dt>
-<dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-
-<dt><code>offsets</code></dt>
-<dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-
-<dt><code>weights</code></dt>
-<dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
-
-
-<dt><code>formula</code></dt>
-<dd><p>model formula used for fitting, extracted from the formula in the upper-level call</p></dd>
+<p></p><div class="arguments"><dl><dt><code>data</code></dt>
+<dd><p>a named list used internally to carry the data matrices</p></dd>
 
 
 <dt><code>control</code></dt>

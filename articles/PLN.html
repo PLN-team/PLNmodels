@@ -110,7 +110,7 @@
 Poisson log-normal model</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-02-15</h4>
+            <h4 data-toc-skip class="date">2024-03-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLN.Rmd" class="external-link"><code>vignettes/PLN.Rmd</code></a></small>
       <div class="hidden name"><code>PLN.Rmd</code></div>
@@ -159,7 +159,7 @@ etc.)</p>
 <div class="section level3">
 <h3 id="mathematical-background">Mathematical background<a class="anchor" aria-label="anchor" href="#mathematical-background"></a>
 </h3>
-<p>The multivariate Poisson lognormal model (in short PLN, see <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span>) relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent
+<p>The multivariate Poisson lognormal model (in short PLN, see <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span>) relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent
 variables <span class="math inline">\(\mathbf{Z}_i\)</span> as
 follows</p>
 <p><span class="math display">\[\begin{equation}
@@ -223,9 +223,8 @@ data matrices available to feed the model are</p>
 variational strategy to approximate the log-likelihood function and
 optimize the consecutive variational surrogate of the log-likelihood
 with a gradient-ascent-based approach. To this end, we rely on the CCSA
-algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library
-<span class="citation">(<a href="#ref-nlopt" role="doc-biblioref">Johnson 2011</a>)</span>, which we link to the
-package.</p>
+algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02">2002</a>)</span> implemented in the C++ library <span class="citation">(<a href="#ref-nlopt">Johnson 2011</a>)</span>, which
+we link to the package.</p>
 </div>
 </div>
 </div>
@@ -587,7 +586,7 @@ covariate, which gives a slight improvement.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-AiH89" class="csl-entry">
 Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log
 Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.

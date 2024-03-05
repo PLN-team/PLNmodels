@@ -110,7 +110,7 @@
 with PLN-PCA</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-02-15</h4>
+            <h4 data-toc-skip class="date">2024-03-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNPCA.Rmd" class="external-link"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -161,14 +161,11 @@ etc.)</p>
 <div class="section level3">
 <h3 id="mathematical-background">Mathematical background<a class="anchor" aria-label="anchor" href="#mathematical-background"></a>
 </h3>
-<p>In the vein of <span class="citation">Tipping and Bishop (<a href="#ref-TiB99" role="doc-biblioref">1999</a>)</span>, we introduce in
-<span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA" role="doc-biblioref">2018</a>)</span> a probabilistic
-PCA model for multivariate count data which is a variant of the Poisson
-Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span> (see <a href="PLN.html">the PLN vignette</a> as a reminder). Indeed, it can be
-viewed as a PLN model with an additional rank constraint on the
-covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>
-such that <span class="math inline">\(\mathrm{rank}(\boldsymbol\Sigma)=
-q\)</span>.</p>
+<p>In the vein of <span class="citation">Tipping and Bishop (<a href="#ref-TiB99">1999</a>)</span>, we introduce in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA">2018</a>)</span> a probabilistic PCA model for
+multivariate count data which is a variant of the Poisson Lognormal
+model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span> (see <a href="PLN.html">the PLN
+vignette</a> as a reminder). Indeed, it can be viewed as a PLN model
+with an additional rank constraint on the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> such that <span class="math inline">\(\mathrm{rank}(\boldsymbol\Sigma)= q\)</span>.</p>
 <p>This PLN-PCA model can be written in a hierarchical framework where a
 sample of <span class="math inline">\(p\)</span>-dimensional observation
 vectors <span class="math inline">\(\mathbf{Y}_i\)</span> is related to
@@ -226,9 +223,9 @@ matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>.
 Technically speaking, we adopt a variational strategy to approximate the
 log-likelihood function and optimize the consecutive variational
 surrogate of the log-likelihood with a gradient-ascent-based approach.
-To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02" role="doc-biblioref">2002</a>)</span> implemented in the C++ library
-<span class="citation">(<a href="#ref-nlopt" role="doc-biblioref">Johnson 2011</a>)</span>, which we link to the
-package. Technical details can be found in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA" role="doc-biblioref">2018</a>)</span>.</p>
+To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02">2002</a>)</span>
+implemented in the C++ library <span class="citation">(<a href="#ref-nlopt">Johnson 2011</a>)</span>, which we link to the
+package. Technical details can be found in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA">2018</a>)</span>.</p>
 </div>
 </div>
 </div>
@@ -263,9 +260,9 @@ as follows:</p>
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
 ##   Rank approximation = 1 
-     Rank approximation = 2 
-     Rank approximation = 4 
      Rank approximation = 3 
+     Rank approximation = 4 
+     Rank approximation = 2 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model,
@@ -404,8 +401,8 @@ You can do so by specifying <code>reverse = TRUE</code>:</p>
 hopefully strictly increasing (or rather decreasing if using
 <code>reverse = TRUE</code>) with the number of axes (or subspace
 dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of
-<span class="math inline">\(q\)</span> (see <span class="citation">(<a href="#ref-PLNPCA" role="doc-biblioref">Chiquet, Mariadassou, and Robin
-2018</a>)</span> for details on its computation).</p>
+<span class="math inline">\(q\)</span> (see <span class="citation">(<a href="#ref-PLNPCA">Chiquet, Mariadassou, and Robin 2018</a>)</span> for
+details on its computation).</p>
 <p>From this plot, we can see that the best model in terms of BIC or ICL
 is obtained for a rank <span class="math inline">\(q=4\)</span> or <span class="math inline">\(q=3\)</span>. We may extract the corresponding
 model with the method <code>getBestModel("ICL")</code>. A model with a
@@ -740,9 +737,9 @@ thanks to the model formula:</p>
 ## 
 ##  Adjusting 4 PLN models for PCA analysis.
 ##   Rank approximation = 1 
-     Rank approximation = 3 
-     Rank approximation = 4 
      Rank approximation = 2 
+     Rank approximation = 4 
+     Rank approximation = 3 
 ##  Post-treatments
 ##  DONE!</code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>
@@ -786,7 +783,7 @@ sequential plan with <em>future</em>.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-AiH89" class="csl-entry">
 Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log
 Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.

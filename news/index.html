@@ -79,6 +79,15 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="1.2.0" id="plnmodels-120-2024-02-24">PLNmodels 1.2.0 (2024-02-24)<a class="anchor" aria-label="anchor" href="#plnmodels-120-2024-02-24"></a></h2>
+<ul><li>new feature: ZIPLN (PLN with zero inflation)
+<ul><li>ZIPLN() and ZIPLNfit-class to allow for zero-inflation in the standard PLN model (merge PR <a href="https://github.com/pln-team/PLNmodels/issues/116" class="external-link">#116</a>)</li>
+<li>ZIPLNnetwork() and ZIPLNfit_sparse-class to allow for zero-inflation in the PLNnetwork model (merge PR <a href="https://github.com/pln-team/PLNmodels/issues/118" class="external-link">#118</a>)</li>
+<li>Code factorization between PLNnetwork and ZIPLNnetwork (and associated classes)</li>
+</ul></li>
+<li>fix inconsistency between fitted and predict (merge PR <a href="https://github.com/pln-team/PLNmodels/issues/115" class="external-link">#115</a>)</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="1.1.0" id="plnmodels-110-2024-01-08">PLNmodels 1.1.0 (2024-01-08)<small>2024-01-08</small><a class="anchor" aria-label="anchor" href="#plnmodels-110-2024-01-08"></a></h2>
 <ul><li>Update documentation of PLN*_param() functions to include torch optimization parameters</li>
 <li>Add (somehow) explicit error message when torch convergence fails</li>

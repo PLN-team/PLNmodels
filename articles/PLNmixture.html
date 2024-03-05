@@ -110,7 +110,7 @@
 PLN-mixture</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-02-15</h4>
+            <h4 data-toc-skip class="date">2024-03-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNmixture.Rmd" class="external-link"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
@@ -161,15 +161,13 @@ etc.)</p>
 <h3 id="mathematical-background">Mathematical background<a class="anchor" aria-label="anchor" href="#mathematical-background"></a>
 </h3>
 <p>PLN-mixture for multivariate count data is a variant of the Poisson
-Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89" role="doc-biblioref">1989</a>)</span> (see <a href="PLN.html">the PLN vignette</a> as a reminder) which can be viewed
-as a PLN model with an additional mixture layer in the model: the latent
-observations found in the first layer are assumed to be drawn from a
-mixture of <span class="math inline">\(K\)</span> multivariate Gaussian
-components. Each component <span class="math inline">\(k\)</span> has a
-prior probability <span class="math inline">\(p(i \in k) =
-\pi_k\)</span> such that <span class="math inline">\(\sum_k \pi_k =
-1\)</span>. We denote by <span class="math inline">\(C_i\in
-\{1,\dots,K\}\)</span> the multinomial variable <span class="math inline">\(\mathcal{M}(1,\boldsymbol{\pi} =
+Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span> (see <a href="PLN.html">the PLN
+vignette</a> as a reminder) which can be viewed as a PLN model with an
+additional mixture layer in the model: the latent observations found in
+the first layer are assumed to be drawn from a mixture of <span class="math inline">\(K\)</span> multivariate Gaussian components. Each
+component <span class="math inline">\(k\)</span> has a prior probability
+<span class="math inline">\(p(i \in k) = \pi_k\)</span> such that <span class="math inline">\(\sum_k \pi_k = 1\)</span>. We denote by <span class="math inline">\(C_i\in \{1,\dots,K\}\)</span> the multinomial
+variable <span class="math inline">\(\mathcal{M}(1,\boldsymbol{\pi} =
 (\pi_1,\dots,\pi_K))\)</span> describing the component to which
 observation <span class="math inline">\(i\)</span> belongs to.
 Introducing this additional layer, our PLN mixture model is as
@@ -227,14 +225,15 @@ further assumes that all species have the same biological variability.
 In particular, in both parametrisations, all observed covariations are
 caused only by the group structure.</p>
 <p>For readers familiar with the <code>mclust</code> <code>R</code>
-package <span class="citation">(<a href="#ref-fraley1999" role="doc-biblioref">Fraley and Raftery 1999</a>)</span>, which
-implements Gaussian mixture models with many variants of covariance
-matrices of each component, the spherical model corresponds to
-<code>VII</code> (spherical, unequal volume) and the diagonal model to
-<code>VVI</code> (diagonal, varying volume and shape). {Using
-constrained forms of the covariance matrices enables} PLN-mixture to
-{provide a clustering} even when the number of sites <span class="math inline">\(n\)</span> remains of the same order, or smaller,
-than the number of species <span class="math inline">\(p\)</span>.</p>
+package <span class="citation">(<a href="#ref-fraley1999">Fraley and
+Raftery 1999</a>)</span>, which implements Gaussian mixture models with
+many variants of covariance matrices of each component, the spherical
+model corresponds to <code>VII</code> (spherical, unequal volume) and
+the diagonal model to <code>VVI</code> (diagonal, varying volume and
+shape). {Using constrained forms of the covariance matrices enables}
+PLN-mixture to {provide a clustering} even when the number of sites
+<span class="math inline">\(n\)</span> remains of the same order, or
+smaller, than the number of species <span class="math inline">\(p\)</span>.</p>
 </div>
 <div class="section level4">
 <h4 id="optimization-by-variational-inference">Optimization by Variational inference<a class="anchor" aria-label="anchor" href="#optimization-by-variational-inference"></a>
@@ -694,7 +693,7 @@ sequential plan with <em>future</em>.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-AiH89" class="csl-entry">
 Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log
 Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.

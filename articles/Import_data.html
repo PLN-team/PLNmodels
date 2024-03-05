@@ -109,7 +109,7 @@
       <h1 data-toc-skip>Data importation in PLNmodels</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-02-15</h4>
+            <h4 data-toc-skip class="date">2024-03-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/Import_data.Rmd" class="external-link"><code>vignettes/Import_data.Rmd</code></a></small>
       <div class="hidden name"><code>Import_data.Rmd</code></div>
@@ -208,20 +208,19 @@ few popular methods:</p>
 <ul>
 <li>Total Sum Scaling (TSS), where the offset of a sample is the total
 count in that sample</li>
-<li>Cumulative Sum Scaling (CSS), introduced in <span class="citation">(<a href="#ref-CSS" role="doc-biblioref">Paulson et al.
-2013</a>)</span>, where the offset of a sample if the cumulative sum of
-counts in that sample, up to a quantile determined in a data driven
-way.</li>
-<li>Relative Log-Expression (RLE), implemented in <span class="citation">(<a href="#ref-DESeq2" role="doc-biblioref">Anders and
-Huber 2010</a>)</span>, where all samples are used to compute a
-reference sample, each sample is compared to the reference sample using
-log-ratios and the offset is the median log-ratio.</li>
-<li>Geometric Mean of Pairwise Ratio (GMPR), introduced in <span class="citation">(<a href="#ref-GMPR" role="doc-biblioref">Chen et al.
-2018</a>)</span> where each sample is compared to each other to compute
-a median log-ratio and the offset of a sample is the geometric means of
-those pairwise ratios.</li>
-<li>Wrench, introduced in <span class="citation">(<a href="#ref-Kumar2018" role="doc-biblioref">Kumar et al. 2018</a>)</span>
-and fully implemented in the <a href="https://bioconductor.org/packages/release/bioc/html/Wrench.html" class="external-link">Wrench
+<li>Cumulative Sum Scaling (CSS), introduced in <span class="citation">(<a href="#ref-CSS">Paulson et al. 2013</a>)</span>,
+where the offset of a sample if the cumulative sum of counts in that
+sample, up to a quantile determined in a data driven way.</li>
+<li>Relative Log-Expression (RLE), implemented in <span class="citation">(<a href="#ref-DESeq2">Anders and Huber
+2010</a>)</span>, where all samples are used to compute a reference
+sample, each sample is compared to the reference sample using log-ratios
+and the offset is the median log-ratio.</li>
+<li>Geometric Mean of Pairwise Ratio (GMPR), introduced in <span class="citation">(<a href="#ref-GMPR">Chen et al. 2018</a>)</span> where
+each sample is compared to each other to compute a median log-ratio and
+the offset of a sample is the geometric means of those pairwise
+ratios.</li>
+<li>Wrench, introduced in <span class="citation">(<a href="#ref-Kumar2018">Kumar et al. 2018</a>)</span> and fully
+implemented in the <a href="https://bioconductor.org/packages/release/bioc/html/Wrench.html" class="external-link">Wrench
 package</a>, where all samples are used to compute reference proportions
 and each sample is compared to the reference using ratios (and
 <strong>not log-ratios</strong>) of proportions to compute compositional
@@ -380,7 +379,7 @@ as expected.</p>
 </h2>
 <p>Community composition data are quite popular in microbial ecology and
 usually stored in flat files using the <a href="http://biom-format.org/" class="external-link">biom format</a> and/or imported in R as
-phyloseq-class objects <span class="citation">(<a href="#ref-phyloseq" role="doc-biblioref">McMurdie 2013</a>)</span> using the Bioconductor <a href="https://joey711.github.io/phyloseq/" class="external-link">phyloseq</a> package.</p>
+phyloseq-class objects <span class="citation">(<a href="#ref-phyloseq">McMurdie 2013</a>)</span> using the Bioconductor <a href="https://joey711.github.io/phyloseq/" class="external-link">phyloseq</a> package.</p>
 <!-- We provide helper functions to directly import data from a biom file (or biom-class object) and a phyloseq-class object.  -->
 <p>We show here how to import data from a biom file (or biom-class
 object) and form a phyloseq-class object.</p>
@@ -494,9 +493,9 @@ O_i = s_i^{\hat{l}} / \text{median}_i \{ s_i^{\hat{l}} \}
 centered around <span class="math inline">\(1\)</span> and compare sizes
 differences with respect to the reference sample. Note also that the
 reference quantiles <span class="math inline">\(q^l\)</span> can be
-computed using either the median (default, as in the original <span class="citation">Paulson et al. (<a href="#ref-CSS" role="doc-biblioref">2013</a>)</span> paper) or the mean, by specifying
-<code>reference = mean</code>, as implemented in
-<code>metagenomeseq</code>.</p>
+computed using either the median (default, as in the original <span class="citation">Paulson et al. (<a href="#ref-CSS">2013</a>)</span>
+paper) or the mean, by specifying <code>reference = mean</code>, as
+implemented in <code>metagenomeseq</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="relative-log-expression">Relative Log Expression<a class="anchor" aria-label="anchor" href="#relative-log-expression"></a>
@@ -533,10 +532,9 @@ or when a sample shares no species with any other.</p>
 <h3 id="wrench-normalisation">Wrench normalisation<a class="anchor" aria-label="anchor" href="#wrench-normalisation"></a>
 </h3>
 <p>This method is fully detailed in <span class="citation">Kumar et al.
-(<a href="#ref-Kumar2018" role="doc-biblioref">2018</a>)</span> and we
-only provide a barebone implementation corresponding to the defaults
-parameters of <code>Wrench::wrench()</code>. Assume that samples belong
-to <span class="math inline">\(K\)</span> discrete groups and note <span class="math inline">\(g_i\)</span> the group of sample <span class="math inline">\(i\)</span>. Wrench is based on the following
+(<a href="#ref-Kumar2018">2018</a>)</span> and we only provide a
+barebone implementation corresponding to the defaults parameters of
+<code>Wrench::wrench()</code>. Assume that samples belong to <span class="math inline">\(K\)</span> discrete groups and note <span class="math inline">\(g_i\)</span> the group of sample <span class="math inline">\(i\)</span>. Wrench is based on the following
 (simplified) log-normal model for counts: <span class="math display">\[
 Y_{ij} \sim \pi_{ij} \delta_0 + (1 - \pi_{ij})\log\mathcal{N}(\mu_{ij},
 \sigma^2_j)
@@ -649,7 +647,7 @@ O_i = \frac{\hat{\Lambda}_i}{(\prod_{i = 1}^n \hat{\Lambda}_i)^{1/n}}
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-DESeq2" class="csl-entry">
 Anders, Simon, and Wolfgang Huber. 2010. <span>“Differential Expression
 Analysis for Sequence Count Data.”</span> <em>Genome Biology</em> 11

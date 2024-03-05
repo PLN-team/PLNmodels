@@ -40,6 +40,9 @@
     <loc>https://pln-team.github.io/PLNmodels/news/index.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/Networkfamily.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/PLN.html</loc>
   </url>
   <url>
@@ -133,6 +136,15 @@
     <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLNfit_spherical.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLNnetwork.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLNnetwork_param.html</loc>
+  </url>
+  <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/ZIPLNnetworkfamily.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/barents.html</loc>
   </url>
   <url>
@@ -187,6 +199,9 @@
     <loc>https://pln-team.github.io/PLNmodels/reference/pipe.html</loc>
   </url>
   <url>
+    <loc>https://pln-team.github.io/PLNmodels/reference/plot.Networkfamily.html</loc>
+  </url>
+  <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/plot.PLNLDAfit.html</loc>
   </url>
   <url>
@@ -205,10 +220,10 @@
     <loc>https://pln-team.github.io/PLNmodels/reference/plot.PLNmixturefit.html</loc>
   </url>
   <url>
-    <loc>https://pln-team.github.io/PLNmodels/reference/plot.PLNnetworkfamily.html</loc>
+    <loc>https://pln-team.github.io/PLNmodels/reference/plot.PLNnetworkfit.html</loc>
   </url>
   <url>
-    <loc>https://pln-team.github.io/PLNmodels/reference/plot.PLNnetworkfit.html</loc>
+    <loc>https://pln-team.github.io/PLNmodels/reference/plot.ZIPLNfit_sparse.html</loc>
   </url>
   <url>
     <loc>https://pln-team.github.io/PLNmodels/reference/predict.PLNLDAfit.html</loc>
