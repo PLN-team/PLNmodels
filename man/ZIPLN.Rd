@@ -44,20 +44,14 @@ Note that different covariates can be used for each part.
 \examples{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-myPLN <- PLN(Abundance ~ 1, data = trichoptera)
 ## Use different models for zero-inflation...
 myZIPLN_single <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "single")
+\dontrun{
 myZIPLN_row    <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "row")
 myZIPLN_col    <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "col")
 ## ...including logistic regression on covariates
 myZIPLN_covar  <- ZIPLN(Abundance ~ 1 | 1 + Wind, data = trichoptera)
-dplyr::bind_rows(
-  myPLN$criteria,
-  myZIPLN_single$criteria,
-  myZIPLN_row$criteria,
-  myZIPLN_col$criteria,
-  myZIPLN_covar$criteria
-)
+}
 }
 \seealso{
 The class \code{\link{ZIPLNfit}}
