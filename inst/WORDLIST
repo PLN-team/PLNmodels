@@ -11,8 +11,10 @@ Bournaud
 CAH
 CCSA
 CCSAQ
+CMD
 Chessel
 Coulet
+Cpp
 DESeq
 EBIC
 ELBO
@@ -66,7 +68,6 @@ PLNmixturefit
 PLNmodel
 PLNnetwork
 PLNnetworkfamily
-PLNnetworkfit
 PLNnetworks
 PLNs
 Pathobiome
@@ -92,6 +93,10 @@ Usseglio
 VE
 VEstep
 Variational
+ZI
+ZIPLN
+ZIPLNfit
+ZIPLNnetwork
 Zhang
 abundancies
 ade
@@ -117,6 +122,7 @@ compositional
 compositionality
 cond
 corrplot
+covar
 covariations
 cpp
 cumNormStat
@@ -162,6 +168,7 @@ leq
 les
 lm
 loadings
+logarithmically
 loglik
 lr
 lumineux
@@ -216,13 +223,17 @@ rescaled
 rmarkdown
 rsquared
 résultats
+scRNA
+scRNAseq
 solaris
 sparsification
+sparsify
 sparsifying
 sur
 texttt
 th
 tibble
+trancript
 triangleq
 trichoptera
 uncond
