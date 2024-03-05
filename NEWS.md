@@ -1,6 +1,6 @@
-# PLNmodels 1.2.0 (2024-02-24)
+# PLNmodels 1.2.0 (2024-03-05)
 
-* new feature: ZIPLN (PLN with zero inflation) 
+* new feature: ZIPLN (PLN with zero inflation) for standard PLN and PLN Network
   * ZIPLN() and ZIPLNfit-class to allow for zero-inflation in the standard PLN model (merge PR #116)
   * ZIPLNnetwork() and ZIPLNfit_sparse-class to allow for zero-inflation in the  PLNnetwork model (merge PR #118)
   * Code factorization between PLNnetwork and ZIPLNnetwork (and associated classes)
