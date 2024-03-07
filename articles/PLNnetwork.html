@@ -110,7 +110,7 @@
 count data with PLN-network</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-03-05</h4>
+            <h4 data-toc-skip class="date">2024-03-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNnetwork.Rmd" class="external-link"><code>vignettes/PLNnetwork.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -243,42 +243,13 @@ with care and check details in <code><a href="../reference/PLNnetwork.html">?PLN
 of models is fitted as follows:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">network_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNnetwork.html">PLNnetwork</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></code></pre></div>
-<pre><code>## 
-##  Initialization...
-##  Adjusting 30 PLN with sparse inverse covariance estimation
-##  Joint optimization alternating gradient descent and graphical-lasso
-##  sparsifying penalty = 3.643028 
-    sparsifying penalty = 3.364959 
-    sparsifying penalty = 3.108114 
-    sparsifying penalty = 2.870875 
-    sparsifying penalty = 2.651743 
-    sparsifying penalty = 2.449338 
-    sparsifying penalty = 2.262382 
-    sparsifying penalty = 2.089696 
-    sparsifying penalty = 1.930192 
-    sparsifying penalty = 1.782862 
-    sparsifying penalty = 1.646778 
-    sparsifying penalty = 1.52108 
-    sparsifying penalty = 1.404978 
-    sparsifying penalty = 1.297737 
-    sparsifying penalty = 1.198682 
-    sparsifying penalty = 1.107187 
-    sparsifying penalty = 1.022677 
-    sparsifying penalty = 0.9446167 
-    sparsifying penalty = 0.8725149 
-    sparsifying penalty = 0.8059166 
-    sparsifying penalty = 0.7444017 
-    sparsifying penalty = 0.6875821 
-    sparsifying penalty = 0.6350996 
-    sparsifying penalty = 0.586623 
-    sparsifying penalty = 0.5418465 
-    sparsifying penalty = 0.5004879 
-    sparsifying penalty = 0.4622861 
-    sparsifying penalty = 0.4270002 
-    sparsifying penalty = 0.3944076 
-    sparsifying penalty = 0.3643028 
-##  Post-treatments
-##  DONE!</code></pre>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">##  Initialization...</span></span>
+<span><span class="co">##  Adjusting 30 PLN with sparse inverse covariance estimation</span></span>
+<span><span class="co">##  Joint optimization alternating gradient descent and graphical-lasso</span></span>
+<span><span class="co">##  sparsifying penalty = 3.643028  sparsifying penalty = 3.364959  sparsifying penalty = 3.108114  sparsifying penalty = 2.870875  sparsifying penalty = 2.651743  sparsifying penalty = 2.449338  sparsifying penalty = 2.262382  sparsifying penalty = 2.089696  sparsifying penalty = 1.930192  sparsifying penalty = 1.782862  sparsifying penalty = 1.646778  sparsifying penalty = 1.52108   sparsifying penalty = 1.404978  sparsifying penalty = 1.297737  sparsifying penalty = 1.198682  sparsifying penalty = 1.107187  sparsifying penalty = 1.022677  sparsifying penalty = 0.9446167     sparsifying penalty = 0.8725149     sparsifying penalty = 0.8059166     sparsifying penalty = 0.7444017     sparsifying penalty = 0.6875821     sparsifying penalty = 0.6350996     sparsifying penalty = 0.586623  sparsifying penalty = 0.5418465     sparsifying penalty = 0.5004879     sparsifying penalty = 0.4622861     sparsifying penalty = 0.4270002     sparsifying penalty = 0.3944076     sparsifying penalty = 0.3643028 </span></span>
+<span><span class="co">##  Post-treatments</span></span>
+<span><span class="co">##  DONE!</span></span></code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model,
 similar to the one used in the function <code>PLN</code>.</p>
 </div>
@@ -623,11 +594,11 @@ additional analyses).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">my_graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH 90060c6 UNW- 17 1 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH fd70f09 UNW- 17 1 -- </span></span>
 <span><span class="co">## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),</span></span>
 <span><span class="co">## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),</span></span>
 <span><span class="co">## | width (e/n)</span></span>
-<span><span class="co">## + edge from 90060c6 (vertex names):</span></span>
+<span><span class="co">## + edge from fd70f09 (vertex names):</span></span>
 <span><span class="co">## [1] Hfo--Hsp</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></span></code></pre></div>
