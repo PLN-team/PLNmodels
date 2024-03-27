@@ -110,7 +110,7 @@
 with PLN-PCA</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-03-12</h4>
+            <h4 data-toc-skip class="date">2024-03-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNPCA.Rmd" class="external-link"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -259,7 +259,7 @@ as follows:</p>
 <span><span class="co">##  Initialization...</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##  Adjusting 4 PLN models for PCA analysis.</span></span>
-<span><span class="co">##   Rank approximation = 3      Rank approximation = 2      Rank approximation = 1      Rank approximation = 4 </span></span>
+<span><span class="co">##   Rank approximation = 1      Rank approximation = 2      Rank approximation = 4      Rank approximation = 3 </span></span>
 <span><span class="co">##  Post-treatments</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model,
@@ -336,6 +336,7 @@ the collection</p>
 <th align="left">nb_param</th>
 <th align="left">status</th>
 <th align="left">backend</th>
+<th align="left">objective</th>
 <th align="left">iterations</th>
 </tr></thead>
 <tbody>
@@ -345,6 +346,7 @@ the collection</p>
 <td align="left">34</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
+<td align="left">-36014.235727</td>
 <td align="left">589</td>
 </tr>
 <tr class="even">
@@ -353,6 +355,7 @@ the collection</p>
 <td align="left">50</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
+<td align="left">-36325.754453</td>
 <td align="left">1523</td>
 </tr>
 <tr class="odd">
@@ -361,6 +364,7 @@ the collection</p>
 <td align="left">65</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
+<td align="left">-36414.927717</td>
 <td align="left">1756</td>
 </tr>
 <tr class="even">
@@ -369,6 +373,7 @@ the collection</p>
 <td align="left">79</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
+<td align="left">-36459.404440</td>
 <td align="left">3994</td>
 </tr>
 </tbody>
@@ -733,7 +738,7 @@ thanks to the model formula:</p>
 <span><span class="co">##  Initialization...</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##  Adjusting 4 PLN models for PCA analysis.</span></span>
-<span><span class="co">##   Rank approximation = 2      Rank approximation = 1      Rank approximation = 4      Rank approximation = 3 </span></span>
+<span><span class="co">##   Rank approximation = 1      Rank approximation = 2      Rank approximation = 3      Rank approximation = 4 </span></span>
 <span><span class="co">##  Post-treatments</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
 <p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>
