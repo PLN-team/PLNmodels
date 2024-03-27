@@ -142,7 +142,7 @@ test_that("PLN: Check that all univariate PLN models are equivalent with the mul
 
   univariate_full <- lapply(1:p, function(j) {
     Abundance <- trichoptera$Abundance[, j, drop = FALSE]
-    PLN(Abundance ~ 1 + offset(log(Offset)), control = PLN_param(trace = 0))
+    PLN(Abundance ~ 1 + offset(log(Offset)), control = PLN_param(trace = 0, config_optim = list(algorithm = "LBFGS")))
   })
 
   univariate_diagonal <- lapply(1:p, function(j) {

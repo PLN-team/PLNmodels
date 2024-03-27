@@ -127,7 +127,7 @@ test_that("ZIPLN fit: check sparse output and plot",  {
   expect_is(myPLNfit, "ZIPLNfit")
 
   expect_equal(myPLNfit$vcov_model, "sparse")
-  expect_true(igraph::is.igraph(myPLNfit$plot_network(output = "igraph", plot = FALSE)))
+  expect_true(igraph::is_igraph(myPLNfit$plot_network(output = "igraph", plot = FALSE)))
   expect_true(inherits(myPLNfit$plot_network(output = "corrplot", plot = FALSE), "Matrix"))
 
 })

@@ -95,7 +95,6 @@ Rcpp::List optim_zipln_zipar_covar(
     metadata.map<B0_ID>(parameters.data()) = init_B0;
 
     auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-    set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
 
     const arma::mat Xt_R = X0.t() * R;
 
@@ -198,8 +197,6 @@ Rcpp::List optim_zipln_M(
     metadata.map<M_ID>(parameters.data()) = init_M;
 
     auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-    set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
-
     const arma::mat X_B = X * B; // (n,p)
     const arma::mat O_S2 = O + 0.5 * S % S; // (n,p)
 
@@ -241,8 +238,6 @@ Rcpp::List optim_zipln_S(
     metadata.map<S_ID>(parameters.data()) = init_S;
 
     auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-    set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
-
     const arma::mat O_M = O + M;
 
     // Optimize
