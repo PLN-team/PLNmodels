@@ -111,7 +111,7 @@ ZIPLN_param <- function(
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-6
   config_opt$maxit_out <- 100
-  config_opt$approx_ZI <- FALSE
+  config_opt$approx_ZI <- TRUE
   config_opt[names(config_optim)] <- config_optim
 
   structure(list(
