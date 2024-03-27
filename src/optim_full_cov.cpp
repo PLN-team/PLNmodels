@@ -33,53 +33,28 @@ Rcpp::List nlopt_optimize(
     metadata.map<M_ID>(parameters.data()) = init_M;
     metadata.map<S_ID>(parameters.data()) = init_S;
 
+    // Optimize
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
-    if(config.containsElementNamed("xtol_abs")) {
-        SEXP value = config["xtol_abs"];
-        if(Rcpp::is<double>(value)) {
-            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
-        } else {
-            auto per_param_list = Rcpp::as<Rcpp::List>(value);
-            auto packed = std::vector<double>(metadata.packed_size);
-            set_from_r_sexp(metadata.map<B_ID>(packed.data()), per_param_list["B"]);
-            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
-            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
-            set_per_value_xtol_abs(optimizer.get(), packed);
-        }
-    }
-
-    // if(config.containsElementNamed("x_weights")) {
-    //   SEXP value = config["x_weights"];
-    //   if(Rcpp::is<double>(value)) {
-    //     set_uniform_x_weights(optimizer.get(), Rcpp::as<double>(value));
-    //   } else {
-    //     auto per_param_list = Rcpp::as<Rcpp::List>(value);
-    //     auto packed = std::vector<double>(metadata.packed_size);
-    //     set_from_r_sexp(metadata.map<B_ID>(packed.data()), per_param_list["B"]);
-    //     set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
-    //     set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
-    //     set_per_value_x_weights(optimizer.get(), packed);
-    //   }
-    // }
-
+    std::vector<double> objective_vec ;
     const double w_bar = accu(w);
 
-    // Optimize
-    auto objective_and_grad = [&metadata, &Y, &X, &O, &w, &w_bar](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &Y, &X, &O, &w, &w_bar, &objective_vec](const double * params, double * grad) -> double {
         const arma::mat B = metadata.map<B_ID>(params);
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
         const double w_bar = accu(w);
 
-        arma::mat S2 = S % S;
-        arma::mat Z = O + X * B + M;
+        arma::mat S2 = S % S ;
+        arma::mat Z = O + X * B + M ;
         arma::mat A = exp(Z + 0.5 * S2);
         arma::mat Omega = w_bar * inv_sympd(M.t() * (M.each_col() % w) + diagmat(w.t() * S2));
-        double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) - 0.5 * w_bar * real(log_det(Omega));
+        double objective = accu(w.t() * (A - Y % Z - 0.5 * trunc_log(S2))) - 0.5 * w_bar * real(log_det(Omega));
 
-        metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
-        metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
-        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
+        metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y) ;
+        metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y) ;
+        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1)) ;
+
+        objective_vec.push_back(objective) ;
 
         return objective;
     };
@@ -114,6 +89,7 @@ Rcpp::List nlopt_optimize(
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status", static_cast<int>(result.status)),
             Rcpp::Named("backend", "nlopt"),
+            Rcpp::Named("objective", objective_vec),
             Rcpp::Named("iterations", result.nb_iterations)
         ))
       );
@@ -145,22 +121,11 @@ Rcpp::List nlopt_optimize_vestep(
     metadata.map<M_ID>(parameters.data()) = init_M;
     metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto optimizer = new_nlopt_optimizer(config, parameters.size());
-    if(config.containsElementNamed("xtol_abs")) {
-        SEXP value = config["xtol_abs"];
-        if(Rcpp::is<double>(value)) {
-            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
-        } else {
-            auto per_param_list = Rcpp::as<Rcpp::List>(value);
-            auto packed = std::vector<double>(metadata.packed_size);
-            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
-            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
-            set_per_value_xtol_abs(optimizer.get(), packed);
-        }
-    }
-
     // Optimize
-    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &B, &Omega](const double * params, double * grad) -> double {
+    auto optimizer = new_nlopt_optimizer(config, parameters.size());
+    std::vector<double> objective_vec ;
+
+    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &B, &Omega, &objective_vec](const double * params, double * grad) -> double {
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
 
@@ -172,6 +137,8 @@ Rcpp::List nlopt_optimize_vestep(
 
         metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
         metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
+
+        objective_vec.push_back(objective) ;
 
         return objective;
     };
@@ -196,6 +163,7 @@ Rcpp::List nlopt_optimize_vestep(
       Rcpp::Named("monitoring", Rcpp::List::create(
           Rcpp::Named("status", static_cast<int>(result.status)),
           Rcpp::Named("backend", "nlopt"),
+          Rcpp::Named("objective", objective_vec),
           Rcpp::Named("iterations", result.nb_iterations)
       ))
     );
