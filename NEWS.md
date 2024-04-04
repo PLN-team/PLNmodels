@@ -1,3 +1,7 @@
+# Current version
+
+* fix use of native pipe to ensure compatibility with R 3.6 (merge PR #125, fix #124)
+
 # PLNmodels 1.2.0 (2024-03-05)
 
 * new feature: ZIPLN (PLN with zero inflation) for standard PLN and PLN Network
