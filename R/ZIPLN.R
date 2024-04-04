@@ -93,9 +93,9 @@ ZIPLN_param <- function(
 ) {
 
   covariance <- match.arg(covariance)
-  if (covariance == "fixed") stopifnot("Omega must be provied for fixed covariance" = inherits(Omega, "matrix") | inherits(Omega, "Matrix")) |> try()
+  if (covariance == "fixed") stopifnot("Omega must be provied for fixed covariance" = inherits(Omega, "matrix") | inherits(Omega, "Matrix")) %>% try()
   if (inherits(Omega, "matrix") | inherits(Omega, "Matrix")) covariance <- "fixed"
-  if (covariance == "sparse") stopifnot("You should provide a positive penalty when chosing 'sparse' covariance" = penalty > 0) |> try()
+  if (covariance == "sparse") stopifnot("You should provide a positive penalty when chosing 'sparse' covariance" = penalty > 0) %>% try()
   if (penalty > 0) covariance <- "sparse"
   if (!is.null(inception)) stopifnot(isZIPLNfit(inception))
 
