@@ -22,7 +22,7 @@ arma::vec plnblockbis_vloglik(
   const arma::mat & S = Rcpp::as<arma::mat>(params["S"]); // (n,q)
   const arma::mat & Mu = Rcpp::as<arma::mat>(params["Mu"]); // (n,p)
   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
-  const arma::mat &T  = Rcpp::as<arma::mat>(params["T"]); // (n,p)
+  const arma::mat &T  = Rcpp::as<arma::mat>(params["T"]); // (q,p)
   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
   const arma::mat & D = Rcpp::as<arma::mat>(params["D"]); // (p,p)
   const arma::vec log_pi = arma::trunc_log(mean(T,1));
@@ -364,7 +364,9 @@ Rcpp::List optim_plnblockbis_VE(
     arma::mat A1 = trunc_exp(O + Mu + .5 * Delta2) ;
     arma::mat A2 = trunc_exp(M + .5 * S2) ;
 
-    arma::mat Tau = M.t() * diagmat(w) * Y - A2.t()* diagmat(w) * A1  ;
+    // Changement ici : ajout du facteur  (1/w_bar)
+    //arma::mat Tau = (1/w_bar) * (M.t() * diagmat(w) * Y - A2.t()* diagmat(w) * A1)  ;
+    arma::mat Tau = (M.t() * diagmat(w) * Y - A2.t()* diagmat(w) * A1)  ;
     Tau.each_col() += log_pi ;
     Tau.each_col( [](arma::vec& x){
       x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;

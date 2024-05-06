@@ -44,6 +44,7 @@ PLNblockbisfamily <- R6Class(
       ## Initialize fields shared by the super class
       super$initialize(responses, covariates, offsets, weights, control)
       private$params  <- nb_blocks
+      # private$cl_scores <- matrix()
       if (length(sparsity) == 1) sparsity <- rep(sparsity, length(nb_blocks))
       stopifnot(all.equal(length(sparsity),length(nb_blocks)))
 
@@ -89,7 +90,8 @@ PLNblockbisfamily <- R6Class(
           "kmeansvar" = {
             blocks <- lapply(nb_blocks, function(k) {
               if (k == private$p) res <- 1:private$p
-              else res <- kmeansvar(Means, init = k, nstart = 30)$cl
+              else {
+                res <- kmeansvar(Means, init = k)$cl}
               res
             })
           },
@@ -116,13 +118,31 @@ PLNblockbisfamily <- R6Class(
                       model <- PLNblockbisfit_sparse$new(blocks_, sparsity_, responses, covariates, offsets, weights, formula, control)
                     } else {
                       model <- PLNblockbisfit$new(blocks_, responses, covariates, offsets, weights, formula, control)
+                      this_control <- control
+                      this_control$config_optim$maxit_out = 5
+                      this_control$config_optim$g_resampling = 0
+                      model$optimize(responses, covariates, offsets, weights, this_control$config_optim)
+                      return(model)
                     }
                   })
-            likelihood_kmeans <- lapply(nb_blocks, function(k){models_kmeans[[k]]$loglik})
+            likelihood_kmeans <- lapply(seq_along(nb_blocks), function(k){models_kmeans[[k]]$loglik})
 
             blocks_kmeansvar <- lapply(nb_blocks, function(k) {
               if (k == private$p) res <- 1:private$p
-              else res <- kmeansvar(Means, init = k, nstart = 30)$cl
+              # else res <- kmeansvar(Means, init = k, nstart = 30)$cl
+              else{
+                done = FALSE
+                while(!done){
+                  tryCatch(
+                    {
+                      res <- kmeansvar(Means, init = k, nstart=30)$cl
+                      done = TRUE
+                    },
+                    error=function(e) {
+                      done = FALSE
+                    }
+                  )
+                }}
               res
             })
             blocks_kmeansvar1 <- blocks_kmeansvar %>% map(as_indicator) %>% map(.check_boundaries)
@@ -131,9 +151,14 @@ PLNblockbisfamily <- R6Class(
                 model <- PLNblockbisfit_sparse$new(blocks_, sparsity_, responses, covariates, offsets, weights, formula, control)
               } else {
                 model <- PLNblockbisfit$new(blocks_, responses, covariates, offsets, weights, formula, control)
+                this_control <- control
+                this_control$config_optim$maxit_out = 5
+                this_control$config_optim$g_resampling = 0
+                model$optimize(responses, covariates, offsets, weights, this_control$config_optim)
+                return(model)
               }
             })
-            likelihood_kmeansvar <- lapply(nb_blocks, function(k){models_kmeansvar[[k]]$loglik})
+            likelihood_kmeansvar <- lapply(seq_along(nb_blocks), function(k){models_kmeansvar[[k]]$loglik})
 
             blocks_clustvar <- hclustvar(Means) %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
             blocks_clustvar1 <- blocks_clustvar %>% map(as_indicator) %>% map(.check_boundaries)
@@ -142,9 +167,14 @@ PLNblockbisfamily <- R6Class(
                 model <- PLNblockbisfit_sparse$new(blocks_, sparsity_, responses, covariates, offsets, weights, formula, control)
               } else {
                 model <- PLNblockbisfit$new(blocks_, responses, covariates, offsets, weights, formula, control)
+                this_control <- control
+                this_control$config_optim$maxit_out = 5
+                this_control$config_optim$g_resampling = 0
+                model$optimize(responses, covariates, offsets, weights, this_control$config_optim)
+                return(model)
               }
             })
-            likelihood_clustvar <- lapply(nb_blocks, function(k){models_clustvar[[k]]$loglik})
+            likelihood_clustvar <- lapply(seq_along(nb_blocks), function(k){models_clustvar[[k]]$loglik})
 
             blocks_hclust <- hclust(as.dist(1 - cov2cor(crossprod(Means))), method = "complete") %>% cutree(nb_blocks) %>% as.data.frame() %>% as.list()
             blocks_hclust1 <- blocks_hclust %>% map(as_indicator) %>% map(.check_boundaries)
@@ -153,19 +183,63 @@ PLNblockbisfamily <- R6Class(
                 model <- PLNblockbisfit_sparse$new(blocks_, sparsity_, responses, covariates, offsets, weights, formula, control)
               } else {
                 model <- PLNblockbisfit$new(blocks_, responses, covariates, offsets, weights, formula, control)
+                this_control <- control
+                this_control$config_optim$maxit_out = 5
+                this_control$config_optim$g_resampling = 0
+                model$optimize(responses, covariates, offsets, weights, this_control$config_optim)
+                return(model)
               }
             })
-            likelihood_hclust <- lapply(nb_blocks, function(k){models_hclust[[k]]$loglik})
+            likelihood_hclust <- lapply(seq_along(nb_blocks), function(k){models_hclust[[k]]$loglik})
+
+            ####################################################
+            # Identifying elements whose clustering is uncertain
+            cl_scores = matrix(rep(0, private$p * length(nb_blocks)), nrow=private$p)
+            for(Q in seq_along(nb_blocks)){
+              blocks_kmeansQ <- blocks_kmeans1[[Q]]
+              blocks_kmeansQ[blocks_kmeansQ < 0.9] <- 0
+              indices_kmeans <- max.col(blocks_kmeansQ)
+
+              blocks_kmeansvarQ <- blocks_kmeansvar1[[Q]]
+              blocks_kmeansvarQ[blocks_kmeansvarQ < 0.9] <- 0
+              indices_kmeansvar <- max.col(blocks_kmeansvarQ)
+
+              blocks_clustvarQ <- blocks_clustvar1[[Q]]
+              blocks_clustvarQ[blocks_clustvarQ < 0.9] <- 0
+              indices_clustvar <- max.col(blocks_clustvarQ)
+
+              blocks_hclustQ <- blocks_hclust1[[Q]]
+              blocks_hclustQ[blocks_hclustQ < 0.9] <- 0
+              indices_hclust<- max.col(blocks_hclustQ)
+
+              for(element in 1:private$p){
+                col_kmeans = as.integer(blocks_kmeansQ[, indices_kmeans[[element]]] + 0.1)
+                col_kmeansvar = as.integer(blocks_kmeansvarQ[, indices_kmeansvar[[element]]] + 0.1)
+                col_clustvar = as.integer(blocks_clustvarQ[, indices_clustvar[[element]]] + 0.1)
+                col_hclust = as.integer(blocks_hclustQ[, indices_hclust[[element]]] + 0.1)
+
+                score = (sum((col_kmeans + col_kmeansvar) %% 2 == 0) - 1) / (private$p - 1)
+                score = score + (sum((col_kmeans + col_clustvar) %% 2 == 0) - 1)/ (private$p - 1)
+                score = score + (sum((col_kmeans + col_hclust) %% 2 == 0) - 1)/ (private$p - 1)
+                score = score + (sum((col_kmeansvar + col_clustvar) %% 2 == 0) - 1)/ (private$p - 1)
+                score = score + (sum((col_kmeansvar + col_hclust) %% 2 == 0) - 1)/ (private$p - 1)
+                score = score + (sum((col_clustvar + col_hclust) %% 2 == 0) - 1)/ (private$p - 1)
+                score = score / 6
+
+                cl_scores[element, Q] = score
+              }
+            }
+            private$cl_scores <- cl_scores
+            ####################################################
 
             initializations <- c("models_kmeans", "blocks_kmeansvar", "blocks_clustvar", "blocks_hclust")
             blocks <- list(blocks_kmeans, blocks_kmeansvar, blocks_clustvar, blocks_hclust)
             likelihoods <- list(likelihood_kmeans, likelihood_kmeansvar, likelihood_clustvar, likelihood_hclust)
-            result <- lapply(nb_blocks, function(i) {
+            result <- lapply(seq_along(nb_blocks), function(i) {
               max_values <- sapply(likelihoods, `[[`, i)
               which_max <- which.max(max_values)
               return(blocks[[which_max]][[i]])
             })
-
 
           }
 
@@ -184,12 +258,13 @@ PLNblockbisfamily <- R6Class(
         })
     },
 
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Optimization ----------------------
     #' @description Call to the C++ optimizer on all models of the collection
     #' @param config a list for controlling the optimization.
     optimize_sequentially = function(config) {
-      ## go along modes by decrezasing group sizes
+      ## go along modes by decreasing group sizes
       models_order <- order(self$nb_blocks, decreasing = TRUE)
       for (m in seq_along(models_order))  {
         if (config$trace == 1) {
@@ -199,6 +274,9 @@ PLNblockbisfamily <- R6Class(
         if (config$trace > 1) {
           cat("\tNumber of blocks =", self$models[[models_order[m]]]$nb_block, "- iteration:")
         }
+        ######
+        if(config$g_resampling > 1){config$cl_scores = private$cl_scores[,m]}
+        ######
         self$models[[models_order[m]]]$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
         ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
         if (m < length(self$nb_blocks)) {
@@ -228,11 +306,25 @@ PLNblockbisfamily <- R6Class(
     #' @importFrom purrr pluck
     #' @importFrom furrr future_map
     optimize = function(config) {
-      self$models <- lapply(self$models, function(model) {
+      ###########
+      # this_config = config
+      # this_config$cl_scores = private$cl_scores[,m]
+      ###########
+      # self$models <- lapply(self$models, function(model) {
+      #   if (config$trace >= 1) {
+      #     cat("\tnumber of blocks =", model$nb_block, "\r")
+      #     flush.console()
+      #   }
+      #   model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
+      #   model
+      # })
+      self$models <- lapply(seq_along(self$models), function(m) {
+        model = self$models[[m]]
         if (config$trace >= 1) {
           cat("\tnumber of blocks =", model$nb_block, "\r")
           flush.console()
         }
+        if(config$g_resampling > 1){config$cl_scores = private$cl_scores[,m]}
         model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
         model
       })
@@ -292,6 +384,9 @@ PLNblockbisfamily <- R6Class(
       cat(" - Best model (greater BIC): nb blocks =", format(self$getBestModel("BIC")$nb_block, digits = 3), "\n")
       cat(" - Best model (greater ICL): nb blocks =", format(self$getBestModel("ICL")$nb_block, digits = 3), "\n")
     }
+  ),
+  private = list(
+    cl_scores = NA
   ),
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

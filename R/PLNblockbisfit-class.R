@@ -47,8 +47,12 @@ PLNblockbisfit <- R6Class(
       n <- nrow(responses)
       Q <- ncol(blocks)
 
+      ####################
       private$M <- control$inception$var_par$M %*% blocks
       private$S <- control$inception$var_par$S %*% blocks
+      # private$M <- control$inception_full$var_par$M %*% blocks
+      # private$S <- control$inception_full$var_par$S %*% blocks
+      ####################
 
       private$Tau <- t(blocks)
 
@@ -92,7 +96,7 @@ PLNblockbisfit <- R6Class(
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
 
-      # browser()
+
       do.call(self$update, optim_out)
     }
 
