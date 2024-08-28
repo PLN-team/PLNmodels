@@ -4,7 +4,13 @@
 \alias{prepare_data}
 \title{Prepare data for use in PLN models}
 \usage{
-prepare_data(counts, covariates, offset = "TSS", ...)
+prepare_data(
+  counts,
+  covariates,
+  offset = "TSS",
+  call = rlang::caller_env(),
+  ...
+)
 }
 \arguments{
 \item{counts}{Required. An abundance count table, preferably with dimensions names and species as columns.}
@@ -12,6 +18,8 @@ prepare_data(counts, covariates, offset = "TSS", ...)
 \item{covariates}{Required. A covariates data frame, preferably with row names.}
 
 \item{offset}{Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018), Wrench (introduced in Kumar et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).}
+
+\item{call}{Optional. The execution environment in which to set the local error call.}
 
 \item{...}{Additional parameters passed on to \code{\link[=compute_offset]{compute_offset()}}}
 }
