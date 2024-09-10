@@ -27,7 +27,7 @@ extract_model_zi <- function(call, envir) {
   call_args <- c(as.list(call_args), list(xlev = attr(call$formula, "xlevels"), na.action = NULL))
 
   ## Extract terms for ZI and PLN components
-  terms <- .extract_terms_zi(as.formula(call$formula, env = envir))
+  terms <- .extract_terms_zi(as.formula(eval(call$formula, env = envir)))
   ## eval the call in the parent environment with adjustement due to ZI terms
   call_args$formula <- terms$formula
   frame <- do.call(stats::model.frame, call_args, envir = envir)
@@ -35,7 +35,7 @@ extract_model_zi <- function(call, envir) {
   ## Save level for predict function
   xlevels <- list(PLN = .getXlevels(terms$PLN, frame))
   if (!is.null(terms$ZI)) xlevels$ZI = .getXlevels(terms$ZI, frame)
-  attr(call$formula, "xlevels") <- xlevels
+  if (!is.null(xlevels$PLN)) attr(call$formula, "xlevels") <- xlevels
 
   ## Create the set of matrices to fit the PLN model
   X  <- model.matrix(terms$PLN, frame, xlev = xlevels$PLN)
