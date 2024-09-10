@@ -48,13 +48,24 @@ test_that("common_samples succeeds on matrices with no or partial dimension name
                     default_names    = TRUE))
 })
 
-test_that("common_samples fails on matrices with dimension names but no common samples",  {
-  expect_error(
+# test_that("common_samples fails on matrices with dimension names but no common samples",  {
+#   expect_error(
+#     suppressWarnings(
+#       common_samples(
+#         `rownames<-`(counts, paste0("Sample_", 1:49)),
+#         covariates))#,
+#     #"Conflicting samples names in count matrix and covariates data frames"
+#   )
+# })
+
+cli::test_that_cli("common_samples fails on matrices with dimension names but conflicting names",  {
+  testthat::local_edition(3)
+  expect_snapshot(
+    error = TRUE,
     suppressWarnings(
       common_samples(
         `rownames<-`(counts, paste0("Sample_", 1:49)),
-        covariates))#,
-    #"Conflicting samples names in count matrix and covariates data frames"
+        covariates))
   )
 })
 
@@ -65,10 +76,9 @@ test_that("common_samples succeeds on matrices with dimension names and differen
                     default_names    = FALSE))
 })
 
-test_that("common_samples find biggest subset of common samples and produces message.",  {
-  #expect_message(result <- common_samples(counts, covariates[1:35, ]),
-  #               "14 samples were dropped from the abundance matrix for lack of associated covariates."
-  #               )
+cli::test_that_cli("common_samples find biggest subset of common samples and produces message.",  {
+  testthat::local_edition(3)
+  expect_snapshot(result <- common_samples(counts, covariates[1:35, ]))
   expect_warning(result <- common_samples(counts, covariates[1:35, ]))
   expect_length(result$common_samples, 35)
   expect_equal(result$common_samples,
@@ -158,14 +168,15 @@ test_that("compute_offset provides correct answers for identical samples", {
   expect_null(compute_offset(counts, "none"))
 })
 
-test_that("compute_offset fails with an informative error when given a data.frame", {
+cli::test_that_cli("compute_offset fails with an informative error when given a data.frame", {
   sizes <- rep(1, 5)
   counts <- sizes %o% 1:10
-
-  expect_error(compute_offset(counts, data.frame(counts)),
+  testthat::local_edition(3)
+  testthat::expect_snapshot(error = TRUE,
+                            compute_offset(counts, data.frame(counts)))
 #               regexp = "You supplied a data.frame to compute_offset(). Did you mean to supply a numeric matrix?
 #  Try converting your data.frame to a matrix with as.matrix().",
-               fixed = TRUE)
+#                fixed = TRUE)
 
 })
 
