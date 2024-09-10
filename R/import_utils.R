@@ -544,7 +544,7 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wren
       "x" = "You supplied a data.frame for {.var offset}",
       "i" = "Did you mean to supply a numeric matrix?",
       "i" = "Try converting your data.frame to a matrix with `as.matrix()`."
-    ), call = call)
+    ))
   }
   ## special behavior for numeric offset
   if (is.numeric(offset)) {
