@@ -60,6 +60,7 @@ PLNnetworkfit <- R6Class(
       args <- list(data   = data,
                    params = list(B = private$B, M = private$M, S = private$S),
                    config = config)
+      private$Sigma <- crossprod(private$M)/self$n + diag(colMeans(private$S**2), self$p, self$p)
       while (!cond) {
         iter <- iter + 1
         if (config$trace > 1) cat("", iter)
