@@ -86,6 +86,7 @@ circle <- function(center = c(0, 0), radius = 1, npoints = 100) {
   return(data.frame(x = xx, y = yy))
 }
 
+#' @importFrom scales alpha
 GeomCircle <- ggplot2::ggproto("GeomCircle",
     ggplot2::Geom,
     required_aes = c("x", "y", "radius"),
