@@ -7,18 +7,23 @@ common_samples <- function(counts, covariates, call = rlang::caller_env()) {
   ## Have default samples names been created when matching samples?
   default_names <- FALSE
   ## Sanity checks:
-  name_warning <- c("!" = "There are no matching names in {.var counts} and {.var covariates}.",
-                    "i" = "Function will proceed assuming:",
-                    "i" = "- samples are in the same order;",
-                    "i" = "- samples are rows of {.var counts}.", sep = "\n")
+  name_warning <- c(
+    "!" = "There are no matching names in {.var counts} and {.var covariates}.",
+    "i" = "Function will proceed assuming:",
+    "i" = "- samples are in the same order;",
+    "i" = "- samples are rows of {.var counts}.", sep = "\n"
+  )
+  row_count_abort <- c(
+    "x" = "{.var counts} and {.var covariates} have different number of row(s):",
+    "i" = "{.var counts} has {.cls {nrow(counts)}} row(s);",
+    "i" = "{.var covariates} has {.cls {nrow(covariates)}} row(s).",
+    sep = "\n"
+  )
   ## no sample names in covariates: create sample names
   if (is.null(rownames(covariates))) {
     cli::cli_warn(name_warning, call = call)
     if (nrow(counts) != nrow(covariates)) {
-      cli::cli_abort(c(
-        "x" = "The number of rows of {.var counts} and those of {.var covariates} are not the same",
-        "i" = "The number of rows of {.var counts} is {.cls {nrow(counts)}} and those of {.var covariates} is {.cls {nrow(covariates)}}."
-      ), call = call)
+      cli::cli_abort(row_count_abort, call = call)
     }
     if (is.null(rownames(counts))) rownames(counts) <- paste0("Sample_", 1:nrow(counts))
     rownames(covariates) <- rownames(counts)
@@ -32,10 +37,7 @@ common_samples <- function(counts, covariates, call = rlang::caller_env()) {
     ## - row (samples) names are conflicting
     cli::cli_warn(name_warning, call = call)
     if (nrow(counts) != nrow(covariates)) {
-      cli::cli_abort(c(
-        "x" = "The number of rows of {.var counts} and those of {.var covariates} are not the same",
-        "i" = "The number of rows of {.var counts} is {.cls {nrow(counts)}} and those of {.var covariates} is {.cls {nrow(covariates)}}."
-      ), call = call)
+      cli::cli_abort(row_count_abort, call = call)
     }
     if (!is.null(rownames(counts))) {
       cli::cli_abort(c(
