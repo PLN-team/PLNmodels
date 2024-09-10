@@ -146,7 +146,7 @@ PLNfit <- R6Class(
 
         ## Error message if objective diverges
         if (!is.finite(loss$item())) {
-          stop(sprintf("The ELBO diverged during the optimization procedure.\nConsider using:\n* a different optimizer (current optimizer: %s)\n* a smaller learning rate (current rate: %.3f)\nwith `control = PLN_param(config_optim = list(algorithm = ..., lr = ...))`",
+          stop(sprintf("The ELBO diverged during the optimization procedure.\nConsider using:\n* a different optimizer (current optimizer: %s)\n* a smaller learning rate (current rate: %.3f)\nwith `control = PLN_param(backend = 'torch', config_optim = list(algorithm = ..., lr = ...))`",
                        config$algorithm, config$lr))
         }
 
@@ -158,7 +158,7 @@ PLNfit <- R6Class(
         ## Check for convergence
         #print (delta_f)
         if (delta_f < config$ftol_rel) status <- 3
-        if (delta_x < config$xtol_rel) status <- 4
+        #if (delta_x < config$xtol_rel) status <- 4
         if (status %in% c(3,4)) {
           objective <- objective[1:iterate + 1]
           break
