@@ -292,13 +292,13 @@ sends a very basic summary of the estimation process:</p>
 <span><span class="co">##  Task: Network Inference </span></span>
 <span><span class="co">## ========================================================</span></span>
 <span><span class="co">##  - 30 penalties considered: from 0.3643028 to 3.643028 </span></span>
-<span><span class="co">##  - Best model (greater BIC): lambda = 0.394 </span></span>
-<span><span class="co">##  - Best model (greater EBIC): lambda = 0.394</span></span></code></pre>
+<span><span class="co">##  - Best model (greater BIC): lambda = 0.5 </span></span>
+<span><span class="co">##  - Best model (greater EBIC): lambda = 0.873</span></span></code></pre>
 <p>One can also easily access the successive values of the criteria in
 the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">network_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
 <col width="9%">
 <col width="9%">
@@ -308,7 +308,7 @@ the collection</p>
 <col width="8%">
 <col width="10%">
 <col width="11%">
-<col width="8%">
+<col width="10%">
 <col width="10%">
 </colgroup>
 <thead><tr class="header">
@@ -327,73 +327,73 @@ the collection</p>
 <tr class="odd">
 <td align="right">3.643028</td>
 <td align="right">34</td>
-<td align="right">-1288.725</td>
-<td align="right">-1354.885</td>
-<td align="right">-2802.811</td>
+<td align="right">-1286.240</td>
+<td align="right">-1352.401</td>
+<td align="right">-2786.880</td>
 <td align="right">0</td>
-<td align="right">-1354.885</td>
-<td align="right">-1295.192</td>
-<td align="right">0</td>
+<td align="right">-1352.401</td>
+<td align="right">-1292.857</td>
+<td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
 <td align="right">3.364959</td>
 <td align="right">34</td>
-<td align="right">-1277.738</td>
-<td align="right">-1343.899</td>
-<td align="right">-2767.723</td>
+<td align="right">-1280.386</td>
+<td align="right">-1346.546</td>
+<td align="right">-2781.026</td>
 <td align="right">0</td>
-<td align="right">-1343.899</td>
-<td align="right">-1284.218</td>
-<td align="right">0</td>
+<td align="right">-1346.546</td>
+<td align="right">-1286.727</td>
+<td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
 <td align="right">3.108114</td>
 <td align="right">34</td>
-<td align="right">-1265.778</td>
-<td align="right">-1331.939</td>
-<td align="right">-2720.678</td>
+<td align="right">-1274.915</td>
+<td align="right">-1341.076</td>
+<td align="right">-2775.554</td>
 <td align="right">0</td>
-<td align="right">-1331.939</td>
-<td align="right">-1272.399</td>
-<td align="right">0</td>
+<td align="right">-1341.076</td>
+<td align="right">-1280.987</td>
+<td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
 <td align="right">2.870875</td>
 <td align="right">34</td>
-<td align="right">-1263.462</td>
-<td align="right">-1329.623</td>
-<td align="right">-2744.594</td>
+<td align="right">-1269.806</td>
+<td align="right">-1335.967</td>
+<td align="right">-2770.442</td>
 <td align="right">0</td>
-<td align="right">-1329.623</td>
-<td align="right">-1269.545</td>
-<td align="right">0</td>
+<td align="right">-1335.967</td>
+<td align="right">-1275.615</td>
+<td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
 <td align="right">2.651743</td>
-<td align="right">34</td>
-<td align="right">-1255.483</td>
-<td align="right">-1321.644</td>
-<td align="right">-2724.996</td>
-<td align="right">0</td>
-<td align="right">-1321.644</td>
-<td align="right">-1261.444</td>
-<td align="right">0</td>
+<td align="right">35</td>
+<td align="right">-1264.816</td>
+<td align="right">-1332.923</td>
+<td align="right">-2767.393</td>
+<td align="right">1</td>
+<td align="right">-1335.380</td>
+<td align="right">-1270.378</td>
+<td align="right">0.0069204</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
 <td align="right">2.449338</td>
-<td align="right">34</td>
-<td align="right">-1245.770</td>
-<td align="right">-1311.931</td>
-<td align="right">-2689.989</td>
-<td align="right">0</td>
-<td align="right">-1311.931</td>
-<td align="right">-1251.739</td>
-<td align="right">0</td>
+<td align="right">35</td>
+<td align="right">-1260.124</td>
+<td align="right">-1328.231</td>
+<td align="right">-2762.693</td>
+<td align="right">1</td>
+<td align="right">-1330.687</td>
+<td align="right">-1265.445</td>
+<td align="right">0.0069204</td>
 <td align="left">NA</td>
 </tr>
 </tbody>
@@ -430,9 +430,9 @@ the collection</p>
 <td align="left">34</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1288.724502</td>
-<td align="left">7.000000</td>
-<td align="left">0.000001</td>
+<td align="left">1286.240299</td>
+<td align="left">6.000000</td>
+<td align="left">0.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
@@ -440,9 +440,9 @@ the collection</p>
 <td align="left">34</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1277.738463</td>
-<td align="left">6.000000</td>
-<td align="left">0.000002</td>
+<td align="left">1280.385544</td>
+<td align="left">2.000000</td>
+<td align="left">0.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
@@ -450,8 +450,8 @@ the collection</p>
 <td align="left">34</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1265.777727</td>
-<td align="left">6.000000</td>
+<td align="left">1274.914993</td>
+<td align="left">2.000000</td>
 <td align="left">0.000000</td>
 </tr>
 <tr class="even">
@@ -460,29 +460,29 @@ the collection</p>
 <td align="left">34</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1263.462365</td>
-<td align="left">7.000000</td>
-<td align="left">0.000007</td>
+<td align="left">1269.805897</td>
+<td align="left">2.000000</td>
+<td align="left">0.000000</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.3</td>
 <td align="right">2.651743</td>
-<td align="left">34</td>
+<td align="left">35</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1255.483336</td>
-<td align="left">7.000000</td>
-<td align="left">0.000006</td>
+<td align="left">1264.816350</td>
+<td align="left">2.000000</td>
+<td align="left">0.000001</td>
 </tr>
 <tr class="even">
 <td align="left">elt.4</td>
 <td align="right">2.449338</td>
-<td align="left">34</td>
+<td align="left">35</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1245.769892</td>
-<td align="left">6.000000</td>
-<td align="left">0.000009</td>
+<td align="left">1260.123900</td>
+<td align="left">2.000000</td>
+<td align="left">0.000001</td>
 </tr>
 </tbody>
 </table>
@@ -596,10 +596,10 @@ specific one, mostly for network visualization purposes. Most fields and
 methods are recalled when such an object is printed:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_StARS</span></span></code></pre></div>
-<pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 1.4)</span></span>
+<pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 1.3)</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">##  nb_param    loglik       BIC       ICL n_edges      EBIC pen_loglik density</span></span>
-<span><span class="co">##        35 -1202.876 -1270.983 -2599.318       1 -1273.439  -1207.717   0.007</span></span>
+<span><span class="co">##        35 -1210.266 -1278.373 -2668.246       1 -1280.829  -1214.445   0.007</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -618,11 +618,11 @@ additional analyses).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">my_graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH 2bebe17 UNW- 17 1 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH fc219ed UNW- 17 1 -- </span></span>
 <span><span class="co">## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),</span></span>
 <span><span class="co">## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),</span></span>
 <span><span class="co">## | width (e/n)</span></span>
-<span><span class="co">## + edge from 2bebe17 (vertex names):</span></span>
+<span><span class="co">## + edge from fc219ed (vertex names):</span></span>
 <span><span class="co">## [1] Hfo--Hsp</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></span></code></pre></div>
