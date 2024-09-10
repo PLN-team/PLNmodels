@@ -21,16 +21,10 @@ Description: The Poisson-lognormal model and variants (Chiquet,
     discriminant analysis, model-based clustering and network inference.
     Implements variational algorithms to fit such models accompanied with
     a set of functions for visualization and diagnostic.
-License: GPL (>= 3)
 URL: https://pln-team.github.io/PLNmodels/
 BugReports: https://github.com/pln-team/PLNmodels/issues
 License: GPL (>= 3)
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
 Depends: R (>= 3.6)
-LazyData: true
-biocViews:
 Imports: 
     cli,
     corrplot,
