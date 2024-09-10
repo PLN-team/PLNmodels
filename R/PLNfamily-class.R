@@ -15,7 +15,7 @@
 #' @rdname PLNfamily
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
-#' @importFrom purrr map reduce map_chr
+#' @importFrom purrr map reduce
 PLNfamily <-
   R6Class(
     classname = "PLNfamily",
@@ -182,7 +182,7 @@ PLNfamily <-
       #' @field convergence sends back a data frame with some convergence diagnostics associated with the optimization process (method, optimal value, etc)
       convergence = function() {
         res <- purrr::map(self$models, function(model) {
-          c(nb_param = model$nb_param, purrr::map_chr(model$optim_par, tail, 1))
+          c(nb_param = model$nb_param, purrr::map(model$optim_par, tail, 1))
         }) %>% purrr::reduce(rbind)
         data.frame(param = private$params, res, stringsAsFactors = FALSE)
       }
