@@ -6,27 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Supervized classification of multivariate count table with the Poisson discriminant Analysis • PLNmodels</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Supervized classification of multivariate count table with the Poisson discriminant Analysis">
-<meta property="og:description" content="PLNmodels">
-<meta property="og:image" content="https://pln-team.github.io/PLNmodels/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -55,7 +47,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -90,7 +82,7 @@
 <li>
   <a href="https://github.com/pln-team/PLNmodels/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -101,7 +93,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -110,9 +102,9 @@
 table with the Poisson discriminant Analysis</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-04-11</h4>
+            <h4 data-toc-skip class="date">2024-09-10</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNLDA.Rmd" class="external-link"><code>vignettes/PLNLDA.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNLDA.Rmd" class="external-link"><code>vignettes/PLNLDA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNLDA.Rmd</code></div>
 
     </div>
@@ -229,101 +221,149 @@ model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)
 vignette</a> as a reminder). Indeed, it can viewed as a PLN model with a
 discrete group structure in the latent Gaussian space.</p>
 <p>This PLN-LDA model can be written in a hierarchical framework where a
-sample of <span class="math inline">\(p\)</span>-dimensional observation
-vectors <span class="math inline">\(\mathbf{Y}_i\)</span> is related to
-some <span class="math inline">\(p\)</span>-dimensional vectors of
-latent variables <span class="math inline">\(\mathbf{Z}_i\)</span> and a
-discrete structure with <span class="math inline">\(K\)</span> groups in
-the following way: <span class="math display">\[\begin{equation}
+sample of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-dimensional
+observation vectors
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐘</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{Y}_i</annotation></semantics></math>
+is related to some
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-dimensional
+vectors of latent variables
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐙</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{Z}_i</annotation></semantics></math>
+and a discrete structure with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+groups in the following way:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">group structure </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝛍</mi><mi>i</mi></msub><mo>=</mo><msub><mi>μ</mi><msub><mi>g</mi><mi>i</mi></msub></msub></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>g</mi><mi>i</mi></msub><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝛍</mi><mi>i</mi></msub><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="center" style="text-align: center"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
   \begin{array}{rcl}
-    \text{group structure }   &amp; \mathbf{\mu}_i = \mu_{g_i} &amp; g_i
-\in \{1, \dots, K\}  \\
-    \text{latent space }   &amp; \mathbf{Z}_i \quad \text{indep.} &amp;
-\mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i,
-\boldsymbol{\Sigma})  &amp; \\
-    \text{observation space } &amp; Y_{ij} | Z_{ij} \quad \text{indep.}
-&amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
+    \text{group structure }   &amp; \mathbf{\mu}_i = \mu_{g_i} &amp; g_i \in \{1, \dots, K\}  \\
+    \text{latent space }   &amp; \mathbf{Z}_i \quad \text{indep.} &amp; \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i, \boldsymbol{\Sigma})  &amp; \\
+    \text{observation space } &amp; Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
-\end{equation}\]</span> where <span class="math inline">\(g_i\)</span>
-denotes the group sample <span class="math inline">\(i\)</span> belongs
-to.</p>
-<p>The different parameters <span class="math inline">\({\boldsymbol\mu}_k \in\mathbb{R}^p\)</span>
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>i</mi></msub><annotation encoding="application/x-tex">g_i</annotation></semantics></math>
+denotes the group sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+belongs to.</p>
+<p>The different parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝛍</mi><mi>k</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mi>p</mi></msup></mrow><annotation encoding="application/x-tex">{\boldsymbol\mu}_k \in\mathbb{R}^p</annotation></semantics></math>
 corresponds to the group-specific main effects and the variance matrix
-<span class="math inline">\(\boldsymbol{\Sigma}\)</span> is shared among
-groups. An equivalent way of writing this model is the following: <span class="math display">\[\begin{equation}
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol{\Sigma}</annotation></semantics></math>
+is shared among groups. An equivalent way of writing this model is the
+following:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝛍</mi><mi>i</mi></msub><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝛍</mi><mi>i</mi></msub><mo>=</mo><msubsup><mi>𝐠</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐌</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
   \begin{array}{rcl}
-  \text{latent space } &amp;   \mathbf{Z}_i \sim
-\mathcal{N}({\boldsymbol\mu}_i,\boldsymbol\Sigma) &amp;
-\boldsymbol{\mu}_i = \mathbf{g}_i^\top \mathbf{M} \\
-  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.}
-&amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
+  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i,\boldsymbol\Sigma) &amp; \boldsymbol{\mu}_i = \mathbf{g}_i^\top \mathbf{M} \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
   \end{array}
-\end{equation}\]</span> where, with a slight abuse of notation, <span class="math inline">\(\mathbf{g}_i\)</span> is a group-indicator vector
-of length <span class="math inline">\(K\)</span> (<span class="math inline">\(g_{ik} = 1 \Leftrightarrow g_i = k\)</span>) and
-<span class="math inline">\(\mathbf{M} = [\boldsymbol{\mu}_1^\top,
-\dots, \boldsymbol{\mu}_K^\top]^\top\)</span> is a <span class="math inline">\(K \times p\)</span> matrix collecting the
-group-specific main effects.</p>
+\end{equation}</annotation></semantics></math> where, with a slight
+abuse of notation,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐠</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{g}_i</annotation></semantics></math>
+is a group-indicator vector of length
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>⇔</mo><msub><mi>g</mi><mi>i</mi></msub><mo>=</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">g_{ik} = 1 \Leftrightarrow g_i = k</annotation></semantics></math>)
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐌</mi><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">[</mo><msubsup><mi>𝛍</mi><mn>1</mn><mi>⊤</mi></msubsup><mo>,</mo><mi>…</mi><mo>,</mo><msubsup><mi>𝛍</mi><mi>K</mi><mi>⊤</mi></msubsup><mo stretchy="true" form="postfix">]</mo></mrow><mi>⊤</mi></msup></mrow><annotation encoding="application/x-tex">\mathbf{M} = [\boldsymbol{\mu}_1^\top, \dots, \boldsymbol{\mu}_K^\top]^\top</annotation></semantics></math>
+is a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">K \times p</annotation></semantics></math>
+matrix collecting the group-specific main effects.</p>
 <div class="section level4">
 <h4 id="covariates-and-offsets">Covariates and offsets<a class="anchor" aria-label="anchor" href="#covariates-and-offsets"></a>
 </h4>
 <p>Just like PLN, PLN-LDA generalizes to a formulation close to a
 multivariate generalized linear model where the main effect is due to a
-linear combination of the discrete group structure, <span class="math inline">\(d\)</span> covariates <span class="math inline">\(\mathbf{x}_i\)</span> and a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation}
-  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{g}_i^\top
-\mathbf{M} + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Sigma)
-\end{equation}\]</span> where <span class="math inline">\(\mathbf{B}\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression
-parameters.</p>
+linear combination of the discrete group structure,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+covariates
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐱</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{x}_i</annotation></semantics></math>
+and a vector
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐨</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{o}_i</annotation></semantics></math>
+of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+offsets in sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.
+The latent layer then reads
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐠</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐌</mi><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi></mrow><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{equation} 
+  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{g}_i^\top \mathbf{M} + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Sigma)
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
+is a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">d\times p</annotation></semantics></math>
+matrix of regression parameters.</p>
 </div>
 <div class="section level4">
 <h4 id="prediction">Prediction<a class="anchor" aria-label="anchor" href="#prediction"></a>
 </h4>
 <p>Given:</p>
 <ul>
-<li>a new observation <span class="math inline">\(\mathbf{Y}\)</span>
-with associated offset <span class="math inline">\(\mathbf{o}\)</span>
-and covariates <span class="math inline">\(\mathbf{x}\)</span>
+<li>a new observation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
+with associated offset
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐨</mi><annotation encoding="application/x-tex">\mathbf{o}</annotation></semantics></math>
+and covariates
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐱</mi><annotation encoding="application/x-tex">\mathbf{x}</annotation></semantics></math>
 </li>
-<li>a model with estimated parameters <span class="math inline">\(\hat{\boldsymbol{\Sigma}}\)</span>, <span class="math inline">\(\hat{\mathbf{B}}\)</span>, <span class="math inline">\(\hat{\mathbf{M}}\)</span> and group counts <span class="math inline">\((n_1, \dots, n_K)\)</span>
+<li>a model with estimated parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>𝚺</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\boldsymbol{\Sigma}}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>𝐁</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\mathbf{B}}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>𝐌</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\mathbf{M}}</annotation></semantics></math>
+and group counts
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>n</mi><mi>K</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(n_1, \dots, n_K)</annotation></semantics></math>
 </li>
 </ul>
 <p>We can predict the observation’s group using Bayes rule as follows:
-for <span class="math inline">\(k \in {1, \dots, K}\)</span>, compute
-<span class="math display">\[\begin{equation}
+for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>∈</mo><mrow><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi></mrow></mrow><annotation encoding="application/x-tex">k \in {1, \dots, K}</annotation></semantics></math>,
+compute
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>f</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="prefix">|</mo><mi>𝐠</mi><mo>=</mo><mi>k</mi><mo>,</mo><mi>𝐨</mi><mo>,</mo><mi>𝐱</mi><mo>,</mo><mover><mi>𝐁</mi><mo accent="true">̂</mo></mover><mo>,</mo><mover><mi>𝚺</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>𝚽</mi><mrow><mi>P</mi><mi>L</mi><mi>N</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo>;</mo><mi>𝐨</mi><mo>+</mo><msub><mi>𝛍</mi><mi>k</mi></msub><mo>+</mo><msup><mi>𝐱</mi><mi>⊤</mi></msup><mover><mi>𝐁</mi><mo accent="true">̂</mo></mover><mo>,</mo><mover><mi>𝚺</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>p</mi><mi>k</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><msub><mi>n</mi><mi>k</mi></msub><mrow><munderover><mo>∑</mo><mrow><mi>k</mi><mi>′</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>n</mi><mrow><mi>k</mi><mi>′</mi></mrow></msub></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation}
 \begin{aligned}
-f_k(\mathbf{Y}) &amp; = p(\mathbf{Y} | \mathbf{g} = k, \mathbf{o},
-\mathbf{x}, \hat{\mathbf{B}}, \hat{\boldsymbol{\Sigma}}) \\
-                &amp; = \boldsymbol{\Phi}_{PLN}(\mathbf{Y}; \mathbf{o} +
-\boldsymbol{\mu}_k + \mathbf{x}^\top \hat{\mathbf{B}},
-\hat{\boldsymbol{\Sigma}}) \\
+f_k(\mathbf{Y}) &amp; = p(\mathbf{Y} | \mathbf{g} = k, \mathbf{o}, \mathbf{x}, \hat{\mathbf{B}}, \hat{\boldsymbol{\Sigma}}) \\
+                &amp; = \boldsymbol{\Phi}_{PLN}(\mathbf{Y}; \mathbf{o} + \boldsymbol{\mu}_k + \mathbf{x}^\top \hat{\mathbf{B}}, \hat{\boldsymbol{\Sigma}}) \\
 p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}    
 \end{aligned}
-\end{equation}\]</span> where <span class="math inline">\(\boldsymbol{\Phi}_{PLN}(\bullet; \boldsymbol{\mu},
-\boldsymbol{\Sigma})\)</span> is the density function of a PLN
-distribution with parameters <span class="math inline">\((\boldsymbol{\mu}, \boldsymbol{\Sigma})\)</span>.
-<span class="math inline">\(f_k(\mathbf{Y})\)</span> and <span class="math inline">\(p_k\)</span> are respectively plug-in estimates of
-(i) the probability of observing counts <span class="math inline">\(\mathbf{Y}\)</span> in a sample from group <span class="math inline">\(k\)</span> and (ii) the probability that a sample
-originates from group <span class="math inline">\(k\)</span>.</p>
-<p>The posterior probability <span class="math inline">\(\hat{\pi}_k(\mathbf{Y})\)</span> that observation
-<span class="math inline">\(\mathbf{Y}\)</span> belongs to group <span class="math inline">\(k\)</span> and most likely group <span class="math inline">\(\hat{k}(\mathbf{Y})\)</span> can thus be defined
-as <span class="math display">\[\begin{equation}
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝚽</mi><mrow><mi>P</mi><mi>L</mi><mi>N</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>•</mo><mo>;</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol{\Phi}_{PLN}(\bullet; \boldsymbol{\mu}, \boldsymbol{\Sigma})</annotation></semantics></math>
+is the density function of a PLN distribution with parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(\boldsymbol{\mu}, \boldsymbol{\Sigma})</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f_k(\mathbf{Y})</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>k</mi></msub><annotation encoding="application/x-tex">p_k</annotation></semantics></math>
+are respectively plug-in estimates of (i) the probability of observing
+counts
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
+in a sample from group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+and (ii) the probability that a sample originates from group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.</p>
+<p>The posterior probability
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{\pi}_k(\mathbf{Y})</annotation></semantics></math>
+that observation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
+belongs to group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+and most likely group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>k</mi><mo accent="true">̂</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{k}(\mathbf{Y})</annotation></semantics></math>
+can thus be defined as
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><msub><mi>p</mi><mi>k</mi></msub><msub><mi>f</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><munderover><mo>∑</mo><mrow><mi>k</mi><mi>′</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>p</mi><mrow><mi>k</mi><mi>′</mi></mrow></msub><msub><mi>f</mi><mrow><mi>k</mi><mi>′</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mover><mi>k</mi><mo accent="true">̂</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><munder><mrow><mo>arg</mo><mo>max</mo></mrow><mrow><mi>k</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mrow></munder><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation}
 \begin{aligned}
-\hat{\pi}_k(\mathbf{Y}) &amp; = \frac{p_k f_k(\mathbf{Y})}{\sum_{k'
-= 1}^K p_{k'} f_{k'}(\mathbf{Y})} \\
-\hat{k}(\mathbf{Y})     &amp; = \underset{k \in \{1, \dots,
-K\}}{\arg\max} \hat{\pi}_k(\mathbf{Y})
+\hat{\pi}_k(\mathbf{Y}) &amp; = \frac{p_k f_k(\mathbf{Y})}{\sum_{k' = 1}^K p_{k'} f_{k'}(\mathbf{Y})} \\
+\hat{k}(\mathbf{Y})     &amp; = \underset{k \in \{1, \dots, K\}}{\arg\max} \hat{\pi}_k(\mathbf{Y})
 \end{aligned}
-\end{equation}\]</span></p>
+\end{equation}</annotation></semantics></math></p>
 </div>
 <div class="section level4">
 <h4 id="optimization-by-variational-inference">Optimization by Variational inference<a class="anchor" aria-label="anchor" href="#optimization-by-variational-inference"></a>
 </h4>
 <p>Classification and prediction are the main objectives in (PLN-)LDA.
 To reach this goal, we first need to estimate the model parameters.
-Inference in PLN-LDA focuses on the group-specific main effects <span class="math inline">\(\mathbf{M}\)</span>, the regression parameters
-<span class="math inline">\(\mathbf{B}\)</span> and the covariance
-matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>.
-Technically speaking, we can treat <span class="math inline">\(\mathbf{g}_i\)</span> as a discrete covariate and
-estimate <span class="math inline">\([\mathbf{M}, \mathbf{B}]\)</span>
+Inference in PLN-LDA focuses on the group-specific main effects
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐌</mi><annotation encoding="application/x-tex">\mathbf{M}</annotation></semantics></math>,
+the regression parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
+and the covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol\Sigma</annotation></semantics></math>.
+Technically speaking, we can treat
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐠</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{g}_i</annotation></semantics></math>
+as a discrete covariate and estimate
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mi>𝐌</mi><mo>,</mo><mi>𝐁</mi><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[\mathbf{M}, \mathbf{B}]</annotation></semantics></math>
 using the same strategy as for the standard <strong>PLN</strong> model.
 Briefly, we adopt a variational strategy to approximate the
 log-likelihood function and optimize the consecutive variational
@@ -396,22 +436,27 @@ via <code><a href="../reference/PLNLDAfit.html">?PLNLDAfit</a></code>.</p>
 <code>PLNLDAfit</code> object using <code>S3</code> methods, the most
 interesting ones are</p>
 <ul>
-<li>the <span class="math inline">\(p \times p\)</span> covariance
-matrix <span class="math inline">\(\hat{\boldsymbol{\Sigma}}\)</span>:</li>
+<li>the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">p \times p</annotation></semantics></math>
+covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>𝚺</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\boldsymbol{\Sigma}}</annotation></semantics></math>:</li>
 </ul>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myLDA_nocov</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">corrplot</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a></span><span class="op">(</span>is.corr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNLDA_files/figure-html/vcov-1.png" width="700"></p>
 <ul>
-<li>the regression coefficient matrix <span class="math inline">\(\hat{\mathbf{B}}\)</span> (in this case
-<code>NULL</code> as there are no covariates)</li>
+<li>the regression coefficient matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>𝐁</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\mathbf{B}}</annotation></semantics></math>
+(in this case <code>NULL</code> as there are no covariates)</li>
 </ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myLDA_nocov</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## NULL</span></span></code></pre>
 <ul>
-<li>the <span class="math inline">\(p \times K\)</span> matrix of group
-means <span class="math inline">\(\mathbf{M}\)</span>
+<li>the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>×</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">p \times K</annotation></semantics></math>
+matrix of group means
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐌</mi><annotation encoding="application/x-tex">\mathbf{M}</annotation></semantics></math>
 </li>
 </ul>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -548,9 +593,9 @@ which reveals here that the groups are well separated:</p>
 there are 4 or more groups and uses special representations for the edge
 cases of 3 or less groups.</p>
 <p><code>ggplot2</code>-savvy users who want to make their own
-representations can extracts the <span class="math inline">\(n \times
-(K-1)\)</span> matrix of sample scores from the <code>PLNLDAfit</code>
-object …</p>
+representations can extracts the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">n \times (K-1)</annotation></semantics></math>
+matrix of sample scores from the <code>PLNLDAfit</code> object …</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myLDA_nocov</span><span class="op">$</span><span class="va">scores</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">head</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -661,8 +706,9 @@ object …</p>
 </tr>
 </tbody>
 </table>
-<p>…or the <span class="math inline">\(p \times (K-1)\)</span> matrix of
-correlations between scores and (latent) variables</p>
+<p>…or the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p \times (K-1)</annotation></semantics></math>
+matrix of correlations between scores and (latent) variables</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myLDA_nocov</span><span class="op">$</span><span class="va">corr_map</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">head</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -793,7 +839,8 @@ observed <em>species counts</em> (rather than predicting counts from
 known covariates).</p>
 <p>By default, the <code>predict</code> use the argument
 <code>type = "posterior"</code> to output the matrix of log-posterior
-probabilities <span class="math inline">\(\log(\hat{\pi})_k\)</span></p>
+probabilities
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><msub><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>π</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">\log(\hat{\pi})_k</annotation></semantics></math></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myLDA_nocov</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span>
 <span><span class="co">## equivalent to </span></span>
@@ -915,8 +962,10 @@ probabilities <span class="math inline">\(\log(\hat{\pi})_k\)</span></p>
 </tr>
 </tbody>
 </table>
-<p>You can also show them in the standard (and human-friendly) <span class="math inline">\([0, 1]\)</span> scale with
-<code>scale = "prob"</code> to get the matrix <span class="math inline">\(\hat{\pi}_k\)</span></p>
+<p>You can also show them in the standard (and human-friendly)
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math>
+scale with <code>scale = "prob"</code> to get the matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><annotation encoding="application/x-tex">\hat{\pi}_k</annotation></semantics></math></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myLDA_nocov</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>, scale <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span></span>
 <span><span class="va">predicted.class</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
@@ -1023,7 +1072,9 @@ probabilities <span class="math inline">\(\log(\hat{\pi})_k\)</span></p>
 </tbody>
 </table>
 <p>Setting <code>type = "response"</code>, we can predict the most
-likely group <span class="math inline">\(\hat{k}\)</span> instead:</p>
+likely group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>k</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{k}</annotation></semantics></math>
+instead:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myLDA_nocov</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>,  type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span></span>
 <span><span class="va">predicted.class</span></span></code></pre></div>
@@ -1054,9 +1105,14 @@ overfitting</em>).</p>
 <span><span class="co">##        12  0  0  0  0  1  0  0  0  0  0  0  1</span></span></code></pre>
 <p>Finally, we can get the coordinates of the new data on the same graph
 at the original ones with <code>type = "scores"</code>. This is done by
-averaging the latent positions <span class="math inline">\(\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k\)</span>
-(found when the sample is assumed to come from group <span class="math inline">\(k\)</span>) and weighting them with the <span class="math inline">\(\hat{\pi}_k\)</span>. Some samples, have
-compositions that put them very far from their group mean.</p>
+averaging the latent positions
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>𝐙</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo>+</mo><msub><mi>𝛍</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">\hat{\mathbf{Z}}_i + \boldsymbol{\mu}_k</annotation></semantics></math>
+(found when the sample is assumed to come from group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>)
+and weighting them with the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><annotation encoding="application/x-tex">\hat{\pi}_k</annotation></semantics></math>.
+Some samples, have compositions that put them very far from their group
+mean.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">predicted.scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myLDA_nocov</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>,  type <span class="op">=</span> <span class="st">"scores"</span><span class="op">)</span></span>
@@ -1089,8 +1145,9 @@ with before :</p>
 <p>All fields of our new <code>PLNLDA</code> fit can be accessed as
 before with similar results. The only important difference is the result
 of <code>coef</code>: since we included a covariate in the model,
-<code>coef</code> now returns a 1-column matrix for <span class="math inline">\(\hat{\mathbf{B}}\)</span> instead of
-<code>NULL</code></p>
+<code>coef</code> now returns a 1-column matrix for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>𝐁</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\mathbf{B}}</annotation></semantics></math>
+instead of <code>NULL</code></p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">myLDA_cov</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">head</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -1319,9 +1376,7 @@ Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2):
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -1334,16 +1389,16 @@ Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2):
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

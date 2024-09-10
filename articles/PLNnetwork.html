@@ -6,27 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sparse structure estimation for multivariate count data with PLN-network • PLNmodels</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Sparse structure estimation for multivariate count data with PLN-network">
-<meta property="og:description" content="PLNmodels">
-<meta property="og:image" content="https://pln-team.github.io/PLNmodels/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -55,7 +47,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -90,7 +82,7 @@
 <li>
   <a href="https://github.com/pln-team/PLNmodels/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -101,7 +93,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -110,9 +102,9 @@
 count data with PLN-network</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-04-11</h4>
+            <h4 data-toc-skip class="date">2024-09-10</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNnetwork.Rmd" class="external-link"><code>vignettes/PLNnetwork.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNnetwork.Rmd" class="external-link"><code>vignettes/PLNnetwork.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
 
     </div>
@@ -157,60 +149,92 @@ etc.)</p>
 <span class="citation">Chiquet, Robin, and Mariadassou (<a href="#ref-PLNnetwork">2019</a>)</span> is a variant of the Poisson
 Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span>, see <a href="PLN.html">the PLN
 vignette</a> as a reminder. Compare to the standard PLN model we add a
-sparsity constraint on the inverse covariance matrix <span class="math inline">\({\boldsymbol\Sigma}^{-1}\triangleq
-\boldsymbol\Omega\)</span> by means of the <span class="math inline">\(\ell_1\)</span>-norm, such that <span class="math inline">\(\|\boldsymbol\Omega\|_1 &lt; c\)</span>.
+sparsity constraint on the inverse covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>𝚺</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>≜</mo><mi>𝛀</mi></mrow><annotation encoding="application/x-tex">{\boldsymbol\Sigma}^{-1}\triangleq \boldsymbol\Omega</annotation></semantics></math>
+by means of the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>ℓ</mo><mn>1</mn></msub><annotation encoding="application/x-tex">\ell_1</annotation></semantics></math>-norm,
+such that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="postfix">∥</mo><mi>𝛀</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>1</mn></msub><mo>&lt;</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">\|\boldsymbol\Omega\|_1 &lt; c</annotation></semantics></math>.
 PLN-network is the equivalent of the sparse multivariate Gaussian model
 <span class="citation">(<a href="#ref-banerjee2008">Banerjee, Ghaoui,
 and d’Aspremont 2008</a>)</span> in the PLN framework. It relates some
-<span class="math inline">\(p\)</span>-dimensional observation vectors
-<span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent
-variables <span class="math inline">\(\mathbf{Z}_i\)</span> as follows
-<span class="math display">\[\begin{equation}
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-dimensional
+observation vectors
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐘</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{Y}_i</annotation></semantics></math>
+to some
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-dimensional
+vectors of Gaussian latent variables
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐙</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{Z}_i</annotation></semantics></math>
+as follows
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><msup><mi>𝛀</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo stretchy="false" form="postfix">∥</mo><mi>𝛀</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>1</mn></msub><mo>&lt;</mo><mi>c</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
   \begin{array}{rcl}
-  \text{latent space } &amp;   \mathbf{Z}_i \sim
-\mathcal{N}\left({\boldsymbol\mu},\boldsymbol\Omega^{-1}\right)
-&amp;  \|\boldsymbol\Omega\|_1 &lt; c \\
-  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.}
-&amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
+  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}\left({\boldsymbol\mu},\boldsymbol\Omega^{-1}\right) &amp;  \|\boldsymbol\Omega\|_1 &lt; c \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
-\end{equation}\]</span></p>
-<p>The parameter <span class="math inline">\({\boldsymbol\mu}\)</span>
-corresponds to the main effects and the latent covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> describes the
-underlying structure of dependence between the <span class="math inline">\(p\)</span> variables.</p>
-<p>The <span class="math inline">\(\ell_1\)</span>-penalty on <span class="math inline">\(\boldsymbol\Omega\)</span> induces sparsity and
-selection of important direct relationships between entities. Hence, the
-support of <span class="math inline">\(\boldsymbol\Omega\)</span>
+\end{equation}</annotation></semantics></math></p>
+<p>The parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛍</mi><annotation encoding="application/x-tex">{\boldsymbol\mu}</annotation></semantics></math>
+corresponds to the main effects and the latent covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol\Sigma</annotation></semantics></math>
+describes the underlying structure of dependence between the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+variables.</p>
+<p>The
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>ℓ</mo><mn>1</mn></msub><annotation encoding="application/x-tex">\ell_1</annotation></semantics></math>-penalty
+on
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛀</mi><annotation encoding="application/x-tex">\boldsymbol\Omega</annotation></semantics></math>
+induces sparsity and selection of important direct relationships between
+entities. Hence, the support of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛀</mi><annotation encoding="application/x-tex">\boldsymbol\Omega</annotation></semantics></math>
 correspond to a network of underlying interactions. The sparsity level
-(<span class="math inline">\(c\)</span> in the above mathematical
-model), which corresponds to the number of edges in the network, is
-controlled by a penalty parameter in the optimization process sometimes
-referred to as <span class="math inline">\(\lambda\)</span>. All
-mathematical details can be found in <span class="citation">Chiquet,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>
+in the above mathematical model), which corresponds to the number of
+edges in the network, is controlled by a penalty parameter in the
+optimization process sometimes referred to as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>.
+All mathematical details can be found in <span class="citation">Chiquet,
 Robin, and Mariadassou (<a href="#ref-PLNnetwork">2019</a>)</span>.</p>
 <div class="section level4">
 <h4 id="covariates-and-offsets">Covariates and offsets<a class="anchor" aria-label="anchor" href="#covariates-and-offsets"></a>
 </h4>
 <p>Just like PLN, PLN-network generalizes to a formulation close to a
 multivariate generalized linear model where the main effect is due to a
-linear combination of <span class="math inline">\(d\)</span> covariates
-<span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation}
-  \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i +
-\mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Omega^{-1}\right), \qquad
-\|\boldsymbol\Omega\|_1 &lt; c ,
-\end{equation}\]</span> where <span class="math inline">\(\mathbf{B}\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression
-parameters.</p>
+linear combination of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+covariates
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐱</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{x}_i</annotation></semantics></math>
+and to a vector
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐨</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{o}_i</annotation></semantics></math>
+of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+offsets in sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.
+The latent layer then reads
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi></mrow><mo>,</mo><msup><mi>𝛀</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><mo stretchy="false" form="postfix">∥</mo><mi>𝛀</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>1</mn></msub><mo>&lt;</mo><mi>c</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation} 
+  \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Omega^{-1}\right), \qquad \|\boldsymbol\Omega\|_1 &lt; c ,
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
+is a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">d\times p</annotation></semantics></math>
+matrix of regression parameters.</p>
 </div>
 <div class="section level4">
 <h4 id="alternating-optimization">Alternating optimization<a class="anchor" aria-label="anchor" href="#alternating-optimization"></a>
 </h4>
-<p>Regularization via sparsification of <span class="math inline">\(\boldsymbol\Omega\)</span> and visualization of
-the consecutive network is the main objective in PLN-network. To reach
-this goal, we need to first estimate the model parameters. Inference in
-PLN-network focuses on the regression parameters <span class="math inline">\(\mathbf{B}\)</span> and the inverse covariance
-<span class="math inline">\(\boldsymbol\Omega\)</span>. Technically
-speaking, we adopt a variational strategy to approximate the <span class="math inline">\(\ell_1\)</span>-penalized log-likelihood function
-and optimize the consecutive sparse variational surrogate with an
-optimization scheme that alternates between two step</p>
+<p>Regularization via sparsification of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛀</mi><annotation encoding="application/x-tex">\boldsymbol\Omega</annotation></semantics></math>
+and visualization of the consecutive network is the main objective in
+PLN-network. To reach this goal, we need to first estimate the model
+parameters. Inference in PLN-network focuses on the regression
+parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
+and the inverse covariance
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛀</mi><annotation encoding="application/x-tex">\boldsymbol\Omega</annotation></semantics></math>.
+Technically speaking, we adopt a variational strategy to approximate the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>ℓ</mo><mn>1</mn></msub><annotation encoding="application/x-tex">\ell_1</annotation></semantics></math>-penalized
+log-likelihood function and optimize the consecutive sparse variational
+surrogate with an optimization scheme that alternates between two
+step</p>
 <ol style="list-style-type: decimal">
 <li>a gradient-ascent-step, performed with the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02">2002</a>)</span>
 implemented in the C++ library <span class="citation">(<a href="#ref-nlopt">Johnson 2011</a>)</span>, which we link to the
@@ -268,13 +292,13 @@ sends a very basic summary of the estimation process:</p>
 <span><span class="co">##  Task: Network Inference </span></span>
 <span><span class="co">## ========================================================</span></span>
 <span><span class="co">##  - 30 penalties considered: from 0.3643028 to 3.643028 </span></span>
-<span><span class="co">##  - Best model (greater BIC): lambda = 0.462 </span></span>
-<span><span class="co">##  - Best model (greater EBIC): lambda = 0.744</span></span></code></pre>
+<span><span class="co">##  - Best model (greater BIC): lambda = 0.394 </span></span>
+<span><span class="co">##  - Best model (greater EBIC): lambda = 0.394</span></span></code></pre>
 <p>One can also easily access the successive values of the criteria in
 the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">network_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
+<table class="table">
 <colgroup>
 <col width="9%">
 <col width="9%">
@@ -284,7 +308,7 @@ the collection</p>
 <col width="8%">
 <col width="10%">
 <col width="11%">
-<col width="10%">
+<col width="8%">
 <col width="10%">
 </colgroup>
 <thead><tr class="header">
@@ -303,73 +327,73 @@ the collection</p>
 <tr class="odd">
 <td align="right">3.643028</td>
 <td align="right">34</td>
-<td align="right">-1286.143</td>
-<td align="right">-1352.304</td>
-<td align="right">-2786.264</td>
+<td align="right">-1288.725</td>
+<td align="right">-1354.885</td>
+<td align="right">-2802.811</td>
 <td align="right">0</td>
-<td align="right">-1352.304</td>
-<td align="right">-1292.767</td>
-<td align="right">0.0000000</td>
+<td align="right">-1354.885</td>
+<td align="right">-1295.192</td>
+<td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
 <td align="right">3.364959</td>
 <td align="right">34</td>
-<td align="right">-1280.104</td>
-<td align="right">-1346.265</td>
-<td align="right">-2783.682</td>
+<td align="right">-1277.738</td>
+<td align="right">-1343.899</td>
+<td align="right">-2767.723</td>
 <td align="right">0</td>
-<td align="right">-1346.265</td>
-<td align="right">-1286.439</td>
-<td align="right">0.0000000</td>
+<td align="right">-1343.899</td>
+<td align="right">-1284.218</td>
+<td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
 <td align="right">3.108114</td>
 <td align="right">34</td>
-<td align="right">-1271.429</td>
-<td align="right">-1337.590</td>
-<td align="right">-2762.833</td>
+<td align="right">-1265.778</td>
+<td align="right">-1331.939</td>
+<td align="right">-2720.678</td>
 <td align="right">0</td>
-<td align="right">-1337.590</td>
-<td align="right">-1277.650</td>
-<td align="right">0.0000000</td>
+<td align="right">-1331.939</td>
+<td align="right">-1272.399</td>
+<td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
 <td align="right">2.870875</td>
 <td align="right">34</td>
-<td align="right">-1261.099</td>
-<td align="right">-1327.260</td>
-<td align="right">-2727.954</td>
+<td align="right">-1263.462</td>
+<td align="right">-1329.623</td>
+<td align="right">-2744.594</td>
 <td align="right">0</td>
-<td align="right">-1327.260</td>
-<td align="right">-1267.330</td>
-<td align="right">0.0000000</td>
+<td align="right">-1329.623</td>
+<td align="right">-1269.545</td>
+<td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
 <td align="right">2.651743</td>
 <td align="right">34</td>
-<td align="right">-1257.046</td>
-<td align="right">-1323.207</td>
-<td align="right">-2735.816</td>
+<td align="right">-1255.483</td>
+<td align="right">-1321.644</td>
+<td align="right">-2724.996</td>
 <td align="right">0</td>
-<td align="right">-1323.207</td>
-<td align="right">-1262.917</td>
-<td align="right">0.0000000</td>
+<td align="right">-1321.644</td>
+<td align="right">-1261.444</td>
+<td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
 <td align="right">2.449338</td>
-<td align="right">35</td>
-<td align="right">-1249.456</td>
-<td align="right">-1317.563</td>
-<td align="right">-2719.589</td>
-<td align="right">1</td>
-<td align="right">-1320.019</td>
-<td align="right">-1255.195</td>
-<td align="right">0.0069204</td>
+<td align="right">34</td>
+<td align="right">-1245.770</td>
+<td align="right">-1311.931</td>
+<td align="right">-2689.989</td>
+<td align="right">0</td>
+<td align="right">-1311.931</td>
+<td align="right">-1251.739</td>
+<td align="right">0</td>
 <td align="left">NA</td>
 </tr>
 </tbody>
@@ -406,29 +430,29 @@ the collection</p>
 <td align="left">34</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1286.142854</td>
-<td align="left">6.000000</td>
-<td align="left">0.000005</td>
+<td align="left">1288.724502</td>
+<td align="left">7.000000</td>
+<td align="left">0.000001</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
 <td align="right">3.364959</td>
 <td align="left">34</td>
-<td align="left">4</td>
+<td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1280.103846</td>
-<td align="left">7.000000</td>
-<td align="left">0.000001</td>
+<td align="left">1277.738463</td>
+<td align="left">6.000000</td>
+<td align="left">0.000002</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
 <td align="right">3.108114</td>
 <td align="left">34</td>
-<td align="left">4</td>
+<td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1271.428998</td>
-<td align="left">7.000000</td>
-<td align="left">0.000001</td>
+<td align="left">1265.777727</td>
+<td align="left">6.000000</td>
+<td align="left">0.000000</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
@@ -436,9 +460,9 @@ the collection</p>
 <td align="left">34</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1261.098935</td>
-<td align="left">6.000000</td>
-<td align="left">0.000008</td>
+<td align="left">1263.462365</td>
+<td align="left">7.000000</td>
+<td align="left">0.000007</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.3</td>
@@ -446,19 +470,19 @@ the collection</p>
 <td align="left">34</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1257.045656</td>
-<td align="left">8.000000</td>
-<td align="left">0.000003</td>
+<td align="left">1255.483336</td>
+<td align="left">7.000000</td>
+<td align="left">0.000006</td>
 </tr>
 <tr class="even">
 <td align="left">elt.4</td>
 <td align="right">2.449338</td>
-<td align="left">35</td>
-<td align="left">4</td>
+<td align="left">34</td>
+<td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1249.456251</td>
-<td align="left">8.000000</td>
-<td align="left">0.000008</td>
+<td align="left">1245.769892</td>
+<td align="left">6.000000</td>
+<td align="left">0.000009</td>
 </tr>
 </tbody>
 </table>
@@ -478,11 +502,11 @@ mentioned above, and is a good starting point for model selection:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network_models</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot-1.png" width="672"></p>
 <p>Note that we use the original definition of the BIC/ICL criterion
-(<span class="math inline">\(\texttt{loglik} -
-\frac{1}{2}\texttt{pen}\)</span>), which is on the same scale as the
-log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular
-alternative</a> consists in using <span class="math inline">\(-2\texttt{loglik} + \texttt{pen}\)</span> instead.
-You can do so by specifying <code>reverse = TRUE</code>:</p>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">\texttt{loglik} - \frac{1}{2}\texttt{pen}</annotation></semantics></math>),
+which is on the same scale as the log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular
+alternative</a> consists in using
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>2</mn><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>+</mo><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">-2\texttt{loglik} + \texttt{pen}</annotation></semantics></math>
+instead. You can do so by specifying <code>reverse = TRUE</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network_models</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/plot-reverse-1.png" width="672"></p>
@@ -575,7 +599,7 @@ methods are recalled when such an object is printed:</p>
 <pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 1.4)</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">##  nb_param    loglik       BIC       ICL n_edges      EBIC pen_loglik density</span></span>
-<span><span class="co">##        35 -1203.858 -1271.965 -2608.229       1 -1274.422  -1208.642   0.007</span></span>
+<span><span class="co">##        35 -1202.876 -1270.983 -2599.318       1 -1273.439  -1207.717   0.007</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -594,11 +618,11 @@ additional analyses).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">my_graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH d18834a UNW- 17 1 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH 2bebe17 UNW- 17 1 -- </span></span>
 <span><span class="co">## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),</span></span>
 <span><span class="co">## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),</span></span>
 <span><span class="co">## | width (e/n)</span></span>
-<span><span class="co">## + edge from d18834a (vertex names):</span></span>
+<span><span class="co">## + edge from 2bebe17 (vertex names):</span></span>
 <span><span class="co">## [1] Hfo--Hsp</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></span></code></pre></div>
@@ -686,9 +710,7 @@ Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2):
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -701,16 +723,16 @@ Approximations.”</span> <em>SIAM Journal on Optimization</em> 12 (2):
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

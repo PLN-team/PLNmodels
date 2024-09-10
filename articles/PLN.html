@@ -6,27 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Analyzing multivariate count data with the Poisson log-normal model • PLNmodels</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Analyzing multivariate count data with the Poisson log-normal model">
-<meta property="og:description" content="PLNmodels">
-<meta property="og:image" content="https://pln-team.github.io/PLNmodels/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -55,7 +47,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -90,7 +82,7 @@
 <li>
   <a href="https://github.com/pln-team/PLNmodels/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -101,7 +93,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -110,9 +102,9 @@
 Poisson log-normal model</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-04-11</h4>
+            <h4 data-toc-skip class="date">2024-09-10</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLN.Rmd" class="external-link"><code>vignettes/PLN.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLN.Rmd" class="external-link"><code>vignettes/PLN.Rmd</code></a></small>
       <div class="hidden name"><code>PLN.Rmd</code></div>
 
     </div>
@@ -159,22 +151,29 @@ etc.)</p>
 <div class="section level3">
 <h3 id="mathematical-background">Mathematical background<a class="anchor" aria-label="anchor" href="#mathematical-background"></a>
 </h3>
-<p>The multivariate Poisson lognormal model (in short PLN, see <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span>) relates some <span class="math inline">\(p\)</span>-dimensional observation vectors <span class="math inline">\(\mathbf{Y}_i\)</span> to some <span class="math inline">\(p\)</span>-dimensional vectors of Gaussian latent
-variables <span class="math inline">\(\mathbf{Z}_i\)</span> as
-follows</p>
-<p><span class="math display">\[\begin{equation}
+<p>The multivariate Poisson lognormal model (in short PLN, see <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span>) relates some
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-dimensional
+observation vectors
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐘</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{Y}_i</annotation></semantics></math>
+to some
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-dimensional
+vectors of Gaussian latent variables
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐙</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{Z}_i</annotation></semantics></math>
+as follows</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝐘</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>𝐙</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation}
   \begin{array}{rcl}
-  \text{latent space } &amp;   \mathbf{Z}_i \sim
-\mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \\
-  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.}
-&amp;   \mathbf{Y}_i |
-\mathbf{Z}_i\sim\mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right).
+  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp;   \mathbf{Y}_i | \mathbf{Z}_i\sim\mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right).
   \end{array}
-\end{equation}\]</span></p>
-<p>The parameter <span class="math inline">\({\boldsymbol\mu}\)</span>
-corresponds to the main effects and the latent covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> describes the
-underlying residual structure of dependence between the <span class="math inline">\(p\)</span> variables. The following figure
-provides insights about the role played by the different layers</p>
+\end{equation}</annotation></semantics></math></p>
+<p>The parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛍</mi><annotation encoding="application/x-tex">{\boldsymbol\mu}</annotation></semantics></math>
+corresponds to the main effects and the latent covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol\Sigma</annotation></semantics></math>
+describes the underlying residual structure of dependence between the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+variables. The following figure provides insights about the role played
+by the different layers</p>
 <!-- ```{r geometricalInsight, echo = FALSE, fig.cap = "PLN: geometrical view", fig.width=7, fig.height=7, fig.align='center'} -->
 <!-- knitr::include_graphics("figures/PLN_geometry.jpg") -->
 <!-- ``` -->
@@ -188,33 +187,50 @@ PLN: geometrical view
 </h4>
 <p>This model generalizes naturally to a formulation closer to a
 multivariate generalized linear model, where the main effect is due to a
-linear combination of <span class="math inline">\(d\)</span> covariates
-<span class="math inline">\(\mathbf{x}_i\)</span> (including a vector of
-intercepts). We also let the possibility to add some offsets for the
-<span class="math inline">\(p\)</span> variables in in each sample, that
-is <span class="math inline">\(\mathbf{o}_i\)</span>. Hence, the
-previous model generalizes to</p>
-<p><span class="math display">\[\begin{equation}
+linear combination of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+covariates
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐱</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{x}_i</annotation></semantics></math>
+(including a vector of intercepts). We also let the possibility to add
+some offsets for the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+variables in in each sample, that is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐨</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{o}_i</annotation></semantics></math>.
+Hence, the previous model generalizes to</p>
+<p><span class="math display">$$\begin{equation}
   \mathbf{Y}_i | \mathbf{Z}_i \sim
 \mathcal{P}\left(\exp\{\mathbf{Z}_i\}\right), \qquad \mathbf{Z}_i \sim
 \mathcal{N}({\mathbf{o}_i +
 \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Sigma), \\
-\end{equation}\]</span> where <span class="math inline">\(\mathbf{B}\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression
-parameters. When all individuals <span class="math inline">\(i=1,\dots,n\)</span> are stacked together, the
-data matrices available to feed the model are</p>
+\end{equation}$$</span> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
+is a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">d\times p</annotation></semantics></math>
+matrix of regression parameters. When all individuals
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">i=1,\dots,n</annotation></semantics></math>
+are stacked together, the data matrices available to feed the model
+are</p>
 <ul>
-<li>the <span class="math inline">\(n\times p\)</span> matrix of counts
-<span class="math inline">\(\mathbf{Y}\)</span>
+<li>the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">n\times p</annotation></semantics></math>
+matrix of counts
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
 </li>
-<li>the <span class="math inline">\(n\times d\)</span> matrix of design
-<span class="math inline">\(\mathbf{X}\)</span>
+<li>the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">n\times d</annotation></semantics></math>
+matrix of design
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
 </li>
-<li>the <span class="math inline">\(n\times p\)</span> matrix of offsets
-<span class="math inline">\(\mathbf{O}\)</span>
+<li>the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">n\times p</annotation></semantics></math>
+matrix of offsets
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐎</mi><annotation encoding="application/x-tex">\mathbf{O}</annotation></semantics></math>
 </li>
 </ul>
-<p>Inference in PLN then focuses on the regression parameters <span class="math inline">\(\mathbf{B}\)</span> and on the covariance matrix
-<span class="math inline">\(\boldsymbol\Sigma\)</span>.</p>
+<p>Inference in PLN then focuses on the regression parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
+and on the covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol\Sigma</annotation></semantics></math>.</p>
 </div>
 <div class="section level4">
 <h4 id="optimization-by-variational-inference">Optimization by Variational inference<a class="anchor" aria-label="anchor" href="#optimization-by-variational-inference"></a>
@@ -251,9 +267,10 @@ for each species:</p>
 <span><span class="co">##  Post-treatments...</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model:
-the vector <span class="math inline">\(\boldsymbol\mu\)</span> of main
-effects in the mathematical formulation (one per column species) is
-specified in the call with the term <code>~ 1</code> in the
+the vector
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛍</mi><annotation encoding="application/x-tex">\boldsymbol\mu</annotation></semantics></math>
+of main effects in the mathematical formulation (one per column species)
+is specified in the call with the term <code>~ 1</code> in the
 right-hand-side of the formula. <code>Abundance</code> is a variable in
 the data frame <code>trichoptera</code> corresponding to a matrix of 17
 columns and the <em>response</em> in the model, occurring on the
@@ -300,8 +317,9 @@ just like with a traditional list, <em>e.g.</em>,</p>
 standard (G)LM-like interface of <code>R::stats</code>, which we present
 now.</p>
 <p>One can access the fitted value of the counts (<code>Abundance</code>
-– <span class="math inline">\(\hat{\mathbf{Y}}\)</span>) and check that
-the algorithm basically learned correctly from the data<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>:</p>
+–
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>𝐘</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\mathbf{Y}}</annotation></semantics></math>)
+and check that the algorithm basically learned correctly from the data<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  fitted   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -453,18 +471,22 @@ variable:</p>
 <h3 id="covariance-models-full-diagonal-spherical">Covariance models (full, diagonal, spherical)<a class="anchor" aria-label="anchor" href="#covariance-models-full-diagonal-spherical"></a>
 </h3>
 <p>It is possible to change a bit the parametrization used for modeling
-the residual covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>, and thus reduce the
-total number of parameters used in the model. By default, the residual
-covariance is fully parameterized (hence <span class="math inline">\(p
-\times (p+1)/2\)</span> parameters). However, we can chose to only model
-the variances of the species and not the covariances, by means of a
-diagonal matrix <span class="math inline">\(\boldsymbol\Sigma_D\)</span>
-with only <span class="math inline">\(p\)</span> parameters. In an
-extreme situation, we may also chose a single variance parameter for the
-whole matrix <span class="math inline">\(\boldsymbol\Sigma = \sigma
-\mathbf{I}_p\)</span>. This can be tuned in <code>PLN</code> with the
-<code>control</code> argument, a list controlling various aspects of the
-underlying optimization process:</p>
+the residual covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol\Sigma</annotation></semantics></math>,
+and thus reduce the total number of parameters used in the model. By
+default, the residual covariance is fully parameterized (hence
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">p \times (p+1)/2</annotation></semantics></math>
+parameters). However, we can chose to only model the variances of the
+species and not the covariances, by means of a diagonal matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝚺</mi><mi>D</mi></msub><annotation encoding="application/x-tex">\boldsymbol\Sigma_D</annotation></semantics></math>
+with only
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+parameters. In an extreme situation, we may also chose a single variance
+parameter for the whole matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝚺</mi><mo>=</mo><mi>σ</mi><msub><mi>𝐈</mi><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">\boldsymbol\Sigma = \sigma \mathbf{I}_p</annotation></semantics></math>.
+This can be tuned in <code>PLN</code> with the <code>control</code>
+argument, a list controlling various aspects of the underlying
+optimization process:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN_spherical</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span></span>
@@ -622,9 +644,7 @@ offsets term was used<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -637,16 +657,16 @@ offsets term was used<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

@@ -6,27 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data importation in PLNmodels • PLNmodels</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Data importation in PLNmodels">
-<meta property="og:description" content="PLNmodels">
-<meta property="og:image" content="https://pln-team.github.io/PLNmodels/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -55,7 +47,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -90,7 +82,7 @@
 <li>
   <a href="https://github.com/pln-team/PLNmodels/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -101,7 +93,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -109,9 +101,9 @@
       <h1 data-toc-skip>Data importation in PLNmodels</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-04-11</h4>
+            <h4 data-toc-skip class="date">2024-09-10</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/Import_data.Rmd" class="external-link"><code>vignettes/Import_data.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/Import_data.Rmd" class="external-link"><code>vignettes/Import_data.Rmd</code></a></small>
       <div class="hidden name"><code>Import_data.Rmd</code></div>
 
     </div>
@@ -461,58 +453,99 @@ build your own)</li>
 <h2 id="mathematical-details-about-the-offsets">Mathematical details about the offsets<a class="anchor" aria-label="anchor" href="#mathematical-details-about-the-offsets"></a>
 </h2>
 <p>We detail here the mathematical background behind the various offsets
-and the way they are computed. Note <span class="math inline">\(\mathbf{Y} = (Y_{ij})\)</span> the counts matrix
-where <span class="math inline">\(Y_{ij}\)</span> is the count of
-species <span class="math inline">\(j\)</span> in sample <span class="math inline">\(i\)</span>. Assume that there are <span class="math inline">\(p\)</span> species and <span class="math inline">\(n\)</span> samples in total. The offset of sample
-<span class="math inline">\(i\)</span> is noted <span class="math inline">\(O_i\)</span> and computed in the following
-way.</p>
+and the way they are computed. Note
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐘</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathbf{Y} = (Y_{ij})</annotation></semantics></math>
+the counts matrix where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">Y_{ij}</annotation></semantics></math>
+is the count of species
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
+in sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.
+Assume that there are
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+species and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+samples in total. The offset of sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+is noted
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>O</mi><mi>i</mi></msub><annotation encoding="application/x-tex">O_i</annotation></semantics></math>
+and computed in the following way.</p>
 <div class="section level3">
 <h3 id="total-sum-scaling">Total Sum Scaling<a class="anchor" aria-label="anchor" href="#total-sum-scaling"></a>
 </h3>
 <p>Offsets are simply the total counts of a sample (frequently called
-depths in the metabarcoding literature): <span class="math display">\[
+depths in the metabarcoding literature):
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>O</mi><mi>i</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>p</mi></munderover><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
 O_i = \sum_{j=1}^p Y_{ij}
-\]</span></p>
+</annotation></semantics></math></p>
 </div>
 <div class="section level3">
 <h3 id="cumulative-sum-scaling">Cumulative Sum Scaling<a class="anchor" aria-label="anchor" href="#cumulative-sum-scaling"></a>
 </h3>
-<p>Positive counts are used to compute sample-specific quantiles <span class="math inline">\(q_i^l\)</span> and cumulative sums <span class="math inline">\(s_i^l\)</span> defined as <span class="math display">\[
-q_i^l = \min \{q \text{ such that } \sum_j 1_{Y_{ij} \leq q} \geq l
-\sum_j 1_{Y_{ij} &gt; 0} \} \qquad s_i^l = \sum_{j: Y_{ij} \leq q_i^l}
-Y_{ij}
-\]</span> The sample-specific quantiles are then used to compute
-reference quantiles defined as <span class="math inline">\(q^l =
-\text{median} \{q^i_l\}\)</span> and median average deviation around the
-quantile <span class="math inline">\(q^l\)</span> as <span class="math inline">\(d^l = \text{median} |q_i^l - q^l|\)</span>. The
-method then searches for the smallest quantile <span class="math inline">\(l\)</span> for which it detects instability,
-defined as large relative increase in the <span class="math inline">\(d^l\)</span>. Formally, <span class="math inline">\(\hat{l}\)</span> is the smallest <span class="math inline">\(l\)</span> satisfying <span class="math inline">\(\frac{d^{l+1} - d^l}{d^l} \geq 0.1\)</span>. The
-scaling sample-specific offset are then chosen as: <span class="math display">\[
+<p>Positive counts are used to compute sample-specific quantiles
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>q</mi><mi>i</mi><mi>l</mi></msubsup><annotation encoding="application/x-tex">q_i^l</annotation></semantics></math>
+and cumulative sums
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>s</mi><mi>i</mi><mi>l</mi></msubsup><annotation encoding="application/x-tex">s_i^l</annotation></semantics></math>
+defined as
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>q</mi><mi>i</mi><mi>l</mi></msubsup><mo>=</mo><mo>min</mo><mo stretchy="false" form="prefix">{</mo><mi>q</mi><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> such that </mtext><mspace width="0.333em"></mspace></mrow><munder><mo>∑</mo><mi>j</mi></munder><msub><mn>1</mn><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>≤</mo><mi>q</mi></mrow></msub><mo>≥</mo><mi>l</mi><munder><mo>∑</mo><mi>j</mi></munder><msub><mn>1</mn><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>&gt;</mo><mn>0</mn></mrow></msub><mo stretchy="false" form="postfix">}</mo><mspace width="2.0em"></mspace><msubsup><mi>s</mi><mi>i</mi><mi>l</mi></msubsup><mo>=</mo><munder><mo>∑</mo><mrow><mi>j</mi><mo>:</mo><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>≤</mo><msubsup><mi>q</mi><mi>i</mi><mi>l</mi></msubsup></mrow></munder><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+q_i^l = \min \{q \text{ such that } \sum_j 1_{Y_{ij} \leq q} \geq l \sum_j 1_{Y_{ij} &gt; 0} \} \qquad s_i^l = \sum_{j: Y_{ij} \leq q_i^l} Y_{ij}
+</annotation></semantics></math> The sample-specific quantiles are then
+used to compute reference quantiles defined as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>q</mi><mi>l</mi></msup><mo>=</mo><mtext mathvariant="normal">median</mtext><mo stretchy="false" form="prefix">{</mo><msubsup><mi>q</mi><mi>l</mi><mi>i</mi></msubsup><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">q^l = \text{median} \{q^i_l\}</annotation></semantics></math>
+and median average deviation around the quantile
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>q</mi><mi>l</mi></msup><annotation encoding="application/x-tex">q^l</annotation></semantics></math>
+as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mi>l</mi></msup><mo>=</mo><mtext mathvariant="normal">median</mtext><mrow><mo stretchy="true" form="prefix">|</mo><msubsup><mi>q</mi><mi>i</mi><mi>l</mi></msubsup><mo>−</mo><msup><mi>q</mi><mi>l</mi></msup><mo stretchy="true" form="postfix">|</mo></mrow></mrow><annotation encoding="application/x-tex">d^l = \text{median} |q_i^l - q^l|</annotation></semantics></math>.
+The method then searches for the smallest quantile
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>l</mi><annotation encoding="application/x-tex">l</annotation></semantics></math>
+for which it detects instability, defined as large relative increase in
+the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>d</mi><mi>l</mi></msup><annotation encoding="application/x-tex">d^l</annotation></semantics></math>.
+Formally,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>l</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{l}</annotation></semantics></math>
+is the smallest
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>l</mi><annotation encoding="application/x-tex">l</annotation></semantics></math>
+satisfying
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><msup><mi>d</mi><mrow><mi>l</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>−</mo><msup><mi>d</mi><mi>l</mi></msup></mrow><msup><mi>d</mi><mi>l</mi></msup></mfrac><mo>≥</mo><mn>0.1</mn></mrow><annotation encoding="application/x-tex">\frac{d^{l+1} - d^l}{d^l} \geq 0.1</annotation></semantics></math>.
+The scaling sample-specific offset are then chosen as:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>O</mi><mi>i</mi></msub><mo>=</mo><msubsup><mi>s</mi><mi>i</mi><mover><mi>l</mi><mo accent="true">̂</mo></mover></msubsup><mi>/</mi><msub><mtext mathvariant="normal">median</mtext><mi>i</mi></msub><mo stretchy="false" form="prefix">{</mo><msubsup><mi>s</mi><mi>i</mi><mover><mi>l</mi><mo accent="true">̂</mo></mover></msubsup><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">
 O_i = s_i^{\hat{l}} / \text{median}_i \{ s_i^{\hat{l}} \}
-\]</span> Dividing by the median of the <span class="math inline">\(s_i^{\hat{l}}\)</span> ensures that offsets are
-centered around <span class="math inline">\(1\)</span> and compare sizes
-differences with respect to the reference sample. Note also that the
-reference quantiles <span class="math inline">\(q^l\)</span> can be
-computed using either the median (default, as in the original <span class="citation">Paulson et al. (<a href="#ref-CSS">2013</a>)</span>
-paper) or the mean, by specifying <code>reference = mean</code>, as
-implemented in <code>metagenomeseq</code>.</p>
+</annotation></semantics></math> Dividing by the median of the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>s</mi><mi>i</mi><mover><mi>l</mi><mo accent="true">̂</mo></mover></msubsup><annotation encoding="application/x-tex">s_i^{\hat{l}}</annotation></semantics></math>
+ensures that offsets are centered around
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
+and compare sizes differences with respect to the reference sample. Note
+also that the reference quantiles
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>q</mi><mi>l</mi></msup><annotation encoding="application/x-tex">q^l</annotation></semantics></math>
+can be computed using either the median (default, as in the original
+<span class="citation">Paulson et al. (<a href="#ref-CSS">2013</a>)</span> paper) or the mean, by specifying
+<code>reference = mean</code>, as implemented in
+<code>metagenomeseq</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="relative-log-expression">Relative Log Expression<a class="anchor" aria-label="anchor" href="#relative-log-expression"></a>
 </h3>
-<p>A reference sample <span class="math inline">\((q_j)_j\)</span> is
-first built by computing the geometric means of each species count:
-<span class="math display">\[
+<p>A reference sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>q</mi><mi>j</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>j</mi></msub><annotation encoding="application/x-tex">(q_j)_j</annotation></semantics></math>
+is first built by computing the geometric means of each species count:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mi>j</mi></msub><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munder><mo>∑</mo><mi>i</mi></munder><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
 q_j = \exp \left( \frac{1}{n} \sum_{i} \log(Y_{ij})\right)
-\]</span> Each sample is then compared to the reference sample to
-compute one ratio per species and the final offset <span class="math inline">\(O_i\)</span> is the median of those ratios: <span class="math display">\[
+</annotation></semantics></math> Each sample is then compared to the
+reference sample to compute one ratio per species and the final offset
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>O</mi><mi>i</mi></msub><annotation encoding="application/x-tex">O_i</annotation></semantics></math>
+is the median of those ratios:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>O</mi><mi>i</mi></msub><mo>=</mo><msub><mtext mathvariant="normal">median</mtext><mi>j</mi></msub><mfrac><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msub><mi>q</mi><mi>j</mi></msub></mfrac></mrow><annotation encoding="application/x-tex">
 O_i = \text{median}_j \frac{Y_{ij}}{q_j}
-\]</span> The method fails when no species is shared across all sample
-(as all <span class="math inline">\(q_j\)</span> are then <span class="math inline">\(0\)</span>) or when a sample shares less than 50%
-of species with the reference (in which case the median of the ratios
-may be null or infinite). The problem can be alleviated by adding
-pseudocounts to the <span class="math inline">\(c_{ij}\)</span> with
-<code>pseudocounts = 1</code> or using positive counts in the
+</annotation></semantics></math> The method fails when no species is
+shared across all sample (as all
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>q</mi><mi>j</mi></msub><annotation encoding="application/x-tex">q_j</annotation></semantics></math>
+are then
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>)
+or when a sample shares less than 50% of species with the reference (in
+which case the median of the ratios may be null or infinite). The
+problem can be alleviated by adding pseudocounts to the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">c_{ij}</annotation></semantics></math>
+with <code>pseudocounts = 1</code> or using positive counts in the
 computations (<code>type = "poscounts"</code>)</p>
 </div>
 <div class="section level3">
@@ -520,13 +553,17 @@ computations (<code>type = "poscounts"</code>)</p>
 </h3>
 <p>This method is similar to RLE but does create a reference sample.
 Instead, each sample is compared to each other to compute a median ratio
-(similar to RLE) <span class="math display">\[
-r_{ii'} = {\text{median}}_{j: Y_{ij}.Y_{i'j} &gt; 0}
-\frac{Y_{ij}}{Y_{i'j}}
-\]</span> The offset is then taken as the median of all the <span class="math inline">\(r_{ii'}\)</span>: <span class="math display">\[
+(similar to RLE)
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mrow><mi>i</mi><mi>i</mi><mi>′</mi></mrow></msub><mo>=</mo><msub><mtext mathvariant="normal">median</mtext><mrow><mi>j</mi><mo>:</mo><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mi>.</mi><msub><mi>Y</mi><mrow><mi>i</mi><mi>′</mi><mi>j</mi></mrow></msub><mo>&gt;</mo><mn>0</mn></mrow></msub><mfrac><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msub><mi>Y</mi><mrow><mi>i</mi><mi>′</mi><mi>j</mi></mrow></msub></mfrac></mrow><annotation encoding="application/x-tex">
+r_{ii'} = {\text{median}}_{j: Y_{ij}.Y_{i'j} &gt; 0} \frac{Y_{ij}}{Y_{i'j}}
+</annotation></semantics></math> The offset is then taken as the median
+of all the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mrow><mi>i</mi><mi>i</mi><mi>′</mi></mrow></msub><annotation encoding="application/x-tex">r_{ii'}</annotation></semantics></math>:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>O</mi><mi>i</mi></msub><mo>=</mo><msub><mtext mathvariant="normal">median</mtext><mrow><mi>i</mi><mi>′</mi><mi>!</mi><mo>=</mo><mi>i</mi></mrow></msub><msub><mi>r</mi><mrow><mi>i</mi><mi>i</mi><mi>′</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
 O_i = \text{median}_{i' != i} r_{ii'}
-\]</span> The method fails when there is only one sample in the data set
-or when a sample shares no species with any other.</p>
+</annotation></semantics></math> The method fails when there is only one
+sample in the data set or when a sample shares no species with any
+other.</p>
 </div>
 <div class="section level3">
 <h3 id="wrench-normalisation">Wrench normalisation<a class="anchor" aria-label="anchor" href="#wrench-normalisation"></a>
@@ -534,114 +571,142 @@ or when a sample shares no species with any other.</p>
 <p>This method is fully detailed in <span class="citation">Kumar et al.
 (<a href="#ref-Kumar2018">2018</a>)</span> and we only provide a
 barebone implementation corresponding to the defaults parameters of
-<code>Wrench::wrench()</code>. Assume that samples belong to <span class="math inline">\(K\)</span> discrete groups and note <span class="math inline">\(g_i\)</span> the group of sample <span class="math inline">\(i\)</span>. Wrench is based on the following
-(simplified) log-normal model for counts: <span class="math display">\[
-Y_{ij} \sim \pi_{ij} \delta_0 + (1 - \pi_{ij})\log\mathcal{N}(\mu_{ij},
-\sigma^2_j)
-\]</span> where the <span class="math inline">\(Y_{ij}\)</span> are
-independent and the mean <span class="math inline">\(\mu_{ij}\)</span>
-is decomposed as: <span class="math display">\[
-\mu_{ij} = \underbrace{\log{p_{0j}}}_{\text{log-ref. prop.}}
-+  \underbrace{\log{d_i}}_{\text{log-depth}} +
-\underbrace{\log{\zeta_{0g_i}}}_{\text{log effect of group } g_i} +
-\underbrace{a_{i}}_{\text{(f|m)ixed effect}} +
-\underbrace{b_{ij}}_{\text{mixed effects}}
-\]</span> where the random effects are independents centered gaussian
-and the depths is the total sum of counts: <span class="math display">\[
+<code>Wrench::wrench()</code>. Assume that samples belong to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+discrete groups and note
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>i</mi></msub><annotation encoding="application/x-tex">g_i</annotation></semantics></math>
+the group of sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.
+Wrench is based on the following (simplified) log-normal model for
+counts:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><msub><mi>π</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msub><mi>δ</mi><mn>0</mn></msub><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>π</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>log</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msubsup><mi>σ</mi><mi>j</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+Y_{ij} \sim \pi_{ij} \delta_0 + (1 - \pi_{ij})\log\mathcal{N}(\mu_{ij}, \sigma^2_j)
+</annotation></semantics></math> where the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">Y_{ij}</annotation></semantics></math>
+are independent and the mean
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\mu_{ij}</annotation></semantics></math>
+is decomposed as:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><munder><munder><mrow><mo>log</mo><msub><mi>p</mi><mrow><mn>0</mn><mi>j</mi></mrow></msub></mrow><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">log-ref. prop.</mtext></munder><mo>+</mo><munder><munder><mrow><mo>log</mo><msub><mi>d</mi><mi>i</mi></msub></mrow><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">log-depth</mtext></munder><mo>+</mo><munder><munder><mrow><mo>log</mo><msub><mi>ζ</mi><mrow><mn>0</mn><msub><mi>g</mi><mi>i</mi></msub></mrow></msub></mrow><mo accent="true">⏟</mo></munder><mrow><mrow><mtext mathvariant="normal">log effect of group </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>g</mi><mi>i</mi></msub></mrow></munder><mo>+</mo><munder><munder><msub><mi>a</mi><mi>i</mi></msub><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">(f|m)ixed effect</mtext></munder><mo>+</mo><munder><munder><msub><mi>b</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">mixed effects</mtext></munder></mrow><annotation encoding="application/x-tex">
+\mu_{ij} = \underbrace{\log{p_{0j}}}_{\text{log-ref. prop.}} +  \underbrace{\log{d_i}}_{\text{log-depth}} + \underbrace{\log{\zeta_{0g_i}}}_{\text{log effect of group } g_i} + \underbrace{a_{i}}_{\text{(f|m)ixed effect}} + \underbrace{b_{ij}}_{\text{mixed effects}}
+</annotation></semantics></math> where the random effects are
+independents centered gaussian and the depths is the total sum of
+counts:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>d</mi><mi>i</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>p</mi></munderover><msub><mi>c</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>b</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><msubsup><mi>η</mi><msub><mi>g</mi><mi>i</mi></msub><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{align*}
 d_i &amp; = \sum_{j=1}^p c_{ij} \\
 b_{ij} &amp; \sim \mathcal{N}(0, \eta^2_{g_i}) \\
 \end{align*}
-\]</span></p>
-<p>The <strong>net</strong> log fold change <span class="math inline">\(\theta_{ij}\)</span> of the <strong>proportion
-ratio</strong> <span class="math inline">\(r_{ij} = c_{ij} / d_i
-p_{0j}\)</span> of species <span class="math inline">\(j\)</span>
-relative to the reference is <span class="math inline">\(\log(\theta_{ij}) \overset{\Delta}{=}
-\mathbb{E}[\log(r_{ij}) | a_i, b_{ij}] = \log{\zeta_{0g_i}} + a_i +
-b_{ij}\)</span>. We can decompose it as <span class="math inline">\(\theta_{ij} = \Lambda_i^{-1} v_{ij}\)</span> where
-<span class="math inline">\(\Lambda_i^{-1}\)</span> is the
-<em>compositional correction factor</em> and <span class="math inline">\(v_{ij}\)</span> is the fold change of <strong>true
-abundances</strong>.</p>
+</annotation></semantics></math></p>
+<p>The <strong>net</strong> log fold change
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\theta_{ij}</annotation></semantics></math>
+of the <strong>proportion ratio</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><msub><mi>c</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mi>/</mi><msub><mi>d</mi><mi>i</mi></msub><msub><mi>p</mi><mrow><mn>0</mn><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">r_{ij} = c_{ij} / d_i p_{0j}</annotation></semantics></math>
+of species
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
+relative to the reference is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mover><mo>=</mo><mi>Δ</mi></mover><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="prefix">|</mo><msub><mi>a</mi><mi>i</mi></msub><mo>,</mo><msub><mi>b</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mo>log</mo><msub><mi>ζ</mi><mrow><mn>0</mn><msub><mi>g</mi><mi>i</mi></msub></mrow></msub><mo>+</mo><msub><mi>a</mi><mi>i</mi></msub><mo>+</mo><msub><mi>b</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\log(\theta_{ij}) \overset{\Delta}{=} \mathbb{E}[\log(r_{ij}) | a_i, b_{ij}] = \log{\zeta_{0g_i}} + a_i + b_{ij}</annotation></semantics></math>.
+We can decompose it as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><msubsup><mi>Λ</mi><mi>i</mi><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><msub><mi>v</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\theta_{ij} = \Lambda_i^{-1} v_{ij}</annotation></semantics></math>
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>Λ</mi><mi>i</mi><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><annotation encoding="application/x-tex">\Lambda_i^{-1}</annotation></semantics></math>
+is the <em>compositional correction factor</em> and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>v</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">v_{ij}</annotation></semantics></math>
+is the fold change of <strong>true abundances</strong>.</p>
 <p>With the above notations, the net fold change compounds both the fold
 change of true abundances and the compositional correction factors. With
-the assumption that the <span class="math inline">\(b_{ij}\)</span> are
-centered, <span class="math inline">\(\log(\hat{\Lambda}_i)\)</span> can
-be estimated through a robust average of the <span class="math inline">\(\hat{\theta}_{ij}\)</span>, which can themselves
-be computed from the log-ratio of proportions.</p>
+the assumption that the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">b_{ij}</annotation></semantics></math>
+are centered,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>Λ</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\log(\hat{\Lambda}_i)</annotation></semantics></math>
+can be estimated through a robust average of the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\hat{\theta}_{ij}</annotation></semantics></math>,
+which can themselves be computed from the log-ratio of proportions.</p>
 <p>We detail here how the different parameters and/or effects are
 estimated.</p>
 <ul>
-<li>The reference proportions <span class="math inline">\(p_{0j}\)</span> are constructed as averages of the
-sample proportions <span class="math inline">\(p_{ij}\)</span> and the
-ratio are derived from both quantities <span class="math display">\[
-p_{ij} = \frac{Y_{ij}}{\sum_{j=1}^p Y_{ij}} \qquad p_{0j} = \frac{1}{n}
-\sum_{i=1}^n p_{ij} \qquad r_{ij} = \frac{p_{ij}}{p_{0j}}
-\]</span>
+<li>The reference proportions
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mn>0</mn><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">p_{0j}</annotation></semantics></math>
+are constructed as averages of the sample proportions
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">p_{ij}</annotation></semantics></math>
+and the ratio are derived from both quantities
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mfrac><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>p</mi></munderover><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></mfrac><mspace width="2.0em"></mspace><msub><mi>p</mi><mrow><mn>0</mn><mi>j</mi></mrow></msub><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>p</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="2.0em"></mspace><msub><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mfrac><msub><mi>p</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msub><mi>p</mi><mrow><mn>0</mn><mi>j</mi></mrow></msub></mfrac></mrow><annotation encoding="application/x-tex">
+p_{ij} = \frac{Y_{ij}}{\sum_{j=1}^p Y_{ij}} \qquad p_{0j} = \frac{1}{n} \sum_{i=1}^n p_{ij} \qquad r_{ij} = \frac{p_{ij}}{p_{0j}}
+</annotation></semantics></math>
 </li>
-<li>The probabilities of absence <span class="math inline">\(\pi_{ij}\)</span> are estimated by fitting the
-following Bernoulli models: <span class="math display">\[
+<li>The probabilities of absence
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>π</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\pi_{ij}</annotation></semantics></math>
+are estimated by fitting the following Bernoulli models:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mn>1</mn><mrow><mo stretchy="false" form="prefix">{</mo><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>0</mn><mo stretchy="false" form="postfix">}</mo></mrow></msub><mo>∼</mo><mi>ℬ</mi><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>π</mi><mi>j</mi><msub><mi>d</mi><mi>i</mi></msub></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
 1_{\{Y_{ij} = 0\}} \sim \mathcal{B}(\pi_{j}^{d_i})
-\]</span> and setting <span class="math inline">\(\hat{\pi}_{ij} =
-\hat{\pi}^{d_i}\)</span>
+</annotation></semantics></math> and setting
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><msup><mover><mi>π</mi><mo accent="true">̂</mo></mover><msub><mi>d</mi><mi>i</mi></msub></msup></mrow><annotation encoding="application/x-tex">\hat{\pi}_{ij} = \hat{\pi}^{d_i}</annotation></semantics></math>
 </li>
-<li>The species variances <span class="math inline">\(\sigma^2_j\)</span> are estimated by fitting the
-following linear model (with no zero-inflation component) <span class="math display">\[
+<li>The species variances
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>σ</mi><mi>j</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\sigma^2_j</annotation></semantics></math>
+are estimated by fitting the following linear model (with no
+zero-inflation component)
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>d</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>μ</mi><msub><mi>g</mi><mi>i</mi></msub></msub><mo>+</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><msubsup><mi>σ</mi><mi>j</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
 \log Y_{ij} \sim \log(d_i) + \mu_{g_i} + \mathcal{N}(0, \sigma^2_j)
-\]</span> Note that in the original <code>Wrench::wrench()</code>, the
-log depth <span class="math inline">\(\log(d_i)\)</span> is used as
-predictor but I believe it makes more sense to use it an offset.</li>
-<li>set the group proportions <span class="math inline">\(p_{gj}\)</span> and group ratios <span class="math inline">\(r_{gj}\)</span> to: <span class="math display">\[
-p_{gj} = \frac{\sum_{i : g_i = g} Y_{ij}}{\sum_{j, i : g_i = g} Y_{ij}}
-\qquad r_{gj} = \frac{p_{gj}}{p_{0j}}
-\]</span>
+</annotation></semantics></math> Note that in the original
+<code>Wrench::wrench()</code>, the log depth
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>d</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\log(d_i)</annotation></semantics></math>
+is used as predictor but I believe it makes more sense to use it an
+offset.</li>
+<li>set the group proportions
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">p_{gj}</annotation></semantics></math>
+and group ratios
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">r_{gj}</annotation></semantics></math>
+to:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub><mo>=</mo><mfrac><mrow><munder><mo>∑</mo><mrow><mi>i</mi><mo>:</mo><msub><mi>g</mi><mi>i</mi></msub><mo>=</mo><mi>g</mi></mrow></munder><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><mrow><munder><mo>∑</mo><mrow><mi>j</mi><mo>,</mo><mi>i</mi><mo>:</mo><msub><mi>g</mi><mi>i</mi></msub><mo>=</mo><mi>g</mi></mrow></munder><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></mfrac><mspace width="2.0em"></mspace><msub><mi>r</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub><mo>=</mo><mfrac><msub><mi>p</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub><msub><mi>p</mi><mrow><mn>0</mn><mi>j</mi></mrow></msub></mfrac></mrow><annotation encoding="application/x-tex">
+p_{gj} = \frac{\sum_{i : g_i = g} Y_{ij}}{\sum_{j, i : g_i = g} Y_{ij}} \qquad r_{gj} = \frac{p_{gj}}{p_{0j}}
+</annotation></semantics></math>
 </li>
-<li>Estimate the location and dispersion parameters as: <span class="math display">\[
-\hat{\zeta}_{0g} = \frac{\sum_{j=1}^p r_{gj}}{p}
+<li>Estimate the location and dispersion parameters as:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>ζ</mi><mo accent="true">̂</mo></mover><mrow><mn>0</mn><mi>g</mi></mrow></msub><mo>=</mo><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>p</mi></munderover><msub><mi>r</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub></mrow><mi>p</mi></mfrac><mspace width="2.0em"></mspace><mo>log</mo><msub><mi>r</mi><mrow><mi>g</mi><mi>.</mi></mrow></msub><mo>=</mo><mfrac><mrow><munder><mo>∑</mo><mrow><mi>j</mi><mo>:</mo><msub><mi>r</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub><mo>≠</mo><mn>1</mn></mrow></munder><mo>log</mo><msub><mi>r</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub></mrow><mrow><munder><mo>∑</mo><mrow><mi>j</mi><mo>:</mo><msub><mi>r</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub><mo>≠</mo><mn>0</mn></mrow></munder><mn>1</mn></mrow></mfrac><mspace width="2.0em"></mspace><msubsup><mover><mi>η</mi><mo accent="true">̂</mo></mover><mi>g</mi><mn>2</mn></msubsup><mo>=</mo><mfrac><mrow><munder><mo>∑</mo><mrow><mi>j</mi><mo>:</mo><msub><mi>r</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub><mo>≠</mo><mn>1</mn></mrow></munder><msup><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><msub><mi>r</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub><mo>−</mo><mo>log</mo><msub><mi>r</mi><mrow><mi>g</mi><mi>.</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><munder><mo>∑</mo><mrow><mi>j</mi><mo>:</mo><msub><mi>r</mi><mrow><mi>g</mi><mi>j</mi></mrow></msub><mo>≠</mo><mn>0</mn></mrow></munder><mn>1</mn></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\hat{\zeta}_{0g} = \frac{\sum_{j=1}^p r_{gj}}{p} 
 \qquad
-\log{r_{g.}} = \frac{\sum_{j: r_{gj} \neq 1} \log{r_{gj}}}{\sum_{j:
-r_{gj} \neq 0} 1}   
+\log{r_{g.}} = \frac{\sum_{j: r_{gj} \neq 1} \log{r_{gj}}}{\sum_{j: r_{gj} \neq 0} 1}   
 \qquad
-\hat{\eta}_{g}^2 = \frac{\sum_{j: r_{gj} \neq 1} (\log{r_{gj}} -
-\log{r_{g.}})^2}{\sum_{j: r_{gj} \neq 0} 1}
-\]</span>
+\hat{\eta}_{g}^2 = \frac{\sum_{j: r_{gj} \neq 1} (\log{r_{gj}} - \log{r_{g.}})^2}{\sum_{j: r_{gj} \neq 0} 1}
+</annotation></semantics></math>
 </li>
 <li>Estimate the mixed effects as shrunken (and scaled) averages of the
-ratios <span class="math display">\[
-\hat{a}_i = \frac{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} +
-\hat{\sigma}^2_j} (\log{r_{ij}} - \log{\hat{\zeta}_{0g_i}})}{\sum_{j =
-1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j}}
-\qquad
-\hat{b}_{ij} = \frac{\hat{\eta}^2_{g_i}}{\hat{\eta}^2_{g_i} +
-\hat{\sigma}^2_j} \left( \log{r_{ij}} - \log\hat{\zeta}_{0g_i} -
-\hat{a}_i\right)
-\]</span>
+ratios
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>a</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo>=</mo><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>p</mi></munderover><mfrac><mn>1</mn><mrow><msubsup><mover><mi>η</mi><mo accent="true">̂</mo></mover><msub><mi>g</mi><mi>i</mi></msub><mn>2</mn></msubsup><mo>+</mo><msubsup><mover><mi>σ</mi><mo accent="true">̂</mo></mover><mi>j</mi><mn>2</mn></msubsup></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><msub><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><mo>log</mo><msub><mover><mi>ζ</mi><mo accent="true">̂</mo></mover><mrow><mn>0</mn><msub><mi>g</mi><mi>i</mi></msub></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>p</mi></munderover><mfrac><mn>1</mn><mrow><msubsup><mover><mi>η</mi><mo accent="true">̂</mo></mover><msub><mi>g</mi><mi>i</mi></msub><mn>2</mn></msubsup><mo>+</mo><msubsup><mover><mi>σ</mi><mo accent="true">̂</mo></mover><mi>j</mi><mn>2</mn></msubsup></mrow></mfrac></mrow></mfrac><mspace width="2.0em"></mspace><msub><mover><mi>b</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mfrac><msubsup><mover><mi>η</mi><mo accent="true">̂</mo></mover><msub><mi>g</mi><mi>i</mi></msub><mn>2</mn></msubsup><mrow><msubsup><mover><mi>η</mi><mo accent="true">̂</mo></mover><msub><mi>g</mi><mi>i</mi></msub><mn>2</mn></msubsup><mo>+</mo><msubsup><mover><mi>σ</mi><mo accent="true">̂</mo></mover><mi>j</mi><mn>2</mn></msubsup></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><msub><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><mo>log</mo><msub><mover><mi>ζ</mi><mo accent="true">̂</mo></mover><mrow><mn>0</mn><msub><mi>g</mi><mi>i</mi></msub></mrow></msub><mo>−</mo><msub><mover><mi>a</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+\hat{a}_i = \frac{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j} (\log{r_{ij}} - \log{\hat{\zeta}_{0g_i}})}{\sum_{j = 1}^p \frac{1}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j}}
+\qquad 
+\hat{b}_{ij} = \frac{\hat{\eta}^2_{g_i}}{\hat{\eta}^2_{g_i} + \hat{\sigma}^2_j} \left( \log{r_{ij}} - \log\hat{\zeta}_{0g_i} - \hat{a}_i\right)
+</annotation></semantics></math>
 </li>
-<li>Estimate the regularized ratios as: <span class="math display">\[
-\hat{\theta}_{ij} = \exp\left( \log\hat{\zeta}_{0g_i} + \hat{a}_i +
-\hat{b}_{ij} \right)
-\]</span>
+<li>Estimate the regularized ratios as:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><msub><mover><mi>ζ</mi><mo accent="true">̂</mo></mover><mrow><mn>0</mn><msub><mi>g</mi><mi>i</mi></msub></mrow></msub><mo>+</mo><msub><mover><mi>a</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo>+</mo><msub><mover><mi>b</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+\hat{\theta}_{ij} = \exp\left( \log\hat{\zeta}_{0g_i} + \hat{a}_i + \hat{b}_{ij} \right)
+</annotation></semantics></math>
 </li>
 <li>Estimate the compositional correction factors as (weighted) means of
-the regularized (and possibly corrected) ratios: <span class="math display">\[
-\hat{\Lambda}_i =
+the regularized (and possibly corrected) ratios:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>Λ</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>p</mi></munderover><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mi minsize="2.4" maxsize="2.4">/</mi><mi>p</mi></mtd><mtd columnalign="left" style="text-align: left"><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> if type = "simple"</mtext></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>p</mi></munderover><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><msup><mi>e</mi><mrow><mo>−</mo><msubsup><mover><mi>σ</mi><mo accent="true">̂</mo></mover><mi>j</mi><mn>2</mn></msubsup><mi>/</mi><mn>2</mn></mrow></msup><mi>/</mi><msub><mi>w</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mi minsize="2.4" maxsize="2.4">/</mi><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>p</mi></munderover><mn>1</mn><mi>/</mi><msub><mi>w</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> if type = "wrench"</mtext></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">
+\hat{\Lambda}_i = 
 \begin{cases}
-\sum_{j = 1}^p \hat{\theta}_{ij} \bigg/ p&amp; \text{ if type =
-"simple"} \\
-\sum_{j = 1}^p \hat{\theta}_{ij} e^{-\hat{\sigma}_j^2 / 2} /  w_{ij}
-\bigg/ \sum_{j=1}^p 1/w_{ij}  &amp; \text{ if type = "wrench"}
-\\
+\sum_{j = 1}^p \hat{\theta}_{ij} \bigg/ p&amp; \text{ if type = "simple"} \\
+\sum_{j = 1}^p \hat{\theta}_{ij} e^{-\hat{\sigma}_j^2 / 2} /  w_{ij} \bigg/ \sum_{j=1}^p 1/w_{ij}  &amp; \text{ if type = "wrench"} \\
 \end{cases}
-\]</span> where <span class="math inline">\(w_{ij} = (1 -
-\hat{\pi}_{ij})(\hat{\pi}_{ij} + e^{\hat{\sigma}_j^2 + \hat{\eta}_i^2} -
-1)\)</span>. The correction term <span class="math inline">\(e^{\hat{\sigma}_j^2 / 2}\)</span> arises from the
-relation <span class="math inline">\(\mathbb{E}[r_{ij} | r_{ij} &gt; 0]
-= \theta_{ij} e^{\sigma_j^2/2}\)</span> and the weight <span class="math inline">\(w_{ij}\)</span> are marginal variances: <span class="math inline">\(\mathbb{V}[r_{ij}] = w_{ij}\)</span>.</li>
+</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>+</mo><msup><mi>e</mi><mrow><msubsup><mover><mi>σ</mi><mo accent="true">̂</mo></mover><mi>j</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mover><mi>η</mi><mo accent="true">̂</mo></mover><mi>i</mi><mn>2</mn></msubsup></mrow></msup><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">w_{ij} = (1 - \hat{\pi}_{ij})(\hat{\pi}_{ij} + e^{\hat{\sigma}_j^2 + \hat{\eta}_i^2} - 1)</annotation></semantics></math>.
+The correction term
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>e</mi><mrow><msubsup><mover><mi>σ</mi><mo accent="true">̂</mo></mover><mi>j</mi><mn>2</mn></msubsup><mi>/</mi><mn>2</mn></mrow></msup><annotation encoding="application/x-tex">e^{\hat{\sigma}_j^2 / 2}</annotation></semantics></math>
+arises from the relation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>&gt;</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><msub><mi>θ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msup><mi>e</mi><mrow><msubsup><mi>σ</mi><mi>j</mi><mn>2</mn></msubsup><mi>/</mi><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\mathbb{E}[r_{ij} | r_{ij} &gt; 0] = \theta_{ij} e^{\sigma_j^2/2}</annotation></semantics></math>
+and the weight
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">w_{ij}</annotation></semantics></math>
+are marginal variances:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝕍</mi><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><msub><mi>w</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\mathbb{V}[r_{ij}] = w_{ij}</annotation></semantics></math>.</li>
 </ul>
 <p>The offsets are then the product of compositional correction factors
-and depths: <span class="math display">\[
-O_i = \frac{\hat{\Lambda}_i}{(\prod_{i = 1}^n \hat{\Lambda}_i)^{1/n}}
-\times \frac{d_i}{(\prod_{i = 1}^n d_i)^{1/n}}
-\]</span></p>
+and depths:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>O</mi><mi>i</mi></msub><mo>=</mo><mfrac><msub><mover><mi>Λ</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><msup><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∏</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mover><mi>Λ</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mn>1</mn><mi>/</mi><mi>n</mi></mrow></msup></mfrac><mo>×</mo><mfrac><msub><mi>d</mi><mi>i</mi></msub><msup><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∏</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>d</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mn>1</mn><mi>/</mi><mi>n</mi></mrow></msup></mfrac></mrow><annotation encoding="application/x-tex">
+O_i = \frac{\hat{\Lambda}_i}{(\prod_{i = 1}^n \hat{\Lambda}_i)^{1/n}} \times \frac{d_i}{(\prod_{i = 1}^n d_i)^{1/n}}
+</annotation></semantics></math></p>
 </div>
 </div>
 <div class="section level2 unnumbered">
@@ -688,9 +753,7 @@ Surveys.”</span> <em>Nat Methods</em> 10 (September): 1200–1202. <a href="ht
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -703,16 +766,16 @@ Surveys.”</span> <em>Nat Methods</em> 10 (September): 1200–1202. <a href="ht
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

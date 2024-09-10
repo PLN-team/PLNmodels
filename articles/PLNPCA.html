@@ -6,27 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dimension reduction of multivariate count data with PLN-PCA • PLNmodels</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Dimension reduction of multivariate count data with PLN-PCA">
-<meta property="og:description" content="PLNmodels">
-<meta property="og:image" content="https://pln-team.github.io/PLNmodels/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -55,7 +47,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -90,7 +82,7 @@
 <li>
   <a href="https://github.com/pln-team/PLNmodels/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -101,7 +93,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -110,9 +102,9 @@
 with PLN-PCA</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2024-04-11</h4>
+            <h4 data-toc-skip class="date">2024-09-10</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/HEAD/vignettes/PLNPCA.Rmd" class="external-link"><code>vignettes/PLNPCA.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNPCA.Rmd" class="external-link"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
 
     </div>
@@ -165,52 +157,74 @@ etc.)</p>
 multivariate count data which is a variant of the Poisson Lognormal
 model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span> (see <a href="PLN.html">the PLN
 vignette</a> as a reminder). Indeed, it can be viewed as a PLN model
-with an additional rank constraint on the covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> such that <span class="math inline">\(\mathrm{rank}(\boldsymbol\Sigma)= q\)</span>.</p>
+with an additional rank constraint on the covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol\Sigma</annotation></semantics></math>
+such that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">k</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">\mathrm{rank}(\boldsymbol\Sigma)= q</annotation></semantics></math>.</p>
 <p>This PLN-PCA model can be written in a hierarchical framework where a
-sample of <span class="math inline">\(p\)</span>-dimensional observation
-vectors <span class="math inline">\(\mathbf{Y}_i\)</span> is related to
-some <span class="math inline">\(q\)</span>-dimensional vectors of
-latent variables <span class="math inline">\(\mathbf{W}_i\)</span> as
-follows: <span class="math display">\[\begin{equation}
+sample of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-dimensional
+observation vectors
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐘</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{Y}_i</annotation></semantics></math>
+is related to some
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>-dimensional
+vectors of latent variables
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐖</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{W}_i</annotation></semantics></math>
+as follows:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐖</mi><mi>i</mi></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">i.i.d.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝐖</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mn>𝟎</mn><mi>q</mi></msub><mo>,</mo><msub><mi>𝐈</mi><mi>q</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">parameter space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>=</mo><mi>𝛍</mi><mo>+</mo><msup><mi>𝐂</mi><mi>⊤</mi></msup><msub><mi>𝐖</mi><mi>i</mi></msub></mtd><mtd columnalign="left" style="text-align: left"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
   \begin{array}{rcl}
-    \text{latent space }  &amp; \mathbf{W}_i \quad \text{i.i.d.} &amp;
-\mathbf{W}_i \sim      \mathcal{N}(\mathbf{0}_q, \mathbf{I}_q)  \\
-\text{parameter space } &amp;   \mathbf{Z}_i = {\boldsymbol\mu} +
-\mathbf{C}^\top \mathbf{W}_i &amp; \\
-  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.}
-&amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
+    \text{latent space }  &amp; \mathbf{W}_i \quad \text{i.i.d.} &amp; \mathbf{W}_i \sim      \mathcal{N}(\mathbf{0}_q, \mathbf{I}_q)  \\
+\text{parameter space } &amp;   \mathbf{Z}_i = {\boldsymbol\mu} + \mathbf{C}^\top \mathbf{W}_i &amp; \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
-\end{equation}\]</span></p>
-<p>The parameter <span class="math inline">\({\boldsymbol\mu}\in\mathbb{R}^p\)</span>
-corresponds to the main effects, the <span class="math inline">\(p\times
-q\)</span> matrix <span class="math inline">\(\mathbf{C}\)</span> to the
-loadings in the parameter spaces and <span class="math inline">\(\mathbf{W}_i\)</span> to the scores of the <span class="math inline">\(i\)</span>-th observation in the low-dimensional
-latent subspace of the parameter space. The dimension of the latent
-space <span class="math inline">\(q\)</span> corresponds to the number
-of axes in the PCA or, in other words, to the rank of <span class="math inline">\(\mathbf{C}\mathbf{C}^\intercal\)</span>. An
-hopefully more intuitive way of writing this model is the following:
-<span class="math display">\[\begin{equation}
+\end{equation}</annotation></semantics></math></p>
+<p>The parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝛍</mi><mo>∈</mo><msup><mi>ℝ</mi><mi>p</mi></msup></mrow><annotation encoding="application/x-tex">{\boldsymbol\mu}\in\mathbb{R}^p</annotation></semantics></math>
+corresponds to the main effects, the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>×</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">p\times q</annotation></semantics></math>
+matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐂</mi><annotation encoding="application/x-tex">\mathbf{C}</annotation></semantics></math>
+to the loadings in the parameter spaces and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐖</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{W}_i</annotation></semantics></math>
+to the scores of the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>-th
+observation in the low-dimensional latent subspace of the parameter
+space. The dimension of the latent space
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
+corresponds to the number of axes in the PCA or, in other words, to the
+rank of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐂</mi><msup><mi>𝐂</mi><mo>⊺</mo></msup></mrow><annotation encoding="application/x-tex">\mathbf{C}\mathbf{C}^\intercal</annotation></semantics></math>.
+An hopefully more intuitive way of writing this model is the following:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><mi>𝚺</mi><mo>=</mo><mi>𝐂</mi><msup><mi>𝐂</mi><mi>⊤</mi></msup></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
   \begin{array}{rcl}
-  \text{latent space } &amp;   \mathbf{Z}_i \sim
-\mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \qquad
-\boldsymbol\Sigma = \mathbf{C}\mathbf{C}^\top \\
-  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.}
-&amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
+  \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{C}\mathbf{C}^\top \\
+  \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
   \end{array}
-\end{equation}\]</span> where the interpretation of PLN-PCA as a
-rank-constrained PLN model is more obvious.</p>
+\end{equation}</annotation></semantics></math> where the interpretation
+of PLN-PCA as a rank-constrained PLN model is more obvious.</p>
 <div class="section level4">
 <h4 id="covariates-and-offsets">Covariates and offsets<a class="anchor" aria-label="anchor" href="#covariates-and-offsets"></a>
 </h4>
 <p>Just like PLN, PLN-PCA generalizes to a formulation close to a
 multivariate generalized linear model where the main effect is due to a
-linear combination of <span class="math inline">\(d\)</span> covariates
-<span class="math inline">\(\mathbf{x}_i\)</span> and to a vector <span class="math inline">\(\mathbf{o}_i\)</span> of <span class="math inline">\(p\)</span> offsets in sample <span class="math inline">\(i\)</span>. The latent layer then reads <span class="math display">\[\begin{equation}
-  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i +
-\mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Sigma), \qquad
-\boldsymbol\Sigma = \mathbf{C}\mathbf{C}^\top,
-\end{equation}\]</span> where <span class="math inline">\(\mathbf{B}\)</span> is a <span class="math inline">\(d\times p\)</span> matrix of regression
-parameters.</p>
+linear combination of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+covariates
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐱</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{x}_i</annotation></semantics></math>
+and to a vector
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐨</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{o}_i</annotation></semantics></math>
+of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+offsets in sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.
+The latent layer then reads
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi></mrow><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><mi>𝚺</mi><mo>=</mo><mi>𝐂</mi><msup><mi>𝐂</mi><mi>⊤</mi></msup><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation} 
+  \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{C}\mathbf{C}^\top,
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
+is a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">d\times p</annotation></semantics></math>
+matrix of regression parameters.</p>
 </div>
 <div class="section level4">
 <h4 id="optimization-by-variational-inference">Optimization by Variational inference<a class="anchor" aria-label="anchor" href="#optimization-by-variational-inference"></a>
@@ -218,8 +232,9 @@ parameters.</p>
 <p>Dimension reduction and visualization is the main objective in
 (PLN)-PCA. To reach this goal, we need to first estimate the model
 parameters. Inference in PLN-PCA focuses on the regression parameters
-<span class="math inline">\(\mathbf{B}\)</span> and on the covariance
-matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
+and on the covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol\Sigma</annotation></semantics></math>.
 Technically speaking, we adopt a variational strategy to approximate the
 log-likelihood function and optimize the consecutive variational
 surrogate of the log-likelihood with a gradient-ascent-based approach.
@@ -234,9 +249,10 @@ package. Technical details can be found in <span class="citation">Chiquet, Maria
 </h2>
 <p>In the package, the PLNPCA model is adjusted with the function
 <code>PLNPCA</code>, which we review in this section. This function
-adjusts the model for a series of value of <span class="math inline">\(q\)</span> and provides a collection of objects
-<code>PLNPCAfit</code> stored in an object with class
-<code>PLNPCAfamily</code>.</p>
+adjusts the model for a series of value of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
+and provides a collection of objects <code>PLNPCAfit</code> stored in an
+object with class <code>PLNPCAfamily</code>.</p>
 <p>The class <code>PLNPCAfit</code> inherits from the class
 <code>PLNfit</code>, so we strongly recommend the reader to be
 comfortable with <code>PLN</code> and <code>PLNfit</code> before using
@@ -247,8 +263,9 @@ comfortable with <code>PLN</code> and <code>PLNfit</code> before using
 <div class="section level4">
 <h4 id="adjusting-a-collection-of-fits">Adjusting a collection of fits<a class="anchor" aria-label="anchor" href="#adjusting-a-collection-of-fits"></a>
 </h4>
-<p>We fit a collection of <span class="math inline">\(q\)</span> models
-as follows:</p>
+<p>We fit a collection of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
+models as follows:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">PCA_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLNPCA.html">PLNPCA</a></span><span class="op">(</span></span>
 <span>  <span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -259,7 +276,7 @@ as follows:</p>
 <span><span class="co">##  Initialization...</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##  Adjusting 4 PLN models for PCA analysis.</span></span>
-<span><span class="co">##   Rank approximation = 1      Rank approximation = 4      Rank approximation = 3      Rank approximation = 2 </span></span>
+<span><span class="co">##   Rank approximation = 4      Rank approximation = 3      Rank approximation = 1      Rank approximation = 2 </span></span>
 <span><span class="co">##  Post-treatments</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model,
@@ -382,7 +399,8 @@ the collection</p>
 available via <code><a href="../reference/PLNPCAfamily.html">?PLNPCAfamily</a></code>.</p>
 </div>
 <div class="section level4">
-<h4 id="model-selection-of-rank-q">Model selection of rank <span class="math inline">\(q\)</span><a class="anchor" aria-label="anchor" href="#model-selection-of-rank-q"></a>
+<h4 id="model-selection-of-rank-q">Model selection of rank
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math><a class="anchor" aria-label="anchor" href="#model-selection-of-rank-q"></a>
 </h4>
 <p>The <code>plot</code> method of <code>PLNPCAfamily</code> displays
 evolution of the criteria mentioned above, and is a good starting point
@@ -391,25 +409,31 @@ for model selection:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">PCA_models</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/plot%20nocov-1.png" width="672"></p>
 <p>Note that we use the original definition of the BIC/ICL criterion
-(<span class="math inline">\(\texttt{loglik} -
-\frac{1}{2}\texttt{pen}\)</span>), which is on the same scale as the
-log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular
-alternative</a> consists in using <span class="math inline">\(-2\texttt{loglik} + \texttt{pen}\)</span> instead.
-You can do so by specifying <code>reverse = TRUE</code>:</p>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">\texttt{loglik} - \frac{1}{2}\texttt{pen}</annotation></semantics></math>),
+which is on the same scale as the log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular
+alternative</a> consists in using
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>2</mn><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>+</mo><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">-2\texttt{loglik} + \texttt{pen}</annotation></semantics></math>
+instead. You can do so by specifying <code>reverse = TRUE</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">PCA_models</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/plot%20nocov-reverse-1.png" width="672"></p>
 <p>In this case, the variational lower bound of the log-likelihood is
 hopefully strictly increasing (or rather decreasing if using
 <code>reverse = TRUE</code>) with the number of axes (or subspace
-dimension). Also note the (approximated) <span class="math inline">\(R^2\)</span> which is displayed for each value of
-<span class="math inline">\(q\)</span> (see <span class="citation">(<a href="#ref-PLNPCA">Chiquet, Mariadassou, and Robin 2018</a>)</span> for
-details on its computation).</p>
+dimension). Also note the (approximated)
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
+which is displayed for each value of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
+(see <span class="citation">(<a href="#ref-PLNPCA">Chiquet, Mariadassou,
+and Robin 2018</a>)</span> for details on its computation).</p>
 <p>From this plot, we can see that the best model in terms of BIC or ICL
-is obtained for a rank <span class="math inline">\(q=4\)</span> or <span class="math inline">\(q=3\)</span>. We may extract the corresponding
-model with the method <code>getBestModel("ICL")</code>. A model with a
-specific rank can be extracted with the <code><a href="../reference/getModel.html">getModel()</a></code>
-method:</p>
+is obtained for a rank
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">q=4</annotation></semantics></math>
+or
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">q=3</annotation></semantics></math>.
+We may extract the corresponding model with the method
+<code>getBestModel("ICL")</code>. A model with a specific rank can be
+extracted with the <code><a href="../reference/getModel.html">getModel()</a></code> method:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPCA_ICL</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">PCA_models</span>, <span class="st">"ICL"</span><span class="op">)</span> </span>
 <span><span class="va">myPCA_BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModel.html">getModel</a></span><span class="op">(</span><span class="va">PCA_models</span>, <span class="fl">3</span><span class="op">)</span> <span class="co"># getBestModel(PCA_models, "BIC")  is equivalent here </span></span></code></pre></div>
@@ -500,7 +524,9 @@ context of PCA are</p>
 </tr></tbody>
 </table>
 <ul>
-<li>the estimated covariance matrix <span class="math inline">\(\boldsymbol\Sigma\)</span> with fixed rank</li>
+<li>the estimated covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol\Sigma</annotation></semantics></math>
+with fixed rank</li>
 </ul>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a></span><span class="op">(</span>is.corr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
@@ -738,10 +764,12 @@ thanks to the model formula:</p>
 <span><span class="co">##  Initialization...</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##  Adjusting 4 PLN models for PCA analysis.</span></span>
-<span><span class="co">##   Rank approximation = 3      Rank approximation = 4      Rank approximation = 2      Rank approximation = 1 </span></span>
+<span><span class="co">##   Rank approximation = 1      Rank approximation = 2      Rank approximation = 4      Rank approximation = 3 </span></span>
 <span><span class="co">##  Post-treatments</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
-<p>Again, the best model is obtained for <span class="math inline">\(q=3\)</span> classes.</p>
+<p>Again, the best model is obtained for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">q=3</annotation></semantics></math>
+classes.</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">PCA_models_cov</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/extraction%20cov-1.png" width="672"></p>
@@ -814,11 +842,15 @@ Society: Series B (Statistical Methodology)</em> 61 (3): 611–22.
 <ol>
 <li id="fn1"><p>With our PLN-PCA (and any pPCA model for count data,
 where successive models are not nested), it is important to performed
-the model selection of <span class="math inline">\(q\)</span> prior to
-visualization, since the model with rank <span class="math inline">\(q=3\)</span> is not nested in the model with rank
-<span class="math inline">\(q=4\)</span>. Hence, percentage of variance
-must be interpreted with care: it sums to 100% but must be put in
-perspective with the model <span class="math inline">\(R^2\)</span>,
+the model selection of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
+prior to visualization, since the model with rank
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">q=3</annotation></semantics></math>
+is not nested in the model with rank
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">q=4</annotation></semantics></math>.
+Hence, percentage of variance must be interpreted with care: it sums to
+100% but must be put in perspective with the model
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>,
 giving an approximation of the total percentage of variance explained
 with the current model.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
@@ -827,9 +859,7 @@ with the current model.<a href="#fnref1" class="footnote-back">↩︎</a></p></l
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -842,16 +872,16 @@ with the current model.<a href="#fnref1" class="footnote-back">↩︎</a></p></l
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>
