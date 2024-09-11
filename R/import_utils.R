@@ -3,19 +3,27 @@
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Internal function to find the most comprehensive set of common samples between a count table and a covariates data.frame
-common_samples <- function(counts, covariates) {
+common_samples <- function(counts, covariates, call = rlang::caller_env()) {
   ## Have default samples names been created when matching samples?
   default_names <- FALSE
   ## Sanity checks:
-  name_warning <- paste("There are no matching names in the count matrix and the covariates data.frame.",
-                        "Function will proceed assuming:",
-                        "- samples are in the same order;",
-                        "- samples are rows of the abundance matrix.", sep = "\n")
+  name_warning <- c(
+    "!" = "There are no matching names in {.var counts} and {.var covariates}.",
+    "i" = "Function will proceed assuming:",
+    "i" = "- samples are in the same order;",
+    "i" = "- samples are rows of {.var counts}.", sep = "\n"
+  )
+  row_count_abort <- c(
+    "x" = "{.var counts} and {.var covariates} have different number of row(s):",
+    "i" = "{.var counts} has {.cls {nrow(counts)}} row(s);",
+    "i" = "{.var covariates} has {.cls {nrow(covariates)}} row(s).",
+    sep = "\n"
+  )
   ## no sample names in covariates: create sample names
   if (is.null(rownames(covariates))) {
-    warning(name_warning)
+    cli::cli_warn(name_warning, call = call)
     if (nrow(counts) != nrow(covariates)) {
-      stop("Incompatible dimensions")
+      cli::cli_abort(row_count_abort, call = call)
     }
     if (is.null(rownames(counts))) rownames(counts) <- paste0("Sample_", 1:nrow(counts))
     rownames(covariates) <- rownames(counts)
@@ -27,12 +35,15 @@ common_samples <- function(counts, covariates) {
     # If name matching is impossible, abort if
     ## - dimension are incompatible or
     ## - row (samples) names are conflicting
-    warning(name_warning)
+    cli::cli_warn(name_warning, call = call)
     if (nrow(counts) != nrow(covariates)) {
-      stop("Incompatible dimensions")
+      cli::cli_abort(row_count_abort, call = call)
     }
     if (!is.null(rownames(counts))) {
-      stop("Conflicting samples names in count matrix and covariates data frames")
+      cli::cli_abort(c(
+        "x" = "Conflicting sample names in {.var counts} matrix and {.var covariates} data frames",
+        "i" = "Sample names in {.var counts} matrix is {.cls {rownames(counts)}} and in {.var covariates} is {.cls {rownames(covariates)}}."
+      ), call = call)
     }
     rownames(counts) <- rownames(covariates)
     default_names <- TRUE
@@ -44,8 +55,20 @@ common_samples <- function(counts, covariates) {
   if (sample_are_cols) counts <- t(counts)
   ## Ensure consistency by using only common samples
   common_samples <- intersect(rownames(counts), rownames(covariates))
+  # Add condition when less counts than covariates information
   if (length(common_samples) < nrow(counts)) {
-    message(paste0(nrow(counts) - length(common_samples), " samples were dropped from the abundance matrix for lack of associated covariates."))
+    cli::cli_warn(c(
+      "!" = "There are less samples in {.var counts} than in {.var covariates}.",
+      "i" = "{.cls {nrow(counts) - length(common_samples)}} samples were dropped from the {.var counts} matrix for lack of associated {.var covariates}.",
+      "i" = "{.cls There {?is/are} {length(common_samples)}} sample{?s} in the final data.frame."
+    ), call = call)
+  }
+  if (length(common_samples) < nrow(covariates)) {
+    cli::cli_warn(c(
+      "!" = "There are less samples in {.var covariates} than in {.var counts}.",
+      "i" = "{.cls {nrow(covariates) - length(common_samples)}} samples were dropped from {.var covariates} for lack of associated {.var counts}.",
+      "i" = "{.cls There {?is/are} {length(common_samples)}} sample{?s} in the final data.frame."
+    ), call = call)
   }
   return(list(transpose_counts = sample_are_cols,
               common_samples   = common_samples,
@@ -403,6 +426,7 @@ species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_of
 #' @param counts Required. An abundance count table, preferably with dimensions names and species as columns.
 #' @param covariates Required. A covariates data frame, preferably with row names.
 #' @param offset Optional. Normalization scheme used to compute scaling factors used as offset during PLN inference. Available schemes are "TSS" (Total Sum Scaling, default), "CSS" (Cumulative Sum Scaling, used in metagenomeSeq), "RLE" (Relative Log Expression, used in DESeq2), "GMPR" (Geometric Mean of Pairwise Ratio, introduced in Chen et al., 2018), Wrench (introduced in Kumar et al., 2018) or "none". Alternatively the user can supply its own vector or matrix of offsets (see note for specification of the user-supplied offsets).
+#' @param call Optional. The execution environment in which to set the local error call.
 #' @param ... Additional parameters passed on to [compute_offset()]
 #'
 #' @references Chen, L., Reeve, J., Zhang, L., Huang, S., Wang, X. and Chen, J. (2018) GMPR: A robust normalization method for zero-inflated count data with application to microbiome sequencing data. PeerJ, 6, e4600 \doi{10.7717/peerj.4600}
@@ -429,7 +453,7 @@ species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_of
 #' )
 #' proper_data$Abundance
 #' proper_data$Offset
-prepare_data <- function(counts, covariates, offset = "TSS", ...) {
+prepare_data <- function(counts, covariates, offset = "TSS", call = rlang::caller_env(), ...) {
   ## Convert counts and covariates to expected format
   counts     <- data.matrix(counts, rownames.force = TRUE)
   covariates <- as.data.frame(covariates)
@@ -448,15 +472,19 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
   counts <- counts[samples, , drop = FALSE]
   ## Replace NA with 0s
   if (any(is.na(counts))) {
+    cli::cli_warn(c(
+      "!" = "There is at least one NA value in {.var counts}.",
+      "i" = "{.cls {sum(is.na(counts))}} NA value{?s} in {.var counts} {?has/have} been replaced with 0."
+    ), call = call)
     counts[is.na(counts)] <- 0
-    warning("NA values in count table replaced with 0.")
   }
   ## filter out empty samples
   empty_samples <- which(rowSums(counts) == 0)
-  if (length(empty_samples)) {
-    warning(paste0("Sample(s) ",
-                   paste(samples[empty_samples], collapse = " and "),
-                   " dropped for lack of positive counts."))
+  if (length(empty_samples) > 0) { # Add > 0
+    cli::cli_warn(c(
+      "!" = "There  is at least one empty sample in {.var counts}.",
+      "i" = "{.cls {length(empty_samples)}} sample{?s} ({.cls {samples[empty_samples]}}) in {.var counts} {?has/have} been dropped for lack of positive counts."
+    ), call = call)
     samples <- samples[-empty_samples]
     counts <- counts[samples, ,drop = FALSE]
   }
@@ -511,10 +539,12 @@ prepare_data <- function(counts, covariates, offset = "TSS", ...) {
 compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wrench", "TMM", "none"), scale = c("none", "count"), ...) {
   ## special behavior for data.frame
   if (inherits(offset, "data.frame")) {
-    stop(
-  "You supplied a data.frame to compute_offset(). Did you mean to supply a numeric matrix?
-  Try converting your data.frame to a matrix with as.matrix()."
-  )
+    cli::cli_abort(c(
+      "{.var offset} must be an available scheme or a vector or matrix of offsets.",
+      "x" = "You supplied a data.frame for {.var offset}",
+      "i" = "Did you mean to supply a numeric matrix?",
+      "i" = "Try converting your data.frame to a matrix with `as.matrix()`."
+    ))
   }
   ## special behavior for numeric offset
   if (is.numeric(offset)) {

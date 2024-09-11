@@ -8,7 +8,7 @@
 A data frame with 6 variables:
 \itemize{
 \item Abundance: A 30 fish species by 89 sites count matrix
-\item Offset: A 30 fish species by 116 samples offset matrix, measuring the sampling effort in each site
+\item Offset: A 30 fish species by 89 samples offset matrix, measuring the sampling effort in each site
 \item 4 covariates for latitude, longitude, depth (in meters), temperature (in Celsius degrees).
 }
 }
