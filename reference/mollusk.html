@@ -131,7 +131,9 @@ Original data set has been extracted from ade4.</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mollusk</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">mollusc</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">mollusk</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">mollusk</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Sample(s) 134 and 137 and 145 and 146 dropped for lack of positive counts.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span><span style="color: #BBBB00;">!</span> There is at least one empty sample in `counts`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> <span style="color: #0000BB;">&lt;4&gt;</span> samples (<span style="color: #0000BB;">&lt;134/137/145/146&gt;</span>) in `counts` have been dropped for lack of</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   positive counts.</span>
 </code></pre></div>
     </div>
   </div>
