@@ -36,6 +36,7 @@ Networkfamily <- R6Class(
 
       ## Initialize fields shared by the super class
       super$initialize(data$Y, data$X, data$O, data$w, control)
+
       if (is.null(control$penalty_weights))
         control$penalty_weights <- matrix(1, private$p, private$p)
       ## Get the number of penalty
@@ -58,7 +59,6 @@ Networkfamily <- R6Class(
           if (!control$penalize_diagonal) diag(penalty_weights) <- 0
           penalty_weights
         })
-
       ## Get an appropriate grid of penalties
       if (is.null(penalties)) {
         if (control$trace > 1) cat("\nComputing an appropriate grid of penalties.")
@@ -322,7 +322,7 @@ PLNnetworkfamily <- R6Class(
     initialize = function(penalties, data, control) {
 
       ## A basic model (constrained model) for inception, ignored if inception is provided by the user
-      if (is.null(control$inception)) {
+      if (is.null(control$inception) | is.character(control$inception)) {
         ## Allow inception with spherical / diagonal / full PLNfit before switching back to PLNfit_fixedcov
         ## for the inner-outer loop of PLNnetwork.
         myPLN <- switch(
