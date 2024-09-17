@@ -31,6 +31,7 @@
 #' @rdname PLNfit
 #' @include PLNfit-class.R
 #' @importFrom R6 R6Class
+#' @import torch
 #'
 #' @examples
 #' \dontrun{
@@ -96,7 +97,6 @@ PLNfit <- R6Class(
       Ji
     },
 
-    #' @import torch
     torch_optimize = function(data, params, config) {
 
       #config$device = "mps"
@@ -146,7 +146,7 @@ PLNfit <- R6Class(
 
         ## Error message if objective diverges
         if (!is.finite(loss$item())) {
-          stop(sprintf("The ELBO diverged during the optimization procedure.\nConsider using:\n* a different optimizer (current optimizer: %s)\n* a smaller learning rate (current rate: %.3f)\nwith `control = PLN_param(config_optim = list(algorithm = ..., lr = ...))`",
+          stop(sprintf("The ELBO diverged during the optimization procedure.\nConsider using:\n* a different optimizer (current optimizer: %s)\n* a smaller learning rate (current rate: %.3f)\nwith `control = PLN_param(backend = 'torch', config_optim = list(algorithm = ..., lr = ...))`",
                        config$algorithm, config$lr))
         }
 
@@ -158,7 +158,7 @@ PLNfit <- R6Class(
         ## Check for convergence
         #print (delta_f)
         if (delta_f < config$ftol_rel) status <- 3
-        if (delta_x < config$xtol_rel) status <- 4
+        #if (delta_x < config$xtol_rel) status <- 4
         if (status %in% c(3,4)) {
           objective <- objective[1:iterate + 1]
           break
@@ -183,7 +183,6 @@ PLNfit <- R6Class(
       )
       out
     },
-
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE METHODS FOR VARIANCE OF THE ESTIMATORS
@@ -341,7 +340,6 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## END OF PRIVATE METHODS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -557,7 +555,7 @@ PLNfit <- R6Class(
         S <- VE$S
       } else {
         # otherwise set M = 0 and S = diag(Sigma)
-        M <- matrix(1, nrow = n_new, ncol = self$p)
+        M <- matrix(0, nrow = n_new, ncol = self$p)
         S <- matrix(diag(private$Sigma), nrow = n_new, ncol = self$p, byrow = TRUE)
       }
 
@@ -783,6 +781,7 @@ PLNfit_diagonal <- R6Class(
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## END OF TORCH METHODS
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -863,6 +862,7 @@ PLNfit_spherical <- R6Class(
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
+
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## END OF TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -916,7 +916,7 @@ PLNfit_fixedcov <- R6Class(
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$optimizer$main <- ifelse(control$backend == "nlopt", nlopt_optimize_fixed, private$torch_optimize)
-      ## ve step is the same as in the fullly parameterized covariance
+      ## ve step is the same as in the fully parameterized covariance
       private$Omega <- control$Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields

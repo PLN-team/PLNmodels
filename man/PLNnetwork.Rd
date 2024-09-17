@@ -2,7 +2,7 @@
 % Please edit documentation in R/PLNnetwork.R
 \name{PLNnetwork}
 \alias{PLNnetwork}
-\title{Poisson lognormal model towards sparse network inference}
+\title{Sparse Poisson lognormal model for network inference}
 \usage{
 PLNnetwork(
   formula,
@@ -31,7 +31,9 @@ an R6 object with class \code{\link{PLNnetworkfamily}}, which contains
 a collection of models with class \code{\link{PLNnetworkfit}}
 }
 \description{
-Fit the sparse inverse covariance variant of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
+Perform sparse inverse covariance estimation for the Zero Inflated Poisson lognormal model
+using a variational algorithm. Iterate over a range of logarithmically spaced sparsity parameter values.
+Use the (g)lm syntax to specify the model (including covariates and offsets).
 }
 \examples{
 data(trichoptera)

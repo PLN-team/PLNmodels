@@ -1,69 +1,79 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 1.1.0
+Version: 1.2.1
 Authors@R: c(
-  person("Julien", "Chiquet", role = c("aut", "cre"), email = "julien.chiquet@inrae.fr",
-      comment = c(ORCID = "0000-0002-3629-3429")),
-  person("Mahendra", "Mariadassou", role = "aut", email = "mahendra.mariadassou@inrae.fr", 
-      comment = c(ORCID = "0000-0003-2986-354X")),
-  person("Stéphane", "Robin", role ="aut", email = "stephane.robin@inrae.fr"),
-  person("François", "Gindraud", role = "aut", email = "francois.gindraud@gmail.com"),
-  person("Julie", "Aubert", role = "ctb", email = "julie.aubert@inrae.fr"),
-  person("Bastien", "Batardière", role = "ctb", email = "bastien.batardiere@inrae.fr"),
-  person("Giovanni", "Poggiato", role = "ctb", email = "giov.poggiato@gmail.com"),
-  person("Cole", "Trapnell", role = "ctb", email = "coletrap@uw.edu"),
-  person("Maddy", "Duran", role = "ctb", email = "duran@uw.edu")
+    person("Julien", "Chiquet", , "julien.chiquet@inrae.fr", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-3629-3429")),
+    person("Mahendra", "Mariadassou", , "mahendra.mariadassou@inrae.fr", role = "aut",
+           comment = c(ORCID = "0000-0003-2986-354X")),
+    person("Stéphane", "Robin", , "stephane.robin@inrae.fr", role = "aut"),
+    person("François", "Gindraud", , "francois.gindraud@gmail.com", role = "aut"),
+    person("Julie", "Aubert", , "julie.aubert@inrae.fr", role = "ctb"),
+    person("Bastien", "Batardière", , "bastien.batardiere@inrae.fr", role = "ctb"),
+    person("Giovanni", "Poggiato", , "giov.poggiato@gmail.com", role = "ctb"),
+    person("Cole", "Trapnell", , "coletrap@uw.edu", role = "ctb"),
+    person("Maddy", "Duran", , "duran@uw.edu", role = "ctb")
   )
-Description: The Poisson-lognormal model and variants (Chiquet, Mariadassou and Robin, 
-    2021 <doi:10.3389/fevo.2021.588292>) can be used for 
-    a variety of multivariate problems when count data are at play, including 
-    principal component analysis for count data, discriminant analysis, model-based clustering and 
-    network inference. Implements variational algorithms to fit such models accompanied with a set of 
-    functions for visualization and diagnostic. 
+Description: The Poisson-lognormal model and variants (Chiquet,
+    Mariadassou and Robin, 2021 <doi:10.3389/fevo.2021.588292>) can be
+    used for a variety of multivariate problems when count data are at
+    play, including principal component analysis for count data,
+    discriminant analysis, model-based clustering and network inference.
+    Implements variational algorithms to fit such models accompanied with
+    a set of functions for visualization and diagnostic.
 URL: https://pln-team.github.io/PLNmodels/
 BugReports: https://github.com/pln-team/PLNmodels/issues
 License: GPL (>= 3)
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
-Depends: R (>= 3.4)
-LazyData: true
-biocViews:
+Depends: R (>= 3.6)
 Imports: 
-    methods,
-    stats,
-    MASS,
+    cli,
+    ClustOfVar,
+    corrplot,
+    dplyr,
+    fastglm,
+    furrr,
     future,
     future.apply,
-    furrr,
-    R6,
+    ggplot2,
     glassoFast,
-    Matrix,
-    Rcpp,
-    nloptr,
-    igraph,
+    grDevices,
     grid,
     gridExtra,
-    dplyr,
-    tidyr,
-    purrr,
-    ggplot2,
-    corrplot,
+    igraph,
     magrittr,
-    fastglm,
-    ClustOfVar,
-    torch,
+    MASS,
+    Matrix,
+    methods,
+    nloptr,
+    parallel,
+    pscl,
+    purrr,
+    R6,
+    Rcpp,
     rlang,
-    sbm
+    sbm,
+    scales,
+    stats,
+    tidyr,
+    torch
 Suggests: 
+    factoextra,
     knitr,
     rmarkdown,
-    testthat,
-    pkgdown,
     spelling,
-    factoextra
-LinkingTo: Rcpp, RcppArmadillo, nloptr
-VignetteBuilder: knitr
+    testthat
+LinkingTo: 
+    nloptr,
+    Rcpp,
+    RcppArmadillo
+VignetteBuilder: 
+    knitr
+biocViews:
+Encoding: UTF-8
+Language: en-US
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
 Collate: 
     'PLNfit-class.R'
     'PLN.R'
@@ -98,6 +108,10 @@ Collate:
     'PLNnetworkfit-S3methods.R'
     'PLNnetworkfit-class.R'
     'RcppExports.R'
+    'ZIPLNfit-class.R'
+    'ZIPLN.R'
+    'ZIPLNfit-S3methods.R'
+    'ZIPLNnetwork.R'
     'barents.R'
     'import_utils.R'
     'mollusk.R'
@@ -105,8 +119,9 @@ Collate:
     'optimize_plnblock.R'
     'optimize_plnblockbis.R'
     'plot_utils.R'
+    'scRNA.R'
     'trichoptera.R'
     'utils-pipe.R'
+    'utils-zipln.R'
     'utils.R'
     'zzz.R'
-Language: en-US

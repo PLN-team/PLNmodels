@@ -50,11 +50,18 @@ std::unique_ptr<NloptStruct, NloptDeleter> new_nlopt_optimizer(const Rcpp::List 
         throw Rcpp::exception("nlopt_create");
     }
 
+    if(config.containsElementNamed("xtol_abs")) {
+      if(nlopt_set_xtol_abs1(opt.get(), Rcpp::as<double>(config["xtol_abs"])) != NLOPT_SUCCESS) {
+        throw Rcpp::exception("nlopt_set_xtol_abs1");
+      }
+    }
+
     if(config.containsElementNamed("xtol_rel")) {
         if(nlopt_set_xtol_rel(opt.get(), Rcpp::as<double>(config["xtol_rel"])) != NLOPT_SUCCESS) {
             throw Rcpp::exception("nlopt_set_xtol_rel");
         }
     }
+
     if(config.containsElementNamed("ftol_abs")) {
         if(nlopt_set_ftol_abs(opt.get(), Rcpp::as<double>(config["ftol_abs"])) != NLOPT_SUCCESS) {
             throw Rcpp::exception("nlopt_set_ftol_abs");
@@ -93,20 +100,20 @@ std::unique_ptr<NloptStruct, NloptDeleter> new_nlopt_optimizer(const Rcpp::List 
 //     throw Rcpp::exception("nlopt_set_x_weights");
 //   }
 // }
-
-void set_uniform_xtol_abs(NloptStruct * opt, double value) {
-    if(nlopt_set_xtol_abs1(opt, value) != NLOPT_SUCCESS) {
-        throw Rcpp::exception("nlopt_set_xtol_abs1");
-    }
-}
-void set_per_value_xtol_abs(NloptStruct * opt, const std::vector<double> & xtol_abs) {
-    if(xtol_abs.size() != nlopt_get_dimension(opt)) {
-        throw Rcpp::exception("set_per_value_xtol_abs: parameter size mismatch");
-    }
-    if(nlopt_set_xtol_abs(opt, xtol_abs.data()) != NLOPT_SUCCESS) {
-        throw Rcpp::exception("nlopt_set_xtol_abs");
-    }
-}
+//
+// void set_uniform_xtol_abs(NloptStruct * opt, double value) {
+//     if(nlopt_set_xtol_abs1(opt, value) != NLOPT_SUCCESS) {
+//         throw Rcpp::exception("nlopt_set_xtol_abs1");
+//     }
+// }
+// void set_per_value_xtol_abs(NloptStruct * opt, const std::vector<double> & xtol_abs) {
+//     if(xtol_abs.size() != nlopt_get_dimension(opt)) {
+//         throw Rcpp::exception("set_per_value_xtol_abs: parameter size mismatch");
+//     }
+//     if(nlopt_set_xtol_abs(opt, xtol_abs.data()) != NLOPT_SUCCESS) {
+//         throw Rcpp::exception("nlopt_set_xtol_abs");
+//     }
+// }
 
 // ---------------------------------------------------------------------------------------
 // sanity test and example
@@ -137,7 +144,7 @@ bool cpp_test_nlopt() {
 
     auto optimizer = new_nlopt_optimizer(config, x.size());
 
-    set_uniform_xtol_abs(optimizer.get(), 0);
+    // set_uniform_xtol_abs(optimizer.get(), 0);
     // set_uniform_x_weights(optimizer.get(), 1.);
 
     check(nlopt_get_algorithm(optimizer.get()) == NLOPT_LD_LBFGS, "optim algorithm");

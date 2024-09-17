@@ -36,19 +36,6 @@ Rcpp::List nlopt_optimize_block(
   metadata.map<S_ID>(parameters.data()) = init_S;
 
   auto optimizer = new_nlopt_optimizer(config, parameters.size());
-  if(config.containsElementNamed("xtol_abs")) {
-    SEXP value = config["xtol_abs"];
-    if(Rcpp::is<double>(value)) {
-      set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
-    } else {
-      auto per_param_list = Rcpp::as<Rcpp::List>(value);
-      auto packed = std::vector<double>(metadata.packed_size);
-      set_from_r_sexp(metadata.map<B_ID>(packed.data()), per_param_list["B"]);
-      set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
-      set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
-      set_per_value_xtol_abs(optimizer.get(), packed);
-    }
-  }
 
   // Optimization over B, M and S: computation of objective and gradients
   auto objective_and_grad = [&metadata, &Y, &X, &O, &w, &w_bar, &Tau](const double * params, double * grad) -> double {
@@ -203,19 +190,6 @@ Rcpp::List nlopt_optimize_block_sparse(
   metadata.map<S_ID>(parameters.data()) = init_S;
 
   auto optimizer = new_nlopt_optimizer(config, parameters.size());
-  if(config.containsElementNamed("xtol_abs")) {
-    SEXP value = config["xtol_abs"];
-    if(Rcpp::is<double>(value)) {
-      set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
-    } else {
-      auto per_param_list = Rcpp::as<Rcpp::List>(value);
-      auto packed = std::vector<double>(metadata.packed_size);
-      set_from_r_sexp(metadata.map<B_ID>(packed.data()), per_param_list["B"]);
-      set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
-      set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
-      set_per_value_xtol_abs(optimizer.get(), packed);
-    }
-  }
 
   // Optimization over B, M and S: computation of objective and gradients (with Omega fixed)
   auto objective_and_grad = [&metadata, &Y, &X, &O, &w, &w_bar, &Omega, &Tau](const double * params, double * grad) -> double {
@@ -382,18 +356,6 @@ Rcpp::List nlopt_optimize_vestep_block(
   metadata.map<S_ID>(parameters.data()) = init_S;
 
   auto optimizer = new_nlopt_optimizer(config, parameters.size());
-  if(config.containsElementNamed("xtol_abs")) {
-    SEXP value = config["xtol_abs"];
-    if(Rcpp::is<double>(value)) {
-      set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
-    } else {
-      auto per_param_list = Rcpp::as<Rcpp::List>(value);
-      auto packed = std::vector<double>(metadata.packed_size);
-      set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
-      set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
-      set_per_value_xtol_abs(optimizer.get(), packed);
-    }
-  }
 
   const arma::mat mu = O + X * B ;
   const arma::mat A2 = trunc_exp(mu) ;

@@ -51,7 +51,6 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-PLNnetworkfit-new}{\code{PLNnetworkfit$new()}}
-\item \href{#method-PLNnetworkfit-update}{\code{PLNnetworkfit$update()}}
 \item \href{#method-PLNnetworkfit-optimize}{\code{PLNnetworkfit$optimize()}}
 \item \href{#method-PLNnetworkfit-latent_network}{\code{PLNnetworkfit$latent_network()}}
 \item \href{#method-PLNnetworkfit-plot_network}{\code{PLNnetworkfit$plot_network()}}
@@ -60,12 +59,13 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 }
 }
 \if{html}{\out{
-<details open><summary>Inherited methods</summary>
+<details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit_fixedcov" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfit_fixedcov.html#method-PLNfit_fixedcov-postTreatment'><code>PLNmodels::PLNfit_fixedcov$postTreatment()</code></a></span></li>
 </ul>
 </details>
@@ -76,85 +76,15 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 \subsection{Method \code{new()}}{
 Initialize a \code{\link{PLNnetworkfit}} object
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$new(
-  penalty,
-  penalty_weights,
-  responses,
-  covariates,
-  offsets,
-  weights,
-  formula,
-  control
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$new(data, control)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{penalty}}{a positive real number controlling the level of sparsity of the underlying network.}
-
-\item{\code{penalty_weights}}{either a single or a list of p x p matrix of weights (default filled with 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
-
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+\item{\code{data}}{a named list used internally to carry the data matrices}
 
 \item{\code{control}}{a list for controlling the optimization.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNnetworkfit-update"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNnetworkfit-update}{}}}
-\subsection{Method \code{update()}}{
-Update fields of a \code{\link{PLNnetworkfit}} object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$update(
-  penalty = NA,
-  B = NA,
-  Sigma = NA,
-  Omega = NA,
-  M = NA,
-  S = NA,
-  Z = NA,
-  A = NA,
-  Ji = NA,
-  R2 = NA,
-  monitoring = NA
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{penalty}}{a positive real number controlling the level of sparsity of the underlying network.}
-
-\item{\code{B}}{matrix of regression matrix}
-
-\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
-
-\item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
-
-\item{\code{M}}{matrix of mean vectors for the variational approximation}
-
-\item{\code{S}}{matrix of variance vectors for the variational approximation}
-
-\item{\code{Z}}{matrix of latent vectors (includes covariates and offset effects)}
-
-\item{\code{A}}{matrix of fitted values}
-
-\item{\code{Ji}}{vector of variational lower bounds of the log-likelihoods (one value per sample)}
-
-\item{\code{R2}}{approximate R^2 goodness-of-fit criterion}
-
-\item{\code{monitoring}}{a list with optimization monitoring quantities}
 }
 \if{html}{\out{</div>}}
 }
@@ -165,19 +95,13 @@ Update fields of a \code{\link{PLNnetworkfit}} object
 \subsection{Method \code{optimize()}}{
 Call to the C++ optimizer and update of the relevant fields
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$optimize(responses, covariates, offsets, weights, config)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfit$optimize(data, config)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+\item{\code{data}}{a named list used internally to carry the data matrices}
 
 \item{\code{config}}{a list for controlling the optimization}
 }

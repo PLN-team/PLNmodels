@@ -34,23 +34,11 @@ Rcpp::List nlopt_optimize_fixed(
     metadata.map<M_ID>(parameters.data()) = init_M;
     metadata.map<S_ID>(parameters.data()) = init_S;
 
-    auto optimizer = new_nlopt_optimizer(config, parameters.size());
-    if(config.containsElementNamed("xtol_abs")) {
-        SEXP value = config["xtol_abs"];
-        if(Rcpp::is<double>(value)) {
-            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
-        } else {
-            auto per_param_list = Rcpp::as<Rcpp::List>(value);
-            auto packed = std::vector<double>(metadata.packed_size);
-            set_from_r_sexp(metadata.map<B_ID>(packed.data()), per_param_list["B"]);
-            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
-            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
-            set_per_value_xtol_abs(optimizer.get(), packed);
-        }
-    }
-
     // Optimize
-    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &Omega](const double * params, double * grad) -> double {
+    auto optimizer = new_nlopt_optimizer(config, parameters.size());
+    std::vector<double> objective_vec ;
+
+    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &Omega, &objective_vec](const double * params, double * grad) -> double {
         const arma::mat B = metadata.map<B_ID>(params);
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
@@ -63,7 +51,10 @@ Rcpp::List nlopt_optimize_fixed(
 
         metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
         metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
-        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
+        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1)) ;
+
+        objective_vec.push_back(objective) ;
+
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -94,6 +85,7 @@ Rcpp::List nlopt_optimize_fixed(
       Rcpp::Named("monitoring", Rcpp::List::create(
           Rcpp::Named("status", static_cast<int>(result.status)),
           Rcpp::Named("backend", "nlopt"),
+          Rcpp::Named("objective", objective_vec),
           Rcpp::Named("iterations", result.nb_iterations)
       ))
     );

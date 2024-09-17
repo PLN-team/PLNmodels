@@ -36,20 +36,6 @@ Rcpp::List nlopt_optimize_genetic_modeling(
     metadata.map<RHO_ID>(parameters.data()) = init_rho;
 
     auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-    if(configuration.containsElementNamed("xtol_abs")) {
-        SEXP value = configuration["xtol_abs"];
-        if(Rcpp::is<double>(value)) {
-            set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(value));
-        } else {
-            auto per_param_list = Rcpp::as<Rcpp::List>(value);
-            auto packed = std::vector<double>(metadata.packed_size);
-            set_from_r_sexp(metadata.map<THETA_ID>(packed.data()), per_param_list["Theta"]);
-            set_from_r_sexp(metadata.map<M_ID>(packed.data()), per_param_list["M"]);
-            set_from_r_sexp(metadata.map<S_ID>(packed.data()), per_param_list["S"]);
-            set_from_r_sexp(metadata.map<RHO_ID>(packed.data()), per_param_list["rho"]);
-            set_per_value_xtol_abs(optimizer.get(), packed);
-        }
-    }
 
     // Some fixed quantities along optimization
     const double w_bar = accu(w);

@@ -195,7 +195,6 @@ Rcpp::List optim_plnblockbis_VE_blocks(
   metadata.map<S_ID>(parameters.data()) = init_S;
 
   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-  set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
 
   const arma::mat XB = X * B ;
 
@@ -265,7 +264,6 @@ Rcpp::List optim_plnblockbis_VE_species(
   metadata.map<Mu_ID>(parameters.data()) = init_Mu;
   metadata.map<Delta_ID>(parameters.data()) = init_Delta;
   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-  set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
 
   const arma::mat XB = X * B ;
   double w_bar = accu(w);
@@ -345,7 +343,6 @@ Rcpp::List optim_plnblockbis_VE(
   metadata.map<Mu_ID>(parameters.data()) = init_Mu;
   metadata.map<Delta_ID>(parameters.data()) = init_Delta;
   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-  set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
 
   const arma::mat XB = X * B ;
   double w_bar = accu(w);

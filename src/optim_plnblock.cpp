@@ -131,7 +131,6 @@ Rcpp::List optim_plnblock_B(
   auto parameters = std::vector<double>(metadata.packed_size);
   metadata.map<B_ID>(parameters.data()) = init_B;
   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-  set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
 
   const arma::mat A1_T = trunc_exp(M + .5 * S % S) * T;
 
@@ -182,7 +181,6 @@ Rcpp::List optim_plnblock_VE(
   metadata.map<M_ID>(parameters.data()) = init_M;
   metadata.map<S_ID>(parameters.data()) = init_S;
   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-  set_uniform_xtol_abs(optimizer.get(), Rcpp::as<double>(configuration["xtol_abs"]));
 
   const arma::mat mu = O + X * B ;
   const arma::mat A2 = trunc_exp(mu) ;
