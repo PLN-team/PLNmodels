@@ -323,7 +323,7 @@ compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1, type = c("lm", "glm"
     glm_fits <- tryCatch(
       future_map(1:p, function(j) {
         suppressWarnings(glm_func(X, Y[, j], weights = w, offset = O[, j], family = stats::poisson()))
-      }), error = function(e) {e}
+      }, seed = TRUE), error = function(e) {e}
     )
     if (is(glm_fits, "error")) {
       warning(paste("glm_fit failed: using log-lm to initialize model parameters"))
