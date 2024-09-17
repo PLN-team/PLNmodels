@@ -316,7 +316,7 @@ create_parameters <- function(
 compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1, type = c("lm", "glm", "mix")) {
   # Y = responses, X = covariates, O = offsets (in log scale), w = weights
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-  glm_func <- ifelse(d > 0,  fastglm, glm.fit)
+  glm_func <- ifelse(d > 0, fastglm, glm.fit)
   type <- match.arg(type)
   failed <- FALSE
   if (type %in% c("glm", "mix")) {
@@ -336,6 +336,7 @@ compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1, type = c("lm", "glm"
   if (type %in% c("lm", "mix")) {
     lm_fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
     B_lm <- matrix(coefficients(lm_fits), d, p)
+    B_lm[is.na(B_lm)] <- 0
   }
   list(
     B = switch(type, "lm"  = B_lm, B_glm),

@@ -436,7 +436,7 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses)
       ## initialize variational parameters with current value if dimension is the same
       if ((p != self$p) || (n != self$n)) {
-        params0 <- compute_PLN_starting_point(responses, covariates, offsets, weights, s = 0.1)
+        params0 <- compute_PLN_starting_point(responses, covariates, offsets, weights, s = 0.1, type = control$inception)
         params0$B <- NULL
       } else {
         params0 <- list(M = self$var_par$M, S = self$var_par$S)
