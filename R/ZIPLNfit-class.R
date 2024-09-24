@@ -69,6 +69,7 @@ ZIPLNfit <- R6Class(
     #' @description Initialize a [`ZIPLNfit`] model
     #' @importFrom stats glm.fit residuals poisson fitted coef
     #' @importFrom pscl zeroinfl
+    #' @importFrom tidyr replace_na
     initialize = function(data, control) {
       ## problem dimensions
       n <- nrow(data$Y); p <- ncol(data$Y); d <- ncol(data$X); d0 <- ncol(data$X0)
@@ -80,7 +81,6 @@ ZIPLNfit <- R6Class(
       ## initialize the covariance model
       private$covariance <- control$covariance
       private$ziparam    <- control$ziparam
-
       if (isZIPLNfit(control$inception)) {
         private$R  <- control$inception$var_par$R
         private$M  <- control$inception$var_par$M
@@ -102,16 +102,16 @@ ZIPLNfit <- R6Class(
                   "covar"  = pscl::zeroinfl(y ~ 0 + data$X | 0 + data$X0    , offset = data$O[, j]),
                              pscl::zeroinfl(y ~ 0 + data$X |               1, offset = data$O[, j])) # offset only for the count model
             )
-            B0[,j] <- coef(zip_out, "zero")
-            B[,j]  <- coef(zip_out, "count")
-            R[, j] <- predict(zip_out, type = "zero")
-            M[,j]  <- residuals(zip_out) + data$X %*% coef(zip_out, "count")
+            B0[,j] <- replace_na(coef(zip_out, "zero") , -10)
+            B[,j]  <- replace_na(coef(zip_out, "count"), 0)
+            R[, j] <- replace_na(predict(zip_out, type = "zero"), sum(y == 0) / n)
+            M[,j]  <- replace_na(residuals(zip_out), 0) + data$X %*% coef(zip_out, "count")
           } else {
-            p_out <- glm(y ~ 0 + data$X, family = 'poisson', offset = data$O[, j])
+            p_out  <- glm(y ~ 0 + data$X, family = 'poisson', offset = data$O[, j])
             B0[,j] <- rep(-10, d)
-            B[,j]  <- coef(p_out)
-            R[, j] <- 0
-            M[,j]  <- residuals(p_out) + data$X %*% coef(p_out)
+            B[,j]  <- replace_na(coef(p_out), 0)
+            R[, j] <- sum(y == 0) / n
+            M[,j]  <- replace_na(residuals(p_out), 0) + data$X %*% coef(p_out)
           }
         }
 
