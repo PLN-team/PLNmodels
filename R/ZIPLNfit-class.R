@@ -443,7 +443,7 @@ ZIPLNfit <- R6Class(
     ## Print functions -----------------------
     #' @description User friendly print method
     #' @param model First line of the print output
-    show = function(model = paste("A multivariate Zero Inflated Poisson Lognormal fit with", private$covariance, "covariance model.\n")) {
+    show = function(model = paste("A multivariate Zero Inflated Poisson Lognormal fit with", self$vcov_model, "covariance model.\n")) {
       cat(model)
       cat("================================================================================\n")
       print(as.data.frame(round(self$criteria, digits = 3), row.names = ""))

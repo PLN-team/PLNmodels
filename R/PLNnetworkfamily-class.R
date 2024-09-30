@@ -417,7 +417,7 @@ PLNnetworkfamily <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-## CLASS PLNnetworkfamily ----
+## CLASS ZIPLNnetworkfamily ----
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' An R6 Class to represent a collection of ZIPLNnetwork
