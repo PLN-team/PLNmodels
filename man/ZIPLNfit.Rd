@@ -269,7 +269,7 @@ User friendly print method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit$show(
   model = paste("A multivariate Zero Inflated Poisson Lognormal fit with",
-    private$covariance, "covariance model.\\n")
+    self$vcov_model, "covariance model.\\n")
 )}\if{html}{\out{</div>}}
 }
 
