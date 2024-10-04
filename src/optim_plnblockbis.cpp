@@ -19,7 +19,7 @@ arma::vec plnblockbis_vloglik(
   const arma::mat & M = Rcpp::as<arma::mat>(params["M"]); // (n,q)
   const arma::mat & S = Rcpp::as<arma::mat>(params["S"]); // (n,q)
   const arma::mat & T = Rcpp::as<arma::mat>(params["Tau"]); // (q,p)
-  const arma::mat & D = Rcpp::as<arma::mat>(params["D"]); // (p,p)
+  const arma::rowvec & dm = Rcpp::as<arma::rowvec>(params["dm"]); // (p,p)
   const arma::mat & Mu = Rcpp::as<arma::mat>(params["Mu"]); // (n,p)
   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
@@ -31,7 +31,6 @@ arma::vec plnblockbis_vloglik(
   const arma::mat Delta2 = Delta % Delta ;
   const arma::mat Z = O + Mu + M * T;
   const arma::mat A = trunc_exp(O + Mu + .5 * Delta2) % (trunc_exp(M + .5 * S2) * T) ;
-  const arma::vec dm = 1. / arma::diagvec(D) ;
 
   // Element-wise log-likelihood
   return(
@@ -39,7 +38,7 @@ arma::vec plnblockbis_vloglik(
       + 0.5 * (real(log_det(Omega)) + sum(log(S2), 1) + double(q)) // Gaussian-block term
       - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1)       // ...
       + 0.5 * (sum(log(dm)) + sum(log(Delta2), 1) + double(p))     // Gaussian-species term
-      - 0.5 * (pow(Mu - X * B, 2) + Delta2) * dm                   // ...
+      - 0.5 * (pow(Mu - X * B, 2) + Delta2) * dm.t()                   // ...
       + accu(log_pi.t() * T) - accu(T % arma::trunc_log(T))        // Multinomial-block term
   ) ;
 }
@@ -57,7 +56,7 @@ double plnblockbis_loglik(
   const arma::mat & S = Rcpp::as<arma::mat>(params["S"]); // (n,q)
   const arma::mat & Mu = Rcpp::as<arma::mat>(params["Mu"]); // (n,p)
   const arma::mat & T = Rcpp::as<arma::mat>(params["Tau"]); // (n,p)
-  const arma::mat & D = Rcpp::as<arma::mat>(params["D"]); // (p,p)
+  const arma::rowvec & dm = Rcpp::as<arma::rowvec>(params["dm"]); // (p,p)
   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
 
@@ -69,15 +68,14 @@ double plnblockbis_loglik(
   const arma::mat Delta2 = Delta % Delta ;
   const arma::mat Z = O + Mu + M * T;
   const arma::mat A = trunc_exp(O + Mu + .5 * Delta2) % (trunc_exp(M + .5 * S2) * T) ;
-  const arma::rowvec dm = 1. / diagvec(D).t() ;
-  const arma::mat DD = pow(Mu - X*B, 2) + Delta2;
-  const arma::rowvec d = mean(DD, 0) ;
+  const arma::mat DD = ((Mu - X*B).t()*(Mu - X*B) + diagmat(sum(Delta2, 0)))/n;
+  const arma::rowvec d = mean(pow(Mu - X*B, 2) + Delta2, 0) ;
   const arma::mat Sigma = (M.t() * M + diagmat(sum(S2,0))) / n;
 
   return (
       accu(Y % (O + Mu + M * T) - A) - accu(logfact(Y))        // Poisson term
       - .5 * n * (log_det_sympd(Sigma) + accu(Omega % Sigma))  // Gaussian-block term
-      - .5 * n * (accu(log(d)) + accu(DD * dm.t())/n)                 // Gaussian-species term
+      - .5 * n * (accu(log(d)) + accu(DD % diagmat(dm)))          // Gaussian-species term
       + .5 * (accu(log(S2)) + accu(log(Delta2)) + n * (p + q)) // Gaussian entropies + cst.
       + accu(log_pi.t() * T) - accu(T % trunc_log(T))    // multinomial term
     );
@@ -105,13 +103,13 @@ arma::mat  optim_plnblockbis_B(
 }
 
 // [[Rcpp::export]]
-arma::mat  optim_plnblockbis_D(
+arma::rowvec  optim_plnblockbis_dm(
     const arma::mat & X,
     const arma::mat & B,
     const arma::mat & Mu,
     const arma::mat & Delta
 ) {
-  return(arma::diagmat(mean(pow(Mu - X * B, 2) + Delta % Delta, 0))) ;
+  return(pow(mean(pow(Mu - X * B, 2) + Delta % Delta, 0), -1)) ;
 }
 
 // [[Rcpp::export]]
@@ -119,7 +117,6 @@ Rcpp::List optim_plnblockbis_Tau(
     const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params  // List(M, S, T, B, Omega)
 ) {
-  //std::cout << "optim_plnblockbis_Tau" << std::endl;
   const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"])  ; // responses (n,p)
   const arma::mat & O = Rcpp::as<arma::mat>(data["O"])  ; // offsets (n,p)
   const arma::mat & M = Rcpp::as<arma::mat>(params["M"]); // (n,q)
@@ -130,7 +127,7 @@ Rcpp::List optim_plnblockbis_Tau(
   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
   const arma::mat A1 = trunc_exp(O + Mu + .5* Delta % Delta) ;
   const arma::mat A2 = trunc_exp(M + .5 * S % S) ;
-  arma::mat Tau = M.t() * Y - A2.t() * A1 ;
+  arma::mat Tau = (M.t() * Y - A2.t() * A1) ;
   Tau.each_col() += log_pi - 1 ;
   Tau.each_col( [](arma::vec& x){
     x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;
@@ -154,7 +151,7 @@ Rcpp::List optim_plnblockbis_VE(
   const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);   // (n,d)
   const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);   // (n,p)
   const arma::mat & B = Rcpp::as<arma::mat>(params["B"]); // (d,p)
-  const arma::mat & D = Rcpp::as<arma::mat>(params["D"]); // (p,p)
+  const arma::rowvec & dm = Rcpp::as<arma::rowvec>(params["dm"]); // (p,p)
   const arma::mat & Tau   = Rcpp::as<arma::mat>(params["Tau"]); // (q,p)
   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
   const auto M0    = Rcpp::as<arma::mat>(params["M"]); // (n,q)
@@ -172,7 +169,6 @@ Rcpp::List optim_plnblockbis_VE(
   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
 
   const arma::mat XB = X * B ;
-  const arma::rowvec dm = 1. / diagvec(D).t() ;
   const arma::rowvec domega = diagvec(Omega).t() ;
   const arma::mat YT = Y * Tau.t() ;
 
@@ -192,14 +188,14 @@ Rcpp::List optim_plnblockbis_VE(
     arma::mat A  = A1 % (A2 * Tau) ;
     arma::mat A_T = A2 % (A1 * Tau.t()) ;
     arma::mat Sigma = (M.t() * M + diagmat(sum(S2,0))) / n ;
-    arma::mat DD = MumXB % MumXB + Delta2;
-    arma::rowvec d = mean(DD, 0) ;
+    arma::mat DD = (MumXB.t()*MumXB + diagmat(sum(Delta2, 0)))/n;
+    arma::rowvec d = mean(pow(MumXB, 2) + Delta2, 0) ;
 
     double objective =
       accu(A - Y % (O + Mu + M * Tau))
       + .5 * n * (
             accu(Omega % Sigma) + log_det_sympd(Sigma)
-          + accu(DD * dm.t())/n + accu(log(d))
+          + accu(DD % diagmat(dm)) + accu(log(d))
         )
       - 0.5 * (accu(log(S2)) + accu(log(Delta2))) ;
 

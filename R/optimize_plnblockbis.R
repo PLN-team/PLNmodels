@@ -20,11 +20,13 @@ optimize_plnblockbis <- function(data, params, config) {
   # Link to the approximate function to optimize Omega, depending on the target structure
   optim_plnblockbis_Omega <- ifelse(is.null(params$rho), optim_plnblockbis_Omega, function(M, S)
     optim_plnblockbis_Omega_sparse(M, S, data$w, rho = config$rho))
+  q <- ncol(params$M)
+  p <- ncol(params$M)
   # Main loop
   nb_iter <- 0
   parameters <- params
-  parameters$Omega <- diag(1, ncol(params$M), ncol(params$M))
-  parameters$D <- diag(1, ncol(params$Mu), ncol(params$Mu))
+  parameters$Omega <- diag(1, q, q)
+  parameters$dm <- rep(1, ncol(params$Mu))
   new_parameters <- parameters
   posteriorProb <- list(new_parameters$T)
   criterion <- vector("numeric", config$maxit_out)
@@ -38,7 +40,7 @@ optimize_plnblockbis <- function(data, params, config) {
     new_parameters$B <- optim_plnblockbis_B(XtXm = data$XtXm,
                                             X = data$X,
                                             Mu = new_parameters$Mu)
-    new_parameters$D <- optim_plnblockbis_D(
+    new_parameters$dm <- optim_plnblockbis_dm(
       X = data$X,
       B = new_parameters$B,
       Mu = new_parameters$Mu,
@@ -47,10 +49,10 @@ optimize_plnblockbis <- function(data, params, config) {
 
     # VE Step
     optim_VE <- optim_plnblockbis_VE(data, new_parameters, config)
-    new_parameters$Mu <- optim_VE$Mu
-    new_parameters$M <- optim_VE$M
+    new_parameters$Mu    <- optim_VE$Mu
+    new_parameters$M     <- optim_VE$M
     new_parameters$Delta <- optim_VE$Delta
-    new_parameters$S <- optim_VE$S
+    new_parameters$S     <- optim_VE$S
 
     optim_Tau <- optim_plnblockbis_Tau(data, new_parameters)
     new_parameters$Tau <- optim_Tau$Tau
@@ -85,12 +87,13 @@ optimize_plnblockbis <- function(data, params, config) {
     objective  <- new_objective
   }
   out   <- new_parameters
+  out$D <- diag(as.numeric(1/out$dm)); out$dm <- NULL
   out$A <- optim_Tau$A
   out$Z <- data$O + out$Mu + out$M %*% out$Tau
   out$Sigma <- optim_Omega$Sigma
   out$Ji <- plnblockbis_vloglik(data, new_parameters)
   attr(out$Ji, "weights") <- data$w
-  attr(out$Ji, "loglik") <- - criterion[nb_iter]
+  attr(out$Ji, "loglik") <- -objective
   out$monitoring <- list(
     objective  = criterion[1:nb_iter],
     outer_iterations = nb_iter,

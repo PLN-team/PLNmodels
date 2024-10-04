@@ -81,8 +81,8 @@ optim_plnblockbis_B <- function(XtXm, X, Mu) {
     .Call('_PLNmodels_optim_plnblockbis_B', PACKAGE = 'PLNmodels', XtXm, X, Mu)
 }
 
-optim_plnblockbis_D <- function(X, B, Mu, Delta) {
-    .Call('_PLNmodels_optim_plnblockbis_D', PACKAGE = 'PLNmodels', X, B, Mu, Delta)
+optim_plnblockbis_dm <- function(X, B, Mu, Delta) {
+    .Call('_PLNmodels_optim_plnblockbis_dm', PACKAGE = 'PLNmodels', X, B, Mu, Delta)
 }
 
 optim_plnblockbis_Tau <- function(data, params) {
