@@ -25,35 +25,19 @@ optimize_plnblockbis <- function(data, params, config) {
   parameters <- params
   parameters$Omega <- diag(1, ncol(params$M), ncol(params$M))
   parameters$D <- diag(1, ncol(params$Mu), ncol(params$Mu))
-  parameters$T <- parameters$Tau
-  parameters$Tau <- NULL
   new_parameters <- parameters
   posteriorProb <- list(new_parameters$T)
   criterion <- vector("numeric", config$maxit_out)
   objective <- Inf
 
-  ####################
-  if (config$g_resampling > 1) {
-    Q = ncol(params$M)
-    this_cl_scores = config$cl_scores
-    if (Q > 1 &
-        Q < ncol(params$Mu)) {
-      uncertain = which(this_cl_scores < 0.7)
-    } else{
-      uncertain = c()
-    }
-  }
-  ####################
-
   repeat {
     # M Step
+
     optim_Omega <- optim_plnblockbis_Omega(M = new_parameters$M, S = new_parameters$S)
     new_parameters$Omega <- optim_Omega$Omega
-
     new_parameters$B <- optim_plnblockbis_B(XtXm = data$XtXm,
                                             X = data$X,
                                             Mu = new_parameters$Mu)
-
     new_parameters$D <- optim_plnblockbis_D(
       X = data$X,
       B = new_parameters$B,
@@ -69,7 +53,7 @@ optimize_plnblockbis <- function(data, params, config) {
     new_parameters$S <- optim_VE$S
 
     optim_Tau <- optim_plnblockbis_Tau(data, new_parameters)
-    new_parameters$T <- optim_Tau$Tau
+    new_parameters$Tau <- optim_Tau$Tau
 
     # Going next step and assessing convergence
     nb_iter <- nb_iter + 1
@@ -96,16 +80,17 @@ optimize_plnblockbis <- function(data, params, config) {
         statut <- 5
       break
     }
-    posteriorProb <- append(posteriorProb, list(new_parameters$T))
+    posteriorProb <- append(posteriorProb, list(new_parameters$Tau))
     parameters <- new_parameters
     objective  <- new_objective
   }
   out   <- new_parameters
   out$A <- optim_Tau$A
-  out$Z <- data$O + out$Mu + out$M %*% out$T
+  out$Z <- data$O + out$Mu + out$M %*% out$Tau
   out$Sigma <- optim_Omega$Sigma
   out$Ji <- plnblockbis_vloglik(data, new_parameters)
   attr(out$Ji, "weights") <- data$w
+  attr(out$Ji, "loglik") <- - criterion[nb_iter]
   out$monitoring <- list(
     objective  = criterion[1:nb_iter],
     outer_iterations = nb_iter,

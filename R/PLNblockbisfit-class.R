@@ -44,15 +44,8 @@ PLNblockbisfit <- R6Class(
       ## Overwrite PLNfit Variational parameters (dimension q)
       private$Delta <- control$inception$var_par$S
       private$Mu    <- control$inception$var_par$M + covariates %*% control$inception$model_par$B
-      n <- nrow(responses)
-      Q <- ncol(blocks)
-
-      ####################
-      private$M <- control$inception$var_par$M %*% blocks
-      private$S <- control$inception$var_par$S %*% blocks
-      # private$M <- control$inception_full$var_par$M %*% blocks
-      # private$S <- control$inception_full$var_par$S %*% blocks
-      ####################
+      private$M     <- control$inception$var_par$M %*% blocks
+      private$S     <- control$inception$var_par$S %*% blocks
 
       private$Tau <- t(blocks)
 
@@ -275,13 +268,8 @@ PLNblockbisfit <- R6Class(
     nb_block   = function() {as.integer(self$q)},
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"blocks"},
-    #' @field loglik (weighted) variational lower bound of the loglikelihood
-    loglik     = function() {
-      ## this term should not be sumeed over sites/individuals
-      pi <- matrix(self$groupProportion, self$q, self$p)
-      tau_log_alpha_over_tau <- sum(.xlogy(private$Tau,pi)) - sum(.xlogx(private$Tau))
-      sum(self$weights * private$Ji - tau_log_alpha_over_tau) +  tau_log_alpha_over_tau
-    },
+    #' @field loglik variational lower bound of the loglikelihood
+    loglik     = function() {as.numeric(attr(private$Ji, "loglik"))},
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
     loglik_vec = function() {private$Ji},
     #' @field entropy_blocks Entropy of the variational distribution of the block (multinomial)

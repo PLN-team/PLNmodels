@@ -33,7 +33,7 @@ print(myPLN)
 
 \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
-\item{\code{loglik}}{(weighted) variational lower bound of the loglikelihood}
+\item{\code{loglik}}{variational lower bound of the loglikelihood}
 
 \item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}
 
