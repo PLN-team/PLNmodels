@@ -89,17 +89,32 @@ PLNblockbisfit <- R6Class(
     },
 
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
-    optimize = function(responses, covariates, offsets, weights, config) {
-      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                   params = list(B = private$B, M = private$M, S = private$S,
-                                 Mu = private$Mu, Delta = private$Delta, Tau = private$Tau),
-                   config = config)
+    optimize = function(responses,
+                        covariates,
+                        offsets,
+                        weights,
+                        config) {
+      args <- list(
+        data   = list(
+          Y = responses,
+          X = covariates,
+          O = offsets,
+          XtXm = solve(crossprod(covariates)),
+          w = weights
+        ),
+        params = list(
+          B = private$B,
+          M = private$M,
+          S = private$S,
+          Mu = private$Mu,
+          Delta = private$Delta,
+          Tau = private$Tau
+        ),
+        config = config
+      )
       optim_out <- do.call(private$optimizer$main, args)
-
-
       do.call(self$update, optim_out)
     }
-
   ),
   private = list(
     D = NA,
@@ -270,7 +285,7 @@ PLNblockbisfit <- R6Class(
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
     loglik_vec = function() {private$Ji},
     #' @field entropy_blocks Entropy of the variational distribution of the block (multinomial)
-    entropy_blocks = function() {-sum(.xlogx(private$tau))},
+    entropy_blocks = function() {-sum(.xlogx(private$Tau))},
     #' @field entropy_latent Entropy of the variational distribution of the latent vector (Gaussian)
     entropy_latent = function() {.5 * (self$n * self$q * log(2*pi*exp(1)) + sum(log(self$var_par$S2)))},
     #' @field entropy Full entropy of the variational distribution (latent vector + block)

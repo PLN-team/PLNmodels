@@ -16,9 +16,7 @@ system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), d
 
 ## Blockwise covariance
 system.time(myPLN_blocks <- PLNblockbis(
-            Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = 2:10, data = oaks,
-            control = PLNblockbis_param(config_optim = list(xtol_rel = 1e-10, ftol_out = 1e-6)),
-            sparsity = 0.25 * sqrt(2:10))
+            Abundance ~ 0 + tree + offset(log(Offset)), nb_blocks = 1:20, data = oaks)
 )
 myPLN_block <- getBestModel(myPLN_blocks)
 

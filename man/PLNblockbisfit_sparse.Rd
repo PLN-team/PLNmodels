@@ -18,7 +18,7 @@ print(myPLN)
 }
 }
 \section{Super classes}{
-\code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{PLNmodels::PLNblockbisfit} -> \code{PLNblockbisfit_sparse}
+\code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{\link[PLNmodels:PLNblockbisfit]{PLNmodels::PLNblockbisfit}} -> \code{PLNblockbisfit_sparse}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}

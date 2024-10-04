@@ -248,34 +248,33 @@ BEGIN_RCPP
 END_RCPP
 }
 // optim_plnblockbis_Omega
-Rcpp::List optim_plnblockbis_Omega(const arma::mat& M, const arma::mat& S, const arma::vec& w);
-RcppExport SEXP _PLNmodels_optim_plnblockbis_Omega(SEXP MSEXP, SEXP SSEXP, SEXP wSEXP) {
+Rcpp::List optim_plnblockbis_Omega(const arma::mat& M, const arma::mat& S);
+RcppExport SEXP _PLNmodels_optim_plnblockbis_Omega(SEXP MSEXP, SEXP SSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_plnblockbis_Omega(M, S, w));
+    rcpp_result_gen = Rcpp::wrap(optim_plnblockbis_Omega(M, S));
     return rcpp_result_gen;
 END_RCPP
 }
 // optim_plnblockbis_B
-Rcpp::List optim_plnblockbis_B(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_optim_plnblockbis_B(SEXP dataSEXP, SEXP paramsSEXP, SEXP configurationSEXP) {
+arma::mat optim_plnblockbis_B(const arma::mat& XtXm, const arma::mat& X, const arma::mat& Mu);
+RcppExport SEXP _PLNmodels_optim_plnblockbis_B(SEXP XtXmSEXP, SEXP XSEXP, SEXP MuSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_plnblockbis_B(data, params, configuration));
+    Rcpp::traits::input_parameter< const arma::mat& >::type XtXm(XtXmSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Mu(MuSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_plnblockbis_B(XtXm, X, Mu));
     return rcpp_result_gen;
 END_RCPP
 }
 // optim_plnblockbis_D
-Rcpp::List optim_plnblockbis_D(const arma::mat& X, const arma::mat& B, const arma::mat& Mu, const arma::mat& Delta, const arma::vec& w);
-RcppExport SEXP _PLNmodels_optim_plnblockbis_D(SEXP XSEXP, SEXP BSEXP, SEXP MuSEXP, SEXP DeltaSEXP, SEXP wSEXP) {
+arma::mat optim_plnblockbis_D(const arma::mat& X, const arma::mat& B, const arma::mat& Mu, const arma::mat& Delta);
+RcppExport SEXP _PLNmodels_optim_plnblockbis_D(SEXP XSEXP, SEXP BSEXP, SEXP MuSEXP, SEXP DeltaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -283,13 +282,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Mu(MuSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Delta(DeltaSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_plnblockbis_D(X, B, Mu, Delta, w));
+    rcpp_result_gen = Rcpp::wrap(optim_plnblockbis_D(X, B, Mu, Delta));
     return rcpp_result_gen;
 END_RCPP
 }
 // optim_plnblockbis_Tau
-arma::mat optim_plnblockbis_Tau(const Rcpp::List& data, const Rcpp::List& params);
+Rcpp::List optim_plnblockbis_Tau(const Rcpp::List& data, const Rcpp::List& params);
 RcppExport SEXP _PLNmodels_optim_plnblockbis_Tau(SEXP dataSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -297,32 +295,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
     rcpp_result_gen = Rcpp::wrap(optim_plnblockbis_Tau(data, params));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optim_plnblockbis_VE_blocks
-Rcpp::List optim_plnblockbis_VE_blocks(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_optim_plnblockbis_VE_blocks(SEXP dataSEXP, SEXP paramsSEXP, SEXP configurationSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_plnblockbis_VE_blocks(data, params, configuration));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optim_plnblockbis_VE_species
-Rcpp::List optim_plnblockbis_VE_species(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_optim_plnblockbis_VE_species(SEXP dataSEXP, SEXP paramsSEXP, SEXP configurationSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_plnblockbis_VE_species(data, params, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -582,12 +554,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optim_plnblock_VE", (DL_FUNC) &_PLNmodels_optim_plnblock_VE, 3},
     {"_PLNmodels_plnblockbis_vloglik", (DL_FUNC) &_PLNmodels_plnblockbis_vloglik, 2},
     {"_PLNmodels_plnblockbis_loglik", (DL_FUNC) &_PLNmodels_plnblockbis_loglik, 2},
-    {"_PLNmodels_optim_plnblockbis_Omega", (DL_FUNC) &_PLNmodels_optim_plnblockbis_Omega, 3},
+    {"_PLNmodels_optim_plnblockbis_Omega", (DL_FUNC) &_PLNmodels_optim_plnblockbis_Omega, 2},
     {"_PLNmodels_optim_plnblockbis_B", (DL_FUNC) &_PLNmodels_optim_plnblockbis_B, 3},
-    {"_PLNmodels_optim_plnblockbis_D", (DL_FUNC) &_PLNmodels_optim_plnblockbis_D, 5},
+    {"_PLNmodels_optim_plnblockbis_D", (DL_FUNC) &_PLNmodels_optim_plnblockbis_D, 4},
     {"_PLNmodels_optim_plnblockbis_Tau", (DL_FUNC) &_PLNmodels_optim_plnblockbis_Tau, 2},
-    {"_PLNmodels_optim_plnblockbis_VE_blocks", (DL_FUNC) &_PLNmodels_optim_plnblockbis_VE_blocks, 3},
-    {"_PLNmodels_optim_plnblockbis_VE_species", (DL_FUNC) &_PLNmodels_optim_plnblockbis_VE_species, 3},
     {"_PLNmodels_optim_plnblockbis_VE", (DL_FUNC) &_PLNmodels_optim_plnblockbis_VE, 3},
     {"_PLNmodels_nlopt_optimize_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_rank, 3},
     {"_PLNmodels_nlopt_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_rank, 5},

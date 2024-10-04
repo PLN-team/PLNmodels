@@ -17,98 +17,83 @@
 #
 # Dimensions are checked only on C++ side.
 optimize_plnblockbis <- function(data, params, config) {
-
-
   # Link to the approximate function to optimize Omega, depending on the target structure
-  optim_plnblockbis_Omega <- ifelse(is.null(params$rho),
-        optim_plnblockbis_Omega,
-        function(M, S) optim_plnblockbis_Omega_sparse(M, S, data$w, rho = config$rho)
-    )
+  optim_plnblockbis_Omega <- ifelse(is.null(params$rho), optim_plnblockbis_Omega, function(M, S)
+    optim_plnblockbis_Omega_sparse(M, S, data$w, rho = config$rho))
   # Main loop
   nb_iter <- 0
-  parameters <- params; parameters$Omega <- diag(1, ncol(params$M), ncol(params$M))
+  parameters <- params
+  parameters$Omega <- diag(1, ncol(params$M), ncol(params$M))
   parameters$D <- diag(1, ncol(params$Mu), ncol(params$Mu))
-  parameters$T <- parameters$Tau; parameters$Tau <- NULL
+  parameters$T <- parameters$Tau
+  parameters$Tau <- NULL
   new_parameters <- parameters
   posteriorProb <- list(new_parameters$T)
   criterion <- vector("numeric", config$maxit_out)
   objective <- Inf
 
   ####################
-  if(config$g_resampling > 1){
+  if (config$g_resampling > 1) {
     Q = ncol(params$M)
     this_cl_scores = config$cl_scores
-    if(Q > 1 & Q < ncol(params$Mu)){uncertain = which(this_cl_scores < 0.7)
-    }else{uncertain = c()}
+    if (Q > 1 &
+        Q < ncol(params$Mu)) {
+      uncertain = which(this_cl_scores < 0.7)
+    } else{
+      uncertain = c()
+    }
   }
   ####################
 
   repeat {
-
     # M Step
-    optim_B <- optim_plnblockbis_B(data, new_parameters, config)
-    new_parameters$B <- optim_B$B
-    optim_Omega <- optim_plnblockbis_Omega(M = new_parameters$M, S = new_parameters$S, w = data$w)
+    optim_Omega <- optim_plnblockbis_Omega(M = new_parameters$M, S = new_parameters$S)
     new_parameters$Omega <- optim_Omega$Omega
+
+    new_parameters$B <- optim_plnblockbis_B(XtXm = data$XtXm,
+                                            X = data$X,
+                                            Mu = new_parameters$Mu)
+
+    new_parameters$D <- optim_plnblockbis_D(
+      X = data$X,
+      B = new_parameters$B,
+      Mu = new_parameters$Mu,
+      Delta = new_parameters$Delta
+    )
 
     # VE Step
     optim_VE <- optim_plnblockbis_VE(data, new_parameters, config)
-    new_parameters$M <- optim_VE$M
-    new_parameters$S <- optim_VE$S
     new_parameters$Mu <- optim_VE$Mu
+    new_parameters$M <- optim_VE$M
     new_parameters$Delta <- optim_VE$Delta
-    new_parameters$D <- optim_VE$D
+    new_parameters$S <- optim_VE$S
 
-    new_parameters$T <- optim_VE$Tau
-    ##########
-    if(config$g_resampling > 0){
-      # Besoin de faire des modifs ici aussi pour resample tout le monde.
-      max_values <- apply(new_parameters$T , 2, function(col) max(col, na.rm = TRUE))
-      # if((nb_iter %% 1) == 0){
-      #   to_resample = which(max_values < 0.99)
-      #   for(q in to_resample){
-      #     probabilities = new_parameters$T[,q]
-      #     ##
-      #     init_group = which.max(probabilities)
-      #     ##
-      #     Q = length(probabilities)
-      #     new_group = sample(1:Q, size=1, prob=probabilities)
-      #     new_tau = rep(1e-16, Q)
-      #     new_tau[[new_group]] = 1
-      #     new_parameters$T[,q] = new_tau
-      #   }}
-      if(config$g_resampling > 1){
-        if((nb_iter %% 5) == 0){
-          alpha = rowMeans(new_parameters$T)
-          if(length(uncertain) > 0){
-            chosen = sample(uncertain, size = max(1, 0.3 * length(uncertain)))
-            for(c in chosen){
-              new_group = sample(1:Q, size=1, prob=alpha)
-              new_tau = rep(1e-16, Q)
-              new_tau[[new_group]] = 1
-              new_parameters$T[,chosen] = new_tau
-            }}
-        }
-      }
-    }
-
+    optim_Tau <- optim_plnblockbis_Tau(data, new_parameters)
+    new_parameters$T <- optim_Tau$Tau
 
     # Going next step and assessing convergence
     nb_iter <- nb_iter + 1
-    criterion[nb_iter] <- new_objective <- - plnblockbis_loglik(data, new_parameters)
+    criterion[nb_iter] <- new_objective <- -plnblockbis_loglik(data, new_parameters)
 
     objective_converged <-
-      abs(new_objective - objective)/abs(new_objective) < config$ftol_out
+      abs(new_objective - objective) / abs(new_objective) < config$ftol_out
     parameters_converged <- parameter_list_converged(
-      parameters, new_parameters,
-      xtol_abs = config$xtol_abs, xtol_rel = config$xtol_rel
+      parameters,
+      new_parameters,
+      xtol_abs = config$xtol_abs,
+      xtol_rel = config$xtol_rel
     )
-    maxit_reached <- config$maxit_out >= 0 && nb_iter >= config$maxit_out
+    maxit_reached <- config$maxit_out >= 0 &&
+      nb_iter >= config$maxit_out
 
-    if (parameters_converged | objective_converged | maxit_reached) {
-      if (parameters_converged) statut <- 4
-      if (objective_converged)  statut <- 3
-      if (maxit_reached) statut <- 5
+    if (parameters_converged |
+        objective_converged | maxit_reached) {
+      if (parameters_converged)
+        statut <- 4
+      if (objective_converged)
+        statut <- 3
+      if (maxit_reached)
+        statut <- 5
       break
     }
     posteriorProb <- append(posteriorProb, list(new_parameters$T))
@@ -116,10 +101,9 @@ optimize_plnblockbis <- function(data, params, config) {
     objective  <- new_objective
   }
   out   <- new_parameters
-  out$A <- optim_VE$A
+  out$A <- optim_Tau$A
   out$Z <- data$O + out$Mu + out$M %*% out$T
   out$Sigma <- optim_Omega$Sigma
-  ## J'ai remplacé vloglik par loglik ici
   out$Ji <- plnblockbis_vloglik(data, new_parameters)
   attr(out$Ji, "weights") <- data$w
   out$monitoring <- list(
@@ -134,8 +118,9 @@ optimize_plnblockbis <- function(data, params, config) {
 
 #' @importFrom glassoFast glassoFast
 optim_plnblockbis_Omega_sparse <- function(M, S, w, rho) {
-  n <- sum(w); p <- ncol(M)
-  glassoFast::glassoFast( crossprod(M)/n + diag(crossprod(w, (S * S)), p, p), rho = rho )$wi
+  n <- sum(w)
+  p <- ncol(M)
+  glassoFast::glassoFast(crossprod(M) / n + diag(crossprod(w, (S * S)), p, p), rho = rho)$wi
 }
 
 # Test convergence for a named list of parameters
@@ -143,7 +128,10 @@ optim_plnblockbis_Omega_sparse <- function(M, S, w, rho) {
 # xtol_rel: double ; negative or NULL = disabled
 # xtol_abs: double (negative or NULL = disabled) or list of double/matrices for each parameter (any negative is disabled)
 # Returns boolean
-parameter_list_converged <- function(oldp, newp, xtol_abs = NULL, xtol_rel = NULL) {
+parameter_list_converged <- function(oldp,
+                                     newp,
+                                     xtol_abs = NULL,
+                                     xtol_rel = NULL) {
   # Strategy is to compare each pair of list elements with matching names.
   # Named lists are just vectors (T,str) using order of insertion.
   # mapply() is handy to do the pair tests, but it works on the underlying vector order (ignoring names).
@@ -154,15 +142,19 @@ parameter_list_converged <- function(oldp, newp, xtol_abs = NULL, xtol_rel = NUL
   stopifnot(all(names(oldp) == names(newp)))
 
   # Check convergence with xtol_rel if enabled
-  if(is.double(xtol_rel) && xtol_rel > 0) {
-    if(all(mapply(function(o, n) { all(abs(n - o) <= xtol_rel * abs(o)) }, oldp, newp))) {
+  if (is.double(xtol_rel) && xtol_rel > 0) {
+    if (all(mapply(function(o, n) {
+      all(abs(n - o) <= xtol_rel * abs(o))
+    }, oldp, newp))) {
       return(TRUE)
     }
   }
 
   # Check convergence with xtol_abs (homogeneous) if enabled
-  if(is.double(xtol_abs) && xtol_abs > 0) {
-    if(all(mapply(function(o, n) { all(abs(n - o) <= xtol_abs) }, oldp, newp))) {
+  if (is.double(xtol_abs) && xtol_abs > 0) {
+    if (all(mapply(function(o, n) {
+      all(abs(n - o) <= xtol_abs)
+    }, oldp, newp))) {
       return(TRUE)
     }
   }
