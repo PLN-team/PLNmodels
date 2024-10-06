@@ -87,12 +87,14 @@ PLNblockbisfit <- R6Class(
                         offsets,
                         weights,
                         config) {
+      XtXm <- solve(crossprod(covariates))
       args <- list(
         data   = list(
           Y = responses,
           X = covariates,
           O = offsets,
-          XtXm = solve(crossprod(covariates)),
+          XtXm = XtXm,
+          ProjX = covariates %*% XtXm %*% t(covariates),
           w = weights
         ),
         params = list(

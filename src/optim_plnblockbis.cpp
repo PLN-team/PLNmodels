@@ -24,8 +24,8 @@ arma::vec plnblockbis_vloglik(
   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
 
-  const arma::uword p = Y.n_cols;
-  const arma::uword q = M.n_cols;
+  const double p = double(Y.n_cols);
+  const double q = double(M.n_cols);
   const arma::vec log_pi = arma::trunc_log(mean(T,1));
   const arma::mat S2 = S % S ;
   const arma::mat Delta2 = Delta % Delta ;
@@ -34,12 +34,12 @@ arma::vec plnblockbis_vloglik(
 
   // Element-wise log-likelihood
   return(
-         sum(Y % Z - A, 1) - logfact(Y)                            // Poisson term
-      + 0.5 * (real(log_det(Omega)) + sum(log(S2), 1) + double(q)) // Gaussian-block term
-      - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1)       // ...
-      + 0.5 * (sum(log(dm)) + sum(log(Delta2), 1) + double(p))     // Gaussian-species term
-      - 0.5 * (pow(Mu - X * B, 2) + Delta2) * dm.t()                   // ...
-      + accu(log_pi.t() * T) - accu(T % arma::trunc_log(T))        // Multinomial-block term
+         sum(Y % Z - A, 1) - logfact(Y)                      // Poisson term
+      + 0.5 * (real(log_det(Omega)) + sum(log(S2), 1) + q)   // Gaussian-block term
+      - 0.5 * sum( (M * Omega) % M + S2 * diagmat(Omega), 1) // ...
+      + 0.5 * (sum(log(dm)) + sum(log(Delta2), 1) + p)       // Gaussian-species term
+      - 0.5 * (pow(Mu - X * B, 2) + Delta2) * dm.t()         // ...
+      + accu(log_pi.t() * T) - accu(T % arma::trunc_log(T))  // Multinomial-block term
   ) ;
 }
 
@@ -60,25 +60,24 @@ double plnblockbis_loglik(
   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
 
+  const double n = double(Y.n_rows);
   const double p = double(Y.n_cols);
   const double q = double(M.n_cols);
-  const double n = double(M.n_rows);
   const arma::vec log_pi = arma::trunc_log(mean(T,1));
   const arma::mat S2 = S % S ;
   const arma::mat Delta2 = Delta % Delta ;
   const arma::mat Z = O + Mu + M * T;
   const arma::mat A = trunc_exp(O + Mu + .5 * Delta2) % (trunc_exp(M + .5 * S2) * T) ;
-  const arma::mat DD = ((Mu - X*B).t()*(Mu - X*B) + diagmat(sum(Delta2, 0)))/n;
-  const arma::rowvec d = mean(pow(Mu - X*B, 2) + Delta2, 0) ;
   const arma::mat Sigma = (M.t() * M + diagmat(sum(S2,0))) / n;
 
+  // At optimum, accu(d % dm) = p so some terms vanish
   return (
-      accu(Y % (O + Mu + M * T) - A) - accu(logfact(Y))        // Poisson term
-      - .5 * n * (log_det_sympd(Sigma) + accu(Omega % Sigma))  // Gaussian-block term
-      - .5 * n * (accu(log(d)) + accu(DD % diagmat(dm)))          // Gaussian-species term
-      + .5 * (accu(log(S2)) + accu(log(Delta2)) + n * (p + q)) // Gaussian entropies + cst.
-      + accu(log_pi.t() * T) - accu(T % trunc_log(T))    // multinomial term
-    );
+      accu(Y % (O + Mu + M * T) - A) - accu(logfact(Y))     // Poisson term
+    - .5 * n * (accu(Omega % Sigma) - log_det_sympd(Omega)) // Gaussian-block term
+    + .5 * n * (accu(log(dm)))                              // Gaussian-species term
+    + .5 * (accu(log(S2)) + accu(log(Delta2)) + n * q)      // Gaussian entropies + cst.
+    + (accu(log_pi.t() * T) - accu(T % trunc_log(T)))       // multinomial term
+  );
 }
 
 // [[Rcpp::export]]
@@ -127,7 +126,7 @@ Rcpp::List optim_plnblockbis_Tau(
   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
   const arma::mat A1 = trunc_exp(O + Mu + .5* Delta % Delta) ;
   const arma::mat A2 = trunc_exp(M + .5 * S % S) ;
-  arma::mat Tau = (M.t() * Y - A2.t() * A1) ;
+  arma::mat Tau = (M.t() * Y - A2.t() * A1)  ;
   Tau.each_col() += log_pi - 1 ;
   Tau.each_col( [](arma::vec& x){
     x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;
@@ -191,10 +190,10 @@ Rcpp::List optim_plnblockbis_VE(
     arma::rowvec d = mean(pow(MumXB, 2) + Delta2, 0) ;
 
     double objective =
-      accu(A - Y % (O + Mu + M * Tau) - .5 * log(Delta2))
-      - .5 * accu(log(S2))
-      + .5 * n * (accu(Omega % Sigma) + log_det_sympd(Sigma) + accu(log(d))
-      ) ;
+      accu(A - Y % (O + Mu + M * Tau))
+      - .5 * (accu(log(Delta2)) + accu(log(S2)))
+      + .5 * n * accu(log(d)) // profiled in dm
+      + .5 * n * (accu(Omega % Sigma) + log_det_sympd(Sigma)) ;
 
     metadata.map<Mu_ID>(grad)    = (MumXB.each_row() / d) + A - Y ;
     metadata.map<Delta_ID>(grad) = (Delta.each_row() / d) + Delta % A - pow(Delta, -1) ;
