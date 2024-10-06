@@ -49,9 +49,10 @@ optimize_plnblockbis <- function(data, params, config) {
     new_params$M     <- optim_VE$M
     new_params$Delta <- optim_VE$Delta
     new_params$S     <- optim_VE$S
+    new_params$Tau   <- optim_VE$Tau
 
-    optim_Tau <- optim_plnblockbis_Tau(data, new_params)
-    new_params$Tau <- optim_Tau$Tau
+    # optim_Tau <- optim_plnblockbis_Tau(data, new_params)
+    # new_params$Tau <- optim_Tau$Tau
 
     # Going next step and assessing convergence
     nb_iter <- nb_iter + 1
@@ -83,7 +84,7 @@ optimize_plnblockbis <- function(data, params, config) {
   }
   out   <- new_params
   out$D <- diag(as.numeric(1/out$dm)); out$dm <- NULL
-  out$A <- optim_Tau$A
+  out$A <- optim_VE$A
   out$Z <- data$O + out$Mu + out$M %*% out$Tau
   out$Sigma <- optim_Omega$Sigma
   out$Ji <- plnblockbis_vloglik(data, new_params)

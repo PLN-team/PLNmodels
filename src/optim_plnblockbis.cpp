@@ -126,7 +126,8 @@ Rcpp::List optim_plnblockbis_Tau(
   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
   const arma::mat A1 = trunc_exp(O + Mu + .5* Delta % Delta) ;
   const arma::mat A2 = trunc_exp(M + .5 * S % S) ;
-  arma::mat Tau = (M.t() * Y - A2.t() * A1)  ;
+  const double n = double(Y.n_rows) ;
+  arma::mat Tau = (M.t() * Y - A2.t() * A1) / n ;
   Tau.each_col() += log_pi - 1 ;
   Tau.each_col( [](arma::vec& x){
     x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;
@@ -151,12 +152,12 @@ Rcpp::List optim_plnblockbis_VE(
   const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);   // (n,p)
   const arma::mat & B = Rcpp::as<arma::mat>(params["B"]); // (d,p)
   const arma::rowvec & dm = Rcpp::as<arma::rowvec>(params["dm"]); // (p,p)
-  const arma::mat & Tau   = Rcpp::as<arma::mat>(params["Tau"]); // (q,p)
   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
   const auto M0    = Rcpp::as<arma::mat>(params["M"]); // (n,q)
   const auto S0    = Rcpp::as<arma::mat>(params["S"]); // (n,q)
   const auto Mu0   = Rcpp::as<arma::mat>(params["Mu"]); // (n,q)
   const auto Delta0= Rcpp::as<arma::mat>(params["Delta"]); // (n,q)
+  const auto Tau0  = Rcpp::as<arma::mat>(params["Tau"]); // (q,p)
   const auto metadata = tuple_metadata(M0, S0, Mu0, Delta0);
   enum { M_ID, S_ID, Mu_ID, Delta_ID }; // Names for metadata indexes
 
@@ -167,12 +168,12 @@ Rcpp::List optim_plnblockbis_VE(
   metadata.map<Delta_ID>(parameters.data()) = Delta0;
   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
 
+  arma::mat Tau = Tau0 ;
   const arma::mat XB = X * B ;
   const arma::rowvec domega = diagvec(Omega).t() ;
-  const arma::mat YT = Y * Tau.t() ;
 
   // Optimize
-  auto objective_and_grad = [&metadata, &Y, &YT, &X, &O, &Tau, &Omega, &domega, &dm, &XB](const double * params, double * grad) -> double {
+  auto objective_and_grad = [&metadata, &Y, &X, &O, &Tau, &Omega, &domega, &dm, &XB](const double * params, double * grad) -> double {
     const double n = double(X.n_rows) ;
     const arma::mat M = metadata.map<M_ID>(params);
     const arma::mat S = metadata.map<S_ID>(params);
@@ -197,7 +198,7 @@ Rcpp::List optim_plnblockbis_VE(
 
     metadata.map<Mu_ID>(grad)    = (MumXB.each_row() / d) + A - Y ;
     metadata.map<Delta_ID>(grad) = (Delta.each_row() / d) + Delta % A - pow(Delta, -1) ;
-    metadata.map<M_ID>(grad)     = M * Omega + A_T - YT ;
+    metadata.map<M_ID>(grad)     = M * Omega + A_T - Y * Tau.t() ;
     metadata.map<S_ID>(grad)     = (S.each_row() % domega) + S % A_T - pow(S, -1) ;
 
     return objective;
@@ -208,6 +209,21 @@ Rcpp::List optim_plnblockbis_VE(
   arma::mat S = metadata.copy<S_ID>(parameters.data());
   arma::mat Mu = metadata.copy<Mu_ID>(parameters.data());
   arma::mat Delta = metadata.copy<Delta_ID>(parameters.data());
+  arma::mat Delta2 = Delta % Delta ;
+  arma::mat MumXB = Mu - XB ;
+  arma::mat S2 = S % S ;
+  arma::mat A1 = trunc_exp(O + Mu + .5 * Delta2) ;
+  arma::mat A2 = trunc_exp(M + .5 * S2) ;
+  arma::mat A  = A1 % (A2 * Tau) ;
+
+  arma::vec log_pi = trunc_log(mean(Tau,1)) ;
+  if (Tau.n_rows > 1) {
+    Tau = (M.t() * Y - A2.t() * A1) ;
+    Tau.each_col() += log_pi - 1 ;
+    Tau.each_col( [](arma::vec& x){
+      x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;
+    }) ;
+  }
 
   return Rcpp::List::create(
     Rcpp::Named("status") = static_cast<int>(result.status),
@@ -216,7 +232,9 @@ Rcpp::List optim_plnblockbis_VE(
     Rcpp::Named("M") = M,
     Rcpp::Named("S") = S,
     Rcpp::Named("Mu") = Mu,
-    Rcpp::Named("Delta") = Delta
+    Rcpp::Named("Delta") = Delta,
+    Rcpp::Named("Tau") = Tau,
+    Rcpp::Named("A") = A
   );
 }
 
