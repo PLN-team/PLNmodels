@@ -196,10 +196,10 @@ Rcpp::List optim_plnblockbis_VE(
       + .5 * n * (accu(Omega % Sigma) + log_det_sympd(Sigma) + accu(log(d))
       ) ;
 
-    metadata.map<M_ID>(grad)     = M * Omega + A_T - YT ;
-    metadata.map<S_ID>(grad)     = (S.each_row() % domega) + S % A_T - pow(S, -1) ;
     metadata.map<Mu_ID>(grad)    = (MumXB.each_row() / d) + A - Y ;
     metadata.map<Delta_ID>(grad) = (Delta.each_row() / d) + Delta % A - pow(Delta, -1) ;
+    metadata.map<M_ID>(grad)     = M * Omega + A_T - YT ;
+    metadata.map<S_ID>(grad)     = (S.each_row() % domega) + S % A_T - pow(S, -1) ;
 
     return objective;
   };

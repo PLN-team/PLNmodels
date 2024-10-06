@@ -17,64 +17,59 @@
 #
 # Dimensions are checked only on C++ side.
 optimize_plnblockbis <- function(data, params, config) {
+
   # Link to the approximate function to optimize Omega, depending on the target structure
   optim_plnblockbis_Omega <- ifelse(is.null(params$rho), optim_plnblockbis_Omega, function(M, S)
     optim_plnblockbis_Omega_sparse(M, S, data$w, rho = config$rho))
-  q <- ncol(params$M)
-  p <- ncol(params$M)
+
   # Main loop
   nb_iter <- 0
-  parameters <- params
-  parameters$Omega <- diag(1, q, q)
-  parameters$dm <- rep(1, ncol(params$Mu))
-  new_parameters <- parameters
-  posteriorProb <- list(new_parameters$T)
+  new_params <- params
+  posteriorProb <- list(new_params$Tau)
   criterion <- vector("numeric", config$maxit_out)
   objective <- Inf
-
   repeat {
     # M Step
 
-    optim_Omega <- optim_plnblockbis_Omega(M = new_parameters$M, S = new_parameters$S)
-    new_parameters$Omega <- optim_Omega$Omega
-    new_parameters$B <- optim_plnblockbis_B(XtXm = data$XtXm,
+    optim_Omega <- optim_plnblockbis_Omega(M = new_params$M, S = new_params$S)
+    new_params$Omega <- optim_Omega$Omega
+    new_params$B <- optim_plnblockbis_B(XtXm = data$XtXm,
                                             X = data$X,
-                                            Mu = new_parameters$Mu)
-    new_parameters$dm <- optim_plnblockbis_dm(
+                                            Mu = new_params$Mu)
+    new_params$dm <- optim_plnblockbis_dm(
       X = data$X,
-      B = new_parameters$B,
-      Mu = new_parameters$Mu,
-      Delta = new_parameters$Delta
+      B = new_params$B,
+      Mu = new_params$Mu,
+      Delta = new_params$Delta
     )
 
     # VE Step
-    optim_VE <- optim_plnblockbis_VE(data, new_parameters, config)
-    new_parameters$Mu    <- optim_VE$Mu
-    new_parameters$M     <- optim_VE$M
-    new_parameters$Delta <- optim_VE$Delta
-    new_parameters$S     <- optim_VE$S
+    optim_VE <- optim_plnblockbis_VE(data, new_params, config)
+    new_params$Mu    <- optim_VE$Mu
+    new_params$M     <- optim_VE$M
+    new_params$Delta <- optim_VE$Delta
+    new_params$S     <- optim_VE$S
 
-    optim_Tau <- optim_plnblockbis_Tau(data, new_parameters)
-    new_parameters$Tau <- optim_Tau$Tau
+    optim_Tau <- optim_plnblockbis_Tau(data, new_params)
+    new_params$Tau <- optim_Tau$Tau
 
     # Going next step and assessing convergence
     nb_iter <- nb_iter + 1
-    criterion[nb_iter] <- new_objective <- -plnblockbis_loglik(data, new_parameters)
-
+    criterion[nb_iter] <- new_objective <- -plnblockbis_loglik(data, new_params)
     objective_converged <-
       abs(new_objective - objective) / abs(new_objective) < config$ftol_out
-    parameters_converged <- parameter_list_converged(
-      parameters,
-      new_parameters,
+    params_converged <- parameter_list_converged(
+      params,
+      new_params,
       xtol_abs = config$xtol_abs,
       xtol_rel = config$xtol_rel
     )
     maxit_reached <- config$maxit_out >= 0 &&
       nb_iter >= config$maxit_out
 
-    if (parameters_converged |
+    if (params_converged |
         objective_converged | maxit_reached) {
-      if (parameters_converged)
+      if (params_converged)
         statut <- 4
       if (objective_converged)
         statut <- 3
@@ -82,16 +77,16 @@ optimize_plnblockbis <- function(data, params, config) {
         statut <- 5
       break
     }
-    posteriorProb <- append(posteriorProb, list(new_parameters$Tau))
-    parameters <- new_parameters
+    posteriorProb <- append(posteriorProb, list(new_params$Tau))
+    params <- new_params
     objective  <- new_objective
   }
-  out   <- new_parameters
+  out   <- new_params
   out$D <- diag(as.numeric(1/out$dm)); out$dm <- NULL
   out$A <- optim_Tau$A
   out$Z <- data$O + out$Mu + out$M %*% out$Tau
   out$Sigma <- optim_Omega$Sigma
-  out$Ji <- plnblockbis_vloglik(data, new_parameters)
+  out$Ji <- plnblockbis_vloglik(data, new_params)
   attr(out$Ji, "weights") <- data$w
   attr(out$Ji, "loglik") <- -objective
   out$monitoring <- list(

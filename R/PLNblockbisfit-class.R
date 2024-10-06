@@ -101,6 +101,8 @@ PLNblockbisfit <- R6Class(
           S = private$S,
           Mu = private$Mu,
           Delta = private$Delta,
+          Omega = private$Omega,
+          dm    = rep(1,self$p),
           Tau = private$Tau
         ),
         config = config
@@ -114,7 +116,6 @@ PLNblockbisfit <- R6Class(
     Tau = NA, # variational parameters for the block memberships
     Mu = NA, # variational parameter for species mean
     Delta = NA, # variational parameter for species variance - covariance
-
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
