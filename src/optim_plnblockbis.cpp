@@ -188,23 +188,20 @@ Rcpp::List optim_plnblockbis_VE(
     arma::mat A  = A1 % (A2 * Tau) ;
     arma::mat A_T = A2 % (A1 * Tau.t()) ;
     arma::mat Sigma = (M.t() * M + diagmat(sum(S2,0))) / n ;
-    arma::mat DD = (MumXB.t()*MumXB + diagmat(sum(Delta2, 0)))/n;
     arma::rowvec d = mean(pow(MumXB, 2) + Delta2, 0) ;
 
     double objective =
-      accu(A - Y % (O + Mu + M * Tau))
-      + .5 * n * (
-            accu(Omega % Sigma) + log_det_sympd(Sigma)
-          + accu(DD % diagmat(dm)) + accu(log(d))
-        )
-      - 0.5 * (accu(log(S2)) + accu(log(Delta2))) ;
+      accu(A - Y % (O + Mu + M * Tau) - .5 * log(Delta2))
+      - .5 * accu(log(S2))
+      + .5 * n * (accu(Omega % Sigma) + log_det_sympd(Sigma) + accu(log(d))
+      ) ;
 
-      metadata.map<S_ID>(grad)     = (S.each_row() % domega) + S % A_T - pow(S, -1) ;
-      metadata.map<Delta_ID>(grad) = (Delta.each_row() / d) + Delta % A - pow(Delta, -1) ;
-      metadata.map<M_ID>(grad)     = M * Omega + A_T - YT ;
-      metadata.map<Mu_ID>(grad)    = (MumXB.each_row() / d) + A - Y ;
+    metadata.map<M_ID>(grad)     = M * Omega + A_T - YT ;
+    metadata.map<S_ID>(grad)     = (S.each_row() % domega) + S % A_T - pow(S, -1) ;
+    metadata.map<Mu_ID>(grad)    = (MumXB.each_row() / d) + A - Y ;
+    metadata.map<Delta_ID>(grad) = (Delta.each_row() / d) + Delta % A - pow(Delta, -1) ;
 
-      return objective;
+    return objective;
   };
   OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
