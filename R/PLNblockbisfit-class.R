@@ -42,12 +42,11 @@ PLNblockbisfit <- R6Class(
 
       ## Initial memberships/blocks
       ## Overwrite PLNfit Variational parameters (dimension q)
-      private$Delta <- control$inception$var_par$S
+      private$Delta <- abs(control$inception$var_par$S)
       private$Mu    <- control$inception$var_par$M + covariates %*% control$inception$model_par$B
-      private$M     <- control$inception$var_par$M %*% blocks
-      private$S     <- control$inception$var_par$S %*% blocks
-
-      private$Tau <- t(blocks)
+      private$M     <- control$inception$var_par$M %*% blocks # / ncol(blocks)
+      private$S     <- abs(control$inception$var_par$S) %*% blocks # matrix(0.1, self$n, ncol(blocks))
+      private$Tau   <- t(blocks)
 
       ## Setup of the optimization backend
       private$optimizer$main <-

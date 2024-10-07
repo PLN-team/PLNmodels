@@ -51,9 +51,6 @@ optimize_plnblockbis <- function(data, params, config) {
     new_params$S     <- optim_VE$S
     new_params$Tau   <- optim_VE$Tau
 
-    # optim_Tau <- optim_plnblockbis_Tau(data, new_params)
-    # new_params$Tau <- optim_Tau$Tau
-
     # Going next step and assessing convergence
     nb_iter <- nb_iter + 1
     criterion[nb_iter] <- new_objective <- -plnblockbis_loglik(data, new_params)

@@ -73,7 +73,7 @@ PLNblockbisfamily <- R6Class(
       ##
       ## Either user defined or obtained (the default)
       ## by kmeans on the variational parameters of the means of a fully parametrized PLN
-      Means <- myPLN_init_full$latent_pos # M
+      Means <- myPLN_init_full$var_par$M + .5 * myPLN_init_full$var_par$S2  # M
       if (is.list(control$init_cl)) {
         stopifnot(length(control$init_cl) == length(nb_blocks),
                   all(sapply(control$init_cl, length) == private$p))
@@ -87,11 +87,20 @@ PLNblockbisfamily <- R6Class(
               res
             })
           },
-          "kmeansvar" = {
+          "kmeanspp" = {
             blocks <- lapply(nb_blocks, function(k) {
               if (k == private$p) res <- 1:private$p
-              else {
-                res <- kmeansvar(Means, init = k)$cl}
+              else if (k == 1) res <- rep(1, private$p)
+              else res <- maotai::kmeanspp(t(Means), k)
+              res
+            })
+          },
+          "kmeansvar" = {
+            tree <- hclustvar(Means)
+            blocks <- lapply(nb_blocks, function(k) {
+              if (k == private$p) res <- 1:private$p
+              else{
+                res <-  kmeansvar(Means, init = cutreevar(tree, k)$cluster, nstart = 1)$cl}
               res
             })
           },

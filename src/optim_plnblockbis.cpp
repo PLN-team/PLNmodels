@@ -111,39 +111,12 @@ arma::rowvec  optim_plnblockbis_dm(
   return(pow(mean(pow(Mu - X * B, 2) + Delta % Delta, 0), -1)) ;
 }
 
-// [[Rcpp::export]]
-Rcpp::List optim_plnblockbis_Tau(
-    const Rcpp::List & data  , // List(Y, X, O, w)
-    const Rcpp::List & params  // List(M, S, T, B, Omega)
-) {
-  const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"])  ; // responses (n,p)
-  const arma::mat & O = Rcpp::as<arma::mat>(data["O"])  ; // offsets (n,p)
-  const arma::mat & M = Rcpp::as<arma::mat>(params["M"]); // (n,q)
-  const arma::mat & S = Rcpp::as<arma::mat>(params["S"]); // (n,q)
-  const arma::mat & Tau0 = Rcpp::as<arma::mat>(params["Tau"]); // (n,p)
-  const arma::vec log_pi = arma::trunc_log(mean(Tau0,1));
-  const arma::mat & Mu = Rcpp::as<arma::mat>(params["Mu"]); // (n,p)
-  const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
-  const arma::mat A1 = trunc_exp(O + Mu + .5* Delta % Delta) ;
-  const arma::mat A2 = trunc_exp(M + .5 * S % S) ;
-  const double n = double(Y.n_rows) ;
-  arma::mat Tau = (M.t() * Y - A2.t() * A1) / n ;
-  Tau.each_col() += log_pi - 1 ;
-  Tau.each_col( [](arma::vec& x){
-    x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;
-  }) ;
-  return Rcpp::List::create(
-    Rcpp::Named("Tau") = Tau,
-    Rcpp::Named("A") = A1 % (A2 * Tau)
-  ) ;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
-// Reference;works reasonably well
+// Works reasonably well
 // [[Rcpp::export]]
 Rcpp::List optim_plnblockbis_VE(
     const Rcpp::List & data  , // List(Y, X, O, w)
-    const Rcpp::List & params, // List(M, S, T, B, Omega, D)
+    const Rcpp::List & params, // List(M, S, Tau, B, Omega, dm)
     const Rcpp::List & configuration // List of config values
 ) {
 
@@ -160,6 +133,9 @@ Rcpp::List optim_plnblockbis_VE(
   const auto Tau0  = Rcpp::as<arma::mat>(params["Tau"]); // (q,p)
   const auto metadata = tuple_metadata(M0, S0, Mu0, Delta0);
   enum { M_ID, S_ID, Mu_ID, Delta_ID }; // Names for metadata indexes
+  const arma::uword n = Y.n_rows;
+  const arma::uword p = Y.n_cols;
+  const arma::uword q = M0.n_cols;
 
   auto parameters = std::vector<double>(metadata.packed_size);
   metadata.map<M_ID>(parameters.data()) = M0;
@@ -167,6 +143,17 @@ Rcpp::List optim_plnblockbis_VE(
   metadata.map<Mu_ID>(parameters.data()) = Mu0;
   metadata.map<Delta_ID>(parameters.data()) = Delta0;
   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+
+  arma::mat lb_M(n,q, arma::fill::value(-arma::datum::inf)) ;
+  arma::mat lb_Mu(n,p, arma::fill::value(-arma::datum::inf));
+  arma::mat lb_S(n,q, arma::fill::value(1e-3)) ;
+  arma::mat lb_Delta(n,p, arma::fill::value(1e-3)) ;
+  auto lower_bound = std::vector<double>(metadata.packed_size);
+  metadata.map<M_ID>(lower_bound.data()) = lb_M;
+  metadata.map<S_ID>(lower_bound.data()) = lb_S;
+  metadata.map<Mu_ID>(lower_bound.data()) = lb_Mu;
+  metadata.map<Delta_ID>(lower_bound.data()) = lb_Delta;
+  nlopt_set_lower_bounds(optimizer.get(), lower_bound.data());
 
   arma::mat Tau = Tau0 ;
   const arma::mat XB = X * B ;
@@ -369,201 +356,227 @@ Rcpp::List optim_plnblockbis_VE(
 //     Rcpp::Named("Mu") = Mu,
 //     Rcpp::Named("Delta") = Delta);
 // }
+//
+// [[Rcpp::export]]
+Rcpp::List optim_plnblockbis_Tau(
+    const Rcpp::List & data  , // List(Y, X, O, w)
+    const Rcpp::List & params  // List(M, S, T, B, Omega)
+) {
+  const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"])  ; // responses (n,p)
+  const arma::mat & O = Rcpp::as<arma::mat>(data["O"])  ; // offsets (n,p)
+  const arma::mat & M = Rcpp::as<arma::mat>(params["M"]); // (n,q)
+  const arma::mat & S = Rcpp::as<arma::mat>(params["S"]); // (n,q)
+  const arma::mat & Tau0 = Rcpp::as<arma::mat>(params["Tau"]); // (n,p)
+  const arma::vec log_pi = arma::trunc_log(mean(Tau0,1));
+  const arma::mat & Mu = Rcpp::as<arma::mat>(params["Mu"]); // (n,p)
+  const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,p)
+  const arma::mat A1 = trunc_exp(O + Mu + .5* Delta % Delta) ;
+  const arma::mat A2 = trunc_exp(M + .5 * S % S) ;
+  const double n = double(Y.n_rows) ;
+  arma::mat Tau = (M.t() * Y - A2.t() * A1) / n ;
+  Tau.each_col() += log_pi - 1 ;
+  Tau.each_col( [](arma::vec& x){
+    x = trunc_exp(x - max(x)) / sum(trunc_exp(x - max(x))) ;
+  }) ;
+  return Rcpp::List::create(
+    Rcpp::Named("Tau") = Tau,
+    Rcpp::Named("A") = A1 % (A2 * Tau)
+  ) ;
+}
 
-// // [[Rcpp::export]]
-// Rcpp::List optim_plnblockbis_M(
-//     const Rcpp::List & data  , // List(Y, X, O, w)
-//     const Rcpp::List & params, // List(M, S, T, B, Omega, D)
-//     const Rcpp::List & configuration // List of config values
-// ) {
-//
-//   // OPTIMIZER DECLARATION
-//   const auto init_M   = Rcpp::as<arma::mat>(params["M"]); // (n,q)
-//   const auto metadata = tuple_metadata(init_M);
-//   enum { M_ID, }; // Names for metadata indexes
-//   auto parameters = std::vector<double>(metadata.packed_size);
-//   metadata.map<M_ID>(parameters.data()) = init_M;
-//   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-//
-//   // QUANTITY THAT REMAIN FIXED DURING OPTIMIZATION
-//   const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
-//   const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
-//   const arma::mat & T = Rcpp::as<arma::mat>(params["T"]); // (q,p)
-//   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
-//   const arma::mat & S     = Rcpp::as<arma::mat>(params["S"]); // (n,q)
-//   const arma::mat & Mu    = Rcpp::as<arma::mat>(params["Mu"]); // (n,q)
-//   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,q)
-//   const arma::mat A1  = trunc_exp(O + Mu + .5 * Delta % Delta) ;
-//   const arma::mat A1T = A1 * T.t() ;
-//   const arma::mat YT  = Y * T.t() ;
-//   const arma::mat S2  = S % S ;
-//
-//   // FUNCTION THAT COMPUTE OBJECTIVE AND GRADIENT
-//   auto objective_and_grad = [&metadata, &Y, &T, &YT, &S2, &A1, &A1T, &Omega](const double * params, double * grad) -> double {
-//     const arma::mat M = metadata.map<M_ID>(params);
-//     arma::mat A2 = trunc_exp(M + .5 * S2) ;
-//     arma::mat A  = A1 % (A2 * T) ;
-//     arma::mat AT = A2 % A1T ;
-//
-//     double objective = accu(A - Y % (M * T)) + .5 * accu((M * Omega) % M) ;
-//     metadata.map<M_ID>(grad) = M * Omega + AT - YT  ;
-//     return objective;
-//   };
-//   OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
-//
-//   // SENDING RESULTS RESULTS
-//   arma::mat M = metadata.copy<M_ID>(parameters.data());
-//   return Rcpp::List::create(
-//     Rcpp::Named("status") = static_cast<int>(result.status),
-//     Rcpp::Named("iterations") = result.nb_iterations,
-//     Rcpp::Named("objective") = result.objective,
-//     Rcpp::Named("M") = M);
-// }
-//
-// // [[Rcpp::export]]
-// Rcpp::List optim_plnblockbis_S(
-//     const Rcpp::List & data  , // List(Y, X, O, w)
-//     const Rcpp::List & params, // List(M, S, T, B, Omega, D)
-//     const Rcpp::List & configuration // List of config values
-// ) {
-//
-//   // OPTIMIZER DECLARATION
-//   const auto init_S   = Rcpp::as<arma::mat>(params["S"]); // (n,p)
-//   const auto metadata = tuple_metadata(init_S);
-//   enum { S_ID }; // Names for metadata indexes
-//   auto parameters = std::vector<double>(metadata.packed_size);
-//   metadata.map<S_ID>(parameters.data()) = init_S;
-//   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-//
-//   // QUANTITY THAT REMAIN FIXED DURING OPTIMIZATION
-//   const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
-//   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
-//   const arma::mat & M     = Rcpp::as<arma::mat>(params["M"]); // (n,q)
-//   const arma::mat & Mu    = Rcpp::as<arma::mat>(params["Mu"]); // (n,q)
-//   const arma::mat & T     = Rcpp::as<arma::mat>(params["T"]); // (n,q)
-//   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,q)
-//   const arma::mat A1 = trunc_exp(O + Mu + .5 * Delta % Delta) ;
-//   const arma::mat A1T = A1 * T.t() ;
-//   const arma::vec d_Omega = diagvec(Omega) ;
-//
-//   // FUNCTION THAT COMPUTE OBJECTIVE AND GRADIENT
-//   auto objective_and_grad = [&metadata, &T, &d_Omega, &M, &A1, &A1T](const double * params, double * grad) -> double {
-//     const arma::mat S = metadata.map<S_ID>(params);
-//     arma::mat S2 = S % S ;
-//     arma::mat A2 = trunc_exp(M + .5 * S2) ;
-//
-//     double objective = accu(A1 % (A2 * T)) + .5 * accu(S2 * d_Omega) - .5 * accu(log(S2)) ;
-//     metadata.map<S_ID>(grad) = S % (A1T % A2) + S.each_row() % d_Omega.t() - 1./S  ;
-//     return objective;
-//   };
-//   OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
-//
-//   // SENDING RESULTS
-//   arma::mat S = metadata.copy<S_ID>(parameters.data());
-//   return Rcpp::List::create(
-//     Rcpp::Named("status") = static_cast<int>(result.status),
-//     Rcpp::Named("iterations") = result.nb_iterations,
-//     Rcpp::Named("objective") = result.objective,
-//     Rcpp::Named("S") = S);
-// }
-//
-// // [[Rcpp::export]]
-// Rcpp::List optim_plnblockbis_Mu(
-//     const Rcpp::List & data  , // List(Y, X, O, w)
-//     const Rcpp::List & params, // List(M, S, T, B, Omega, D)
-//     const Rcpp::List & configuration // List of config values
-// ) {
-//
-//   // OPTIMIZER DECLARATION
-//   const auto init_Mu   = Rcpp::as<arma::mat>(params["Mu"]); // (n,p)
-//   const auto metadata = tuple_metadata(init_Mu);
-//   enum { Mu_ID }; // Names for metadata indexes
-//   auto parameters = std::vector<double>(metadata.packed_size);
-//   metadata.map<Mu_ID>(parameters.data()) = init_Mu;
-//   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-//
-//   // QUANTITY THAT REMAIN FIXED DURING OPTIMIZATION
-//   const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
-//   const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // responses (n,d)
-//   const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
-//   const arma::mat & D = Rcpp::as<arma::mat>(params["D"]); // (p,p)
-//   const arma::mat & B = Rcpp::as<arma::mat>(params["B"]); // (d,p)
-//   const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
-//   const arma::mat & M     = Rcpp::as<arma::mat>(params["M"]); // (n,q)
-//   const arma::mat & S     = Rcpp::as<arma::mat>(params["S"]); // (n,q)
-//   const arma::mat & T     = Rcpp::as<arma::mat>(params["T"]); // (q,p)
-//   const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,q)
-//   const arma::mat XB  = X * B ;
-//   const arma::vec dm  = 1./arma::diagvec(D) ;
-//   const arma::mat expDA2T  = trunc_exp(O + .5 * Delta % Delta) % (trunc_exp(M + .5 * S % S) * T) ;
-//
-//   // FUNCTION THAT COMPUTE OBJECTIVE AND GRADIENT
-//   auto objective_and_grad = [&metadata, &Y, &dm, &XB, &expDA2T](const double * params, double * grad) -> double {
-//     const arma::mat Mu = metadata.map<Mu_ID>(params);
-//     arma::mat A  = trunc_exp(Mu) % expDA2T ;
-//     arma::mat MumXB = Mu - XB ;
-//
-//     double objective = accu(A - Y % Mu) + .5 * accu(pow(MumXB, 2)*dm) ;
-//     metadata.map<Mu_ID>(grad) = MumXB.each_row() % dm.t() + A - Y  ;
-//     return objective;
-//   };
-//   OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
-//
-//   // SENDING RESULTS RESULTS
-//   arma::mat Mu = metadata.copy<Mu_ID>(parameters.data());
-//   return Rcpp::List::create(
-//     Rcpp::Named("status") = static_cast<int>(result.status),
-//     Rcpp::Named("iterations") = result.nb_iterations,
-//     Rcpp::Named("objective") = result.objective,
-//     Rcpp::Named("Mu") = Mu);
-// }
-//
-// // [[Rcpp::export]]
-// Rcpp::List optim_plnblockbis_Delta(
-//     const Rcpp::List & data  , // List(Y, X, O, w)
-//     const Rcpp::List & params, // List(M, S, T, B, Omega, D)
-//     const Rcpp::List & configuration // List of config values
-// ) {
-//
-//   // OPTIMIZER DECLARATION
-//   const auto init_Delta   = Rcpp::as<arma::mat>(params["Delta"]);
-//   const auto metadata = tuple_metadata(init_Delta);
-//   enum { Delta_ID }; // Names for metadata indexes
-//   auto parameters = std::vector<double>(metadata.packed_size);
-//   metadata.map<Delta_ID>(parameters.data()) = init_Delta;
-//   auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-//
-//   // QUANTITY THAT REMAIN FIXED DURING OPTIMIZATION
-//   const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
-//   const arma::mat & M = Rcpp::as<arma::mat>(params["M"]); // (n,q)
-//   const arma::mat & D = Rcpp::as<arma::mat>(params["D"]); // (n,q)
-//   const arma::mat & Mu= Rcpp::as<arma::mat>(params["Mu"]); // (n,q)
-//   const arma::mat & T = Rcpp::as<arma::mat>(params["T"]); // (n,q)
-//   const arma::mat & S = Rcpp::as<arma::mat>(params["S"]); // (n,q)
-//   const arma::mat expMuA2T  = trunc_exp(O + Mu) % (trunc_exp(M + .5 * S % S) * T)  ;
-//   const arma::vec dm  = 1./arma::diagvec(D) ;
-//
-//   // FUNCTION THAT COMPUTE OBJECTIVE AND GRADIENT
-//   auto objective_and_grad = [&metadata, &T, &dm, &expMuA2T](const double * params, double * grad) -> double {
-//     const arma::mat Delta = metadata.map<Delta_ID>(params);
-//     arma::mat Delta2 = Delta % Delta ;
-//     arma::mat A  = exp(.5 * Delta2) % expMuA2T   ;
-//
-//     double objective = accu(A) + .5 * accu(Delta2 * dm) - .5 * accu(log(Delta2)) ;
-//     metadata.map<Delta_ID>(grad) = Delta % A  + Delta.each_row() % dm.t() - 1./Delta  ;
-//     return objective;
-//   };
-//   OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
-//
-//   // SENDING RESULTS
-//   arma::mat Delta = metadata.copy<Delta_ID>(parameters.data());
-//   return Rcpp::List::create(
-//     Rcpp::Named("status") = static_cast<int>(result.status),
-//     Rcpp::Named("iterations") = result.nb_iterations,
-//     Rcpp::Named("objective") = result.objective,
-//     Rcpp::Named("Delta") = Delta);
-// }
+// [[Rcpp::export]]
+Rcpp::List optim_plnblockbis_M(
+    const Rcpp::List & data  , // List(Y, X, O, w)
+    const Rcpp::List & params, // List(M, S, T, B, Omega, D)
+    const Rcpp::List & configuration // List of config values
+) {
 
+  // OPTIMIZER DECLARATION
+  const auto init_M   = Rcpp::as<arma::mat>(params["M"]); // (n,q)
+  const auto metadata = tuple_metadata(init_M);
+  enum { M_ID, }; // Names for metadata indexes
+  auto parameters = std::vector<double>(metadata.packed_size);
+  metadata.map<M_ID>(parameters.data()) = init_M;
+  auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+
+  // QUANTITY THAT REMAIN FIXED DURING OPTIMIZATION
+  const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
+  const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
+  const arma::mat & T = Rcpp::as<arma::mat>(params["T"]); // (q,p)
+  const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
+  const arma::mat & S     = Rcpp::as<arma::mat>(params["S"]); // (n,q)
+  const arma::mat & Mu    = Rcpp::as<arma::mat>(params["Mu"]); // (n,q)
+  const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,q)
+  const arma::mat A1  = trunc_exp(O + Mu + .5 * Delta % Delta) ;
+  const arma::mat A1T = A1 * T.t() ;
+  const arma::mat YT  = Y * T.t() ;
+  const arma::mat S2  = S % S ;
+
+  // FUNCTION THAT COMPUTE OBJECTIVE AND GRADIENT
+  auto objective_and_grad = [&metadata, &Y, &T, &YT, &S2, &A1, &A1T, &Omega](const double * params, double * grad) -> double {
+    const arma::mat M = metadata.map<M_ID>(params);
+    arma::mat A2 = trunc_exp(M + .5 * S2) ;
+    arma::mat A  = A1 % (A2 * T) ;
+    arma::mat AT = A2 % A1T ;
+
+    double objective = accu(A - Y % (M * T)) + .5 * accu((M * Omega) % M) ;
+    metadata.map<M_ID>(grad) = M * Omega + AT - YT  ;
+    return objective;
+  };
+  OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+
+  // SENDING RESULTS RESULTS
+  arma::mat M = metadata.copy<M_ID>(parameters.data());
+  return Rcpp::List::create(
+    Rcpp::Named("status") = static_cast<int>(result.status),
+    Rcpp::Named("iterations") = result.nb_iterations,
+    Rcpp::Named("objective") = result.objective,
+    Rcpp::Named("M") = M);
+}
+
+// [[Rcpp::export]]
+Rcpp::List optim_plnblockbis_S(
+    const Rcpp::List & data  , // List(Y, X, O, w)
+    const Rcpp::List & params, // List(M, S, T, B, Omega, D)
+    const Rcpp::List & configuration // List of config values
+) {
+
+  // OPTIMIZER DECLARATION
+  const auto init_S   = Rcpp::as<arma::mat>(params["S"]); // (n,p)
+  const auto metadata = tuple_metadata(init_S);
+  enum { S_ID }; // Names for metadata indexes
+  auto parameters = std::vector<double>(metadata.packed_size);
+  metadata.map<S_ID>(parameters.data()) = init_S;
+  auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+
+  // QUANTITY THAT REMAIN FIXED DURING OPTIMIZATION
+  const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
+  const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
+  const arma::mat & M     = Rcpp::as<arma::mat>(params["M"]); // (n,q)
+  const arma::mat & Mu    = Rcpp::as<arma::mat>(params["Mu"]); // (n,q)
+  const arma::mat & T     = Rcpp::as<arma::mat>(params["T"]); // (n,q)
+  const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,q)
+  const arma::mat A1 = trunc_exp(O + Mu + .5 * Delta % Delta) ;
+  const arma::mat A1T = A1 * T.t() ;
+  const arma::vec d_Omega = diagvec(Omega) ;
+
+  // FUNCTION THAT COMPUTE OBJECTIVE AND GRADIENT
+  auto objective_and_grad = [&metadata, &T, &d_Omega, &M, &A1, &A1T](const double * params, double * grad) -> double {
+    const arma::mat S = metadata.map<S_ID>(params);
+    arma::mat S2 = S % S ;
+    arma::mat A2 = trunc_exp(M + .5 * S2) ;
+
+    double objective = accu(A1 % (A2 * T)) + .5 * accu(S2 * d_Omega) - .5 * accu(log(S2)) ;
+    metadata.map<S_ID>(grad) = S % (A1T % A2) + S.each_row() % d_Omega.t() - 1./S  ;
+    return objective;
+  };
+  OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+
+  // SENDING RESULTS
+  arma::mat S = metadata.copy<S_ID>(parameters.data());
+  return Rcpp::List::create(
+    Rcpp::Named("status") = static_cast<int>(result.status),
+    Rcpp::Named("iterations") = result.nb_iterations,
+    Rcpp::Named("objective") = result.objective,
+    Rcpp::Named("S") = S);
+}
+
+// [[Rcpp::export]]
+Rcpp::List optim_plnblockbis_Mu(
+    const Rcpp::List & data  , // List(Y, X, O, w)
+    const Rcpp::List & params, // List(M, S, T, B, Omega, D)
+    const Rcpp::List & configuration // List of config values
+) {
+
+  // OPTIMIZER DECLARATION
+  const auto init_Mu   = Rcpp::as<arma::mat>(params["Mu"]); // (n,p)
+  const auto metadata = tuple_metadata(init_Mu);
+  enum { Mu_ID }; // Names for metadata indexes
+  auto parameters = std::vector<double>(metadata.packed_size);
+  metadata.map<Mu_ID>(parameters.data()) = init_Mu;
+  auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+
+  // QUANTITY THAT REMAIN FIXED DURING OPTIMIZATION
+  const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
+  const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // responses (n,d)
+  const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
+  const arma::mat & D = Rcpp::as<arma::mat>(params["D"]); // (p,p)
+  const arma::mat & B = Rcpp::as<arma::mat>(params["B"]); // (d,p)
+  const arma::mat & Omega = Rcpp::as<arma::mat>(params["Omega"]); // (q,q)
+  const arma::mat & M     = Rcpp::as<arma::mat>(params["M"]); // (n,q)
+  const arma::mat & S     = Rcpp::as<arma::mat>(params["S"]); // (n,q)
+  const arma::mat & T     = Rcpp::as<arma::mat>(params["T"]); // (q,p)
+  const arma::mat & Delta = Rcpp::as<arma::mat>(params["Delta"]); // (n,q)
+  const arma::mat XB  = X * B ;
+  const arma::vec dm  = 1./arma::diagvec(D) ;
+  const arma::mat expDA2T  = trunc_exp(O + .5 * Delta % Delta) % (trunc_exp(M + .5 * S % S) * T) ;
+
+  // FUNCTION THAT COMPUTE OBJECTIVE AND GRADIENT
+  auto objective_and_grad = [&metadata, &Y, &dm, &XB, &expDA2T](const double * params, double * grad) -> double {
+    const arma::mat Mu = metadata.map<Mu_ID>(params);
+    arma::mat A  = trunc_exp(Mu) % expDA2T ;
+    arma::mat MumXB = Mu - XB ;
+
+    double objective = accu(A - Y % Mu) + .5 * accu(pow(MumXB, 2)*dm) ;
+    metadata.map<Mu_ID>(grad) = MumXB.each_row() % dm.t() + A - Y  ;
+    return objective;
+  };
+  OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+
+  // SENDING RESULTS RESULTS
+  arma::mat Mu = metadata.copy<Mu_ID>(parameters.data());
+  return Rcpp::List::create(
+    Rcpp::Named("status") = static_cast<int>(result.status),
+    Rcpp::Named("iterations") = result.nb_iterations,
+    Rcpp::Named("objective") = result.objective,
+    Rcpp::Named("Mu") = Mu);
+}
+
+// [[Rcpp::export]]
+Rcpp::List optim_plnblockbis_Delta(
+    const Rcpp::List & data  , // List(Y, X, O, w)
+    const Rcpp::List & params, // List(M, S, T, B, Omega, D)
+    const Rcpp::List & configuration // List of config values
+) {
+
+  // OPTIMIZER DECLARATION
+  const auto init_Delta   = Rcpp::as<arma::mat>(params["Delta"]);
+  const auto metadata = tuple_metadata(init_Delta);
+  enum { Delta_ID }; // Names for metadata indexes
+  auto parameters = std::vector<double>(metadata.packed_size);
+  metadata.map<Delta_ID>(parameters.data()) = init_Delta;
+  auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+
+  // QUANTITY THAT REMAIN FIXED DURING OPTIMIZATION
+  const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
+  const arma::mat & M = Rcpp::as<arma::mat>(params["M"]); // (n,q)
+  const arma::mat & D = Rcpp::as<arma::mat>(params["D"]); // (n,q)
+  const arma::mat & Mu= Rcpp::as<arma::mat>(params["Mu"]); // (n,q)
+  const arma::mat & T = Rcpp::as<arma::mat>(params["T"]); // (n,q)
+  const arma::mat & S = Rcpp::as<arma::mat>(params["S"]); // (n,q)
+  const arma::mat expMuA2T  = trunc_exp(O + Mu) % (trunc_exp(M + .5 * S % S) * T)  ;
+  const arma::vec dm  = 1./arma::diagvec(D) ;
+
+  // FUNCTION THAT COMPUTE OBJECTIVE AND GRADIENT
+  auto objective_and_grad = [&metadata, &T, &dm, &expMuA2T](const double * params, double * grad) -> double {
+    const arma::mat Delta = metadata.map<Delta_ID>(params);
+    arma::mat Delta2 = Delta % Delta ;
+    arma::mat A  = exp(.5 * Delta2) % expMuA2T   ;
+
+    double objective = accu(A) + .5 * accu(Delta2 * dm) - .5 * accu(log(Delta2)) ;
+    metadata.map<Delta_ID>(grad) = Delta % A  + Delta.each_row() % dm.t() - 1./Delta  ;
+    return objective;
+  };
+  OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+
+  // SENDING RESULTS
+  arma::mat Delta = metadata.copy<Delta_ID>(parameters.data());
+  return Rcpp::List::create(
+    Rcpp::Named("status") = static_cast<int>(result.status),
+    Rcpp::Named("iterations") = result.nb_iterations,
+    Rcpp::Named("objective") = result.objective,
+    Rcpp::Named("Delta") = Delta);
+}
 
 // // [[Rcpp::export]]
 // Rcpp::List optim_plnblockbis_VE_profiled(
