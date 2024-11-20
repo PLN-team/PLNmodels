@@ -191,7 +191,7 @@ PLNfit <- R6Class(
     variance_variational = function(X, config = config_default_nlopt) {
     ## Variance of B for n data points
       fisher <- Matrix::bdiag(lapply(1:self$p, function(j) {
-        crossprod(X, private$A[, j] * X) # t(X) %*% diag(A[, i]) %*% X
+        crossprod(X, private$A[, j] * X) # t(X) %*% diag(A[, j]) %*% X
       }))
       vcov_B <- tryCatch(Matrix::solve(fisher), error = function(e) {e})
       if (is(vcov_B, "error")) {
@@ -220,22 +220,11 @@ PLNfit <- R6Class(
 
     compute_vcov_from_resamples = function(resamples){
       B_list = resamples %>% map("B")
-      #print (B_list)
       vcov_B = lapply(seq(1, ncol(private$B)), function(B_col){
         param_ests_for_col = B_list %>% map(~.x[, B_col])
         param_ests_for_col = do.call(rbind, param_ests_for_col)
-        #print (param_ests_for_col)
         row_vcov = cov(param_ests_for_col)
       })
-      #print ("vcov blocks")
-      #print (vcov_B)
-
-      #B_vcov <- resamples %>% map("B") %>% map(~( . )) %>% reduce(cov)
-
-      #var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%
-      #  `dimnames<-`(dimnames(private$B))
-      #B_hat  <- private$B[,] ## strips attributes while preserving names
-
       vcov_B = Matrix::bdiag(vcov_B) %>% as.matrix()
 
       rownames(vcov_B) <- colnames(vcov_B) <-
@@ -244,16 +233,33 @@ PLNfit <- R6Class(
         ## Hack to make sure that species is first and varies slowest
         apply(1, paste0, collapse = "_")
 
-      #print (pheatmap::pheatmap(vcov_B, cluster_rows=FALSE, cluster_cols=FALSE))
-
-
-      #names = lapply(bootstrapped_df$cov_mat, function(m){ colnames(m)}) %>% unlist()
-      #rownames(bootstrapped_vhat) = names
-      #colnames(bootstrapped_vhat) = names
-
       vcov_B = methods::as(vcov_B, "dgCMatrix")
 
       return(vcov_B)
+    },
+
+    vcov_sandwich_B = function(Y, X) {
+      getMat_iCnB <- function(i) {
+        a_i   <- as.numeric(private$A[i, ])
+        s2_i  <- as.numeric(private$S[i, ]**2)
+        omega <- as.numeric(diag(private$Omega))
+        diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
+        solve(private$Sigma + diag_mat_i)
+      }
+      YmA <- Y - private$A
+      Dn <- matrix(0, self$d*self$p, self$d*self$p)
+      Cn <- matrix(0, self$d*self$p, self$d*self$p)
+      for (i in 1:self$n) {
+        xxt_i <- tcrossprod(X[i, ])
+        Cn <- Cn - kronecker(getMat_iCnB(i) , xxt_i) / self$n
+        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / self$n
+      }
+      Cn_inv <- solve(Cn)
+      dim_names <- dimnames(attr(private$B, "vcov_variational"))
+      vcov_sand <- ((Cn_inv %*% Dn %*% Cn_inv) / self$n) %>% `dimnames<-`(dim_names)
+      attr(private$B, "vcov_sandwich") <- vcov_sand
+      attr(private$B, "variance_sandwich") <- matrix(diag(vcov_sand), nrow = self$d, ncol = self$p,
+                                                     dimnames = dimnames(private$B))
     },
 
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
@@ -263,14 +269,11 @@ PLNfit <- R6Class(
                      O = O[-i, , drop = FALSE],
                      w = w[-i])
         args <- list(data = data,
-                     # params = list(B = private$B,
-                     #               M = matrix(0, self$n-1, self$p),
-                     #               S = private$S[-i, , drop = FALSE]),
                      params = do.call(compute_PLN_starting_point, data),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
-      })
+      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
 
       B_jack <- jacks %>% map("B") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%
@@ -300,19 +303,15 @@ PLNfit <- R6Class(
         if (config$backend == "torch") # Convert data to torch tensors
           data   <- lapply(data, torch_tensor, device = config$device)                         # list with Y, X, O, w
 
-        #print (data$Y$device)
-
         args <- list(data = data,
-                     # params = list(B = private$B, M = matrix(0,self$n,self$p), S = private$S[resample, ]),
                      params = do.call(compute_PLN_starting_point, data),
                      config = config)
         if (config$backend == "torch") # Convert data to torch tensors
           args$params <- lapply(args$params, torch_tensor, requires_grad = TRUE, device = config$device) # list with B, M, S
 
         optim_out <- do.call(private$optimizer$main, args)
-        #print (optim_out)
         optim_out[c("B", "Omega", "monitoring")]
-      })
+      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
 
       B_boots <- boots %>% map("B") %>% reduce(`+`) / n_resamples
       attr(private$B, "variance_bootstrap") <-
@@ -455,7 +454,7 @@ PLNfit <- R6Class(
     #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
     #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
     #' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
-    #' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
+    #' * sandwich_var boolean indicating whether sandwich estimator should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
     #' * trace integer for verbosity. should be > 1 to see output in post-treatments
     postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config_post, config_optim, nullModel = NULL) {
       ## PARAMATERS DIMNAMES
@@ -495,6 +494,11 @@ PLNfit <- R6Class(
           #print (str(config_optim))
         }
         private$variance_bootstrap(responses, covariates, offsets, weights, n_resamples=config_post$bootstrap, config = config_optim)
+      }
+      ## 5. compute and store matrix of standard variances for B with sandwich correction approximation
+      if (config_post$sandwich_var) {
+        if(config_post$trace > 1) cat("\n\tComputing sandwich estimator of the variance...")
+        private$vcov_sandwich_B(responses, covariates)
       }
     },
 
@@ -920,25 +924,8 @@ PLNfit_fixedcov <- R6Class(
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
       private$Sigma <- solve(optim_out$Omega)
-    },
-
-    #' @description Update R2, fisher and std_err fields after optimization
-    #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
-    #' @param config_optim a list for controlling the optimization parameter. See details
-    #' @details The list of parameters `config` controls the post-treatment processing, with the following entries:
-    #' * trace integer for verbosity. should be > 1 to see output in post-treatments
-    #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
-    #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
-    #' * variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
-    #' * rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
-    postTreatment = function(responses, covariates, offsets, weights = rep(1, nrow(responses)), config_post, config_optim, nullModel = NULL) {
-      super$postTreatment(responses, covariates, offsets, weights, config_post, config_optim, nullModel)
-      ## 6. compute and store matrix of standard variances for B with sandwich correction approximation
-      if (config_post$sandwich_var) {
-        if(config_post$trace > 1) cat("\n\tComputing sandwich estimator of the variance...")
-        private$vcov_sandwich_B(responses, covariates)
-      }
     }
+
   ),
   private = list(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -976,7 +963,7 @@ PLNfit_fixedcov <- R6Class(
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
-      }, future.seed = TRUE)
+      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
 
       B_jack <- jacks %>% map("B") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%
@@ -984,31 +971,6 @@ PLNfit_fixedcov <- R6Class(
       B_hat  <- private$B[,] ## strips attributes while preserving names
       attr(private$B, "bias") <- (self$n - 1) * (B_jack - B_hat)
       attr(private$B, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
-    },
-
-    vcov_sandwich_B = function(Y, X) {
-      getMat_iCnB <- function(i) {
-        a_i   <- as.numeric(private$A[i, ])
-        s2_i  <- as.numeric(private$S[i, ]**2)
-        # omega <- as.numeric(1/diag(private$Sigma))
-        # diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
-        diag_mat_i <- diag(1/a_i + .5 * s2_i^2)
-        solve(private$Sigma + diag_mat_i)
-      }
-      YmA <- Y - private$A
-      Dn <- matrix(0, self$d*self$p, self$d*self$p)
-      Cn <- matrix(0, self$d*self$p, self$d*self$p)
-      for (i in 1:self$n) {
-        xxt_i <- tcrossprod(X[i, ])
-        Cn <- Cn - kronecker(getMat_iCnB(i) , xxt_i) / (self$n)
-        Dn <- Dn + kronecker(tcrossprod(YmA[i,]), xxt_i) / (self$n)
-      }
-      Cn_inv <- solve(Cn)
-      dim_names <- dimnames(attr(private$B, "vcov_variational"))
-      vcov_sand <- ((Cn_inv %*% Dn %*% Cn_inv) / self$n) %>% `dimnames<-`(dim_names)
-      attr(private$B, "vcov_sandwich") <- vcov_sand
-      attr(private$B, "variance_sandwich") <- matrix(diag(vcov_sand), nrow = self$d, ncol = self$p,
-                                                         dimnames = dimnames(private$B))
     }
   ),
   active = list(
