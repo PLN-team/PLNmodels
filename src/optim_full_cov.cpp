@@ -113,6 +113,8 @@ Rcpp::List nlopt_optimize_vestep(
     const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
     const auto init_M = Rcpp::as<arma::mat>(params["M"]); // (n,p)
     const auto init_S = Rcpp::as<arma::mat>(params["S"]); // (n,p)
+    const arma::uword n = Y.n_rows;
+    const arma::uword p = Y.n_cols;
 
     const auto metadata = tuple_metadata(init_M, init_S);
     enum { M_ID, S_ID }; // Names for metadata indexes
@@ -124,6 +126,13 @@ Rcpp::List nlopt_optimize_vestep(
     // Optimize
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
     std::vector<double> objective_vec ;
+
+    // arma::mat lb_M(n,p, arma::fill::value(-arma::datum::inf)) ;
+    // arma::mat lb_S(n,p, arma::fill::value(1e-3)) ;
+    // auto lower_bound = std::vector<double>(metadata.packed_size);
+    // metadata.map<M_ID>(lower_bound.data()) = lb_M;
+    // metadata.map<S_ID>(lower_bound.data()) = lb_S;
+    // nlopt_set_lower_bounds(optimizer.get(), lower_bound.data());
 
     auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &B, &Omega, &objective_vec](const double * params, double * grad) -> double {
         const arma::mat M = metadata.map<M_ID>(params);

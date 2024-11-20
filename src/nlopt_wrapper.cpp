@@ -13,6 +13,7 @@ static const AlgorithmNameAssociation supported_algorithms[] = {
     {"LBFGS", NLOPT_LD_LBFGS},
     {"VAR1", NLOPT_LD_VAR1},
     {"VAR2", NLOPT_LD_VAR2},
+    {"COBYLA", NLOPT_LN_COBYLA},
     {"TNEWTON", NLOPT_LD_TNEWTON},
     {"TNEWTON_RESTART", NLOPT_LD_TNEWTON_RESTART},
     {"TNEWTON_PRECOND", NLOPT_LD_TNEWTON_PRECOND},
