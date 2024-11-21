@@ -240,10 +240,10 @@ PLNfit <- R6Class(
 
     vcov_sandwich_B = function(Y, X) {
       getMat_iCnB <- function(i) {
-        a_i   <- as.numeric(private$A[i, ])
-        s2_i  <- as.numeric(private$S[i, ]**2)
+        a_i <- as.numeric(private$A[i, ])
+        s_i <- as.numeric(private$S[i, ])
         omega <- as.numeric(diag(private$Omega))
-        diag_mat_i <- diag(1/a_i + s2_i^2 / (1 + s2_i * (a_i + omega)))
+        diag_mat_i <- diag(1/a_i + s_i^4 / (1 + s_i^2 * (a_i + omega)))
         solve(private$Sigma + diag_mat_i)
       }
       YmA <- Y - private$A
@@ -301,7 +301,7 @@ PLNfit <- R6Class(
                      O = O[resample, , drop = FALSE],
                      w = w[resample])
         if (config$backend == "torch") # Convert data to torch tensors
-          data   <- lapply(data, torch_tensor, device = config$device)                         # list with Y, X, O, w
+          data   <- lapply(data, torch_tensor, device = config$device)
 
         args <- list(data = data,
                      params = do.call(compute_PLN_starting_point, data),

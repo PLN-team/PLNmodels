@@ -2,9 +2,6 @@ library(tidyverse)
 library(PLNmodels)
 set.seed(1234)
 
-nb_cores <- 10
-options(future.fork.enable = TRUE)
-
 params <- PLNmodels:::create_parameters(n = 50, p = 10, d = 1, depths = 1e3)
 X <- params$X
 B <- params$B
@@ -14,16 +11,12 @@ data <- prepare_data(Y, X, offset = "none")
 logO <- attr(Y, "offsets")
 
 conf <- list(variational_var = TRUE, jackknife = TRUE, bootstrap = nrow(Y), sandwich_var = TRUE)
-future::plan("multicore", workers = nb_cores)
 model <- PLN(Abundance ~ 0 + . + offset(logO), data = data, control = PLN_param(config_post = conf))
-future::plan("sequential")
 
 B_hat <- coef(model)
 B_se_var <- standard_error(model, "variational")
 B_se_jk  <- standard_error(model, "jackknife")
 B_se_bt  <- standard_error(model, "bootstrap")
-B_se_var <- standard_error(model, "variational")
-B_se_jk  <- standard_error(model, "jackknife")
 B_se_sw  <- standard_error(model, "sandwich")
 
 data.frame(
