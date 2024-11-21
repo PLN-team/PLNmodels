@@ -89,3 +89,7 @@ cpp_test_packing <- function() {
     .Call('_PLNmodels_cpp_test_packing', PACKAGE = 'PLNmodels')
 }
 
+get_sandwich_variance_B <- function(Y, X, A, S, Sigma, Diag_Omega) {
+    .Call('_PLNmodels_get_sandwich_variance_B', PACKAGE = 'PLNmodels', Y, X, A, S, Sigma, Diag_Omega)
+}
+
