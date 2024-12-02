@@ -66,4 +66,3 @@ data.frame(
   geom_abline(slope = 1, intercept = 0) + labs(x = "True value", y = "Mean estimate") + theme_bw() -> p
 
 print(p)
-
