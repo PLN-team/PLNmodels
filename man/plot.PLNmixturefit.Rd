@@ -13,12 +13,12 @@
 
 \item{main}{character. A title for the  plot. If NULL (the default), an hopefully appropriate title will be used.}
 
-\item{plot}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
+\item{plot}{logical. Should the plot be displayed or sent back as \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object}
 
 \item{...}{Not used (S3 compatibility).}
 }
 \value{
-a \code{\link{ggplot}} graphic
+a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
 }
 \description{
 Represent the result of the clustering either by coloring the individual in a two-dimension PCA factor map,

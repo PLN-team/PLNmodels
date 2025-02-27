@@ -27,7 +27,7 @@ extract_model_zi <- function(call, envir) {
   call_args <- c(as.list(call_args), list(xlev = attr(call$formula, "xlevels"), na.action = NULL))
 
   ## Extract terms for ZI and PLN components
-  terms <- .extract_terms_zi(as.formula(eval(call$formula, env = envir)))
+  terms <- .extract_terms_zi(as.formula(eval(call$formula, envir = envir)))
   ## eval the call in the parent environment with adjustement due to ZI terms
   call_args$formula <- terms$formula
   frame <- do.call(stats::model.frame, call_args, envir = envir)

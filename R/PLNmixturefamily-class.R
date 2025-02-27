@@ -222,14 +222,14 @@ PLNmixturefamily <-
       #' @param reverse A logical indicating whether to plot the value of the criteria in the "natural" direction
       #' (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
       #' natural direction, on the same scale as the log-likelihood..
-      #' @return A [`ggplot2`] object
+      #' @return A [`ggplot2::ggplot`] object
       plot = function(criteria = c("loglik", "BIC", "ICL"), reverse = FALSE) {
         vlines <- map_int(intersect(criteria, c("BIC", "ICL")), function(crit) self$getBestModel(crit)$k)
         p <- super$plot(criteria, reverse) + xlab("# of clusters") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
         p
        },
       #' @description Plot objective value of the optimization problem along the penalty path
-      #' @return a [`ggplot`] graph
+      #' @return a [`ggplot2::ggplot`] graph
       plot_objective = function() {
         objective <- self$models %>% map('optim_par') %>% map('objective') %>% unlist
         changes   <- self$models %>% map('optim_par') %>% map('outer_iterations') %>% unlist %>% cumsum

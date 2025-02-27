@@ -184,7 +184,7 @@ PLNPCAfit <- R6Class(
       #' @description Plot the factorial map of the PCA
       # @inheritParams plot.PLNPCAfit
       #' @param cols a character, factor or numeric to define the color associated with the individuals. By default, all individuals receive the default color of the current palette.
-      #' @return a [`ggplot`] graphic
+      #' @return a [`ggplot2::ggplot`] graphic
       plot_individual_map = function(axes=1:min(2,self$rank), main = "Individual Factor Map", plot = TRUE, cols = "default") {
 
         .scores <- data.frame(self$scores[,axes, drop = FALSE])
@@ -200,7 +200,7 @@ PLNPCAfit <- R6Class(
       #' @description Plot the correlation circle of a specified axis for a [`PLNLDAfit`] object
       # @inheritParams plot.PLNPCAfit
       #' @param cols a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.
-      #' @return a [`ggplot`] graphic
+      #' @return a [`ggplot2::ggplot`] graphic
       plot_correlation_circle = function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "default", plot=TRUE) {
 
         ## data frame with correlations between variables and PCs
