@@ -138,7 +138,7 @@ natural direction, on the same scale as the log-likelihood..}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \code{\link{ggplot2}} object
+A \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object
 }
 }
 \if{html}{\out{<hr>}}
@@ -151,7 +151,7 @@ Plot objective value of the optimization problem along the penalty path
 }
 
 \subsection{Returns}{
-a \code{\link{ggplot}} graph
+a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graph
 }
 }
 \if{html}{\out{<hr>}}

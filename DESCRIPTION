@@ -24,7 +24,7 @@ Description: The Poisson-lognormal model and variants (Chiquet,
 URL: https://pln-team.github.io/PLNmodels/
 BugReports: https://github.com/pln-team/PLNmodels/issues
 License: GPL (>= 3)
-Depends: R (>= 3.6)
+Depends: R (>= 4.1.0)
 Imports: 
     cli,
     corrplot,

@@ -120,7 +120,7 @@ PLNfamily <-
       #' @param reverse A logical indicating whether to plot the value of the criteria in the "natural" direction
       #' (loglik - penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the natural direction, on
       #' the same scale as the log-likelihood.
-      #' @return A [`ggplot2`] object
+      #' @return A [`ggplot2::ggplot`] object
       plot = function(criteria, reverse) {
         stopifnot(!anyNA(self$criteria[criteria]))
         dplot <- self$criteria %>%

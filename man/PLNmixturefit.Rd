@@ -194,14 +194,14 @@ Plot the matrix of expected mean counts (without offsets, without covariate effe
 \describe{
 \item{\code{main}}{character. A title for the plot.  An hopefully appropriate title will be used by default.}
 
-\item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
+\item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object}
 
 \item{\code{log_scale}}{logical. Should the color scale values be log-transform before plotting? Default is \code{TRUE}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-a \code{\link{ggplot}} graphic
+a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
 }
 }
 \if{html}{\out{<hr>}}
@@ -221,12 +221,12 @@ Plot the individual map of a PCA performed on the latent coordinates, where indi
 \describe{
 \item{\code{main}}{character. A title for the plot. An hopefully appropriate title will be used by default.}
 
-\item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
+\item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-a \code{\link{ggplot}} graphic
+a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
 }
 }
 \if{html}{\out{<hr>}}
