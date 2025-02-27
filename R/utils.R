@@ -55,7 +55,8 @@ config_post_default_PLNLDA <-
     jackknife       = FALSE,
     bootstrap       = 0L,
     rsquared        = TRUE,
-    variational_var = FALSE
+    variational_var = FALSE,
+    sandwich_var    = FALSE
   )
 
 config_post_default_PLNPCA <-
@@ -63,7 +64,8 @@ config_post_default_PLNPCA <-
     jackknife       = FALSE,
     bootstrap       = 0L,
     rsquared        = TRUE,
-    variational_var = FALSE
+    variational_var = FALSE,
+    sandwich_var    = FALSE
   )
 
 config_post_default_PLNmixture <-
@@ -71,7 +73,8 @@ config_post_default_PLNmixture <-
     jackknife       = FALSE,
     bootstrap       = 0L,
     rsquared        = TRUE,
-    variational_var = FALSE
+    variational_var = FALSE,
+    sandwich_var    = FALSE
   )
 
 status_to_message <- function(status) {

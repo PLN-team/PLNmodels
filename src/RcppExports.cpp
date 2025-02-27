@@ -330,6 +330,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_sandwich_variance_B
+arma::mat get_sandwich_variance_B(const arma::mat& Y, const arma::mat& X, const arma::mat& A, const arma::mat& S, const arma::mat& Sigma, const arma::vec& Diag_Omega);
+RcppExport SEXP _PLNmodels_get_sandwich_variance_B(SEXP YSEXP, SEXP XSEXP, SEXP ASEXP, SEXP SSEXP, SEXP SigmaSEXP, SEXP Diag_OmegaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Sigma(SigmaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Diag_Omega(Diag_OmegaSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_sandwich_variance_B(Y, X, A, S, Sigma, Diag_Omega));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_cpp_test_nlopt", (DL_FUNC) &_PLNmodels_cpp_test_nlopt, 0},
@@ -354,6 +370,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optim_zipln_M", (DL_FUNC) &_PLNmodels_optim_zipln_M, 9},
     {"_PLNmodels_optim_zipln_S", (DL_FUNC) &_PLNmodels_optim_zipln_S, 7},
     {"_PLNmodels_cpp_test_packing", (DL_FUNC) &_PLNmodels_cpp_test_packing, 0},
+    {"_PLNmodels_get_sandwich_variance_B", (DL_FUNC) &_PLNmodels_get_sandwich_variance_B, 6},
     {NULL, NULL, 0}
 };
 
