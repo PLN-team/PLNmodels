@@ -173,7 +173,7 @@ Networkfamily <- R6Class(
     #' (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
     #' natural direction, on the same scale as the log-likelihood.
     #' @param log.x logical: should the x-axis be represented in log-scale? Default is `TRUE`.
-    #' @return a [`ggplot`] graph
+    #' @return a [`ggplot2::ggplot`] graph
     plot = function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), reverse = FALSE, log.x = TRUE) {
       vlines <- sapply(intersect(criteria, c("BIC", "EBIC")) , function(crit) self$getBestModel(crit)$penalty)
       p <- super$plot(criteria, reverse) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
@@ -184,7 +184,7 @@ Networkfamily <- R6Class(
     #' @description Plot stability path
     #' @param stability scalar: the targeted level of stability using stability selection. Default is `0.9`.
     #' @param log.x logical: should the x-axis be represented in log-scale? Default is `TRUE`.
-    #' @return a [`ggplot`] graph
+    #' @return a [`ggplot2::ggplot`] graph
     plot_stars = function(stability = 0.9, log.x = TRUE) {
       if (anyNA(self$stability)) stop("stability selection has not yet been performed! Use stability_selection()")
       dplot <- self$criteria %>% select(param, density, stability) %>%
@@ -209,7 +209,7 @@ Networkfamily <- R6Class(
     },
 
     #' @description Plot objective value of the optimization problem along the penalty path
-    #' @return a [`ggplot`] graph
+    #' @return a [`ggplot2::ggplot`] graph
     plot_objective = function() {
       objective <- unlist(lapply(self$models, function(model) model$optim_par$objective))
       changes <- cumsum(unlist(lapply(self$models, function(model) model$optim_par$iterations)))

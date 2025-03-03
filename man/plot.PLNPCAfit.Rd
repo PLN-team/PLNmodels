@@ -29,14 +29,14 @@
 
 \item{var_cols}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
 
-\item{plot}{logical. Should the plot be displayed or sent back as \code{\link{ggplot}} object}
+\item{plot}{logical. Should the plot be displayed or sent back as \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object}
 
 \item{main}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
 
 \item{...}{Not used (S3 compatibility).}
 }
 \value{
-displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a \code{\link{ggplot}} or gtable object
+displays an individual and/or variable factor maps for the corresponding axes, and/or sends back a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} or gtable object
 }
 \description{
 PCA visualization (individual and/or variable factor map(s)) for a \code{\link{PLNPCAfit}} object

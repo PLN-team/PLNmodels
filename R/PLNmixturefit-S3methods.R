@@ -17,10 +17,10 @@ isPLNmixturefit <- function(Robject) {inherits(Robject, "PLNmixturefit")}
 #' @param x an R6 object with class [`PLNmixturefit`]
 #' @param type character for the type of plot, either "pca", for or "matrix". Default is `"pca"`.
 #' @param main character. A title for the  plot. If NULL (the default), an hopefully appropriate title will be used.
-#' @param plot logical. Should the plot be displayed or sent back as [`ggplot`] object
+#' @param plot logical. Should the plot be displayed or sent back as [`ggplot2::ggplot`] object
 #' @param ... Not used (S3 compatibility).
 #'
-#' @return a [`ggplot`] graphic
+#' @return a [`ggplot2::ggplot`] graphic
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)

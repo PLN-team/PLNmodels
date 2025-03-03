@@ -105,7 +105,7 @@ PLNPCAfamily <- R6Class(
     #' @param reverse A logical indicating whether to plot the value of the criteria in the "natural" direction
     #' (loglik - penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the natural direction, on
     #' the same scale as the log-likelihood.
-    #' @return A [`ggplot2`] object
+    #' @return A [`ggplot2::ggplot`] object
     plot = function(criteria = c("loglik", "BIC", "ICL"), reverse = FALSE) {
       vlines <- sapply(intersect(criteria, c("BIC", "ICL")) , function(crit) self$getBestModel(crit)$rank)
       p <- super$plot(criteria, reverse) + xlab("rank") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)

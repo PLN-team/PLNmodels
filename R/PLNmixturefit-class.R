@@ -243,10 +243,10 @@ PLNmixturefit <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -----------------
       #' @description Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering
-      #' @param plot logical. Should the plot be displayed or sent back as [`ggplot`] object
+      #' @param plot logical. Should the plot be displayed or sent back as [`ggplot2::ggplot`] object
       #' @param main character. A title for the plot.  An hopefully appropriate title will be used by default.
       #' @param log_scale logical. Should the color scale values be log-transform before plotting? Default is \code{TRUE}.
-      #' @return a [`ggplot`] graphic
+      #' @return a [`ggplot2::ggplot`] graphic
       plot_clustering_data = function(main = "Expected counts reorder by clustering", plot = TRUE, log_scale = TRUE) {
         M  <- private$mix_up('var_par$M')
         S2 <- private$mix_up('var_par$S2')
@@ -259,9 +259,9 @@ PLNmixturefit <-
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Graphical methods -----------------
       #' @description Plot the individual map of a PCA performed on the latent coordinates, where individuals are colored according to the memberships
-      #' @param plot logical. Should the plot be displayed or sent back as [`ggplot`] object
+      #' @param plot logical. Should the plot be displayed or sent back as [`ggplot2::ggplot`] object
       #' @param main character. A title for the plot. An hopefully appropriate title will be used by default.
-      #' @return a [`ggplot`] graphic
+      #' @return a [`ggplot2::ggplot`] graphic
       plot_clustering_pca = function(main = "Clustering labels in Individual Factor Map", plot = TRUE) {
         mu <- self$posteriorProb %*% t(self$group_means) + private$mix_up('var_par$M')
         svdM <- svd(scale(mu, TRUE, FALSE), nv = 2)

@@ -345,7 +345,7 @@ Plot the factorial map of the PCA
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-a \code{\link{ggplot}} graphic
+a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
 }
 }
 \if{html}{\out{<hr>}}
@@ -376,7 +376,7 @@ Plot the correlation circle of a specified axis for a \code{\link{PLNLDAfit}} ob
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-a \code{\link{ggplot}} graphic
+a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
 }
 }
 \if{html}{\out{<hr>}}
