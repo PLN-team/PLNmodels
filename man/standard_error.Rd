@@ -18,19 +18,19 @@
 
 standard_error(
   object,
-  type = c("variational", "jackknife", "sandwich"),
+  type = c("sandwich", "variational", "jackknife"),
   parameter = c("B", "Omega")
 )
 
 \method{standard_error}{PLNfit}(
   object,
-  type = c("variational", "sandwich", "jackknife", "bootstrap"),
+  type = c("sandwich", "variational", "jackknife", "bootstrap"),
   parameter = c("B", "Omega")
 )
 
 \method{standard_error}{PLNfit_fixedcov}(
   object,
-  type = c("variational", "sandwich", "jackknife", "bootstrap", "sandwich"),
+  type = c("sandwich", "variational", "jackknife", "bootstrap"),
   parameter = c("B", "Omega")
 )
 
@@ -49,7 +49,7 @@ standard_error(
 \arguments{
 \item{object}{an R6 object with class PLNfit}
 
-\item{type}{string describing the type of variance approximation: "variational", "jackknife", "sandwich" (only for fixed covariance). Default is "variational".}
+\item{type}{string describing the type of variance approximation: "variational", "jackknife", "sandwich". Default is "sandwich".}
 
 \item{parameter}{string describing the target parameter: either B (regression coefficients) or Omega (inverse residual covariance)}
 }

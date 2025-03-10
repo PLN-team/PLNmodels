@@ -1,5 +1,6 @@
 # Current version
 
+* fix sandwich variance estimation (PR #140)
 * fix use of native pipe to ensure compatibility with R 3.6 (merge PR #125, fix #124)
 
 # PLNmodels 1.2.0 (2024-03-05)

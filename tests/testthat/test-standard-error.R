@@ -4,7 +4,7 @@ data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
 ## Error messages ---------------------
-test_that("Check that fisher and standard_error return objects with proper dimensions and sign",  {
+test_that("Variational Fisher: Check that fisher and standard_error return objects with proper dimensions and sign",  {
 
   myPLN_cov <- PLN(Abundance ~ Wind + offset(log(Offset)), data = trichoptera, control = PLN_param(config_post = list(variational_var = TRUE)))
   expect_is(myPLN_cov, "PLNfit")
@@ -31,19 +31,18 @@ test_that("Check that fisher and standard_error return objects with proper dimen
 myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, control = PLN_param(config_post = list(variational_var = TRUE)))
 
 ## Consistency -----------------------
-test_that("Check internal consistency of Fisher matrix for PLN models with no covariates",  {
+test_that("Variational Fisher: Check internal consistency of Fisher matrix for PLN models with no covariates",  {
   tol <- 1e-8
 
   n <- nrow(myPLN$fitted)
   ## Consistency of the standard error matrix
-  sem <- (sqrt(n) * standard_error(myPLN)) %>% as.numeric()
+  sem <- (sqrt(n) * standard_error(myPLN, "variational")) %>% as.numeric()
   manual.sem <- 1/colMeans(myPLN$fitted) %>% sqrt()
 
   ## Internal consistency
   expect_equal(sem, manual.sem, tolerance = tol)
 
 })
-
 
 test_that("Check temporal consistency of Fisher matrix for PLN models with no covariates",  {
   tol <- 1e-2
@@ -70,6 +69,31 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
 
   ## Temporal consistency (with previous fits of the PLN model, here fitted on the 2018/12/11 with PLNmodels version 0.5.9601)
   expect_equal(sem             , expected.sem     , tolerance = tol)
+
+})
+
+
+## Error messages ---------------------
+test_that("Sandwich: check that fisher and standard_error return objects with proper dimensions and sign",  {
+
+  myPLN_cov <- PLN(Abundance ~ Wind + offset(log(Offset)), data = trichoptera, control = PLN_param(config_post = list(sandwich_var = TRUE)))
+  expect_is(myPLN_cov, "PLNfit")
+  p <- myPLN_cov$p
+  d <- myPLN_cov$d
+
+
+  sem <- standard_error(myPLN_cov)
+  ## Dimensions
+  expect_equal(dim(sem), c(d, p))
+
+  ## Names
+  expect_equal(rownames(sem), rownames(coef(myPLN_cov)))
+  expect_equal(colnames(sem), colnames(coef(myPLN_cov)))
+
+  ## Standard errors are all positive
+  for (i in 1:(p*d)) {
+    expect_gte(sem[i], 0)
+  }
 
 })
 

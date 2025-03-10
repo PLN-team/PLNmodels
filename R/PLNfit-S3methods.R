@@ -156,7 +156,7 @@ sigma.PLNfit <- function(object, ...) {
 #' @description Extracts univariate standard errors for the estimated coefficient of B. Standard errors are computed from the (approximate) Fisher information matrix.
 #'
 #' @param object an R6 object with class PLNfit
-#' @param type string describing the type of variance approximation: "variational", "jackknife", "sandwich" (only for fixed covariance). Default is "variational".
+#' @param type string describing the type of variance approximation: "variational", "jackknife", "sandwich". Default is "sandwich".
 #' @param parameter string describing the target parameter: either B (regression coefficients) or Omega (inverse residual covariance)
 #'
 #' @seealso [vcov.PLNfit()] for the complete variance covariance estimation of the coefficient
@@ -169,13 +169,13 @@ sigma.PLNfit <- function(object, ...) {
 #'               control = PLN_param(config_post = list(variational_var = TRUE)))
 #' standard_error(myPLN)
 #' @export
-standard_error <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("B", "Omega")) {
+standard_error <- function(object, type = c("sandwich", "variational", "jackknife"), parameter = c("B", "Omega")) {
   UseMethod("standard_error", object)
 }
 
 #' @describeIn standard_error Component-wise standard errors of B in [`PLNfit`]
 #' @export
-standard_error.PLNfit <- function(object, type = c("variational", "sandwich", "jackknife", "bootstrap"), parameter = c("B", "Omega")) {
+standard_error.PLNfit <- function(object, type = c("sandwich", "variational", "jackknife", "bootstrap"), parameter = c("B", "Omega")) {
   type <- match.arg(type)
   par  <- match.arg(parameter)
   if (type == "variational" & is.null(attr(object$model_par$B, "variance_variational")))
@@ -191,7 +191,7 @@ standard_error.PLNfit <- function(object, type = c("variational", "sandwich", "j
 
 #' @describeIn standard_error Component-wise standard errors of B in [`PLNfit_fixedcov`]
 #' @export
-standard_error.PLNfit_fixedcov <- function(object, type = c("variational", "sandwich", "jackknife", "bootstrap", "sandwich"), parameter = c("B", "Omega")) {
+standard_error.PLNfit_fixedcov <- function(object, type = c("sandwich", "variational", "jackknife", "bootstrap"), parameter = c("B", "Omega")) {
   type <- match.arg(type)
   par  <- match.arg(parameter)
   if (par == "Omega")
