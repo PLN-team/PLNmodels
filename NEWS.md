@@ -1,5 +1,7 @@
-# Current version
+# PLNmodels 1.2.1 (2025-03-10)
 
+* fix NOTES in CRAN due to missing packages in \link{} (PR #142)
+* Now requires R >= 4.1.0 because package code uses the pipe |>  (PR #142)
 * fix sandwich variance estimation (PR #140)
 * fix use of native pipe to ensure compatibility with R 3.6 (merge PR #125, fix #124)
 
