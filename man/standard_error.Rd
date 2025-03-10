@@ -76,7 +76,7 @@ Extracts univariate standard errors for the estimated coefficient of B. Standard
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
-              control = PLN_param(config_post = list(variational_var = TRUE)))
+              control = PLN_param(config_post = list(sandwich_var = TRUE)))
 standard_error(myPLN)
 }
 \seealso{
