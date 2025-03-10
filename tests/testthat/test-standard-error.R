@@ -4,7 +4,7 @@ data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
 ## Error messages ---------------------
-test_that("Check that fisher and standard_error return objects with proper dimensions and sign",  {
+test_that("Variational Fisher: Check that fisher and standard_error return objects with proper dimensions and sign",  {
 
   myPLN_cov <- PLN(Abundance ~ Wind + offset(log(Offset)), data = trichoptera, control = PLN_param(config_post = list(variational_var = TRUE)))
   expect_is(myPLN_cov, "PLNfit")
@@ -12,7 +12,7 @@ test_that("Check that fisher and standard_error return objects with proper dimen
   d <- myPLN_cov$d
 
 
-  sem <- standard_error(myPLN_cov)
+  sem <- standard_error(myPLN_cov, "variational")
   ## Dimensions
   expect_equal(dim(sem), c(d, p))
 
@@ -31,12 +31,12 @@ test_that("Check that fisher and standard_error return objects with proper dimen
 myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, control = PLN_param(config_post = list(variational_var = TRUE)))
 
 ## Consistency -----------------------
-test_that("Check internal consistency of Fisher matrix for PLN models with no covariates",  {
+test_that("Variational Fisher: Check internal consistency of Fisher matrix for PLN models with no covariates",  {
   tol <- 1e-8
 
   n <- nrow(myPLN$fitted)
   ## Consistency of the standard error matrix
-  sem <- (sqrt(n) * standard_error(myPLN)) %>% as.numeric()
+  sem <- (sqrt(n) * standard_error(myPLN, "variational")) %>% as.numeric()
   manual.sem <- 1/colMeans(myPLN$fitted) %>% sqrt()
 
   ## Internal consistency
@@ -44,13 +44,12 @@ test_that("Check internal consistency of Fisher matrix for PLN models with no co
 
 })
 
-
 test_that("Check temporal consistency of Fisher matrix for PLN models with no covariates",  {
   tol <- 1e-2
 
   n <- nrow(myPLN$fitted)
   ## Consistency of the diagonal of the fisher matrix
-  fim.diag <- 1/(n * standard_error(myPLN)^2)
+  fim.diag <- 1/(n * standard_error(myPLN, "variational")^2)
   ## Values computed on the 2018/12/11 with PLNmodels version 0.5.9601)
   expected.fim.diag <- c(0.0612123698810698, 0.0612384161054906, 3.73462487824109, 0.122467107738817,
                          122.19280897578, 2.2230572191967, 0.285741065637069, 0.285687659219944,
@@ -59,7 +58,7 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
                          5.93888146445577)
 
   ## Consistency of the standard error matrix
-  sem <- standard_error(myPLN) %>% as.numeric()
+  sem <- standard_error(myPLN, "variational") %>% as.numeric()
   ## Values computed on the 2018/12/11 with PLNmodels version 0.5.9601)
   expected.sem <-
     c(0.577407423403546, 0.577284617461014, 0.0739228099688871, 0.40821807394677,
@@ -70,6 +69,31 @@ test_that("Check temporal consistency of Fisher matrix for PLN models with no co
 
   ## Temporal consistency (with previous fits of the PLN model, here fitted on the 2018/12/11 with PLNmodels version 0.5.9601)
   expect_equal(sem             , expected.sem     , tolerance = tol)
+
+})
+
+
+## Error messages ---------------------
+test_that("Sandwich: check that fisher and standard_error return objects with proper dimensions and sign",  {
+
+  myPLN_cov <- PLN(Abundance ~ Wind + offset(log(Offset)), data = trichoptera, control = PLN_param(config_post = list(sandwich_var = TRUE)))
+  expect_is(myPLN_cov, "PLNfit")
+  p <- myPLN_cov$p
+  d <- myPLN_cov$d
+
+
+  sem <- standard_error(myPLN_cov)
+  ## Dimensions
+  expect_equal(dim(sem), c(d, p))
+
+  ## Names
+  expect_equal(rownames(sem), rownames(coef(myPLN_cov)))
+  expect_equal(colnames(sem), colnames(coef(myPLN_cov)))
+
+  ## Standard errors are all positive
+  for (i in 1:(p*d)) {
+    expect_gte(sem[i], 0)
+  }
 
 })
 
@@ -91,21 +115,24 @@ test_that("Check that variance estimation are coherent in PLNfit",  {
       jackknife       = TRUE,
       bootstrap       = 50L,
       variational_var = TRUE,
+      sandwich_var    = TRUE,
       rsquared        = FALSE,
       trace           = 2
     )
 
-  config_optim <- config_default_nlopt
+  config_optim <- PLNmodels:::config_default_nlopt
   myPLN$postTreatment(Y, X, log_O, config_post = config_post, config_optim = config_optim)
 
 
   tr_variational <- sum(standard_error(myPLN, "variational")^2)
   tr_bootstrap   <- sum(standard_error(myPLN, "bootstrap")^2)
   tr_jackknife   <- sum(standard_error(myPLN, "jackknife")^2)
+  tr_sandwich    <- sum(standard_error(myPLN, "sandwich")^2)
 
   expect_gt(tr_variational, 0)
   expect_gt(tr_jackknife  , 0)
   expect_gt(tr_bootstrap  , 0)
+  expect_gt(tr_sandwich   , 0)
 
   ## using control parameters
   myPLN_prime <- PLN(Abundance ~ Var_1 + 0 + offset(log(Offset)), data = data, control = PLN_param(config_post = config_post))
@@ -113,10 +140,12 @@ test_that("Check that variance estimation are coherent in PLNfit",  {
   tr_variational <- sum(standard_error(myPLN_prime, "variational")^2)
   tr_bootstrap   <- sum(standard_error(myPLN_prime, "bootstrap")^2)
   tr_jackknife   <- sum(standard_error(myPLN_prime, "jackknife")^2)
+  tr_sandwich    <- sum(standard_error(myPLN_prime, "sandwich")^2)
 
   expect_gt(tr_variational, 0)
   expect_gt(tr_jackknife  , 0)
   expect_gt(tr_bootstrap  , 0)
+  expect_gt(tr_sandwich  , 0)
 })
 
 test_that("Check that variance estimation are coherent in PLNnetwork",  {

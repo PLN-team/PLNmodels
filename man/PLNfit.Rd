@@ -273,7 +273,7 @@ The list of parameters \code{config} controls the post-treatment processing, wit
 \item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
 \item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
 \item variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
-\item rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
+\item sandwich_var boolean indicating whether sandwich estimator should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
 \item trace integer for verbosity. should be > 1 to see output in post-treatments
 }
 }

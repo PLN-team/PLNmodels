@@ -156,7 +156,7 @@ sigma.PLNfit <- function(object, ...) {
 #' @description Extracts univariate standard errors for the estimated coefficient of B. Standard errors are computed from the (approximate) Fisher information matrix.
 #'
 #' @param object an R6 object with class PLNfit
-#' @param type string describing the type of variance approximation: "variational", "jackknife", "sandwich" (only for fixed covariance). Default is "variational".
+#' @param type string describing the type of variance approximation: "variational", "jackknife", "sandwich". Default is "sandwich".
 #' @param parameter string describing the target parameter: either B (regression coefficients) or Omega (inverse residual covariance)
 #'
 #' @seealso [vcov.PLNfit()] for the complete variance covariance estimation of the coefficient
@@ -166,16 +166,16 @@ sigma.PLNfit <- function(object, ...) {
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
-#'               control = PLN_param(config_post = list(variational_var = TRUE)))
+#'               control = PLN_param(config_post = list(sandwich_var = TRUE)))
 #' standard_error(myPLN)
 #' @export
-standard_error <- function(object, type = c("variational", "jackknife", "sandwich"), parameter = c("B", "Omega")) {
+standard_error <- function(object, type = c("sandwich", "variational", "jackknife"), parameter = c("B", "Omega")) {
   UseMethod("standard_error", object)
 }
 
 #' @describeIn standard_error Component-wise standard errors of B in [`PLNfit`]
 #' @export
-standard_error.PLNfit <- function(object, type = c("variational", "jackknife", "bootstrap", "sandwich"), parameter = c("B", "Omega")) {
+standard_error.PLNfit <- function(object, type = c("sandwich", "variational", "jackknife", "bootstrap"), parameter = c("B", "Omega")) {
   type <- match.arg(type)
   par  <- match.arg(parameter)
   if (type == "variational" & is.null(attr(object$model_par$B, "variance_variational")))
@@ -184,14 +184,14 @@ standard_error.PLNfit <- function(object, type = c("variational", "jackknife", "
     stop("Jackknife estimation not available: rerun by setting `jackknife = TRUE` in the control list.")
   if (type == "bootstrap" & is.null(attr(object$model_par$B, "variance_bootstrap")))
     stop("Bootstrap estimation not available: rerun by setting `bootstrap > 0` in the control list.")
-  if (type == "sandwich")
-    stop("Sandwich estimator is only available for fixed covariance / precision matrix.")
+  if (type == "sandwich" & is.null(attr(object$model_par$B, "variance_sandwich")))
+    stop("Sandwich estimator not available: rerun by setting `sandwich_var = TRUE` in the control list.")
   attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
 }
 
 #' @describeIn standard_error Component-wise standard errors of B in [`PLNfit_fixedcov`]
 #' @export
-standard_error.PLNfit_fixedcov <- function(object, type = c("variational", "jackknife", "bootstrap", "sandwich"), parameter = c("B", "Omega")) {
+standard_error.PLNfit_fixedcov <- function(object, type = c("sandwich", "variational", "jackknife", "bootstrap"), parameter = c("B", "Omega")) {
   type <- match.arg(type)
   par  <- match.arg(parameter)
   if (par == "Omega")
@@ -202,5 +202,7 @@ standard_error.PLNfit_fixedcov <- function(object, type = c("variational", "jack
     stop("Jackknife estimation not available: rerun by setting `jackknife = TRUE` in the control list.")
   if (type == "bootstrap" & is.null(attr(object$model_par$B, "variance_bootstrap")))
     stop("Bootstrap estimation not available: rerun by setting `bootstrap > 0` in the control list.")
+  if (type == "sandwich" & is.null(attr(object$model_par$B, "variance_sandwich")))
+    stop("Sandwich estimator not available: rerun by setting `sandwich_var = TRUE` in the control list.")
   attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
 }
