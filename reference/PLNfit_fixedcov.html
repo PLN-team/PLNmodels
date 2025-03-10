@@ -18,7 +18,7 @@ An R6 Class to represent a PLNfit in a standard, general framework, with fixed (
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
       </span>
     </div>
 
@@ -114,9 +114,9 @@ An R6 Class to represent a PLNfit in a standard, general framework, with fixed (
 
 <ul><li><p><a href="#method-PLNfit_fixedcov-new"><code>PLNfit_fixedcov$new()</code></a></p></li>
 <li><p><a href="#method-PLNfit_fixedcov-optimize"><code>PLNfit_fixedcov$optimize()</code></a></p></li>
-<li><p><a href="#method-PLNfit_fixedcov-postTreatment"><code>PLNfit_fixedcov$postTreatment()</code></a></p></li>
 <li><p><a href="#method-PLNfit_fixedcov-clone"><code>PLNfit_fixedcov$clone()</code></a></p></li>
 </ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href="PLNfit.html#method-optimize_vestep"><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment"><a href="PLNfit.html#method-postTreatment"><code>PLNmodels::PLNfit$postTreatment()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href="PLNfit.html#method-predict"><code>PLNmodels::PLNfit$predict()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></li>
@@ -190,72 +190,15 @@ An R6 Class to represent a PLNfit in a standard, general framework, with fixed (
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNfit_fixedcov-postTreatment"></a><div class="section">
-<h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
-<p>Update R2, fisher and std_err fields after optimization</p><div class="section">
-<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit_fixedcov</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span></span>
-<span>  <span class="va">responses</span>,</span>
-<span>  <span class="va">covariates</span>,</span>
-<span>  <span class="va">offsets</span>,</span>
-<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">responses</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="va">config_post</span>,</span>
-<span>  <span class="va">config_optim</span>,</span>
-<span>  nullModel <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>responses</code></dt>
-<dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-
-<dt><code>covariates</code></dt>
-<dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-
-<dt><code>offsets</code></dt>
-<dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class</p></dd>
-
-
-<dt><code>weights</code></dt>
-<dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
-
-
-<dt><code>config_post</code></dt>
-<dd><p>a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details</p></dd>
-
-
-<dt><code>config_optim</code></dt>
-<dd><p>a list for controlling the optimization parameter. See details</p></dd>
-
-
-<dt><code>nullModel</code></dt>
-<dd><p>null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.</p></dd>
-
-
-</dl><p></p></div>
-</div>
-<div class="section">
-<h4 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h4>
-<p>The list of parameters <code>config</code> controls the post-treatment processing, with the following entries:</p><ul><li><p>trace integer for verbosity. should be &gt; 1 to see output in post-treatments</p></li>
-<li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
-<li><p>bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).</p></li>
-<li><p>variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
-<li><p>rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE</p></li>
-</ul></div>
-
-
 </div><p></p><hr><a id="method-PLNfit_fixedcov-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfit_fixedcov</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 

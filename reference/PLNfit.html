@@ -21,7 +21,7 @@ Fields are accessed via active binding and cannot be changed by the user."><meta
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
       </span>
     </div>
 
@@ -441,7 +441,7 @@ See the documentation for <code><a href="https://rdrr.io/r/stats/coef.html" clas
 <p>The list of parameters <code>config</code> controls the post-treatment processing, with the following entries:</p><ul><li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
 <li><p>bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).</p></li>
 <li><p>variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
-<li><p>rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE</p></li>
+<li><p>sandwich_var boolean indicating whether sandwich estimator should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
 <li><p>trace integer for verbosity. should be &gt; 1 to see output in post-treatments</p></li>
 </ul></div>
 

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
       </span>
     </div>
 
@@ -93,21 +93,21 @@
 <span></span>
 <span><span class="fu">standard_error</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
-<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variational"</span>, <span class="st">"jackknife"</span>, <span class="st">"sandwich"</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sandwich"</span>, <span class="st">"variational"</span>, <span class="st">"jackknife"</span><span class="op">)</span>,</span>
 <span>  parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"Omega"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'PLNfit'</span></span>
 <span><span class="fu">standard_error</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
-<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variational"</span>, <span class="st">"jackknife"</span>, <span class="st">"bootstrap"</span>, <span class="st">"sandwich"</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sandwich"</span>, <span class="st">"variational"</span>, <span class="st">"jackknife"</span>, <span class="st">"bootstrap"</span><span class="op">)</span>,</span>
 <span>  parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"Omega"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'PLNfit_fixedcov'</span></span>
 <span><span class="fu">standard_error</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
-<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variational"</span>, <span class="st">"jackknife"</span>, <span class="st">"bootstrap"</span>, <span class="st">"sandwich"</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sandwich"</span>, <span class="st">"variational"</span>, <span class="st">"jackknife"</span>, <span class="st">"bootstrap"</span><span class="op">)</span>,</span>
 <span>  parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"Omega"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -135,7 +135,7 @@
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>string describing the type of variance approximation: "variational", "jackknife", "sandwich" (only for fixed covariance). Default is "variational".</p></dd>
+<dd><p>string describing the type of variance approximation: "variational", "jackknife", "sandwich". Default is "sandwich".</p></dd>
 
 
 <dt id="arg-parameter">parameter<a class="anchor" aria-label="anchor" href="#arg-parameter"></a></dt>
@@ -165,19 +165,19 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span>,</span></span>
-<span class="r-in"><span>              control <span class="op">=</span> <span class="fu"><a href="PLN_param.html">PLN_param</a></span><span class="op">(</span>config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variational_var <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>              control <span class="op">=</span> <span class="fu"><a href="PLN_param.html">PLN_param</a></span><span class="op">(</span>config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sandwich_var <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting a full covariance PLN model with nlopt optimizer</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="fu">standard_error</span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   Che    Hyc        Hym       Hys        Psy        Aga</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.5773521 0.5773 0.07392279 0.4082529 0.01292372 0.09579415</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   Glo       Ath       Cea       Ced        Set       All</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.2672489 0.2673105 0.3782165 0.0928489 0.07270995 0.1386912</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    Han        Hfo        Hsp       Hve        Sta</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.07233891 0.08667446 0.04608661 0.3333497 0.05862089</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   Che       Hyc       Hym       Hys        Psy       Aga</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.6880663 0.5939557 0.1888002 0.4860979 0.04795397 0.2084701</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   Glo       Ath       Cea       Ced       Set       All</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.3437327 0.3437914 0.2506917 0.1884151 0.2568735 0.2810084</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   Han       Hfo       Hsp       Hve       Sta</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.3710332 0.3830626 0.2955706 0.4049102 0.1772968</span>
 </code></pre></div>
     </div>
   </div>
