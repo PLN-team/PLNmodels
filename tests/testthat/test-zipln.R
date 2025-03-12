@@ -53,7 +53,7 @@ test_that("PLN is working with unnamed data matrix",  {
 
     MMA    <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "MMA")))
     CCSAQ  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "CCSAQ")))
-    LBFGS  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "LBFGS_NOCEDAL")))
+    LBFGS  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "LBFGS")))
 
     expect_equal(MMA$loglik, CCSAQ$loglik, tolerance = 1e-1) ## Almost equivalent, CCSAQ faster
 
