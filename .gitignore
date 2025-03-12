@@ -65,3 +65,5 @@ data-raw/*.RData
 README.html
 
 pkgdown
+
+tests/testthat/_snaps/
