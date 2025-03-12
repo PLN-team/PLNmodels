@@ -9,7 +9,6 @@ struct AlgorithmNameAssociation {
     nlopt_algorithm enum_value;
 };
 static const AlgorithmNameAssociation supported_algorithms[] = {
-    {"LBFGS_NOCEDAL", NLOPT_LD_LBFGS_NOCEDAL},
     {"LBFGS", NLOPT_LD_LBFGS},
     {"VAR1", NLOPT_LD_VAR1},
     {"VAR2", NLOPT_LD_VAR2},
