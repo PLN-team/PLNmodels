@@ -1,3 +1,7 @@
+# PLNmodels devlopment version
+
+* fix for #143 (remove LBFGS_NOCEDAL variant from the possible agorithms)
+
 # PLNmodels 1.2.1 (2025-03-10)
 
 * fix NOTES in CRAN due to missing packages in \link{} (PR #142)
