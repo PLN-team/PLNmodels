@@ -1,11 +1,8 @@
 
-Submitting PLNmodels version 1.2.1 to CRAN (CRAN request)
+Submitting PLNmodels version 1.2.2 to CRAN (CRAN request)
 
-Most of the problems on https://cran.r-project.org/web/checks/check_results_PLNmodels.html are due to external (yet important) packages (nloptr essentially).
-
-PLNmodels is scheduled for archiving today, March 10. Although noptr is due for submission soon, the corrections have not yet been made on CRAN: while archiving is not required for nloptr, it is required for the pckages that depend on it (including PLNmodels).
-
-We corrected the couple of NOTES imputed to PLNmodels, hoping to avoid the archival of our package.
+Hopefully corrected usages of different version of nlopt (2.9.x) in nloptr by 
+removing reference to the LBFGS_NOCEDAL algorithm
 
 ## Tested environments
 
@@ -26,11 +23,11 @@ We corrected the couple of NOTES imputed to PLNmodels, hoping to avoid the archi
 
 all status OK except for 2 NOTES
 
-* the usual NOTE about libs size (RcppArmadillo)
+* the usual NOTE about libs size (RcppArmadillo and nlopt)
 * a note about the number of dependencies
 
-── R CMD check results ────────────────────────────── PLNmodels 1.2.1 ────
-Duration: 6m 30.2s
+── R CMD check results ──────────────────────────── PLNmodels 1.2.2 ────
+Duration: 3m 13.4s
 
 ❯ checking package dependencies ... NOTE
   Imports includes 21 non-default packages.
@@ -39,11 +36,11 @@ Duration: 6m 30.2s
   use conditionally.
 
 ❯ checking installed package size ... NOTE
-    installed size is 15.2Mb
+    installed size is 24.8Mb
     sub-directories of 1Mb or more:
       data   1.4Mb
-      doc    2.3Mb
-      libs   9.8Mb
+      doc    2.4Mb
+      libs  19.3Mb
 
 0 errors ✔ | 0 warnings ✔ | 2 notes ✖
 
