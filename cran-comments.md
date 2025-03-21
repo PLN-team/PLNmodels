@@ -2,12 +2,18 @@
 Submitting PLNmodels version 1.2.2 to CRAN (CRAN request)
 
 Hopefully corrected usages of different version of nlopt (2.9.x) in nloptr by 
-removing reference to the LBFGS_NOCEDAL algorithm
+removing reference to the LBFGS_NOCEDAL algorithm.
 
 ## Tested environments
 
 * tested locally on Ubuntu Linux 24.04.2 LTS, R-release, GCC
 
+* tested remotely with rhub-action
+  - gcc15
+  - clang-asan
+  - clang-ubsan
+  - linux (devel)
+  
 * tested remotely with win-builder 
   - Windows Server 2022, R 4.3.3, 64 bit
   - Windows Server 2022, R 4.4.3, 64 bit
