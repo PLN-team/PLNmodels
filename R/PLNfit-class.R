@@ -489,7 +489,7 @@ PLNfit <- R6Class(
 
     #' @description Predict position, scores or observations of new data.
     #' @param newdata A data frame in which to look for variables with which to predict. If omitted, the fitted values are used.
-    #' @param responses Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest in in testing the model.
+    #' @param responses Optional data frame containing the count of the observed variables (matching the names of the provided as data in the PLN function), assuming the interest is in testing the model.
     #' @param type Scale used for the prediction. Either `link` (default, predicted positions in the latent space) or `response` (predicted counts).
     #' @param level Optional integer value the level to be used in obtaining the predictions. Level zero corresponds to the population predictions (default if `responses` is not provided) while level one (default) corresponds to predictions after evaluating the variational parameters for the new data.
     #' @param envir Environment in which the prediction is evaluated
@@ -532,18 +532,18 @@ PLNfit <- R6Class(
           Omega      = private$Omega
         )
         M <- VE$M
-        S <- VE$S
+        S2 <- (VE$S)**2
       } else {
         # otherwise set M = 0 and S = diag(Sigma)
         M <- matrix(0, nrow = n_new, ncol = self$p)
-        S <- matrix(diag(private$Sigma), nrow = n_new, ncol = self$p, byrow = TRUE)
+        S2 <- matrix(diag(private$Sigma), nrow = n_new, ncol = self$p, byrow = TRUE)
       }
 
       type <- match.arg(type)
       results <- switch(
         type,
         link = EZ + M,
-        response = exp(EZ + M + 0.5 * S)
+        response = exp(EZ + M + 0.5 * S2)
       )
       attr(results, "type") <- type
       results
