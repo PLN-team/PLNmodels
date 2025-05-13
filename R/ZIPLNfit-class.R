@@ -392,10 +392,10 @@ ZIPLNfit <- R6Class(
 
       ## Extract the model matrices from the new data set with initial formula
       # PLN part
-      X <- model.matrix(terms$PLN[-2], newdata, xlev = attr(private$formula, "xlevels")$PLN)
+      X <- model.matrix(as.formula(terms$PLN), newdata, xlev = attr(private$formula, "xlevels")$PLN)
       # ZI part
       if (!is.null(terms$ZI)) {
-        X0 <- model.matrix(terms$ZI, newdata, xlev = attr(private$formula, "xlevels")$ZI)
+        X0 <- model.matrix(as.formula(terms$ZI), newdata, xlev = attr(private$formula, "xlevels")$ZI)
       } else {
         X0 <- matrix(NA,0,0)
       }
