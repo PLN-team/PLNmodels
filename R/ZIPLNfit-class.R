@@ -108,7 +108,7 @@ ZIPLNfit <- R6Class(
             M[,j]  <- replace_na(residuals(zip_out), 0) + data$X %*% coef(zip_out, "count")
           } else {
             p_out  <- glm(y ~ 0 + data$X, family = 'poisson', offset = data$O[, j])
-            B0[,j] <- rep(-10, d)
+            B0[,j] <- rep(-10, d0)
             B[,j]  <- replace_na(coef(p_out), 0)
             R[, j] <- sum(y == 0) / n
             M[,j]  <- replace_na(residuals(p_out), 0) + data$X %*% coef(p_out)
