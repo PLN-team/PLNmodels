@@ -108,7 +108,7 @@ ZIPLNfit <- R6Class(
             M[,j]  <- replace_na(residuals(zip_out), 0) + data$X %*% coef(zip_out, "count")
           } else {
             p_out  <- glm(y ~ 0 + data$X, family = 'poisson', offset = data$O[, j])
-            B0[,j] <- rep(-10, d)
+            B0[,j] <- rep(-10, d0)
             B[,j]  <- replace_na(coef(p_out), 0)
             R[, j] <- sum(y == 0) / n
             M[,j]  <- replace_na(residuals(p_out), 0) + data$X %*% coef(p_out)
@@ -392,10 +392,10 @@ ZIPLNfit <- R6Class(
 
       ## Extract the model matrices from the new data set with initial formula
       # PLN part
-      X <- model.matrix(terms$PLN[-2], newdata, xlev = attr(private$formula, "xlevels")$PLN)
+      X <- model.matrix(as.formula(terms$PLN), newdata, xlev = attr(private$formula, "xlevels")$PLN)
       # ZI part
       if (!is.null(terms$ZI)) {
-        X0 <- model.matrix(terms$ZI, newdata, xlev = attr(private$formula, "xlevels")$ZI)
+        X0 <- model.matrix(as.formula(terms$ZI), newdata, xlev = attr(private$formula, "xlevels")$ZI)
       } else {
         X0 <- matrix(NA,0,0)
       }
