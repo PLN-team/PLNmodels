@@ -395,17 +395,16 @@ ZIPLNfit <- R6Class(
       if (level == 0) {
         # For prediction-only, use covariate-only formula
         pln_formula <- update(as.formula(terms$PLN), NULL ~ .)
-        X <- model.matrix(pln_formula, newdata)
+        X <- model.matrix(pln_formula, newdata, xlev = attr(private$formula, "xlevels")$PLN)
       } else {
         X <- model.matrix(as.formula(terms$PLN), newdata, xlev = attr(private$formula, "xlevels")$PLN)
       }
       
       # ZI part
-      # ZI part
       if (!is.null(terms$ZI)) {
         if (level == 0) {
           zi_formula <- update(as.formula(terms$ZI), NULL ~ .)
-          X0 <- model.matrix(zi_formula, newdata)
+          X0 <- model.matrix(zi_formula, newdata, xlev = attr(private$formula, "xlevels")$ZI)
         } else {
           X0 <- model.matrix(as.formula(terms$ZI), newdata, xlev = attr(private$formula, "xlevels")$ZI)
         }
