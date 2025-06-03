@@ -392,15 +392,31 @@ ZIPLNfit <- R6Class(
 
       ## Extract the model matrices from the new data set with initial formula
       # PLN part
-      X <- model.matrix(as.formula(terms$PLN), newdata, xlev = attr(private$formula, "xlevels")$PLN)
+      if (level == 0) {
+        # For prediction-only, use covariate-only formula
+        pln_formula <- update(as.formula(terms$PLN), NULL ~ .)
+        X <- model.matrix(pln_formula, newdata, xlev = attr(private$formula, "xlevels")$PLN)
+      } else {
+        X <- model.matrix(as.formula(terms$PLN), newdata, xlev = attr(private$formula, "xlevels")$PLN)
+      }
+      
       # ZI part
       if (!is.null(terms$ZI)) {
-        X0 <- model.matrix(as.formula(terms$ZI), newdata, xlev = attr(private$formula, "xlevels")$ZI)
+        if (level == 0) {
+          zi_formula <- update(as.formula(terms$ZI), NULL ~ .)
+          X0 <- model.matrix(zi_formula, newdata, xlev = attr(private$formula, "xlevels")$ZI)
+        } else {
+          X0 <- model.matrix(as.formula(terms$ZI), newdata, xlev = attr(private$formula, "xlevels")$ZI)
+        }
       } else {
         X0 <- matrix(NA,0,0)
       }
 
-      O <- model.offset(model.frame(terms$PLN[-2], newdata))
+      if (level == 0) {
+        O <- model.offset(model.frame(pln_formula, newdata))
+      } else {
+        O <- model.offset(model.frame(terms$PLN[-2], newdata))
+      }
       if (is.null(O)) O <- matrix(0, n_new, self$p)
 
       ## Optimize M and S if responses are provided,
