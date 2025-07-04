@@ -523,7 +523,7 @@ ZIPLNfit <- R6Class(
                         "single" = 1L,
                         "row"    = self$n,
                         "col"    =  self$p,
-                        "covar"  =  self$p * self$d))
+                        "covar"  =  self$p * self$d0))
     },
     #' @field nb_param_pln number of parameters in the PLN part of the model
     nb_param_pln   = function() {
@@ -553,12 +553,16 @@ ZIPLNfit <- R6Class(
     loglik      = function() {sum(private$Ji) },
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
     loglik_vec  = function() {private$Ji},
+    #' @field AIC variational lower bound of the AIC
+    AIC         = function() {self$loglik - self$nb_param},
+    #' @field AICc variational lower bound of the AIC
+    AICc         = function() {self$AIC - self$nb_param * (self$nb_param + 1) / (self$n - self$nb_param - 1)},
     #' @field BIC variational lower bound of the BIC
     BIC         = function() {self$loglik - .5 * log(self$n) * self$nb_param},
     #' @field entropy Entropy of the variational distribution
     entropy     = function() {self$entropy_ZI + self$entropy_PLN},
     #' @field entropy_ZI Entropy of the variational distribution
-    entropy_ZI  = function() {-sum(.xlogx(1-private$R)) - sum(.xlogx(private$R))},
+    entropy_ZI  = function() {-sum(.xlogx(1 - private$R)) - sum(.xlogx(private$R))},
     #' @field entropy_PLN Entropy of the Gaussian variational distribution in the PLN component
     entropy_PLN = function() {.5 * (self$n * self$p * log(2*pi*exp(1)) + sum(log(private$S^2)))},
     #' @field ICL variational lower bound of the ICL

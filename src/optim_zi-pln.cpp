@@ -23,15 +23,15 @@ arma::vec zipln_vloglik(
     const arma::uword p = Y.n_cols;
 
     const arma::mat S2 = S % S ;
-    const arma::mat A = exp(O + M + .5 * S2) ;
+    const arma::mat A = trunc_exp(O + M + .5 * S2) ;
     const arma::mat M_mu = M - X * B ;
     const arma::mat mu0  = logit(Pi) ;
     return (
         0.5 * real(log_det(Omega)) + 0.5 * double(p)
         + sum(
             (1 - R) % ( Y % (O + M) - A - logfact_mat(Y) )
-            + R % mu0 - log( 1 + exp(mu0) )
-            + 0.5 * log(S2) - 0.5 * ((M_mu * Omega) % M_mu + S2 * diagmat(Omega))
+            + R % mu0 - trunc_log( 1 + exp(mu0) )
+            + 0.5 * trunc_log(S2) - 0.5 * ((M_mu * Omega) % M_mu + S2 * diagmat(Omega))
             - R % trunc_log(R) - (1 - R) % trunc_log(1-R), 1)
     ) ;
 }

@@ -1,0 +1,129 @@
+---
+title: "Simulation assessing Model Selection criteria"
+format: html
+execute: 
+  cache: true
+---
+
+## Useful libraries & functions
+
+```{r useful-libraries}
+library(tidyverse)
+library(PLNmodels)
+library(MASS)
+set.seed(1)
+```
+
+```{r simu-parameters}
+p <- 20
+seq_n <- c(60, 120, 240)
+groups_0 <- 
+  list(
+    rep(1, 60),
+    rep(1, 120),
+    rep(1, 240)
+  )
+groups_1 <- 
+  list(
+    factor(rep(1:2, each = 30)),
+    factor(rep(1:2, each = 60)),
+    factor(rep(1:2, each = 120))
+  )
+groups_2 <- 
+  list(
+    factor(rep(1:3, each = 20)),
+    factor(rep(1:3, each = 40)),
+    factor(rep(1:3, each = 80))
+  )
+
+B_0 <- matrix(4, 1, p)
+B_1 <- matrix(0, 2, p) ; B_1[1, ] <- 4 ; B_1[2, ] <- 6
+B_2 <- matrix(0, 3, p) ; B_2[1, ] <- 4 ; B_2[2, ] <- 6 ; B_2[3, ] <- 8
+
+Pi_0 <- rep(0.5, p)
+Pi_1 <- runif(p, 0.1, 0.9)
+
+Sigma <- toeplitz(0.75^(0:(p - 1)))
+```
+
+```{r rZIPLN}
+rZIPLN <- function(X, B, Sigma, Pi) {
+  n <- nrow(X)
+  p <- ncol(Sigma)
+  Z <- X %*% B + mvrnorm(n, rep(0,p), as.matrix(Sigma))
+  Y <- matrix(rpois(n * p, as.vector(exp(Z))), n, p)
+  zero <- t(replicate(n, rbinom(n = length(Pi), size = 1, prob = Pi)))
+  res <- Y
+  attr(res, "PLN") <- Y
+  res[zero == 1] <- 0
+  res
+}
+```
+
+```{r simu_func}
+one_simu <- function(
+    simu_number, 
+    true_model = c("model_0_0", "model_1_0", "model_2_0", "model_0_1", "model_1_1", "model_2_1")) {
+  cat("+")
+  true_model <- match.arg(true_model)
+  try(
+  do.call(rbind, mapply(
+    function(
+    n, group_0, group_1, group_2) {
+      Y <- 
+        switch(true_model,
+               "model_0_0" = rZIPLN(model.matrix(~ 0 + group_0), B_0, Sigma, Pi_0),
+               "model_1_0" = rZIPLN(model.matrix(~ 0 + group_1), B_1, Sigma, Pi_0),
+               "model_2_0" = rZIPLN(model.matrix(~ 0 + group_2), B_2, Sigma, Pi_0),
+               "model_0_1" = rZIPLN(model.matrix(~ 0 + group_0), B_0, Sigma, Pi_1),
+               "model_1_1" = rZIPLN(model.matrix(~ 0 + group_1), B_1, Sigma, Pi_1),
+               "model_2_1" = rZIPLN(model.matrix(~ 0 + group_2), B_2, Sigma, Pi_1)
+        )
+      data_ <- suppressWarnings(
+        prepare_data(counts = Y, 
+                     covariates = cbind(factor(group_0), factor(group_1), factor(group_2))) 
+      )
+      model_0_0 <- ZIPLN(Y ~ 0 + group_0, zi = "single", data = data_, control = ZIPLN_param(trace = 0))
+      model_1_0 <- ZIPLN(Y ~ 0 + group_1, zi = "single", data = data_, control = ZIPLN_param(trace = 0))
+      model_2_0 <- ZIPLN(Y ~ 0 + group_2, zi = "single", data = data_, control = ZIPLN_param(trace = 0))
+      model_0_1 <- ZIPLN(Y ~ 0 + group_0, zi = "col", data = data_, control = ZIPLN_param(trace = 0))
+      model_1_1 <- ZIPLN(Y ~ 0 + group_1, zi = "col", data = data_, control = ZIPLN_param(trace = 0))
+      model_2_1 <- ZIPLN(Y ~ 0 + group_2, zi = "col", data = data_, control = ZIPLN_param(trace = 0))
+      
+      res <- data.frame(
+        simu       = simu_number,
+        n          = n,
+        true_model = true_model,
+        AIC   = c(model_0_0$AIC, model_1_0$AIC, model_2_0$AIC, model_0_1$AIC, model_1_1$AIC, model_2_1$AIC), 
+        BIC   = c(model_0_0$BIC, model_1_0$BIC, model_2_0$BIC, model_0_1$BIC, model_1_1$BIC, model_2_1$BIC), 
+        ICL   = c(model_0_0$ICL, model_1_0$ICL, model_2_0$ICL, model_0_1$ICL, model_1_1$ICL, model_2_1$ICL), 
+        model = c("model_0_0", "model_1_0", "model_2_0", "model_0_1", "model_1_1", "model_2_1")
+      )
+      res
+    }, seq_n, groups_0, groups_1, groups_2, SIMPLIFY = FALSE
+  )), silent = TRUE)
+}
+```
+
+```{r simu}
+nsim <- 40
+out_model_0_0 <- do.call(rbind, lapply(1:nsim, one_simu, true_model = "model_0_0"))
+out_model_1_0 <- do.call(rbind, lapply(1:nsim, one_simu, true_model = "model_1_0"))
+out_model_2_0 <- do.call(rbind, lapply(1:nsim, one_simu, true_model = "model_2_0"))
+out_model_0_1 <- do.call(rbind, lapply(1:nsim, one_simu, true_model = "model_0_1"))
+out_model_1_1 <- do.call(rbind, lapply(1:nsim, one_simu, true_model = "model_1_1"))
+out_model_2_1 <- do.call(rbind, lapply(1:nsim, one_simu, true_model = "model_2_1"))
+out <- rbind(out_model_0_0, out_model_1_0, out_model_2_0,
+             out_model_0_1, out_model_1_1, out_model_2_1)
+```
+
+```{r results}
+results <- 
+  out %>% group_by(true_model, simu, n) %>% 
+  summarize(ICL_choice  = model[which.max(ICL)],
+            BIC_choice  = model[which.max(BIC)],
+            AIC_choice  = model[which.max(AIC)]) %>% ungroup() %>% 
+  mutate(ICL = ICL_choice == true_model, BIC  = BIC_choice == true_model, AIC = AIC_choice == true_model)
+results %>% group_by(true_model, n) %>% 
+  summarize(ICL_correct = mean(ICL), BIC_correct  = mean(BIC), AIC_correct = mean(AIC))
+```
