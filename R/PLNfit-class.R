@@ -680,6 +680,8 @@ PLNfit <- R6Class(
     loglik     = function() {sum(self$weights[self$weights > .Machine$double.eps] * private$Ji[self$weights > .Machine$double.eps]) },
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
     loglik_vec = function() {private$Ji},
+    #' @field AIC variational lower bound of the AIC
+    AIC         = function() {self$loglik - self$nb_param},
     #' @field BIC variational lower bound of the BIC
     BIC        = function() {self$loglik - .5 * log(self$n) * self$nb_param},
     #' @field entropy Entropy of the variational distribution

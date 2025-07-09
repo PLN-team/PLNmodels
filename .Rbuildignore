@@ -29,6 +29,7 @@
 ^inst/test/
 ^inst/missing_data$
 ^inst/simus_PLNnetwork$
+^inst/simus_ZIPLN$
 ^\.github$
 ^data-raw$
 ^CRAN-SUBMISSION$
