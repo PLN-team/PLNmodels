@@ -1,0 +1,391 @@
+---
+title: "Microcosm data analysis with ZIPLN"
+format: 
+  html:
+    embed-resources: true
+execute: 
+  warning: false
+  cache: true
+---
+
+## Useful libraries & functions
+
+```{r packages, message=FALSE}
+library(PLNmodels)
+library(tidyverse)
+library(gt)
+library(viridis)
+library(lemon)
+```
+
+## Data loading and basic pretratments
+
+```{r data}
+data(microcosm)
+```
+
+## Fit various PLN model 
+
+Assess groups effects in PLN models.
+
+```{r microcosm-PLN, echo = TRUE, message=FALSE, results='hide'}
+PLN           <- PLN(Abundance ~ 1             + offset(log(Offset)), data = microcosm)
+PLN_site      <- PLN(Abundance ~ 0 + site      + offset(log(Offset)), data = microcosm)
+PLN_time      <- PLN(Abundance ~ 0 + time      + offset(log(Offset)), data = microcosm)
+PLN_site_time <- PLN(Abundance ~ 0 + site_time + offset(log(Offset)), data = microcosm)
+```
+
+## Fit various ZI-PLN models
+
+#### Playing with the ZI component
+
+Try various way of modeling probability of being zero:
+
+```{r microcosm-ZI, echo = TRUE, message=FALSE, results='hide'}
+ZI            <- ZIPLN(Abundance ~ 1 + offset(log(Offset)) | 1       , data = microcosm)
+ZI_site       <- ZIPLN(Abundance ~ 1 + offset(log(Offset)) | 0 + site, data = microcosm)
+ZI_time       <- ZIPLN(Abundance ~ 1 + offset(log(Offset)) | 0 + time, data = microcosm)
+ZI_site_time  <- ZIPLN(Abundance ~ 1 + offset(log(Offset)) | 0 + site_time,
+                       data = microcosm)
+```
+
+#### Include covariates both in PLN and ZI components
+
+```{r microcosm-ZIPLN, echo = TRUE, message=FALSE, results='hide'}
+ZI_site_PLN_site <- ZIPLN(Abundance ~ 0 + site      + offset(log(Offset)) | 0 + site,
+                          data = microcosm)
+ZI_time_PLN_time <- ZIPLN(Abundance ~ 0 + time      + offset(log(Offset)) | 0 + time,
+                          data = microcosm)
+ZI_PLN_site_time <- ZIPLN(Abundance ~ 0 + site_time + offset(log(Offset)) | 0 + site_time,
+                          data = microcosm)
+```
+
+Other possible combinations:
+
+```{r microcosm-ZIPLN-more, echo = TRUE, message=FALSE, results='hide'}
+ZI_site_PLN_site_time <- ZIPLN(Abundance ~ 0 + site_time + offset(log(Offset)) | 0 + site,
+                               data = microcosm)
+ZI_time_PLN_site_time <- ZIPLN(Abundance ~ 0 + site_time + offset(log(Offset)) | 0 + time,
+                               data = microcosm)
+ZI_site_time_PLN_site <- ZIPLN(Abundance ~ 0 + site + offset(log(Offset)) | 0 + site_time,
+                               data = microcosm)
+ZI_site_time_PLN_time <- ZIPLN(Abundance ~ 0 + time + offset(log(Offset)) | 0 + site_time,
+                               data = microcosm)
+```
+
+## Locate the best model
+
+```{r microcosm-ZIPLN-criteria, echo = FALSE}
+rbind(
+  PLN$criteria, PLN_time$criteria, PLN_site$criteria, PLN_site_time$criteria,
+  ZI$criteria, ZI_time$criteria, ZI_site$criteria, ZI_site_time$criteria,
+  ZI_time_PLN_time$criteria, ZI_site_PLN_site$criteria,
+  ZI_time_PLN_site_time$criteria, ZI_site_PLN_site_time$criteria,
+  ZI_site_time_PLN_time$criteria, ZI_site_time_PLN_site$criteria,
+  ZI_PLN_site_time$criteria
+) %>%
+  as.data.frame(row.names = 
+    c("PLN", "PLN time", "PLN site", "PLN site * time",
+      "ZI", "ZI time", "ZI site", "ZI site * time",
+      "ZI time PLN time", "ZI site PLN site",
+      "ZI time and PLN site * time", "ZI site and PLN site * time",
+      "ZI site * time and PLN time", "ZI site * time and PLN site",
+      "ZI and PLN site * time")) %>%
+  gt::gt(rownames_to_stub = TRUE) %>% 
+  gt::tab_stubhead(label = "model") %>% 
+  gt::tab_header(
+    title = md("**Model selection criteria**"),
+    subtitle = md("The *top two* largest are presented")
+    ) %>% 
+  gt::tab_row_group(
+    label = "ZIPLN",
+    rows = 9:15
+  ) %>% 
+  gt::tab_row_group(
+    label = "ZI",
+    rows = 5:8
+  )  %>% 
+  gt::tab_row_group(
+    label = "PLN",
+    rows = 1:4
+  ) %>% 
+  gt::tab_options(table.font.size = 18) %>% 
+      tab_style(
+        style = list(
+          cell_fill(color = '#9a2515'),
+          cell_text(color = 'white')
+          ),
+          locations = cells_body(
+          columns = c("BIC"), 
+          rows = c(1, 7, 10)
+    )) %>% 
+      tab_style(
+        style = list(
+          cell_fill(color = '#9a2515'),
+          cell_text(color = 'white')
+          ),
+          locations = cells_body(
+          columns = c("AIC"), 
+          rows = c(4, 8, 14)
+    )) %>% 
+      tab_style(
+        style = list(
+          cell_fill(color = '#9a2515'),
+          cell_text(color = 'white')
+          ),
+          locations = cells_body(
+          columns = c("ICL"), 
+          rows = c(2, 8, 15)
+    ))
+```
+
+$\rightsquigarrow$ Ok, for illustrative purpose, let us keep model with `site_time` in both ZI an PLN components.
+
+```{r best-models}
+best_PLN   <- PLN_site_time
+best_ZIPLN <- ZI_PLN_site_time
+```
+
+## Model fits 
+
+### ZI-PLN
+
+```{r zipln-fit}
+latent_means <- ZI_site_time_PLN_site$latent
+colnames(latent_means) <- colnames(microcosm$Abundance)
+asv_clust <- hclust(dist(t(latent_means)), method = "ward.D2")
+asv_ordering <- asv_clust$labels[asv_clust$order]
+
+plot_data <- latent_means |> 
+  as_tibble(rownames = "sample") |> mutate(sample = microcosm$sample) %>% 
+  pivot_longer(-sample, names_to = "ASV", values_to = "M", names_ptypes = factor(levels = asv_ordering)) |> 
+  inner_join(microcosm, by = "sample")
+
+proba_zi <- ZI_site_time_PLN_site$var_par$R
+colnames(proba_zi) <- colnames(microcosm$Abundance)
+plot_data_zi <- proba_zi |> 
+  as_tibble(rownames = "sample") |> mutate(sample = microcosm$sample) %>% 
+  pivot_longer(-sample, names_to = "ASV", values_to = "M", names_ptypes = factor(levels = asv_ordering)) |> 
+  inner_join(microcosm, by = "sample")
+
+sigma <- sigma(ZI_site_time_PLN_site)
+counts_tibble <- microcosm$Abundance |> as("matrix") |> 
+  as_tibble(rownames = "sample") |> 
+  pivot_longer(-sample, names_to = "ASV", values_to = "count", names_ptypes = factor(levels = asv_ordering))
+
+p <- inner_join(plot_data, counts_tibble, by = join_by(sample, ASV)) |> 
+  inner_join(plot_data_zi |> select(sample, ASV, ZI = M), by = join_by(sample, ASV)) |> 
+  inner_join(tibble(ASV = factor(asv_ordering, levels = asv_ordering), 
+                    S2  = diag(sigma)[asv_ordering]), 
+             by = join_by(ASV)) |> 
+  ggplot(aes(x = count, y = (1 - ZI)*exp(M + 0.5*S2))) + 
+  geom_point(alpha = 0.1) +
+  geom_abline(slope = 1, intercept = 0, color = "grey60", linetype = "dashed") + 
+  scale_x_log10() + scale_y_log10() + 
+  labs(x = "Observed", y = "Fitted") + 
+  facet_wrap(~site_time) + 
+  theme_bw()
+p
+```
+
+## Model fits
+
+### PLN seems to do just as well...
+
+```{r pln-fit}
+latent_means_PLN <- best_PLN$latent
+colnames(latent_means_PLN) <- colnames(microcosm$Abundance)
+sigma_PLN <- sigma(best_PLN)
+
+plot_data_PLN <- latent_means_PLN |> 
+  as_tibble(rownames = "sample") |> mutate(sample = microcosm$sample) %>% 
+  pivot_longer(-sample, names_to = "ASV", values_to = "M", names_ptypes = factor(levels = asv_ordering)) |> 
+  inner_join(microcosm, by = "sample")
+
+counts_tibble <- microcosm$Abundance |> as("matrix") |> 
+  as_tibble(rownames = "sample") |> 
+  pivot_longer(-sample, names_to = "ASV", values_to = "count", names_ptypes = factor(levels = asv_ordering))
+p <- inner_join(plot_data_PLN, counts_tibble, by = join_by(sample, ASV)) |> 
+  inner_join(tibble(ASV = factor(asv_ordering, levels = asv_ordering), 
+                    S2  = diag(sigma)[asv_ordering]), 
+             by = join_by(ASV)) |> 
+  ggplot(aes(x = count, y = exp(M + 0.5*S2))) + 
+  geom_point(alpha = 0.1) +
+  geom_abline(slope = 1, intercept = 0, color = "grey60", linetype = "dashed") + 
+  scale_x_log10() + scale_y_log10() + 
+  labs(x = "Observed", y = "Fitted") + 
+  facet_wrap(~site_time) + 
+  theme_bw()
+p
+```
+
+## Fits of zeros
+
+### But zeros are not well predicted 
+
+```{r fit-zeros}
+# distribution of zeros
+true_zeros <- microcosm$Abundance == 0
+n_zeros <- sum(true_zeros)
+n_nzeros <- sum(!true_zeros)
+distr_zeros <-
+    data.frame(
+        fitted   = c(as.vector(fitted(best_PLN)[true_zeros]), as.vector(fitted(ZI_site_time_PLN_site)[true_zeros])),
+        obs      = rep(1:n_zeros, 2),
+        method   = factor(rep(c("PLN site_time", "ZI site_time"), each = n_zeros))
+    ) %>%
+    ggplot() +
+    geom_rug(aes(x = fitted, color = method)) +
+    geom_point(aes(x = obs, y = fitted, color = method), size = 0.3, alpha = 0.1) +
+    ggtitle("Distribution of observed zeros as fitted by the models") +
+    xlab(label = "observations #") +
+    scale_color_viridis_d() + theme_bw()
+distr_zeros
+```
+
+## ZI-PLN: latent layer
+
+### Latent means of the PLN component (w/wo covariate effects)
+
+```{r palette, include = FALSE}
+library(ggtext)
+library(factoextra)
+library(ggh4x)
+library(patchwork)
+site_time_palette <- c(
+  "_**<span style = 'color:#6baed6;'>Buccal</span>**_"  = "transparent",
+  "B -1W" = "#bdd7e7", 
+  "B 1M" = "#6baed6", 
+  "B 3M" = "#2171b5", 
+  "B 7M" = "#053061",
+  "_**<span style = 'color:#fb6a4a;'>Nasal</span>**_"  = "transparent",
+  "N -1W" = "#fcae91", 
+  "N 1M" = "#fb6a4a", 
+  "N 3M" = "#cb181d",
+  "N 7M" = "#67001F",
+  "_**<span style = 'color:#bf812d;'>Vaginal</span>**_"  = "transparent",
+  "V -1W" = "#dfc27d", 
+  "V 1M" = "#bf812d", 
+  "V 3M" = "#8c510a",
+  "V 7M" = "#543005",
+  "_**<span style = 'color:#74c476;'>Milk</span>**_"  = "transparent",
+  "L -1W" = "#bae4b3", 
+  "L 1M" = "#74c476", 
+  "L 3M" = "#238b45", 
+  "L 7M" = "#00441B"
+)
+site_time_palette_simple <- site_time_palette[-c(1,6,11,16)]
+index_palette <- c("minus" = "#67a9cf", 
+                   "plus" = "#ef8a62")
+site_time_design <- strip_nested(
+  background_x = elem_list_rect(fill = c(
+    ## Time
+    rep("gray", 4), 
+    ## Site within time
+    site_time_palette_simple[c(1, 5, 9, 2, 6, 10, 14, 3, 7, 11, 15, 4, 8, 12, 16)]))
+)
+```
+
+```{r pca_zipln, fig.height=5, fig.width=10}
+pca_PLN_latent_means <- prcomp(best_ZIPLN$latent) %>% factoextra::fviz_pca_ind(axes = c(1,2), col.ind = microcosm$site_time, palette = site_time_palette)
+pca_PLN_latent_means_wcov <- prcomp(best_ZIPLN$latent_pos) %>% factoextra::fviz_pca_ind(axes = c(1,2), col.ind = microcosm$site_time, palette = site_time_palette)
+pca_PLN_latent_means + pca_PLN_latent_means_wcov + plot_annotation(
+  title = "PCA on latent means", 
+  subtitle = "With (left: M) or w/o (right: M - XB) the effect of covariates"
+)
+```
+
+## PLN: latent layer
+
+### Same for standard PLN
+
+```{r pca_pln, fig.height=5, fig.width=10}
+pca_PLN_latent_means <- prcomp(best_PLN$latent) %>% factoextra::fviz_pca_ind(axes = c(1,2), col.ind = microcosm$site_time, palette = site_time_palette)
+pca_PLN_latent_means_wcov <- prcomp(best_PLN$latent_pos) %>% factoextra::fviz_pca_ind(axes = c(1,2), col.ind = microcosm$site_time, palette = site_time_palette)
+pca_PLN_latent_means + pca_PLN_latent_means_wcov + plot_annotation(
+  title = "PCA on latent means", 
+  subtitle = "With (left: M) or w/o (right: M - XB) the effect of covariates"
+)
+```
+
+## ZI PLN
+
+### Clustering of the latent means vs probability of zero inflation
+
+```{r heatmap_zipln, fig.height=5, fig.width=10}
+latent_means <- best_ZIPLN$latent
+colnames(latent_means) <- colnames(microcosm$Abundance)
+asv_clust <- hclust(dist(t(latent_means)), method = "ward.D2")
+asv_ordering <- asv_clust$labels[asv_clust$order]
+
+plot_data <- latent_means |> 
+  as_tibble(rownames = "sample") |> mutate(sample = microcosm$sample) %>% 
+  pivot_longer(-sample, names_to = "ASV", values_to = "M", names_ptypes = factor(levels = asv_ordering)) |> 
+  inner_join(microcosm, by = "sample")
+p_heatmap <- plot_data |> 
+  ggplot(aes(x = sample, y = ASV, fill = M)) + 
+  geom_tile() + 
+  # scale_fill_distiller(type = "div", ) +
+  scale_fill_viridis_c(option = "E") + 
+  facet_nested(~ time + site, scales = "free_x", space = "free_x", strip = site_time_design) + 
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.spacing.x = unit(0.1, "line")) +
+  labs(x = "Samples", y = "ASV") + 
+  NULL
+
+proba_zi <- best_ZIPLN$var_par$R
+colnames(proba_zi) <- colnames(microcosm$Abundance)
+plot_data_zi <- proba_zi |> 
+  as_tibble(rownames = "sample") |> mutate(sample = microcosm$sample) %>% 
+  pivot_longer(-sample, names_to = "ASV", values_to = "M", names_ptypes = factor(levels = asv_ordering)) |> 
+  inner_join(microcosm, by = "sample")
+
+p_heatmap_zi <- plot_data_zi |> 
+  ggplot(aes(x = sample, y = ASV, fill = M)) + 
+  geom_tile() + 
+  # scale_fill_distiller(type = "div", ) +
+  scale_fill_viridis_c(option = "E", name = "P(Y = 0)") + 
+  facet_nested(~ time + site, scales = "free_x", space = "free_x", strip = site_time_design) + 
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.spacing.x = unit(0.1, "line")) +
+  labs(x = "Samples", y = "ASV") + 
+  NULL
+
+(p_heatmap + p_heatmap_zi & theme(legend.position = "bottom")) + 
+  plot_layout() + 
+  plot_annotation(
+    title = "Heatmap of latent means (M, left) and ZI probability (Rho, right)"
+  )
+```
+
+
+## ZI PLN
+
+### Latent means vs probability of zero inflation
+
+```{r means_vs_zi}
+plot_data |> 
+  select(ASV, sample, M, site_time) |> 
+  bind_cols(plot_data_zi |> select(ZI = M)) |>  
+  ggplot(aes(x = M, y = ZI, color = site_time)) + 
+  geom_point(alpha = 0.1) + 
+  facet_wrap(~site_time) + 
+  scale_color_manual(values = site_time_palette, guide = "none") + 
+  # scale_y_log10() + 
+  labs(x = "Latent mean", y = "Proba of zero inflation") + 
+  NULL
+```
+
+## Residual covariance
+
+### Reordered by hierarchical clustering with complete linkage
+
+```{r zipln-covariance}
+sigma_PLN <- sigma(best_PLN)
+par(mfrow = c(2,2))
+sigma |> cov2cor() %>% corrplot::corrplot(method = "color", tl.pos = "n", order = "hclust", is.corr = TRUE, hclust.method = "complete", title = "\nCorrelation matrix ZIPLN")
+sigma_PLN |> cov2cor() %>%  corrplot::corrplot(method = "color", tl.pos = "n", order = "hclust", is.corr = TRUE, hclust.method = "complete", title = "\nCorrelation matrix PLN")
+hist(sigma, main = "histogramm of ZIPLN covariances")
+hist(sigma_PLN, main = "histogramm of PLN covariances")
+```
+
