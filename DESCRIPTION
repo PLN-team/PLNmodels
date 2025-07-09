@@ -102,6 +102,7 @@ Collate:
     'ZIPLNnetwork.R'
     'barents.R'
     'import_utils.R'
+    'microcosm.R'
     'mollusk.R'
     'oaks.R'
     'plot_utils.R'
