@@ -3,6 +3,7 @@ title: "Simulation assessing Model Selection criteria"
 format: html
 execute: 
   cache: true
+  warning: false
 ---
 
 ## Useful libraries & functions
@@ -15,7 +16,7 @@ set.seed(1)
 ```
 
 ```{r simu-parameters}
-p <- 20
+p <- 40
 seq_n <- c(60, 120, 240)
 groups_0 <- 
   list(
@@ -106,7 +107,7 @@ one_simu <- function(
 ```
 
 ```{r simu}
-nsim <- 40
+nsim <- 50
 out_model_0_0 <- do.call(rbind, lapply(1:nsim, one_simu, true_model = "model_0_0"))
 out_model_1_0 <- do.call(rbind, lapply(1:nsim, one_simu, true_model = "model_1_0"))
 out_model_2_0 <- do.call(rbind, lapply(1:nsim, one_simu, true_model = "model_2_0"))

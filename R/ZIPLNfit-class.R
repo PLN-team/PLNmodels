@@ -399,7 +399,7 @@ ZIPLNfit <- R6Class(
       } else {
         X <- model.matrix(as.formula(terms$PLN), newdata, xlev = attr(private$formula, "xlevels")$PLN)
       }
-      
+
       # ZI part
       if (!is.null(terms$ZI)) {
         if (level == 0) {
@@ -555,8 +555,6 @@ ZIPLNfit <- R6Class(
     loglik_vec  = function() {private$Ji},
     #' @field AIC variational lower bound of the AIC
     AIC         = function() {self$loglik - self$nb_param},
-    #' @field AICc variational lower bound of the AIC
-    AICc         = function() {self$AIC - self$nb_param * (self$nb_param + 1) / (self$n - self$nb_param - 1)},
     #' @field BIC variational lower bound of the BIC
     BIC         = function() {self$loglik - .5 * log(self$n) * self$nb_param},
     #' @field entropy Entropy of the variational distribution
