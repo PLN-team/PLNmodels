@@ -1,6 +1,9 @@
 ---
 title: "Simulation assessing Model Selection criteria"
-format: html
+authors: B. Batardière, J. Chiquet, M. Mariadassou
+format: 
+  html:
+    self-contained: true
 execute: 
   cache: true
   warning: false
@@ -12,8 +15,25 @@ execute:
 library(tidyverse)
 library(PLNmodels)
 library(MASS)
+library(gt)
 set.seed(1)
 ```
+
+## Simulations settings
+
+We consider ZIPLN models with $p=40$ variables and a varying number of covariates in the PLN component:
+
+- `groups_0`: an intercept for each covariates ($p$ parameters), 
+- `groups_1`: a categorical covariates with 2 modalities ($2p$ parameters)
+- `groups_2`: a categorical covariates with 3 modalities ($3p$ parameters)
+
+We fix the  corresponding regression coefficients $B_0, B_1, B_2$ accordingly. We also consider two sets of parameters for the ZI component: either a unique probability $\pi$ for each variable (1 parameter in the ZI component), or some variable-dependent probabilities $\pi_j$ randomly and uniformly picked in $[0.1,0.9]$ ($p$ parameter in the ZI component).
+
+The covariance matrix $\Sigma$ is fixed to a Toeplitz/AR structure, such that $\Sigma_{ij} = \rho^{|i-j|}$ with $\rho=0.75$.
+
+Under these settings, we have 6 different ZIPLN model (3 choices for covariates in the PLN component and 2 choice for the ZI component). 
+
+We vary the sample size $n \in \{60, 120, 240\}$.
 
 ```{r simu-parameters}
 p <- 40
@@ -47,6 +67,8 @@ Pi_1 <- runif(p, 0.1, 0.9)
 Sigma <- toeplitz(0.75^(0:(p - 1)))
 ```
 
+We introduce a simple function to generate data under a ZIPLN distribution: 
+
 ```{r rZIPLN}
 rZIPLN <- function(X, B, Sigma, Pi) {
   n <- nrow(X)
@@ -60,6 +82,12 @@ rZIPLN <- function(X, B, Sigma, Pi) {
   res
 }
 ```
+
+## Evaluating model selection of various information criteria 
+
+We evaluate the capability of BIC, AIC and ICL to select the correct model with the following piece of code : all possible $6$ models are fitted when data is generated under the true model (being one of them).
+
+First we define the function to perform a single simulation for a varying sample size:
 
 ```{r simu_func}
 one_simu <- function(
@@ -106,6 +134,8 @@ one_simu <- function(
 }
 ```
 
+Second  we launch the simulations by cycling over all possible true models:
+
 ```{r simu}
 nsim <- 50
 out_model_0_0 <- do.call(rbind, lapply(1:nsim, one_simu, true_model = "model_0_0"))
@@ -118,13 +148,22 @@ out <- rbind(out_model_0_0, out_model_1_0, out_model_2_0,
              out_model_0_1, out_model_1_1, out_model_2_1)
 ```
 
+## Results
+
+We measure the performances by estimating the probability of choising the correct model for each criterion, and for all different models as the true reference one.
+
 ```{r results}
 results <- 
   out %>% group_by(true_model, simu, n) %>% 
   summarize(ICL_choice  = model[which.max(ICL)],
             BIC_choice  = model[which.max(BIC)],
             AIC_choice  = model[which.max(AIC)]) %>% ungroup() %>% 
-  mutate(ICL = ICL_choice == true_model, BIC  = BIC_choice == true_model, AIC = AIC_choice == true_model)
+  mutate(ICL = ICL_choice == true_model, 
+         BIC = BIC_choice == true_model, 
+         AIC = AIC_choice == true_model)
 results %>% group_by(true_model, n) %>% 
-  summarize(ICL_correct = mean(ICL), BIC_correct  = mean(BIC), AIC_correct = mean(AIC))
+  summarize(ICL_correct = mean(ICL),
+            BIC_correct = mean(BIC),
+            AIC_correct = mean(AIC)) %>% gt()
 ```
+

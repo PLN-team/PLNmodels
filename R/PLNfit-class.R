@@ -691,7 +691,11 @@ PLNfit <- R6Class(
     #' @field R_squared approximated goodness-of-fit criterion
     R_squared  = function() {private$R2},
     #' @field criteria a vector with loglik, BIC, ICL and number of parameters
-    criteria   = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL)}
+    criteria    = function() {data.frame(
+        nb_param = self$nb_param, loglik = self$loglik,
+        BIC = self$BIC, AIC = self$AIC, ICL = self$ICL
+      )
+    }
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  END OF THE CLASS PLNfit
