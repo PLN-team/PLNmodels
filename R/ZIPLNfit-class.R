@@ -105,13 +105,14 @@ ZIPLNfit <- R6Class(
             B0[,j] <- replace_na(coef(zip_out, "zero") , -10)
             B[,j]  <- replace_na(coef(zip_out, "count"), 0)
             R[, j] <- replace_na(predict(zip_out, type = "zero"), sum(y == 0) / n)
-            M[,j]  <- replace_na(residuals(zip_out), 0) + data$X %*% coef(zip_out, "count")
+            M[,j]  <- pmin(replace_na(residuals(zip_out), 0) + data$X %*% coef(zip_out, "count"), 10)
+            if (max(M[,j]) > 10) browser()
           } else {
             p_out  <- glm(y ~ 0 + data$X, family = 'poisson', offset = data$O[, j])
             B0[,j] <- rep(-10, d0)
             B[,j]  <- replace_na(coef(p_out), 0)
             R[, j] <- sum(y == 0) / n
-            M[,j]  <- replace_na(residuals(p_out), 0) + data$X %*% coef(p_out)
+            M[,j]  <- pmin(replace_na(residuals(p_out), 0) + data$X %*% coef(p_out), 10)
           }
         }
 
@@ -159,7 +160,6 @@ ZIPLNfit <- R6Class(
 
       vloglik <- -Inf; objective <- Inf
       repeat {
-
         # Check maxeval
         if (control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
           stop_reason <- "maximum number of iterations reached"
@@ -399,7 +399,7 @@ ZIPLNfit <- R6Class(
       } else {
         X <- model.matrix(as.formula(terms$PLN), newdata, xlev = attr(private$formula, "xlevels")$PLN)
       }
-      
+
       # ZI part
       if (!is.null(terms$ZI)) {
         if (level == 0) {
@@ -555,8 +555,6 @@ ZIPLNfit <- R6Class(
     loglik_vec  = function() {private$Ji},
     #' @field AIC variational lower bound of the AIC
     AIC         = function() {self$loglik - self$nb_param},
-    #' @field AICc variational lower bound of the AIC
-    AICc         = function() {self$AIC - self$nb_param * (self$nb_param + 1) / (self$n - self$nb_param - 1)},
     #' @field BIC variational lower bound of the BIC
     BIC         = function() {self$loglik - .5 * log(self$n) * self$nb_param},
     #' @field entropy Entropy of the variational distribution
@@ -568,7 +566,11 @@ ZIPLNfit <- R6Class(
     #' @field ICL variational lower bound of the ICL
     ICL         = function() {self$BIC - self$entropy},
     #' @field criteria a vector with loglik, BIC, ICL and number of parameters
-    criteria    = function() {data.frame(nb_param = self$nb_param, loglik = self$loglik, BIC = self$BIC, ICL = self$ICL)}
+    criteria    = function() {data.frame(
+        nb_param = self$nb_param, loglik = self$loglik,
+        BIC = self$BIC, AIC = self$AIC, ICL = self$ICL
+      )
+    }
   )
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

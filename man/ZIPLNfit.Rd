@@ -68,8 +68,6 @@ print(myPLN)
 
 \item{\code{AIC}}{variational lower bound of the AIC}
 
-\item{\code{AICc}}{variational lower bound of the AIC}
-
 \item{\code{BIC}}{variational lower bound of the BIC}
 
 \item{\code{entropy}}{Entropy of the variational distribution}
