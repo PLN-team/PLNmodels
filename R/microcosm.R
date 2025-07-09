@@ -15,7 +15,7 @@
 #' * Abundance: A 880 taxa by 259 samples count matrix
 #' * sample: Unique sample id
 #' * Offset: sequencing depth
-#' * site: sampling site (B: bouche/mouth; N: nez/nose V: vagin/vagina L: lait/milk)
+#' * site: sampling site (O: oral; N: nasal V: vaginal M: milk)
 #' * time: sampling time (-1W; 1M, 3M, 7M)
 #' * site_time: factor of possible pairs of (site, time). No milk sampling at -1W.
 #'
