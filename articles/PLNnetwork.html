@@ -298,24 +298,26 @@ sends a very basic summary of the estimation process:</p>
 the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">network_models</span><span class="op">$</span><span class="va">criteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
+<table class="table">
 <colgroup>
-<col width="9%">
-<col width="9%">
-<col width="10%">
-<col width="10%">
-<col width="10%">
 <col width="8%">
+<col width="8%">
+<col width="9%">
+<col width="9%">
+<col width="9%">
+<col width="9%">
+<col width="7%">
+<col width="9%">
 <col width="10%">
-<col width="11%">
-<col width="10%">
-<col width="10%">
+<col width="9%">
+<col width="9%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">param</th>
 <th align="right">nb_param</th>
 <th align="right">loglik</th>
 <th align="right">BIC</th>
+<th align="right">AIC</th>
 <th align="right">ICL</th>
 <th align="right">n_edges</th>
 <th align="right">EBIC</th>
@@ -329,6 +331,7 @@ the collection</p>
 <td align="right">34</td>
 <td align="right">-1288.622</td>
 <td align="right">-1354.783</td>
+<td align="right">-1322.622</td>
 <td align="right">-2802.303</td>
 <td align="right">0</td>
 <td align="right">-1354.783</td>
@@ -341,6 +344,7 @@ the collection</p>
 <td align="right">34</td>
 <td align="right">-1282.911</td>
 <td align="right">-1349.072</td>
+<td align="right">-1316.911</td>
 <td align="right">-2796.577</td>
 <td align="right">0</td>
 <td align="right">-1349.072</td>
@@ -353,6 +357,7 @@ the collection</p>
 <td align="right">34</td>
 <td align="right">-1277.571</td>
 <td align="right">-1343.732</td>
+<td align="right">-1311.571</td>
 <td align="right">-2791.235</td>
 <td align="right">0</td>
 <td align="right">-1343.732</td>
@@ -365,6 +370,7 @@ the collection</p>
 <td align="right">35</td>
 <td align="right">-1270.172</td>
 <td align="right">-1338.279</td>
+<td align="right">-1305.172</td>
 <td align="right">-2782.915</td>
 <td align="right">1</td>
 <td align="right">-1340.735</td>
@@ -377,6 +383,7 @@ the collection</p>
 <td align="right">35</td>
 <td align="right">-1265.105</td>
 <td align="right">-1333.212</td>
+<td align="right">-1300.105</td>
 <td align="right">-2777.798</td>
 <td align="right">1</td>
 <td align="right">-1335.669</td>
@@ -389,6 +396,7 @@ the collection</p>
 <td align="right">35</td>
 <td align="right">-1257.149</td>
 <td align="right">-1325.256</td>
+<td align="right">-1292.149</td>
 <td align="right">-2762.819</td>
 <td align="right">1</td>
 <td align="right">-1327.712</td>
@@ -598,8 +606,10 @@ methods are recalled when such an object is printed:</p>
 <code class="sourceCode R"><span><span class="va">model_StARS</span></span></code></pre></div>
 <pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 1.3)</span></span>
 <span><span class="co">## ==================================================================</span></span>
-<span><span class="co">##  nb_param    loglik      BIC       ICL n_edges      EBIC pen_loglik density</span></span>
-<span><span class="co">##        35 -1212.163 -1280.27 -2678.265       1 -1282.726  -1216.284   0.007</span></span>
+<span><span class="co">##  nb_param    loglik      BIC       AIC       ICL n_edges      EBIC pen_loglik</span></span>
+<span><span class="co">##        35 -1212.163 -1280.27 -1247.163 -2678.265       1 -1282.726  -1216.284</span></span>
+<span><span class="co">##  density</span></span>
+<span><span class="co">##    0.007</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -618,11 +628,11 @@ additional analyses).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">my_graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH abb4aff UNW- 17 1 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH 28cb305 UNW- 17 1 -- </span></span>
 <span><span class="co">## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),</span></span>
 <span><span class="co">## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),</span></span>
 <span><span class="co">## | width (e/n)</span></span>
-<span><span class="co">## + edge from abb4aff (vertex names):</span></span>
+<span><span class="co">## + edge from 28cb305 (vertex names):</span></span>
 <span><span class="co">## [1] Hfo--Hsp</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></span></code></pre></div>

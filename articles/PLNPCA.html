@@ -309,6 +309,7 @@ the collection</p>
 <th align="right">nb_param</th>
 <th align="right">loglik</th>
 <th align="right">BIC</th>
+<th align="right">AIC</th>
 <th align="right">ICL</th>
 </tr></thead>
 <tbody>
@@ -317,6 +318,7 @@ the collection</p>
 <td align="right">34</td>
 <td align="right">-1042.0386</td>
 <td align="right">-1108.1995</td>
+<td align="right">-1076.0386</td>
 <td align="right">-1120.3695</td>
 </tr>
 <tr class="even">
@@ -324,6 +326,7 @@ the collection</p>
 <td align="right">50</td>
 <td align="right">-731.0336</td>
 <td align="right">-828.3291</td>
+<td align="right">-781.0336</td>
 <td align="right">-860.2024</td>
 </tr>
 <tr class="odd">
@@ -331,6 +334,7 @@ the collection</p>
 <td align="right">65</td>
 <td align="right">-640.9613</td>
 <td align="right">-767.4455</td>
+<td align="right">-705.9613</td>
 <td align="right">-823.0533</td>
 </tr>
 <tr class="even">
@@ -338,6 +342,7 @@ the collection</p>
 <td align="right">79</td>
 <td align="right">-600.3276</td>
 <td align="right">-754.0545</td>
+<td align="right">-679.3276</td>
 <td align="right">-838.8941</td>
 </tr>
 </tbody>
@@ -633,8 +638,8 @@ vignette</a>). Most are recalled via the show method:</p>
 <code class="sourceCode R"><span><span class="va">myPCA_ICL</span></span></code></pre></div>
 <pre><code><span><span class="co">## Poisson Lognormal with rank constrained for PCA (rank = 3)</span></span>
 <span><span class="co">## ==================================================================</span></span>
-<span><span class="co">##  nb_param   loglik      BIC      ICL</span></span>
-<span><span class="co">##        65 -640.961 -767.445 -823.053</span></span>
+<span><span class="co">##  nb_param   loglik      BIC      AIC      ICL</span></span>
+<span><span class="co">##        65 -640.961 -767.445 -705.961 -823.053</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
