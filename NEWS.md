@@ -1,3 +1,9 @@
+# PLNmodels dev version
+
+* various fix in ZIPLN model (prediction and initialization #146, #149, #150, #152)
+* microcosm data now included (#153, #154)
+* add AIC for PLN and ZIPLN classes (#151)
+
 # PLNmodels 1.2.2 (2025-03-21)
 
 * fix for #143 (remove LBFGS_NOCEDAL variant from the possible algorithms)

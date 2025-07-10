@@ -124,7 +124,24 @@ test_that("PLN fit: Check prediction",  {
   expect_length(predict(model, newdata = toy_data[3:4, ], type = "r"), 2L)
 })
 
+test_that("PLN fit: Check cross-validation",  {
 
+  n <- nrow(trichoptera)
+  K <- 5
+  folds <- split(sample(1:n), rep(1:K, length = n))
+  formula <- as.formula("Abundance ~ 1")
+
+  Y     <- lapply(folds, function(fold) trichoptera$Abundance[fold, ])
+  Y_hat <- lapply(folds, function(test_set) {
+    train_set <- setdiff(1:n, test_set)
+    model <- do.call(PLN, list(formula = eval(formula), data = trichoptera, subset = train_set, control = PLN_param(trace = FALSE)))
+    predict(model, trichoptera[test_set, ], type = "response")
+  })
+  err <- map2_dbl(Y_hat, Y, function(y_hat, y) mean((y_hat - y)^2))
+  attr(err, "folds") <- folds
+  err
+
+})
 
 test_that("PLN fit: Check conditional prediction",  {
 

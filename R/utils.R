@@ -149,7 +149,6 @@ nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nr
 
 #' @importFrom stats .getXlevels
 extract_model <- function(call, envir) {
-
   ## extract relevant arguments from the high level call for the model frame
   call_args <- call[match(c("formula", "data", "subset", "weights"), names(call), 0L)]
   call_args <- c(as.list(call_args), list(xlev = attr(call$formula, "xlevels"), na.action = NULL))
