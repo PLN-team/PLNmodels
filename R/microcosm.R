@@ -17,7 +17,7 @@
 #' * Offset: sequencing depth
 #' * site: sampling site (`O`: oral; `N`: nasal; `V`: vaginam; `M`: milk)
 #' * time: sampling time (`-1W`: 1 week before calving; `1M`: 1 month after calving; `3M`: 3 months after calving; `7M`: 7 months after calving)
-#' * site_time: factor of possible pairs of (site, time). The combination `M_-1W` is absent.
+#' * site_time: factor of possible pairs of (site, time). The combination `M -1W` is absent.
 #'
 #' @seealso [prepare_data()]
 #' @references  Mariadassou, M., Nouvel, L.X., Constant, F. et al. Microbiota members from body sites of dairy cows are largely shared within individual hosts throughout lactation but sharing is limited in the herd. anim microbiome 5, 32 (2023). \doi{10.1186/s42523-023-00252-w}
