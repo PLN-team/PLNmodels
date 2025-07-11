@@ -27,7 +27,7 @@ before and after calving in terms of counts of Amplicon Sequence Variants (ASV) 
 body sites. Three body sites (vagina, mouth, nose) in addition to the milk of the 4 teats were sampled
 at 4 times points: 1 week before calving (except for the milk), 1 month, 3 months and 7 months after calving.
 We present a reduced version of the original data consisting of 880 samples with
-sequencing depths ranging from 1,001 to 71,881 reads per sample (see \href{https://doi.org/10.1186/s42523-023-00252-w}{Mariadassou et al. (2023)} for details). ASVs with prevalence in the dataset
+sequencing depths ranging from 1,001 to 71,881 reads per sample (see \doi{10.1186/s42523-023-00252-w} for details). ASVs with prevalence in the dataset
 lower than 5\% were filtered out and samples for which the total depth (after ASV filtering were removed),
 resulting in a count table of n = 880 samples with p = 259 ASV and a mean proportion of zeroes of 90.3\%.
 }
