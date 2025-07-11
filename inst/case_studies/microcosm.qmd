@@ -55,7 +55,11 @@ ZI_site_time  <- ZIPLN(Abundance ~ 1 + offset(log(Offset)) | 0 + site_time,
 ```{r microcosm-ZIPLN, echo = TRUE, message=FALSE, results='hide'}
 ZI_site_PLN_site <- ZIPLN(Abundance ~ 0 + site      + offset(log(Offset)) | 0 + site,
                           data = microcosm)
+ZI_site_PLN_time <- ZIPLN(Abundance ~ 0 + time      + offset(log(Offset)) | 0 + site,
+                          data = microcosm)
 ZI_time_PLN_time <- ZIPLN(Abundance ~ 0 + time      + offset(log(Offset)) | 0 + time,
+                          data = microcosm)
+ZI_time_PLN_site <- ZIPLN(Abundance ~ 0 + site      + offset(log(Offset)) | 0 + time,
                           data = microcosm)
 ZI_PLN_site_time <- ZIPLN(Abundance ~ 0 + site_time + offset(log(Offset)) | 0 + site_time,
                           data = microcosm)
@@ -77,30 +81,42 @@ ZI_site_time_PLN_time <- ZIPLN(Abundance ~ 0 + time + offset(log(Offset)) | 0 + 
 ## Locate the best model
 
 ```{r microcosm-ZIPLN-criteria, echo = FALSE}
-rbind(
+criteria <- rbind(
   PLN$criteria, PLN_time$criteria, PLN_site$criteria, PLN_site_time$criteria,
   ZI$criteria, ZI_time$criteria, ZI_site$criteria, ZI_site_time$criteria,
-  ZI_time_PLN_time$criteria, ZI_site_PLN_site$criteria,
+  ZI_time_PLN_time$criteria, ZI_time_PLN_site$criteria, 
+  ZI_site_PLN_site$criteria, ZI_site_PLN_time$criteria, 
   ZI_time_PLN_site_time$criteria, ZI_site_PLN_site_time$criteria,
   ZI_site_time_PLN_time$criteria, ZI_site_time_PLN_site$criteria,
   ZI_PLN_site_time$criteria
-) %>%
-  as.data.frame(row.names = 
-    c("PLN", "PLN time", "PLN site", "PLN site * time",
-      "ZI", "ZI time", "ZI site", "ZI site * time",
-      "ZI time PLN time", "ZI site PLN site",
-      "ZI time and PLN site * time", "ZI site and PLN site * time",
-      "ZI site * time and PLN time", "ZI site * time and PLN site",
-      "ZI and PLN site * time")) %>%
-  gt::gt(rownames_to_stub = TRUE) %>% 
-  gt::tab_stubhead(label = "model") %>% 
+) %>% rename(`#param` = nb_param, Loglik = loglik)
+models <- data.frame(
+  stub = rep("", 17),
+  ZI = c("", "", "", "", "~1", "~ time", "~ site",  "~ site:time", 
+                      "~time", "~time", "~site","~site", "~time", "~site",
+                      "~ site:time", "~ site:time", "~ site:time"),
+  PLN = c("~1", "~ time", "~ site",  "~ site:time", "", "", "", "",
+                      "~time", "~site", "~site","~time", "~site:time", "~site:time",
+                      "~ time", "~ site", "~ site:time")
+  ) %>% rename(` ` = stub)
+model_selection <- dplyr::bind_cols(models, criteria)
+readr::write_rds(model_selection, "model_selection.rds")
+```
+
+```{r modele_selection_table}
+model_selection %>% gt() %>% 
+  tab_spanner(
+    label = "Model", columns = c(ZI, PLN, `#param`)
+  ) %>% 
+  tab_spanner(
+    label = "Criterion", columns = c(Loglik, BIC, AIC, ICL)
+  ) %>% 
   gt::tab_header(
-    title = md("**Model selection criteria**"),
-    subtitle = md("The *top two* largest are presented")
+    title = md("**Model selection criteria**")
     ) %>% 
   gt::tab_row_group(
     label = "ZIPLN",
-    rows = 9:15
+    rows = 9:17
   ) %>% 
   gt::tab_row_group(
     label = "ZI",
@@ -118,7 +134,7 @@ rbind(
           ),
           locations = cells_body(
           columns = c("BIC"), 
-          rows = c(1, 7, 10)
+          rows = c(1, 7, 12)
     )) %>% 
       tab_style(
         style = list(
@@ -127,7 +143,7 @@ rbind(
           ),
           locations = cells_body(
           columns = c("AIC"), 
-          rows = c(4, 8, 14)
+          rows = c(4, 8, 16)
     )) %>% 
       tab_style(
         style = list(
@@ -136,11 +152,17 @@ rbind(
           ),
           locations = cells_body(
           columns = c("ICL"), 
-          rows = c(2, 8, 15)
+          rows = c(2, 8, 17)
     ))
 ```
 
 $\rightsquigarrow$ Ok, for illustrative purpose, let us keep model with `site_time` in both ZI an PLN components.
+
+
+```{r save-models}
+readr::write_rds(PLN_site_time   , file =    "PLN_site_time.rds")
+readr::write_rds(ZI_PLN_site_time, file = "ZI_PLN_site_time.rds")
+```
 
 ## Figures
 
