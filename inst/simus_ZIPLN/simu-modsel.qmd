@@ -4,6 +4,7 @@ authors: B. Batardière, J. Chiquet, M. Mariadassou
 format: 
   html:
     self-contained: true
+  pdf: default
 execute: 
   cache: true
   warning: false
@@ -92,7 +93,8 @@ First we define the function to perform a single simulation for a varying sample
 ```{r simu_func}
 one_simu <- function(
     simu_number, 
-    true_model = c("model_0_0", "model_1_0", "model_2_0", "model_0_1", "model_1_1", "model_2_1")) {
+    true_model = c("model_0_0", "model_1_0", "model_2_0",
+                   "model_0_1", "model_1_1", "model_2_1")) {
   cat("+")
   true_model <- match.arg(true_model)
   try(
@@ -101,32 +103,43 @@ one_simu <- function(
     n, group_0, group_1, group_2) {
       Y <- 
         switch(true_model,
-               "model_0_0" = rZIPLN(model.matrix(~ 0 + group_0), B_0, Sigma, Pi_0),
-               "model_1_0" = rZIPLN(model.matrix(~ 0 + group_1), B_1, Sigma, Pi_0),
-               "model_2_0" = rZIPLN(model.matrix(~ 0 + group_2), B_2, Sigma, Pi_0),
-               "model_0_1" = rZIPLN(model.matrix(~ 0 + group_0), B_0, Sigma, Pi_1),
-               "model_1_1" = rZIPLN(model.matrix(~ 0 + group_1), B_1, Sigma, Pi_1),
-               "model_2_1" = rZIPLN(model.matrix(~ 0 + group_2), B_2, Sigma, Pi_1)
+          "model_0_0" = rZIPLN(model.matrix(~ 0 + group_0), B_0, Sigma, Pi_0),
+          "model_1_0" = rZIPLN(model.matrix(~ 0 + group_1), B_1, Sigma, Pi_0),
+          "model_2_0" = rZIPLN(model.matrix(~ 0 + group_2), B_2, Sigma, Pi_0),
+          "model_0_1" = rZIPLN(model.matrix(~ 0 + group_0), B_0, Sigma, Pi_1),
+          "model_1_1" = rZIPLN(model.matrix(~ 0 + group_1), B_1, Sigma, Pi_1),
+          "model_2_1" = rZIPLN(model.matrix(~ 0 + group_2), B_2, Sigma, Pi_1)
         )
       data_ <- suppressWarnings(
-        prepare_data(counts = Y, 
-                     covariates = cbind(factor(group_0), factor(group_1), factor(group_2))) 
+        prepare_data(
+          counts = Y, 
+          covariates = cbind(factor(group_0), factor(group_1), factor(group_2))) 
       )
-      model_0_0 <- ZIPLN(Y ~ 0 + group_0, zi = "single", data = data_, control = ZIPLN_param(trace = 0))
-      model_1_0 <- ZIPLN(Y ~ 0 + group_1, zi = "single", data = data_, control = ZIPLN_param(trace = 0))
-      model_2_0 <- ZIPLN(Y ~ 0 + group_2, zi = "single", data = data_, control = ZIPLN_param(trace = 0))
-      model_0_1 <- ZIPLN(Y ~ 0 + group_0, zi = "col", data = data_, control = ZIPLN_param(trace = 0))
-      model_1_1 <- ZIPLN(Y ~ 0 + group_1, zi = "col", data = data_, control = ZIPLN_param(trace = 0))
-      model_2_1 <- ZIPLN(Y ~ 0 + group_2, zi = "col", data = data_, control = ZIPLN_param(trace = 0))
+      model_0_0 <- ZIPLN(Y ~ 0 + group_0, zi = "single", data = data_,
+                         control = ZIPLN_param(trace = 0))
+      model_1_0 <- ZIPLN(Y ~ 0 + group_1, zi = "single", data = data_,
+                         control = ZIPLN_param(trace = 0))
+      model_2_0 <- ZIPLN(Y ~ 0 + group_2, zi = "single", data = data_,
+                         control = ZIPLN_param(trace = 0))
+      model_0_1 <- ZIPLN(Y ~ 0 + group_0, zi = "col", data = data_,
+                         control = ZIPLN_param(trace = 0))
+      model_1_1 <- ZIPLN(Y ~ 0 + group_1, zi = "col", data = data_,
+                         control = ZIPLN_param(trace = 0))
+      model_2_1 <- ZIPLN(Y ~ 0 + group_2, zi = "col", data = data_,
+                         control = ZIPLN_param(trace = 0))
       
       res <- data.frame(
         simu       = simu_number,
         n          = n,
         true_model = true_model,
-        AIC   = c(model_0_0$AIC, model_1_0$AIC, model_2_0$AIC, model_0_1$AIC, model_1_1$AIC, model_2_1$AIC), 
-        BIC   = c(model_0_0$BIC, model_1_0$BIC, model_2_0$BIC, model_0_1$BIC, model_1_1$BIC, model_2_1$BIC), 
-        ICL   = c(model_0_0$ICL, model_1_0$ICL, model_2_0$ICL, model_0_1$ICL, model_1_1$ICL, model_2_1$ICL), 
-        model = c("model_0_0", "model_1_0", "model_2_0", "model_0_1", "model_1_1", "model_2_1")
+        AIC   = c(model_0_0$AIC, model_1_0$AIC, model_2_0$AIC,
+                  model_0_1$AIC, model_1_1$AIC, model_2_1$AIC), 
+        BIC   = c(model_0_0$BIC, model_1_0$BIC, model_2_0$BIC,
+                  model_0_1$BIC, model_1_1$BIC, model_2_1$BIC), 
+        ICL   = c(model_0_0$ICL, model_1_0$ICL, model_2_0$ICL,
+                  model_0_1$ICL, model_1_1$ICL, model_2_1$ICL), 
+        model = c("model_0_0", "model_1_0", "model_2_0",
+                  "model_0_1", "model_1_1", "model_2_1")
       )
       res
     }, seq_n, groups_0, groups_1, groups_2, SIMPLIFY = FALSE
