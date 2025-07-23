@@ -1,8 +1,8 @@
-# PLNmodels dev version
-
+# PLNmodels 1.2.2-9100
 * various fix in ZIPLN model (prediction and initialization #146, #149, #150, #152)
 * microcosm data now included (#153, #154)
 * add AIC for PLN and ZIPLN classes (#151)
+* other fixes (#155)
 
 # PLNmodels 1.2.2 (2025-03-21)
 

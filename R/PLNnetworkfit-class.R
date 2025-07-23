@@ -57,7 +57,7 @@ PLNnetworkfit <- R6Class(
       convergence <- numeric(config$maxit_out)
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
-      args <- list(data   = data,
+      args <- list(data   = list(Y = data$Y, X = data$X, O = data$O, w = data$w),
                    params = list(B = private$B, M = private$M, S = private$S),
                    config = config)
       private$Sigma <- crossprod(private$M)/self$n + diag(colMeans(private$S**2), self$p, self$p)
