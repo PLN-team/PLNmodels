@@ -13,7 +13,7 @@ setwd(working.dir)
 methods_names <- set_names(
   c("SPIEC-EASI",
     "sparse PLN",
-    # "sparse PLNCov",
+    "sparse PLNCov",
     "sparse ZIPLNCov",
     "sparse ZIPLNCol",
     "GLasso",
@@ -22,7 +22,7 @@ methods_names <- set_names(
     ),
   nm = c("spiecEasi_network",
          "sparsePLN_network",
-         # "sparsePLNCov_network",
+         "sparsePLNCov_network",
          "sparseZIPLNCov_network",
          "sparseZIPLNCol_network",
          "graphical_lasso_network",
@@ -49,7 +49,7 @@ nsimu <- 50
 one_simu <- function(n, covar_effect, zi_effect, network) {
   Sigma_star <- graph2cov(network, v = 0.3, u = 0.1)
   group <- factor(sample(1:3, n, replace = TRUE))
-  X <- cbind(1, rnorm(n, 2, 1) #  model.matrix(~ group + 0)
+  X <- cbind(rnorm(n, 2, 1)) #  model.matrix(~ group + 0)
   mu <- X %*% matrix(runif(ncol(X)*p, -covar_effect,  covar_effect) , ncol(X), p)
 
   par_zi <- switch(zi_effect, "contrasted" = c(-5,5), "skew-right" = c(0,5), "skew-left" = c(-5,0))
