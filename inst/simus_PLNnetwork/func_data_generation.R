@@ -72,7 +72,6 @@ rMLN <- function(n, mu = matrix(0, n, p), Sigma, N = rep(3000, n), pi = rep(0, n
   prop.list <- lapply(seq_len(nrow(proportions)), function(i) proportions[i,])
   counts <- mapply(rmultinom, size = N, prob = prop.list, n = 1)
   counts <- t(counts)
-  
 }
 
 #' @param n the sample size

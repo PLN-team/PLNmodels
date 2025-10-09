@@ -1,3 +1,5 @@
+sigmoid <- function(x) {1/(1 + exp(-x))}
+
 mse <- function(theta, theta.star) {
   mean((theta - theta.star)^2, na.rm = TRUE)
 }
