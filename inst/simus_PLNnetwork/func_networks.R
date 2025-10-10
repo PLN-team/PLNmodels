@@ -40,7 +40,6 @@ graphical_lasso_covariance <- function(cov, nPenalties = 50, approx = FALSE) {
   res
 }
 
-
 neighborhood_selection_network <- function(X, Y, X0, nPenalties=50) {
   graphical_lasso_network(X, Y, nPenalties=nPenalties, approx = TRUE)
 }
@@ -93,7 +92,7 @@ sparsePLNCov_network <- function(Y, X, X0) {
 
 sparseZIPLNCov_network <- function(Y, X, X0) {
   data_PLN <- suppressWarnings(prepare_data(Y, X))
-  out <- ZIPLNnetwork(Y ~ 1 + X + offset(log(Offset)) | 0 + X0, data = data_PLN, control = ZIPLNnetwork_param(min_ratio = 1e-2, trace = 0))
+  out <- ZIPLNnetwork(Y ~ 0 + X + offset(log(Offset)) | 0 + X0, data = data_PLN, control = ZIPLNnetwork_param(min_ratio = 1e-2, trace = 0))
   res <- sapply(out$models, function(model) {
     net_ <- model$latent_network("support")
     Matrix(1 * net_)
@@ -103,7 +102,7 @@ sparseZIPLNCov_network <- function(Y, X, X0) {
 
 sparseZIPLNCol_network <- function(Y, X, X0) {
   data_PLN <- suppressWarnings(prepare_data(Y, X))
-  out <- ZIPLNnetwork(Y ~ 1 + X + offset(log(Offset)) | 1, data = data_PLN, control = ZIPLNnetwork_param(min_ratio = 1e-2, trace = 0))
+  out <- ZIPLNnetwork(Y ~ 0 + X + offset(log(Offset)) | 1, data = data_PLN, control = ZIPLNnetwork_param(min_ratio = 1e-2, trace = 0))
   res <- sapply(out$models, function(model) {
     net_ <- model$latent_network("support")
     Matrix(1 * net_)

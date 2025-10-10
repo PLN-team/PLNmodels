@@ -13,7 +13,6 @@ setwd(working.dir)
 methods_names <- set_names(
   c("SPIEC-EASI",
     "sparse PLN",
-    "sparse PLNCov",
     "sparse ZIPLNCov",
     "sparse ZIPLNCol",
     "GLasso",
@@ -22,7 +21,6 @@ methods_names <- set_names(
     ),
   nm = c("spiecEasi_network",
          "sparsePLN_network",
-         "sparsePLNCov_network",
          "sparseZIPLNCov_network",
          "sparseZIPLNCol_network",
          "graphical_lasso_network",
@@ -49,17 +47,17 @@ nsimu <- 50
 one_simu <- function(n, covar_effect, zi_effect, network) {
   Sigma_star <- graph2cov(network, v = 0.3, u = 0.1)
   group <- factor(sample(1:3, n, replace = TRUE))
-  X <- cbind(rnorm(n, 2, 1)) #  model.matrix(~ group + 0)
+  X <- model.matrix(~ group + 0)
   mu <- X %*% matrix(runif(ncol(X)*p, -covar_effect,  covar_effect) , ncol(X), p)
 
   par_zi <- switch(zi_effect, "contrasted" = c(-5,5), "skew-right" = c(0,5), "skew-left" = c(-5,0))
   group0 <- factor(sample(1:2, n, replace = TRUE))
   X0 <- model.matrix(~ group0 + 0)
   mu0 <- X0 %*% matrix(runif(ncol(X0)*p, par_zi[1],  par_zi[2]) , ncol(X0), p)
-  
+
   N  <- rnegbin(n, mu = 1000, theta = offset_effect); N[N == 0] <- 1000
   Y <- rMLN(n, mu = mu, Sigma = Sigma_star, N = N)
-  
+
   W <- matrix(rbinom(n*p, size = 1, prob = sigmoid(mu0)), n, p)
   Y <- Y * W
   which_zero  <- which(colSums(Y) == 0)
@@ -76,7 +74,7 @@ one_simu <- function(n, covar_effect, zi_effect, network) {
   names(res_auc) <- methods_names
   res_aupr <- sapply(res_roc, perf_aupr)
   names(res_aupr) <- methods_names
-  
+
   tidy_res <- data.frame(
     fallout = unlist(lapply(res_roc, function(res) res$fallout )),
     recall  = unlist(lapply(res_roc, function(res) res$recall )) ,
@@ -105,13 +103,13 @@ res <- do.call(rbind, pbmclapply(1:nsimu, function(simu_label) {
   res
 }, mc.cores = cores))
 
-results_summarized <- res %>% add_column(topology = "random") %>% 
+results_summarized <- res %>% add_column(topology = "random") %>%
   dplyr::select(-pAUC, -AUPR) %>%  mutate(
     topology = fct_rev(factor(topology))) %>%
-  mutate(method = factor(method)) %>% 
+  mutate(method = factor(method)) %>%
   mutate(covar_effect = fct_rev(factor(covar_effect))) %>%
   mutate(sample_size = fct_rev(factor(sample_size))) %>%
-  group_by(topology, covar_effect, covar_zi, sample_size, method, sim_label) %>% 
+  group_by(topology, covar_effect, covar_zi, sample_size, method, sim_label) %>%
   summarize(AUC = auc(fallout, recall), AUPR = aupr(recall, precision))
 
 myAUC <- ggplot(results_summarized, aes(x = sample_size, y = AUC, fill = fct_reorder(method, AUC, .fun = median, .desc = TRUE))) + geom_boxplot() +
