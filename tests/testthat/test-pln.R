@@ -203,3 +203,21 @@ test_that("PLN: Check that all univariate PLN models are equivalent with the mul
   ))
 
 })
+
+test_that("PLN: check initialization fails when the covariate model matrix is singular",  {
+  n = 10; d = 1; p = 10
+  Y <- matrix(rpois(n*p, 1), n, p)
+
+  # Artifically build singular model matrix with continuous covariates
+  x <- matrix(rnorm(n*d), n, d)
+  X_singular <- cbind(x, x)
+
+  # Artificially build correlated factors (discrete covariates)
+  f1 <- gl(2, n/2, labels = c("1.1", "1.2"))
+  f2 <- gl(2, n/2, labels = c("2.1", "2.2"))
+
+  # In both cases, model.matrix(formula) is singular
+  expect_error(PLN(Y ~ X_singular))
+  expect_error(PLN(Y ~ f1 + f2))
+
+})

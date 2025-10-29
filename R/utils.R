@@ -269,7 +269,7 @@ create_parameters <- function(
 #' Barebone function to compute starting points for B, M and S when fitting a PLN. Mostly intended for internal use.
 #'
 #' @param Y Response count matrix
-#' @param X Covariate matrix
+#' @param X Covariate matrix. Note that initialization will fail if the model matrix is singular.
 #' @param O Offset matrix (in log-scale)
 #' @param w Weight vector (defaults to 1)
 #' @param s Scale parameter for S (defaults to 0.1)
@@ -293,7 +293,7 @@ create_parameters <- function(
 compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
   # Y = responses, X = covariates, O = offsets (in log scale), w = weights
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-  fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)))
+  fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)), singular.ok = FALSE)
   list(B = matrix(fits$coefficients, d, p),
        M = matrix(fits$residuals, n, p),
        S = matrix(s, n, p))

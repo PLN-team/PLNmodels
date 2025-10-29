@@ -9,7 +9,7 @@ compute_PLN_starting_point(Y, X, O, w, s = 0.1)
 \arguments{
 \item{Y}{Response count matrix}
 
-\item{X}{Covariate matrix}
+\item{X}{Covariate matrix. Note that initialization will fail if the model matrix is singular.}
 
 \item{O}{Offset matrix (in log-scale)}
 
