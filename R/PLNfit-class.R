@@ -577,9 +577,12 @@ PLNfit <- R6Class(
       if (is.null(O)) O <- matrix(0, n_new, self$p)
 
       # Compute parameters of the law
-      vcov11 <- private$Sigma[cond ,  cond, drop = FALSE]
-      vcov22 <- private$Sigma[!cond, !cond, drop = FALSE]
-      vcov12 <- private$Sigma[cond , !cond, drop = FALSE]
+      # as.matrix() coerces sparse Matrix (returned by diagonal/spherical covariance
+      # models) to dense, so that simplify2array() in the map below produces a
+      # numeric array rather than a list of sparse Matrix objects.
+      vcov11 <- as.matrix(private$Sigma[cond ,  cond, drop = FALSE])
+      vcov22 <- as.matrix(private$Sigma[!cond, !cond, drop = FALSE])
+      vcov12 <- as.matrix(private$Sigma[cond , !cond, drop = FALSE])
       prec11 <- solve(vcov11)
       A <- crossprod(vcov12, prec11)
       Sigma21 <- vcov22 - A %*% vcov12

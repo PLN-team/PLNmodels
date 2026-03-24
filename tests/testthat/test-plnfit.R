@@ -173,6 +173,30 @@ test_that("PLN fit: Check conditional prediction",  {
 
 })
 
+test_that("PLN fit: Check conditional prediction with sparse covariance models", {
+
+  n_cond <- 10
+  p_cond <- 2
+  p <- ncol(trichoptera$Abundance)
+  Yc <- trichoptera$Abundance[1:n_cond, 1:p_cond, drop = FALSE]
+  newdata <- trichoptera[1:n_cond, , drop = FALSE]
+
+  for (covariance in c("diagonal", "spherical")) {
+    model <- PLN(
+      Abundance ~ 1,
+      data = trichoptera,
+      control = PLN_param(covariance = covariance, trace = 0)
+    )
+
+    pred <- predict_cond(model, newdata, Yc, type = "response", var_par = TRUE)
+    expect_equal(dim(pred), c(n_cond, p - p_cond))
+    expect_equal(dim(attr(pred, "M")), dim(pred))
+    expect_equal(dim(attr(pred, "S")), c(p - p_cond, p - p_cond, n_cond))
+    expect_true(is.array(attr(pred, "S")))
+    expect_true(is.numeric(attr(pred, "S")))
+  }
+})
+
 test_that("PLN fit: Check number of parameters",  {
 
   p <- ncol(trichoptera$Abundance)
