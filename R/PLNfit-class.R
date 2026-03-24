@@ -934,7 +934,7 @@ PLNfit_fixedcov <- R6Class(
     },
 
     torch_Omega = function(data, params) {
-      params$Omega <- torch_tensor(private$Omega)
+      params$Omega <- torch_tensor(private$Omega, dtype = params$B$dtype, device = params$B$device)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
