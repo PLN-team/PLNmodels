@@ -49,6 +49,7 @@ test_that("PLNnetwork fit: check classes, getters and field access", {
 
 test_that("PLNnetwork fit accepts torch backend", {
   skip_if_not_installed("torch")
+  skip_if_not(torch::torch_is_installed())
 
   data("trichoptera", package = "PLNmodels", envir = environment())
   trichoptera_small <- prepare_data(

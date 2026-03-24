@@ -82,6 +82,7 @@ test_that("PLNPCA fit: check classes, getters and field access", {
 
 test_that("PLNPCA torch backend works for fit and project", {
   skip_if_not_installed("torch")
+  skip_if_not(torch::torch_is_installed())
 
   torch_control <- PLNPCA_param(
     backend = "torch",
