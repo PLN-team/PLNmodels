@@ -58,14 +58,16 @@ test_that("common_samples succeeds on matrices with no or partial dimension name
 #   )
 # })
 
-cli::test_that_cli("common_samples fails on matrices with dimension names but conflicting names",  {
-  testthat::local_edition(3)
-  expect_snapshot(
-    error = TRUE,
+# These checks used to rely on cli snapshot tests, but direct message matching
+# is more stable across recent testthat versions and CI environments.
+test_that("common_samples fails on matrices with dimension names but conflicting names",  {
+  expect_error(
     suppressWarnings(
       common_samples(
         `rownames<-`(counts, paste0("Sample_", 1:49)),
-        covariates))
+        covariates)
+    ),
+    regexp = "Conflicting sample names in `counts` matrix and `covariates` data\\s+frames"
   )
 })
 
@@ -76,10 +78,11 @@ test_that("common_samples succeeds on matrices with dimension names and differen
                     default_names    = FALSE))
 })
 
-cli::test_that_cli("common_samples find biggest subset of common samples and produces message.",  {
-  testthat::local_edition(3)
-  expect_snapshot(result <- common_samples(counts, covariates[1:35, ]))
-  expect_warning(result <- common_samples(counts, covariates[1:35, ]))
+test_that("common_samples find biggest subset of common samples and produces message.",  {
+  expect_warning(
+    result <- common_samples(counts, covariates[1:35, ]),
+    regexp = "There are less samples in `counts` than in `covariates`\\."
+  )
   expect_length(result$common_samples, 35)
   expect_equal(result$common_samples,
                as.character(1:35))
@@ -168,16 +171,17 @@ test_that("compute_offset provides correct answers for identical samples", {
   expect_null(compute_offset(counts, "none"))
 })
 
-cli::test_that_cli("compute_offset fails with an informative error when given a data.frame", {
+test_that("compute_offset fails with an informative error when given a data.frame", {
   sizes <- rep(1, 5)
   counts <- sizes %o% 1:10
-  testthat::local_edition(3)
-  testthat::expect_snapshot(error = TRUE,
-                            compute_offset(counts, data.frame(counts)))
-#               regexp = "You supplied a data.frame to compute_offset(). Did you mean to supply a numeric matrix?
-#  Try converting your data.frame to a matrix with as.matrix().",
-#                fixed = TRUE)
-
+  err <- rlang::catch_cnd(compute_offset(counts, data.frame(counts)))
+  expect_s3_class(err, "error")
+  expect_match(conditionMessage(err),
+               "You supplied a data\\.frame for `offset`")
+  expect_match(conditionMessage(err),
+               "Did you mean to supply a numeric matrix\\?")
+  expect_match(conditionMessage(err),
+               "Try converting your data\\.frame to a matrix with `as.matrix\\(\\)`\\.")
 })
 
 test_that("offset_rle provides correct answers when adding pseudocounts", {
