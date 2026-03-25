@@ -41,8 +41,14 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: |
+            any::rcmdcheck
+            any::remotes
           needs: check
+
+      - name: Pin testthat 3.3.0
+        run: remotes::install_version("testthat", version = "3.3.0", repos = "https://cloud.r-project.org")
+        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
