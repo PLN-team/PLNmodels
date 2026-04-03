@@ -5,7 +5,7 @@
 \title{Control of PLNPCA fit}
 \usage{
 PLNPCA_param(
-  backend = "nlopt",
+  backend = c("nlopt", "torch"),
   trace = 1,
   config_optim = list(),
   config_post = list(),

@@ -46,3 +46,43 @@ test_that("PLNnetwork fit: check classes, getters and field access", {
   expect_true(inherits(myPLNfit$plot_network(output = "corrplot", plot = FALSE), "Matrix"))
 
 })
+
+test_that("PLNnetwork fit accepts torch backend", {
+  skip_if_not_installed("torch")
+  skip_if_not(torch::torch_is_installed())
+
+  data("trichoptera", package = "PLNmodels", envir = environment())
+  trichoptera_small <- prepare_data(
+    trichoptera$Abundance[1:10, 1:4],
+    trichoptera$Covariate[1:10, , drop = FALSE]
+  )
+  Y <- as.matrix(trichoptera_small$Abundance)
+  torch_control <- PLNnetwork_param(
+    backend = "torch",
+    trace = 0,
+    config_optim = list(
+      algorithm = "RPROP",
+      lr = 0.01,
+      num_epoch = 5,
+      num_batch = 1,
+      maxit_out = 2
+    )
+  )
+
+  models <- NULL
+  expect_no_error(models <- PLNnetwork(
+    Abundance ~ 1,
+    data = trichoptera_small,
+    penalties = 0.1,
+    control = torch_control
+  ))
+  expect_false(is.null(models))
+
+  myPLNfit <- getBestModel(models)
+  expect_equal(dim(myPLNfit$latent), dim(Y))
+  expect_equal(dim(myPLNfit$model_par$B), c(1, ncol(Y)))
+  expect_equal(dim(myPLNfit$model_par$Omega), c(ncol(Y), ncol(Y)))
+  expect_equal(dim(myPLNfit$var_par$M), dim(Y))
+  expect_equal(dim(myPLNfit$var_par$S), dim(Y))
+  expect_equal(sum(myPLNfit$loglik_vec), myPLNfit$loglik, tolerance = 1e-4)
+})
