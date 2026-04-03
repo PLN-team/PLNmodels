@@ -102,7 +102,7 @@
 PLN-mixture</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2025-11-03</h4>
+            <h4 data-toc-skip class="date">2026-04-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNmixture.Rmd" class="external-link"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
@@ -125,7 +125,7 @@ Classes <code>PLNmixturefamily</code> and
 plus some others for data manipulation and representation:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.sthda.com/english/rpkgs/factoextra" class="external-link">factoextra</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kassambara/factoextra" class="external-link">factoextra</a></span><span class="op">)</span></span></code></pre></div>
 <p>The main function <code>PLNmixture</code> integrates some features of
 the <strong>future</strong> package to perform parallel computing: you
 can set your plan to speed the fit by relying on 2 workers as
@@ -414,7 +414,7 @@ the collection</p>
 representing the objective function</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mixture_models</span><span class="op">$</span><span class="fu">plot_objective</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="PLNmixture_files/figure-html/objective-1.png" width="700"></p>
+<p><img src="PLNmixture_files/figure-html/objective-1.png" class="r-plt" alt="" width="700"></p>
 <p>Comprehensive information about <code>PLNmixturefamily</code> is
 available via <code><a href="../reference/PLNmixturefamily.html">?PLNmixturefamily</a></code>.</p>
 </div>
@@ -426,7 +426,7 @@ displays evolution of the criteria mentioned above, and is a good
 starting point for model selection:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mixture_models</span><span class="op">)</span></span></code></pre></div>
-<p><img src="PLNmixture_files/figure-html/plot%20nocov-1.png" width="672"></p>
+<p><img src="PLNmixture_files/figure-html/plot%20nocov-1.png" class="r-plt" alt="" width="672"></p>
 <p>Note that we use the original definition of the BIC/ICL criterion
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">\texttt{loglik} - \frac{1}{2}\texttt{pen}</annotation></semantics></math>),
 which is on the same scale as the log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular
@@ -435,7 +435,7 @@ alternative</a> consists in using
 instead. You can do so by specifying <code>reverse = TRUE</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mixture_models</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="PLNmixture_files/figure-html/plot%20nocov-reverse-1.png" width="672"></p>
+<p><img src="PLNmixture_files/figure-html/plot%20nocov-reverse-1.png" class="r-plt" alt="" width="672"></p>
 <p>From those plots, we can see that the best model in terms of BIC is
 obtained for a number of clusters of 2. We may extract the corresponding
 model with the method <code><a href="../reference/getBestModel.html">getBestModel()</a></code>. A model with a
@@ -620,13 +620,13 @@ methods: <code>plot</code> and <code>predict</code>.</p>
 the latent layer:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">"pca"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="PLNmixture_files/figure-html/plot%20clustering-1.png" width="700"></p>
+<p><img src="PLNmixture_files/figure-html/plot%20clustering-1.png" class="r-plt" alt="" width="700"></p>
 <p>We can also plot the data matrix with samples reordered by clusters
 to check whether it exhibits strong pattern or not. The limits between
 clusters are highlighted by grey lines.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, <span class="st">"matrix"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="PLNmixture_files/figure-html/plot%20reordered%20data-1.png" width="700"></p>
+<p><img src="PLNmixture_files/figure-html/plot%20reordered%20data-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="predict-method">
@@ -701,7 +701,7 @@ mean.</p>
 <span>                              prior <span class="op">=</span> <span class="va">myMix_BIC</span><span class="op">$</span><span class="va">posteriorProb</span>, type <span class="op">=</span> <span class="st">"position"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span><span class="va">predicted.position</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_ind</a></span><span class="op">(</span>col.ind <span class="op">=</span> <span class="va">predicted.class</span><span class="op">)</span></span></code></pre></div>
-<p><img src="PLNmixture_files/figure-html/predicted_position-1.png" width="672"></p>
+<p><img src="PLNmixture_files/figure-html/predicted_position-1.png" class="r-plt" alt="" width="672"></p>
 <p>When you are done, do not forget to get back to the standard
 sequential plan with <em>future</em>.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
@@ -741,7 +741,7 @@ Model-Based Cluster Analysis.”</span> <em>Journal of Classification</em>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
