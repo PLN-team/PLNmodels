@@ -80,6 +80,40 @@ test_that("PLNPCA fit: check classes, getters and field access", {
   expect_true(inherits(myPLNfit, "PCA"))
 })
 
+test_that("PLNPCA torch backend works for fit and project", {
+  skip_if_not_installed("torch")
+  skip_if_not(torch::torch_is_installed())
+
+  torch_control <- PLNPCA_param(
+    backend = "torch",
+    trace = 0,
+    config_optim = list(algorithm = "RPROP", lr = 0.01, num_epoch = 20, num_batch = 1)
+  )
+
+  torch_fit <- getModel(
+    PLNPCA(
+      Abundance ~ 1,
+      data = trichoptera,
+      ranks = 1,
+      control = torch_control
+    ),
+    1
+  )
+
+  Y <- as.matrix(trichoptera$Abundance)
+  expected_loglik_vec <- .5 * ncol(Y) - rowSums(PLNmodels:::.logfactorial(Y)) +
+    rowSums(Y * torch_fit$latent - fitted(torch_fit)) -
+    .5 * rowSums(torch_fit$var_par$M^2 + torch_fit$var_par$S^2 - log(torch_fit$var_par$S^2) - 1)
+
+  expect_equal(torch_fit$loglik_vec, expected_loglik_vec, tolerance = 1e-4, check.attributes = FALSE)
+
+  model1 <- getModel(models, 1)
+  expect_no_error(scores <- model1$project(newdata = trichoptera, control = torch_control))
+  expect_false(is.null(scores))
+  expect_equal(dim(scores), dim(model1$scores))
+  expect_equal(dimnames(scores), dimnames(model1$scores))
+})
+
 test_that("Bindings for factoextra return sensible values", {
   ## $eig
   expect_gte(min(myPLNfit$eig[, "eigenvalue"]), 0)

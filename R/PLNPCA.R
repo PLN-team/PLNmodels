@@ -74,7 +74,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #' @inherit PLN_param details
 #' @export
 PLNPCA_param <- function(
-    backend       = "nlopt",
+    backend       = c("nlopt", "torch"),
     trace         = 1      ,
     config_optim  = list() ,
     config_post   = list() ,
