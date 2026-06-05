@@ -14,228 +14,224 @@ See the documentation for ...
 The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefamily]{PLNmixturefamily}}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{n}}{number of samples}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{n}}{number of samples}
 
-\item{\code{p}}{number of dimensions of the latent space}
+    \item{\code{p}}{number of dimensions of the latent space}
 
-\item{\code{k}}{number of components}
+    \item{\code{k}}{number of components}
 
-\item{\code{d}}{number of covariates}
+    \item{\code{d}}{number of covariates}
 
-\item{\code{components}}{components of the mixture (PLNfits)}
+    \item{\code{components}}{components of the mixture (PLNfits)}
 
-\item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
+    \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
-\item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
+    \item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
 
-\item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
+    \item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
 
-\item{\code{memberships}}{vector for cluster index}
+    \item{\code{memberships}}{vector for cluster index}
 
-\item{\code{mixtureParam}}{vector of cluster proportions}
+    \item{\code{mixtureParam}}{vector of cluster proportions}
 
-\item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
+    \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
-\item{\code{nb_param}}{number of parameters in the current PLN model}
+    \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{entropy_clustering}}{Entropy of the variational distribution of the cluster (multinomial)}
+    \item{\code{entropy_clustering}}{Entropy of the variational distribution of the cluster (multinomial)}
 
-\item{\code{entropy_latent}}{Entropy of the variational distribution of the latent vector (Gaussian)}
+    \item{\code{entropy_latent}}{Entropy of the variational distribution of the latent vector (Gaussian)}
 
-\item{\code{entropy}}{Full entropy of the variational distribution (latent vector + clustering)}
+    \item{\code{entropy}}{Full entropy of the variational distribution (latent vector + clustering)}
 
-\item{\code{loglik}}{variational lower bound of the loglikelihood}
+    \item{\code{loglik}}{variational lower bound of the loglikelihood}
 
-\item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}
+    \item{\code{loglik_vec}}{element-wise variational lower bound of the loglikelihood}
 
-\item{\code{BIC}}{variational lower bound of the BIC}
+    \item{\code{BIC}}{variational lower bound of the BIC}
 
-\item{\code{ICL}}{variational lower bound of the ICL (include entropy of both the clustering and latent distributions)}
+    \item{\code{ICL}}{variational lower bound of the ICL (include entropy of both the clustering and latent distributions)}
 
-\item{\code{R_squared}}{approximated goodness-of-fit criterion}
+    \item{\code{R_squared}}{approximated goodness-of-fit criterion}
 
-\item{\code{criteria}}{a vector with loglik, BIC, ICL, and number of parameters}
+    \item{\code{criteria}}{a vector with loglik, BIC, ICL, and number of parameters}
 
-\item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)}
+    \item{\code{model_par}}{a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)}
 
-\item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
+    \item{\code{vcov_model}}{character: the model used for the covariance (either "spherical", "diagonal" or "full")}
 
-\item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
+    \item{\code{fitted}}{a matrix: fitted values of the observations (A in the model)}
 
-\item{\code{group_means}}{a matrix of group mean vectors in the latent space.}
-}
-\if{html}{\out{</div>}}
+    \item{\code{group_means}}{a matrix of group mean vectors in the latent space.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-PLNmixturefit-new}{\code{PLNmixturefit$new()}}
-\item \href{#method-PLNmixturefit-optimize}{\code{PLNmixturefit$optimize()}}
-\item \href{#method-PLNmixturefit-predict}{\code{PLNmixturefit$predict()}}
-\item \href{#method-PLNmixturefit-plot_clustering_data}{\code{PLNmixturefit$plot_clustering_data()}}
-\item \href{#method-PLNmixturefit-plot_clustering_pca}{\code{PLNmixturefit$plot_clustering_pca()}}
-\item \href{#method-PLNmixturefit-postTreatment}{\code{PLNmixturefit$postTreatment()}}
-\item \href{#method-PLNmixturefit-show}{\code{PLNmixturefit$show()}}
-\item \href{#method-PLNmixturefit-print}{\code{PLNmixturefit$print()}}
-\item \href{#method-PLNmixturefit-clone}{\code{PLNmixturefit$clone()}}
-}
+  \itemize{
+    \item \href{#method-PLNmixturefit-initialize}{\code{PLNmixturefit$new()}}
+    \item \href{#method-PLNmixturefit-optimize}{\code{PLNmixturefit$optimize()}}
+    \item \href{#method-PLNmixturefit-predict}{\code{PLNmixturefit$predict()}}
+    \item \href{#method-PLNmixturefit-plot_clustering_data}{\code{PLNmixturefit$plot_clustering_data()}}
+    \item \href{#method-PLNmixturefit-plot_clustering_pca}{\code{PLNmixturefit$plot_clustering_pca()}}
+    \item \href{#method-PLNmixturefit-postTreatment}{\code{PLNmixturefit$postTreatment()}}
+    \item \href{#method-PLNmixturefit-show}{\code{PLNmixturefit$show()}}
+    \item \href{#method-PLNmixturefit-print}{\code{PLNmixturefit$print()}}
+    \item \href{#method-PLNmixturefit-clone}{\code{PLNmixturefit$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNmixturefit-new"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNmixturefit-new}{}}}
-\subsection{Method \code{new()}}{
-Optimize a the
+\if{html}{\out{<a id="method-PLNmixturefit-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefit-initialize}{}}}
+\subsection{\code{PLNmixturefit$new()}}{
+  Optimize a the
 
 
-Initialize a \code{\link{PLNmixturefit}} model
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$new(
+  Initialize a \code{\link{PLNmixturefit}} model
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefit$new(
   responses,
   covariates,
   offsets,
   posteriorProb,
   formula,
   control
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{responses}}{the matrix of responses common to every models}
+      \item{\code{covariates}}{the matrix of covariates common to every models}
+      \item{\code{offsets}}{the matrix of offsets common to every models}
+      \item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
+      \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+      \item{\code{control}}{a list for controlling the optimization.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{posteriorProb}}{matrix ofposterior probability for cluster belonging}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{control}}{a list for controlling the optimization.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefit-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefit-optimize}{}}}
-\subsection{Method \code{optimize()}}{
-Optimize a \code{\link{PLNmixturefit}} model
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$optimize(responses, covariates, offsets, config)}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefit$optimize()}}{
+  Optimize a \code{\link{PLNmixturefit}} model
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefit$optimize(responses, covariates, offsets, config)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{responses}}{the matrix of responses common to every models}
+      \item{\code{covariates}}{the matrix of covariates common to every models}
+      \item{\code{offsets}}{the matrix of offsets common to every models}
+      \item{\code{config}}{a list for controlling the optimization}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{config}}{a list for controlling the optimization}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefit-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefit-predict}{}}}
-\subsection{Method \code{predict()}}{
-Predict group of new samples
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$predict(
+\subsection{\code{PLNmixturefit$predict()}}{
+  Predict group of new samples
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefit$predict(
   newdata,
   type = c("posterior", "response", "position"),
   prior = matrix(rep(1/self$k, self$k), nrow(newdata), self$k, byrow = TRUE),
   control = PLNmixture_param(),
   envir = parent.frame()
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{newdata}}{A data frame in which to look for variables, offsets and counts with which to predict.}
-
-\item{\code{type}}{The type of prediction required. The default \code{posterior} are posterior probabilities for each group ,
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{newdata}}{A data frame in which to look for variables, offsets and counts with which to predict.}
+      \item{\code{type}}{The type of prediction required. The default \code{posterior} are posterior probabilities for each group ,
 \code{response} is the group with maximal posterior probability and \code{latent} is the averaged latent coordinate (without
 offset and nor covariate effects),
 with weights equal to the posterior probabilities.}
-
-\item{\code{prior}}{User-specified prior group probabilities in the new data. The default uses a uniform prior.}
-
-\item{\code{control}}{a list-like structure for controlling the fit. See \code{\link[=PLNmixture_param]{PLNmixture_param()}} for details.}
-
-\item{\code{envir}}{Environment in which the prediction is evaluated}
+      \item{\code{prior}}{User-specified prior group probabilities in the new data. The default uses a uniform prior.}
+      \item{\code{control}}{a list-like structure for controlling the fit. See \code{\link[=PLNmixture_param]{PLNmixture_param()}} for details.}
+      \item{\code{envir}}{Environment in which the prediction is evaluated}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefit-plot_clustering_data"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefit-plot_clustering_data}{}}}
-\subsection{Method \code{plot_clustering_data()}}{
-Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$plot_clustering_data(
+\subsection{\code{PLNmixturefit$plot_clustering_data()}}{
+  Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefit$plot_clustering_data(
   main = "Expected counts reorder by clustering",
   plot = TRUE,
   log_scale = TRUE
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{main}}{character. A title for the plot.  An hopefully appropriate title will be used by default.}
+      \item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object}
+      \item{\code{log_scale}}{logical. Should the color scale values be log-transform before plotting? Default is \code{TRUE}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{main}}{character. A title for the plot.  An hopefully appropriate title will be used by default.}
-
-\item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object}
-
-\item{\code{log_scale}}{logical. Should the color scale values be log-transform before plotting? Default is \code{TRUE}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefit-plot_clustering_pca"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefit-plot_clustering_pca}{}}}
-\subsection{Method \code{plot_clustering_pca()}}{
-Plot the individual map of a PCA performed on the latent coordinates, where individuals are colored according to the memberships
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$plot_clustering_pca(
+\subsection{\code{PLNmixturefit$plot_clustering_pca()}}{
+  Plot the individual map of a PCA performed on the latent coordinates, where individuals are colored according to the memberships
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefit$plot_clustering_pca(
   main = "Clustering labels in Individual Factor Map",
   plot = TRUE
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{main}}{character. A title for the plot. An hopefully appropriate title will be used by default.}
+      \item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{main}}{character. A title for the plot. An hopefully appropriate title will be used by default.}
-
-\item{\code{plot}}{logical. Should the plot be displayed or sent back as \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefit-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefit-postTreatment}{}}}
-\subsection{Method \code{postTreatment()}}{
-Update fields after optimization
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$postTreatment(
+\subsection{\code{PLNmixturefit$postTreatment()}}{
+  Update fields after optimization
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefit$postTreatment(
   responses,
   covariates,
   offsets,
@@ -243,64 +239,65 @@ Update fields after optimization
   config_post,
   config_optim,
   nullModel
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{responses}}{the matrix of responses common to every models}
+      \item{\code{covariates}}{the matrix of covariates common to every models}
+      \item{\code{offsets}}{the matrix of offsets common to every models}
+      \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+      \item{\code{config_post}}{a list for controlling the post-treatment}
+      \item{\code{config_optim}}{a list for controlling the optimization during the post-treatment computations}
+      \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{config_post}}{a list for controlling the post-treatment}
-
-\item{\code{config_optim}}{a list for controlling the optimization during the post-treatment computations}
-
-\item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefit-show"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefit-show}{}}}
-\subsection{Method \code{show()}}{
-User friendly print method
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$show()}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefit$show()}}{
+  User friendly print method
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefit$show()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefit-print"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefit-print}{}}}
-\subsection{Method \code{print()}}{
-User friendly print method
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$print()}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefit$print()}}{
+  User friendly print method
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefit$print()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefit-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefit-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefit$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefit$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefit$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

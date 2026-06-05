@@ -10,172 +10,179 @@ super class for \code{\link{PLNPCAfamily}} and \code{\link{PLNnetworkfamily}}.
 \code{\link[=getModel]{getModel()}}
 }
 \section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{responses}}{the matrix of responses common to every models}
+  \if{html}{\out{<div class="r6-fields">}}
+  \describe{
+    \item{\code{responses}}{the matrix of responses common to every models}
 
-\item{\code{covariates}}{the matrix of covariates common to every models}
+    \item{\code{covariates}}{the matrix of covariates common to every models}
 
-\item{\code{offsets}}{the matrix of offsets common to every models}
+    \item{\code{offsets}}{the matrix of offsets common to every models}
 
-\item{\code{weights}}{the vector of observation weights}
+    \item{\code{weights}}{the vector of observation weights}
 
-\item{\code{inception}}{a \link{PLNfit} object, obtained when no sparsifying penalty is applied.}
+    \item{\code{inception}}{a \link{PLNfit} object, obtained when no sparsifying penalty is applied.}
 
-\item{\code{models}}{a list of \link{PLNfit} object, one per penalty.}
-}
-\if{html}{\out{</div>}}
+    \item{\code{models}}{a list of \link{PLNfit} object, one per penalty.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{criteria}}{a data frame with the values of some criteria (approximated log-likelihood, BIC, ICL, etc.) for the collection of models / fits
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{criteria}}{a data frame with the values of some criteria (approximated log-likelihood, BIC, ICL, etc.) for the collection of models / fits
 BIC and ICL are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty}
 
-\item{\code{convergence}}{sends back a data frame with some convergence diagnostics associated with the optimization process (method, optimal value, etc)}
-}
-\if{html}{\out{</div>}}
+    \item{\code{convergence}}{sends back a data frame with some convergence diagnostics associated with the optimization process (method, optimal value, etc)}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-PLNfamily-new}{\code{PLNfamily$new()}}
-\item \href{#method-PLNfamily-postTreatment}{\code{PLNfamily$postTreatment()}}
-\item \href{#method-PLNfamily-getModel}{\code{PLNfamily$getModel()}}
-\item \href{#method-PLNfamily-plot}{\code{PLNfamily$plot()}}
-\item \href{#method-PLNfamily-show}{\code{PLNfamily$show()}}
-\item \href{#method-PLNfamily-print}{\code{PLNfamily$print()}}
-\item \href{#method-PLNfamily-clone}{\code{PLNfamily$clone()}}
-}
+  \itemize{
+    \item \href{#method-PLNfamily-initialize}{\code{PLNfamily$new()}}
+    \item \href{#method-PLNfamily-postTreatment}{\code{PLNfamily$postTreatment()}}
+    \item \href{#method-PLNfamily-getModel}{\code{PLNfamily$getModel()}}
+    \item \href{#method-PLNfamily-plot}{\code{PLNfamily$plot()}}
+    \item \href{#method-PLNfamily-show}{\code{PLNfamily$show()}}
+    \item \href{#method-PLNfamily-print}{\code{PLNfamily$print()}}
+    \item \href{#method-PLNfamily-clone}{\code{PLNfamily$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfamily-new"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfamily-new}{}}}
-\subsection{Method \code{new()}}{
-Create a new \code{\link{PLNfamily}} object.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$new(responses, covariates, offsets, weights, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-PLNfamily-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfamily-initialize}{}}}
+\subsection{\code{PLNfamily$new()}}{
+  Create a new \code{\link{PLNfamily}} object.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNfamily$new(responses, covariates, offsets, weights, control)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{responses}}{the matrix of responses common to every models}
+      \item{\code{covariates}}{the matrix of covariates common to every models}
+      \item{\code{offsets}}{the matrix of offsets common to every models}
+      \item{\code{weights}}{the vector of observation weights}
+      \item{\code{control}}{list controlling the optimization and the model}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A new \code{\link{PLNfamily}} object
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{weights}}{the vector of observation weights}
-
-\item{\code{control}}{list controlling the optimization and the model}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A new \code{\link{PLNfamily}} object
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfamily-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfamily-postTreatment}{}}}
-\subsection{Method \code{postTreatment()}}{
-Update fields after optimization
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$postTreatment(config_post, config_optim)}\if{html}{\out{</div>}}
+\subsection{\code{PLNfamily$postTreatment()}}{
+  Update fields after optimization
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNfamily$postTreatment(config_post, config_optim)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).}
+      \item{\code{config_optim}}{a list for controlling the optimization parameters used during post_treatments}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).}
-
-\item{\code{config_optim}}{a list for controlling the optimization parameters used during post_treatments}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfamily-getModel"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfamily-getModel}{}}}
-\subsection{Method \code{getModel()}}{
-Extract a model from a collection of models
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$getModel(var, index = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{PLNfamily$getModel()}}{
+  Extract a model from a collection of models
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNfamily$getModel(var, index = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{var}}{value of the parameter (\code{rank} for PLNPCA, \code{sparsity} for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
+      \item{\code{index}}{Integer index of the model to be returned. Only the first value is taken into account.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A \code{\link{PLNfit}} object
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{var}}{value of the parameter (\code{rank} for PLNPCA, \code{sparsity} for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
-
-\item{\code{index}}{Integer index of the model to be returned. Only the first value is taken into account.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A \code{\link{PLNfit}} object
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfamily-plot"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfamily-plot}{}}}
-\subsection{Method \code{plot()}}{
-Lineplot of selected criteria for all models in the collection
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$plot(criteria, reverse)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{criteria}}{A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)}
-
-\item{\code{reverse}}{A logical indicating whether to plot the value of the criteria in the "natural" direction
+\subsection{\code{PLNfamily$plot()}}{
+  Lineplot of selected criteria for all models in the collection
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNfamily$plot(criteria, reverse)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{criteria}}{A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)}
+      \item{\code{reverse}}{A logical indicating whether to plot the value of the criteria in the "natural" direction
 (loglik - penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the natural direction, on
 the same scale as the log-likelihood.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfamily-show"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfamily-show}{}}}
-\subsection{Method \code{show()}}{
-User friendly print method
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$show()}\if{html}{\out{</div>}}
+\subsection{\code{PLNfamily$show()}}{
+  User friendly print method
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNfamily$show()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfamily-print"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfamily-print}{}}}
-\subsection{Method \code{print()}}{
-User friendly print method
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$print()}\if{html}{\out{</div>}}
+\subsection{\code{PLNfamily$print()}}{
+  User friendly print method
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNfamily$print()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfamily-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfamily-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfamily$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNfamily$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNfamily$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

@@ -5,8 +5,6 @@
 \title{An R6 Class to represent a ZIPLNfit in a standard, general framework, with spherical residual covariance}
 \description{
 An R6 Class to represent a ZIPLNfit in a standard, general framework, with spherical residual covariance
-
-An R6 Class to represent a ZIPLNfit in a standard, general framework, with spherical residual covariance
 }
 \examples{
 \dontrun{
@@ -19,70 +17,71 @@ print(myPLN)
 }
 }
 \section{Super class}{
-\code{\link[PLNmodels:ZIPLNfit]{PLNmodels::ZIPLNfit}} -> \code{ZIPLNfit_spherical}
+\code{\link[PLNmodels:ZIPLNfit]{ZIPLNfit}} -> \code{ZIPLNfit_spherical}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{nb_param_pln}}{number of parameters in the PLN part of the current model}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{nb_param_pln}}{number of parameters in the PLN part of the current model}
 
-\item{\code{vcov_model}}{character: the model used for the residual covariance}
-}
-\if{html}{\out{</div>}}
+    \item{\code{vcov_model}}{character: the model used for the residual covariance}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-ZIPLNfit_spherical-new}{\code{ZIPLNfit_spherical$new()}}
-\item \href{#method-ZIPLNfit_spherical-clone}{\code{ZIPLNfit_spherical$clone()}}
+  \itemize{
+    \item \href{#method-ZIPLNfit_spherical-initialize}{\code{ZIPLNfit_spherical$new()}}
+    \item \href{#method-ZIPLNfit_spherical-clone}{\code{ZIPLNfit_spherical$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details><summary>Inherited methods</summary>
+\if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="optimize"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-optimize'><code>PLNmodels::ZIPLNfit$optimize()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-optimize_vestep'><code>PLNmodels::ZIPLNfit$optimize_vestep()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="predict"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-predict'><code>PLNmodels::ZIPLNfit$predict()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="print"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-print'><code>PLNmodels::ZIPLNfit$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="show"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-show'><code>PLNmodels::ZIPLNfit$show()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="update"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-update'><code>PLNmodels::ZIPLNfit$update()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="optimize"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-optimize'><code>ZIPLNfit$optimize()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-optimize_vestep'><code>ZIPLNfit$optimize_vestep()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="predict"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-predict'><code>ZIPLNfit$predict()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="print"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-print'><code>ZIPLNfit$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="show"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-show'><code>ZIPLNfit$show()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="update"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-update'><code>ZIPLNfit$update()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-ZIPLNfit_spherical-new"></a>}}
-\if{latex}{\out{\hypertarget{method-ZIPLNfit_spherical-new}{}}}
-\subsection{Method \code{new()}}{
-Initialize a \code{\link{ZIPLNfit_spherical}} model
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_spherical$new(data, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-ZIPLNfit_spherical-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-ZIPLNfit_spherical-initialize}{}}}
+\subsection{\code{ZIPLNfit_spherical$new()}}{
+  Initialize a \code{\link{ZIPLNfit_spherical}} model
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ZIPLNfit_spherical$new(data, control)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{data}}{a named list used internally to carry the data matrices}
+      \item{\code{control}}{a list for controlling the optimization. See details.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{data}}{a named list used internally to carry the data matrices}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ZIPLNfit_spherical-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-ZIPLNfit_spherical-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZIPLNfit_spherical$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{ZIPLNfit_spherical$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ZIPLNfit_spherical$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

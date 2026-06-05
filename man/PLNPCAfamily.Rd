@@ -20,42 +20,41 @@ class(myPCAs)
 The function \code{\link[=PLNPCA]{PLNPCA()}}, the class \code{\link[=PLNPCAfit]{PLNPCAfit()}}
 }
 \section{Super class}{
-\code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{PLNPCAfamily}
+\code{\link[PLNmodels:PLNfamily]{PLNfamily}} -> \code{PLNPCAfamily}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{ranks}}{the dimensions of the successively fitted models}
-}
-\if{html}{\out{</div>}}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{ranks}}{the dimensions of the successively fitted models}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-PLNPCAfamily-new}{\code{PLNPCAfamily$new()}}
-\item \href{#method-PLNPCAfamily-optimize}{\code{PLNPCAfamily$optimize()}}
-\item \href{#method-PLNPCAfamily-getModel}{\code{PLNPCAfamily$getModel()}}
-\item \href{#method-PLNPCAfamily-getBestModel}{\code{PLNPCAfamily$getBestModel()}}
-\item \href{#method-PLNPCAfamily-plot}{\code{PLNPCAfamily$plot()}}
-\item \href{#method-PLNPCAfamily-show}{\code{PLNPCAfamily$show()}}
-\item \href{#method-PLNPCAfamily-clone}{\code{PLNPCAfamily$clone()}}
+  \itemize{
+    \item \href{#method-PLNPCAfamily-initialize}{\code{PLNPCAfamily$new()}}
+    \item \href{#method-PLNPCAfamily-optimize}{\code{PLNPCAfamily$optimize()}}
+    \item \href{#method-PLNPCAfamily-getModel}{\code{PLNPCAfamily$getModel()}}
+    \item \href{#method-PLNPCAfamily-getBestModel}{\code{PLNPCAfamily$getBestModel()}}
+    \item \href{#method-PLNPCAfamily-plot}{\code{PLNPCAfamily$plot()}}
+    \item \href{#method-PLNPCAfamily-show}{\code{PLNPCAfamily$show()}}
+    \item \href{#method-PLNPCAfamily-clone}{\code{PLNPCAfamily$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
+\if{html}{\out{<details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-print'><code>PLNmodels::PLNfamily$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNfamily$postTreatment()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-print'><code>PLNfamily$print()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNPCAfamily-new"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNPCAfamily-new}{}}}
-\subsection{Method \code{new()}}{
-Initialize all models in the collection.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$new(
+\if{html}{\out{<a id="method-PLNPCAfamily-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfamily-initialize}{}}}
+\subsection{\code{PLNPCAfamily$new()}}{
+  Initialize all models in the collection.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfamily$new(
   ranks,
   responses,
   covariates,
@@ -63,138 +62,143 @@ Initialize all models in the collection.
   weights,
   formula,
   control
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{ranks}}{the dimensions of the successively fitted models}
+      \item{\code{responses}}{the matrix of responses common to every models}
+      \item{\code{covariates}}{the matrix of covariates common to every models}
+      \item{\code{offsets}}{the matrix of offsets common to every models}
+      \item{\code{weights}}{the vector of observation weights}
+      \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+      \item{\code{control}}{list controlling the optimization and the model}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{ranks}}{the dimensions of the successively fitted models}
-
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{weights}}{the vector of observation weights}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{control}}{list controlling the optimization and the model}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfamily-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfamily-optimize}{}}}
-\subsection{Method \code{optimize()}}{
-Call to the C++ optimizer on all models of the collection
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$optimize(config)}\if{html}{\out{</div>}}
+\subsection{\code{PLNPCAfamily$optimize()}}{
+  Call to the C++ optimizer on all models of the collection
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfamily$optimize(config)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{config}}{list controlling the optimization.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{config}}{list controlling the optimization.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfamily-getModel"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfamily-getModel}{}}}
-\subsection{Method \code{getModel()}}{
-Extract model from collection and add "PCA" class for compatibility with \code{\link[factoextra:fviz]{factoextra::fviz()}}
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$getModel(var, index = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{PLNPCAfamily$getModel()}}{
+  Extract model from collection and add "PCA" class for compatibility with \code{\link[factoextra:fviz]{factoextra::fviz()}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfamily$getModel(var, index = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{var}}{value of the parameter (rank for PLNPCA, sparsity for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
+      \item{\code{index}}{Integer index of the model to be returned. Only the first value is taken into account.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link{PLNPCAfit}} object
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{var}}{value of the parameter (rank for PLNPCA, sparsity for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.}
-
-\item{\code{index}}{Integer index of the model to be returned. Only the first value is taken into account.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link{PLNPCAfit}} object
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfamily-getBestModel"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfamily-getBestModel}{}}}
-\subsection{Method \code{getBestModel()}}{
-Extract best model in the collection
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$getBestModel(crit = c("ICL", "BIC"))}\if{html}{\out{</div>}}
+\subsection{\code{PLNPCAfamily$getBestModel()}}{
+  Extract best model in the collection
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfamily$getBestModel(crit = c("ICL", "BIC"))}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{crit}}{a character for the criterion used to performed the selection. Either
+"ICL", "BIC". Default is \code{ICL}}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link{PLNPCAfit}} object
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{crit}}{a character for the criterion used to performed the selection. Either
-"ICL", "BIC". Default is \code{ICL}}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link{PLNPCAfit}} object
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfamily-plot"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfamily-plot}{}}}
-\subsection{Method \code{plot()}}{
-Lineplot of selected criteria for all models in the collection
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$plot(criteria = c("loglik", "BIC", "ICL"), reverse = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{criteria}}{A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).}
-
-\item{\code{reverse}}{A logical indicating whether to plot the value of the criteria in the "natural" direction
+\subsection{\code{PLNPCAfamily$plot()}}{
+  Lineplot of selected criteria for all models in the collection
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfamily$plot(criteria = c("loglik", "BIC", "ICL"), reverse = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{criteria}}{A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).}
+      \item{\code{reverse}}{A logical indicating whether to plot the value of the criteria in the "natural" direction
 (loglik - penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the natural direction, on
 the same scale as the log-likelihood.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfamily-show"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfamily-show}{}}}
-\subsection{Method \code{show()}}{
-User friendly print method
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$show()}\if{html}{\out{</div>}}
+\subsection{\code{PLNPCAfamily$show()}}{
+  User friendly print method
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfamily$show()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfamily-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfamily-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfamily$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNPCAfamily$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfamily$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }
