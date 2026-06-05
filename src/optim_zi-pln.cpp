@@ -1,4 +1,7 @@
 #include <RcppArmadillo.h>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(nloptr)]]
@@ -132,16 +135,7 @@ arma::mat optim_zipln_R_var(
     // Zero R_{i,j} if Y_{i,j} > 0
     // multiplication with f(sign(Y)) could work to zero stuff as there should not be any +inf
     // using a loop as it is more explicit and should have ok performance in C++
-    arma::uword n = Y.n_rows;
-    arma::uword p = Y.n_cols;
-    for(arma::uword i = 0; i < n; i += 1) {
-        for(arma::uword j = 0; j < p; j += 1) {
-            // Add fuzzy comparison ?
-            if(Y(i, j) > 0.) {
-                R(i, j) = 0.;
-            }
-        }
-    }
+    R.elem(arma::find(Y > 0.)).zeros();
     return R;
 }
 
@@ -163,15 +157,19 @@ arma::mat optim_zipln_R_exact (
 
   arma::mat XB = X * B;
   arma::mat M_mu = M - XB;
-  arma::uword n = M.n_rows;
-  arma::uword p = M.n_cols;
-  arma::vec diag_Sigma = arma::diagvec((1./n) * (M_mu.t() * M_mu + diagmat(sum(S % S, 0)))) ;
-  arma::mat R = arma::zeros(n,p);
-  for(arma::uword i = 0; i < n; i += 1) {
-    for(arma::uword j = 0; j < p; j += 1) {
+  const int n = (int)M.n_rows;
+  const int p = (int)M.n_cols;
+  arma::vec diag_Sigma = arma::diagvec((1./n) * (M_mu.t() * M_mu + diagmat(sum(S % S, 0))));
+  arma::mat R = arma::zeros(n, p);
+  // lambertW0_CS is pure (no global state) — safe to parallelize
+#ifdef _OPENMP
+#pragma omp parallel for collapse(2) schedule(static)
+#endif
+  for(int i = 0; i < n; i++) {
+    for(int j = 0; j < p; j++) {
       if(Y(i, j) < 0.5) {
-        double Phi = phi(O(i,j) + XB(i,j), diag_Sigma(j)) ;
-        R(i,j) = Pi(i,j) / (Phi * (1 - Pi(i,j)) + Pi(i,j)) ;
+        double Phi = phi(O(i,j) + XB(i,j), diag_Sigma(j));
+        R(i,j) = Pi(i,j) / (Phi * (1 - Pi(i,j)) + Pi(i,j));
       }
     }
   }

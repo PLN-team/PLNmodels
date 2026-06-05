@@ -35,10 +35,13 @@ Rcpp::List nlopt_optimize_diagonal(
 
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
     std::vector<double> objective_vec ;
+    objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
     const double w_bar = accu(w);
 
+    const arma::mat Xw = X.each_col() % w;   // fixed: precomputed once
+
     // Optimize
-    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &w_bar, &objective_vec](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &O, &X, &Xw, &Y, &w, &w_bar, &objective_vec](const double * params, double * grad) -> double {
         const arma::mat B = metadata.map<B_ID>(params);
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
@@ -49,9 +52,9 @@ Rcpp::List nlopt_optimize_diagonal(
         arma::rowvec diag_sigma = w.t() * (M % M + S2) / w_bar;
         double objective = accu(diagmat(w) * (A - Y % Z - 0.5 * log(S2))) + 0.5 * w_bar * accu(log(diag_sigma));
 
-        metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
+        metadata.map<B_ID>(grad) = Xw.t() * (A - Y);
         metadata.map<M_ID>(grad) = diagmat(w) * ((M.each_row() / diag_sigma) + A - Y);
-        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % pow(diag_sigma, -1) + S % A - pow(S, -1)) ;
+        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % pow(diag_sigma, -1) + S % A - pow(S, -1));
 
         objective_vec.push_back(objective) ;
 
@@ -127,21 +130,24 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
 
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
     std::vector<double> objective_vec ;
+    objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
+
+    const arma::mat XB_diag  = X * B;
+    const arma::vec omega2_v = arma::diagvec(Omega);  // fixed: Omega not optimized in vestep
 
     // Optimize
-    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &B, &Omega, &objective_vec](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &O, &XB_diag, &Y, &w, &omega2_v, &objective_vec](const double * params, double * grad) -> double {
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
-        arma::mat Z = O + X * B + M;
+        arma::mat Z = O + XB_diag + M;
         arma::mat A = exp(Z + 0.5 * S2);
-        arma::vec omega2 = arma::diagvec(Omega);
         double objective =
-            accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * as_scalar(w.t() * (pow(M, 2) + S2) * omega2) ;
+            accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * as_scalar(w.t() * (pow(M, 2) + S2) * omega2_v) ;
 
-        metadata.map<M_ID>(grad) = diagmat(w) * (M * arma::diagmat(omega2) + A - Y);
-        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % omega2.t() + S % A - pow(S, -1));
+        metadata.map<M_ID>(grad) = diagmat(w) * (M * arma::diagmat(omega2_v) + A - Y);
+        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % omega2_v.t() + S % A - pow(S, -1));
 
         objective_vec.push_back(objective) ;
 

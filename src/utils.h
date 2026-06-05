@@ -18,7 +18,8 @@ inline arma::vec ki(arma::mat y) {
 }
 
 inline arma::mat logistic(arma::mat M) {
-  return arma::trunc_exp(M) % pow(1. + arma::trunc_exp(M), -1) ;
+  arma::mat e = arma::trunc_exp(M);
+  return e / (1. + e);
 }
 
 inline arma::mat logit(arma::mat M) {

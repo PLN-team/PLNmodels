@@ -37,8 +37,11 @@ Rcpp::List nlopt_optimize_spherical(
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
     const double w_bar = accu(w);
     std::vector<double> objective_vec ;
+    objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
 
-    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &w_bar, &objective_vec](const double * params, double * grad) -> double {
+    const arma::mat Xw = X.each_col() % w;   // fixed: precomputed once
+
+    auto objective_and_grad = [&metadata, &O, &X, &Xw, &Y, &w, &w_bar, &objective_vec](const double * params, double * grad) -> double {
         const arma::mat B = metadata.map<B_ID>(params);
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
@@ -50,9 +53,9 @@ Rcpp::List nlopt_optimize_spherical(
         double sigma2 = accu(diagmat(w) * (pow(M, 2) + S2)) / (double(p) * w_bar) ;
         double objective = accu(w.t() * (A - Y % Z - 0.5 * log(S2))) + 0.5 * (double(p) * w_bar) * log(sigma2) ;
 
-        metadata.map<B_ID>(grad) = (X.each_col() % w).t() * (A - Y);
+        metadata.map<B_ID>(grad) = Xw.t() * (A - Y);
         metadata.map<M_ID>(grad) = diagmat(w) * (M / sigma2 + A - Y);
-        metadata.map<S_ID>(grad) = diagmat(w) * (S / sigma2 + S % A - pow(S, -1)) ;
+        metadata.map<S_ID>(grad) = diagmat(w) * (S / sigma2 + S % A - pow(S, -1));
 
         objective_vec.push_back(objective) ;
 
@@ -126,13 +129,16 @@ Rcpp::List nlopt_optimize_vestep_spherical(
     // Optimize
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
     std::vector<double> objective_vec ;
+    objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
 
-    auto objective_and_grad = [&metadata, &O, &X, &Y, &w, &B, &Omega, &objective_vec](const double * params, double * grad) -> double {
+    const arma::mat XB_sph = X * B;   // fixed: B not optimized in vestep
+
+    auto objective_and_grad = [&metadata, &O, &XB_sph, &Y, &w, &Omega, &objective_vec](const double * params, double * grad) -> double {
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
 
         arma::mat S2 = S % S;
-        arma::mat Z = O + X * B + M;
+        arma::mat Z = O + XB_sph + M;
         arma::mat A = exp(Z + 0.5 * S2);
         double n_sigma2 = accu(diagmat(w) * (pow(M, 2) + S2)) ;
         double omega2 = Omega(0, 0);

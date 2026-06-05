@@ -9,8 +9,6 @@
 #include <tuple>   // packer system
 #include <utility> // move, forward
 
-#define ARMA_EXTRA_DEBUG
-
 // Stores type, dimensions and offset for a single T object.
 // Must be specialised ; see specialisations for double/arma::vec/arma::mat below.
 //
