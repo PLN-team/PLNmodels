@@ -138,10 +138,21 @@ ZIPLNfit <- R6Class(
         "single" = function(R, ...) list(Pi = matrix(    mean(R), nrow(R), p)              , B0 = matrix(NA, d0, p)),
         "row"    = function(R, ...) list(Pi = matrix(rowMeans(R), nrow(R), p)              , B0 = matrix(NA, d0, p)),
         "col"    = function(R, ...) list(Pi = matrix(colMeans(R), nrow(R), p, byrow = TRUE), B0 = matrix(NA, d0, p)),
-        "covar"  = optim_zipln_zipar_covar
+        "covar"  = function(R, init_B0, X0, config) {
+          if (identical(config$algorithm, "NEWTON")) config$algorithm <- "CCSAQ"
+          optim_zipln_zipar_covar(R, init_B0, X0, config)
+        }
       )
       private$optimizer$R <- ifelse(control$config_optim$approx_ZI, optim_zipln_R_var, optim_zipln_R_exact)
       private$optimizer$Omega <- optim_zipln_Omega_full
+      private$optimizer$MS <- if (identical(control$config_optim$algorithm, "NEWTON")) {
+        ftol <- if (!is.null(control$config_optim$ftol_rel)) control$config_optim$ftol_rel else 1e-8
+        maxiter <- as.integer(if (!is.null(control$config_optim$maxeval)) control$config_optim$maxeval else 200L)
+        function(init_M, init_S, Y, X, O, R, B, Omega, configuration)
+          optim_zipln_M_S_newton(init_M, init_S, Y, X, O, R, B, Omega, maxiter, ftol)
+      } else {
+        optim_zipln_M_S
+      }
 
     },
 
@@ -189,7 +200,7 @@ ZIPLNfit <- R6Class(
         new_R <- private$optimizer$R(Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = new_Pi, B = new_B)
 
         # PLN part: joint optimization of M and S
-        MS_out <- optim_zipln_M_S(
+        MS_out <- private$optimizer$MS(
           init_M = parameters$M, init_S = parameters$S,
           Y = data$Y, X = data$X, O = data$O, R = new_R, B = new_B, Omega = new_Omega,
           configuration = control
@@ -307,7 +318,7 @@ ZIPLNfit <- R6Class(
         new_R <- private$optimizer$R(
           Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = Pi, B = B
         )
-        MS_out <- optim_zipln_M_S(
+        MS_out <- private$optimizer$MS(
           init_M = parameters$M, init_S = parameters$S,
           Y = data$Y, X = data$X, O = data$O, R = new_R, B = B, Omega = Omega,
           configuration = control

@@ -1,4 +1,4 @@
-available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2") #"TNEWTON", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART"#
+available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2", "NEWTON") #"TNEWTON", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART"#
 available_algorithms_torch <- c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")
 
 config_default_nlopt <-

@@ -360,8 +360,15 @@ PLNfit <- R6Class(
         private$M <- start_point$M
         private$S <- start_point$S
       }
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize, private$torch_optimize)
-      private$optimizer$vestep <- nlopt_optimize_vestep
+      is_newton <- identical(control$config_optim$algorithm, "NEWTON")
+      private$optimizer$main <- if (control$backend == "torch") {
+        private$torch_optimize
+      } else if (is_newton) {
+        nlopt_optimize_newton
+      } else {
+        nlopt_optimize
+      }
+      private$optimizer$vestep <- if (is_newton) nlopt_optimize_vestep_newton else nlopt_optimize_vestep
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

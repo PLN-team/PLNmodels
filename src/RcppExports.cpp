@@ -75,6 +75,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// nlopt_optimize_newton
+Rcpp::List nlopt_optimize_newton(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_newton(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_newton(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_vestep_newton
+Rcpp::List nlopt_optimize_vestep_newton(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_newton(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_newton(data, params, B, Omega, config));
+    return rcpp_result_gen;
+END_RCPP
+}
 // nlopt_optimize_vestep
 Rcpp::List nlopt_optimize_vestep(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& config);
 RcppExport SEXP _PLNmodels_nlopt_optimize_vestep(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configSEXP) {
@@ -339,6 +367,45 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// optim_zipln_M_logS
+Rcpp::List optim_zipln_M_logS(const arma::mat& init_M, const arma::mat& init_S, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& R, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_optim_zipln_M_logS(SEXP init_MSEXP, SEXP init_SSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP RSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type init_M(init_MSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type init_S(init_SSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type R(RSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_zipln_M_logS(init_M, init_S, Y, X, O, R, B, Omega, configuration));
+    return rcpp_result_gen;
+END_RCPP
+}
+// optim_zipln_M_S_newton
+Rcpp::List optim_zipln_M_S_newton(const arma::mat& init_M, const arma::mat& init_S, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& R, const arma::mat& B, const arma::mat& Omega, const int maxiter, const double ftol_rel);
+RcppExport SEXP _PLNmodels_optim_zipln_M_S_newton(SEXP init_MSEXP, SEXP init_SSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP RSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP maxiterSEXP, SEXP ftol_relSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type init_M(init_MSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type init_S(init_SSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type R(RSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
+    Rcpp::traits::input_parameter< const int >::type maxiter(maxiterSEXP);
+    Rcpp::traits::input_parameter< const double >::type ftol_rel(ftol_relSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_zipln_M_S_newton(init_M, init_S, Y, X, O, R, B, Omega, maxiter, ftol_rel));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_test_packing
 bool cpp_test_packing();
 RcppExport SEXP _PLNmodels_cpp_test_packing() {
@@ -372,6 +439,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_nlopt_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_diagonal, 5},
     {"_PLNmodels_nlopt_optimize_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_fixed, 3},
     {"_PLNmodels_nlopt_optimize", (DL_FUNC) &_PLNmodels_nlopt_optimize, 3},
+    {"_PLNmodels_nlopt_optimize_newton", (DL_FUNC) &_PLNmodels_nlopt_optimize_newton, 3},
+    {"_PLNmodels_nlopt_optimize_vestep_newton", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_newton, 5},
     {"_PLNmodels_nlopt_optimize_vestep", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep, 5},
     {"_PLNmodels_nlopt_optimize_genetic_modeling", (DL_FUNC) &_PLNmodels_nlopt_optimize_genetic_modeling, 7},
     {"_PLNmodels_nlopt_optimize_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_rank, 3},
@@ -389,6 +458,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optim_zipln_M", (DL_FUNC) &_PLNmodels_optim_zipln_M, 9},
     {"_PLNmodels_optim_zipln_S", (DL_FUNC) &_PLNmodels_optim_zipln_S, 7},
     {"_PLNmodels_optim_zipln_M_S", (DL_FUNC) &_PLNmodels_optim_zipln_M_S, 9},
+    {"_PLNmodels_optim_zipln_M_logS", (DL_FUNC) &_PLNmodels_optim_zipln_M_logS, 9},
+    {"_PLNmodels_optim_zipln_M_S_newton", (DL_FUNC) &_PLNmodels_optim_zipln_M_S_newton, 10},
     {"_PLNmodels_cpp_test_packing", (DL_FUNC) &_PLNmodels_cpp_test_packing, 0},
     {"_PLNmodels_get_sandwich_variance_B", (DL_FUNC) &_PLNmodels_get_sandwich_variance_B, 6},
     {NULL, NULL, 0}

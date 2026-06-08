@@ -21,6 +21,14 @@ nlopt_optimize <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize', PACKAGE = 'PLNmodels', data, params, config)
 }
 
+nlopt_optimize_newton <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_newton', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+nlopt_optimize_vestep_newton <- function(data, params, B, Omega, config) {
+    .Call('_PLNmodels_nlopt_optimize_vestep_newton', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
+}
+
 nlopt_optimize_vestep <- function(data, params, B, Omega, config) {
     .Call('_PLNmodels_nlopt_optimize_vestep', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
 }
@@ -87,6 +95,14 @@ optim_zipln_S <- function(init_S, O, M, R, B, diag_Omega, configuration) {
 
 optim_zipln_M_S <- function(init_M, init_S, Y, X, O, R, B, Omega, configuration) {
     .Call('_PLNmodels_optim_zipln_M_S', PACKAGE = 'PLNmodels', init_M, init_S, Y, X, O, R, B, Omega, configuration)
+}
+
+optim_zipln_M_logS <- function(init_M, init_S, Y, X, O, R, B, Omega, configuration) {
+    .Call('_PLNmodels_optim_zipln_M_logS', PACKAGE = 'PLNmodels', init_M, init_S, Y, X, O, R, B, Omega, configuration)
+}
+
+optim_zipln_M_S_newton <- function(init_M, init_S, Y, X, O, R, B, Omega, maxiter, ftol_rel) {
+    .Call('_PLNmodels_optim_zipln_M_S_newton', PACKAGE = 'PLNmodels', init_M, init_S, Y, X, O, R, B, Omega, maxiter, ftol_rel)
 }
 
 cpp_test_packing <- function() {
