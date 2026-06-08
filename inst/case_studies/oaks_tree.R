@@ -54,7 +54,6 @@ rbind(
   knitr::kable()
 
 
-
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks)
 plot(myLDA_tree)
@@ -85,7 +84,7 @@ factoextra::fviz_pca_biplot(
   ) + labs(col = "distance (cm)") + scale_color_viridis_d()
 
 ## Dimension reduction with PCA
-system.time(myPLNPCAs_tree <- PLNPCA(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, ranks = 1:30)) # about 40 sec.
+system.time(myPLNPCAs_tree <- PLNPCA(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, ranks = 1:30)) # about 40 sec. with 20 cores
 plot(myPLNPCAs_tree)
 myPLNPCA_tree <- getBestModel(myPLNPCAs_tree)
 
@@ -96,8 +95,7 @@ factoextra::fviz_pca_biplot(
   labs(col = "distance (cm)") + scale_color_viridis_c()
 
 ## Network inference with sparce covariance estimation
-
-system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.1)))
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.05)))
 plot(myPLNnets)
 plot(getBestModel(myPLNnets, "EBIC"))
 # stability_selection(myPLNnets)

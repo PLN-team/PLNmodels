@@ -2,6 +2,7 @@ library(PLNmodels)
 library(MASS)
 library(tidyverse)
 library(parallel)
+library(viridisLite)
 
 rZIPLN <- function(n     = 10,
                    mu    = rep(0, ncol(Sigma)),
@@ -129,12 +130,12 @@ one_simu <- function(i) {
 
 res <- do.call(rbind, lapply(1:50, one_simu))
 
-p <- ggplot(res) + aes(x = factor(n), y = pred_Y, fill = factor(method)) + geom_violin() + theme_bw() +
+p <- ggplot(res) + aes(x = factor(n), y = pred_Y, fill = factor(method)) + geom_violin() + scale_fill_viridis_d() + theme_bw() +
   scale_y_log10() + ylim(c(0,2))
 p
 
-p <- ggplot(res) + aes(x = factor(n), y = rmse_B, fill = factor(method)) + geom_violin() + theme_bw() + scale_y_log10() + ylim(c(2,5))
+p <- ggplot(res) + aes(x = factor(n), y = rmse_B, fill = factor(method)) + geom_violin() + scale_fill_viridis_d() + theme_bw() + scale_y_log10() + ylim(c(2,5))
 p
 
-p <- ggplot(res) + aes(x = factor(n), y = rmse_Omega, fill = factor(method)) + geom_violin() + theme_bw() + scale_y_log10() + ylim(c(0.1,.3))
+p <- ggplot(res) + aes(x = factor(n), y = rmse_Omega, fill = factor(method)) + geom_violin() + scale_fill_viridis_d() + theme_bw() + scale_y_log10() + ylim(c(0.1,.3))
 p

@@ -34,7 +34,7 @@ arma::vec zipln_vloglik(
         + sum(
             (1 - R) % ( Y % (O + M) - A - logfact_mat(Y) )
             + R % mu0 - trunc_log( 1 + exp(mu0) )
-            + 0.5 * trunc_log(S2) - 0.5 * ((M_mu * Omega) % M_mu + S2 * diagmat(Omega))
+            + 0.5 * trunc_log(S2) - 0.5 * ((M_mu * Omega) % M_mu + S2.each_row() % diagvec(Omega).t())
             - R % trunc_log(R) - (1 - R) % trunc_log(1-R), 1)
     ) ;
 }
@@ -100,14 +100,15 @@ Rcpp::List optim_zipln_zipar_covar(
     auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
 
     const arma::mat Xt_R = X0.t() * R;
+    const arma::mat X0t = X0.t();
 
     // Optimize
-    auto objective_and_grad = [&metadata, &X0, &R, &Xt_R](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &X0, &X0t, &Xt_R](const double * params, double * grad) -> double {
         const arma::mat B0 = metadata.map<B0_ID>(params);
 
         arma::mat e_mu0 = exp(X0 * B0);
-        double objective = -trace(Xt_R.t() * B0) + accu(log(1. + e_mu0));
-        metadata.map<B0_ID>(grad) = -Xt_R + X0.t() * (e_mu0 % pow(1. + e_mu0, -1)) ;
+        double objective = -accu(Xt_R % B0) + accu(log(1. + e_mu0));
+        metadata.map<B0_ID>(grad) = -Xt_R + X0t * (e_mu0 / (1. + e_mu0)) ;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -131,7 +132,7 @@ arma::mat optim_zipln_R_var(
     const arma::mat & B // covariates (n,d)
 ) {
     arma::mat A = exp(O + M + 0.5 * S % S);
-    arma::mat R = pow(1. + exp(- (A + logit(Pi))), -1);
+    arma::mat R = 1. / (1. + exp(-(A + logit(Pi))));
     // Zero R_{i,j} if Y_{i,j} > 0
     // multiplication with f(sign(Y)) could work to zero stuff as there should not be any +inf
     // using a loop as it is more explicit and should have ok performance in C++
@@ -159,7 +160,7 @@ arma::mat optim_zipln_R_exact (
   arma::mat M_mu = M - XB;
   const int n = (int)M.n_rows;
   const int p = (int)M.n_cols;
-  arma::vec diag_Sigma = arma::diagvec((1./n) * (M_mu.t() * M_mu + diagmat(sum(S % S, 0))));
+  arma::vec diag_Sigma = (sum(M_mu % M_mu, 0) + sum(S % S, 0)).t() / double(n);
   arma::mat R = arma::zeros(n, p);
   // lambertW0_CS is pure (no global state) — safe to parallelize
 #ifdef _OPENMP
@@ -206,7 +207,7 @@ Rcpp::List optim_zipln_M(
         arma::mat A = exp(O_S2 + M);              // (n,p)
         arma::mat M_mu_Omega = (M - X_B) * Omega; // (n,p)
 
-        double objective = - trace((1. - R).t() * (Y % M - A)) + 0.5 * trace(M_mu_Omega * (M - X_B).t());
+        double objective = - accu((1. - R) % (Y % M - A)) + 0.5 * accu(M_mu_Omega % (M - X_B));
         metadata.map<M_ID>(grad) = M_mu_Omega + (1. - R) % (A - Y);
         return objective;
     };
@@ -242,14 +243,15 @@ Rcpp::List optim_zipln_S(
     auto objective_and_grad = [&metadata, &O_M, &R, &diag_Omega](const double * params, double * grad) -> double {
         const arma::mat S = metadata.map<S_ID>(params);
 
-        arma::mat A = exp(O_M + 0.5 * S % S); // (n,p)
+        const arma::mat S2 = S % S;
+        arma::mat A = exp(O_M + 0.5 * S2); // (n,p)
 
         // trace(1^T log(S)) == accu(log(S)).
         // S_bar = diag(sum(S, 0)). trace(Omega * S_bar) = dot(diagvec(Omega), sum(S2, 0))
-        double objective = trace((1. - R).t() * A) + 0.5 * dot(diag_Omega, sum(S % S, 0)) - 0.5 * accu(log(S % S));
+        double objective = accu((1. - R) % A) + 0.5 * dot(diag_Omega, sum(S2, 0)) - 0.5 * accu(log(S2));
         // S2^\emptyset interpreted as pow(S2, -1.) as that makes the most sense (gradient component for log(S2))
         // 1_n Diag(Omega)^T is n rows of diag(omega) values
-        metadata.map<S_ID>(grad) = S.each_row() % diag_Omega.t() + (1. - R) % S % A - pow(S, -1.) ;
+        metadata.map<S_ID>(grad) = S.each_row() % diag_Omega.t() + (1. - R) % S % A - 1. / S ;
         return objective;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);

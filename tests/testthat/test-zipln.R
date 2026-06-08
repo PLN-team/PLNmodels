@@ -43,7 +43,7 @@ test_that("PLN is working with a single variable data matrix",  {
 })
 
 test_that("PLN is working with unnamed data matrix",  {
-  n = 10; d = 3; p = 10
+  n = 15; d = 2; p = 4
   Y <- matrix(rpois(n*p, 1), n, p)
   X <- matrix(rnorm(n*d), n, d)
   expect_is(ZIPLN(Y ~ X), "ZIPLNfit")
