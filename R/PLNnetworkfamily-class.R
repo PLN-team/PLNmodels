@@ -177,7 +177,7 @@ Networkfamily <- R6Class(
     plot = function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), reverse = FALSE, log.x = TRUE) {
       vlines <- sapply(intersect(criteria, c("BIC", "EBIC")) , function(crit) self$getBestModel(crit)$penalty)
       p <- super$plot(criteria, reverse) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
-      if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
+      if (log.x) p <- p + ggplot2::coord_transform(x = "log10")
       p
     },
 

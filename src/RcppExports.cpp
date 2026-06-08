@@ -34,6 +34,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// nlopt_optimize_newton_diagonal
+Rcpp::List nlopt_optimize_newton_diagonal(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_newton_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_newton_diagonal(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
 // nlopt_optimize_vestep_diagonal
 Rcpp::List nlopt_optimize_vestep_diagonal(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& config);
 RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configSEXP) {
@@ -46,6 +59,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
     rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_diagonal(data, params, B, Omega, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_newton_fixed
+Rcpp::List nlopt_optimize_newton_fixed(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_newton_fixed(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_newton_fixed(data, params, config));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -173,6 +199,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
     rcpp_result_gen = Rcpp::wrap(nlopt_optimize_spherical(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_newton_spherical
+Rcpp::List nlopt_optimize_newton_spherical(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_newton_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_newton_spherical(data, params, config));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -436,7 +475,9 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_cpp_test_nlopt", (DL_FUNC) &_PLNmodels_cpp_test_nlopt, 0},
     {"_PLNmodels_nlopt_optimize_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_diagonal, 3},
+    {"_PLNmodels_nlopt_optimize_newton_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_newton_diagonal, 3},
     {"_PLNmodels_nlopt_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_diagonal, 5},
+    {"_PLNmodels_nlopt_optimize_newton_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_newton_fixed, 3},
     {"_PLNmodels_nlopt_optimize_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_fixed, 3},
     {"_PLNmodels_nlopt_optimize", (DL_FUNC) &_PLNmodels_nlopt_optimize, 3},
     {"_PLNmodels_nlopt_optimize_newton", (DL_FUNC) &_PLNmodels_nlopt_optimize_newton, 3},
@@ -446,6 +487,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_nlopt_optimize_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_rank, 3},
     {"_PLNmodels_nlopt_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_rank, 5},
     {"_PLNmodels_nlopt_optimize_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_spherical, 3},
+    {"_PLNmodels_nlopt_optimize_newton_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_newton_spherical, 3},
     {"_PLNmodels_nlopt_optimize_vestep_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_spherical, 5},
     {"_PLNmodels_zipln_vloglik", (DL_FUNC) &_PLNmodels_zipln_vloglik, 9},
     {"_PLNmodels_optim_zipln_Omega_full", (DL_FUNC) &_PLNmodels_optim_zipln_Omega_full, 4},

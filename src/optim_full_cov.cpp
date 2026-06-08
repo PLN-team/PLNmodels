@@ -68,7 +68,6 @@ Rcpp::List nlopt_optimize(
             arma::mat MO = M * Omega;           // cached: reused in objective and M-gradient
             const arma::rowvec wS2 = w.t() * S2;
 
-            // trace(Omega * nSigma) = accu(MO % (W*M)) + dot(diag(Omega), w^T S2)
             double objective = accu(w.t() * (A - Y % Z - 0.5 * trunc_log(S2)))
                              + 0.5 * (accu(MO % (M.each_col() % w)) + dot(Omega_diag, wS2.t()));
 

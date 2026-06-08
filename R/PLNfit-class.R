@@ -743,7 +743,14 @@ PLNfit_diagonal <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_diagonal, private$torch_optimize)
+      is_newton <- identical(control$config_optim$algorithm, "NEWTON")
+      private$optimizer$main <- if (control$backend == "torch") {
+        private$torch_optimize
+      } else if (is_newton) {
+        nlopt_optimize_newton_diagonal
+      } else {
+        nlopt_optimize_diagonal
+      }
       private$optimizer$vestep <- nlopt_optimize_vestep_diagonal
     }
   ),
@@ -826,7 +833,14 @@ PLNfit_spherical <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_spherical, private$torch_optimize)
+      is_newton <- identical(control$config_optim$algorithm, "NEWTON")
+      private$optimizer$main <- if (control$backend == "torch") {
+        private$torch_optimize
+      } else if (is_newton) {
+        nlopt_optimize_newton_spherical
+      } else {
+        nlopt_optimize_spherical
+      }
       private$optimizer$vestep <- nlopt_optimize_vestep_spherical
     }
   ),
@@ -913,7 +927,14 @@ PLNfit_fixedcov <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main <- ifelse(control$backend == "nlopt", nlopt_optimize_fixed, private$torch_optimize)
+      is_newton <- identical(control$config_optim$algorithm, "NEWTON")
+      private$optimizer$main <- if (control$backend == "torch") {
+        private$torch_optimize
+      } else if (is_newton) {
+        nlopt_optimize_newton_fixed
+      } else {
+        nlopt_optimize_fixed
+      }
       ## ve step is the same as in the fully parameterized covariance
       private$Omega <- control$Omega
     },

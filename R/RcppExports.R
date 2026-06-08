@@ -9,8 +9,16 @@ nlopt_optimize_diagonal <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_diagonal', PACKAGE = 'PLNmodels', data, params, config)
 }
 
+nlopt_optimize_newton_diagonal <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_newton_diagonal', PACKAGE = 'PLNmodels', data, params, config)
+}
+
 nlopt_optimize_vestep_diagonal <- function(data, params, B, Omega, config) {
     .Call('_PLNmodels_nlopt_optimize_vestep_diagonal', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
+}
+
+nlopt_optimize_newton_fixed <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_newton_fixed', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 nlopt_optimize_fixed <- function(data, params, config) {
@@ -47,6 +55,10 @@ nlopt_optimize_vestep_rank <- function(data, params, B, C, config) {
 
 nlopt_optimize_spherical <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_spherical', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+nlopt_optimize_newton_spherical <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_newton_spherical', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 nlopt_optimize_vestep_spherical <- function(data, params, B, Omega, config) {

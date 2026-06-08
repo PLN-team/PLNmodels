@@ -1,9 +1,9 @@
-available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2", "NEWTON") #"TNEWTON", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART"#
+available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2", "NEWTON")
 available_algorithms_torch <- c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")
 
 config_default_nlopt <-
   list(
-    algorithm     = "CCSAQ",
+    algorithm     = "NEWTON",
     backend       = "nlopt",
     maxeval       = 10000  ,
     ftol_rel      = 1e-8   ,

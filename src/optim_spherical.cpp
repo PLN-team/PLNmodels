@@ -100,6 +100,164 @@ Rcpp::List nlopt_optimize_spherical(
 }
 
 // ---------------------------------------------------------------------------------------
+// Spherical covariance PLN — coordinate-Newton optimizer
+
+// [[Rcpp::export]]
+Rcpp::List nlopt_optimize_newton_spherical(
+    const Rcpp::List & data  , // List(Y, X, O, w)
+    const Rcpp::List & params, // List(B, M, S)
+    const Rcpp::List & config  // List of config values
+) {
+    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
+    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
+    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
+    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    arma::mat B = Rcpp::as<arma::mat>(params["B"]);
+    arma::mat M = Rcpp::as<arma::mat>(params["M"]);
+    arma::mat S = Rcpp::as<arma::mat>(params["S"]);
+
+    const int maxiter  = config.containsElementNamed("maxeval")     ? Rcpp::as<int>(config["maxeval"])        : 200;
+    const double ftol  = config.containsElementNamed("ftol_rel")    ? Rcpp::as<double>(config["ftol_rel"])    : 1e-8;
+    const int max_em   = config.containsElementNamed("max_em_iter") ? Rcpp::as<int>(config["max_em_iter"])    : 50;
+    const double em_tol= config.containsElementNamed("em_ftol")     ? Rcpp::as<double>(config["em_ftol"])     : 1e-8;
+
+    const int n = Y.n_rows;
+    const arma::uword p = Y.n_cols;
+    const double w_bar = arma::accu(w);
+    const double c1 = 1e-4;
+
+    const arma::mat Xw  = X.each_col() % w;
+    arma::mat Xw2 = X % X; Xw2.each_col() %= w;
+    const arma::mat ones_row = arma::ones(n, 1);
+
+    // Initial omega2 (scalar) from starting M, S
+    arma::mat S2  = S % S;
+    double sigma2 = arma::accu(arma::diagmat(w) * (M % M + S2)) / (double(p) * w_bar);
+    double omega2 = 1.0 / sigma2;
+    arma::mat logS = arma::log(S);
+
+    std::vector<double> objective_vec;
+    double elbo_prev = -arma::datum::inf;
+    int total_iter = 0;
+    int last_status = 5;
+
+    for (int em = 0; em < max_em; em++) {
+        double obj_prev = arma::datum::inf;
+
+        for (int it = 0; it < maxiter; it++) {
+            S2 = S % S;
+            arma::mat Z = O + X * B + M;
+            arma::mat A = arma::exp(Z + 0.5 * S2);
+
+            // ---- Diagonal Newton step for B ----
+            arma::mat grad_B = Xw.t() * (A - Y);
+            arma::mat hess_B = Xw2.t() * A;
+            hess_B.clamp(1e-10, arma::datum::inf);
+            arma::mat step_B  = grad_B / hess_B;
+            arma::mat XstepB  = X * step_B;
+            double f0_B   = arma::accu(w.t() * (A - Y % Z));
+            double slope_B = -arma::accu(grad_B % step_B);
+            double alpha_B = 1.0;
+            for (int ls = 0; ls < 20; ls++) {
+                arma::mat Zt = Z - alpha_B * XstepB;
+                if (arma::accu(w.t() * (arma::exp(Zt + 0.5*S2) - Y % Zt))
+                    <= f0_B + c1 * alpha_B * slope_B) break;
+                alpha_B *= 0.5;
+            }
+            B -= alpha_B * step_B;
+            Z  = O + X * B + M;
+            A  = arma::exp(Z + 0.5 * S2);
+
+            // ---- Diagonal Newton step for M (scalar omega2 broadcast) ----
+            arma::mat grad_M = omega2 * M + A - Y; grad_M.each_col() %= w;
+            arma::mat hess_M = omega2 + A;          hess_M.each_col() %= w;
+            hess_M.clamp(1e-10, arma::datum::inf);
+            arma::mat step_M = grad_M / hess_M;
+            double f0_M   = arma::accu(w.t() * (A - Y % Z))
+                          + 0.5 * omega2 * arma::as_scalar(w.t() * arma::sum(M % M, 1));
+            double slope_M = -arma::accu(grad_M % step_M);
+            double alpha_M = 1.0;
+            for (int ls = 0; ls < 20; ls++) {
+                arma::mat Mt = M - alpha_M * step_M;
+                arma::mat Zt = Z - alpha_M * step_M;
+                arma::mat At = arma::exp(Zt + 0.5 * S2);
+                if (arma::accu(w.t() * (At - Y % Zt))
+                    + 0.5 * omega2 * arma::as_scalar(w.t() * arma::sum(Mt % Mt, 1))
+                    <= f0_M + c1 * alpha_M * slope_M) break;
+                alpha_M *= 0.5;
+            }
+            M -= alpha_M * step_M;
+            Z  = O + X * B + M;
+
+            // ---- Fixed-point update for logS (overflow-safe) ----
+            A = arma::exp(Z + 0.5 * S2);
+            {
+                const arma::mat logS_cand = -0.5 * arma::log(A + omega2);
+                const arma::mat logS_ub   = 0.5 * arma::log(arma::clamp(700. - Z, 1., arma::datum::inf));
+                logS = arma::clamp(arma::min(logS_cand, logS_ub), -20., arma::datum::inf);
+            }
+            S  = arma::exp(logS);
+            S2 = S % S;
+
+            // ---- Objective for inner convergence ----
+            A = arma::exp(Z + 0.5 * S2);
+            double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * arma::trunc_log(S2)))
+                       + 0.5 * omega2 * arma::accu(arma::diagmat(w) * (M % M + S2));
+            objective_vec.push_back(obj);
+            total_iter++;
+
+            if (it > 0 && std::abs(obj - obj_prev) < ftol * (1.0 + std::abs(obj_prev))) {
+                last_status = 3; break;
+            }
+            obj_prev = obj;
+        }
+
+        // ---- M-step: update sigma2 analytically ----
+        S2    = S % S;
+        sigma2 = arma::accu(arma::diagmat(w) * (M % M + S2)) / (double(p) * w_bar);
+        omega2 = 1.0 / sigma2;
+
+        // ---- Outer EM convergence on ELBO ----
+        arma::mat Z = O + X * B + M;
+        arma::mat A = arma::exp(Z + 0.5 * S2);
+        double elbo = arma::accu(w.t() * (Y % Z - A + 0.5 * arma::trunc_log(S2)))
+                    - 0.5 * w_bar * double(p) * std::log(sigma2);
+        if (em > 0 && std::abs(elbo - elbo_prev) < em_tol * (1.0 + std::abs(elbo_prev))) {
+            last_status = 3; break;
+        }
+        elbo_prev = elbo;
+    }
+
+    // ---- Final output ----
+    S2 = S % S;
+    arma::sp_mat Sigma_out(p, p); Sigma_out.diag() = arma::ones<arma::vec>(p) * sigma2;
+    arma::sp_mat Omega_out(p, p); Omega_out.diag() = arma::ones<arma::vec>(p) * omega2;
+    arma::mat Z = O + X * B + M;
+    arma::mat A = arma::exp(Z + 0.5 * S2);
+    arma::mat loglik = arma::sum(Y % Z - A - 0.5 * (M % M + S2) / sigma2 + 0.5 * arma::log(S2 / sigma2), 1)
+                     + ki(Y);
+
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
+    return Rcpp::List::create(
+        Rcpp::Named("B",     B        ),
+        Rcpp::Named("Sigma", Sigma_out),
+        Rcpp::Named("Omega", Omega_out),
+        Rcpp::Named("M",     M        ),
+        Rcpp::Named("S",     S        ),
+        Rcpp::Named("Z",     Z        ),
+        Rcpp::Named("A",     A        ),
+        Rcpp::Named("Ji",    Ji       ),
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status",     last_status   ),
+            Rcpp::Named("backend",    "newton"      ),
+            Rcpp::Named("objective",  objective_vec ),
+            Rcpp::Named("iterations", total_iter    )
+        ))
+    );
+}
+
+// ---------------------------------------------------------------------------------------
 // VE spherical
 
 // [[Rcpp::export]]
