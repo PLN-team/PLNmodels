@@ -72,3 +72,5 @@ README.html
 pkgdown
 
 tests/testthat/_snaps/
+
+snowflake.log

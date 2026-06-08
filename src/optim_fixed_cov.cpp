@@ -6,6 +6,7 @@
 #include "nlopt_wrapper.h"
 #include "packing.h"
 #include "utils.h"
+#include "newton_impl.h"
 
 // ---------------------------------------------------------------------------------------
 // Fixed inverse covariance (Omega)
@@ -19,109 +20,21 @@ Rcpp::List nlopt_optimize_newton_fixed(
     const Rcpp::List & params, // List(B, M, S, Omega)
     const Rcpp::List & config  // List of config values
 ) {
-    const arma::mat & Y     = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X     = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O     = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w     = Rcpp::as<arma::vec>(data["w"]);
-    arma::mat B             = Rcpp::as<arma::mat>(params["B"]);
-    arma::mat M             = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S             = Rcpp::as<arma::mat>(params["S"]);
-    const arma::mat   Omega = Rcpp::as<arma::mat>(params["Omega"]);
+    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
+    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
+    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
+    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    arma::mat B         = Rcpp::as<arma::mat>(params["B"]);
+    arma::mat M         = Rcpp::as<arma::mat>(params["M"]);
+    arma::mat S         = Rcpp::as<arma::mat>(params["S"]);
+    const arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
 
-    const int maxiter  = config.containsElementNamed("maxeval")  ? Rcpp::as<int>(config["maxeval"])     : 200;
-    const double ftol  = config.containsElementNamed("ftol_rel") ? Rcpp::as<double>(config["ftol_rel"]) : 1e-8;
+    const int    maxiter = config.containsElementNamed("maxeval")  ? Rcpp::as<int>(config["maxeval"])     : 200;
+    const double ftol    = config.containsElementNamed("ftol_rel") ? Rcpp::as<double>(config["ftol_rel"]) : 1e-8;
 
-    const int n = Y.n_rows;
-    const double w_bar = arma::accu(w);
-    const double c1 = 1e-4;
+    FixedCovTraits::State state(Omega);
 
-    const arma::mat Xw  = X.each_col() % w;
-    arma::mat Xw2 = X % X; Xw2.each_col() %= w;
-    const arma::vec diag_Omega = arma::diagvec(Omega);
-    const arma::mat ones_row   = arma::ones(n, 1);
-
-    arma::mat S2   = S % S;
-    arma::mat logS = arma::log(S);
-
-    std::vector<double> objective_vec;
-    double obj_prev = arma::datum::inf;
-    int total_iter = 0;
-    int last_status = 5;
-
-    for (int it = 0; it < maxiter; it++) {
-        S2 = S % S;
-        arma::mat Z = O + X * B + M;
-        arma::mat A = arma::exp(Z + 0.5 * S2);
-
-        // ---- Diagonal Newton step for B ----
-        newton_step_B(Xw, Xw2, X, Y, O, w, M, S2, B, Z, A);
-
-        // ---- Diagonal Newton step for M ----
-        arma::mat MO     = M * Omega;
-        arma::mat grad_M = MO + A - Y; grad_M.each_col() %= w;
-        arma::mat hess_M = A + ones_row * diag_Omega.t();
-        hess_M.each_col() %= w;
-        hess_M.clamp(1e-10, arma::datum::inf);
-        arma::mat step_M = grad_M / hess_M;
-        double f0_M   = arma::accu(w.t() * (A - Y % Z))
-                      + 0.5 * arma::accu(MO % (M.each_col() % w));
-        double slope_M = -arma::accu(grad_M % step_M);
-        double alpha_M = 1.0;
-        for (int ls = 0; ls < 20; ls++) {
-            arma::mat Mt  = M - alpha_M * step_M;
-            arma::mat Zt  = Z - alpha_M * step_M;
-            arma::mat At  = arma::exp(Zt + 0.5 * S2);
-            arma::mat MOt = Mt * Omega;
-            if (arma::accu(w.t() * (At - Y % Zt))
-                + 0.5 * arma::accu(MOt % (Mt.each_col() % w))
-                <= f0_M + c1 * alpha_M * slope_M) break;
-            alpha_M *= 0.5;
-        }
-        M  -= alpha_M * step_M;
-        MO  = M * Omega;
-        Z   = O + X * B + M;
-
-        // ---- Fixed-point update for logS (overflow-safe) ----
-        fixed_point_logS(logS, S, S2, Z, A, ones_row * diag_Omega.t());
-
-        // ---- Objective for convergence ----
-        A = arma::exp(Z + 0.5 * S2);
-        double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * arma::trunc_log(S2)))
-                   + 0.5 * (arma::accu(MO % (M.each_col() % w))
-                            + arma::dot(diag_Omega, (w.t() * S2).t()));
-        objective_vec.push_back(obj);
-        total_iter++;
-
-        if (it > 0 && converged(obj, obj_prev, ftol)) { last_status = 3; break; }
-        obj_prev = obj;
-    }
-
-    // ---- Final output ----
-    S2 = S % S;
-    arma::mat Sigma = (M.t() * (M.each_col() % w) + arma::diagmat(w.t() * S2)) / w_bar;
-    arma::mat Z = O + X * B + M;
-    arma::mat A = arma::exp(Z + 0.5 * S2);
-    arma::vec loglik = arma::sum(Y % Z - A - 0.5 * ((M * Omega) % M - arma::log(S2) + S2 * arma::diagmat(Omega)), 1)
-                     + 0.5 * std::real(arma::log_det(Omega)) + ki(Y);
-
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
-    return Rcpp::List::create(
-        Rcpp::Named("B",     B    ),
-        Rcpp::Named("M",     M    ),
-        Rcpp::Named("S",     S    ),
-        Rcpp::Named("Z",     Z    ),
-        Rcpp::Named("A",     A    ),
-        Rcpp::Named("Sigma", Sigma),
-        Rcpp::Named("Omega", Omega),
-        Rcpp::Named("Ji",    Ji   ),
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status",     last_status   ),
-            Rcpp::Named("backend",    "newton"      ),
-            Rcpp::Named("objective",  objective_vec ),
-            Rcpp::Named("iterations", total_iter    )
-        ))
-    );
+    return newton_optimize_impl<FixedCovTraits>(Y, X, O, w, B, M, S, state, maxiter, ftol, 1, 0.0);
 }
 
 // ---------------------------------------------------------------------------------------

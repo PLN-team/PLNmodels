@@ -110,7 +110,7 @@ PLNmixture_param <- function(
   stopifnot(backend %in% c("nlopt", "torch"))
   if (backend == "nlopt") {
     stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-    config_opt <- config_default_nlopt
+    config_opt <- config_default_nlopt_pln
   }
   if (backend == "torch") {
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
