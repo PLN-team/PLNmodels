@@ -3,6 +3,18 @@ available_algorithms_torch <- c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")
 
 config_default_nlopt <-
   list(
+    algorithm     = "CCSAQ",
+    backend       = "nlopt",
+    maxeval       = 10000  ,
+    ftol_rel      = 1e-8   ,
+    xtol_rel      = 1e-6   ,
+    ftol_abs      = 0.0    ,
+    xtol_abs      = 0.0    ,
+    maxtime       = -1
+  )
+
+config_default_nlopt_pln <-
+  list(
     algorithm     = "NEWTON",
     backend       = "nlopt",
     maxeval       = 10000  ,

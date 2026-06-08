@@ -97,7 +97,7 @@ Rcpp::List nlopt_optimize(
         double elbo = accu(w.t() * (Y % Z - A + 0.5 * trunc_log(S2)))
                     - 0.5 * w_bar * real(log_det(Sigma));
 
-        if (em_iter > 0 && std::abs(elbo - elbo_prev) < em_ftol * (1.0 + std::abs(elbo_prev))) break;
+        if (em_iter > 0 && converged(elbo, elbo_prev, em_ftol)) break;
         elbo_prev = elbo;
     }
 
@@ -186,23 +186,7 @@ Rcpp::List nlopt_optimize_newton(
             arma::mat A = arma::exp(Z + 0.5 * S2);
 
             // ---- Diagonal Newton step for B ----
-            arma::mat grad_B = Xw.t() * (A - Y);                      // (d,p)
-            arma::mat hess_B = Xw2.t() * A;                           // (d,p), >0
-            hess_B.clamp(1e-10, arma::datum::inf);
-            arma::mat step_B  = grad_B / hess_B;
-            arma::mat XstepB  = X * step_B;                           // (n,p)
-            double f0_B   = arma::accu(w.t() * (A - Y % Z));
-            double slope_B = -arma::accu(grad_B % step_B);
-            double alpha_B = 1.0;
-            for (int ls = 0; ls < 20; ls++) {
-                arma::mat Zt = Z - alpha_B * XstepB;
-                if (arma::accu(w.t() * (arma::exp(Zt + 0.5*S2) - Y % Zt))
-                    <= f0_B + c1 * alpha_B * slope_B) break;
-                alpha_B *= 0.5;
-            }
-            B -= alpha_B * step_B;
-            Z  = O + X * B + M;
-            A  = arma::exp(Z + 0.5 * S2);
+            newton_step_B(Xw, Xw2, X, Y, O, w, M, S2, B, Z, A);
 
             // ---- Diagonal Newton step for M ----
             arma::mat MO     = M * Omega;                              // (n,p)
@@ -230,15 +214,7 @@ Rcpp::List nlopt_optimize_newton(
             Z   = O + X * B + M;
 
             // ---- Fixed-point update for logS (overflow-safe) ----
-            A = arma::exp(Z + 0.5 * S2);
-            {
-                const arma::mat logS_cand = -0.5 * arma::log(A + ones_row * diag_Omega.t());
-                const arma::mat logS_ub   = 0.5 * arma::log(
-                    arma::clamp(700. - Z, 1., arma::datum::inf));
-                logS = arma::clamp(arma::min(logS_cand, logS_ub), -20., arma::datum::inf);
-            }
-            S    = arma::exp(logS);
-            S2   = S % S;
+            fixed_point_logS(logS, S, S2, Z, A, ones_row * diag_Omega.t());
 
             // ---- Objective for inner convergence ----
             A = arma::exp(Z + 0.5 * S2);
@@ -248,9 +224,7 @@ Rcpp::List nlopt_optimize_newton(
             objective_vec.push_back(obj);
             total_iter++;
 
-            if (it > 0 && std::abs(obj - obj_prev) < ftol * (1.0 + std::abs(obj_prev))) {
-                last_status = 3; break;
-            }
+            if (it > 0 && converged(obj, obj_prev, ftol)) { last_status = 3; break; }
             obj_prev = obj;
         }
 
@@ -264,9 +238,7 @@ Rcpp::List nlopt_optimize_newton(
         arma::mat A    = arma::exp(Z + 0.5 * S2);
         double elbo = arma::accu(w.t() * (Y % Z - A + 0.5 * arma::trunc_log(S2)))
                     - 0.5 * w_bar * real(arma::log_det(Sigma));
-        if (em > 0 && std::abs(elbo - elbo_prev) < em_tol * (1.0 + std::abs(elbo_prev))) {
-            last_status = 3; break;
-        }
+        if (em > 0 && converged(elbo, elbo_prev, em_tol)) { last_status = 3; break; }
         elbo_prev = elbo;
     }
 
@@ -376,7 +348,7 @@ Rcpp::List nlopt_optimize_vestep_newton(
         objective_vec.push_back(obj);
         total_iter++;
 
-        if (it > 0 && std::abs(obj - obj_prev) < ftol * (1.0 + std::abs(obj_prev))) break;
+        if (it > 0 && converged(obj, obj_prev, ftol)) break;
         obj_prev = obj;
     }
 
