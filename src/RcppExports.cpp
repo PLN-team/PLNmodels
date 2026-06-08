@@ -320,6 +320,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// optim_zipln_M_S
+Rcpp::List optim_zipln_M_S(const arma::mat& init_M, const arma::mat& init_S, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& R, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_optim_zipln_M_S(SEXP init_MSEXP, SEXP init_SSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP RSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type init_M(init_MSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type init_S(init_SSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type R(RSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_zipln_M_S(init_M, init_S, Y, X, O, R, B, Omega, configuration));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_test_packing
 bool cpp_test_packing();
 RcppExport SEXP _PLNmodels_cpp_test_packing() {
@@ -369,6 +388,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optim_zipln_R_exact", (DL_FUNC) &_PLNmodels_optim_zipln_R_exact, 7},
     {"_PLNmodels_optim_zipln_M", (DL_FUNC) &_PLNmodels_optim_zipln_M, 9},
     {"_PLNmodels_optim_zipln_S", (DL_FUNC) &_PLNmodels_optim_zipln_S, 7},
+    {"_PLNmodels_optim_zipln_M_S", (DL_FUNC) &_PLNmodels_optim_zipln_M_S, 9},
     {"_PLNmodels_cpp_test_packing", (DL_FUNC) &_PLNmodels_cpp_test_packing, 0},
     {"_PLNmodels_get_sandwich_variance_B", (DL_FUNC) &_PLNmodels_get_sandwich_variance_B, 6},
     {NULL, NULL, 0}

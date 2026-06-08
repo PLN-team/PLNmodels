@@ -262,3 +262,58 @@ Rcpp::List optim_zipln_S(
         Rcpp::Named("iterations") = result.nb_iterations,
         Rcpp::Named("S") = S);
 }
+
+// [[Rcpp::export]]
+Rcpp::List optim_zipln_M_S(
+    const arma::mat & init_M,    // (n,p)
+    const arma::mat & init_S,    // (n,p)
+    const arma::mat & Y,         // responses (n,p)
+    const arma::mat & X,         // covariates (n,d)
+    const arma::mat & O,         // offsets (n,p)
+    const arma::mat & R,         // (n,p)
+    const arma::mat & B,         // (d,p)
+    const arma::mat & Omega,     // (p,p)
+    const Rcpp::List & configuration
+) {
+    const auto metadata = tuple_metadata(init_M, init_S);
+    enum { M_ID, S_ID };
+
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<M_ID>(parameters.data()) = init_M;
+    metadata.map<S_ID>(parameters.data()) = init_S;
+
+    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+    const arma::mat X_B = X * B;
+    const arma::vec diag_Omega = diagvec(Omega);
+
+    auto objective_and_grad = [&metadata, &Y, &O, &R, &X_B, &Omega, &diag_Omega](
+            const double * params, double * grad) -> double {
+        const arma::mat M  = metadata.map<M_ID>(params);
+        const arma::mat S  = metadata.map<S_ID>(params);
+        const arma::mat S2 = S % S;
+        const arma::mat A  = exp(O + M + 0.5 * S2);
+        const arma::mat M_mu        = M - X_B;
+        const arma::mat M_mu_Omega  = M_mu * Omega;
+
+        double objective = - accu((1. - R) % (Y % M - A))
+                         + 0.5 * accu(M_mu_Omega % M_mu)
+                         + 0.5 * dot(diag_Omega, sum(S2, 0))
+                         - 0.5 * accu(log(S2));
+
+        metadata.map<M_ID>(grad) = M_mu_Omega + (1. - R) % (A - Y);
+        metadata.map<S_ID>(grad) = S.each_row() % diag_Omega.t() + (1. - R) % S % A - 1. / S;
+
+        return objective;
+    };
+
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+
+    arma::mat M = metadata.copy<M_ID>(parameters.data());
+    arma::mat S = metadata.copy<S_ID>(parameters.data());
+    return Rcpp::List::create(
+        Rcpp::Named("status")     = static_cast<int>(result.status),
+        Rcpp::Named("iterations") = result.nb_iterations,
+        Rcpp::Named("M") = M,
+        Rcpp::Named("S") = S
+    );
+}

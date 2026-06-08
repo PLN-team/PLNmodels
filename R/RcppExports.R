@@ -85,6 +85,10 @@ optim_zipln_S <- function(init_S, O, M, R, B, diag_Omega, configuration) {
     .Call('_PLNmodels_optim_zipln_S', PACKAGE = 'PLNmodels', init_S, O, M, R, B, diag_Omega, configuration)
 }
 
+optim_zipln_M_S <- function(init_M, init_S, Y, X, O, R, B, Omega, configuration) {
+    .Call('_PLNmodels_optim_zipln_M_S', PACKAGE = 'PLNmodels', init_M, init_S, Y, X, O, R, B, Omega, configuration)
+}
+
 cpp_test_packing <- function() {
     .Call('_PLNmodels_cpp_test_packing', PACKAGE = 'PLNmodels')
 }

@@ -188,17 +188,14 @@ ZIPLNfit <- R6Class(
         # ZI part
         new_R <- private$optimizer$R(Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = new_Pi, B = new_B)
 
-        # PLN part
-        new_M <- optim_zipln_M(
-          init_M = parameters$M,
-          Y = data$Y, X = data$X, O = data$O, R = new_R, S = parameters$S, B = new_B, Omega = new_Omega,
+        # PLN part: joint optimization of M and S
+        MS_out <- optim_zipln_M_S(
+          init_M = parameters$M, init_S = parameters$S,
+          Y = data$Y, X = data$X, O = data$O, R = new_R, B = new_B, Omega = new_Omega,
           configuration = control
-        )$M
-        new_S <- optim_zipln_S(
-          init_S = parameters$S,
-          O = data$O, M = new_M, R = new_R, B = new_B, diag_Omega = diag(new_Omega),
-          configuration = control
-        )$S
+        )
+        new_M <- MS_out$M
+        new_S <- MS_out$S
 
         # Check convergence
         new_parameters <- list(
@@ -310,16 +307,13 @@ ZIPLNfit <- R6Class(
         new_R <- private$optimizer$R(
           Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = Pi, B = B
         )
-        new_M <- optim_zipln_M(
-          init_M = parameters$M,
-          Y = data$Y, X = data$X, O = data$O, R = new_R, S = parameters$S, B = B, Omega = Omega,
+        MS_out <- optim_zipln_M_S(
+          init_M = parameters$M, init_S = parameters$S,
+          Y = data$Y, X = data$X, O = data$O, R = new_R, B = B, Omega = Omega,
           configuration = control
-        )$M
-        new_S <- optim_zipln_S(
-          init_S = parameters$S,
-          O = data$O, M = new_M, R = new_R, B = B, diag_Omega = diag(Omega),
-          configuration = control
-        )$S
+        )
+        new_M <- MS_out$M
+        new_S <- MS_out$S
         # Check convergence
         new_parameters <- list(R = new_R, M = new_M, S = new_S)
         nb_iter <- nb_iter + 1
