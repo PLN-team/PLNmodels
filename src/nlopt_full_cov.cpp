@@ -6,13 +6,12 @@
 #include "nlopt_wrapper.h"
 #include "packing.h"
 #include "utils.h"
-#include "newton_impl.h"
 
 // ---------------------------------------------------------------------------------------
-// Fully parametrized covariance
+// Full covariance PLN — nlopt/CCSAQ optimizer
 
 // [[Rcpp::export]]
-Rcpp::List nlopt_optimize(
+Rcpp::List nlopt_optimize_full(
     const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params, // List(B, M, S)
     const Rcpp::List & config  // List of config values
@@ -135,144 +134,10 @@ Rcpp::List nlopt_optimize(
 }
 
 // ---------------------------------------------------------------------------------------
-// Full covariance PLN — coordinate-Newton optimizer
+// VE full covariance — nlopt/CCSAQ (M and S only, B and Omega fixed)
 
 // [[Rcpp::export]]
-Rcpp::List nlopt_optimize_newton(
-    const Rcpp::List & data  , // List(Y, X, O, w)
-    const Rcpp::List & params, // List(B, M, S)
-    const Rcpp::List & config  // List of config values
-) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
-    arma::mat B = Rcpp::as<arma::mat>(params["B"]);
-    arma::mat M = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S = Rcpp::as<arma::mat>(params["S"]);
-
-    const int    maxiter = config.containsElementNamed("maxeval")     ? Rcpp::as<int>(config["maxeval"])        : 200;
-    const double ftol    = config.containsElementNamed("ftol_rel")    ? Rcpp::as<double>(config["ftol_rel"])    : 1e-8;
-    const int    max_em  = config.containsElementNamed("max_em_iter") ? Rcpp::as<int>(config["max_em_iter"])    : 50;
-    const double em_tol  = config.containsElementNamed("em_ftol")     ? Rcpp::as<double>(config["em_ftol"])     : 1e-8;
-
-    const double w_bar = arma::accu(w);
-    arma::mat S2 = S % S;
-    FullCovTraits::State state(M, S2, w, w_bar);
-
-    return newton_optimize_impl<FullCovTraits>(Y, X, O, w, B, M, S, state, maxiter, ftol, max_em, em_tol);
-}
-
-// ---------------------------------------------------------------------------------------
-// VE full — coordinate-Newton (M and S only, B and Omega fixed)
-
-// [[Rcpp::export]]
-Rcpp::List nlopt_optimize_vestep_newton(
-    const Rcpp::List & data  , // List(Y, X, O, w)
-    const Rcpp::List & params, // List(M, S)
-    const arma::mat & B,       // (d,p) fixed
-    const arma::mat & Omega,   // (p,p) fixed
-    const Rcpp::List & config  // List of config values
-) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
-    arma::mat M = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S = Rcpp::as<arma::mat>(params["S"]);
-
-    const int maxiter = config.containsElementNamed("maxeval")  ? Rcpp::as<int>(config["maxeval"])     : 200;
-    const double ftol = config.containsElementNamed("ftol_rel") ? Rcpp::as<double>(config["ftol_rel"]) : 1e-8;
-
-    const int n = Y.n_rows;
-    const double c1 = 1e-4;
-    const arma::vec diag_Omega = arma::diagvec(Omega);
-    const arma::mat ones_row   = arma::ones(n, 1);
-    const arma::mat XB         = X * B;
-
-    arma::mat logS = arma::log(S);
-    arma::mat S2   = S % S;
-
-    std::vector<double> objective_vec;
-    double obj_prev   = arma::datum::inf;
-    int    total_iter = 0;
-
-    for (int it = 0; it < maxiter; it++) {
-        S2 = S % S;
-        arma::mat Z = O + XB + M;
-        arma::mat A = arma::exp(Z + 0.5 * S2);
-
-        // ---- Diagonal Newton step for M ----
-        arma::mat MO     = M * Omega;
-        arma::mat grad_M = MO + A - Y; grad_M.each_col() %= w;
-        arma::mat hess_M = A + ones_row * diag_Omega.t();
-        hess_M.each_col() %= w;
-        hess_M.clamp(1e-10, arma::datum::inf);
-        arma::mat step_M = grad_M / hess_M;
-        double f0_M   = arma::accu(w.t() * (A - Y % Z))
-                      + 0.5 * arma::accu(MO % (M.each_col() % w));
-        double slope_M = -arma::accu(grad_M % step_M);
-        double alpha_M = 1.0;
-        for (int ls = 0; ls < 20; ls++) {
-            arma::mat Mt  = M - alpha_M * step_M;
-            arma::mat Zt  = Z - alpha_M * step_M;
-            arma::mat At  = arma::exp(Zt + 0.5 * S2);
-            arma::mat MOt = Mt * Omega;
-            if (arma::accu(w.t() * (At - Y % Zt))
-                + 0.5 * arma::accu(MOt % (Mt.each_col() % w))
-                <= f0_M + c1 * alpha_M * slope_M) break;
-            alpha_M *= 0.5;
-        }
-        M  -= alpha_M * step_M;
-        MO  = M * Omega;
-        Z   = O + XB + M;
-
-        // ---- Fixed-point update for logS ----
-        A    = arma::exp(Z + 0.5 * S2);
-        logS = arma::clamp(-0.5 * arma::log(A + ones_row * diag_Omega.t()), -20., 10.);
-        S    = arma::exp(logS);
-        S2   = S % S;
-
-        // ---- Objective for convergence check ----
-        A = arma::exp(Z + 0.5 * S2);
-        double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * arma::trunc_log(S2)))
-                   + 0.5 * (arma::accu(MO % (M.each_col() % w))
-                            + arma::dot(diag_Omega, (w.t() * S2).t()));
-        objective_vec.push_back(obj);
-        total_iter++;
-
-        if (it > 0 && converged(obj, obj_prev, ftol)) break;
-        obj_prev = obj;
-    }
-
-    // ---- Final output ----
-    S2 = S % S;
-    arma::mat Z = O + XB + M;
-    arma::mat A = arma::exp(Z + 0.5 * S2);
-    arma::vec loglik = arma::sum(Y % Z - A + 0.5 * arma::log(S2)
-                         - 0.5 * ((M * Omega) % M + S2 * arma::diagmat(Omega)), 1)
-                     + 0.5 * real(arma::log_det(Omega)) + ki(Y);
-
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
-    return Rcpp::List::create(
-        Rcpp::Named("M")  = M,
-        Rcpp::Named("S")  = S,
-        Rcpp::Named("Ji") = Ji,
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status",     3          ),
-            Rcpp::Named("backend",    "newton"   ),
-            Rcpp::Named("objective",  objective_vec),
-            Rcpp::Named("iterations", total_iter )
-        ))
-    );
-}
-
-// ---------------------------------------------------------------------------------------
-// VE full
-
-// [[Rcpp::export]]
-Rcpp::List nlopt_optimize_vestep(
+Rcpp::List nlopt_optimize_vestep_full(
     const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params, // List(M, S)
     const arma::mat & B,       // (d,p)

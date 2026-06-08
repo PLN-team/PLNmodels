@@ -364,11 +364,11 @@ PLNfit <- R6Class(
       private$optimizer$main <- if (control$backend == "torch") {
         private$torch_optimize
       } else if (is_newton) {
-        nlopt_optimize_newton
+        newton_optimize_full
       } else {
-        nlopt_optimize
+        nlopt_optimize_full
       }
-      private$optimizer$vestep <- if (is_newton) nlopt_optimize_vestep_newton else nlopt_optimize_vestep
+      private$optimizer$vestep <- if (is_newton) newton_optimize_vestep_full else nlopt_optimize_vestep_full
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -747,11 +747,11 @@ PLNfit_diagonal <- R6Class(
       private$optimizer$main <- if (control$backend == "torch") {
         private$torch_optimize
       } else if (is_newton) {
-        nlopt_optimize_newton_diagonal
+        newton_optimize_diagonal
       } else {
         nlopt_optimize_diagonal
       }
-      private$optimizer$vestep <- if (is_newton) nlopt_optimize_vestep_newton_diagonal else nlopt_optimize_vestep_diagonal
+      private$optimizer$vestep <- if (is_newton) newton_optimize_vestep_diagonal else nlopt_optimize_vestep_diagonal
     }
   ),
   private = list(
@@ -837,11 +837,11 @@ PLNfit_spherical <- R6Class(
       private$optimizer$main <- if (control$backend == "torch") {
         private$torch_optimize
       } else if (is_newton) {
-        nlopt_optimize_newton_spherical
+        newton_optimize_spherical
       } else {
         nlopt_optimize_spherical
       }
-      private$optimizer$vestep <- if (is_newton) nlopt_optimize_vestep_newton_spherical else nlopt_optimize_vestep_spherical
+      private$optimizer$vestep <- if (is_newton) newton_optimize_vestep_spherical else nlopt_optimize_vestep_spherical
     }
   ),
   private = list(
@@ -931,7 +931,7 @@ PLNfit_fixedcov <- R6Class(
       private$optimizer$main <- if (control$backend == "torch") {
         private$torch_optimize
       } else if (is_newton) {
-        nlopt_optimize_newton_fixed
+        newton_optimize_fixed
       } else {
         nlopt_optimize_fixed
       }
