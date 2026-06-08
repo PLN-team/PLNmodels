@@ -16,6 +16,9 @@ struct FullCovTraits {
             Omega      = arma::inv_sympd(Sigma);
             diag_Omega = arma::diagvec(Omega);
         }
+        // vestep: Omega known and fixed
+        explicit State(const arma::mat & omega)
+            : Omega(omega), diag_Omega(arma::diagvec(omega)) {}
     };
 
     static arma::mat cov_diag(const State & s, const arma::mat & ones_row) {
@@ -82,6 +85,11 @@ struct DiagonalCovTraits {
             sigma2 = (w.t() * (M % M + S2)) / w_bar;
             omega2 = arma::pow(sigma2, -1);
         }
+        // vestep: Omega known and fixed (diagonal matrix passed as dense mat)
+        explicit State(const arma::mat & omega_mat) {
+            omega2 = arma::diagvec(omega_mat).t();
+            sigma2 = arma::pow(omega2, -1);
+        }
     };
 
     static arma::mat cov_diag(const State & s, const arma::mat & ones_row) {
@@ -147,6 +155,9 @@ struct SphericalCovTraits {
             sigma2 = arma::accu(arma::diagmat(w) * (M % M + S2)) / (double(p) * w_bar);
             omega2 = 1.0 / sigma2;
         }
+        // vestep: Omega known and fixed (scalar diagonal matrix)
+        explicit State(const arma::mat & omega_mat)
+            : omega2(omega_mat(0, 0)), sigma2(1.0 / omega_mat(0, 0)) {}
     };
 
     // returns double: fixed_point_logS<double> handles scalar broadcast

@@ -113,3 +113,84 @@ Rcpp::List newton_optimize_impl(
         ))
     );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Generic VE-step Newton optimizer (B and Omega fixed, only M and S updated).
+// State must be initialized from a fixed Omega via the explicit constructor.
+template<typename Traits>
+Rcpp::List newton_vestep_impl(
+    const arma::mat & Y, const arma::mat & X, const arma::mat & O, const arma::vec & w,
+    arma::mat M, arma::mat S,
+    const arma::mat & B, const typename Traits::State & state,
+    int maxiter, double ftol
+) {
+    const int n = Y.n_rows;
+    const double c1 = 1e-4;
+    const arma::mat ones_row = arma::ones(n, 1);
+    const arma::mat XB = X * B;
+
+    arma::mat S2   = S % S;
+    arma::mat logS = arma::log(S);
+
+    std::vector<double> objective_vec;
+    double obj_prev = arma::datum::inf;
+    int total_iter  = 0;
+
+    for (int it = 0; it < maxiter; it++) {
+        S2 = S % S;
+        arma::mat Z = O + XB + M;
+        arma::mat A = arma::exp(Z + 0.5 * S2);
+
+        // ---- Diagonal Newton step for M ----
+        arma::mat grad_M, hess_M;
+        Traits::grad_hess_M(M, state, A, Y, w, ones_row, grad_M, hess_M);
+        hess_M.clamp(1e-10, arma::datum::inf);
+        arma::mat step_M = grad_M / hess_M;
+        double f0_M    = arma::accu(w.t() * (A - Y % Z)) + Traits::penalty_M(M, state, w);
+        double slope_M = -arma::accu(grad_M % step_M);
+        double alpha_M = 1.0;
+        for (int ls = 0; ls < 20; ls++) {
+            arma::mat Mt = M - alpha_M * step_M;
+            arma::mat Zt = Z - alpha_M * step_M;
+            arma::mat At = arma::exp(Zt + 0.5 * S2);
+            if (arma::accu(w.t() * (At - Y % Zt)) + Traits::penalty_M(Mt, state, w)
+                <= f0_M + c1 * alpha_M * slope_M) break;
+            alpha_M *= 0.5;
+        }
+        M -= alpha_M * step_M;
+        Z  = O + XB + M;
+
+        // ---- Fixed-point update for S ----
+        fixed_point_logS(logS, S, S2, Z, A, Traits::cov_diag(state, ones_row));
+
+        // ---- Objective for convergence ----
+        A = arma::exp(Z + 0.5 * S2);
+        double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * arma::trunc_log(S2)))
+                   + Traits::objective_cov(M, S2, state, w);
+        objective_vec.push_back(obj);
+        total_iter++;
+
+        if (it > 0 && converged(obj, obj_prev, ftol)) break;
+        obj_prev = obj;
+    }
+
+    // ---- Final output ----
+    S2 = S % S;
+    arma::mat Z = O + XB + M;
+    arma::mat A = arma::exp(Z + 0.5 * S2);
+    arma::vec loglik = Traits::final_loglik(Y, Z, A, M, S2, state);
+
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
+    return Rcpp::List::create(
+        Rcpp::Named("M")  = M,
+        Rcpp::Named("S")  = S,
+        Rcpp::Named("Ji") = Ji,
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status",     3           ),
+            Rcpp::Named("backend",    "newton"    ),
+            Rcpp::Named("objective",  objective_vec),
+            Rcpp::Named("iterations", total_iter  )
+        ))
+    );
+}
