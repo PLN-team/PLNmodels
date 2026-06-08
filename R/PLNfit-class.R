@@ -751,7 +751,7 @@ PLNfit_diagonal <- R6Class(
       } else {
         nlopt_optimize_diagonal
       }
-      private$optimizer$vestep <- nlopt_optimize_vestep_diagonal
+      private$optimizer$vestep <- if (is_newton) nlopt_optimize_vestep_newton_diagonal else nlopt_optimize_vestep_diagonal
     }
   ),
   private = list(
@@ -841,7 +841,7 @@ PLNfit_spherical <- R6Class(
       } else {
         nlopt_optimize_spherical
       }
-      private$optimizer$vestep <- nlopt_optimize_vestep_spherical
+      private$optimizer$vestep <- if (is_newton) nlopt_optimize_vestep_newton_spherical else nlopt_optimize_vestep_spherical
     }
   ),
   private = list(
