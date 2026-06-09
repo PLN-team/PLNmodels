@@ -364,10 +364,14 @@ PLNfit <- R6Class(
         private$torch_optimize
       } else if (control$backend == "homemade") {
         newton_optimize_full
+      } else if (control$backend == "homemade_alt") {
+        newton_optimize_full_alt
+      } else if (control$backend == "hybrid") {
+        make_hybrid_optimizer(newton_optimize_full, newton_optimize_full_alt)
       } else {
         nlopt_optimize_full
       }
-      private$optimizer$vestep <- if (control$backend == "homemade") newton_optimize_vestep_full else nlopt_optimize_vestep_full
+      private$optimizer$vestep <- if (control$backend %in% c("homemade", "homemade_alt", "hybrid")) newton_optimize_vestep_full else nlopt_optimize_vestep_full
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -746,10 +750,14 @@ PLNfit_diagonal <- R6Class(
         private$torch_optimize
       } else if (control$backend == "homemade") {
         newton_optimize_diagonal
+      } else if (control$backend == "homemade_alt") {
+        newton_optimize_diagonal_alt
+      } else if (control$backend == "hybrid") {
+        make_hybrid_optimizer(newton_optimize_diagonal, newton_optimize_diagonal_alt)
       } else {
         nlopt_optimize_diagonal
       }
-      private$optimizer$vestep <- if (control$backend == "homemade") newton_optimize_vestep_diagonal else nlopt_optimize_vestep_diagonal
+      private$optimizer$vestep <- if (control$backend %in% c("homemade", "homemade_alt", "hybrid")) newton_optimize_vestep_diagonal else nlopt_optimize_vestep_diagonal
     }
   ),
   private = list(
@@ -835,10 +843,14 @@ PLNfit_spherical <- R6Class(
         private$torch_optimize
       } else if (control$backend == "homemade") {
         newton_optimize_spherical
+      } else if (control$backend == "homemade_alt") {
+        newton_optimize_spherical_alt
+      } else if (control$backend == "hybrid") {
+        make_hybrid_optimizer(newton_optimize_spherical, newton_optimize_spherical_alt)
       } else {
         nlopt_optimize_spherical
       }
-      private$optimizer$vestep <- if (control$backend == "homemade") newton_optimize_vestep_spherical else nlopt_optimize_vestep_spherical
+      private$optimizer$vestep <- if (control$backend %in% c("homemade", "homemade_alt", "hybrid")) newton_optimize_vestep_spherical else nlopt_optimize_vestep_spherical
     }
   ),
   private = list(
@@ -928,6 +940,10 @@ PLNfit_fixedcov <- R6Class(
         private$torch_optimize
       } else if (control$backend == "homemade") {
         newton_optimize_fixed
+      } else if (control$backend == "homemade_alt") {
+        newton_optimize_fixed_alt
+      } else if (control$backend == "hybrid") {
+        make_hybrid_optimizer(newton_optimize_fixed, newton_optimize_fixed_alt)
       } else {
         nlopt_optimize_fixed
       }
