@@ -21,6 +21,14 @@ newton_optimize_vestep_full <- function(data, params, B, Omega, config) {
     .Call('_PLNmodels_newton_optimize_vestep_full', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
 }
 
+newton_optimize_rank <- function(data, params, config) {
+    .Call('_PLNmodels_newton_optimize_rank', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+newton_optimize_vestep_rank <- function(data, params, B, C, config) {
+    .Call('_PLNmodels_newton_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, B, C, config)
+}
+
 newton_optimize_spherical <- function(data, params, config) {
     .Call('_PLNmodels_newton_optimize_spherical', PACKAGE = 'PLNmodels', data, params, config)
 }
@@ -49,6 +57,14 @@ nlopt_optimize_vestep_full <- function(data, params, B, Omega, config) {
     .Call('_PLNmodels_nlopt_optimize_vestep_full', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
 }
 
+nlopt_optimize_rank <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_rank', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+nlopt_optimize_vestep_rank <- function(data, params, B, C, config) {
+    .Call('_PLNmodels_nlopt_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, B, C, config)
+}
+
 nlopt_optimize_spherical <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_spherical', PACKAGE = 'PLNmodels', data, params, config)
 }
@@ -63,14 +79,6 @@ cpp_test_nlopt <- function() {
 
 nlopt_optimize_genetic_modeling <- function(init_parameters, Y, X, O, w, C, configuration) {
     .Call('_PLNmodels_nlopt_optimize_genetic_modeling', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, C, configuration)
-}
-
-nlopt_optimize_rank <- function(data, params, config) {
-    .Call('_PLNmodels_nlopt_optimize_rank', PACKAGE = 'PLNmodels', data, params, config)
-}
-
-nlopt_optimize_vestep_rank <- function(data, params, B, C, config) {
-    .Call('_PLNmodels_nlopt_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, B, C, config)
 }
 
 zipln_vloglik <- function(Y, X, O, Pi, Omega, B, R, M, S) {

@@ -236,12 +236,15 @@ PLNPCAfit <- R6Class(
       #' @description Initialize a [`PLNPCAfit`] object
       initialize = function(rank, responses, covariates, offsets, weights, formula, control) {
         super$initialize(responses, covariates, offsets, weights, formula, control)
+        is_newton <- identical(control$config_optim$algorithm, "NEWTON")
         if (control$backend == "torch") {
           private$optimizer$main <- private$torch_optimize_rank
+        } else if (is_newton) {
+          private$optimizer$main <- newton_optimize_rank
         } else {
           private$optimizer$main <- nlopt_optimize_rank
         }
-        private$optimizer$vestep <- nlopt_optimize_vestep_rank
+        private$optimizer$vestep <- if (is_newton) newton_optimize_vestep_rank else nlopt_optimize_vestep_rank
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {
@@ -252,6 +255,25 @@ PLNPCAfit <- R6Class(
         private$S  <- matrix(0.1, self$n, rank)
         private$C  <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
       },
+      #' @description Reinitialize parameters for sequential warm-starting from a lower-rank fit.
+      #' Fitted loadings C, scores M, variances S, and regression coefficients B from `prev_fit`
+      #' are carried over; new columns are padded using the inception SVD (C) or zeros/0.1 (M/S).
+      #' @param prev_fit a converged [`PLNPCAfit`] of rank `self$rank - k` (k >= 1)
+      #' @param svdM the inception SVD (from `PLNPCAfamily`)
+      warm_start_from = function(prev_fit, svdM) {
+        q_prev  <- prev_fit$rank
+        q_new   <- self$rank
+        new_idx <- (q_prev + 1):q_new
+        C_new_cols <- svdM$v[, new_idx, drop = FALSE] %*%
+                      diag(svdM$d[new_idx], nrow = length(new_idx)) / sqrt(self$n)
+        private$C <- cbind(prev_fit$model_par$C, C_new_cols)
+        private$M <- cbind(prev_fit$var_par$M,
+                           matrix(0,   nrow = self$n, ncol = q_new - q_prev))
+        private$S <- cbind(prev_fit$var_par$S,
+                           matrix(0.1, nrow = self$n, ncol = q_new - q_prev))
+        private$B <- prev_fit$model_par$B
+      },
+
       #' @description Update a [`PLNPCAfit`] object
       #' @param M     matrix of mean vectors for the variational approximation
       #' @param C     matrix of PCA loadings (in the latent space)

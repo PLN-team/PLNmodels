@@ -68,6 +68,11 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #' @param inception Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 #'    log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 #'    which sometimes speeds up the inference.
+#' @param sequential logical. If `TRUE`, ranks are fitted in ascending order and each model is
+#'    warm-started from the converged solution of the previous rank: loadings C are augmented
+#'    with new columns from the inception SVD, while latent scores M and variances S are
+#'    padded with zeros / 0.1 respectively. Disables parallel fitting across ranks.
+#'    Default is `FALSE`.
 #'
 #' @return list of parameters configuring the fit.
 #'
@@ -78,7 +83,8 @@ PLNPCA_param <- function(
     trace         = 1      ,
     config_optim  = list() ,
     config_post   = list() ,
-    inception     = NULL     # pretrained PLNfit used as initialization
+    inception     = NULL   , # pretrained PLNfit used as initialization
+    sequential    = FALSE    # fit ranks sequentially, warm-starting each from the previous
 ) {
 
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
@@ -101,6 +107,7 @@ PLNPCA_param <- function(
   }
   config_opt[names(config_optim)] <- config_optim
   config_opt$trace <- trace
+  config_opt$sequential <- sequential
 
   structure(list(
     backend       = backend   ,
