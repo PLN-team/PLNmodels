@@ -8,10 +8,9 @@
 #include "utils.h"
 
 // ---------------------------------------------------------------------------------------
-// Diagonal covariance PLN — nlopt/CCSAQ optimizer
+// Diagonal covariance PLN — nlopt/CCSAQ optimizer (archived: B in parameter vector)
 
-// [[Rcpp::export]]
-Rcpp::List nlopt_optimize_diagonal(
+Rcpp::List nlopt_optimize_diagonal_old(
     const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params, // List(B, M, S)
     const Rcpp::List & config  // List of config values
@@ -105,10 +104,10 @@ Rcpp::List nlopt_optimize_diagonal(
 }
 
 // ---------------------------------------------------------------------------------------
-// Diagonal covariance PLN — profiled-B nlopt: B removed from parameter vector, closed-form per eval
+// Diagonal covariance PLN — nlopt/CCSAQ optimizer: B profiled via closed form, reduced parameter vector
 
 // [[Rcpp::export]]
-Rcpp::List nlopt_optimize_diagonal_alt(
+Rcpp::List nlopt_optimize_diagonal(
     const Rcpp::List & data  ,
     const Rcpp::List & params,
     const Rcpp::List & config
@@ -183,7 +182,7 @@ Rcpp::List nlopt_optimize_diagonal_alt(
         Rcpp::Named("Ji", Ji),
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status", static_cast<int>(result.status)),
-            Rcpp::Named("backend", "nlopt_alt"),
+            Rcpp::Named("backend", "nlopt"),
             Rcpp::Named("objective", objective_vec),
             Rcpp::Named("iterations", result.nb_iterations)
         ))

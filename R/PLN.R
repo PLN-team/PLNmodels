@@ -101,7 +101,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' @export
 PLN_param <- function(
-    backend       = c("homemade", "nlopt", "torch", "homemade_alt", "hybrid", "nlopt_alt"),
+    backend       = c("homemade", "nlopt", "torch", "homemade_alt", "hybrid"),
     trace         = 1,
     covariance    = c("full", "diagonal", "spherical", "fixed"),
     Omega         = NULL,
@@ -127,8 +127,6 @@ PLN_param <- function(
   } else if (backend == "torch") {
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_opt <- config_default_torch
-  } else if (backend == "nlopt_alt") {
-    config_opt <- config_default_nlopt
   } else { # "homemade", "homemade_alt", or "hybrid"
     config_opt <- config_default_homemade
   }

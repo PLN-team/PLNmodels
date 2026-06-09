@@ -8,10 +8,9 @@
 #include "utils.h"
 
 // ---------------------------------------------------------------------------------------
-// Fixed inverse covariance (Omega) PLN — nlopt/CCSAQ optimizer
+// Fixed inverse covariance (Omega) PLN — nlopt/CCSAQ optimizer (archived: B in parameter vector)
 
-// [[Rcpp::export]]
-Rcpp::List nlopt_optimize_fixed(
+Rcpp::List nlopt_optimize_fixed_old(
     const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params, // List(B, M, S)
     const Rcpp::List & config  // List of config values
@@ -98,10 +97,10 @@ Rcpp::List nlopt_optimize_fixed(
 }
 
 // ---------------------------------------------------------------------------------------
-// Fixed covariance PLN — profiled-B nlopt: B removed from parameter vector, closed-form per eval
+// Fixed covariance PLN — nlopt/CCSAQ optimizer: B profiled via closed form, reduced parameter vector
 
 // [[Rcpp::export]]
-Rcpp::List nlopt_optimize_fixed_alt(
+Rcpp::List nlopt_optimize_fixed(
     const Rcpp::List & data  ,
     const Rcpp::List & params,
     const Rcpp::List & config
@@ -172,7 +171,7 @@ Rcpp::List nlopt_optimize_fixed_alt(
         Rcpp::Named("Ji", Ji),
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status", static_cast<int>(result.status)),
-            Rcpp::Named("backend", "nlopt_alt"),
+            Rcpp::Named("backend", "nlopt"),
             Rcpp::Named("objective", objective_vec),
             Rcpp::Named("iterations", result.nb_iterations)
         ))

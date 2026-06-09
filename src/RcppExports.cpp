@@ -201,19 +201,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// nlopt_optimize_diagonal_alt
-Rcpp::List nlopt_optimize_diagonal_alt(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_diagonal_alt(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_diagonal_alt(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
 // nlopt_optimize_vestep_diagonal
 Rcpp::List nlopt_optimize_vestep_diagonal(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& config);
 RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configSEXP) {
@@ -242,19 +229,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// nlopt_optimize_fixed_alt
-Rcpp::List nlopt_optimize_fixed_alt(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_fixed_alt(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_fixed_alt(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
 // nlopt_optimize_full
 Rcpp::List nlopt_optimize_full(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
 RcppExport SEXP _PLNmodels_nlopt_optimize_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
@@ -265,19 +239,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
     rcpp_result_gen = Rcpp::wrap(nlopt_optimize_full(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_full_alt
-Rcpp::List nlopt_optimize_full_alt(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_full_alt(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_full_alt(data, params, config));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -334,19 +295,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
     rcpp_result_gen = Rcpp::wrap(nlopt_optimize_spherical(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_spherical_alt
-Rcpp::List nlopt_optimize_spherical_alt(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_spherical_alt(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_spherical_alt(data, params, config));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -677,17 +625,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_newton_optimize_spherical_alt", (DL_FUNC) &_PLNmodels_newton_optimize_spherical_alt, 3},
     {"_PLNmodels_newton_optimize_vestep_spherical", (DL_FUNC) &_PLNmodels_newton_optimize_vestep_spherical, 5},
     {"_PLNmodels_nlopt_optimize_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_diagonal, 3},
-    {"_PLNmodels_nlopt_optimize_diagonal_alt", (DL_FUNC) &_PLNmodels_nlopt_optimize_diagonal_alt, 3},
     {"_PLNmodels_nlopt_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_diagonal, 5},
     {"_PLNmodels_nlopt_optimize_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_fixed, 3},
-    {"_PLNmodels_nlopt_optimize_fixed_alt", (DL_FUNC) &_PLNmodels_nlopt_optimize_fixed_alt, 3},
     {"_PLNmodels_nlopt_optimize_full", (DL_FUNC) &_PLNmodels_nlopt_optimize_full, 3},
-    {"_PLNmodels_nlopt_optimize_full_alt", (DL_FUNC) &_PLNmodels_nlopt_optimize_full_alt, 3},
     {"_PLNmodels_nlopt_optimize_vestep_full", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_full, 5},
     {"_PLNmodels_nlopt_optimize_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_rank, 3},
     {"_PLNmodels_nlopt_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_rank, 5},
     {"_PLNmodels_nlopt_optimize_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_spherical, 3},
-    {"_PLNmodels_nlopt_optimize_spherical_alt", (DL_FUNC) &_PLNmodels_nlopt_optimize_spherical_alt, 3},
     {"_PLNmodels_nlopt_optimize_vestep_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_spherical, 5},
     {"_PLNmodels_cpp_test_nlopt", (DL_FUNC) &_PLNmodels_cpp_test_nlopt, 0},
     {"_PLNmodels_nlopt_optimize_genetic_modeling", (DL_FUNC) &_PLNmodels_nlopt_optimize_genetic_modeling, 7},

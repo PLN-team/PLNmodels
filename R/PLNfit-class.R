@@ -368,8 +368,6 @@ PLNfit <- R6Class(
         newton_optimize_full_alt
       } else if (control$backend == "hybrid") {
         make_hybrid_optimizer(newton_optimize_full, newton_optimize_full_alt)
-      } else if (control$backend == "nlopt_alt") {
-        nlopt_optimize_full_alt
       } else {
         nlopt_optimize_full
       }
@@ -756,8 +754,6 @@ PLNfit_diagonal <- R6Class(
         newton_optimize_diagonal_alt
       } else if (control$backend == "hybrid") {
         make_hybrid_optimizer(newton_optimize_diagonal, newton_optimize_diagonal_alt)
-      } else if (control$backend == "nlopt_alt") {
-        nlopt_optimize_diagonal_alt
       } else {
         nlopt_optimize_diagonal
       }
@@ -851,8 +847,6 @@ PLNfit_spherical <- R6Class(
         newton_optimize_spherical_alt
       } else if (control$backend == "hybrid") {
         make_hybrid_optimizer(newton_optimize_spherical, newton_optimize_spherical_alt)
-      } else if (control$backend == "nlopt_alt") {
-        nlopt_optimize_spherical_alt
       } else {
         nlopt_optimize_spherical
       }
@@ -950,8 +944,6 @@ PLNfit_fixedcov <- R6Class(
         newton_optimize_fixed_alt
       } else if (control$backend == "hybrid") {
         make_hybrid_optimizer(newton_optimize_fixed, newton_optimize_fixed_alt)
-      } else if (control$backend == "nlopt_alt") {
-        nlopt_optimize_fixed_alt
       } else {
         nlopt_optimize_fixed
       }

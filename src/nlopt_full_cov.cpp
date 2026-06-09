@@ -8,10 +8,9 @@
 #include "utils.h"
 
 // ---------------------------------------------------------------------------------------
-// Full covariance PLN — nlopt/CCSAQ optimizer
+// Full covariance PLN — nlopt/CCSAQ optimizer (archived: B in parameter vector)
 
-// [[Rcpp::export]]
-Rcpp::List nlopt_optimize_full(
+Rcpp::List nlopt_optimize_full_old(
     const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params, // List(B, M, S)
     const Rcpp::List & config  // List of config values
@@ -137,10 +136,10 @@ Rcpp::List nlopt_optimize_full(
 }
 
 // ---------------------------------------------------------------------------------------
-// Full covariance PLN — profiled-B nlopt: B removed from parameter vector, closed-form per eval
+// Full covariance PLN — nlopt/CCSAQ optimizer: B profiled via closed form, reduced parameter vector
 
 // [[Rcpp::export]]
-Rcpp::List nlopt_optimize_full_alt(
+Rcpp::List nlopt_optimize_full(
     const Rcpp::List & data  , // List(Y, X, O, w)
     const Rcpp::List & params, // List(B, M, S)
     const Rcpp::List & config  // List of config values
@@ -251,7 +250,7 @@ Rcpp::List nlopt_optimize_full_alt(
         Rcpp::Named("Ji", Ji),
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status", last_status),
-            Rcpp::Named("backend", "nlopt_alt"),
+            Rcpp::Named("backend", "nlopt"),
             Rcpp::Named("objective", objective_vec),
             Rcpp::Named("iterations", total_iterations)
         ))
