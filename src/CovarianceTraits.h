@@ -35,9 +35,10 @@ struct FullCovTraits {
         hess_M = A + ones_row * s.diag_Omega.t(); hess_M.each_col() %= w;
     }
 
-    // accu(MO % (M.*w_per_row)) = w' * rowsum(MO % M)  — avoids each_col() on const M
-    static double penalty_M(const arma::mat & M, const State & s, const arma::vec & w) {
-        arma::mat MO = M * s.Omega;
+    static arma::mat times_Omega(const arma::mat & M, const State & s) { return M * s.Omega; }
+
+    // Takes precomputed MO = M * Omega to avoid redundant matrix multiplies in Armijo
+    static double penalty_M(const arma::mat & MO, const arma::mat & M, const arma::vec & w) {
         return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
     }
 
@@ -106,8 +107,10 @@ struct DiagonalCovTraits {
         hess_M = ones_row * s.omega2 + A;          hess_M.each_col() %= w;
     }
 
-    static double penalty_M(const arma::mat & M, const State & s, const arma::vec & w) {
-        return 0.5 * arma::as_scalar((w.t() * (M % M)) * s.omega2.t());
+    static arma::mat times_Omega(const arma::mat & M, const State & s) { return M.each_row() % s.omega2; }
+
+    static double penalty_M(const arma::mat & MO, const arma::mat & M, const arma::vec & w) {
+        return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
     }
 
     static double objective_cov(const arma::mat & M, const arma::mat & S2, const State & s, const arma::vec & w) {
@@ -176,8 +179,10 @@ struct SphericalCovTraits {
         hess_M = s.omega2 + A;          hess_M.each_col() %= w;
     }
 
-    static double penalty_M(const arma::mat & M, const State & s, const arma::vec & w) {
-        return 0.5 * s.omega2 * arma::as_scalar(w.t() * arma::sum(M % M, 1));
+    static arma::mat times_Omega(const arma::mat & M, const State & s) { return s.omega2 * M; }
+
+    static double penalty_M(const arma::mat & MO, const arma::mat & M, const arma::vec & w) {
+        return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
     }
 
     static double objective_cov(const arma::mat & M, const arma::mat & S2, const State & s, const arma::vec & w) {
@@ -238,8 +243,9 @@ struct FixedCovTraits {
         hess_M = A + ones_row * s.diag_Omega.t(); hess_M.each_col() %= w;
     }
 
-    static double penalty_M(const arma::mat & M, const State & s, const arma::vec & w) {
-        arma::mat MO = M * s.Omega;
+    static arma::mat times_Omega(const arma::mat & M, const State & s) { return M * s.Omega; }
+
+    static double penalty_M(const arma::mat & MO, const arma::mat & M, const arma::vec & w) {
         return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
     }
 

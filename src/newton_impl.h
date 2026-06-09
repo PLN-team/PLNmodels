@@ -43,14 +43,18 @@ Rcpp::List newton_optimize_impl(
             Traits::grad_hess_M(M, state, A, Y, w, ones_row, grad_M, hess_M);
             hess_M.clamp(1e-10, arma::datum::inf);
             arma::mat step_M = grad_M / hess_M;
-            double f0_M    = arma::accu(w.t() * (A - Y % Z)) + Traits::penalty_M(M, state, w);
+            // Precompute MO and dMO once — avoids O(n*p²) multiply at each Armijo backtrack
+            arma::mat MO   = Traits::times_Omega(M, state);
+            arma::mat dMO  = Traits::times_Omega(step_M, state);
+            double f0_M    = arma::accu(w.t() * (A - Y % Z)) + Traits::penalty_M(MO, M, w);
             double slope_M = -arma::accu(grad_M % step_M);
             double alpha_M = 1.0;
             for (int ls = 0; ls < 20; ls++) {
-                arma::mat Mt = M - alpha_M * step_M;
-                arma::mat Zt = Z - alpha_M * step_M;
-                arma::mat At = arma::exp(Zt + 0.5 * S2);
-                if (arma::accu(w.t() * (At - Y % Zt)) + Traits::penalty_M(Mt, state, w)
+                arma::mat Mt  = M  - alpha_M * step_M;
+                arma::mat MOt = MO - alpha_M * dMO;    // linear update, no matrix multiply
+                arma::mat Zt  = Z  - alpha_M * step_M;
+                arma::mat At  = arma::exp(Zt + 0.5 * S2);
+                if (arma::accu(w.t() * (At - Y % Zt)) + Traits::penalty_M(MOt, Mt, w)
                     <= f0_M + c1 * alpha_M * slope_M) break;
                 alpha_M *= 0.5;
             }
@@ -149,14 +153,17 @@ Rcpp::List newton_vestep_impl(
         Traits::grad_hess_M(M, state, A, Y, w, ones_row, grad_M, hess_M);
         hess_M.clamp(1e-10, arma::datum::inf);
         arma::mat step_M = grad_M / hess_M;
-        double f0_M    = arma::accu(w.t() * (A - Y % Z)) + Traits::penalty_M(M, state, w);
+        arma::mat MO   = Traits::times_Omega(M, state);
+        arma::mat dMO  = Traits::times_Omega(step_M, state);
+        double f0_M    = arma::accu(w.t() * (A - Y % Z)) + Traits::penalty_M(MO, M, w);
         double slope_M = -arma::accu(grad_M % step_M);
         double alpha_M = 1.0;
         for (int ls = 0; ls < 20; ls++) {
-            arma::mat Mt = M - alpha_M * step_M;
-            arma::mat Zt = Z - alpha_M * step_M;
-            arma::mat At = arma::exp(Zt + 0.5 * S2);
-            if (arma::accu(w.t() * (At - Y % Zt)) + Traits::penalty_M(Mt, state, w)
+            arma::mat Mt  = M  - alpha_M * step_M;
+            arma::mat MOt = MO - alpha_M * dMO;
+            arma::mat Zt  = Z  - alpha_M * step_M;
+            arma::mat At  = arma::exp(Zt + 0.5 * S2);
+            if (arma::accu(w.t() * (At - Y % Zt)) + Traits::penalty_M(MOt, Mt, w)
                 <= f0_M + c1 * alpha_M * slope_M) break;
             alpha_M *= 0.5;
         }
