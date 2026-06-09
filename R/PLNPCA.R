@@ -104,8 +104,8 @@ PLNPCA_param <- function(
   } else if (backend == "torch") {
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_opt <- config_default_torch
-  } else { # "homemade"
-    config_opt <- config_default_homemade
+  } else { # "homemade" — spectral gradient method
+    config_opt <- config_default_spectral
   }
   config_opt[names(config_optim)] <- config_optim
   config_opt$trace <- trace

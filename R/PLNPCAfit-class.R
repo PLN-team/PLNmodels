@@ -239,11 +239,11 @@ PLNPCAfit <- R6Class(
         if (control$backend == "torch") {
           private$optimizer$main <- private$torch_optimize_rank
         } else if (control$backend == "homemade") {
-          private$optimizer$main <- newton_optimize_rank
+          private$optimizer$main <- spectral_optimize_rank
         } else {
           private$optimizer$main <- nlopt_optimize_rank
         }
-        private$optimizer$vestep <- if (control$backend == "homemade") newton_optimize_vestep_rank else nlopt_optimize_vestep_rank
+        private$optimizer$vestep <- if (control$backend == "homemade") spectral_optimize_vestep_rank else nlopt_optimize_vestep_rank
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {

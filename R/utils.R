@@ -22,6 +22,20 @@ config_default_homemade <-
     ftol_rel  = 1e-8
   )
 
+# Spectral gradient method (PLNPCA homemade backend): needs tighter tolerance
+# than the nlopt default (1e-8) because GLL nonmonotone acceptance causes
+# objective oscillations that fool consecutive convergence at 1e-8 into
+# stopping prematurely at suboptimal local minima.  1e-9 balances quality and
+# speed: on typical datasets spectral matches or exceeds NLOPT quality in
+# comparable wall-clock time.
+config_default_spectral <-
+  list(
+    algorithm = "SPECTRAL",
+    backend   = "homemade",
+    maxeval   = 10000,
+    ftol_rel  = 1e-9
+  )
+
 config_default_torch <-
   list(
     algorithm     = "RPROP",

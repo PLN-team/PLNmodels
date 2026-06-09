@@ -513,6 +513,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// spectral_optimize_rank
+Rcpp::List spectral_optimize_rank(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_spectral_optimize_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(spectral_optimize_rank(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// spectral_optimize_vestep_rank
+Rcpp::List spectral_optimize_vestep_rank(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& C, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_spectral_optimize_vestep_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP CSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type C(CSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(spectral_optimize_vestep_rank(data, params, B, C, config));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_sandwich_variance_B
 arma::mat get_sandwich_variance_B(const arma::mat& Y, const arma::mat& X, const arma::mat& A, const arma::mat& S, const arma::mat& Sigma, const arma::vec& Diag_Omega);
 RcppExport SEXP _PLNmodels_get_sandwich_variance_B(SEXP YSEXP, SEXP XSEXP, SEXP ASEXP, SEXP SSEXP, SEXP SigmaSEXP, SEXP Diag_OmegaSEXP) {
@@ -565,6 +593,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optim_zipln_M_logS", (DL_FUNC) &_PLNmodels_optim_zipln_M_logS, 9},
     {"_PLNmodels_optim_zipln_M_S_newton", (DL_FUNC) &_PLNmodels_optim_zipln_M_S_newton, 10},
     {"_PLNmodels_cpp_test_packing", (DL_FUNC) &_PLNmodels_cpp_test_packing, 0},
+    {"_PLNmodels_spectral_optimize_rank", (DL_FUNC) &_PLNmodels_spectral_optimize_rank, 3},
+    {"_PLNmodels_spectral_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_spectral_optimize_vestep_rank, 5},
     {"_PLNmodels_get_sandwich_variance_B", (DL_FUNC) &_PLNmodels_get_sandwich_variance_B, 6},
     {NULL, NULL, 0}
 };

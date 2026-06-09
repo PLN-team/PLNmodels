@@ -137,6 +137,14 @@ cpp_test_packing <- function() {
     .Call('_PLNmodels_cpp_test_packing', PACKAGE = 'PLNmodels')
 }
 
+spectral_optimize_rank <- function(data, params, config) {
+    .Call('_PLNmodels_spectral_optimize_rank', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+spectral_optimize_vestep_rank <- function(data, params, B, C, config) {
+    .Call('_PLNmodels_spectral_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, B, C, config)
+}
+
 get_sandwich_variance_B <- function(Y, X, A, S, Sigma, Diag_Omega) {
     .Call('_PLNmodels_get_sandwich_variance_B', PACKAGE = 'PLNmodels', Y, X, A, S, Sigma, Diag_Omega)
 }

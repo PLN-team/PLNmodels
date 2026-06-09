@@ -53,7 +53,6 @@ rbind(
                               "ZIPLN diagonal single", "ZIPLN diagonal column prob", "ZIPLN diagonal row prob", "ZIPLN diagonal covar prob")) %>%
   knitr::kable()
 
-
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks)
 plot(myLDA_tree)
