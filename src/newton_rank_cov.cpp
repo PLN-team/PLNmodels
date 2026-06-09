@@ -14,7 +14,7 @@
 // Update order per iteration: B → C → M → S
 //   B, M : diagonal Newton + Armijo (standard)
 //   C    : diagonal Newton (Gauss-Newton Hessian) + Armijo (full Z and A recomputed)
-//   S    : closed-form fixed-point: logS = -½ log(1 + A*C²)
+//   S    : closed-form exact minimiser in ψ = logS² space: ψ = −log(1 + A·C²)
 
 // [[Rcpp::export]]
 Rcpp::List newton_optimize_rank(
@@ -38,11 +38,11 @@ Rcpp::List newton_optimize_rank(
     const arma::mat Xw  = X.each_col() % w;
     arma::mat Xw2 = X % X; Xw2.each_col() %= w;
 
-    arma::mat C2   = C % C;
-    arma::mat S2   = S % S;
-    arma::mat logS = arma::log(S);
-    arma::mat Z    = O + X * B + M * C.t();
-    arma::mat A    = arma::exp(Z + 0.5 * S2 * C2.t());
+    arma::mat C2  = C % C;
+    arma::mat psi = arma::log(S % S);        // ψ = log(S²), work in logS² space throughout
+    arma::mat S2  = arma::exp(psi);
+    arma::mat Z   = O + X * B + M * C.t();
+    arma::mat A   = arma::exp(Z + 0.5 * S2 * C2.t());
 
     std::vector<double> objective_vec;
     double obj_prev = arma::datum::inf;
@@ -130,18 +130,18 @@ Rcpp::List newton_optimize_rank(
             A   = arma::exp(Z + 0.5 * S2 * C2.t());
         }
 
-        // ---- S step (closed-form fixed-point) ----
-        // From ∂obj/∂Sᵢₖ = 0:  Sᵢₖ = 1/√(1 + (A*C²)ᵢₖ)
+        // ---- S step (exact minimiser in ψ = logS² space) ----
+        // ∂F/∂ψᵢₖ = 0  ⟹  ψᵢₖ = −log(1 + (A·C²)ᵢₖ)
+        // KL term: S² − logS² − 1 = exp(ψ) − ψ − 1
         {
-            logS = arma::clamp(-0.5 * arma::log(1. + A * C2), -20., 0.);
-            S    = arma::exp(logS);
-            S2   = S % S;
-            A    = arma::exp(Z + 0.5 * S2 * C2.t());
+            psi = arma::clamp(-arma::log(1. + A * C2), -40., 0.);
+            S2  = arma::exp(psi);
+            A   = arma::exp(Z + 0.5 * S2 * C2.t());
         }
 
         // ---- Convergence check ----
         double obj = arma::accu(w.t() * (A - Y % Z))
-                   + 0.5 * arma::accu(w.t() * (M % M + S2 - arma::trunc_log(S2) - 1.));
+                   + 0.5 * arma::accu(w.t() * (M % M + S2 - psi - 1.));
         objective_vec.push_back(obj);
         total_iter++;
 
@@ -150,7 +150,8 @@ Rcpp::List newton_optimize_rank(
     }
 
     // ---- Final output ----
-    S2 = S % S;
+    S2 = arma::exp(psi);
+    S  = arma::exp(0.5 * psi);
     Z  = O + X * B + M * C.t();
     A  = arma::exp(Z + 0.5 * S2 * C2.t());
     const double w_bar = arma::accu(w);
@@ -158,7 +159,7 @@ Rcpp::List newton_optimize_rank(
     arma::mat Sigma = C * nSig * C.t() / w_bar;
     arma::mat Omega = C * arma::inv_sympd(nSig / w_bar) * C.t();
     arma::vec loglik = arma::sum(Y % Z - A, 1)
-                     - 0.5 * arma::sum(M % M + S2 - arma::trunc_log(S2) - 1., 1)
+                     - 0.5 * arma::sum(M % M + S2 - psi - 1., 1)
                      + ki(Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
@@ -207,10 +208,10 @@ Rcpp::List newton_optimize_vestep_rank(
     const arma::mat C2  = C % C;
     const arma::mat XB  = X * B;
 
-    arma::mat S2   = S % S;
-    arma::mat logS = arma::log(S);
-    arma::mat Z    = O + XB + M * C.t();
-    arma::mat A    = arma::exp(Z + 0.5 * S2 * C2.t());
+    arma::mat psi = arma::log(S % S);   // ψ = log(S²)
+    arma::mat S2  = arma::exp(psi);
+    arma::mat Z   = O + XB + M * C.t();
+    arma::mat A   = arma::exp(Z + 0.5 * S2 * C2.t());
 
     std::vector<double> objective_vec;
     double obj_prev = arma::datum::inf;
@@ -243,17 +244,16 @@ Rcpp::List newton_optimize_vestep_rank(
             A  = arma::exp(Z + 0.5 * S2 * C2.t());
         }
 
-        // ---- S step (closed-form fixed-point) ----
+        // ---- S step (exact minimiser in ψ = logS² space) ----
         {
-            logS = arma::clamp(-0.5 * arma::log(1. + A * C2), -20., 0.);
-            S    = arma::exp(logS);
-            S2   = S % S;
-            A    = arma::exp(Z + 0.5 * S2 * C2.t());
+            psi = arma::clamp(-arma::log(1. + A * C2), -40., 0.);
+            S2  = arma::exp(psi);
+            A   = arma::exp(Z + 0.5 * S2 * C2.t());
         }
 
         // ---- Convergence check ----
         double obj = arma::accu(w.t() * (A - Y % Z))
-                   + 0.5 * arma::accu(w.t() * (M % M + S2 - arma::trunc_log(S2) - 1.));
+                   + 0.5 * arma::accu(w.t() * (M % M + S2 - psi - 1.));
         objective_vec.push_back(obj);
         total_iter++;
 
@@ -262,11 +262,12 @@ Rcpp::List newton_optimize_vestep_rank(
     }
 
     // ---- Final output ----
-    S2 = S % S;
+    S2 = arma::exp(psi);
+    S  = arma::exp(0.5 * psi);
     Z  = O + XB + M * C.t();
     A  = arma::exp(Z + 0.5 * S2 * C2.t());
     arma::vec loglik = arma::sum(Y % Z - A, 1)
-                     - 0.5 * arma::sum(M % M + S2 - arma::trunc_log(S2) - 1., 1)
+                     - 0.5 * arma::sum(M % M + S2 - psi - 1., 1)
                      + ki(Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
