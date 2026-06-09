@@ -103,6 +103,90 @@ Rcpp::List nlopt_optimize_spherical(
 }
 
 // ---------------------------------------------------------------------------------------
+// Spherical covariance PLN — profiled-B nlopt: B removed from parameter vector, closed-form per eval
+
+// [[Rcpp::export]]
+Rcpp::List nlopt_optimize_spherical_alt(
+    const Rcpp::List & data  ,
+    const Rcpp::List & params,
+    const Rcpp::List & config
+) {
+    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
+    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
+    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
+    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const auto init_B = Rcpp::as<arma::mat>(params["B"]);
+    const auto init_M = Rcpp::as<arma::mat>(params["M"]);
+    const auto init_S = Rcpp::as<arma::mat>(params["S"]);
+
+    const auto metadata = tuple_metadata(init_M, init_S);
+    enum { M_ID, S_ID };
+
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<M_ID>(parameters.data()) = X * init_B + init_M;
+    metadata.map<S_ID>(parameters.data()) = arma::log(init_S % init_S);
+
+    auto optimizer = new_nlopt_optimizer(config, parameters.size());
+    const double w_bar = accu(w);
+    const arma::uword p = Y.n_cols;
+    std::vector<double> objective_vec;
+    objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
+
+    const arma::mat Xw  = X.each_col() % w;
+    const arma::mat P_X = arma::solve(X.t() * Xw, Xw.t());
+
+    auto objective_and_grad = [&](const double * par, double * grad) -> double {
+        const arma::mat M_full = metadata.map<M_ID>(par);
+        const arma::mat logS2  = metadata.map<S_ID>(par);
+        arma::mat S2    = arma::exp(logS2);
+        arma::mat B     = P_X * M_full;
+        arma::mat M_res = M_full - X * B;
+        arma::mat Z     = O + M_full;
+        arma::mat A     = exp(Z + 0.5 * S2);
+        double sigma2   = accu(diagmat(w) * (pow(M_res, 2) + S2)) / (double(p) * w_bar);
+        double objective = accu(w.t() * (A - Y % Z - 0.5 * logS2)) + 0.5 * double(p) * w_bar * log(sigma2);
+        // gradient for M_full = gradient for M_res (envelope theorem for B and sigma2)
+        metadata.map<M_ID>(grad) = diagmat(w) * (M_res / sigma2 + A - Y);
+        metadata.map<S_ID>(grad) = 0.5 * diagmat(w) * (S2 / sigma2 + S2 % A - 1.);
+        objective_vec.push_back(objective);
+        return objective;
+    };
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+
+    arma::mat M_full = metadata.copy<M_ID>(parameters.data());
+    arma::mat logS2  = metadata.copy<S_ID>(parameters.data());
+    arma::mat S2     = arma::exp(logS2);
+    arma::mat S      = arma::exp(0.5 * logS2);
+    arma::mat B      = P_X * M_full;
+    arma::mat M      = M_full - X * B;
+    const double sigma2 = accu(diagmat(w) * (pow(M, 2) + S2)) / (double(p) * w_bar);
+    arma::sp_mat Sigma(p, p); Sigma.diag() = arma::ones<arma::vec>(p) * sigma2;
+    arma::sp_mat Omega(p, p); Omega.diag() = arma::ones<arma::vec>(p) * pow(sigma2, -1);
+    arma::mat Z = O + M_full;
+    arma::mat A = exp(Z + 0.5 * S2);
+    arma::mat loglik = sum(Y % Z - A - 0.5 * (pow(M, 2) + S2) / sigma2 + 0.5 * (logS2 - log(sigma2)), 1) + ki(Y);
+
+    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
+    Ji.attr("weights") = w;
+    return Rcpp::List::create(
+        Rcpp::Named("B", B),
+        Rcpp::Named("M", M),
+        Rcpp::Named("S", S),
+        Rcpp::Named("Z", Z),
+        Rcpp::Named("A", A),
+        Rcpp::Named("Sigma", Sigma),
+        Rcpp::Named("Omega", Omega),
+        Rcpp::Named("Ji", Ji),
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status", static_cast<int>(result.status)),
+            Rcpp::Named("backend", "nlopt_alt"),
+            Rcpp::Named("objective", objective_vec),
+            Rcpp::Named("iterations", result.nb_iterations)
+        ))
+    );
+}
+
+// ---------------------------------------------------------------------------------------
 // VE spherical — nlopt/CCSAQ (M and S only, B and Omega fixed)
 
 // [[Rcpp::export]]
