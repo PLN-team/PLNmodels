@@ -56,21 +56,21 @@ inline void newton_step_B(
     A  = arma::exp(Z + 0.5 * S2);
 }
 
-// ---- Fixed-point update for logS (overflow-safe) ----
+// ---- Fixed-point update for ψ = log(S²) (overflow-safe) ----
+// Exact minimiser of F(ψ) for fixed A: ψ = −log(A + cov_diag).
 // cov_diag: diagonal of Omega broadcast to (n,p) — arma::mat or double (scalar broadcast).
-// Updates A, logS, S, S2 in-place using logS = clamp(min(-½log(A+cov_diag), ½log(700-Z))).
+// Updates A, ψ, S2 = exp(ψ) in-place.  S is not stored: recover via exp(0.5*ψ) at output.
 template<typename CovDiagType>
-inline void fixed_point_logS(
-    arma::mat & logS, arma::mat & S, arma::mat & S2,
+inline void fixed_point_psi(
+    arma::mat & psi, arma::mat & S2,
     const arma::mat & Z, arma::mat & A,
     const CovDiagType & cov_diag
 ) {
     A = arma::exp(Z + 0.5 * S2);
-    const arma::mat logS_cand = -0.5 * arma::log(A + cov_diag);
-    const arma::mat logS_ub   = 0.5 * arma::log(arma::clamp(700. - Z, 1., arma::datum::inf));
-    logS = arma::clamp(arma::min(logS_cand, logS_ub), -20., arma::datum::inf);
-    S    = arma::exp(logS);
-    S2   = S % S;
+    const arma::mat psi_cand = -arma::log(A + cov_diag);
+    const arma::mat psi_ub   = arma::log(arma::clamp(700. - Z, 1., arma::datum::inf));
+    psi = arma::clamp(arma::min(psi_cand, psi_ub), -40., arma::datum::inf);
+    S2  = arma::exp(psi);
 }
 
 // ---- Relative convergence test: |val - prev| < tol * (1 + |prev|) ----

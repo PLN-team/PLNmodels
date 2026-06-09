@@ -22,8 +22,8 @@ Rcpp::List newton_optimize_impl(
     arma::mat Xw2        = X % X; Xw2.each_col() %= w;
     const arma::mat ones_row = arma::ones(n, 1);
 
-    arma::mat S2   = S % S;
-    arma::mat logS = arma::log(S);
+    arma::mat psi = arma::log(S % S);   // ψ = log(S²), work in logS² space throughout
+    arma::mat S2  = arma::exp(psi);
 
     std::vector<double> objective_vec;
     double elbo_prev = -arma::datum::inf;
@@ -33,7 +33,7 @@ Rcpp::List newton_optimize_impl(
     auto inner_loop = [&]() {
         double obj_prev = arma::datum::inf;
         for (int it = 0; it < maxiter; it++) {
-            S2 = S % S;
+            S2 = arma::exp(psi);
             arma::mat Z = O + X * B + M;
             arma::mat A = arma::exp(Z + 0.5 * S2);
 
@@ -57,10 +57,12 @@ Rcpp::List newton_optimize_impl(
             M -= alpha_M * step_M;
             Z  = O + X * B + M;
 
-            fixed_point_logS(logS, S, S2, Z, A, Traits::cov_diag(state, ones_row));
+            // S step: ψ = −log(A + ω²)  — exact minimiser for fixed A
+            fixed_point_psi(psi, S2, Z, A, Traits::cov_diag(state, ones_row));
 
             A = arma::exp(Z + 0.5 * S2);
-            double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * arma::trunc_log(S2)))
+            // KL entropy: S² − log(S²) − 1 = exp(ψ) − ψ − 1
+            double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * psi))
                        + Traits::objective_cov(M, S2, state, w);
             objective_vec.push_back(obj);
             total_iter++;
@@ -74,12 +76,12 @@ Rcpp::List newton_optimize_impl(
         for (int em = 0; em < max_em; em++) {
             inner_loop();
 
-            S2 = S % S;
+            S2 = arma::exp(psi);
             Traits::mstep(state, M, S2, w, w_bar, p);
 
             arma::mat Z = O + X * B + M;
             arma::mat A = arma::exp(Z + 0.5 * S2);
-            double elbo = arma::accu(w.t() * (Y % Z - A + 0.5 * arma::trunc_log(S2)))
+            double elbo = arma::accu(w.t() * (Y % Z - A + 0.5 * psi))
                         + Traits::elbo_cov(state, w_bar, p);
             if (em > 0 && converged(elbo, elbo_prev, em_tol)) { last_status = 3; break; }
             elbo_prev = elbo;
@@ -88,10 +90,11 @@ Rcpp::List newton_optimize_impl(
         inner_loop();
     }
 
-    S2 = S % S;
+    S2 = arma::exp(psi);
+    S  = arma::exp(0.5 * psi);
     arma::mat Z = O + X * B + M;
     arma::mat A = arma::exp(Z + 0.5 * S2);
-    arma::vec loglik = Traits::final_loglik(Y, Z, A, M, S2, state);
+    arma::vec loglik = Traits::final_loglik(Y, Z, A, M, psi, state);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;
@@ -129,15 +132,15 @@ Rcpp::List newton_vestep_impl(
     const arma::mat ones_row = arma::ones(n, 1);
     const arma::mat XB = X * B;
 
-    arma::mat S2   = S % S;
-    arma::mat logS = arma::log(S);
+    arma::mat psi = arma::log(S % S);   // ψ = log(S²)
+    arma::mat S2  = arma::exp(psi);
 
     std::vector<double> objective_vec;
     double obj_prev = arma::datum::inf;
     int total_iter  = 0;
 
     for (int it = 0; it < maxiter; it++) {
-        S2 = S % S;
+        S2 = arma::exp(psi);
         arma::mat Z = O + XB + M;
         arma::mat A = arma::exp(Z + 0.5 * S2);
 
@@ -160,12 +163,12 @@ Rcpp::List newton_vestep_impl(
         M -= alpha_M * step_M;
         Z  = O + XB + M;
 
-        // ---- Fixed-point update for S ----
-        fixed_point_logS(logS, S, S2, Z, A, Traits::cov_diag(state, ones_row));
+        // ---- S step: ψ = −log(A + ω²) — exact minimiser for fixed A ----
+        fixed_point_psi(psi, S2, Z, A, Traits::cov_diag(state, ones_row));
 
         // ---- Objective for convergence ----
         A = arma::exp(Z + 0.5 * S2);
-        double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * arma::trunc_log(S2)))
+        double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * psi))
                    + Traits::objective_cov(M, S2, state, w);
         objective_vec.push_back(obj);
         total_iter++;
@@ -175,10 +178,11 @@ Rcpp::List newton_vestep_impl(
     }
 
     // ---- Final output ----
-    S2 = S % S;
+    S2 = arma::exp(psi);
+    S  = arma::exp(0.5 * psi);
     arma::mat Z = O + XB + M;
     arma::mat A = arma::exp(Z + 0.5 * S2);
-    arma::vec loglik = Traits::final_loglik(Y, Z, A, M, S2, state);
+    arma::vec loglik = Traits::final_loglik(Y, Z, A, M, psi, state);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;

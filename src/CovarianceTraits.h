@@ -59,8 +59,9 @@ struct FullCovTraits {
     }
 
     static arma::vec final_loglik(const arma::mat & Y, const arma::mat & Z, const arma::mat & A,
-                                   const arma::mat & M, const arma::mat & S2, const State & s) {
-        return arma::sum(Y % Z - A + 0.5 * arma::log(S2)
+                                   const arma::mat & M, const arma::mat & psi, const State & s) {
+        const arma::mat S2 = arma::exp(psi);
+        return arma::sum(Y % Z - A + 0.5 * psi
                        - 0.5 * ((M * s.Omega) % M + S2 * arma::diagmat(s.Omega)), 1)
              + 0.5 * std::real(arma::log_det(s.Omega)) + ki(Y);
     }
@@ -124,9 +125,10 @@ struct DiagonalCovTraits {
     }
 
     static arma::vec final_loglik(const arma::mat & Y, const arma::mat & Z, const arma::mat & A,
-                                   const arma::mat & M, const arma::mat & S2, const State & s) {
-        arma::vec omega2_v = s.omega2.t();
-        return arma::sum(Y % Z - A + 0.5 * arma::log(S2), 1)
+                                   const arma::mat & M, const arma::mat & psi, const State & s) {
+        const arma::mat S2    = arma::exp(psi);
+        const arma::vec omega2_v = s.omega2.t();
+        return arma::sum(Y % Z - A + 0.5 * psi, 1)
              - 0.5 * (M % M + S2) * omega2_v
              + 0.5 * arma::accu(arma::log(omega2_v)) + ki(Y);
     }
@@ -160,7 +162,7 @@ struct SphericalCovTraits {
             : omega2(omega_mat(0, 0)), sigma2(1.0 / omega_mat(0, 0)) {}
     };
 
-    // returns double: fixed_point_logS<double> handles scalar broadcast
+    // returns double: fixed_point_psi<double> handles scalar broadcast
     static double cov_diag(const State & s, const arma::mat & /*ones_row*/) {
         return s.omega2;
     }
@@ -193,8 +195,9 @@ struct SphericalCovTraits {
     }
 
     static arma::vec final_loglik(const arma::mat & Y, const arma::mat & Z, const arma::mat & A,
-                                   const arma::mat & M, const arma::mat & S2, const State & s) {
-        return arma::sum(Y % Z - A - 0.5 * (M % M + S2) / s.sigma2 + 0.5 * arma::log(S2 / s.sigma2), 1)
+                                   const arma::mat & M, const arma::mat & psi, const State & s) {
+        const arma::mat S2 = arma::exp(psi);
+        return arma::sum(Y % Z - A - 0.5 * (M % M + S2) / s.sigma2 + 0.5 * (psi - std::log(s.sigma2)), 1)
              + ki(Y);
     }
 
@@ -254,8 +257,9 @@ struct FixedCovTraits {
     }
 
     static arma::vec final_loglik(const arma::mat & Y, const arma::mat & Z, const arma::mat & A,
-                                   const arma::mat & M, const arma::mat & S2, const State & s) {
-        return arma::sum(Y % Z - A + 0.5 * arma::log(S2)
+                                   const arma::mat & M, const arma::mat & psi, const State & s) {
+        const arma::mat S2 = arma::exp(psi);
+        return arma::sum(Y % Z - A + 0.5 * psi
                        - 0.5 * ((M * s.Omega) % M + S2 * arma::diagmat(s.Omega)), 1)
              + 0.5 * std::real(arma::log_det(s.Omega)) + ki(Y);
     }
