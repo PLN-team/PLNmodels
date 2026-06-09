@@ -360,15 +360,14 @@ PLNfit <- R6Class(
         private$M <- start_point$M
         private$S <- start_point$S
       }
-      is_newton <- identical(control$config_optim$algorithm, "NEWTON")
       private$optimizer$main <- if (control$backend == "torch") {
         private$torch_optimize
-      } else if (is_newton) {
+      } else if (control$backend == "homemade") {
         newton_optimize_full
       } else {
         nlopt_optimize_full
       }
-      private$optimizer$vestep <- if (is_newton) newton_optimize_vestep_full else nlopt_optimize_vestep_full
+      private$optimizer$vestep <- if (control$backend == "homemade") newton_optimize_vestep_full else nlopt_optimize_vestep_full
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -743,15 +742,14 @@ PLNfit_diagonal <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      is_newton <- identical(control$config_optim$algorithm, "NEWTON")
       private$optimizer$main <- if (control$backend == "torch") {
         private$torch_optimize
-      } else if (is_newton) {
+      } else if (control$backend == "homemade") {
         newton_optimize_diagonal
       } else {
         nlopt_optimize_diagonal
       }
-      private$optimizer$vestep <- if (is_newton) newton_optimize_vestep_diagonal else nlopt_optimize_vestep_diagonal
+      private$optimizer$vestep <- if (control$backend == "homemade") newton_optimize_vestep_diagonal else nlopt_optimize_vestep_diagonal
     }
   ),
   private = list(
@@ -833,15 +831,14 @@ PLNfit_spherical <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      is_newton <- identical(control$config_optim$algorithm, "NEWTON")
       private$optimizer$main <- if (control$backend == "torch") {
         private$torch_optimize
-      } else if (is_newton) {
+      } else if (control$backend == "homemade") {
         newton_optimize_spherical
       } else {
         nlopt_optimize_spherical
       }
-      private$optimizer$vestep <- if (is_newton) newton_optimize_vestep_spherical else nlopt_optimize_vestep_spherical
+      private$optimizer$vestep <- if (control$backend == "homemade") newton_optimize_vestep_spherical else nlopt_optimize_vestep_spherical
     }
   ),
   private = list(
@@ -927,10 +924,9 @@ PLNfit_fixedcov <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      is_newton <- identical(control$config_optim$algorithm, "NEWTON")
       private$optimizer$main <- if (control$backend == "torch") {
         private$torch_optimize
-      } else if (is_newton) {
+      } else if (control$backend == "homemade") {
         newton_optimize_fixed
       } else {
         nlopt_optimize_fixed

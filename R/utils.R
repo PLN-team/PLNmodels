@@ -1,4 +1,4 @@
-available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2", "NEWTON")
+available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2")
 available_algorithms_torch <- c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")
 
 config_default_nlopt <-
@@ -13,16 +13,13 @@ config_default_nlopt <-
     maxtime       = -1
   )
 
-config_default_nlopt_pln <-
+
+config_default_homemade <-
   list(
-    algorithm     = "NEWTON",
-    backend       = "nlopt",
-    maxeval       = 10000  ,
-    ftol_rel      = 1e-8   ,
-    xtol_rel      = 1e-6   ,
-    ftol_abs      = 0.0    ,
-    xtol_abs      = 0.0    ,
-    maxtime       = -1
+    algorithm = "NEWTON",
+    backend   = "homemade",
+    maxeval   = 10000,
+    ftol_rel  = 1e-8
   )
 
 config_default_torch <-

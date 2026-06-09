@@ -55,7 +55,9 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
-#' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
+#' @param backend optimization back used, either "nlopt", "torch", or "homemade". Default is "nlopt".
+#'   Use "homemade" for the built-in coordinate-Newton optimizer (exact diagonal Newton steps),
+#'   which does not depend on NLOPT.
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "fixed". Default is "full".
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma. Must be specified if `covariance` is "fixed"
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
@@ -99,7 +101,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' @export
 PLN_param <- function(
-    backend       = c("nlopt", "torch"),
+    backend       = c("homemade", "nlopt", "torch"),
     trace         = 1,
     covariance    = c("full", "diagonal", "spherical", "fixed"),
     Omega         = NULL,
@@ -119,14 +121,14 @@ PLN_param <- function(
 
   ## optimization config
   backend <- match.arg(backend)
-  stopifnot(backend %in% c("nlopt", "torch"))
   if (backend == "nlopt") {
     stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-    config_opt <- config_default_nlopt_pln
-  }
-  if (backend == "torch") {
+    config_opt <- config_default_nlopt
+  } else if (backend == "torch") {
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_opt <- config_default_torch
+  } else { # "homemade"
+    config_opt <- config_default_homemade
   }
   config_opt[names(config_optim)] <- config_optim
   config_opt$trace <- trace

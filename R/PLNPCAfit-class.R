@@ -236,15 +236,14 @@ PLNPCAfit <- R6Class(
       #' @description Initialize a [`PLNPCAfit`] object
       initialize = function(rank, responses, covariates, offsets, weights, formula, control) {
         super$initialize(responses, covariates, offsets, weights, formula, control)
-        is_newton <- identical(control$config_optim$algorithm, "NEWTON")
         if (control$backend == "torch") {
           private$optimizer$main <- private$torch_optimize_rank
-        } else if (is_newton) {
+        } else if (control$backend == "homemade") {
           private$optimizer$main <- newton_optimize_rank
         } else {
           private$optimizer$main <- nlopt_optimize_rank
         }
-        private$optimizer$vestep <- if (is_newton) newton_optimize_vestep_rank else nlopt_optimize_vestep_rank
+        private$optimizer$vestep <- if (control$backend == "homemade") newton_optimize_vestep_rank else nlopt_optimize_vestep_rank
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {

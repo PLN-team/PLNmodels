@@ -61,7 +61,9 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'
 #' Helper to define list of parameters to control the PLNPCA fit. All arguments have defaults.
 #'
-#' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
+#' @param backend optimization back used, either "nlopt", "torch", or "homemade". Default is "nlopt".
+#'   Use "homemade" for the built-in coordinate-Newton optimizer (exact diagonal Newton steps for
+#'   B, M, C, and closed-form update for S in log(S²) space), which does not depend on NLOPT.
 #' @param trace a integer for verbosity.
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
 #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
@@ -79,7 +81,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #' @inherit PLN_param details
 #' @export
 PLNPCA_param <- function(
-    backend       = c("nlopt", "torch"),
+    backend       = c("nlopt", "torch", "homemade"),
     trace         = 1      ,
     config_optim  = list() ,
     config_post   = list() ,
@@ -96,14 +98,14 @@ PLNPCA_param <- function(
 
   ## optimization config
   backend <- match.arg(backend)
-  stopifnot(backend %in% c("nlopt", "torch"))
   if (backend == "nlopt") {
     stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
     config_opt <- config_default_nlopt
-  }
-  if (backend == "torch") {
+  } else if (backend == "torch") {
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_opt <- config_default_torch
+  } else { # "homemade"
+    config_opt <- config_default_homemade
   }
   config_opt[names(config_optim)] <- config_optim
   config_opt$trace <- trace
