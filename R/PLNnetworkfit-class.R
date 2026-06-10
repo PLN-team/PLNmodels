@@ -53,8 +53,8 @@ PLNnetworkfit <- R6Class(
     #' @param config a list for controlling the optimization
     optimize = function(data, config) {
       cond <- FALSE; iter <- 0
-      objective   <- numeric(config$maxit_out)
-      convergence <- numeric(config$maxit_out)
+      objective   <- numeric(config$maxit_em)
+      convergence <- numeric(config$maxit_em)
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
       args <- list(data   = list(Y = data$Y, X = data$X, O = data$O, w = data$w),
@@ -76,7 +76,7 @@ PLNnetworkfit <- R6Class(
         ## Check convergence
         objective[iter]   <- -self$loglik # + self$penalty * sum(abs(private$Omega))
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
-        if ((convergence[iter] < config$ftol_out) | (iter >= config$maxit_out)) cond <- TRUE
+        if ((convergence[iter] < config$ftol_em) | (iter >= config$maxit_em)) cond <- TRUE
 
         ## Prepare next iterate
         args$params <- list(B = private$B, M = private$M, S = private$S)

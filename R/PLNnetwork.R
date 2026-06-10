@@ -69,8 +69,8 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @return list of parameters configuring the fit.
 #' @inherit PLN_param details
 #' @details See [PLN_param()] for a full description of the generic optimization parameters. PLNnetwork_param() also has two additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:
-#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6
-#' * "maxit_out" outer solver stops when the number of iteration exceeds maxit_out. Default is 50
+#' * "ftol_em" outer alternating solver stops when the objective changes by less than ftol_em (relative). Default is 1e-5
+#' * "maxit_em" outer alternating solver stops when the number of iterations exceeds maxit_em. Default is 20
 #'
 #' @seealso [PLN_param()]
 #' @export
@@ -107,8 +107,8 @@ PLNnetwork_param <- function(
   }
   inception_cov <- match.arg(inception_cov)
   config_opt$trace <- trace
-  config_opt$ftol_out  <- 1e-5
-  config_opt$maxit_out <- 20
+  config_opt$ftol_em  <- 1e-5
+  config_opt$maxit_em <- 20
   config_opt[names(config_optim)] <- config_optim
 
   structure(list(

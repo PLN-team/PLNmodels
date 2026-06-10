@@ -82,8 +82,8 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 #'
 #' @return list of parameters configuring the fit.
 #' @details See [PLN_param()] for a full description of the generic optimization parameters. PLNmixture_param() also has additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:
-#' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
-#' * "maxit_out" outer solver stops when the number of iteration exceeds maxit_out. Default is 50
+#' * "ftol_em" outer EM solver stops when the objective changes by less than ftol_em (relative). Default is 1e-3
+#' * "maxit_em" outer EM solver stops when the number of iterations exceeds maxit_em. Default is 50
 #' * "it_smooth" number of the iterations of the smoothing procedure. Default is 1.
 #'
 #' @seealso [PLN_param()]
@@ -116,8 +116,8 @@ PLNmixture_param <- function(
   } else { # "homemade" or "hybrid"
     config_opt <- config_default_homemade
   }
-  config_opt$ftol_out  <- 1e-3
-  config_opt$maxit_out <- 50
+  config_opt$ftol_em  <- 1e-3
+  config_opt$maxit_em <- 50
   config_opt$it_smooth <- 1
   config_opt[names(config_optim)] <- config_optim
   config_opt$trace <- trace

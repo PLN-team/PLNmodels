@@ -50,8 +50,8 @@ Helper to define list of parameters to control the PLN fit. All arguments have d
 \details{
 See \code{\link[=PLN_param]{PLN_param()}} for a full description of the generic optimization parameters. PLNnetwork_param() also has two additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:
 \itemize{
-\item "ftol_out" outer solver stops when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-6
-\item "maxit_out" outer solver stops when the number of iteration exceeds maxit_out. Default is 50
+\item "ftol_em" outer alternating solver stops when the objective changes by less than ftol_em (relative). Default is 1e-5
+\item "maxit_em" outer alternating solver stops when the number of iterations exceeds maxit_em. Default is 20
 }
 }
 \seealso{
