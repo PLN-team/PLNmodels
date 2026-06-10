@@ -84,11 +84,16 @@ PLNLDAfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Post treatment --------------------
     #' @description  Update R2, fisher and std_err fields and visualization
+    #' @param grouping a factor with group memberships
+    #' @param responses the matrix of responses (counts)
+    #' @param covariates the matrix of covariates
+    #' @param offsets the matrix of offsets
+    #' @param weights an optional vector of observation weights. Default is uniform weights.
     #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).
     #' @param config_optim list controlling the optimization parameters
-    postTreatment = function(grouping, responses, covariates, offsets, config_post, config_optim) {
+    postTreatment = function(grouping, responses, covariates, offsets, weights = rep(1, nrow(responses)), config_post, config_optim) {
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
-      super$postTreatment(responses, covariates, offsets, config_post = config_post, config_optim = config_optim)
+      super$postTreatment(responses, covariates, offsets, weights, config_post = config_post, config_optim = config_optim)
       rownames(private$C) <- colnames(private$C) <- colnames(responses)
       colnames(private$S) <- 1:self$q
       if (config_post$trace > 1) cat("\n\tCompute LD scores for visualization...")
@@ -406,16 +411,9 @@ PLNLDAfit_diagonal <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
       super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main <- if (control$backend == "torch") {
-        private$torch_optimize
-      } else if (control$backend == "homemade") {
-        newton_optimize_diagonal
-      } else if (control$backend == "hybrid") {
-        make_hybrid_optimizer(nlopt_optimize_diagonal, newton_optimize_diagonal)
-      } else {
-        nlopt_optimize_diagonal
-      }
-      private$optimizer$vestep <- if (control$backend %in% c("homemade", "hybrid")) newton_optimize_vestep_diagonal else nlopt_optimize_vestep_diagonal
+      private$setup_optimizer(control$backend,
+        nlopt_optimize_diagonal,         newton_optimize_diagonal,
+        nlopt_optimize_vestep_diagonal,  newton_optimize_vestep_diagonal)
     }
   ),
   private = list(
@@ -440,13 +438,12 @@ PLNLDAfit_diagonal <- R6Class(
     },
 
     torch_vloglik = function(data, params) {
-      S2 <- torch_pow(params$S, 2)
+      S2 <- torch_square(params$S)
       omega_diag <- torch_pow(private$torch_sigma_diag(data, params), -1)
-
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
         .5 * sum(torch_log(omega_diag)) +
-          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
-          .5 * torch_matmul(torch_pow(params$M, 2) + S2, omega_diag)
+          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2) -
+                      .5 * (torch_square(params$M) + S2) * omega_diag[NULL,], dim = 2)
       )
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
@@ -504,16 +501,9 @@ PLNLDAfit_spherical <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
       super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main <- if (control$backend == "torch") {
-        private$torch_optimize
-      } else if (control$backend == "homemade") {
-        newton_optimize_spherical
-      } else if (control$backend == "hybrid") {
-        make_hybrid_optimizer(nlopt_optimize_spherical, newton_optimize_spherical)
-      } else {
-        nlopt_optimize_spherical
-      }
-      private$optimizer$vestep <- if (control$backend %in% c("homemade", "hybrid")) newton_optimize_vestep_spherical else nlopt_optimize_vestep_spherical
+      private$setup_optimizer(control$backend,
+        nlopt_optimize_spherical,         newton_optimize_spherical,
+        nlopt_optimize_vestep_spherical,  newton_optimize_vestep_spherical)
     }
   ),
   private = list(

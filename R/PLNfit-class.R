@@ -58,6 +58,7 @@ PLNfit <- R6Class(
     A          = NA    , # matrix of expected counts (under variational approximation)
     Ji         = NA    , # element-wise approximated loglikelihood
     R2         = NA    , # approximated goodness of fit criterion
+    w          = NULL  , # observation weights, stored at initialization
     optimizer  = list(), # list of links to the functions doing the optimization
     monitoring = list(), # list with optimization monitoring quantities
 
@@ -322,6 +323,24 @@ PLNfit <- R6Class(
       lmin   <- logLikPoisson(responses, nullModel, weights)
       lmax   <- logLikPoisson(responses, log(responses), weights)
       private$R2 <- (loglik - lmin) / (lmax - lmin)
+    },
+
+    ## Set optimizer$main and (optionally) optimizer$vestep from the four covariance-specific
+    ## C++ functions. Called by every subclass initialize() so the dispatch logic lives once.
+    setup_optimizer = function(backend, nlopt_fn, newton_fn,
+                               nlopt_vestep_fn = NULL, newton_vestep_fn = NULL) {
+      private$optimizer$main <- if (backend == "torch") {
+        private$torch_optimize
+      } else if (backend == "homemade") {
+        newton_fn
+      } else if (backend == "hybrid") {
+        make_hybrid_optimizer(nlopt_fn, newton_fn)
+      } else {
+        nlopt_fn
+      }
+      if (!is.null(nlopt_vestep_fn))
+        private$optimizer$vestep <-
+          if (backend %in% c("homemade", "hybrid")) newton_vestep_fn else nlopt_vestep_fn
     }
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -345,6 +364,7 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses); d <- ncol(covariates)
       ## set up various quantities
       private$formula <- formula # user formula call
+      private$w       <- weights
       ## initialize the variational parameters
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -360,16 +380,9 @@ PLNfit <- R6Class(
         private$M <- start_point$M
         private$S <- start_point$S
       }
-      private$optimizer$main <- if (control$backend == "torch") {
-        private$torch_optimize
-      } else if (control$backend == "homemade") {
-        newton_optimize_full
-      } else if (control$backend == "hybrid") {
-        make_hybrid_optimizer(nlopt_optimize_full, newton_optimize_full)
-      } else {
-        nlopt_optimize_full
-      }
-      private$optimizer$vestep <- if (control$backend %in% c("homemade", "hybrid")) newton_optimize_vestep_full else nlopt_optimize_vestep_full
+      private$setup_optimizer(control$backend,
+        nlopt_optimize_full,         newton_optimize_full,
+        nlopt_optimize_vestep_full,  newton_optimize_vestep_full)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -387,16 +400,16 @@ PLNfit <- R6Class(
     #' @param monitoring a list with optimization monitoring quantities
     #' @return Update the current [`PLNfit`] object
     update = function(B=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
-      if (!anyNA(B))      private$B  <- B
-      if (!anyNA(Sigma))      private$Sigma  <- Sigma
-      if (!anyNA(Omega))      private$Omega  <- Omega
-      if (!anyNA(M))          private$M      <- M
-      if (!anyNA(S))          private$S      <- S
-      if (!anyNA(Z))          private$Z      <- Z
-      if (!anyNA(A))          private$A      <- A
-      if (!anyNA(Ji))         private$Ji     <- Ji
-      if (!anyNA(R2))         private$R2     <- R2
-      if (!anyNA(monitoring)) private$monitoring <- monitoring
+      if (!identical(B,          NA)) private$B          <- B
+      if (!identical(Sigma,      NA)) private$Sigma      <- Sigma
+      if (!identical(Omega,      NA)) private$Omega      <- Omega
+      if (!identical(M,          NA)) private$M          <- M
+      if (!identical(S,          NA)) private$S          <- S
+      if (!identical(Z,          NA)) private$Z          <- Z
+      if (!identical(A,          NA)) private$A          <- A
+      if (!identical(Ji,         NA)) private$Ji         <- Ji
+      if (!identical(R2,         NA)) private$R2         <- R2
+      if (!identical(monitoring, NA)) private$monitoring <- monitoring
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -672,7 +685,7 @@ PLNfit <- R6Class(
     #' @field var_par a list with the matrices of the variational parameters: M (means) and S2 (variances)
     var_par    = function() {list(M = private$M, S2 = private$S**2, S = private$S)},
     #' @field optim_par a list with parameters useful for monitoring the optimization
-    optim_par  = function() {c(private$monitoring, backend = private$backend)},
+    optim_par  = function() {private$monitoring},
     #' @field latent a matrix: values of the latent vector (Z in the model)
     latent     = function() {private$Z},
     #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
@@ -684,9 +697,13 @@ PLNfit <- R6Class(
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"full"},
     #' @field weights observational weights
-    weights     = function() {as.numeric(attr(private$Ji, "weights"))},
+    weights     = function() {private$w},
     #' @field loglik (weighted) variational lower bound of the loglikelihood
-    loglik     = function() {sum(self$weights[self$weights > .Machine$double.eps] * private$Ji[self$weights > .Machine$double.eps]) },
+    loglik     = function() {
+      if (!is.numeric(private$Ji)) return(0)
+      w <- self$weights
+      sum(w[w > .Machine$double.eps] * private$Ji[w > .Machine$double.eps])
+    },
     #' @field loglik_vec element-wise variational lower bound of the loglikelihood
     loglik_vec = function() {private$Ji},
     #' @field AIC variational lower bound of the AIC
@@ -742,16 +759,9 @@ PLNfit_diagonal <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main <- if (control$backend == "torch") {
-        private$torch_optimize
-      } else if (control$backend == "homemade") {
-        newton_optimize_diagonal
-      } else if (control$backend == "hybrid") {
-        make_hybrid_optimizer(nlopt_optimize_diagonal, newton_optimize_diagonal)
-      } else {
-        nlopt_optimize_diagonal
-      }
-      private$optimizer$vestep <- if (control$backend %in% c("homemade", "hybrid")) newton_optimize_vestep_diagonal else nlopt_optimize_vestep_diagonal
+      private$setup_optimizer(control$backend,
+        nlopt_optimize_diagonal,         newton_optimize_diagonal,
+        nlopt_optimize_vestep_diagonal,  newton_optimize_vestep_diagonal)
     }
   ),
   private = list(
@@ -833,16 +843,9 @@ PLNfit_spherical <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main <- if (control$backend == "torch") {
-        private$torch_optimize
-      } else if (control$backend == "homemade") {
-        newton_optimize_spherical
-      } else if (control$backend == "hybrid") {
-        make_hybrid_optimizer(nlopt_optimize_spherical, newton_optimize_spherical)
-      } else {
-        nlopt_optimize_spherical
-      }
-      private$optimizer$vestep <- if (control$backend %in% c("homemade", "hybrid")) newton_optimize_vestep_spherical else nlopt_optimize_vestep_spherical
+      private$setup_optimizer(control$backend,
+        nlopt_optimize_spherical,         newton_optimize_spherical,
+        nlopt_optimize_vestep_spherical,  newton_optimize_vestep_spherical)
     }
   ),
   private = list(
@@ -928,16 +931,7 @@ PLNfit_fixedcov <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main <- if (control$backend == "torch") {
-        private$torch_optimize
-      } else if (control$backend == "homemade") {
-        newton_optimize_fixed
-      } else if (control$backend == "hybrid") {
-        make_hybrid_optimizer(nlopt_optimize_fixed, newton_optimize_fixed)
-      } else {
-        nlopt_optimize_fixed
-      }
-      ## ve step is the same as in the fully parameterized covariance
+      private$setup_optimizer(control$backend, nlopt_optimize_fixed, newton_optimize_fixed)
       private$Omega <- control$Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields

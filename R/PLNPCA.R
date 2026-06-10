@@ -98,17 +98,8 @@ PLNPCA_param <- function(
 
   ## optimization config
   backend <- match.arg(backend)
-  if (backend == "nlopt") {
-    stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-    config_opt <- config_default_nlopt
-  } else if (backend == "torch") {
-    stopifnot(config_optim$algorithm %in% available_algorithms_torch)
-    config_opt <- config_default_torch
-  } else { # "homemade" — spectral gradient method
-    config_opt <- config_default_spectral
-  }
-  config_opt[names(config_optim)] <- config_optim
-  config_opt$trace <- trace
+  config_opt <- make_config_optim(backend, config_optim, trace,
+                                  homemade_default = config_default_spectral)
   config_opt$sequential <- sequential
 
   structure(list(

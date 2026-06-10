@@ -138,6 +138,7 @@ latent space, update corresponding fields
   responses,
   covariates,
   offsets,
+  weights = rep(1, nrow(responses)),
   config_post,
   config_optim
 )}
@@ -146,10 +147,11 @@ latent space, update corresponding fields
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
-      \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-      \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-      \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{grouping}}{a factor with group memberships}
+      \item{\code{responses}}{the matrix of responses (counts)}
+      \item{\code{covariates}}{the matrix of covariates}
+      \item{\code{offsets}}{the matrix of offsets}
+      \item{\code{weights}}{an optional vector of observation weights. Default is uniform weights.}
       \item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).}
       \item{\code{config_optim}}{list controlling the optimization parameters}
     }

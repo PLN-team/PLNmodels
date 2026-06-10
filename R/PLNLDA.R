@@ -55,7 +55,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = PLNLDA_pa
   myLDA$optimize(grouping, args$Y, args$X, args$O, args$w, control$config_optim)
 
   ## Post-treatment: prepare LDA visualization
-  myLDA$postTreatment(grouping, args$Y, args$X, args$O, control$config_post, control$config_optim)
+  myLDA$postTreatment(grouping, args$Y, args$X, args$O, args$w, control$config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   myLDA
@@ -95,18 +95,7 @@ PLNLDA_param <- function(
   config_pst$trace <- trace
 
   ## optimization config
-  backend <- match.arg(backend)
-  if (backend == "nlopt") {
-    stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-    config_opt <- config_default_nlopt
-  } else if (backend == "torch") {
-    stopifnot(config_optim$algorithm %in% available_algorithms_torch)
-    config_opt <- config_default_torch
-  } else { # "homemade" or "hybrid"
-    config_opt <- config_default_homemade
-  }
-  config_opt[names(config_optim)] <- config_optim
-  config_opt$trace <- trace
+  config_opt <- make_config_optim(backend, config_optim, trace)
 
   structure(list(
     backend       = backend   ,

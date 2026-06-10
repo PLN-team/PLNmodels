@@ -287,10 +287,10 @@ are carried over; new columns are padded using the inception SVD (C) or zeros/0.
   responses,
   covariates,
   offsets,
-  weights,
+  weights = rep(1, nrow(responses)),
   config_post,
   config_optim,
-  nullModel
+  nullModel = NULL
 )}
     \if{html}{\out{</div>}}
   }

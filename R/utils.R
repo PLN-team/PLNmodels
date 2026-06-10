@@ -79,6 +79,29 @@ config_default_torch <-
     device        = "cpu"
   )
 
+## Build the optimizer config list from a backend name and user overrides.
+## `homemade_default` lets PLNPCA pass config_default_spectral instead of config_default_homemade.
+## `extra` is a named list of additional defaults applied BEFORE user overrides (so the user can
+## still override them), used for outer-loop parameters like ftol_em/maxit_em in PLNnetwork and
+## PLNmixture.
+make_config_optim <- function(backend, config_optim, trace,
+                              homemade_default = config_default_homemade,
+                              extra = list()) {
+  config_opt <- if (backend == "nlopt") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
+    config_default_nlopt
+  } else if (backend == "torch") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_torch)
+    config_default_torch
+  } else {
+    homemade_default
+  }
+  config_opt$trace <- trace
+  config_opt[names(extra)] <- extra
+  config_opt[names(config_optim)] <- config_optim
+  config_opt
+}
+
 config_post_default_PLN <-
   list(
     jackknife       = FALSE,

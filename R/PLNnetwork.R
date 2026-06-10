@@ -96,20 +96,9 @@ PLNnetwork_param <- function(
 
   ## optimization config
   backend <- match.arg(backend)
-  if (backend == "nlopt") {
-    stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-    config_opt <- config_default_nlopt
-  } else if (backend == "torch") {
-    stopifnot(config_optim$algorithm %in% available_algorithms_torch)
-    config_opt <- config_default_torch
-  } else { # "homemade" or "hybrid"
-    config_opt <- config_default_homemade
-  }
   inception_cov <- match.arg(inception_cov)
-  config_opt$trace <- trace
-  config_opt$ftol_em  <- 1e-5
-  config_opt$maxit_em <- 20
-  config_opt[names(config_optim)] <- config_optim
+  config_opt <- make_config_optim(backend, config_optim, trace,
+                                  extra = list(ftol_em = 1e-5, maxit_em = 20))
 
   structure(list(
     backend           = backend          ,
