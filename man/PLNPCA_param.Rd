@@ -5,15 +5,18 @@
 \title{Control of PLNPCA fit}
 \usage{
 PLNPCA_param(
-  backend = c("nlopt", "torch"),
+  backend = c("nlopt", "torch", "homemade"),
   trace = 1,
   config_optim = list(),
   config_post = list(),
-  inception = NULL
+  inception = NULL,
+  sequential = FALSE
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt" or "torch". Default is "nlopt"}
+\item{backend}{optimization back used, either "nlopt", "torch", or "homemade". Default is "nlopt".
+Use "homemade" for the built-in coordinate-Newton optimizer (exact diagonal Newton steps for
+B, M, C, and closed-form update for S in log(S²) space), which does not depend on NLOPT.}
 
 \item{trace}{a integer for verbosity.}
 
@@ -24,6 +27,12 @@ PLNPCA_param(
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.}
+
+\item{sequential}{logical. If \code{TRUE}, ranks are fitted in ascending order and each model is
+warm-started from the converged solution of the previous rank: loadings C are augmented
+with new columns from the inception SVD, while latent scores M and variances S are
+padded with zeros / 0.1 respectively. Disables parallel fitting across ranks.
+Default is \code{FALSE}.}
 }
 \value{
 list of parameters configuring the fit.

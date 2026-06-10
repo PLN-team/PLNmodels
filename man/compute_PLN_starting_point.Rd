@@ -32,7 +32,7 @@ data(barents)
 Y <- barents$Abundance
 X <- model.matrix(Abundance ~ Latitude + Longitude + Depth + Temperature, data = barents)
 O <- log(barents$Offset)
-w <-- rep(1, nrow(Y))
+w <- rep(1, nrow(Y))
 compute_PLN_starting_point(Y, X, O, w)
 }
 

@@ -5,7 +5,7 @@
 \title{Control of a PLNmixture fit}
 \usage{
 PLNmixture_param(
-  backend = "nlopt",
+  backend = c("homemade", "nlopt", "hybrid", "torch"),
   trace = 1,
   covariance = "spherical",
   init_cl = "kmeans",
@@ -16,7 +16,7 @@ PLNmixture_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt" or "torch". Default is "nlopt"}
+\item{backend}{optimization back used, either "homemade", "nlopt", "hybrid" or "torch". Default is "homemade".}
 
 \item{trace}{a integer for verbosity.}
 

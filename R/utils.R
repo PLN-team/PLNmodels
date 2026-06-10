@@ -122,26 +122,6 @@ config_post_default_PLNmixture <-
     sandwich_var    = FALSE
   )
 
-status_to_message <- function(status) {
-  message <- switch(as.character(status),
-                    "1"  = "success",
-                    "2"  = "success, stopval was reached",
-                    "3"  = "success, ftol_rel or ftol_abs was reached",
-                    "4"  = "success, xtol_rel or xtol_abs was reached",
-                    "5"  = "success, maxeval was reached",
-                    "6"  = "success, maxtime was reached",
-                    "-1" = "failure",
-                    "-2" = "invalid arguments",
-                    "-3" = "out of memory.",
-                    "-4" = "roundoff errors led to a breakdown of the optimization algorithm",
-                    "-5" = "forced termination:",
-                    "Return status not recognized"
-  )
-  message
-}
-
-trace <- function(x) sum(diag(x))
-
 .xlogx <- function(x) ifelse(x < .Machine$double.eps, 0, x*log(x))
 
 .softmax <- function(x) {
@@ -227,16 +207,6 @@ edge_to_node <- function(x, n = max(x)) {
   i <- x - j.grid[j]
   ## Renumber i and j starting from 1 to stick with R convention
   return(data.frame(node1 = i + 1, node2 = j + 1))
-}
-
-node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
-  ## Convert node labels to integers (starting from 0)
-  x <- match(x, node.set) - 1
-  y <- match(y, node.set) - 1
-  ## For each pair (x,y) return, corresponding edge number
-  n <- length(node.set)
-  j.grid <- cumsum(0:(n - 1))
-  x + j.grid[y] + 1
 }
 
 #' @title PLN RNG
@@ -329,7 +299,7 @@ create_parameters <- function(
 #' Y <- barents$Abundance
 #' X <- model.matrix(Abundance ~ Latitude + Longitude + Depth + Temperature, data = barents)
 #' O <- log(barents$Offset)
-#' w <-- rep(1, nrow(Y))
+#' w <- rep(1, nrow(Y))
 #' compute_PLN_starting_point(Y, X, O, w)
 #' }
 #'

@@ -5,7 +5,7 @@
 \title{Control of PLNnetwork fit}
 \usage{
 PLNnetwork_param(
-  backend = c("nlopt", "torch"),
+  backend = c("nlopt", "homemade", "hybrid", "torch"),
   inception_cov = c("full", "spherical", "diagonal"),
   trace = 1,
   n_penalties = 30,
@@ -18,7 +18,8 @@ PLNnetwork_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt" or "torch". Default is "nlopt"}
+\item{backend}{optimization back used, either "nlopt", "homemade", "hybrid" or "torch". Default is "nlopt".
+Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "homemade".}
 
 \item{inception_cov}{Covariance structure used for the inception model used to initialize the PLNfamily. Defaults to "full" and can be constrained to "diagonal" and "spherical".}
 

@@ -121,7 +121,6 @@ PLNnetwork_param <- function(
     penalty_weights   = penalty_weights  ,
     jackknife         = FALSE            ,
     bootstrap         = 0                ,
-    variance          = TRUE             ,
     config_post       = config_pst       ,
     config_optim      = config_opt       ,
     inception         = inception       ), class = "PLNmodels_param")

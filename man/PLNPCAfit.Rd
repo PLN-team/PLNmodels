@@ -59,6 +59,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \subsection{Public methods}{
   \itemize{
     \item \href{#method-PLNPCAfit-initialize}{\code{PLNPCAfit$new()}}
+    \item \href{#method-PLNPCAfit-warm_start_from}{\code{PLNPCAfit$warm_start_from()}}
     \item \href{#method-PLNPCAfit-update}{\code{PLNPCAfit$update()}}
     \item \href{#method-PLNPCAfit-optimize}{\code{PLNPCAfit$optimize()}}
     \item \href{#method-PLNPCAfit-optimize_vestep}{\code{PLNPCAfit$optimize_vestep()}}
@@ -99,6 +100,28 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
       \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
       \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
       \item{\code{control}}{a list for controlling the optimization. See details.}
+    }
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNPCAfit-warm_start_from"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-warm_start_from}{}}}
+\subsection{\code{PLNPCAfit$warm_start_from()}}{
+  Reinitialize parameters for sequential warm-starting from a lower-rank fit.
+Fitted loadings C, scores M, variances S, and regression coefficients B from \code{prev_fit}
+are carried over; new columns are padded using the inception SVD (C) or zeros/0.1 (M/S).
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$warm_start_from(prev_fit, svdM)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{prev_fit}}{a converged \code{\link{PLNPCAfit}} of rank \code{self$rank - k} (k >= 1)}
+      \item{\code{svdM}}{the inception SVD (from \code{PLNPCAfamily})}
     }
     \if{html}{\out{</div>}}
   }

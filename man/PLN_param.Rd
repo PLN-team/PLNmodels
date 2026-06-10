@@ -5,7 +5,7 @@
 \title{Control of a PLN fit}
 \usage{
 PLN_param(
-  backend = c("nlopt", "torch"),
+  backend = c("homemade", "nlopt", "hybrid", "torch"),
   trace = 1,
   covariance = c("full", "diagonal", "spherical", "fixed"),
   Omega = NULL,
@@ -15,7 +15,9 @@ PLN_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt" or "torch". Default is "nlopt"}
+\item{backend}{optimization back used, either "homemade" (default), "nlopt", "hybrid" or "torch".
+"homemade" is the built-in envelope-theorem Newton optimizer (does not depend on NLOPT).
+"hybrid" runs nlopt first for basin finding, then switches to homemade for refinement.}
 
 \item{trace}{a integer for verbosity.}
 

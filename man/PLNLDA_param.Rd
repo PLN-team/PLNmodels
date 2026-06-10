@@ -5,7 +5,7 @@
 \title{Control of a PLNLDA fit}
 \usage{
 PLNLDA_param(
-  backend = c("nlopt", "torch"),
+  backend = c("homemade", "nlopt", "hybrid", "torch"),
   trace = 1,
   covariance = c("full", "diagonal", "spherical"),
   config_post = list(),

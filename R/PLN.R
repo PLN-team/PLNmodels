@@ -36,7 +36,6 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
       "diagonal"  = PLNfit_diagonal$new(args$Y, args$X, args$O, args$w, args$formula, control),
       "spherical" = PLNfit_spherical$new(args$Y, args$X, args$O, args$w, args$formula, control),
       "fixed"     = PLNfit_fixedcov$new(args$Y, args$X, args$O, args$w, args$formula, control),
-      # "genet"     = PLNfit_$new(args$Y, args$X, args$O, args$w, args$formula, control),
                     PLNfit$new(args$Y, args$X, args$O, args$w, args$formula, control)) # default: full covariance
 
   ## optimization
@@ -55,9 +54,9 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
-#' @param backend optimization back used, either "nlopt", "torch", or "homemade". Default is "nlopt".
-#'   Use "homemade" for the built-in coordinate-Newton optimizer (exact diagonal Newton steps),
-#'   which does not depend on NLOPT.
+#' @param backend optimization back used, either "homemade" (default), "nlopt", "hybrid" or "torch".
+#'   "homemade" is the built-in envelope-theorem Newton optimizer (does not depend on NLOPT).
+#'   "hybrid" runs nlopt first for basin finding, then switches to homemade for refinement.
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "fixed". Default is "full".
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma. Must be specified if `covariance` is "fixed"
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
