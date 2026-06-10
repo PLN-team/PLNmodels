@@ -36,3 +36,4 @@
 ^AUTHORS$
 ^dev$
 ^\.claude$
+^DEVLOG.*\.md$
