@@ -32,7 +32,7 @@ Rcpp::List newton_optimize_rank(
     arma::mat S = Rcpp::as<arma::mat>(params["S"]);
 
     const int    maxiter = config.containsElementNamed("maxeval")  ? Rcpp::as<int>(config["maxeval"])     : 200;
-    const double ftol    = config.containsElementNamed("ftol_rel") ? Rcpp::as<double>(config["ftol_rel"]) : 1e-8;
+    const double ftol    = config.containsElementNamed("ftol_in") ? Rcpp::as<double>(config["ftol_in"]) : 1e-8;
 
     const arma::uword n = Y.n_rows;
     const arma::uword q = C.n_cols;
@@ -221,7 +221,7 @@ Rcpp::List newton_optimize_vestep_rank(
     arma::mat S = Rcpp::as<arma::mat>(params["S"]);
 
     const int    maxiter = config.containsElementNamed("maxeval")  ? Rcpp::as<int>(config["maxeval"])     : 200;
-    const double ftol    = config.containsElementNamed("ftol_rel") ? Rcpp::as<double>(config["ftol_rel"]) : 1e-8;
+    const double ftol    = config.containsElementNamed("ftol_in") ? Rcpp::as<double>(config["ftol_in"]) : 1e-8;
 
     const arma::uword n = Y.n_rows;
     const arma::uword q = C.n_cols;

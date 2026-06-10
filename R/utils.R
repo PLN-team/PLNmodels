@@ -19,7 +19,7 @@ config_default_homemade <-
     algorithm = "NEWTON",
     backend   = "homemade",
     maxeval   = 10000,
-    ftol_rel  = 1e-8,
+    ftol_in   = 1e-8,
     maxit_em  = 50,
     ftol_em   = 1e-8
   )
@@ -33,7 +33,7 @@ make_hybrid_optimizer <- function(opt_nlopt, opt_newton) {
     # Phase 1: nlopt config with 10× looser tolerance for fast basin finding
     config1 <- modifyList(config_default_nlopt, list(
       maxeval  = config$maxeval,
-      ftol_rel = config$ftol_rel * 10
+      ftol_rel = config$ftol_in * 10
     ))
     res1 <- opt_nlopt(data, params, config1)
     params2 <- modifyList(params, list(B = res1$B, M = res1$M, S = res1$S))
@@ -57,7 +57,7 @@ config_default_spectral <-
     algorithm = "SPECTRAL",
     backend   = "homemade",
     maxeval   = 10000,
-    ftol_rel  = 1e-9
+    ftol_in   = 1e-9
   )
 
 config_default_torch <-

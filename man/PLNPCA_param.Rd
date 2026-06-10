@@ -71,7 +71,7 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 When "homemade" or "hybrid" backend is used, the following entries are relevant
 \itemize{
 \item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
-\item "ftol_rel" stop the inner loop when the objective changes by less than ftol_rel (relative). Default is 1e-8
+\item "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8
 \item "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
 \item "ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8
 }

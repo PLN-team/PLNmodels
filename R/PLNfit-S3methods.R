@@ -189,6 +189,100 @@ standard_error.PLNfit <- function(object, type = c("sandwich", "variational", "j
   attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
 }
 
+#' Extract log-likelihood of a fitted PLN model
+#'
+#' @name logLik.PLNfit
+#' @description Returns the variational lower bound of the log-likelihood as a `"logLik"` object,
+#' compatible with [stats::AIC()] and [stats::BIC()].
+#'
+#' @param object an R6 object with class [`PLNfit`]
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return An object of class `"logLik"`. The numeric value is the variational ELBO.
+#' Attributes `df` and `nobs` hold the number of parameters and observations.
+#'
+#' @importFrom stats logLik
+#' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' model <- PLN(Abundance ~ 1, data = trichoptera)
+#' logLik(model)
+logLik.PLNfit <- function(object, ...) {
+  stopifnot(isPLNfit(object))
+  structure(object$loglik, class = "logLik", df = object$nb_param, nobs = object$n)
+}
+
+#' Akaike Information Criterion for a fitted PLN model
+#'
+#' @name AIC.PLNfit
+#' @description Computes the variational AIC as `loglik - nb_param` (larger is better).
+#' This follows the maximization convention used throughout PLNmodels.
+#'
+#' @param object an R6 object with class [`PLNfit`]
+#' @param k not used, present for S3 compatibility.
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A scalar: the variational AIC (larger is better).
+#'
+#' @importFrom stats AIC
+#' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' model <- PLN(Abundance ~ 1, data = trichoptera)
+#' AIC(model)
+AIC.PLNfit <- function(object, ..., k = 2) {
+  stopifnot(isPLNfit(object))
+  object$AIC
+}
+
+#' Bayesian Information Criterion for a fitted PLN model
+#'
+#' @name BIC.PLNfit
+#' @description Computes the variational BIC as `loglik - 0.5 * log(n) * nb_param` (larger is better).
+#' This follows the maximization convention used throughout PLNmodels.
+#'
+#' @param object an R6 object with class [`PLNfit`]
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A scalar: the variational BIC (larger is better).
+#'
+#' @importFrom stats BIC
+#' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' model <- PLN(Abundance ~ 1, data = trichoptera)
+#' BIC(model)
+BIC.PLNfit <- function(object, ...) {
+  stopifnot(isPLNfit(object))
+  object$BIC
+}
+
+#' Integrated Classification Likelihood
+#'
+#' @name ICL
+#' @description Generic function to compute the Integrated Classification Likelihood (ICL) of a fitted model.
+#' ICL = BIC - entropy of the variational distribution (larger is better).
+#'
+#' @param object a fitted model object
+#' @param ... additional parameters passed to methods
+#' @return A scalar: the variational ICL (larger is better).
+#' @export
+ICL <- function(object, ...) UseMethod("ICL")
+
+#' @rdname ICL
+#' @description `ICL.PLNfit`: ICL for a fitted [`PLNfit`].
+#' @param object an R6 object with class [`PLNfit`]
+#' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' model <- PLN(Abundance ~ 1, data = trichoptera)
+#' ICL(model)
+ICL.PLNfit <- function(object, ...) {
+  stopifnot(isPLNfit(object))
+  object$ICL
+}
+
 #' @describeIn standard_error Component-wise standard errors of B in [`PLNfit_fixedcov`]
 #' @export
 standard_error.PLNfit_fixedcov <- function(object, type = c("sandwich", "variational", "jackknife", "bootstrap"), parameter = c("B", "Omega")) {

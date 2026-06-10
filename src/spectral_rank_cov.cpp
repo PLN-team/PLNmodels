@@ -52,7 +52,7 @@ Rcpp::List spectral_optimize_rank(
     arma::mat S = Rcpp::as<arma::mat>(params["S"]);
 
     const int    maxiter   = config.containsElementNamed("maxeval")  ? Rcpp::as<int>(config["maxeval"])     : 10000;
-    const double ftol      = config.containsElementNamed("ftol_rel") ? Rcpp::as<double>(config["ftol_rel"]) : 1e-10;
+    const double ftol      = config.containsElementNamed("ftol_in") ? Rcpp::as<double>(config["ftol_in"]) : 1e-10;
     const double c_armijo  = 1e-4;
     const int    nm_window = 10;   // GLL nonmonotone window size
 
@@ -217,7 +217,7 @@ Rcpp::List spectral_optimize_vestep_rank(
     arma::mat S = Rcpp::as<arma::mat>(params["S"]);
 
     const int    maxiter   = config.containsElementNamed("maxeval")  ? Rcpp::as<int>(config["maxeval"])     : 10000;
-    const double ftol      = config.containsElementNamed("ftol_rel") ? Rcpp::as<double>(config["ftol_rel"]) : 1e-10;
+    const double ftol      = config.containsElementNamed("ftol_in") ? Rcpp::as<double>(config["ftol_in"]) : 1e-10;
     const double c_armijo  = 1e-4;
     const int    nm_window = 10;
 

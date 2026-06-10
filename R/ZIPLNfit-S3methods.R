@@ -95,6 +95,88 @@ sigma.ZIPLNfit <- function(object, ...) {
   object$model_par$Sigma
 }
 
+#' Extract log-likelihood of a fitted ZIPLN model
+#'
+#' @name logLik.ZIPLNfit
+#' @description Returns the variational lower bound of the log-likelihood as a `"logLik"` object,
+#' compatible with [stats::AIC()] and [stats::BIC()].
+#'
+#' @param object an R6 object with class [`ZIPLNfit`]
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return An object of class `"logLik"`. The numeric value is the variational ELBO.
+#' Attributes `df` and `nobs` hold the number of parameters and observations.
+#'
+#' @importFrom stats logLik
+#' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' model <- ZIPLN(Abundance ~ 1, data = trichoptera)
+#' logLik(model)
+logLik.ZIPLNfit <- function(object, ...) {
+  stopifnot(isZIPLNfit(object))
+  structure(object$loglik, class = "logLik", df = object$nb_param, nobs = object$n)
+}
+
+#' Akaike Information Criterion for a fitted ZIPLN model
+#'
+#' @name AIC.ZIPLNfit
+#' @description Computes the variational AIC as `loglik - nb_param` (larger is better).
+#' This follows the maximization convention used throughout PLNmodels.
+#'
+#' @param object an R6 object with class [`ZIPLNfit`]
+#' @param k not used, present for S3 compatibility.
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A scalar: the variational AIC (larger is better).
+#'
+#' @importFrom stats AIC
+#' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' model <- ZIPLN(Abundance ~ 1, data = trichoptera)
+#' AIC(model)
+AIC.ZIPLNfit <- function(object, ..., k = 2) {
+  stopifnot(isZIPLNfit(object))
+  object$AIC
+}
+
+#' Bayesian Information Criterion for a fitted ZIPLN model
+#'
+#' @name BIC.ZIPLNfit
+#' @description Computes the variational BIC as `loglik - 0.5 * log(n) * nb_param` (larger is better).
+#' This follows the maximization convention used throughout PLNmodels.
+#'
+#' @param object an R6 object with class [`ZIPLNfit`]
+#' @param ... additional parameters for S3 compatibility. Not used
+#' @return A scalar: the variational BIC (larger is better).
+#'
+#' @importFrom stats BIC
+#' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' model <- ZIPLN(Abundance ~ 1, data = trichoptera)
+#' BIC(model)
+BIC.ZIPLNfit <- function(object, ...) {
+  stopifnot(isZIPLNfit(object))
+  object$BIC
+}
+
+#' @rdname ICL
+#' @description `ICL.ZIPLNfit`: ICL for a fitted [`ZIPLNfit`].
+#' @param object an R6 object with class [`ZIPLNfit`]
+#' @export
+#' @examples
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' model <- ZIPLN(Abundance ~ 1, data = trichoptera)
+#' ICL(model)
+ICL.ZIPLNfit <- function(object, ...) {
+  stopifnot(isZIPLNfit(object))
+  object$ICL
+}
+
 ## =========================================================================================
 ##
 ## PUBLIC S3 METHODS FOR ZIPLNfit_sparse
