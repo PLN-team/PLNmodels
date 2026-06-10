@@ -31,7 +31,7 @@ PLNmixturefamily <-
         ## Control options
         control$trace <- FALSE
         config_fast <- control$config_optim
-        config_fast$maxit_out <- 2
+        config_fast$maxit_em <- 2
 
         ## Effective number of clusters (remove empty classes) and current clustering with clusters numbered in 1:k (with no gaps)
         cl  <- model$memberships
@@ -98,7 +98,7 @@ PLNmixturefamily <-
         ## Control options
         control$trace <- FALSE
         config_fast <- control$config_optim
-        config_fast$maxit_out <- 2
+        config_fast$maxit_em <- 2
 
         ## number of clusters
         if (is.null(k)) k <- length(model$components)

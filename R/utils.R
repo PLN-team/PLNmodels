@@ -224,7 +224,7 @@ extract_model <- function(call, envir) {
   ## Evaluate the formula expression to get the formula object before setting
   ## attributes — avoids "cannot set an attribute on a 'symbol'" when the
   ## formula was passed as a variable (e.g. PLN(my_formula, data = d)).
-  formula_obj <- if (is.symbol(call$formula)) {
+  formula_obj <- if (!inherits(call$formula, "formula")) {
     eval(call$formula, envir = envir)
   } else {
     call$formula
@@ -352,16 +352,19 @@ create_parameters <- function(
 compute_PLN_starting_point <- function(Y, X, O, w, method = c("LM", "GLM")) {
   method <- match.arg(method)
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
+  Y0 <- replace(Y, is.na(Y), 0)  # treat missing counts as 0 for initialization only
+  expO <- exp(O)
   if (method == "GLM") {
+    pois_fam <- poisson()
     B <- vapply(seq_len(p), function(j)
-      glm.fit(X, Y[, j], offset = O[, j], weights = w, family = poisson())$coefficients,
+      glm.fit(X, Y0[, j], offset = O[, j], weights = w, family = pois_fam)$coefficients,
       FUN.VALUE = numeric(d)
     )
   } else {
-    B <- lm.fit(w * X, w * log((1 + Y)/exp(O)), singular.ok = FALSE)$coefficients
+    B <- lm.fit(w * X, w * log((1 + Y0) / expO), singular.ok = TRUE)$coefficients
     B[is.na(B)] <- 0
   }
   list(B = matrix(B, d, p),
-       M = matrix(log((1 + Y)/exp(O)), n, p),
-       S = 1 / sqrt(2 + Y))
+       M = matrix(log((1 + Y0) / expO), n, p),
+       S = 1 / sqrt(2 + Y0))
 }

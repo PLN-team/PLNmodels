@@ -258,7 +258,7 @@ PLNfit <- R6Class(
                      O = O[-i, , drop = FALSE],
                      w = w[-i])
         args <- list(data = data,
-                     params = do.call(compute_PLN_starting_point, data),
+                     params = compute_PLN_starting_point(data$Y, data$X, data$O, data$w),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
@@ -293,7 +293,7 @@ PLNfit <- R6Class(
           data   <- lapply(data, torch_tensor, device = config$device)
 
         args <- list(data = data,
-                     params = do.call(compute_PLN_starting_point, data),
+                     params = compute_PLN_starting_point(data$Y, data$X, data$O, data$w),
                      config = config)
         if (config$backend == "torch") # Convert data to torch tensors
           args$params <- lapply(args$params, torch_tensor, requires_grad = TRUE, device = config$device) # list with B, M, S
@@ -553,6 +553,7 @@ PLNfit <- R6Class(
           Omega      = private$Omega
         )
         M <- VE$M          # M_full
+        colnames(M) <- colnames(private$B)
         S2 <- (VE$S)**2
       } else {
         # population prediction: M_full = X*B (M_res = 0)
@@ -937,7 +938,8 @@ PLNfit_fixedcov <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$setup_optimizer(control$backend, nlopt_optimize_fixed, newton_optimize_fixed)
+      private$setup_optimizer(control$backend, nlopt_optimize_fixed, newton_optimize_fixed,
+                              nlopt_optimize_vestep_full, newton_optimize_vestep_full)
       private$Omega <- control$Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
@@ -982,8 +984,7 @@ PLNfit_fixedcov <- R6Class(
                      O = O[-i, , drop = FALSE],
                      w = w[-i])
         args <- list(data = data,
-                     # params = list(B = private$B, Omega = private$Omega, M = private$M[-i, ], S = private$S[-i, ]),
-                     params = do.call(compute_PLN_starting_point, data),
+                     params = compute_PLN_starting_point(data$Y, data$X, data$O, data$w),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]

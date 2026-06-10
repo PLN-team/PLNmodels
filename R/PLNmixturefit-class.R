@@ -324,7 +324,7 @@ PLNmixturefit <-
       #' @field latent a matrix: values of the latent vector (Z in the model)
       latent = function() {private$mix_up('latent')},
       #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
-      latent_pos = function() {private$mix_up('var_par$M')},
+      latent_pos = function() {private$mix_up('latent_pos')},
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
       posteriorProb = function(value) {if (missing(value)) return(private$tau) else private$tau <- value},
       #' @field memberships vector for cluster index
