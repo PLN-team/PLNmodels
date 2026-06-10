@@ -28,6 +28,7 @@ config_default_homemade <-
 # Phase 1 (nlopt) uses looser tolerances to reach the basin quickly with quasi-Newton search.
 # Phase 2 (homemade, envelope-theorem Newton) refines to the full requested tolerance.
 # Returns a closure with the same (data, params, config) signature as the C++ wrappers.
+#' @importFrom utils modifyList
 make_hybrid_optimizer <- function(opt_nlopt, opt_newton) {
   function(data, params, config) {
     # Phase 1: nlopt config with 10× looser tolerance for fast basin finding
