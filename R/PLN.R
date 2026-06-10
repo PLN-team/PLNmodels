@@ -101,7 +101,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' @export
 PLN_param <- function(
-    backend       = c("nlopt", "homemade", "hybrid", "torch"),
+    backend       = c("homemade", "nlopt", "hybrid", "torch"),
     trace         = 1,
     covariance    = c("full", "diagonal", "spherical", "fixed"),
     Omega         = NULL,

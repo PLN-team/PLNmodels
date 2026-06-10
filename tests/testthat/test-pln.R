@@ -58,7 +58,7 @@ test_that("PLN: Check consistency of observation weights - fully parameterized c
   ## equivalent weigths
   expect_output(model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera))),
                 paste("\n Initialization...",
-                      "Adjusting a full covariance PLN model with nlopt optimizer",
+                      "Adjusting a full covariance PLN model with homemade optimizer",
                       "Post-treatments...",
                       "DONE!", sep = "\n "), fixed = TRUE)
 
@@ -125,7 +125,7 @@ test_that("PLN is working with unnamed data matrix",  {
     expect_equal(MMA$loglik, CCSAQ$loglik, tolerance = 1e-1) ## Almost equivalent, CCSAQ faster
     expect_equal(MMA$loglik, LBFGS$loglik, tolerance = 1e-1)
 
-    expect_error(PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(config_optim = list(algorithm = "nawak"))))
+    expect_error(PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(backend = "nlopt", config_optim = list(algorithm = "nawak"))))
  })
 
 test_that("PLN: Check that univariate PLN models works, with matrix of numeric format",  {

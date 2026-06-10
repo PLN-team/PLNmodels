@@ -33,7 +33,8 @@ Rcpp::List newton_optimize_alt_impl(
     // Precompute X'WX and P_X once: P_X = (X'WX)^{-1}X'W (d×n) for live B = P_X * M_full
     const arma::mat Xw   = X.each_col() % w;    // n×d
     const arma::mat XtWX = X.t() * Xw;           // d×d, symmetric PD
-    const arma::mat P_X  = arma::solve(XtWX, Xw.t());  // d×n, precomputed once
+    // When d=0 (no covariates), X'WX is 0×0: skip solve to avoid spurious singularity warning
+    const arma::mat P_X  = (X.n_cols > 0) ? arma::solve(XtWX, Xw.t()) : arma::mat(0, n);
 
     // Convert input M from residual format to M_full = XB + M_res
     M = X * B + M;

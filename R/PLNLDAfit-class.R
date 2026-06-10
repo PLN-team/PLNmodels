@@ -406,8 +406,16 @@ PLNLDAfit_diagonal <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
       super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_diagonal, private$torch_optimize)
-      private$optimizer$vestep <- nlopt_optimize_vestep_diagonal
+      private$optimizer$main <- if (control$backend == "torch") {
+        private$torch_optimize
+      } else if (control$backend == "homemade") {
+        newton_optimize_diagonal
+      } else if (control$backend == "hybrid") {
+        make_hybrid_optimizer(nlopt_optimize_diagonal, newton_optimize_diagonal)
+      } else {
+        nlopt_optimize_diagonal
+      }
+      private$optimizer$vestep <- if (control$backend %in% c("homemade", "hybrid")) newton_optimize_vestep_diagonal else nlopt_optimize_vestep_diagonal
     }
   ),
   private = list(
@@ -496,8 +504,16 @@ PLNLDAfit_spherical <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
       super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_spherical, private$torch_optimize)
-      private$optimizer$vestep <- nlopt_optimize_vestep_spherical
+      private$optimizer$main <- if (control$backend == "torch") {
+        private$torch_optimize
+      } else if (control$backend == "homemade") {
+        newton_optimize_spherical
+      } else if (control$backend == "hybrid") {
+        make_hybrid_optimizer(nlopt_optimize_spherical, newton_optimize_spherical)
+      } else {
+        nlopt_optimize_spherical
+      }
+      private$optimizer$vestep <- if (control$backend %in% c("homemade", "hybrid")) newton_optimize_vestep_spherical else nlopt_optimize_vestep_spherical
     }
   ),
   private = list(

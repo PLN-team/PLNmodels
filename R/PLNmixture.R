@@ -69,7 +69,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 #'
 #' Helper to define list of parameters to control the PLNmixture fit. All arguments have defaults.
 #'
-#' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
+#' @param backend optimization back used, either "homemade", "nlopt", "hybrid" or "torch". Default is "homemade".
 #' @param covariance character setting the model for the covariance matrices of the mixture components. Either "full", "diagonal" or "spherical". Default is "spherical".
 #' @param smoothing The smoothing to apply. Either, 'none', forward', 'backward' or 'both'. Default is 'both'.
 #' @param init_cl The initial clustering to apply. Either, 'kmeans', CAH' or a user defined clustering given as a list of  clusterings, the size of which is equal to the number of clusters considered. Default is 'kmeans'.
@@ -89,7 +89,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 #' @seealso [PLN_param()]
 #' @export
 PLNmixture_param <- function(
-    backend       = "nlopt"    ,
+    backend       = c("homemade", "nlopt", "hybrid", "torch"),
     trace         = 1          ,
     covariance    = "spherical",
     init_cl       = "kmeans"   ,
@@ -107,14 +107,14 @@ PLNmixture_param <- function(
 
   ## optimization config
   backend <- match.arg(backend)
-  stopifnot(backend %in% c("nlopt", "torch"))
   if (backend == "nlopt") {
     stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-    config_opt <- config_default_nlopt_pln
-  }
-  if (backend == "torch") {
+    config_opt <- config_default_nlopt
+  } else if (backend == "torch") {
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_opt <- config_default_torch
+  } else { # "homemade" or "hybrid"
+    config_opt <- config_default_homemade
   }
   config_opt$ftol_out  <- 1e-3
   config_opt$maxit_out <- 50

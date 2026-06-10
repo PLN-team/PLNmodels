@@ -45,7 +45,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = PLN_param
   }
   grouping <- as.factor(grouping)
 
-  # force the intercept term if excluded (prevent interferences with group means when coding discrete variables)
+  # force the intercept term if excluded (prevent interference with group means when coding discrete variables)
   the_call <- match.call(expand.dots = FALSE)
   the_call$formula <- update.formula(formula(the_call), ~ . +1)
 
@@ -87,7 +87,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = PLN_param
 #' @inherit PLN_param details
 #' @export
 PLNLDA_param <- function(
-    backend       = c("nlopt", "torch"),
+    backend       = c("homemade", "nlopt", "hybrid", "torch"),
     trace         = 1,
     covariance    = c("full", "diagonal", "spherical"),
     config_post   = list(),
@@ -104,14 +104,15 @@ PLNLDA_param <- function(
   config_pst$trace <- trace
 
   ## optimization config
-  stopifnot(backend %in% c("nlopt", "torch"))
+  backend <- match.arg(backend)
   if (backend == "nlopt") {
     stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
     config_opt <- config_default_nlopt
-  }
-  if (backend == "torch") {
+  } else if (backend == "torch") {
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_opt <- config_default_torch
+  } else { # "homemade" or "hybrid"
+    config_opt <- config_default_homemade
   }
   config_opt[names(config_optim)] <- config_optim
   config_opt$trace <- trace

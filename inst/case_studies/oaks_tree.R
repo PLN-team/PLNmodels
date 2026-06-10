@@ -2,9 +2,9 @@ library(PLNmodels)
 library(factoextra)
 
 ## setting up future for parallelism
-nb_cores <- 10
-options(future.fork.enable = TRUE)
-future::plan("multicore", workers = nb_cores)
+# nb_cores <- 10
+# options(future.fork.enable = TRUE)
+# future::plan("multicore", workers = nb_cores)
 
 ## get oaks data set
 data(oaks)
@@ -140,4 +140,4 @@ p <- myPLN$plot_clustering_data()
 aricode::ARI(myPLN$memberships, oaks$tree)
 
 
-future::plan("sequential")
+# future::plan("sequential")
