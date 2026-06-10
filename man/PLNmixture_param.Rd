@@ -45,7 +45,7 @@ See \code{\link[=PLN_param]{PLN_param()}} for a full description of the generic 
 \itemize{
 \item "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
 \item "maxit_out" outer solver stops when the number of iteration exceeds maxit_out. Default is 50
-\item "it_smoothing" number of the iterations of the smoothing procedure. Default is 1.
+\item "it_smooth" number of the iterations of the smoothing procedure. Default is 1.
 }
 }
 \seealso{

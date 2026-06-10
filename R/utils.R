@@ -19,7 +19,9 @@ config_default_homemade <-
     algorithm = "NEWTON",
     backend   = "homemade",
     maxeval   = 10000,
-    ftol_rel  = 1e-8
+    ftol_rel  = 1e-8,
+    maxit_em  = 50,
+    ftol_em   = 1e-8
   )
 
 # Hybrid backend: two-phase optimizer — nlopt/CCSAQ (phase 1) then homemade Newton (phase 2).

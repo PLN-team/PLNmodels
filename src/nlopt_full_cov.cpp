@@ -51,8 +51,8 @@ Rcpp::List nlopt_optimize_full(
     metadata.map<S_ID>(parameters.data()) = arma::log(init_S % init_S);
 
     const double w_bar    = accu(w);
-    const int max_em_iter = config.containsElementNamed("max_em_iter") ? Rcpp::as<int>(config["max_em_iter"])    : 50;
-    const double em_ftol  = config.containsElementNamed("em_ftol")     ? Rcpp::as<double>(config["em_ftol"])     : 1e-8;
+    const int maxit_em = config.containsElementNamed("maxit_em") ? Rcpp::as<int>(config["maxit_em"])    : 50;
+    const double ftol_em  = config.containsElementNamed("ftol_em")     ? Rcpp::as<double>(config["ftol_em"])     : 1e-8;
 
     // P_X = (X'WX)^{-1} X'W : d×n, precomputed once; B = P_X * M_full at each eval
     const arma::mat Xw  = X.each_col() % w;
@@ -71,7 +71,7 @@ Rcpp::List nlopt_optimize_full(
     int total_iterations = 0;
     int last_status = 0;
 
-    for (int em_iter = 0; em_iter < std::max(1, max_em_iter); em_iter++) {
+    for (int em_iter = 0; em_iter < std::max(1, maxit_em); em_iter++) {
         auto optimizer = new_nlopt_optimizer(config, parameters.size());
         objective_vec.reserve(objective_vec.size() + nlopt_get_maxeval(optimizer.get()));
         const arma::vec Omega_diag = diagvec(Omega);
@@ -106,7 +106,7 @@ Rcpp::List nlopt_optimize_full(
         arma::mat A = exp(Z + 0.5 * S2);
         double elbo = accu(w.t() * (Y % Z - A + 0.5 * logS2))
                     - 0.5 * w_bar * real(log_det(Sigma));
-        if (em_iter > 0 && converged(elbo, elbo_prev, em_ftol)) break;
+        if (em_iter > 0 && converged(elbo, elbo_prev, ftol_em)) break;
         elbo_prev = elbo;
     }
 

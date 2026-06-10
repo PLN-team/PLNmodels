@@ -68,6 +68,14 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 }
 
+When "homemade" or "hybrid" backend is used, the following entries are relevant
+\itemize{
+\item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
+\item "ftol_rel" stop the inner loop when the objective changes by less than ftol_rel (relative). Default is 1e-8
+\item "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
+\item "ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8
+}
+
 The list of parameters \code{config_post} controls the post-treatment processing (for most \verb{PLN*()} functions), with the following entries (defaults may vary depending on the specific function, check \verb{config_post_default_*} for defaults values):
 \itemize{
 \item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.

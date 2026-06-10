@@ -91,6 +91,12 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #' * "etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP
 #' * "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 #'
+#' When "homemade" or "hybrid" backend is used, the following entries are relevant
+#' * "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
+#' * "ftol_rel" stop the inner loop when the objective changes by less than ftol_rel (relative). Default is 1e-8
+#' * "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
+#' * "ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8
+#'
 #' The list of parameters `config_post` controls the post-treatment processing (for most `PLN*()` functions), with the following entries (defaults may vary depending on the specific function, check `config_post_default_*` for defaults values):
 #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
 #' * bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).

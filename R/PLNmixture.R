@@ -84,7 +84,7 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 #' @details See [PLN_param()] for a full description of the generic optimization parameters. PLNmixture_param() also has additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
 #' * "maxit_out" outer solver stops when the number of iteration exceeds maxit_out. Default is 50
-#' * "it_smoothing" number of the iterations of the smoothing procedure. Default is 1.
+#' * "it_smooth" number of the iterations of the smoothing procedure. Default is 1.
 #'
 #' @seealso [PLN_param()]
 #' @export

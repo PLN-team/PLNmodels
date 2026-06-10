@@ -25,8 +25,8 @@ Rcpp::List newton_optimize_diagonal(
 
     const int    maxiter = config.containsElementNamed("maxeval")     ? Rcpp::as<int>(config["maxeval"])        : 200;
     const double ftol    = config.containsElementNamed("ftol_rel")    ? Rcpp::as<double>(config["ftol_rel"])    : 1e-8;
-    const int    max_em  = config.containsElementNamed("max_em_iter") ? Rcpp::as<int>(config["max_em_iter"])    : 50;
-    const double em_tol  = config.containsElementNamed("em_ftol")     ? Rcpp::as<double>(config["em_ftol"])     : 1e-8;
+    const int    max_em  = config.containsElementNamed("maxit_em") ? Rcpp::as<int>(config["maxit_em"])    : 50;
+    const double em_tol  = config.containsElementNamed("ftol_em")     ? Rcpp::as<double>(config["ftol_em"])     : 1e-8;
 
     const double w_bar = arma::accu(w);
     arma::mat S2 = S % S;
