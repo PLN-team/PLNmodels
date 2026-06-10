@@ -113,10 +113,10 @@ test_that("PLNLDA fit: Check number of parameters",  {
   mdl <- PLN(Abundance ~ Group + 0 , data = trichoptera)
   expect_equal(mdl$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
 
-  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = PLNLDA_param(covariance = "diagonal"))
+  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "diagonal"))
   expect_equal(mdl$nb_param, p + p * 1)
 
-  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = PLNLDA_param(covariance = "spherical"))
+  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "spherical"))
   expect_equal(mdl$nb_param, 1 + p * 1)
 
 })
