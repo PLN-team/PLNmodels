@@ -22,18 +22,21 @@ config_default_homemade <-
     ftol_rel  = 1e-8
   )
 
-# Hybrid backend: two-phase optimizer — homemade (phase 1) then homemade_alt (phase 2).
-# Phase 1 uses looser tolerances (100× the target ftol_rel) to reach the basin quickly.
-# Phase 2 refines to the full requested tolerance.
+# Hybrid backend: two-phase optimizer — nlopt/CCSAQ (phase 1) then homemade Newton (phase 2).
+# Phase 1 (nlopt) uses looser tolerances to reach the basin quickly with quasi-Newton search.
+# Phase 2 (homemade, envelope-theorem Newton) refines to the full requested tolerance.
 # Returns a closure with the same (data, params, config) signature as the C++ wrappers.
-make_hybrid_optimizer <- function(opt_phase1, opt_phase2) {
+make_hybrid_optimizer <- function(opt_nlopt, opt_newton) {
   function(data, params, config) {
-    config1 <- config
-    config1$ftol_rel <- config$ftol_rel * 10
-    if (!is.null(config$em_ftol)) config1$em_ftol <- config$em_ftol * 10
-    res1 <- opt_phase1(data, params, config1)
+    # Phase 1: nlopt config with 10× looser tolerance for fast basin finding
+    config1 <- modifyList(config_default_nlopt, list(
+      maxeval  = config$maxeval,
+      ftol_rel = config$ftol_rel * 10
+    ))
+    res1 <- opt_nlopt(data, params, config1)
     params2 <- modifyList(params, list(B = res1$B, M = res1$M, S = res1$S))
-    res2 <- opt_phase2(data, params2, config)
+    # Phase 2: homemade Newton with full tolerance
+    res2 <- opt_newton(data, params2, config)
     res2$monitoring$objective  <- c(res1$monitoring$objective,  res2$monitoring$objective)
     res2$monitoring$iterations <- res1$monitoring$iterations + res2$monitoring$iterations
     res2$monitoring$backend    <- "hybrid"

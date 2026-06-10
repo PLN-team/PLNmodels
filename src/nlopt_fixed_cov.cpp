@@ -8,95 +8,6 @@
 #include "utils.h"
 
 // ---------------------------------------------------------------------------------------
-// Fixed inverse covariance (Omega) PLN — nlopt/CCSAQ optimizer (archived: B in parameter vector)
-
-Rcpp::List nlopt_optimize_fixed_old(
-    const Rcpp::List & data  , // List(Y, X, O, w)
-    const Rcpp::List & params, // List(B, M, S)
-    const Rcpp::List & config  // List of config values
-) {
-    // Conversion from R, prepare optimization
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
-    const auto init_B = Rcpp::as<arma::mat>(params["B"]);     // (d,p)
-    const auto init_M = Rcpp::as<arma::mat>(params["M"]);     // (n,p)
-    const auto init_S = Rcpp::as<arma::mat>(params["S"]);     // (n,p)
-    const auto  Omega = Rcpp::as<arma::mat>(params["Omega"]); // covinv (p,p)
-
-    const auto metadata = tuple_metadata(init_B, init_M, init_S);
-    enum { B_ID, M_ID, S_ID }; // Names for metadata indexes
-
-    auto parameters = std::vector<double>(metadata.packed_size);
-    metadata.map<B_ID>(parameters.data()) = init_B;
-    metadata.map<M_ID>(parameters.data()) = init_M;
-    metadata.map<S_ID>(parameters.data()) = arma::log(init_S % init_S); // pack logS2
-
-    // Optimize
-    auto optimizer = new_nlopt_optimizer(config, parameters.size());
-    std::vector<double> objective_vec ;
-
-    const arma::mat Xw        = X.each_col() % w;  // fixed: precomputed once
-    const arma::vec Omega_diag = diagvec(Omega);
-
-    auto objective_and_grad = [&metadata, &O, &X, &Xw, &Y, &w, &Omega, &Omega_diag, &objective_vec](const double * params, double * grad) -> double {
-        const arma::mat B     = metadata.map<B_ID>(params);
-        const arma::mat M     = metadata.map<M_ID>(params);
-        const arma::mat logS2 = metadata.map<S_ID>(params);
-
-        arma::mat S2 = arma::exp(logS2);
-        arma::mat Z = O + X * B + M;
-        arma::mat A = exp(Z + 0.5 * S2);
-        arma::mat nSigma = M.t() * (M.each_col() % w) + diagmat(w.t() * S2);
-        // -½ log(S²) → -½ logS2
-        double objective = accu(w.t() * (A - Y % Z - 0.5 * logS2)) + 0.5 * trace(Omega * nSigma);
-
-        metadata.map<B_ID>(grad) = Xw.t() * (A - Y);
-        metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
-        // grad_logS2 = ½ w ⊙ (S²⊙(Ω_diag + A) − 1)
-        metadata.map<S_ID>(grad) = 0.5 * diagmat(w) * (S2.each_row() % Omega_diag.t() + S2 % A - 1.) ;
-
-        objective_vec.push_back(objective) ;
-
-        return objective;
-    };
-    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
-
-    // Model and variational parameters
-    arma::mat B     = metadata.copy<B_ID>(parameters.data());
-    arma::mat M     = metadata.copy<M_ID>(parameters.data());
-    arma::mat logS2 = metadata.copy<S_ID>(parameters.data());
-    arma::mat S2    = arma::exp(logS2);
-    arma::mat S     = arma::exp(0.5 * logS2);
-    arma::mat Sigma = (M.t() * (M.each_col() % w) + diagmat(w.t() * S2)) / accu(w);
-    // Element-wise log-likelihood
-    arma::mat Z = O + X * B + M;
-    arma::mat A = exp(Z + 0.5 * S2);
-    arma::mat loglik = sum(Y % Z - A - 0.5 * ((M * Omega) % M - logS2 + S2 * diagmat(Omega)), 1) +
-                       0.5 * real(log_det(Omega)) + ki(Y);
-
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
-    return Rcpp::List::create(
-      Rcpp::Named("B", B),
-      Rcpp::Named("M", M),
-      Rcpp::Named("S", S),
-      Rcpp::Named("Z", Z),
-      Rcpp::Named("A", A),
-      Rcpp::Named("Sigma", Sigma),
-      Rcpp::Named("Omega", Omega),
-      Rcpp::Named("Ji", Ji),
-      Rcpp::Named("monitoring", Rcpp::List::create(
-          Rcpp::Named("status", static_cast<int>(result.status)),
-          Rcpp::Named("backend", "nlopt"),
-          Rcpp::Named("objective", objective_vec),
-          Rcpp::Named("iterations", result.nb_iterations)
-      ))
-    );
-}
-
-// ---------------------------------------------------------------------------------------
 // Fixed covariance PLN — nlopt/CCSAQ optimizer: B profiled via closed form, reduced parameter vector
 
 // [[Rcpp::export]]
@@ -140,6 +51,7 @@ Rcpp::List nlopt_optimize_fixed(
                          + 0.5 * trace(Omega * (M_res.t() * (M_res.each_col() % w) + diagmat(w.t() * S2)));
         // gradient for M_full = gradient for M_res (envelope theorem for B)
         metadata.map<M_ID>(grad) = diagmat(w) * (M_res * Omega + A - Y);
+        // grad_logS2 = ½ w ⊙ (S²⊙(Ω_diag + A) − 1)
         metadata.map<S_ID>(grad) = 0.5 * diagmat(w) * (S2.each_row() % Omega_diag.t() + S2 % A - 1.);
         objective_vec.push_back(objective);
         return objective;

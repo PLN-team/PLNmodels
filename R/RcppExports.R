@@ -5,10 +5,6 @@ newton_optimize_diagonal <- function(data, params, config) {
     .Call('_PLNmodels_newton_optimize_diagonal', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-newton_optimize_diagonal_alt <- function(data, params, config) {
-    .Call('_PLNmodels_newton_optimize_diagonal_alt', PACKAGE = 'PLNmodels', data, params, config)
-}
-
 newton_optimize_vestep_diagonal <- function(data, params, B, Omega, config) {
     .Call('_PLNmodels_newton_optimize_vestep_diagonal', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
 }
@@ -17,16 +13,8 @@ newton_optimize_fixed <- function(data, params, config) {
     .Call('_PLNmodels_newton_optimize_fixed', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-newton_optimize_fixed_alt <- function(data, params, config) {
-    .Call('_PLNmodels_newton_optimize_fixed_alt', PACKAGE = 'PLNmodels', data, params, config)
-}
-
 newton_optimize_full <- function(data, params, config) {
     .Call('_PLNmodels_newton_optimize_full', PACKAGE = 'PLNmodels', data, params, config)
-}
-
-newton_optimize_full_alt <- function(data, params, config) {
-    .Call('_PLNmodels_newton_optimize_full_alt', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 newton_optimize_vestep_full <- function(data, params, B, Omega, config) {
@@ -43,10 +31,6 @@ newton_optimize_vestep_rank <- function(data, params, B, C, config) {
 
 newton_optimize_spherical <- function(data, params, config) {
     .Call('_PLNmodels_newton_optimize_spherical', PACKAGE = 'PLNmodels', data, params, config)
-}
-
-newton_optimize_spherical_alt <- function(data, params, config) {
-    .Call('_PLNmodels_newton_optimize_spherical_alt', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 newton_optimize_vestep_spherical <- function(data, params, B, Omega, config) {

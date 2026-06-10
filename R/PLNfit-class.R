@@ -364,14 +364,12 @@ PLNfit <- R6Class(
         private$torch_optimize
       } else if (control$backend == "homemade") {
         newton_optimize_full
-      } else if (control$backend == "homemade_alt") {
-        newton_optimize_full_alt
       } else if (control$backend == "hybrid") {
-        make_hybrid_optimizer(newton_optimize_full, newton_optimize_full_alt)
+        make_hybrid_optimizer(nlopt_optimize_full, newton_optimize_full)
       } else {
         nlopt_optimize_full
       }
-      private$optimizer$vestep <- if (control$backend %in% c("homemade", "homemade_alt", "hybrid")) newton_optimize_vestep_full else nlopt_optimize_vestep_full
+      private$optimizer$vestep <- if (control$backend %in% c("homemade", "hybrid")) newton_optimize_vestep_full else nlopt_optimize_vestep_full
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -608,8 +606,6 @@ PLNfit <- R6Class(
           )
 
       M <- tcrossprod(VE$M, A)
-      # S <- map(1:n_new, ~crossprod(sqrt(VE$S[., ]) * t(A)) + Sigma21) %>%
-      #   simplify2array()
       S <- map(1:n_new, ~crossprod(VE$S[., ] * t(A)) + Sigma21) %>% simplify2array()
 
       ## mean latent positions in the parameter space
@@ -750,14 +746,12 @@ PLNfit_diagonal <- R6Class(
         private$torch_optimize
       } else if (control$backend == "homemade") {
         newton_optimize_diagonal
-      } else if (control$backend == "homemade_alt") {
-        newton_optimize_diagonal_alt
       } else if (control$backend == "hybrid") {
-        make_hybrid_optimizer(newton_optimize_diagonal, newton_optimize_diagonal_alt)
+        make_hybrid_optimizer(nlopt_optimize_diagonal, newton_optimize_diagonal)
       } else {
         nlopt_optimize_diagonal
       }
-      private$optimizer$vestep <- if (control$backend %in% c("homemade", "homemade_alt", "hybrid")) newton_optimize_vestep_diagonal else nlopt_optimize_vestep_diagonal
+      private$optimizer$vestep <- if (control$backend %in% c("homemade", "hybrid")) newton_optimize_vestep_diagonal else nlopt_optimize_vestep_diagonal
     }
   ),
   private = list(
@@ -843,14 +837,12 @@ PLNfit_spherical <- R6Class(
         private$torch_optimize
       } else if (control$backend == "homemade") {
         newton_optimize_spherical
-      } else if (control$backend == "homemade_alt") {
-        newton_optimize_spherical_alt
       } else if (control$backend == "hybrid") {
-        make_hybrid_optimizer(newton_optimize_spherical, newton_optimize_spherical_alt)
+        make_hybrid_optimizer(nlopt_optimize_spherical, newton_optimize_spherical)
       } else {
         nlopt_optimize_spherical
       }
-      private$optimizer$vestep <- if (control$backend %in% c("homemade", "homemade_alt", "hybrid")) newton_optimize_vestep_spherical else nlopt_optimize_vestep_spherical
+      private$optimizer$vestep <- if (control$backend %in% c("homemade", "hybrid")) newton_optimize_vestep_spherical else nlopt_optimize_vestep_spherical
     }
   ),
   private = list(
@@ -940,10 +932,8 @@ PLNfit_fixedcov <- R6Class(
         private$torch_optimize
       } else if (control$backend == "homemade") {
         newton_optimize_fixed
-      } else if (control$backend == "homemade_alt") {
-        newton_optimize_fixed_alt
       } else if (control$backend == "hybrid") {
-        make_hybrid_optimizer(newton_optimize_fixed, newton_optimize_fixed_alt)
+        make_hybrid_optimizer(nlopt_optimize_fixed, newton_optimize_fixed)
       } else {
         nlopt_optimize_fixed
       }

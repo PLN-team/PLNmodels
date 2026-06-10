@@ -8,99 +8,21 @@
 #include "utils.h"
 
 // ---------------------------------------------------------------------------------------
-// Diagonal covariance PLN — nlopt/CCSAQ optimizer (archived: B in parameter vector)
-
-Rcpp::List nlopt_optimize_diagonal_old(
-    const Rcpp::List & data  , // List(Y, X, O, w)
-    const Rcpp::List & params, // List(B, M, S)
-    const Rcpp::List & config  // List of config values
+// Shared inner computation for diagonal-covariance NLOPT objective and gradients.
+// Z = O + X*B + M_res and S2 = exp(logS2) must be pre-computed by the caller.
+// inv_sigma2: row vector of element-wise precisions (profiled 1/diag_sigma or fixed omega2).
+// penalty: KL variance term (log-det for profiled E-step; quadratic for fixed-omega vestep).
+static double diag_cov_obj_grad_impl(
+    const arma::mat & M_res, const arma::mat & Z,
+    const arma::mat & S2,   const arma::mat & logS2,
+    const arma::rowvec & inv_sigma2, double penalty,
+    const arma::mat & Y, const arma::vec & w,
+    arma::mat & grad_M, arma::mat & grad_S
 ) {
-    // Conversion from R, prepare optimization
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
-    const auto init_B = Rcpp::as<arma::mat>(params["B"]); // (d,p)
-    const auto init_M = Rcpp::as<arma::mat>(params["M"]); // (n,p)
-    const auto init_S = Rcpp::as<arma::mat>(params["S"]); // (n,p)
-
-    const auto metadata = tuple_metadata(init_B, init_M, init_S);
-    enum { B_ID, M_ID, S_ID }; // Names for metadata indexes
-
-    auto parameters = std::vector<double>(metadata.packed_size);
-    metadata.map<B_ID>(parameters.data()) = init_B;
-    metadata.map<M_ID>(parameters.data()) = init_M;
-    metadata.map<S_ID>(parameters.data()) = arma::log(init_S % init_S); // pack logS2
-
-    auto optimizer = new_nlopt_optimizer(config, parameters.size());
-    std::vector<double> objective_vec ;
-    objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
-    const double w_bar = accu(w);
-
-    const arma::mat Xw = X.each_col() % w;   // fixed: precomputed once
-
-    // Optimize
-    auto objective_and_grad = [&metadata, &O, &X, &Xw, &Y, &w, &w_bar, &objective_vec](const double * params, double * grad) -> double {
-        const arma::mat B     = metadata.map<B_ID>(params);
-        const arma::mat M     = metadata.map<M_ID>(params);
-        const arma::mat logS2 = metadata.map<S_ID>(params);
-
-        arma::mat S2 = arma::exp(logS2);
-        arma::mat Z = O + X * B + M;
-        arma::mat A = exp(Z + 0.5 * S2);
-        arma::rowvec diag_sigma = w.t() * (M % M + S2) / w_bar;
-        // -½ log(S²) → -½ logS2
-        double objective = accu(diagmat(w) * (A - Y % Z - 0.5 * logS2)) + 0.5 * w_bar * accu(log(diag_sigma));
-
-        metadata.map<B_ID>(grad) = Xw.t() * (A - Y);
-        metadata.map<M_ID>(grad) = diagmat(w) * ((M.each_row() / diag_sigma) + A - Y);
-        // grad_logS2 = ½ w ⊙ (S²⊙(1/σ² + A) − 1)
-        metadata.map<S_ID>(grad) = 0.5 * diagmat(w) * (S2.each_row() % pow(diag_sigma, -1) + S2 % A - 1.);
-
-        objective_vec.push_back(objective) ;
-
-        return objective;
-    };
-    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
-
-    // Variational parameters
-    arma::mat M    = metadata.copy<M_ID>(parameters.data());
-    arma::mat logS2 = metadata.copy<S_ID>(parameters.data());
-    arma::mat S2   = arma::exp(logS2);
-    arma::mat S    = arma::exp(0.5 * logS2);
-    // Regression parameters
-    arma::mat B = metadata.copy<B_ID>(parameters.data());
-    // Variance parameters
-    arma::rowvec sigma2 = w.t() * (M % M + S2) / w_bar;
-    arma::vec omega2 = pow(sigma2.t(), -1);
-    arma::sp_mat Sigma(Y.n_cols, Y.n_cols);
-    Sigma.diag() = sigma2;
-    arma::sp_mat Omega(Y.n_cols, Y.n_cols);
-    Omega.diag() = omega2;
-    // Element-wise log-likelihood
-    arma::mat Z = O + X * B + M;
-    arma::mat A = exp(Z + 0.5 * S2);
-    arma::mat loglik =
-        sum(Y % Z - A + 0.5 * logS2, 1) - 0.5 * (pow(M, 2) + S2) * omega2 + 0.5 * sum(log(omega2)) + ki(Y);
-
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
-    return Rcpp::List::create(
-        Rcpp::Named("B", B),
-        Rcpp::Named("Sigma", Sigma),
-        Rcpp::Named("Omega", Omega),
-        Rcpp::Named("M", M),
-        Rcpp::Named("S", S),
-        Rcpp::Named("Z", Z),
-        Rcpp::Named("A", A),
-        Rcpp::Named("Ji", Ji),
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status", static_cast<int>(result.status)),
-            Rcpp::Named("backend", "nlopt"),
-            Rcpp::Named("objective", objective_vec),
-            Rcpp::Named("iterations", result.nb_iterations)
-        ))
-    );
+    const arma::mat A = arma::exp(Z + 0.5 * S2);
+    grad_M = arma::diagmat(w) * (M_res.each_row() % inv_sigma2 + A - Y);
+    grad_S = 0.5 * arma::diagmat(w) * (S2.each_row() % inv_sigma2 + S2 % A - 1.);
+    return accu(w.t() * (A - Y % Z - 0.5 * logS2)) + penalty;
 }
 
 // ---------------------------------------------------------------------------------------
@@ -135,22 +57,23 @@ Rcpp::List nlopt_optimize_diagonal(
     const arma::mat Xw  = X.each_col() % w;
     const arma::mat P_X = arma::solve(X.t() * Xw, Xw.t());
 
+    // E-step: M_full is the NLOPT parameter; B and diag_sigma profiled at each eval
     auto objective_and_grad = [&](const double * par, double * grad) -> double {
-        const arma::mat M_full = metadata.map<M_ID>(par);
-        const arma::mat logS2  = metadata.map<S_ID>(par);
-        arma::mat S2    = arma::exp(logS2);
-        arma::mat B     = P_X * M_full;
-        arma::mat M_res = M_full - X * B;
-        arma::mat Z     = O + M_full;
-        arma::mat A     = exp(Z + 0.5 * S2);
-        arma::rowvec diag_sigma = w.t() * (M_res % M_res + S2) / w_bar;
-        double objective = accu(diagmat(w) * (A - Y % Z - 0.5 * logS2))
-                         + 0.5 * w_bar * accu(log(diag_sigma));
-        // gradient for M_full = gradient for M_res (envelope theorem for B and sigma2)
-        metadata.map<M_ID>(grad) = diagmat(w) * ((M_res.each_row() / diag_sigma) + A - Y);
-        metadata.map<S_ID>(grad) = 0.5 * diagmat(w) * (S2.each_row() % pow(diag_sigma, -1) + S2 % A - 1.);
-        objective_vec.push_back(objective);
-        return objective;
+        const arma::mat M_full    = metadata.map<M_ID>(par);
+        const arma::mat logS2     = metadata.map<S_ID>(par);
+        const arma::mat S2        = arma::exp(logS2);
+        const arma::mat B         = P_X * M_full;
+        const arma::mat M_res     = M_full - X * B;
+        const arma::rowvec diag_sigma = w.t() * (M_res % M_res + S2) / w_bar;
+        const arma::rowvec inv_sigma2 = arma::pow(diag_sigma, -1);
+        arma::mat gM, gS;
+        const double obj = diag_cov_obj_grad_impl(M_res, O + M_full, S2, logS2,
+                                                   inv_sigma2, 0.5 * w_bar * accu(arma::log(diag_sigma)),
+                                                   Y, w, gM, gS);
+        metadata.map<M_ID>(grad) = gM;
+        metadata.map<S_ID>(grad) = gS;
+        objective_vec.push_back(obj);
+        return obj;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
@@ -218,26 +141,21 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     std::vector<double> objective_vec ;
     objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
 
-    const arma::mat XB_diag  = X * B;
-    const arma::vec omega2_v = arma::diagvec(Omega);  // fixed: Omega not optimized in vestep
+    const arma::mat OXB          = O + X * B;  // fixed offset, precomputed once
+    const arma::rowvec omega2_v  = arma::diagvec(Omega).t();  // fixed precision, as row vector
 
-    // Optimize
-    auto objective_and_grad = [&metadata, &O, &XB_diag, &Y, &w, &omega2_v, &objective_vec](const double * params, double * grad) -> double {
+    // Vestep: M_res is the NLOPT parameter; B and Omega fixed by the caller
+    auto objective_and_grad = [&](const double * params, double * grad) -> double {
         const arma::mat M     = metadata.map<M_ID>(params);
         const arma::mat logS2 = metadata.map<S_ID>(params);
-
-        arma::mat S2 = arma::exp(logS2);
-        arma::mat Z = O + XB_diag + M;
-        arma::mat A = exp(Z + 0.5 * S2);
-        double objective =
-            accu(w.t() * (A - Y % Z - 0.5 * logS2)) + 0.5 * as_scalar(w.t() * (pow(M, 2) + S2) * omega2_v) ;
-
-        metadata.map<M_ID>(grad) = diagmat(w) * (M * arma::diagmat(omega2_v) + A - Y);
-        metadata.map<S_ID>(grad) = 0.5 * diagmat(w) * (S2.each_row() % omega2_v.t() + S2 % A - 1.);
-
-        objective_vec.push_back(objective) ;
-
-        return objective;
+        const arma::mat S2    = arma::exp(logS2);
+        const double penalty  = 0.5 * as_scalar(w.t() * (arma::pow(M, 2) + S2) * omega2_v.t());
+        arma::mat gM, gS;
+        const double obj = diag_cov_obj_grad_impl(M, OXB + M, S2, logS2, omega2_v, penalty, Y, w, gM, gS);
+        metadata.map<M_ID>(grad) = gM;
+        metadata.map<S_ID>(grad) = gS;
+        objective_vec.push_back(obj);
+        return obj;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
@@ -246,10 +164,10 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     arma::mat logS2 = metadata.copy<S_ID>(parameters.data());
     arma::mat S2    = arma::exp(logS2);
     arma::mat S     = arma::exp(0.5 * logS2);
-    arma::vec omega2 = Omega.diag();
     // Element-wise log-likelihood
-    arma::mat Z = O + X * B + M;
+    arma::mat Z = OXB + M;
     arma::mat A = exp(Z + 0.5 * S2);
+    arma::vec omega2 = Omega.diag();
     arma::mat loglik =
       sum(Y % Z - A + 0.5 * logS2, 1) - 0.5 * (pow(M, 2) + S2) * omega2 + 0.5 * sum(log(omega2)) + ki(Y);
 
