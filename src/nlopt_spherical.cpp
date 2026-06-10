@@ -6,24 +6,7 @@
 #include "nlopt_wrapper.h"
 #include "packing.h"
 #include "utils.h"
-
-// ---------------------------------------------------------------------------------------
-// Shared inner computation for spherical-covariance NLOPT objective and gradients.
-// Z = O + X*B + M_res and S2 = exp(logS2) must be pre-computed by the caller.
-// inv_sigma2: scalar precision (profiled 1/sigma2 or fixed omega2 = Omega(0,0)).
-// penalty: KL variance term (log for profiled E-step; quadratic for fixed-omega vestep).
-static double spherical_cov_obj_grad_impl(
-    const arma::mat & M_res, const arma::mat & Z,
-    const arma::mat & S2,   const arma::mat & logS2,
-    double inv_sigma2, double penalty,
-    const arma::mat & Y, const arma::vec & w,
-    arma::mat & grad_M, arma::mat & grad_S
-) {
-    const arma::mat A = arma::exp(Z + 0.5 * S2);
-    grad_M = arma::diagmat(w) * (M_res * inv_sigma2 + A - Y);
-    grad_S = 0.5 * arma::diagmat(w) * (S2 * inv_sigma2 + S2 % A - 1.);
-    return accu(w.t() * (A - Y % Z - 0.5 * logS2)) + penalty;
-}
+#include "nlopt_impl.h"
 
 // ---------------------------------------------------------------------------------------
 // Spherical covariance PLN — nlopt/CCSAQ optimizer: B profiled via closed form, reduced parameter vector
@@ -56,7 +39,7 @@ Rcpp::List nlopt_optimize_spherical(
     objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
 
     const arma::mat Xw  = X.each_col() % w;
-    const arma::mat P_X = arma::solve(X.t() * Xw, Xw.t());
+    const arma::mat P_X = (X.n_cols > 0) ? arma::solve(X.t() * Xw, Xw.t()) : arma::mat(0, Y.n_rows);
 
     // E-step: M_full is the NLOPT parameter; B and sigma2 profiled at each eval
     auto objective_and_grad = [&](const double * par, double * grad) -> double {

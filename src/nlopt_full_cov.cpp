@@ -6,24 +6,7 @@
 #include "nlopt_wrapper.h"
 #include "packing.h"
 #include "utils.h"
-
-// ---------------------------------------------------------------------------------------
-// Shared inner computation: full-covariance NLOPT objective and gradients.
-// Z = O + X*B + M_res must be computed by the caller (varies between E-step and vestep).
-static double full_cov_obj_grad_impl(
-    const arma::mat & M_res, const arma::mat & Z, const arma::mat & logS2,
-    const arma::mat & Omega,  const arma::vec & Omega_diag,
-    const arma::mat & Y,     const arma::vec & w,
-    arma::mat & grad_M, arma::mat & grad_S
-) {
-    const arma::mat S2 = arma::exp(logS2);
-    const arma::mat A  = arma::exp(Z + 0.5 * S2);
-    const arma::mat MO = M_res * Omega;
-    grad_M = arma::diagmat(w) * (MO + A - Y);
-    grad_S = 0.5 * arma::diagmat(w) * (S2.each_row() % Omega_diag.t() + S2 % A - 1.);
-    return accu(w.t() * (A - Y % Z - 0.5 * logS2))
-         + 0.5 * (accu(MO % (M_res.each_col() % w)) + dot(Omega_diag, (w.t() * S2).t()));
-}
+#include "nlopt_impl.h"
 
 // ---------------------------------------------------------------------------------------
 // Full covariance PLN — nlopt/CCSAQ optimizer: B profiled via closed form, reduced parameter vector
@@ -50,13 +33,12 @@ Rcpp::List nlopt_optimize_full(
     metadata.map<M_ID>(parameters.data()) = init_M;
     metadata.map<S_ID>(parameters.data()) = arma::log(init_S % init_S);
 
-    const double w_bar    = accu(w);
-    const int maxit_em = config.containsElementNamed("maxit_em") ? Rcpp::as<int>(config["maxit_em"])    : 50;
-    const double ftol_em  = config.containsElementNamed("ftol_em")     ? Rcpp::as<double>(config["ftol_em"])     : 1e-8;
+    const double w_bar = accu(w);
+    const NewtonConfig cfg(config);
 
     // P_X = (X'WX)^{-1} X'W : d×n, precomputed once; B = P_X * M_full at each eval
     const arma::mat Xw  = X.each_col() % w;
-    const arma::mat P_X = arma::solve(X.t() * Xw, Xw.t());
+    const arma::mat P_X = (X.n_cols > 0) ? arma::solve(X.t() * Xw, Xw.t()) : arma::mat(0, Y.n_rows);
 
     // Initial Omega: M_res = M_full - X*B
     arma::mat Omega;
@@ -72,7 +54,7 @@ Rcpp::List nlopt_optimize_full(
     int total_iterations = 0;
     int last_status = 0;
 
-    for (int em_iter = 0; em_iter < std::max(1, maxit_em); em_iter++) {
+    for (int em_iter = 0; em_iter < std::max(1, cfg.max_em); em_iter++) {
         auto optimizer = new_nlopt_optimizer(config, parameters.size());
         objective_vec.reserve(objective_vec.size() + nlopt_get_maxeval(optimizer.get()));
         const arma::vec Omega_diag = diagvec(Omega);
@@ -107,7 +89,7 @@ Rcpp::List nlopt_optimize_full(
         arma::mat A = exp(Z + 0.5 * S2);
         double elbo = accu(w.t() * (Y % Z - A + 0.5 * logS2))
                     - 0.5 * w_bar * real(log_det(Sigma));
-        if (em_iter > 0 && converged(elbo, elbo_prev, ftol_em)) break;
+        if (em_iter > 0 && converged(elbo, elbo_prev, cfg.em_tol)) break;
         elbo_prev = elbo;
     }
 

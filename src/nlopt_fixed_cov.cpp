@@ -6,6 +6,7 @@
 #include "nlopt_wrapper.h"
 #include "packing.h"
 #include "utils.h"
+#include "nlopt_impl.h"
 
 // ---------------------------------------------------------------------------------------
 // Fixed covariance PLN — nlopt/CCSAQ optimizer: B profiled via closed form, reduced parameter vector
@@ -35,26 +36,21 @@ Rcpp::List nlopt_optimize_fixed(
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
     std::vector<double> objective_vec;
 
-    const arma::mat Xw        = X.each_col() % w;
-    const arma::mat P_X       = arma::solve(X.t() * Xw, Xw.t());
+    const arma::mat Xw         = X.each_col() % w;
+    const arma::mat P_X        = (X.n_cols > 0) ? arma::solve(X.t() * Xw, Xw.t()) : arma::mat(0, Y.n_rows);
     const arma::vec Omega_diag = diagvec(Omega);
 
     auto objective_and_grad = [&](const double * par, double * grad) -> double {
         const arma::mat M_full = metadata.map<M_ID>(par);
         const arma::mat logS2  = metadata.map<S_ID>(par);
-        arma::mat S2    = arma::exp(logS2);
-        arma::mat B     = P_X * M_full;
-        arma::mat M_res = M_full - X * B;
-        arma::mat Z     = O + M_full;
-        arma::mat A     = exp(Z + 0.5 * S2);
-        double objective = accu(w.t() * (A - Y % Z - 0.5 * logS2))
-                         + 0.5 * trace(Omega * (M_res.t() * (M_res.each_col() % w) + diagmat(w.t() * S2)));
-        // gradient for M_full = gradient for M_res (envelope theorem for B)
-        metadata.map<M_ID>(grad) = diagmat(w) * (M_res * Omega + A - Y);
-        // grad_logS2 = ½ w ⊙ (S²⊙(Ω_diag + A) − 1)
-        metadata.map<S_ID>(grad) = 0.5 * diagmat(w) * (S2.each_row() % Omega_diag.t() + S2 % A - 1.);
-        objective_vec.push_back(objective);
-        return objective;
+        const arma::mat B      = P_X * M_full;
+        const arma::mat M_res  = M_full - X * B;
+        arma::mat gM, gS;
+        const double obj = full_cov_obj_grad_impl(M_res, O + M_full, logS2, Omega, Omega_diag, Y, w, gM, gS);
+        metadata.map<M_ID>(grad) = gM;
+        metadata.map<S_ID>(grad) = gS;
+        objective_vec.push_back(obj);
+        return obj;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
