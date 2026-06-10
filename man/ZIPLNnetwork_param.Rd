@@ -33,7 +33,7 @@ Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternat
 
 \item{penalty_weights}{either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
 
-\item{config_post}{a list for controlling the post-treatment (optional bootstrap, jackknife, R2, etc).}
+\item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 

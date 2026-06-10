@@ -28,7 +28,7 @@ PLNmixture_param(
 
 \item{config_optim}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
 
-\item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).}
+\item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
@@ -41,13 +41,60 @@ list of parameters configuring the fit.
 Helper to define list of parameters to control the PLNmixture fit. All arguments have defaults.
 }
 \details{
-See \code{\link[=PLN_param]{PLN_param()}} for a full description of the generic optimization parameters. PLNmixture_param() also has additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:
+The list of parameters \code{config_optim} controls the optimizers. When "nlopt" is chosen the following entries are relevant
+\itemize{
+\item "algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".
+\item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10000
+\item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
+\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
+\item "ftol_abs" stop when an optimization step changes the objective function by less than ftol_abs. Default is 0.0 (disabled)
+\item "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)
+\item "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
+}
+
+When "torch" backend is used (only for PLN and PLNLDA for now), the following entries are relevant:
+\itemize{
+\item "algorithm" the optimizer used by torch among RPROP (default), RMSPROP, ADAM and ADAGRAD
+\item "maxeval" stop when the number of iteration exceeds maxeval. Default is 10 000
+\item "numepoch" stop training once this number of epochs exceeds numepoch. Set to -1 to enable infinite training. Default is 1 000
+\item "num_batch" number of batches to use during training. Defaults to 1 (use full dataset at each epoch)
+\item "ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8
+\item "xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6
+\item "lr" learning rate. Default is 0.1.
+\item "momentum" momentum factor. Default is 0 (no momentum). Only used in RMSPROP
+\item "weight_decay" Weight decay penalty. Default is 0 (no decay). Not used in RPROP
+\item "step_sizes" pair of minimal (default: 1e-6) and maximal (default: 50) allowed step sizes. Only used in RPROP
+\item "etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP
+\item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
+}
+
+When "homemade" or "hybrid" backend is used, the following entries are relevant
+\itemize{
+\item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
+\item "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8
+\item "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
+\item "ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8
+}
+
+The list of parameters \code{config_post} controls the post-treatment processing (for most \verb{PLN*()} functions), with the following entries (defaults may vary depending on the specific function, check \verb{config_post_default_*} for defaults values):
+\itemize{
+\item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
+\item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
+\item variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
+\item sandwich_var boolean indicating whether sandwich estimation should be used to estimate the variance of the model parameters (highly underestimated). Default is FALSE.
+\item rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
+}
+}
+\section{Outer-loop optimization parameters}{
+
+\code{PLNmixture_param()} adds parameters controlling the EM and smoothing outer loops:
 \itemize{
 \item "ftol_em" outer EM solver stops when the objective changes by less than ftol_em (relative). Default is 1e-3
 \item "maxit_em" outer EM solver stops when the number of iterations exceeds maxit_em. Default is 50
 \item "it_smooth" number of the iterations of the smoothing procedure. Default is 1.
 }
 }
+
 \seealso{
 \code{\link[=PLN_param]{PLN_param()}}
 }

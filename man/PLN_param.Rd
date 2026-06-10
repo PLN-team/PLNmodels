@@ -11,7 +11,8 @@ PLN_param(
   Omega = NULL,
   config_post = list(),
   config_optim = list(),
-  inception = NULL
+  inception = NULL,
+  init_method = c("LM", "GLM")
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ PLN_param(
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.}
+
+\item{init_method}{character: strategy for the starting-point computation (ignored when \code{inception} is a PLNfit). Either \code{"LM"} (default) or \code{"GLM"} (p independent Poisson GLMs, better for complex or unbalanced designs). See \code{\link[=compute_PLN_starting_point]{compute_PLN_starting_point()}}.}
 }
 \value{
 list of parameters configuring the fit.

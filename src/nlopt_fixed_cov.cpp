@@ -29,7 +29,7 @@ Rcpp::List nlopt_optimize_fixed(
     enum { M_ID, S_ID };
 
     auto parameters = std::vector<double>(metadata.packed_size);
-    metadata.map<M_ID>(parameters.data()) = X * init_B + init_M;
+    metadata.map<M_ID>(parameters.data()) = init_M;
     metadata.map<S_ID>(parameters.data()) = arma::log(init_S % init_S);
 
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
@@ -58,16 +58,16 @@ Rcpp::List nlopt_optimize_fixed(
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
-    arma::mat M_full = metadata.copy<M_ID>(parameters.data());
+    arma::mat M      = metadata.copy<M_ID>(parameters.data());  // M_full
     arma::mat logS2  = metadata.copy<S_ID>(parameters.data());
     arma::mat S2     = arma::exp(logS2);
     arma::mat S      = arma::exp(0.5 * logS2);
-    arma::mat B      = P_X * M_full;
-    arma::mat M      = M_full - X * B;
-    arma::mat Sigma  = (M.t() * (M.each_col() % w) + diagmat(w.t() * S2)) / accu(w);
-    arma::mat Z      = O + M_full;
+    arma::mat B      = P_X * M;
+    arma::mat M_res  = M - X * B;
+    arma::mat Sigma  = (M_res.t() * (M_res.each_col() % w) + diagmat(w.t() * S2)) / accu(w);
+    arma::mat Z      = O + M;
     arma::mat A      = exp(Z + 0.5 * S2);
-    arma::mat loglik = sum(Y % Z - A - 0.5 * ((M * Omega) % M - logS2 + S2 * diagmat(Omega)), 1)
+    arma::mat loglik = sum(Y % Z - A - 0.5 * ((M_res * Omega) % M_res - logS2 + S2 * diagmat(Omega)), 1)
                      + 0.5 * real(log_det(Omega)) + ki(Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));

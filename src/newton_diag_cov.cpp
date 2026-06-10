@@ -30,7 +30,8 @@ Rcpp::List newton_optimize_diagonal(
 
     const double w_bar = arma::accu(w);
     arma::mat S2 = S % S;
-    DiagonalCovTraits::State state(M, S2, w, w_bar);
+    const arma::mat M_res_init = M - X * B;
+    DiagonalCovTraits::State state(M_res_init, S2, w, w_bar);
 
     return newton_optimize_alt_impl<DiagonalCovTraits>(Y, X, O, w, B, M, S, state, maxiter, ftol, max_em, em_tol);
 }

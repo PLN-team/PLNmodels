@@ -46,7 +46,7 @@ Rcpp::List nlopt_optimize_spherical(
     enum { M_ID, S_ID };
 
     auto parameters = std::vector<double>(metadata.packed_size);
-    metadata.map<M_ID>(parameters.data()) = X * init_B + init_M;
+    metadata.map<M_ID>(parameters.data()) = init_M;
     metadata.map<S_ID>(parameters.data()) = arma::log(init_S % init_S);
 
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
@@ -77,18 +77,18 @@ Rcpp::List nlopt_optimize_spherical(
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
-    arma::mat M_full = metadata.copy<M_ID>(parameters.data());
+    arma::mat M      = metadata.copy<M_ID>(parameters.data());  // M_full
     arma::mat logS2  = metadata.copy<S_ID>(parameters.data());
     arma::mat S2     = arma::exp(logS2);
     arma::mat S      = arma::exp(0.5 * logS2);
-    arma::mat B      = P_X * M_full;
-    arma::mat M      = M_full - X * B;
-    const double sigma2 = accu(diagmat(w) * (pow(M, 2) + S2)) / (double(p) * w_bar);
+    arma::mat B      = P_X * M;
+    arma::mat M_res  = M - X * B;
+    const double sigma2 = accu(diagmat(w) * (pow(M_res, 2) + S2)) / (double(p) * w_bar);
     arma::sp_mat Sigma(p, p); Sigma.diag() = arma::ones<arma::vec>(p) * sigma2;
     arma::sp_mat Omega(p, p); Omega.diag() = arma::ones<arma::vec>(p) * pow(sigma2, -1);
-    arma::mat Z = O + M_full;
+    arma::mat Z = O + M;
     arma::mat A = exp(Z + 0.5 * S2);
-    arma::mat loglik = sum(Y % Z - A - 0.5 * (pow(M, 2) + S2) / sigma2 + 0.5 * (logS2 - log(sigma2)), 1) + ki(Y);
+    arma::mat loglik = sum(Y % Z - A - 0.5 * (pow(M_res, 2) + S2) / sigma2 + 0.5 * (logS2 - log(sigma2)), 1) + ki(Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;
@@ -141,17 +141,18 @@ Rcpp::List nlopt_optimize_vestep_spherical(
     std::vector<double> objective_vec ;
     objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
 
-    const arma::mat OXB   = O + X * B;  // fixed offset, precomputed once
+    const arma::mat XB    = X * B;  // B is fixed; precompute XB for M_res = M - XB
     const double omega2   = Omega(0, 0);  // fixed precision = 1/sigma2
 
-    // Vestep: M_res is the NLOPT parameter; B and Omega fixed by the caller
+    // Vestep: M_full is the NLOPT parameter; B and Omega fixed by the caller
     auto objective_and_grad = [&](const double * params, double * grad) -> double {
         const arma::mat M     = metadata.map<M_ID>(params);
         const arma::mat logS2 = metadata.map<S_ID>(params);
         const arma::mat S2    = arma::exp(logS2);
-        const double penalty  = 0.5 * omega2 * accu(arma::diagmat(w) * (arma::pow(M, 2) + S2));
+        const arma::mat M_res = M - XB;
+        const double penalty  = 0.5 * omega2 * accu(arma::diagmat(w) * (arma::pow(M_res, 2) + S2));
         arma::mat gM, gS;
-        const double obj = spherical_cov_obj_grad_impl(M, OXB + M, S2, logS2,
+        const double obj = spherical_cov_obj_grad_impl(M_res, O + M, S2, logS2,
                                                         omega2, penalty, Y, w, gM, gS);
         metadata.map<M_ID>(grad) = gM;
         metadata.map<S_ID>(grad) = gS;
@@ -161,14 +162,15 @@ Rcpp::List nlopt_optimize_vestep_spherical(
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
     // Model and variational parameters
-    arma::mat M     = metadata.copy<M_ID>(parameters.data());
+    arma::mat M     = metadata.copy<M_ID>(parameters.data());  // M_full
     arma::mat logS2 = metadata.copy<S_ID>(parameters.data());
     arma::mat S2    = arma::exp(logS2);
     arma::mat S     = arma::exp(0.5 * logS2);
-    // Element-wise log-likelihood  [log(S²·ω²) = logS2 + log(ω²)]
-    arma::mat Z = OXB + M;
+    arma::mat M_res = M - XB;
+    // Element-wise log-likelihood
+    arma::mat Z = O + M;
     arma::mat A = exp(Z + 0.5 * S2);
-    arma::mat loglik = sum(Y % Z - A - 0.5 * (pow(M, 2) + S2) * omega2 + 0.5 * (logS2 + log(omega2)), 1) + ki(Y);
+    arma::mat loglik = sum(Y % Z - A - 0.5 * (pow(M_res, 2) + S2) * omega2 + 0.5 * (logS2 + log(omega2)), 1) + ki(Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;

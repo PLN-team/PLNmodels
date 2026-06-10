@@ -145,38 +145,40 @@ Rcpp::List newton_vestep_impl(
 
     for (int it = 0; it < maxiter; it++) {
         S2 = arma::exp(psi);
-        arma::mat Z = O + XB + M;
+        arma::mat M_res = M - XB;          // M_res for KL terms (B is fixed)
+        arma::mat Z = O + M;               // Z = O + M_full
         arma::mat A = arma::exp(Z + 0.5 * S2);
 
-        // ---- Diagonal Newton step for M ----
+        // ---- Diagonal Newton step for M (gradient == gradient w.r.t. M_res, B fixed) ----
         arma::mat grad_M, hess_M;
-        Traits::grad_hess_M(M, state, A, Y, w, ones_row, grad_M, hess_M);
+        Traits::grad_hess_M(M_res, state, A, Y, w, ones_row, grad_M, hess_M);
         hess_M.clamp(1e-10, arma::datum::inf);
         arma::mat step_M = grad_M / hess_M;
-        arma::mat MO   = Traits::times_Omega(M, state);
+        arma::mat MO   = Traits::times_Omega(M_res, state);
         arma::mat dMO  = Traits::times_Omega(step_M, state);
-        double f0_M    = arma::accu(w.t() * (A - Y % Z)) + Traits::penalty_M(MO, M, w);
+        double f0_M    = arma::accu(w.t() * (A - Y % Z)) + Traits::penalty_M(MO, M_res, w);
         double slope_M = -arma::accu(grad_M % step_M);
         double alpha_M = 1.0;
         for (int ls = 0; ls < 20; ls++) {
-            arma::mat Mt  = M  - alpha_M * step_M;
-            arma::mat MOt = MO - alpha_M * dMO;
-            arma::mat Zt  = Z  - alpha_M * step_M;
-            arma::mat At  = arma::exp(Zt + 0.5 * S2);
-            if (arma::accu(w.t() * (At - Y % Zt)) + Traits::penalty_M(MOt, Mt, w)
+            arma::mat MresT = M_res - alpha_M * step_M;
+            arma::mat MOt   = MO   - alpha_M * dMO;
+            arma::mat Zt    = Z    - alpha_M * step_M;
+            arma::mat At    = arma::exp(Zt + 0.5 * S2);
+            if (arma::accu(w.t() * (At - Y % Zt)) + Traits::penalty_M(MOt, MresT, w)
                 <= f0_M + c1 * alpha_M * slope_M) break;
             alpha_M *= 0.5;
         }
         M -= alpha_M * step_M;
-        Z  = O + XB + M;
+        Z  = O + M;
 
         // ---- S step: ψ = −log(A + ω²) — exact minimiser for fixed A ----
         fixed_point_psi(psi, S2, Z, A, Traits::cov_diag(state, ones_row));
 
         // ---- Objective for convergence ----
         A = arma::exp(Z + 0.5 * S2);
+        arma::mat M_res_new = M - XB;
         double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * psi))
-                   + Traits::objective_cov(M, S2, state, w);
+                   + Traits::objective_cov(M_res_new, S2, state, w);
         objective_vec.push_back(obj);
         total_iter++;
 
@@ -187,9 +189,10 @@ Rcpp::List newton_vestep_impl(
     // ---- Final output ----
     S2 = arma::exp(psi);
     S  = arma::exp(0.5 * psi);
-    arma::mat Z = O + XB + M;
+    arma::mat Z = O + M;           // Z = O + M_full
     arma::mat A = arma::exp(Z + 0.5 * S2);
-    arma::vec loglik = Traits::final_loglik(Y, Z, A, M, psi, state);
+    arma::mat M_res = M - XB;      // for loglik KL terms
+    arma::vec loglik = Traits::final_loglik(Y, Z, A, M_res, psi, state);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;

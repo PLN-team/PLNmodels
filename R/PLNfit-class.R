@@ -59,6 +59,7 @@ PLNfit <- R6Class(
     Ji         = NA    , # element-wise approximated loglikelihood
     R2         = NA    , # approximated goodness of fit criterion
     w          = NULL  , # observation weights, stored at initialization
+    X          = NULL  , # design matrix, stored at initialization for latent_pos
     optimizer  = list(), # list of links to the functions doing the optimization
     monitoring = list(), # list with optimization monitoring quantities
 
@@ -67,7 +68,7 @@ PLNfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
       S2 <- torch_square(params$S[index])
-      Z  <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$B)
+      Z  <- data$O[index] + params$M[index]          # Z = O + M_full
       A <- torch_exp(Z + .5 * S2)
       res <- .5 * sum(data$w[index]) * torch_logdet(private$torch_Sigma(data, params, index)) +
         sum(data$w[index,NULL] * (A - data$Y[index] * Z - .5 * torch_log(S2)))
@@ -76,8 +77,9 @@ PLNfit <- R6Class(
 
     torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
       ws     <- torch_sqrt(data$w[index, NULL])
+      M_res  <- params$M[index] - torch_mm(data$X[index], params$B)  # M_res for covariance
       S2_bar <- torch_sum(torch_square(ws * params$S[index]), 1)
-      MtM    <- torch_mm(torch_t(ws * params$M[index]), ws * params$M[index])
+      MtM    <- torch_mm(torch_t(ws * M_res), ws * M_res)
       (MtM + torch_diag(S2_bar)) / sum(ws*ws)
     },
 
@@ -87,10 +89,11 @@ PLNfit <- R6Class(
 
     torch_vloglik = function(data, params) {
       S2    <- torch_square(params$S)
+      M_res <- params$M - torch_mm(data$X, params$B)  # M_res for KL terms
 
       Ji_tmp = .5 * torch_logdet(params$Omega) +
         torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
-        .5 * torch_sum(torch_mm(params$M, params$Omega) * params$M + S2 * torch_diag(params$Omega), dim = 2)
+        .5 * torch_sum(torch_mm(M_res, params$Omega) * M_res + S2 * torch_diag(params$Omega), dim = 2)
       Ji <- - torch_sum(.logfactorial_torch(data$Y), dim = 2) + Ji_tmp
       Ji <- .5 * self$p + as.numeric(Ji$cpu())
 
@@ -168,7 +171,7 @@ PLNfit <- R6Class(
 
       params$Sigma <- private$torch_Sigma(data, params)
       params$Omega <- private$torch_Omega(data, params)
-      params$Z     <- data$O + params$M + torch_matmul(data$X, params$B)
+      params$Z     <- data$O + params$M                   # Z = O + M_full
       params$A     <- torch_exp(params$Z + torch_pow(params$S, 2)/2)
 
       out <- lapply(params, function(x) {
@@ -365,6 +368,7 @@ PLNfit <- R6Class(
       ## set up various quantities
       private$formula <- formula # user formula call
       private$w       <- weights
+      private$X       <- covariates
       ## initialize the variational parameters
       if (isPLNfit(control$inception)) {
         if (control$trace > 1) cat("\n User defined inceptive PLN model")
@@ -375,7 +379,8 @@ PLNfit <- R6Class(
         private$S     <- control$inception$var_par$S
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
-        start_point <- compute_PLN_starting_point(Y = responses, X = covariates, O = offsets, w = weights)
+        start_point <- compute_PLN_starting_point(Y = responses, X = covariates, O = offsets, w = weights,
+                                                   method = if (is.null(control$init_method)) "LM" else control$init_method)
         private$B <- start_point$B
         private$M <- start_point$M
         private$S <- start_point$S
@@ -439,7 +444,7 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses)
       ## initialize variational parameters with current value if dimension is the same
       if ((p != self$p) || (n != self$n)) {
-        params0 <- list(M = matrix(0, n, p), S = matrix(.1, n, p))
+        params0 <- list(M = covariates %*% B, S = matrix(.1, n, p))
       } else {
         params0 <- list(M = self$var_par$M, S = self$var_par$S)
       }
@@ -537,11 +542,6 @@ PLNfit <- R6Class(
       O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
       if (is.null(O)) O <- matrix(0, n_new, self$p)
 
-      ## mean latent positions in the parameter space (covariates/offset only)
-      EZ <- X %*% private$B + O
-      rownames(EZ) <- rownames(newdata)
-      colnames(EZ) <- colnames(private$Sigma)
-
       ## Optimize M and S if responses are provided,
       if (level == 1) {
         VE <- self$optimize_vestep(
@@ -552,19 +552,20 @@ PLNfit <- R6Class(
           B          = private$B,
           Omega      = private$Omega
         )
-        M <- VE$M
+        M <- VE$M          # M_full
         S2 <- (VE$S)**2
       } else {
-        # otherwise set M = 0 and S2 = diag(Sigma)
-        M <- matrix(0, nrow = n_new, ncol = self$p)
+        # population prediction: M_full = X*B (M_res = 0)
+        M <- X %*% private$B
         S2 <- matrix(diag(private$Sigma), nrow = n_new, ncol = self$p, byrow = TRUE)
       }
+      rownames(M) <- rownames(newdata)
 
       type <- match.arg(type)
       results <- switch(
         type,
-        link = EZ + M,
-        response = exp(EZ + M + 0.5 * S2)
+        link = O + M,
+        response = exp(O + M + 0.5 * S2)
       )
       attr(results, "type") <- type
       results
@@ -618,7 +619,8 @@ PLNfit <- R6Class(
               Omega      = prec11
           )
 
-      M <- tcrossprod(VE$M, A)
+      M_res_VE <- VE$M - X %*% self$model_par$B[, cond, drop = FALSE]
+      M <- tcrossprod(M_res_VE, A)
       S <- map(1:n_new, ~crossprod(VE$S[., ] * t(A)) + Sigma21) %>% simplify2array()
 
       ## mean latent positions in the parameter space
@@ -689,7 +691,7 @@ PLNfit <- R6Class(
     #' @field latent a matrix: values of the latent vector (Z in the model)
     latent     = function() {private$Z},
     #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
-    latent_pos = function() {private$M},
+    latent_pos = function() {private$M - private$X %*% private$B},
     #' @field fitted a matrix: fitted values of the observations (A in the model)
     fitted     = function() {private$A},
     #' @field vcov_coef matrix of sandwich estimator of the variance-covariance of B (need fixed -ie known- covariance at the moment)
@@ -771,14 +773,15 @@ PLNfit_diagonal <- R6Class(
 
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
       S2 <- torch_square(params$S[index])
-      Z <- data$O[index] + params$M[index] + torch_matmul(data$X[index], params$B)
+      Z <- data$O[index] + params$M[index]              # Z = O + M_full
       res <- .5 * sum(data$w[index]) * sum(torch_log(private$torch_sigma_diag(data, params, index))) +
         sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z -  .5 * torch_log(S2)))
       res
     },
 
     torch_sigma_diag = function(data, params, index=torch_tensor(1:self$n)) {
-      torch_sum(data$w[index,NULL] * (torch_square(params$M[index]) + torch_square(params$S[index])), 1) / sum(data$w[index])
+      M_res <- params$M[index] - torch_mm(data$X[index], params$B)  # M_res for covariance
+      torch_sum(data$w[index,NULL] * (torch_square(M_res) + torch_square(params$S[index])), 1) / sum(data$w[index])
     },
 
     torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
@@ -787,11 +790,12 @@ PLNfit_diagonal <- R6Class(
 
     torch_vloglik = function(data, params) {
       S2 <- torch_square(params$S)
+      M_res <- params$M - torch_mm(data$X, params$B)    # M_res for KL terms
       omega_diag <- torch_pow(private$torch_sigma_diag(data, params), -1)
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
         .5 * sum(torch_log(omega_diag)) +
           torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2) -
-                      .5 * (torch_square(params$M) + S2) * omega_diag[NULL,], dim = 2)
+                      .5 * (torch_square(M_res) + S2) * omega_diag[NULL,], dim = 2)
       )
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
@@ -855,14 +859,15 @@ PLNfit_spherical <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
       S2 <- torch_square(params$S[index])
-      Z <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$B)
+      Z <- data$O[index] + params$M[index]              # Z = O + M_full
       res <- .5 * sum(data$w[index]) * self$p * torch_log(private$torch_sigma2(data, params, index)) -
         sum(data$w[index,NULL] * (data$Y[index] * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
       res
     },
 
     torch_sigma2 = function(data, params, index=torch_tensor(1:self$n)) {
-      sum(data$w[index, NULL] * (torch_square(params$M) + torch_square(params$S))) / (sum(data$w) * self$p)
+      M_res <- params$M[index] - torch_mm(data$X[index], params$B)  # M_res for covariance
+      sum(data$w[index, NULL] * (torch_square(M_res) + torch_square(params$S[index]))) / (sum(data$w[index]) * self$p)
     },
 
     torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
@@ -871,9 +876,10 @@ PLNfit_spherical <- R6Class(
 
     torch_vloglik = function(data, params) {
       S2 <- torch_pow(params$S, 2)
+      M_res <- params$M - torch_mm(data$X, params$B)    # M_res for KL terms
       sigma2 <- private$torch_sigma2(data, params)
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
-        torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2/sigma2) - .5 * (torch_pow(params$M, 2) + S2)/sigma2, dim = 2)
+        torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2/sigma2) - .5 * (torch_pow(M_res, 2) + S2)/sigma2, dim = 2)
       )
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
@@ -951,7 +957,7 @@ PLNfit_fixedcov <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
       S2 <- torch_square(params$S[index])
-      Z <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$B)
+      Z <- data$O[index] + params$M[index]              # Z = O + M_full
       res <- sum(data$w) * torch_trace(torch_mm(private$torch_Sigma(data, params, index), private$torch_Omega(data, params))) +
         sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z - .5 * torch_log(S2)))
       res

@@ -219,9 +219,17 @@ extract_model <- function(call, envir) {
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-  ## Save encountered levels for predict methods as attribute of the formula
-  attr(call$formula, "xlevels") <- .getXlevels(terms(frame), frame)
-  list(Y = Y, X = X, O = O, miss = is.na(Y), w = w, formula = call$formula)
+  ## Save encountered levels for predict methods as attribute of the formula.
+  ## Evaluate the formula expression to get the formula object before setting
+  ## attributes — avoids "cannot set an attribute on a 'symbol'" when the
+  ## formula was passed as a variable (e.g. PLN(my_formula, data = d)).
+  formula_obj <- if (is.symbol(call$formula)) {
+    eval(call$formula, envir = envir)
+  } else {
+    call$formula
+  }
+  attr(formula_obj, "xlevels") <- .getXlevels(terms(frame), frame)
+  list(Y = Y, X = X, O = O, miss = is.na(Y), w = w, formula = formula_obj)
 }
 
 edge_to_node <- function(x, n = max(x)) {
@@ -312,10 +320,19 @@ create_parameters <- function(
 #' @param X Covariate matrix. Note that initialization will fail if the model matrix is singular.
 #' @param O Offset matrix (in log-scale)
 #' @param w Weight vector (defaults to 1)
-#' @param s Scale parameter for S (defaults to 0.1)
+#' @param method character: strategy used to initialize B. Either `"LM"` (default, fast weighted
+#'   log-linear regression) or `"GLM"` (p independent Poisson GLMs, more accurate for complex
+#'   or unbalanced designs but slower).
 #' @return a named list of starting values for model parameter B and variational parameters M and S used in the iterative optimization algorithm of [PLN()]
 #'
-#' @details The default strategy to estimate B and M is to fit a linear model with covariates `X` to the response count matrix (after adding a pseudocount of 1, scaling by the offset and taking the log). The regression matrix is used to initialize `B` and the residuals to initialize `M`. `S` is initialized as a constant conformable matrix with value `s`.
+#' @details
+#' * **B**: estimated by weighted LM (`method = "LM"`, default) or p independent Poisson GLMs
+#'   (`method = "GLM"`). The GLM option gives better B estimates for factorial or unbalanced
+#'   designs at the cost of p IRLS fits.
+#' * **M**: initialized to `log((1 + Y) / exp(O))` (M_full in the X*B + M_res parameterization).
+#' * **S**: initialized element-wise to `1 / sqrt(2 + Y)`, the approximate VE-step optimum at
+#'   Omega = I. This adapts automatically to count levels: high S for zero counts (high
+#'   uncertainty), low S for large counts.
 #'
 #' @rdname compute_PLN_starting_point
 #' @examples
@@ -326,15 +343,24 @@ create_parameters <- function(
 #' O <- log(barents$Offset)
 #' w <- rep(1, nrow(Y))
 #' compute_PLN_starting_point(Y, X, O, w)
+#' compute_PLN_starting_point(Y, X, O, w, method = "GLM")
 #' }
 #'
-#' @importFrom stats lm.fit
+#' @importFrom stats lm.fit glm.fit poisson
 #' @export
-compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
-  # Y = responses, X = covariates, O = offsets (in log scale), w = weights
+compute_PLN_starting_point <- function(Y, X, O, w, method = c("LM", "GLM")) {
+  method <- match.arg(method)
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-  fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)), singular.ok = FALSE)
-  list(B = matrix(fits$coefficients, d, p),
-       M = matrix(fits$residuals, n, p),
-       S = matrix(s, n, p))
+  if (method == "GLM") {
+    B <- vapply(seq_len(p), function(j)
+      glm.fit(X, Y[, j], offset = O[, j], weights = w, family = poisson())$coefficients,
+      FUN.VALUE = numeric(d)
+    )
+  } else {
+    B <- lm.fit(w * X, w * log((1 + Y)/exp(O)), singular.ok = FALSE)$coefficients
+    B[is.na(B)] <- 0
+  }
+  list(B = matrix(B, d, p),
+       M = matrix(log((1 + Y)/exp(O)), n, p),
+       S = 1 / sqrt(2 + Y))
 }

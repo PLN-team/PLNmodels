@@ -45,10 +45,7 @@ PLNmixturefit <-
         M  <- private$comp %>%  map("var_par") %>% map("M")
         S2 <- private$comp %>%  map("var_par") %>% map("S2")
 
-        mu <- private$comp %>%  map(coef) %>% map(~outer(rep(1, self$n), as.numeric(.x)))
-
-        Ak_tilde <- list(M, S2, mu) %>%
-          purrr::pmap(function(M_k, S2_k, mu_k) exp(O + mu_k + M_k + .5 * S2_k))
+        Ak_tilde <- map2(M, S2, function(M_k, S2_k) exp(O + M_k + .5 * S2_k))
 
         Tk <- asplit(private$tau, 2)
 
@@ -231,7 +228,7 @@ PLNmixturefit <-
           "position"  = {
             latent_pos <- array(0, dim = c(nrow(args$X), self$k, self$p))
             for (k in seq.int(self$k)) {
-              latent_pos[ , k, ] <- ve_step[[k]]$M + rep(1, nrow(args$X)) %o% self$group_means[, k]
+              latent_pos[ , k, ] <- ve_step[[k]]$M
             }
             res <- apply(latent_pos * tau %o% rep(1, self$p), c(1, 3), sum)
             rownames(res) <- rownames(newdata)
@@ -250,8 +247,7 @@ PLNmixturefit <-
       plot_clustering_data = function(main = "Expected counts reorder by clustering", plot = TRUE, log_scale = TRUE) {
         M  <- private$mix_up('var_par$M')
         S2 <- private$mix_up('var_par$S2')
-        mu <- self$posteriorProb %*% t(self$group_means)
-        A  <- exp(mu + M + .5 * S2)
+        A  <- exp(M + .5 * S2)
         p <- plot_matrix(A, 'samples', 'variables', self$memberships, log_scale)
         if (plot) print(p)
         invisible(p)
@@ -263,7 +259,7 @@ PLNmixturefit <-
       #' @param main character. A title for the plot. An hopefully appropriate title will be used by default.
       #' @return a [`ggplot2::ggplot`] graphic
       plot_clustering_pca = function(main = "Clustering labels in Individual Factor Map", plot = TRUE) {
-        mu <- self$posteriorProb %*% t(self$group_means) + private$mix_up('var_par$M')
+        mu <- private$mix_up('var_par$M')
         svdM <- svd(scale(mu, TRUE, FALSE), nv = 2)
         .scores <- data.frame(t(t(svdM$u[, 1:2]) * svdM$d[1:2]))
         colnames(.scores) <- paste("a",1:2,sep = "")
@@ -328,7 +324,7 @@ PLNmixturefit <-
       #' @field latent a matrix: values of the latent vector (Z in the model)
       latent = function() {private$mix_up('latent')},
       #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
-      latent_pos = function() {private$mix_up('var_par$M') + self$posteriorProb %*% t(self$group_means)},
+      latent_pos = function() {private$mix_up('var_par$M')},
       #' @field posteriorProb matrix ofposterior probability for cluster belonging
       posteriorProb = function(value) {if (missing(value)) return(private$tau) else private$tau <- value},
       #' @field memberships vector for cluster index

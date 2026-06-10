@@ -3,19 +3,15 @@
 #include "utils.h"
 #include "CovarianceTraits.h"
 
-// Alternative parameterization: M stores M_full (the full variational mean on Z_i,
-// not the residual M_res = M_full - XB used in newton_impl.h).
+// M_full parameterization: M is the full variational mean of Z_i (= X_i*B + M_res),
+// consistent with the ZIPLN convention.  M_res = M - X*B is computed locally for KL.
 //
-// B is profiled at every Newton step via the envelope theorem (same as nlopt E-step):
-//   B = P_X * M_full = (X'WX)^{-1} X'W M_full  (closed-form optimum for current M_full)
-//   M_res = M_full - X*B                          (projection orthogonal to col(X))
-// The gradient of J_profiled w.r.t. M_full equals the gradient w.r.t. M_res
-// (envelope theorem), so no formula change is needed.  Within each Armijo line search
-// B is held fixed at the value computed at the start of the Newton step, consistent
-// with how nlopt evaluates the gradient once per quasi-Newton iteration.
+// B is profiled at every Newton step via the envelope theorem:
+//   B = P_X * M = (X'WX)^{-1} X'W M   (closed-form optimum for current M)
+//   M_res = M - X*B                     (projection orthogonal to col(X))
+// The gradient of J_profiled w.r.t. M equals the gradient w.r.t. M_res (envelope theorem).
 //
-// At input/output: M is in the "residual" format (M_res = M_full - XB) to stay
-// compatible with the rest of the R package.  The conversion is done internally.
+// Input/output: M is in M_full format throughout.
 
 template<typename Traits>
 Rcpp::List newton_optimize_alt_impl(
@@ -35,9 +31,6 @@ Rcpp::List newton_optimize_alt_impl(
     const arma::mat XtWX = X.t() * Xw;           // d×d, symmetric PD
     // When d=0 (no covariates), X'WX is 0×0: skip solve to avoid spurious singularity warning
     const arma::mat P_X  = (X.n_cols > 0) ? arma::solve(XtWX, Xw.t()) : arma::mat(0, n);
-
-    // Convert input M from residual format to M_full = XB + M_res
-    M = X * B + M;
 
     arma::mat psi = arma::log(S % S);
     arma::mat S2  = arma::exp(psi);
@@ -154,7 +147,7 @@ Rcpp::List newton_optimize_alt_impl(
     Rcpp::List cov_out = Traits::output_cov(M_res, S2, w, w_bar, state);
     return Rcpp::List::create(
         Rcpp::Named("B",     B               ),
-        Rcpp::Named("M",     M_res           ),   // return residual format for R compatibility
+        Rcpp::Named("M",     M               ),   // M_full
         Rcpp::Named("S",     S               ),
         Rcpp::Named("Z",     Z               ),
         Rcpp::Named("A",     A               ),

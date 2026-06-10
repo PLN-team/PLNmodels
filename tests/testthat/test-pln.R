@@ -18,10 +18,11 @@ test_that("PLN: Check that PLN is running and robust",  {
 
 test_that("PLN: Check consistency of initialization - fully parametrized covariance",  {
 
-  ## use default initialization (LM)
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(trace = 0))
+  ## use default initialization (LM), run enough EM iters to ensure convergence
+  ctrl_cv <- PLN_param(trace = 0, config_optim = list(maxit_em = 500))
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = ctrl_cv)
 
-  ## initialization with the previous fit
+  ## initialization with the previous fit: should converge to the same point
   model2 <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(inception = model1, trace = 0))
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = 0.1)
@@ -35,10 +36,11 @@ test_that("PLN: Check consistency of initialization - fully parametrized covaria
 
 test_that("PLN: Check consistency of initialization - diagonal covariance",  {
 
-  ## use default initialization (GLM)
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(trace = 0, covariance = "diagonal"))
+  ## use default initialization, run enough EM iters to ensure convergence
+  ctrl_cv <- PLN_param(trace = 0, covariance = "diagonal", config_optim = list(maxit_em = 500))
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = ctrl_cv)
 
-  ## initialization with the previous fit
+  ## initialization with the previous fit: should converge to the same point
   model2 <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(inception = model1, trace = 0, covariance = "diagonal"))
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = 0.1)

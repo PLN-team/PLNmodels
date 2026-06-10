@@ -9,7 +9,7 @@ PLNLDA(formula, data, subset, weights, grouping, control = PLNLDA_param())
 \arguments{
 \item{formula}{an object of class "formula": a symbolic description of the model to be fitted.}
 
-\item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which lm is called.}
+\item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which the model is called.}
 
 \item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
 
