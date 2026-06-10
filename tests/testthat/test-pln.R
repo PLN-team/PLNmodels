@@ -73,10 +73,10 @@ test_that("PLN: Check consistency of observation weights - diagonal covariance",
   tol <- 1e-2
 
   ## no weights
-  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "spherical", trace = 0))
+  model1 <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "diagonal", trace = 0))
 
-  ## equivalent weigths
-  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = PLN_param(covariance = "spherical", trace = 0))
+  ## equivalent weights
+  model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = PLN_param(covariance = "diagonal", trace = 0))
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
 })
@@ -87,9 +87,8 @@ test_that("PLN: Check consistency of observation weights - spherical covariance"
   ## no weights
   model1 <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "spherical", trace = 0))
 
-  ## equivalent weigths
+  ## equivalent weights
   model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera)), control = PLN_param(covariance = "spherical", trace = 0))
-  model3 <- PLN(Abundance ~ 1, data = trichoptera, weights = runif(nrow(trichoptera)), control = PLN_param(covariance = "spherical", trace = 0))
 
   expect_equal(model2$loglik   , model1$loglik   , tolerance = tol)
 })
@@ -206,7 +205,7 @@ test_that("PLN: Check that all univariate PLN models are equivalent with the mul
 
 })
 
-test_that("PLN: check initialization fails when the covariate model matrix is singular",  {
+test_that("PLN: singular covariate model matrix is handled gracefully",  {
   n = 10; d = 1; p = 10
   Y <- matrix(rpois(n*p, 1), n, p)
 
@@ -218,8 +217,8 @@ test_that("PLN: check initialization fails when the covariate model matrix is si
   f1 <- gl(2, n/2, labels = c("1.1", "1.2"))
   f2 <- gl(2, n/2, labels = c("2.1", "2.2"))
 
-  # In both cases, model.matrix(formula) is singular
-  expect_error(PLN(Y ~ X_singular))
-  expect_error(PLN(Y ~ f1 + f2))
+  # singular.ok = TRUE: dropped coefficients are zeroed, PLN does not throw
+  expect_no_error(PLN(Y ~ X_singular))
+  expect_no_error(PLN(Y ~ f1 + f2))
 
 })
