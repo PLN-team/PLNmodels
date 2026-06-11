@@ -13,13 +13,15 @@
 //
 // Input/output: M is in M_full format throughout.
 
+// Mirror of nlopt_full_cov structure: outer EM loop (max_em) over an inner VE-step that
+// optimizes (M, ψ) jointly for fixed Omega until convergence (ftol), then one Omega M-step.
+// Joint Newton step per inner iteration: diagonal 2×2 per (i,j) with cross-term H_Mψ.
 template<typename Traits>
 Rcpp::List newton_optimize_impl(
     const arma::mat & Y, const arma::mat & X, const arma::mat & O, const arma::vec & w,
     arma::mat B, arma::mat M, arma::mat S,
     typename Traits::State state,
-    int maxiter, double ftol, int max_em, double em_tol,
-    int block_newton_thresh = 30
+    int maxiter, double ftol, int max_em, double em_tol
 ) {
     const int n          = Y.n_rows;
     const arma::uword p  = Y.n_cols;
@@ -27,10 +29,8 @@ Rcpp::List newton_optimize_impl(
     const double c1      = 1e-4;
     const arma::mat ones_row = arma::ones(n, 1);
 
-    // Precompute X'WX and P_X once: P_X = (X'WX)^{-1}X'W (d×n) for live B = P_X * M_full
-    const arma::mat Xw   = X.each_col() % w;    // n×d
-    const arma::mat XtWX = X.t() * Xw;           // d×d, symmetric PD
-    // When d=0 (no covariates), X'WX is 0×0: skip solve to avoid spurious singularity warning
+    const arma::mat Xw   = X.each_col() % w;
+    const arma::mat XtWX = X.t() * Xw;
     const arma::mat P_X  = (X.n_cols > 0) ? arma::solve(XtWX, Xw.t()) : arma::mat(0, n);
 
     arma::mat psi = arma::log(S % S);
@@ -38,119 +38,83 @@ Rcpp::List newton_optimize_impl(
 
     std::vector<double> objective_vec;
     double elbo_prev = -arma::datum::inf;
-    int total_iter   = 0;
     int last_status  = 5;
 
-    // Inner loop: B profiled at each Newton step via envelope theorem.
-    auto inner_loop = [&]() {
-        double obj_prev = arma::datum::inf;
-        // S2 is current (fixed_point_psi updated it in the previous round, or initialized above).
-        // Sync B, Z, A once per EM round; they are kept current at the end of each Newton step
-        // so subsequent iterations reuse them directly without recomputation.
-        B            = P_X * M;
-        arma::mat Z  = O + M;
-        arma::mat A  = arma::exp(Z + 0.5 * S2);
+    B           = P_X * M;
+    arma::mat Z = O + M;
+    arma::mat A = arma::exp(Z + 0.5 * S2);
 
+    for (int em_iter = 0; em_iter < std::max(1, max_em); em_iter++) {
+        // ── Inner VE-step: optimize (M, ψ) to convergence for the current Omega/state ──
+        double inner_prev = arma::datum::inf;
         for (int it = 0; it < maxiter; it++) {
-            // S2, B, Z, A are all current here.
-            const arma::mat XB    = X * B;         // frozen during the Armijo line search below
+            const arma::mat XB    = X * B;
             const arma::mat M_res = M - XB;
 
-            // Newton step for M_full using Trait-specific preconditioner.
-            // DenseOmegaImpl: shared p×p preconditioner (diag(wA_mean)+Omega), one Cholesky per call.
-            // Diagonal/Spherical: diagonal step (unchanged).
-            arma::mat grad_M, step_M;
-            Traits::compute_step_M(M_res, state, A, Y, w, ones_row, grad_M, step_M,
-                                   static_cast<arma::uword>(block_newton_thresh));
-
-            // Q_step = (I - X*P_X)*step_M: change in M_res per unit alpha (correct projected step)
-            // With live B: M_res_t = M_res - alpha*Q_step, slope = -grad_M . Q_step
+            // Joint Newton step for (M, ψ): gradient + 2×2 Newton per (i,j)
+            arma::mat grad_M, step_M, grad_psi, step_psi;
+            Traits::compute_joint_step_MS(M_res, state, A, S2, Y, w, ones_row,
+                                          grad_M, step_M, grad_psi, step_psi);
             const arma::mat Q_step  = step_M - X * (P_X * step_M);
-            arma::mat MresO  = Traits::times_Omega(M_res, state);
-            arma::mat QstepO = Traits::times_Omega(Q_step, state);
-            double f0_M    = arma::accu(w.t() * (A - Y % Z)) + Traits::penalty_M(MresO, M_res, w);
-            double slope_M = -arma::accu(grad_M % Q_step);
-            // Fall back if step is not a descent direction (degenerate case)
-            if (slope_M >= 0) slope_M = -arma::accu(grad_M % step_M);
-            double alpha_M = 1.0;
+            const arma::mat MresO   = Traits::times_Omega(M_res, state);
+            const arma::mat QstepO  = Traits::times_Omega(Q_step, state);
+            double f0    = arma::accu(w.t() * (A - Y % Z - 0.5 * psi))
+                         + Traits::penalty_M(MresO, M_res, w) + Traits::penalty_S(S2, state, w);
+            double slope = -arma::accu(grad_M % Q_step) - arma::accu(grad_psi % step_psi);
+            if (slope >= 0) slope = -arma::accu(grad_M % step_M) - arma::accu(grad_psi % step_psi);
+            double alpha = 1.0;
             for (int ls = 0; ls < 20; ls++) {
-                arma::mat MresOt = MresO  - alpha_M * QstepO;
-                arma::mat MresT  = M_res  - alpha_M * Q_step;
-                arma::mat Zt     = Z      - alpha_M * step_M;  // = O + Mt
-                arma::mat At     = arma::exp(Zt + 0.5 * S2);
-                if (arma::accu(w.t() * (At - Y % Zt)) + Traits::penalty_M(MresOt, MresT, w)
-                    <= f0_M + c1 * alpha_M * slope_M) break;
-                alpha_M *= 0.5;
+                const arma::mat MresT  = M_res - alpha * Q_step;
+                const arma::mat MresOt = MresO - alpha * QstepO;
+                const arma::mat psit   = psi   - alpha * step_psi;
+                const arma::mat S2t    = arma::exp(psit);
+                const arma::mat Zt     = Z     - alpha * step_M;
+                const arma::mat At     = arma::exp(Zt + 0.5 * S2t);
+                if (arma::accu(w.t() * (At - Y % Zt - 0.5 * psit))
+                    + Traits::penalty_M(MresOt, MresT, w) + Traits::penalty_S(S2t, state, w)
+                    <= f0 + c1 * alpha * slope) break;
+                alpha *= 0.5;
             }
-            M -= alpha_M * step_M;
-            B  = P_X * M;
-            Z  = O + M;
+            M   -= alpha * step_M;
+            psi -= alpha * step_psi;
+            S2   = arma::exp(psi);
+            B    = P_X * M;
+            Z    = O + M;
+            A    = arma::exp(Z + 0.5 * S2);
 
-            // S step: exact fixed-point ψ = −log(A + diag_Ω)
-            fixed_point_psi(psi, S2, Z, A, Traits::cov_diag(state, ones_row));
-
-            // A with new S2 — needed for obj computation and for next iteration
-            A = arma::exp(Z + 0.5 * S2);
-            const arma::mat M_res_new = M - X * B;
-            double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * psi))
-                       + Traits::objective_cov(M_res_new, S2, state, w);
-            objective_vec.push_back(obj);
-            total_iter++;
-
-            if (it > 0 && converged(obj, obj_prev, ftol)) { last_status = 3; break; }
-            obj_prev = obj;
+            objective_vec.push_back(f0);
+            if (it > 0 && converged(f0, inner_prev, ftol)) break;
+            inner_prev = f0;
         }
-    };
 
-    if (Traits::has_em) {
-        for (int em = 0; em < max_em; em++) {
-            inner_loop();
-
-            // S2 is current: fixed_point_psi updated it inside inner_loop.
-            // B is already at its optimum (live-updated in inner_loop); only Omega needs updating.
-            // Recompute M_res for the Sigma/Omega M-step.
-            arma::mat M_res = M - X * B;
-            Traits::mstep(state, M_res, S2, w, w_bar, p);
-
-            arma::mat Z = O + M;
-            arma::mat A = arma::exp(Z + 0.5 * S2);
-            double elbo = arma::accu(w.t() * (Y % Z - A + 0.5 * psi))
-                        + Traits::elbo_cov(state, w_bar, p);
-            if (em > 0 && converged(elbo, elbo_prev, em_tol)) { last_status = 3; break; }
-            elbo_prev = elbo;
+        // ── VM-step: update Omega/Sigma (skipped for fixed covariance) ──
+        const arma::mat M_res_cur = M - X * B;
+        if (Traits::has_em) {
+            Traits::mstep(state, M_res_cur, S2, w, w_bar, p);
+        } else {
+            last_status = 3; break;   // fixed covariance: inner loop already converged
         }
-    } else {
-        // Fixed covariance: Omega is fixed; B is live-updated in inner_loop.
-        double elbo_prev_fix = -arma::datum::inf;
-        for (int em = 0; em < max_em; em++) {
-            inner_loop();
-            // S2 is current: fixed_point_psi updated it inside inner_loop.
-            // B already optimal after inner_loop; recompute M_res for ELBO check.
-            arma::mat M_res = M - X * B;
-            arma::mat Z     = O + M;
-            arma::mat A     = arma::exp(Z + 0.5 * S2);
-            double elbo = arma::accu(w.t() * (Y % Z - A + 0.5 * psi))
-                        - Traits::objective_cov(M_res, S2, state, w);
-            if (em > 0 && converged(elbo, elbo_prev_fix, em_tol)) { last_status = 3; break; }
-            elbo_prev_fix = elbo;
-        }
+
+        // ── Outer ELBO for convergence ──
+        double elbo = arma::accu(w.t() * (Y % Z - A + 0.5 * psi))
+                    + Traits::elbo_cov(state, w_bar, p);
+        if (em_iter > 0 && converged(elbo, elbo_prev, em_tol)) { last_status = 3; break; }
+        elbo_prev = elbo;
     }
 
     S2 = arma::exp(psi);
     S  = arma::exp(0.5 * psi);
     arma::mat M_res = M - X * B;
-    arma::mat Z = O + M;
-    arma::mat A = arma::exp(Z + 0.5 * S2);
+    Z = O + M;
+    A = arma::exp(Z + 0.5 * S2);
 
-    // final_loglik uses M_res for the KL terms (same convention as newton_impl.h)
     arma::vec loglik = Traits::final_loglik(Y, Z, A, M_res, psi, state);
-
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;
     Rcpp::List cov_out = Traits::output_cov(M_res, S2, w, w_bar, state);
     return Rcpp::List::create(
         Rcpp::Named("B",     B               ),
-        Rcpp::Named("M",     M               ),   // M_full
+        Rcpp::Named("M",     M               ),
         Rcpp::Named("S",     S               ),
         Rcpp::Named("Z",     Z               ),
         Rcpp::Named("A",     A               ),
@@ -158,10 +122,10 @@ Rcpp::List newton_optimize_impl(
         Rcpp::Named("Omega", cov_out["Omega"]),
         Rcpp::Named("Ji",    Ji              ),
         Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status",     last_status   ),
-            Rcpp::Named("backend",    "newton"  ),
-            Rcpp::Named("objective",  objective_vec ),
-            Rcpp::Named("iterations", total_iter    )
+            Rcpp::Named("status",     last_status                  ),
+            Rcpp::Named("backend",    "newton"                     ),
+            Rcpp::Named("objective",  objective_vec                ),
+            Rcpp::Named("iterations", (int)objective_vec.size()    )
         ))
     );
 }
@@ -174,8 +138,7 @@ Rcpp::List newton_vestep_impl(
     const arma::mat & Y, const arma::mat & X, const arma::mat & O, const arma::vec & w,
     arma::mat M, arma::mat S,
     const arma::mat & B, const typename Traits::State & state,
-    int maxiter, double ftol,
-    int block_newton_thresh = 30
+    int maxiter, double ftol
 ) {
     const int n = Y.n_rows;
     const double c1 = 1e-4;
@@ -197,29 +160,32 @@ Rcpp::List newton_vestep_impl(
         // S2, Z, A are current.
         arma::mat M_res = M - XB;          // M_res for KL terms (B is fixed)
 
-        // ---- Newton step for M (gradient and preconditioned step via Trait method) ----
-        arma::mat grad_M, step_M;
-        Traits::compute_step_M(M_res, state, A, Y, w, ones_row, grad_M, step_M,
-                               static_cast<arma::uword>(block_newton_thresh));
-        arma::mat MO   = Traits::times_Omega(M_res, state);
-        arma::mat dMO  = Traits::times_Omega(step_M, state);
-        double f0_M    = arma::accu(w.t() * (A - Y % Z)) + Traits::penalty_M(MO, M_res, w);
-        double slope_M = -arma::accu(grad_M % step_M);
-        double alpha_M = 1.0;
+        // ---- Joint Newton step for (M, ψ) ----
+        arma::mat grad_M, step_M, grad_psi, step_psi;
+        Traits::compute_joint_step_MS(M_res, state, A, S2, Y, w, ones_row,
+                                      grad_M, step_M, grad_psi, step_psi);
+        const arma::mat MO  = Traits::times_Omega(M_res, state);
+        const arma::mat dMO = Traits::times_Omega(step_M, state);
+        double f0    = arma::accu(w.t() * (A - Y % Z - 0.5 * psi))
+                     + Traits::penalty_M(MO, M_res, w) + Traits::penalty_S(S2, state, w);
+        double slope = -arma::accu(grad_M % step_M) - arma::accu(grad_psi % step_psi);
+        double alpha = 1.0;
         for (int ls = 0; ls < 20; ls++) {
-            arma::mat MresT = M_res - alpha_M * step_M;
-            arma::mat MOt   = MO   - alpha_M * dMO;
-            arma::mat Zt    = Z    - alpha_M * step_M;
-            arma::mat At    = arma::exp(Zt + 0.5 * S2);
-            if (arma::accu(w.t() * (At - Y % Zt)) + Traits::penalty_M(MOt, MresT, w)
-                <= f0_M + c1 * alpha_M * slope_M) break;
-            alpha_M *= 0.5;
+            const arma::mat MresT = M_res - alpha * step_M;
+            const arma::mat MOt   = MO    - alpha * dMO;
+            const arma::mat psit  = psi   - alpha * step_psi;
+            const arma::mat S2t   = arma::exp(psit);
+            const arma::mat Zt    = Z     - alpha * step_M;
+            const arma::mat At    = arma::exp(Zt + 0.5 * S2t);
+            if (arma::accu(w.t() * (At - Y % Zt - 0.5 * psit))
+                + Traits::penalty_M(MOt, MresT, w) + Traits::penalty_S(S2t, state, w)
+                <= f0 + c1 * alpha * slope) break;
+            alpha *= 0.5;
         }
-        M -= alpha_M * step_M;
-        Z  = O + M;
-
-        // ---- S step: ψ = −log(A + ω²) — exact minimiser for fixed A ----
-        fixed_point_psi(psi, S2, Z, A, Traits::cov_diag(state, ones_row));
+        M   -= alpha * step_M;
+        psi -= alpha * step_psi;
+        S2   = arma::exp(psi);
+        Z    = O + M;
 
         // ---- Objective for convergence ----
         A = arma::exp(Z + 0.5 * S2);

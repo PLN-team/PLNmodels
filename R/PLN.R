@@ -97,7 +97,6 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #' * "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8
 #' * "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
 #' * "ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8
-#' * "block_newton_thresh" for full/fixed covariance: use exact per-observation block Newton (p×p solve) when p ≤ this threshold, diagonal approximation otherwise. Default is 30. Set to 0 to always use the diagonal approximation.
 #'
 #' The list of parameters `config_post` controls the post-treatment processing (for most `PLN*()` functions), with the following entries (defaults may vary depending on the specific function, check `config_post_default_*` for defaults values):
 #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.

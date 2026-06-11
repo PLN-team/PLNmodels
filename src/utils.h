@@ -85,12 +85,10 @@ struct NewtonConfig {
     double ftol               = 1e-8;
     int    max_em             = 50;
     double em_tol             = 1e-8;
-    int    block_newton_thresh = 30;
     explicit NewtonConfig(const Rcpp::List & cfg) {
-        if (cfg.containsElementNamed("maxeval"))             maxiter             = Rcpp::as<int>(cfg["maxeval"]);
-        if (cfg.containsElementNamed("ftol_in"))             ftol                = Rcpp::as<double>(cfg["ftol_in"]);
-        if (cfg.containsElementNamed("maxit_em"))            max_em              = Rcpp::as<int>(cfg["maxit_em"]);
-        if (cfg.containsElementNamed("ftol_em"))             em_tol              = Rcpp::as<double>(cfg["ftol_em"]);
-        if (cfg.containsElementNamed("block_newton_thresh")) block_newton_thresh = Rcpp::as<int>(cfg["block_newton_thresh"]);
+        if (cfg.containsElementNamed("maxeval"))  maxiter = Rcpp::as<int>(cfg["maxeval"]);
+        if (cfg.containsElementNamed("ftol_in"))  ftol    = Rcpp::as<double>(cfg["ftol_in"]);
+        if (cfg.containsElementNamed("maxit_em")) max_em  = Rcpp::as<int>(cfg["maxit_em"]);
+        if (cfg.containsElementNamed("ftol_em"))  em_tol  = Rcpp::as<double>(cfg["ftol_em"]);
     }
 };

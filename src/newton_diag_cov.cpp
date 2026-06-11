@@ -29,7 +29,7 @@ Rcpp::List newton_optimize_diagonal(
     const arma::mat M_res_init = M - X * B;
     DiagonalCovTraits::State state(M_res_init, S2, w, w_bar);
 
-    return newton_optimize_impl<DiagonalCovTraits>(Y, X, O, w, B, M, S, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, cfg.block_newton_thresh);
+    return newton_optimize_impl<DiagonalCovTraits>(Y, X, O, w, B, M, S, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
 }
 
 // ---------------------------------------------------------------------------------------
@@ -52,5 +52,5 @@ Rcpp::List newton_optimize_vestep_diagonal(
 
     const NewtonConfig cfg(config);
     DiagonalCovTraits::State state(Omega);
-    return newton_vestep_impl<DiagonalCovTraits>(Y, X, O, w, M, S, B, state, cfg.maxiter, cfg.ftol, cfg.block_newton_thresh);
+    return newton_vestep_impl<DiagonalCovTraits>(Y, X, O, w, M, S, B, state, cfg.maxiter, cfg.ftol);
 }

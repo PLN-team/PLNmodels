@@ -20,9 +20,8 @@ config_default_homemade <-
     backend             = "homemade",
     maxeval             = 10000,
     ftol_in             = 1e-8,
-    maxit_em            = 50,
-    ftol_em             = 1e-8,
-    block_newton_thresh = 30L
+    maxit_em            = 200,
+    ftol_em             = 1e-8
   )
 
 # Hybrid backend: two-phase optimizer — nlopt/CCSAQ (phase 1) then homemade Newton (phase 2).
