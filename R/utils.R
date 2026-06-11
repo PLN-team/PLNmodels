@@ -16,12 +16,13 @@ config_default_nlopt <-
 
 config_default_homemade <-
   list(
-    algorithm = "NEWTON",
-    backend   = "homemade",
-    maxeval   = 10000,
-    ftol_in   = 1e-8,
-    maxit_em  = 50,
-    ftol_em   = 1e-8
+    algorithm           = "NEWTON",
+    backend             = "homemade",
+    maxeval             = 10000,
+    ftol_in             = 1e-8,
+    maxit_em            = 50,
+    ftol_em             = 1e-8,
+    block_newton_thresh = 30L
   )
 
 # Hybrid backend: two-phase optimizer — nlopt/CCSAQ (phase 1) then homemade Newton (phase 2).

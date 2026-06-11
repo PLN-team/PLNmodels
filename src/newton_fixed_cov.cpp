@@ -3,7 +3,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include "utils.h"
-#include "newton_impl_alt.h"  // newton_optimize_alt_impl — the homemade E-step
+#include "newton_impl.h"  // newton_optimize_impl — the homemade E-step
 
 // ---------------------------------------------------------------------------------------
 // Fixed inverse covariance (Omega provided externally) PLN — homemade Newton optimizer
@@ -26,5 +26,5 @@ Rcpp::List newton_optimize_fixed(
     const NewtonConfig cfg(config);
 
     FixedCovTraits::State state(Omega);
-    return newton_optimize_alt_impl<FixedCovTraits>(Y, X, O, w, B, M, S, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
+    return newton_optimize_impl<FixedCovTraits>(Y, X, O, w, B, M, S, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, cfg.block_newton_thresh);
 }

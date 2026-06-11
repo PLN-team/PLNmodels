@@ -29,6 +29,32 @@ struct DenseOmegaImpl {
 
     static arma::mat times_Omega(const arma::mat & M, const State & s) { return M * s.Omega; }
 
+    // Newton step for M.
+    // p ≤ block_thresh: exact per-observation block Newton — n p×p Cholesky solves, O(np³).
+    //                   Captures full Omega correlation; converges in far fewer inner iterations.
+    // p > block_thresh: diagonal approximation — O(np), same as the original grad_hess_M + divide.
+    static void compute_step_M(
+        const arma::mat & M, const State & s,
+        const arma::mat & A, const arma::mat & Y, const arma::vec & w, const arma::mat & ones_row,
+        arma::mat & grad_M, arma::mat & step_M,
+        arma::uword block_thresh = 30)
+    {
+        const arma::uword n = M.n_rows, p = M.n_cols;
+        const arma::mat MO = M * s.Omega;
+        grad_M = MO + A - Y; grad_M.each_col() %= w;
+        step_M.set_size(n, p);
+        if (p <= block_thresh) {
+            for (arma::uword i = 0; i < n; i++) {
+                const arma::mat H_i = w(i) * (arma::diagmat(A.row(i).t()) + s.Omega);
+                step_M.row(i) = arma::solve(arma::symmatu(H_i), grad_M.row(i).t()).t();
+            }
+        } else {
+            arma::mat hess = A + ones_row * s.diag_Omega.t(); hess.each_col() %= w;
+            hess.clamp(1e-10, arma::datum::inf);
+            step_M = grad_M / hess;
+        }
+    }
+
     static double penalty_M(const arma::mat & MO, const arma::mat & M, const arma::vec & w) {
         return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
     }
@@ -122,6 +148,18 @@ struct DiagonalCovTraits {
 
     static arma::mat times_Omega(const arma::mat & M, const State & s) { return M.each_row() % s.omega2; }
 
+    static void compute_step_M(
+        const arma::mat & M, const State & s,
+        const arma::mat & A, const arma::mat & Y, const arma::vec & w, const arma::mat & ones_row,
+        arma::mat & grad_M, arma::mat & step_M,
+        arma::uword /*block_thresh*/ = 0)
+    {
+        grad_M = M.each_row() % s.omega2 + A - Y; grad_M.each_col() %= w;
+        arma::mat hess = ones_row * s.omega2 + A; hess.each_col() %= w;
+        hess.clamp(1e-10, arma::datum::inf);
+        step_M = grad_M / hess;
+    }
+
     static double penalty_M(const arma::mat & MO, const arma::mat & M, const arma::vec & w) {
         return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
     }
@@ -194,6 +232,18 @@ struct SphericalCovTraits {
     }
 
     static arma::mat times_Omega(const arma::mat & M, const State & s) { return s.omega2 * M; }
+
+    static void compute_step_M(
+        const arma::mat & M, const State & s,
+        const arma::mat & A, const arma::mat & Y, const arma::vec & w, const arma::mat & /*ones_row*/,
+        arma::mat & grad_M, arma::mat & step_M,
+        arma::uword /*block_thresh*/ = 0)
+    {
+        grad_M = s.omega2 * M + A - Y; grad_M.each_col() %= w;
+        arma::mat hess = s.omega2 + A; hess.each_col() %= w;
+        hess.clamp(1e-10, arma::datum::inf);
+        step_M = grad_M / hess;
+    }
 
     static double penalty_M(const arma::mat & MO, const arma::mat & M, const arma::vec & w) {
         return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));

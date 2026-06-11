@@ -3,8 +3,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include "utils.h"
-#include "newton_impl.h"      // newton_vestep_impl
-#include "newton_impl_alt.h"  // newton_optimize_alt_impl — the homemade E-step
+#include "newton_impl.h"  // newton_optimize_impl + newton_vestep_impl
 
 // ---------------------------------------------------------------------------------------
 // Spherical covariance PLN — homemade Newton optimizer (profiled B via envelope theorem)
@@ -30,7 +29,7 @@ Rcpp::List newton_optimize_spherical(
     const arma::mat M_res_init = M - X * B;
     SphericalCovTraits::State state(M_res_init, S2, w, w_bar);
 
-    return newton_optimize_alt_impl<SphericalCovTraits>(Y, X, O, w, B, M, S, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
+    return newton_optimize_impl<SphericalCovTraits>(Y, X, O, w, B, M, S, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, cfg.block_newton_thresh);
 }
 
 // ---------------------------------------------------------------------------------------
@@ -51,9 +50,7 @@ Rcpp::List newton_optimize_vestep_spherical(
     arma::mat M = Rcpp::as<arma::mat>(params["M"]);
     arma::mat S = Rcpp::as<arma::mat>(params["S"]);
 
-    const int    maxiter = config.containsElementNamed("maxeval")  ? Rcpp::as<int>(config["maxeval"])     : 200;
-    const double ftol    = config.containsElementNamed("ftol_in") ? Rcpp::as<double>(config["ftol_in"]) : 1e-8;
-
+    const NewtonConfig cfg(config);
     SphericalCovTraits::State state(Omega);
-    return newton_vestep_impl<SphericalCovTraits>(Y, X, O, w, M, S, B, state, maxiter, ftol);
+    return newton_vestep_impl<SphericalCovTraits>(Y, X, O, w, M, S, B, state, cfg.maxiter, cfg.ftol, cfg.block_newton_thresh);
 }
