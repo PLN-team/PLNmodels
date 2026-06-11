@@ -43,15 +43,17 @@ Rcpp::List newton_optimize_alt_impl(
     // Inner loop: B profiled at each Newton step via envelope theorem.
     auto inner_loop = [&]() {
         double obj_prev = arma::datum::inf;
+        // S2 is current (fixed_point_psi updated it in the previous round, or initialized above).
+        // Sync B, Z, A once per EM round; they are kept current at the end of each Newton step
+        // so subsequent iterations reuse them directly without recomputation.
+        B            = P_X * M;
+        arma::mat Z  = O + M;
+        arma::mat A  = arma::exp(Z + 0.5 * S2);
 
         for (int it = 0; it < maxiter; it++) {
-            S2 = arma::exp(psi);
-            // Envelope theorem: update B to closed-form optimum for current M_full
-            B = P_X * M;
-            const arma::mat XB  = X * B;      // frozen during the Armijo line search below
-            arma::mat M_res = M - XB;
-            arma::mat Z = O + M;               // Z = O + M_full
-            arma::mat A = arma::exp(Z + 0.5 * S2);
+            // S2, B, Z, A are all current here.
+            const arma::mat XB    = X * B;         // frozen during the Armijo line search below
+            const arma::mat M_res = M - XB;
 
             // Newton step for M_full: gradient/Hessian are functions of M_res
             arma::mat grad_M, hess_M;
@@ -79,15 +81,15 @@ Rcpp::List newton_optimize_alt_impl(
                 alpha_M *= 0.5;
             }
             M -= alpha_M * step_M;
-            // Keep B current after accepting the M step
-            B = P_X * M;
+            B  = P_X * M;
             Z  = O + M;
 
             // S step: exact fixed-point ψ = −log(A + diag_Ω)
             fixed_point_psi(psi, S2, Z, A, Traits::cov_diag(state, ones_row));
 
+            // A with new S2 — needed for obj computation and for next iteration
             A = arma::exp(Z + 0.5 * S2);
-            arma::mat M_res_new = M - X * B;  // updated M_res with live B
+            const arma::mat M_res_new = M - X * B;
             double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * psi))
                        + Traits::objective_cov(M_res_new, S2, state, w);
             objective_vec.push_back(obj);
@@ -102,8 +104,7 @@ Rcpp::List newton_optimize_alt_impl(
         for (int em = 0; em < max_em; em++) {
             inner_loop();
 
-            S2 = arma::exp(psi);
-
+            // S2 is current: fixed_point_psi updated it inside inner_loop.
             // B is already at its optimum (live-updated in inner_loop); only Omega needs updating.
             // Recompute M_res for the Sigma/Omega M-step.
             arma::mat M_res = M - X * B;
@@ -121,7 +122,7 @@ Rcpp::List newton_optimize_alt_impl(
         double elbo_prev_fix = -arma::datum::inf;
         for (int em = 0; em < max_em; em++) {
             inner_loop();
-            S2 = arma::exp(psi);
+            // S2 is current: fixed_point_psi updated it inside inner_loop.
             // B already optimal after inner_loop; recompute M_res for ELBO check.
             arma::mat M_res = M - X * B;
             arma::mat Z     = O + M;

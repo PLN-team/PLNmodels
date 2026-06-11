@@ -32,11 +32,13 @@ Rcpp::List newton_optimize_impl(
 
     auto inner_loop = [&]() {
         double obj_prev = arma::datum::inf;
-        for (int it = 0; it < maxiter; it++) {
-            S2 = arma::exp(psi);
-            arma::mat Z = O + X * B + M;
-            arma::mat A = arma::exp(Z + 0.5 * S2);
+        // S2 is current (fixed_point_psi updated it in previous round, or initialized above).
+        // Z and A are kept current at the end of each iteration; compute them once here.
+        arma::mat Z = O + X * B + M;
+        arma::mat A = arma::exp(Z + 0.5 * S2);
 
+        for (int it = 0; it < maxiter; it++) {
+            // S2, Z, A are current; newton_step_B will update B, Z, A.
             newton_step_B(Xw, Xw2, X, Y, O, w, M, S2, B, Z, A);
 
             arma::mat grad_M, hess_M;
@@ -80,7 +82,7 @@ Rcpp::List newton_optimize_impl(
         for (int em = 0; em < max_em; em++) {
             inner_loop();
 
-            S2 = arma::exp(psi);
+            // S2 is current: fixed_point_psi updated it inside inner_loop.
             Traits::mstep(state, M, S2, w, w_bar, p);
 
             arma::mat Z = O + X * B + M;
@@ -143,11 +145,13 @@ Rcpp::List newton_vestep_impl(
     double obj_prev = arma::datum::inf;
     int total_iter  = 0;
 
+    // Z and A are kept current at the end of each iteration; compute them once here.
+    arma::mat Z = O + M;
+    arma::mat A = arma::exp(Z + 0.5 * S2);
+
     for (int it = 0; it < maxiter; it++) {
-        S2 = arma::exp(psi);
+        // S2, Z, A are current.
         arma::mat M_res = M - XB;          // M_res for KL terms (B is fixed)
-        arma::mat Z = O + M;               // Z = O + M_full
-        arma::mat A = arma::exp(Z + 0.5 * S2);
 
         // ---- Diagonal Newton step for M (gradient == gradient w.r.t. M_res, B fixed) ----
         arma::mat grad_M, hess_M;
@@ -187,11 +191,9 @@ Rcpp::List newton_vestep_impl(
     }
 
     // ---- Final output ----
-    S2 = arma::exp(psi);
+    // S2, Z, A are current from the last iteration (fixed_point_psi + exp update).
     S  = arma::exp(0.5 * psi);
-    arma::mat Z = O + M;           // Z = O + M_full
-    arma::mat A = arma::exp(Z + 0.5 * S2);
-    arma::mat M_res = M - XB;      // for loglik KL terms
+    const arma::mat M_res = M - XB;      // for loglik KL terms
     arma::vec loglik = Traits::final_loglik(Y, Z, A, M_res, psi, state);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
