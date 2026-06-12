@@ -342,14 +342,12 @@ PLNfit <- R6Class(
         private$torch_optimize
       } else if (backend == "builtin") {
         newton_fn
-      } else if (backend == "hybrid") {
-        make_hybrid_optimizer(nlopt_fn, newton_fn)
       } else {
         nlopt_fn
       }
       if (!is.null(nlopt_vestep_fn))
         private$optimizer$vestep <-
-          if (backend %in% c("builtin", "hybrid")) newton_vestep_fn else nlopt_vestep_fn
+          if (backend == "builtin") newton_vestep_fn else nlopt_vestep_fn
     }
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -54,9 +54,8 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
-#' @param backend optimization back used, either "builtin" (default), "nlopt", "hybrid" or "torch".
+#' @param backend optimization back used, either "builtin" (default), "nlopt" or "torch".
 #'   "builtin" is the built-in envelope-theorem Newton optimizer (does not depend on NLOPT).
-#'   "hybrid" runs nlopt first for basin finding, then switches to builtin for refinement.
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "fixed". Default is "full".
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma. Must be specified if `covariance` is "fixed"
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
@@ -92,7 +91,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #' * "etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP
 #' * "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 #'
-#' When "builtin" or "hybrid" backend is used, the following entries are relevant
+#' When "builtin" backend is used, the following entries are relevant
 #' * "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
 #' * "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8
 #' * "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
@@ -107,7 +106,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' @export
 PLN_param <- function(
-    backend       = c("builtin", "nlopt", "hybrid", "torch"),
+    backend       = c("builtin", "nlopt", "torch"),
     trace         = 1,
     covariance    = c("full", "diagonal", "spherical", "fixed"),
     Omega         = NULL,

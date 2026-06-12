@@ -68,7 +68,7 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #'
 #' @inheritParams PLN_param
 #' @inheritParams PLNnetwork_param
-#' @param backend optimization backend, either `"builtin"` (default, built-in Newton optimizer for the joint VE step) or `"nlopt"` (NLOPT-based CCSAQ). Unlike [PLN_param()], `"hybrid"` and `"torch"` are not supported.
+#' @param backend optimization backend, either `"builtin"` (default, built-in Newton optimizer for the joint VE step) or `"nlopt"` (NLOPT-based CCSAQ).
 #' @param penalty a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).
 #' @return list of parameters used during the fit and post-processing steps
 #'

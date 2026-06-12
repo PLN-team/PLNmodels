@@ -18,7 +18,7 @@ ZIPLN_param(
 )
 }
 \arguments{
-\item{backend}{optimization backend, either \code{"builtin"} (default, built-in Newton optimizer for the joint VE step) or \code{"nlopt"} (NLOPT-based CCSAQ). Unlike \code{\link[=PLN_param]{PLN_param()}}, \code{"hybrid"} and \code{"torch"} are not supported.}
+\item{backend}{optimization backend, either \code{"builtin"} (default, built-in Newton optimizer for the joint VE step) or \code{"nlopt"} (NLOPT-based CCSAQ).}
 
 \item{trace}{a integer for verbosity.}
 

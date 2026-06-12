@@ -70,7 +70,7 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 }
 
-When "builtin" or "hybrid" backend is used, the following entries are relevant
+When "builtin" backend is used, the following entries are relevant
 \itemize{
 \item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
 \item "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8

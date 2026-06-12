@@ -70,7 +70,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = PLNLDA_pa
 #' @inherit PLN_param details
 #' @export
 PLNLDA_param <- function(
-    backend       = c("builtin", "nlopt", "hybrid", "torch"),
+    backend       = c("builtin", "nlopt", "torch"),
     trace         = 1,
     covariance    = c("full", "diagonal", "spherical"),
     config_post   = list(),

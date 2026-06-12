@@ -24,28 +24,6 @@ config_default_builtin <-
     ftol_em             = 1e-8
   )
 
-# Hybrid backend: two-phase optimizer — nlopt/CCSAQ (phase 1) then builtin Newton (phase 2).
-# Phase 1 (nlopt) uses looser tolerances to reach the basin quickly with quasi-Newton search.
-# Phase 2 (builtin, envelope-theorem Newton) refines to the full requested tolerance.
-# Returns a closure with the same (data, params, config) signature as the C++ wrappers.
-#' @importFrom utils modifyList
-make_hybrid_optimizer <- function(opt_nlopt, opt_newton) {
-  function(data, params, config) {
-    # Phase 1: nlopt config with 10× looser tolerance for fast basin finding
-    config1 <- modifyList(config_default_nlopt, list(
-      maxeval  = config$maxeval,
-      ftol_rel = config$ftol_in * 10
-    ))
-    res1 <- opt_nlopt(data, params, config1)
-    params2 <- modifyList(params, list(B = res1$B, M = res1$M, S2 = res1$S2))
-    # Phase 2: builtin Newton with full tolerance
-    res2 <- opt_newton(data, params2, config)
-    res2$monitoring$objective  <- c(res1$monitoring$objective,  res2$monitoring$objective)
-    res2$monitoring$iterations <- res1$monitoring$iterations + res2$monitoring$iterations
-    res2$monitoring$backend    <- "hybrid"
-    res2
-  }
-}
 
 # PLNPCA builtin backend: joint L-BFGS on [vec(B); vec(C); vec(M); vec(ψ)] with strong Wolfe
 # line search (m=10 pairs). Only maxeval and ftol_in are read by the C++ optimizer.
