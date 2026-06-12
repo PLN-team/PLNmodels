@@ -445,9 +445,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// optim_zipln_M_psi
-Rcpp::List optim_zipln_M_psi(const arma::mat& init_M, const arma::mat& init_S2, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& R, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_optim_zipln_M_psi(SEXP init_MSEXP, SEXP init_S2SEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP RSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
+// ve_step_zipln_nlopt
+Rcpp::List ve_step_zipln_nlopt(const arma::mat& init_M, const arma::mat& init_S2, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& Pi, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& configuration);
+RcppExport SEXP _PLNmodels_ve_step_zipln_nlopt(SEXP init_MSEXP, SEXP init_S2SEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP PiSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -456,17 +456,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type R(RSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_zipln_M_psi(init_M, init_S2, Y, X, O, R, B, Omega, configuration));
+    rcpp_result_gen = Rcpp::wrap(ve_step_zipln_nlopt(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration));
     return rcpp_result_gen;
 END_RCPP
 }
-// optim_zipln_M_psi_newton
-Rcpp::List optim_zipln_M_psi_newton(const arma::mat& init_M, const arma::mat& init_S2, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& R, const arma::mat& B, const arma::mat& Omega, const int maxiter, const double ftol_rel);
-RcppExport SEXP _PLNmodels_optim_zipln_M_psi_newton(SEXP init_MSEXP, SEXP init_S2SEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP RSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP maxiterSEXP, SEXP ftol_relSEXP) {
+// ve_step_zipln_newton
+Rcpp::List ve_step_zipln_newton(const arma::mat& init_M, const arma::mat& init_S2, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& Pi, const arma::mat& B, const arma::mat& Omega, const int maxiter, const double ftol_rel);
+RcppExport SEXP _PLNmodels_ve_step_zipln_newton(SEXP init_MSEXP, SEXP init_S2SEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP PiSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP maxiterSEXP, SEXP ftol_relSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -475,12 +475,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type R(RSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
     Rcpp::traits::input_parameter< const int >::type maxiter(maxiterSEXP);
     Rcpp::traits::input_parameter< const double >::type ftol_rel(ftol_relSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_zipln_M_psi_newton(init_M, init_S2, Y, X, O, R, B, Omega, maxiter, ftol_rel));
+    rcpp_result_gen = Rcpp::wrap(ve_step_zipln_newton(init_M, init_S2, Y, X, O, Pi, B, Omega, maxiter, ftol_rel));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -570,8 +570,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optim_zipln_R_exact", (DL_FUNC) &_PLNmodels_optim_zipln_R_exact, 7},
     {"_PLNmodels_optim_zipln_M", (DL_FUNC) &_PLNmodels_optim_zipln_M, 9},
     {"_PLNmodels_optim_zipln_psi", (DL_FUNC) &_PLNmodels_optim_zipln_psi, 7},
-    {"_PLNmodels_optim_zipln_M_psi", (DL_FUNC) &_PLNmodels_optim_zipln_M_psi, 9},
-    {"_PLNmodels_optim_zipln_M_psi_newton", (DL_FUNC) &_PLNmodels_optim_zipln_M_psi_newton, 10},
+    {"_PLNmodels_ve_step_zipln_nlopt", (DL_FUNC) &_PLNmodels_ve_step_zipln_nlopt, 9},
+    {"_PLNmodels_ve_step_zipln_newton", (DL_FUNC) &_PLNmodels_ve_step_zipln_newton, 10},
     {"_PLNmodels_cpp_test_packing", (DL_FUNC) &_PLNmodels_cpp_test_packing, 0},
     {"_PLNmodels_spectral_optimize_rank", (DL_FUNC) &_PLNmodels_spectral_optimize_rank, 3},
     {"_PLNmodels_spectral_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_spectral_optimize_vestep_rank, 5},

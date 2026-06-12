@@ -74,13 +74,13 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' @inherit PLN_param details
 #' @details See [PLN_param()] and [PLNnetwork_param()] for a full description of the generic optimization parameters. Like [PLNnetwork_param()], ZIPLN_param() has two parameters controlling the optimization due the inner-outer loop structure of the optimizer:
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than `ftol_out` multiplied by the absolute value of the parameter. Default is 1e-6
-#' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 100 (200 for NEWTON)
+#' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 200 for "homemade", 100 for "nlopt"
 #' and one additional parameter controlling the form of the variational approximation of the zero inflation:
 #' * "approx_ZI" either uses an exact or approximated conditional distribution for the zero inflation. Default is FALSE
 #'
 #' @export
 ZIPLN_param <- function(
-    backend       = c("nlopt"),
+    backend       = c("homemade", "nlopt"),
     trace         = 1,
     covariance    = c("full", "diagonal", "spherical", "fixed", "sparse"),
     Omega         = NULL,
@@ -104,17 +104,14 @@ ZIPLN_param <- function(
   config_pst[names(config_post)] <- config_post
   config_pst$trace <- trace
 
-  ## optimization config
-  stopifnot(backend %in% c("nlopt"))
-  algo_req <- if (!is.null(config_optim$algorithm)) config_optim$algorithm else "CCSAQ"
-  stopifnot(algo_req %in% c(available_algorithms_nlopt, "NEWTON", "SPLIT"))
-  config_opt <- config_default_nlopt
-  config_opt$algorithm  <- algo_req
-  config_opt$trace      <- trace
-  config_opt$ftol_out   <- 1e-6
-  config_opt$approx_ZI  <- TRUE
-  config_opt$maxit_out  <- if (algo_req == "NEWTON") 200L else 100L
-  config_opt[names(config_optim)] <- config_optim
+  ## optimization config — mirrors PLN_param: "homemade" = Newton, "nlopt" = CCSAQ/etc.
+  backend    <- match.arg(backend)
+  config_opt <- make_config_optim(backend, config_optim, trace,
+                                  extra = list(
+                                    ftol_out  = 1e-6,
+                                    approx_ZI = TRUE,
+                                    maxit_out = if (backend == "homemade") 200L else 100L
+                                  ))
 
   structure(list(
     backend       = backend   ,

@@ -135,7 +135,7 @@ arma::mat optim_zipln_R_var(
 ) {
     arma::mat A = exp(O + M + 0.5 * S2);
     arma::mat R = 1. / (1. + exp(-(A + logit(Pi))));
-    R.elem(arma::find(Y > 0.)).zeros();
+    R %= arma::conv_to<arma::mat>::from(Y < 0.5);
     return R;
 }
 
@@ -270,13 +270,13 @@ Rcpp::List optim_zipln_psi(
 // Interface: takes M, S2 (variance), returns M, S2.
 
 // [[Rcpp::export]]
-Rcpp::List optim_zipln_M_psi(
+Rcpp::List ve_step_zipln_nlopt(
     const arma::mat & init_M,  // (n,p)
     const arma::mat & init_S2, // (n,p) variational variance
     const arma::mat & Y,       // responses (n,p)
     const arma::mat & X,       // covariates (n,d)
     const arma::mat & O,       // offsets (n,p)
-    const arma::mat & R,       // (n,p)
+    const arma::mat & Pi,      // (n,p) ZI structural probability
     const arma::mat & B,       // (d,p)
     const arma::mat & Omega,   // (p,p)
     const Rcpp::List & configuration
@@ -290,136 +290,182 @@ Rcpp::List optim_zipln_M_psi(
     metadata.map<PSI_ID>(parameters.data()) = psi_init;
 
     auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
-    const arma::mat X_B       = X * B;
+    const arma::mat X_B        = X * B;
     const arma::vec diag_Omega = diagvec(Omega);
+    const arma::mat logit_Pi   = logit(Pi);
+    const arma::mat Y_zero     = arma::conv_to<arma::mat>::from(Y < 0.5);
 
-    auto objective_and_grad = [&metadata, &Y, &O, &R, &X_B, &Omega, &diag_Omega](
+    // R is fixed at its exact conditional optimum given the initial (M, S2).
+    // This ensures a consistent (objective, gradient) pair for nlopt.
+    // After convergence the final R is recomputed from the optimised (M, S2).
+    const arma::mat A0      = arma::exp(O + init_M + 0.5 * init_S2);
+    const arma::mat R0      = (1.0 / (1.0 + arma::exp(-(A0 + logit_Pi)))) % Y_zero;
+    const arma::mat one_m_R = 1.0 - R0;
+
+    auto objective_and_grad = [&metadata, &Y, &O, &X_B, &Omega, &diag_Omega,
+                                &one_m_R](
             const double * params, double * grad) -> double {
         const arma::mat M   = metadata.map<M_ID>  (params);
         const arma::mat psi = metadata.map<PSI_ID>(params);
         const arma::mat S2  = arma::exp(psi);
-        const arma::mat A   = exp(O + M + 0.5 * S2);
+        const arma::mat A   = arma::exp(O + M + 0.5 * S2);
         const arma::mat M_mu       = M - X_B;
         const arma::mat M_mu_Omega = M_mu * Omega;
 
-        double objective = - accu((1. - R) % (Y % M - A))
+        double objective = - accu(one_m_R % (Y % M - A))
                          + 0.5 * accu(M_mu_Omega % M_mu)
                          + 0.5 * dot(diag_Omega, sum(S2, 0))
                          - 0.5 * accu(psi);
 
-        metadata.map<M_ID>  (grad) = M_mu_Omega + (1. - R) % (A - Y);
-        metadata.map<PSI_ID>(grad) = 0.5 * (S2.each_row() % diag_Omega.t() + (1. - R) % S2 % A - 1.);
+        metadata.map<M_ID>  (grad) = M_mu_Omega + one_m_R % (A - Y);
+        metadata.map<PSI_ID>(grad) = 0.5 * (S2.each_row() % diag_Omega.t() + one_m_R % S2 % A - 1.);
 
         return objective;
     };
 
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
-    arma::mat M   = metadata.copy<M_ID>  (parameters.data());
-    arma::mat psi = metadata.copy<PSI_ID>(parameters.data());
+    const arma::mat M    = metadata.copy<M_ID>  (parameters.data());
+    const arma::mat psi  = metadata.copy<PSI_ID>(parameters.data());
+    const arma::mat S2   = arma::exp(psi);
+    const arma::mat A    = arma::exp(O + M + 0.5 * S2);
+    const arma::mat Rfin = (1.0 / (1.0 + arma::exp(-(A + logit_Pi)))) % Y_zero;
     return Rcpp::List::create(
         Rcpp::Named("status")     = static_cast<int>(result.status),
         Rcpp::Named("iterations") = result.nb_iterations,
         Rcpp::Named("M")  = M,
-        Rcpp::Named("S2") = arma::exp(psi)
+        Rcpp::Named("S2") = S2,
+        Rcpp::Named("R")  = Rfin
     );
 }
 
 // ---------------------------------------------------------------------------------------
-// Custom coordinate-Newton optimizer for (M, ψ=log(S²)) — no NLopt dependency.
+// Joint VE Newton optimizer for (M, ψ=log(S²), R) — no NLopt dependency.
 //
-// Per iteration:
-//   1. Diagonal Newton step for M with Armijo backtracking
-//   2. Exact closed-form update for ψ: ψ* = -log(diag_Omega + (1-R)*A)
-//      (exact minimiser of f w.r.t. S² for fixed M and A)
+// R is the exact conditional optimum given (M, ψ): R_ij* = σ(A_ij + logit(π_ij)) for Y=0.
+// Since ∂f/∂R = 0 at R*, updating R at each Newton iteration does not modify the gradient
+// formula for (M, ψ) — only (1-R) changes, tightening the VE step.
 //
-// Upper bound on ψ prevents exp(O+M+0.5*S²) overflow: keep O+M+0.5*S² ≤ 700.
+// Per Newton iteration:
+//   0. R  ← σ(A + logit(Pi)), zeroed where Y > 0          [exact VE for R, O(np)]
+//   1. 2×2 Newton step for (M_res, ψ) with cross-term H_{Mψ}  [joint step]
+//   2. Joint Armijo on (M_res, ψ) with R fixed             [line search, R frozen]
+//
+// M·Ω cached and updated incrementally inside the line search (avoids O(np²) per trial).
 
 // [[Rcpp::export]]
-Rcpp::List optim_zipln_M_psi_newton(
+Rcpp::List ve_step_zipln_newton(
     const arma::mat & init_M,    // (n,p)
     const arma::mat & init_S2,   // (n,p) variational variance
     const arma::mat & Y,         // (n,p)
     const arma::mat & X,         // (n,d)
     const arma::mat & O,         // (n,p)
-    const arma::mat & R,         // (n,p)
+    const arma::mat & Pi,        // (n,p) ZI structural probability (model param, fixed)
     const arma::mat & B,         // (d,p)
     const arma::mat & Omega,     // (p,p)
-    const int    maxiter,        // max coordinate steps
-    const double ftol_rel        // relative objective convergence threshold
+    const int    maxiter,
+    const double ftol_rel
 ) {
-    const arma::mat X_B        = X * B;
-    const arma::vec diag_Omega = diagvec(Omega);
-    const arma::mat ones_col   = arma::ones(init_M.n_rows, 1);
+    const arma::mat XB         = X * B;
+    const arma::mat OXB        = O + XB;
+    const arma::vec diag_Omega = arma::diagvec(Omega);
+    const arma::mat omega_d    = arma::ones(init_M.n_rows, 1) * diag_Omega.t(); // (n,p)
+    const arma::mat logit_Pi   = logit(Pi);
+    const arma::mat Y_zero     = arma::conv_to<arma::mat>::from(Y < 0.5);  // 1.0 where Y==0
 
-    arma::mat M   = init_M;
-    arma::mat psi = arma::log(init_S2);
+    arma::mat M_res = init_M - XB;
+    arma::mat psi   = arma::log(init_S2);
+    arma::mat MO    = M_res * Omega;
+    arma::mat S2    = arma::exp(psi);
+    arma::mat A     = arma::trunc_exp(OXB + M_res + 0.5 * S2);
 
-    // Full objective value f(M, ψ)
-    auto objective = [&](const arma::mat & M_, const arma::mat & psi_) -> double {
-        const arma::mat S2_   = arma::exp(psi_);
-        const arma::mat A_    = arma::exp(O + M_ + 0.5 * S2_);
-        const arma::mat M_mu_ = M_ - X_B;
-        return - accu((1. - R) % (Y % M_ - A_))
-               + 0.5 * accu((M_mu_ * Omega) % M_mu_)
-               + 0.5 * dot(diag_Omega, sum(S2_, 0))
-               - 0.5 * accu(psi_);
+    // R and (1-R): updated at each Newton iteration, frozen during line search.
+    arma::mat R       = 1.0 / (1.0 + arma::exp(-(A + logit_Pi)));
+    R %= Y_zero;
+    arma::mat one_m_R   = 1.0 - R;
+    arma::mat one_m_R_Y = one_m_R % Y;
+
+    // Objective for line search: uses one_m_R / one_m_R_Y captured by ref (frozen during LS).
+    auto obj_fun = [&](const arma::mat & Mres, const arma::mat & MO_,
+                       const arma::mat & psi_) -> double {
+        const arma::mat S2_ = arma::exp(psi_);
+        const arma::mat A_  = arma::trunc_exp(OXB + Mres + 0.5 * S2_);
+        return - arma::accu(one_m_R % (Y % (Mres + XB) - A_))
+               + 0.5 * arma::accu(Mres % MO_)
+               + 0.5 * arma::dot(diag_Omega, arma::sum(S2_, 0))
+               - 0.5 * arma::accu(psi_);
     };
 
-    double obj_prev = objective(M, psi);
+    double obj_prev = obj_fun(M_res, MO, psi);
     int iter = 0;
 
     for (iter = 0; iter < maxiter; iter++) {
         // ----------------------------------------------------------------
-        // Step 1 — diagonal Newton on M with Armijo backtracking
+        // Step 0 — exact R update: R* = σ(A + logit(Pi)), R[Y>0] = 0
+        // ∂f/∂R = 0 here, so gradient of f w.r.t. (M,ψ) is unchanged.
+        // Skipped when update_R=false (R held fixed at initial value).
         // ----------------------------------------------------------------
-        {
-            const arma::mat S2         = arma::exp(psi);
-            const arma::mat A          = arma::exp(O + M + 0.5 * S2);
-            const arma::mat M_mu_Omega = (M - X_B) * Omega;
-            const arma::mat grad_M     = M_mu_Omega + (1. - R) % (A - Y);
-            const arma::mat hess_M     = (1. - R) % A + ones_col * diag_Omega.t();
-            const arma::mat step_M     = grad_M / hess_M;
+        R = 1.0 / (1.0 + arma::exp(-(A + logit_Pi)));
+        R %= Y_zero;
+        one_m_R   = 1.0 - R;
+        one_m_R_Y = one_m_R % Y;
+        obj_prev  = obj_fun(M_res, MO, psi);
 
-            double alpha   = 1.0;
-            const double c1 = 1e-4;
-            const double slope = - accu(grad_M % step_M);
-            for (int ls = 0; ls < 20; ++ls) {
-                if (objective(M - alpha * step_M, psi) <= obj_prev + c1 * alpha * slope)
-                    break;
-                alpha *= 0.5;
-            }
-            M -= alpha * step_M;
+        // ----------------------------------------------------------------
+        // Step 1 — joint 2×2 Newton step for (M_res, ψ)
+        // ----------------------------------------------------------------
+        const arma::mat one_m_R_A = one_m_R % A;
+
+        const arma::mat grad_M   = MO + one_m_R_A - one_m_R_Y;
+        const arma::mat grad_psi = 0.5 * (S2 % (one_m_R_A + omega_d) - 1.0);
+
+        const arma::mat h_mm = one_m_R_A + omega_d;
+        const arma::mat h_pp = 0.5 * S2 % (one_m_R_A % (1.0 + 0.5 * S2) + omega_d);
+        const arma::mat h_mp = 0.5 * S2 % one_m_R_A;
+
+        arma::mat det = h_mm % h_pp - h_mp % h_mp;
+        det.clamp(1e-20, arma::datum::inf);
+
+        const arma::mat step_M   = (h_pp % grad_M   - h_mp % grad_psi) / det;
+        const arma::mat step_psi = (h_mm % grad_psi - h_mp % grad_M  ) / det;
+
+        // ----------------------------------------------------------------
+        // Step 2 — joint Armijo on (M_res, ψ), R frozen at current value.
+        // dMO = step_M * Omega computed once; MO_trial = MO - α·dMO is O(np).
+        // ----------------------------------------------------------------
+        const arma::mat dMO = step_M * Omega;
+        double slope = -arma::accu(grad_M % step_M) - arma::accu(grad_psi % step_psi);
+        if (slope >= 0.0)
+            slope = -(arma::accu(arma::square(grad_M)) + arma::accu(arma::square(grad_psi)));
+
+        constexpr double c1 = 1e-4;
+        double alpha        = 1.0;
+        for (int ls = 0; ls < 20; ++ls) {
+            if (obj_fun(M_res - alpha * step_M,
+                        MO    - alpha * dMO,
+                        psi   - alpha * step_psi) <= obj_prev + c1 * alpha * slope) break;
+            alpha *= 0.5;
         }
 
-        // ----------------------------------------------------------------
-        // Step 2 — exact closed-form update for ψ (fixed-point in S² space)
-        //   S²* = 1 / (diag_Omega + (1-R)*A)  ⟹  ψ* = -log(diag_Omega + (1-R)*A)
-        // Upper bound: keep O + M + 0.5*S² ≤ 700  ⟹  ψ ≤ log(max(1, 700-(O+M)))
-        // ----------------------------------------------------------------
-        {
-            const arma::mat S2      = arma::exp(psi);
-            const arma::mat Z_cur   = O + M;
-            const arma::mat A       = arma::exp(Z_cur + 0.5 * S2);
-            const arma::mat base    = (1. - R) % A + ones_col * diag_Omega.t();
-            const arma::mat psi_opt = - arma::log(base);
-            const arma::mat psi_ub  = arma::log(
-                arma::clamp(700. - Z_cur, 1., arma::datum::inf));
-            psi = arma::clamp(arma::min(psi_opt, psi_ub), -40., arma::datum::inf);
-        }
+        M_res -= alpha * step_M;
+        MO    -= alpha * dMO;
+        psi   -= alpha * step_psi;
+        S2     = arma::exp(psi);
+        A      = arma::trunc_exp(OXB + M_res + 0.5 * S2);
 
         // ----------------------------------------------------------------
-        // Convergence check
+        // Convergence check (M, ψ only; R convergence implicit)
         // ----------------------------------------------------------------
-        const double obj = objective(M, psi);
-        if (iter > 0 && std::abs(obj - obj_prev) < ftol_rel * (1. + std::abs(obj_prev))) break;
+        const double obj = obj_fun(M_res, MO, psi);
+        if (iter > 0 && std::abs(obj - obj_prev) < ftol_rel * (1.0 + std::abs(obj_prev))) break;
         obj_prev = obj;
     }
 
     return Rcpp::List::create(
         Rcpp::Named("status")     = 3,
         Rcpp::Named("iterations") = iter,
-        Rcpp::Named("M")  = M,
-        Rcpp::Named("S2") = arma::exp(psi)
+        Rcpp::Named("M")          = M_res + XB,
+        Rcpp::Named("S2")         = S2,
+        Rcpp::Named("R")          = R
     );
 }

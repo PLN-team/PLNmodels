@@ -139,27 +139,21 @@ ZIPLNfit <- R6Class(
         "row"    = function(R, ...) list(Pi = matrix(rowMeans(R), nrow(R), p)              , B0 = matrix(NA, d0, p)),
         "col"    = function(R, ...) list(Pi = matrix(colMeans(R), nrow(R), p, byrow = TRUE), B0 = matrix(NA, d0, p)),
         "covar"  = function(R, init_B0, X0, config) {
-          if (identical(config$algorithm, "NEWTON")) config$algorithm <- "CCSAQ"
+          # optim_zipln_zipar_covar is always nlopt-based
+          if (control$backend == "homemade") config <- config_default_nlopt
           optim_zipln_zipar_covar(R, init_B0, X0, config)
         }
       )
-      private$optimizer$R <- ifelse(control$config_optim$approx_ZI, optim_zipln_R_var, optim_zipln_R_exact)
       private$optimizer$Omega <- optim_zipln_Omega_full
-      private$optimizer$MS <- if (identical(control$config_optim$algorithm, "NEWTON")) {
-        ftol <- if (!is.null(control$config_optim$ftol_rel)) control$config_optim$ftol_rel else 1e-8
-        maxiter <- as.integer(if (!is.null(control$config_optim$maxeval)) control$config_optim$maxeval else 200L)
-        function(init_M, init_S2, Y, X, O, R, B, Omega, configuration)
-          optim_zipln_M_psi_newton(init_M, init_S2, Y, X, O, R, B, Omega, maxiter, ftol)
-      } else if (identical(control$config_optim$algorithm, "SPLIT")) {
-        # Separate M then ψ=log(S²) optimization via nlopt/CCSAQ
-        function(init_M, init_S2, Y, X, O, R, B, Omega, configuration) {
-          config_sub <- modifyList(configuration, list(algorithm = "CCSAQ"))
-          out_M   <- optim_zipln_M(init_M, Y, X, O, R, init_S2, B, Omega, config_sub)
-          out_psi <- optim_zipln_psi(init_S2, O, out_M$M, R, B, diag(Omega), config_sub)
-          list(M = out_M$M, S2 = out_psi$S2)
-        }
+      # Dispatch VE step on backend: "homemade" = Newton, "nlopt" = CCSAQ/etc.
+      private$optimizer$MS <- if (control$backend == "homemade") {
+        ftol    <- if (!is.null(control$config_optim$ftol_in))  control$config_optim$ftol_in  else 1e-8
+        maxiter <- as.integer(if (!is.null(control$config_optim$maxeval)) control$config_optim$maxeval else 10000L)
+        function(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration)
+          ve_step_zipln_newton(init_M, init_S2, Y, X, O, Pi, B, Omega, maxiter, ftol)
       } else {
-        optim_zipln_M_psi
+        function(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration)
+          ve_step_zipln_nlopt(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration)
       }
 
     },
@@ -203,18 +197,15 @@ ZIPLNfit <- R6Class(
         new_B0 <- optim_new_zipar$B0
         new_Pi <- optim_new_zipar$Pi
 
-        ### VE Step
-        # ZI part
-        new_R <- private$optimizer$R(Y = data$Y, X = data$X, O = data$O, M = parameters$M, S2 = parameters$S2, Pi = new_Pi, B = new_B)
-
-        # PLN part: joint optimization of M and ψ=log(S²)
+        ### VE Step — joint (M, ψ, R): both CCSAQ and NEWTON handle R internally
         MS_out <- private$optimizer$MS(
           init_M = parameters$M, init_S2 = parameters$S2,
-          Y = data$Y, X = data$X, O = data$O, R = new_R, B = new_B, Omega = new_Omega,
-          configuration = control
+          Y = data$Y, X = data$X, O = data$O,
+          Pi = new_Pi, B = new_B, Omega = new_Omega, configuration = control
         )
         new_M  <- MS_out$M
         new_S2 <- MS_out$S2
+        new_R  <- MS_out$R
 
         # Check convergence
         new_parameters <- list(
@@ -322,17 +313,15 @@ ZIPLNfit <- R6Class(
           R = parameters$R, init_B0 = B0, X0 = data$X0, config = config_default_nlopt
         )$Pi
 
-        # VE Step
-        new_R <- private$optimizer$R(
-          Y = data$Y, X = data$X, O = data$O, M = parameters$M, S2 = parameters$S2, Pi = Pi, B = B
-        )
+        # VE Step — joint (M, ψ, R): R handled internally by optimizer
         MS_out <- private$optimizer$MS(
           init_M = parameters$M, init_S2 = parameters$S2,
-          Y = data$Y, X = data$X, O = data$O, R = new_R, B = B, Omega = Omega,
-          configuration = control
+          Y = data$Y, X = data$X, O = data$O,
+          Pi = Pi, B = B, Omega = Omega, configuration = control
         )
         new_M  <- MS_out$M
         new_S2 <- MS_out$S2
+        new_R  <- MS_out$R
         # Check convergence
         new_parameters <- list(R = new_R, M = new_M, S2 = new_S2)
         nb_iter <- nb_iter + 1

@@ -121,12 +121,12 @@ optim_zipln_psi <- function(init_S2, O, M, R, B, diag_Omega, configuration) {
     .Call('_PLNmodels_optim_zipln_psi', PACKAGE = 'PLNmodels', init_S2, O, M, R, B, diag_Omega, configuration)
 }
 
-optim_zipln_M_psi <- function(init_M, init_S2, Y, X, O, R, B, Omega, configuration) {
-    .Call('_PLNmodels_optim_zipln_M_psi', PACKAGE = 'PLNmodels', init_M, init_S2, Y, X, O, R, B, Omega, configuration)
+ve_step_zipln_nlopt <- function(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration) {
+    .Call('_PLNmodels_ve_step_zipln_nlopt', PACKAGE = 'PLNmodels', init_M, init_S2, Y, X, O, Pi, B, Omega, configuration)
 }
 
-optim_zipln_M_psi_newton <- function(init_M, init_S2, Y, X, O, R, B, Omega, maxiter, ftol_rel) {
-    .Call('_PLNmodels_optim_zipln_M_psi_newton', PACKAGE = 'PLNmodels', init_M, init_S2, Y, X, O, R, B, Omega, maxiter, ftol_rel)
+ve_step_zipln_newton <- function(init_M, init_S2, Y, X, O, Pi, B, Omega, maxiter, ftol_rel) {
+    .Call('_PLNmodels_ve_step_zipln_newton', PACKAGE = 'PLNmodels', init_M, init_S2, Y, X, O, Pi, B, Omega, maxiter, ftol_rel)
 }
 
 cpp_test_packing <- function() {
