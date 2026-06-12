@@ -50,8 +50,7 @@ Imports:
     rlang,
     stats,
     tidyr,
-    torch,
-    utils
+    torch
 Suggests:
     factoextra,
     knitr,

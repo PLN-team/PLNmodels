@@ -58,9 +58,9 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'
 #' Helper to define list of parameters to control the PLNPCA fit. All arguments have defaults.
 #'
-#' @param backend optimization backend, either `"nlopt"` (default, NLOPT/CCSAQ — recommended
+#' @param backend optimization backend, either `"nlopt"` (default, NLOPT/CCSAQ, recommended
 #'   for PLNPCA: conservative per-variable steps reliably find the global basin even when
-#'   the singular-value ratio d[1]/sqrt(n) is large), `"builtin"` (joint L-BFGS with strong
+#'   the singular-value ratio d1/sqrt(n) is large), `"builtin"` (joint L-BFGS with strong
 #'   Wolfe line search on all parameters simultaneously — faster per iteration but may
 #'   converge to inferior local optima on ill-conditioned datasets),
 #'   or `"torch"` (automatic differentiation via the torch package).

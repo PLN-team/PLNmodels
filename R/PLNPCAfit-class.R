@@ -256,7 +256,7 @@ PLNPCAfit <- R6Class(
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {
-          svdM <- svd(private$M, nu = rank, nv = self$p)
+          svdM <- svd(private$M - covariates %*% private$B, nu = rank, nv = self$p)
         }
         # M*C^T ≈ M_PLN requires M = sqrt(n)*U when C = V*D/sqrt(n)
         private$M  <- sqrt(self$n) * svdM$u[, 1:rank, drop = FALSE]
@@ -302,10 +302,16 @@ PLNPCAfit <- R6Class(
       ## Optimization ----------------------
       #' @description Call to the C++ optimizer and update of the relevant fields
       optimize = function(responses, covariates, offsets, weights, config) {
-        args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                     params = list(B = private$B, C = private$C, M = private$M, S2 = private$S2),
+        ## Column-scale X to prevent first-step blowup when X has large-scale columns
+        ## (e.g. depth in metres). Equivalent problem; B is unscaled before storing.
+        scales <- pmax(sqrt(colSums(covariates^2)), 1)
+        X_sc   <- sweep(covariates, 2, scales, "/")
+        B_sc   <- sweep(private$B,  1, scales, "*")
+        args <- list(data   = list(Y = responses, X = X_sc, O = offsets, w = weights),
+                     params = list(B = B_sc, C = private$C, M = private$M, S2 = private$S2),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
+        optim_out$B <- sweep(optim_out$B, 1, scales, "/")
         do.call(self$update, optim_out)
       },
 

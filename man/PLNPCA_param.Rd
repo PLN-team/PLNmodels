@@ -5,7 +5,7 @@
 \title{Control of PLNPCA fit}
 \usage{
 PLNPCA_param(
-  backend = c("builtin", "nlopt", "torch"),
+  backend = c("nlopt", "builtin", "torch"),
   trace = 1,
   config_optim = list(),
   config_post = list(),
@@ -14,10 +14,11 @@ PLNPCA_param(
 )
 }
 \arguments{
-\item{backend}{optimization backend, either \code{"builtin"} (default, built-in joint L-BFGS
-with strong Wolfe line search: all parameters B, C, M, ψ are optimised simultaneously
-with a history of 10 curvature pairs; the Wolfe condition guarantees valid curvature
-estimates at every step), \code{"nlopt"} (NLOPT/CCSAQ),
+\item{backend}{optimization backend, either \code{"nlopt"} (default, NLOPT/CCSAQ, recommended
+for PLNPCA: conservative per-variable steps reliably find the global basin even when
+the singular-value ratio d1/sqrt(n) is large), \code{"builtin"} (joint L-BFGS with strong
+Wolfe line search on all parameters simultaneously — faster per iteration but may
+converge to inferior local optima on ill-conditioned datasets),
 or \code{"torch"} (automatic differentiation via the torch package).}
 
 \item{trace}{a integer for verbosity.}
