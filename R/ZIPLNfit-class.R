@@ -106,7 +106,6 @@ ZIPLNfit <- R6Class(
             B[,j]  <- replace_na(coef(zip_out, "count"), 0)
             R[, j] <- replace_na(predict(zip_out, type = "zero"), sum(y == 0) / n)
             M[,j]  <- pmin(replace_na(residuals(zip_out), 0) + data$X %*% coef(zip_out, "count"), 10)
-            if (max(M[,j]) > 10) browser()
           } else {
             p_out  <- glm(y ~ 0 + data$X, family = 'poisson', offset = data$O[, j])
             B0[,j] <- rep(-10, d0)

@@ -87,7 +87,6 @@ ZIPLNnetwork_param <- function(
   config_opt$trace <- trace
   config_opt$ftol_out  <- 1e-6
   config_opt$maxit_out <- 50
-  config_opt$approx_ZI <- TRUE
   config_opt[names(config_optim)] <- config_optim
   inception_cov <- match.arg(inception_cov)
 
