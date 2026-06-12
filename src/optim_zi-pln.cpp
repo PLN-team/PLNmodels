@@ -62,7 +62,7 @@ arma::mat optim_zipln_Omega_spherical(
 ) {
     const arma::uword n = M.n_rows;
     const arma::uword p = M.n_cols;
-    double sigma2 = accu( pow(M - X * B, 2) + S2 ) / double(n * p) ;
+    double sigma2 = accu( arma::square(M - X * B) + S2 ) / double(n * p) ;
     return arma::diagmat(arma::ones(p)/sigma2) ;
 }
 
@@ -74,7 +74,7 @@ arma::mat optim_zipln_Omega_diagonal(
     const arma::mat & S2  // (n,p) variational variance
 ) {
     const arma::uword n = M.n_rows;
-    return arma::diagmat(double(n) / sum( pow(M - X * B, 2) + S2, 0)) ;
+    return arma::diagmat(double(n) / sum( arma::square(M - X * B) + S2, 0)) ;
 }
 
 // [[Rcpp::export]]
@@ -266,8 +266,15 @@ Rcpp::List optim_zipln_psi(
 }
 
 // ---------------------------------------------------------------------------------------
-// Joint optimization of (M, ψ=log(S²)) — nlopt/CCSAQ
-// Interface: takes M, S2 (variance), returns M, S2.
+// Joint VE step for (M, ψ=log(S²), R) — nlopt backend.
+//
+// R is fixed at its exact conditional optimum R* = σ(A₀ + logit(Pi)) [Y>0 → 0]
+// computed once from the initial (M, S²) before the nlopt solve.  Fixing R
+// during the inner solve keeps the (objective, gradient) pair consistent, which
+// is required by nlopt's line-search.  The final R is recomputed from the
+// optimised (M, S²) before returning.
+//
+// Interface: takes Pi (ZI structural probability), returns M, S², R.
 
 // [[Rcpp::export]]
 Rcpp::List ve_step_zipln_nlopt(
@@ -380,48 +387,46 @@ Rcpp::List ve_step_zipln_newton(
     arma::mat A     = arma::trunc_exp(OXB + M_res + 0.5 * S2);
 
     // R and (1-R): updated at each Newton iteration, frozen during line search.
-    arma::mat R       = 1.0 / (1.0 + arma::exp(-(A + logit_Pi)));
-    R %= Y_zero;
-    arma::mat one_m_R   = 1.0 - R;
-    arma::mat one_m_R_Y = one_m_R % Y;
+    // one_m_R_Y = (1-R)%Y = Y always: when Y>0 R=0, when Y=0 Y=0, so just use Y.
+    arma::mat R     = arma::zeros(arma::size(A));
+    arma::mat one_m_R(arma::size(A));
 
-    // Objective for line search: uses one_m_R / one_m_R_Y captured by ref (frozen during LS).
+    // Objective for line search: captures one_m_R by ref (frozen during LS).
     auto obj_fun = [&](const arma::mat & Mres, const arma::mat & MO_,
                        const arma::mat & psi_) -> double {
         const arma::mat S2_ = arma::exp(psi_);
         const arma::mat A_  = arma::trunc_exp(OXB + Mres + 0.5 * S2_);
-        return - arma::accu(one_m_R % (Y % (Mres + XB) - A_))
+        return - arma::accu(Y % (Mres + XB)) + arma::accu(one_m_R % A_)
                + 0.5 * arma::accu(Mres % MO_)
                + 0.5 * arma::dot(diag_Omega, arma::sum(S2_, 0))
                - 0.5 * arma::accu(psi_);
     };
 
-    double obj_prev = obj_fun(M_res, MO, psi);
+    double obj_prev = 0.0;
     int iter = 0;
 
     for (iter = 0; iter < maxiter; iter++) {
         // ----------------------------------------------------------------
         // Step 0 — exact R update: R* = σ(A + logit(Pi)), R[Y>0] = 0
-        // ∂f/∂R = 0 here, so gradient of f w.r.t. (M,ψ) is unchanged.
-        // Skipped when update_R=false (R held fixed at initial value).
+        // ∂f/∂R = 0 at R*, so the gradient w.r.t. (M,ψ) is unaffected.
         // ----------------------------------------------------------------
-        R = 1.0 / (1.0 + arma::exp(-(A + logit_Pi)));
-        R %= Y_zero;
-        one_m_R   = 1.0 - R;
-        one_m_R_Y = one_m_R % Y;
-        obj_prev  = obj_fun(M_res, MO, psi);
+        R       = 1.0 / (1.0 + arma::exp(-(A + logit_Pi)));
+        R      %= Y_zero;
+        one_m_R = 1.0 - R;
+        obj_prev = obj_fun(M_res, MO, psi);
 
         // ----------------------------------------------------------------
         // Step 1 — joint 2×2 Newton step for (M_res, ψ)
         // ----------------------------------------------------------------
         const arma::mat one_m_R_A = one_m_R % A;
 
-        const arma::mat grad_M   = MO + one_m_R_A - one_m_R_Y;
-        const arma::mat grad_psi = 0.5 * (S2 % (one_m_R_A + omega_d) - 1.0);
-
+        // h_mp computed first; h_pp reuses S2 % one_m_R_A via h_mp
         const arma::mat h_mm = one_m_R_A + omega_d;
-        const arma::mat h_pp = 0.5 * S2 % (one_m_R_A % (1.0 + 0.5 * S2) + omega_d);
         const arma::mat h_mp = 0.5 * S2 % one_m_R_A;
+        const arma::mat h_pp = h_mp % (1.0 + 0.5 * S2) + 0.5 * S2 % omega_d;
+
+        const arma::mat grad_M   = MO + one_m_R_A - Y;
+        const arma::mat grad_psi = h_mp + 0.5 * (S2 % omega_d - 1.0);  // = 0.5*(S2%(one_m_R_A+omega_d)-1)
 
         arma::mat det = h_mm % h_pp - h_mp % h_mp;
         det.clamp(1e-20, arma::datum::inf);
@@ -454,11 +459,11 @@ Rcpp::List ve_step_zipln_newton(
         A      = arma::trunc_exp(OXB + M_res + 0.5 * S2);
 
         // ----------------------------------------------------------------
-        // Convergence check (M, ψ only; R convergence implicit)
+        // Convergence: compare objective before and after this Newton step
+        // (R is frozen during the step; obj_prev was set at top of this iter)
         // ----------------------------------------------------------------
         const double obj = obj_fun(M_res, MO, psi);
-        if (iter > 0 && std::abs(obj - obj_prev) < ftol_rel * (1.0 + std::abs(obj_prev))) break;
-        obj_prev = obj;
+        if (std::abs(obj - obj_prev) < ftol_rel * (1.0 + std::abs(obj_prev))) break;
     }
 
     return Rcpp::List::create(
