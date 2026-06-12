@@ -20,11 +20,11 @@ Rcpp::List newton_optimize_fixed(
     const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
     arma::mat B     = Rcpp::as<arma::mat>(params["B"]);
     arma::mat M     = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S     = Rcpp::as<arma::mat>(params["S"]);
+    arma::mat S2    = Rcpp::as<arma::mat>(params["S2"]);
     arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
 
     const NewtonConfig cfg(config);
 
     FixedCovTraits::State state(Omega);
-    return newton_optimize_impl<FixedCovTraits>(Y, X, O, w, B, M, S, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
+    return newton_optimize_impl<FixedCovTraits>(Y, X, O, w, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
 }

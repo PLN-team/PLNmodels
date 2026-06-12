@@ -37,7 +37,7 @@ make_hybrid_optimizer <- function(opt_nlopt, opt_newton) {
       ftol_rel = config$ftol_in * 10
     ))
     res1 <- opt_nlopt(data, params, config1)
-    params2 <- modifyList(params, list(B = res1$B, M = res1$M, S = res1$S))
+    params2 <- modifyList(params, list(B = res1$B, M = res1$M, S2 = res1$S2))
     # Phase 2: homemade Newton with full tolerance
     res2 <- opt_newton(data, params2, config)
     res2$monitoring$objective  <- c(res1$monitoring$objective,  res2$monitoring$objective)
@@ -364,7 +364,7 @@ compute_PLN_starting_point <- function(Y, X, O, w, method = c("LM", "GLM")) {
     B <- lm.fit(w * X, w * log((1 + Y0) / expO), singular.ok = TRUE)$coefficients
     B[is.na(B)] <- 0
   }
-  list(B = matrix(B, d, p),
-       M = matrix(log((1 + Y0) / expO), n, p),
-       S = 1 / sqrt(2 + Y0))
+  list(B  = matrix(B, d, p),
+       M  = matrix(log((1 + Y0) / expO), n, p),
+       S2 = 1 / (2 + Y0))
 }

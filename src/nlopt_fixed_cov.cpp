@@ -21,17 +21,17 @@ Rcpp::List nlopt_optimize_fixed(
     const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
     const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
     const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
-    const auto init_B = Rcpp::as<arma::mat>(params["B"]);
-    const auto init_M = Rcpp::as<arma::mat>(params["M"]);
-    const auto  Omega = Rcpp::as<arma::mat>(params["Omega"]);
-    const auto init_S = Rcpp::as<arma::mat>(params["S"]);
+    const auto init_B  = Rcpp::as<arma::mat>(params["B"]);
+    const auto init_M  = Rcpp::as<arma::mat>(params["M"]);
+    const auto  Omega  = Rcpp::as<arma::mat>(params["Omega"]);
+    const auto init_S2 = Rcpp::as<arma::mat>(params["S2"]);
 
-    const auto metadata = tuple_metadata(init_M, init_S);
+    const auto metadata = tuple_metadata(init_M, init_S2);
     enum { M_ID, S_ID };
 
     auto parameters = std::vector<double>(metadata.packed_size);
     metadata.map<M_ID>(parameters.data()) = init_M;
-    metadata.map<S_ID>(parameters.data()) = arma::log(init_S % init_S);
+    metadata.map<S_ID>(parameters.data()) = arma::log(init_S2);
 
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
     std::vector<double> objective_vec;
@@ -57,7 +57,6 @@ Rcpp::List nlopt_optimize_fixed(
     arma::mat M      = metadata.copy<M_ID>(parameters.data());  // M_full
     arma::mat logS2  = metadata.copy<S_ID>(parameters.data());
     arma::mat S2     = arma::exp(logS2);
-    arma::mat S      = arma::exp(0.5 * logS2);
     arma::mat B      = P_X * M;
     arma::mat M_res  = M - X * B;
     arma::mat Sigma  = (M_res.t() * (M_res.each_col() % w) + diagmat(w.t() * S2)) / accu(w);
@@ -71,7 +70,7 @@ Rcpp::List nlopt_optimize_fixed(
     return Rcpp::List::create(
         Rcpp::Named("B", B),
         Rcpp::Named("M", M),
-        Rcpp::Named("S", S),
+        Rcpp::Named("S2", S2),
         Rcpp::Named("Z", Z),
         Rcpp::Named("A", A),
         Rcpp::Named("Sigma", Sigma),

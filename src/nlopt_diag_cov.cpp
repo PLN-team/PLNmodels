@@ -21,16 +21,16 @@ Rcpp::List nlopt_optimize_diagonal(
     const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
     const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
     const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
-    const auto init_B = Rcpp::as<arma::mat>(params["B"]);
-    const auto init_M = Rcpp::as<arma::mat>(params["M"]);
-    const auto init_S = Rcpp::as<arma::mat>(params["S"]);
+    const auto init_B  = Rcpp::as<arma::mat>(params["B"]);
+    const auto init_M  = Rcpp::as<arma::mat>(params["M"]);
+    const auto init_S2 = Rcpp::as<arma::mat>(params["S2"]);
 
-    const auto metadata = tuple_metadata(init_M, init_S);
+    const auto metadata = tuple_metadata(init_M, init_S2);
     enum { M_ID, S_ID };
 
     auto parameters = std::vector<double>(metadata.packed_size);
     metadata.map<M_ID>(parameters.data()) = init_M;
-    metadata.map<S_ID>(parameters.data()) = arma::log(init_S % init_S);
+    metadata.map<S_ID>(parameters.data()) = arma::log(init_S2);
 
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
     std::vector<double> objective_vec;
@@ -63,7 +63,6 @@ Rcpp::List nlopt_optimize_diagonal(
     arma::mat M      = metadata.copy<M_ID>(parameters.data());  // M_full
     arma::mat logS2  = metadata.copy<S_ID>(parameters.data());
     arma::mat S2     = arma::exp(logS2);
-    arma::mat S      = arma::exp(0.5 * logS2);
     arma::mat B      = P_X * M;
     arma::mat M_res  = M - X * B;
     arma::rowvec sigma2 = w.t() * (M_res % M_res + S2) / w_bar;
@@ -80,7 +79,7 @@ Rcpp::List nlopt_optimize_diagonal(
     return Rcpp::List::create(
         Rcpp::Named("B", B),
         Rcpp::Named("M", M),        // M_full
-        Rcpp::Named("S", S),
+        Rcpp::Named("S2", S2),
         Rcpp::Named("Z", Z),
         Rcpp::Named("A", A),
         Rcpp::Named("Sigma", Sigma),
@@ -110,15 +109,15 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
     const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
     const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
-    const auto init_M = Rcpp::as<arma::mat>(params["M"]); // (n,p)
-    const auto init_S = Rcpp::as<arma::mat>(params["S"]); // (n,p)
+    const auto init_M  = Rcpp::as<arma::mat>(params["M"]); // (n,p)
+    const auto init_S2 = Rcpp::as<arma::mat>(params["S2"]); // (n,p)
 
-    const auto metadata = tuple_metadata(init_M, init_S);
+    const auto metadata = tuple_metadata(init_M, init_S2);
     enum { M_ID, S_ID }; // Names for metadata indexes
 
     auto parameters = std::vector<double>(metadata.packed_size);
     metadata.map<M_ID>(parameters.data()) = init_M;
-    metadata.map<S_ID>(parameters.data()) = arma::log(init_S % init_S); // pack logS2
+    metadata.map<S_ID>(parameters.data()) = arma::log(init_S2); // pack logS2
 
     auto optimizer = new_nlopt_optimizer(config, parameters.size());
     std::vector<double> objective_vec ;
@@ -147,7 +146,6 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     arma::mat M     = metadata.copy<M_ID>(parameters.data());  // M_full
     arma::mat logS2 = metadata.copy<S_ID>(parameters.data());
     arma::mat S2    = arma::exp(logS2);
-    arma::mat S     = arma::exp(0.5 * logS2);
     arma::mat M_res = M - XB;
     // Element-wise log-likelihood
     arma::mat Z = O + M;
@@ -159,8 +157,8 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;
     return Rcpp::List::create(
-      Rcpp::Named("M") = M,
-      Rcpp::Named("S") = S,
+      Rcpp::Named("M")  = M,
+      Rcpp::Named("S2") = S2,
       Rcpp::Named("Ji") = Ji,
       Rcpp::Named("monitoring", Rcpp::List::create(
           Rcpp::Named("status", static_cast<int>(result.status)),

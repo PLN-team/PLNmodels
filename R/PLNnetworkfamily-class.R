@@ -371,7 +371,7 @@ PLNnetworkfamily <- R6Class(
         inception_ <- self$getModel(self$penalties[1])
         inception_$update(
           M  = inception_$var_par$M[subsample, ],
-          S  = inception_$var_par$S[subsample, ]
+          S2 = inception_$var_par$S2[subsample, ]
         )
 
         ## force some control parameters

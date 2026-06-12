@@ -19,7 +19,7 @@
 template<typename Traits>
 Rcpp::List newton_optimize_impl(
     const arma::mat & Y, const arma::mat & X, const arma::mat & O, const arma::vec & w,
-    arma::mat B, arma::mat M, arma::mat S,
+    arma::mat B, arma::mat M, arma::mat S2,
     typename Traits::State state,
     int maxiter, double ftol, int max_em, double em_tol
 ) {
@@ -33,8 +33,7 @@ Rcpp::List newton_optimize_impl(
     const arma::mat XtWX = X.t() * Xw;
     const arma::mat P_X  = (X.n_cols > 0) ? arma::solve(XtWX, Xw.t()) : arma::mat(0, n);
 
-    arma::mat psi = arma::log(S % S);
-    arma::mat S2  = arma::exp(psi);
+    arma::mat psi = arma::log(S2);
 
     std::vector<double> objective_vec;
     double elbo_prev = -arma::datum::inf;
@@ -103,7 +102,6 @@ Rcpp::List newton_optimize_impl(
     }
 
     S2 = arma::exp(psi);
-    S  = arma::exp(0.5 * psi);
     arma::mat M_res = M - X * B;
     Z = O + M;
     A = arma::exp(Z + 0.5 * S2);
@@ -115,7 +113,7 @@ Rcpp::List newton_optimize_impl(
     return Rcpp::List::create(
         Rcpp::Named("B",     B               ),
         Rcpp::Named("M",     M               ),
-        Rcpp::Named("S",     S               ),
+        Rcpp::Named("S2",    S2              ),
         Rcpp::Named("Z",     Z               ),
         Rcpp::Named("A",     A               ),
         Rcpp::Named("Sigma", cov_out["Sigma"]),
@@ -136,7 +134,7 @@ Rcpp::List newton_optimize_impl(
 template<typename Traits>
 Rcpp::List newton_vestep_impl(
     const arma::mat & Y, const arma::mat & X, const arma::mat & O, const arma::vec & w,
-    arma::mat M, arma::mat S,
+    arma::mat M, arma::mat S2,
     const arma::mat & B, const typename Traits::State & state,
     int maxiter, double ftol
 ) {
@@ -145,8 +143,7 @@ Rcpp::List newton_vestep_impl(
     const arma::mat ones_row = arma::ones(n, 1);
     const arma::mat XB = X * B;
 
-    arma::mat psi = arma::log(S % S);   // ψ = log(S²)
-    arma::mat S2  = arma::exp(psi);
+    arma::mat psi = arma::log(S2);
 
     std::vector<double> objective_vec;
     double obj_prev = arma::datum::inf;
@@ -199,7 +196,6 @@ Rcpp::List newton_vestep_impl(
         obj_prev = obj;
     }
 
-    S  = arma::exp(0.5 * psi);
     const arma::mat M_res = M - XB;
     arma::vec loglik = Traits::final_loglik(Y, Z, A, M_res, psi, state);
 
@@ -207,7 +203,7 @@ Rcpp::List newton_vestep_impl(
     Ji.attr("weights") = w;
     return Rcpp::List::create(
         Rcpp::Named("M")  = M,
-        Rcpp::Named("S")  = S,
+        Rcpp::Named("S2") = S2,
         Rcpp::Named("Ji") = Ji,
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status",     3           ),

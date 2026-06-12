@@ -95,7 +95,7 @@ PLNLDAfit <- R6Class(
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
       super$postTreatment(responses, covariates, offsets, weights, config_post = config_post, config_optim = config_optim)
       rownames(private$C) <- colnames(private$C) <- colnames(responses)
-      colnames(private$S) <- 1:self$q
+      colnames(private$S2) <- 1:self$q
       if (config_post$trace > 1) cat("\n\tCompute LD scores for visualization...")
       self$setVisualization()
     },

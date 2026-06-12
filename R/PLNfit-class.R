@@ -52,7 +52,7 @@ PLNfit <- R6Class(
     B          = NA    , # regression parameters of the latent layer
     Sigma      = NA    , # covariance matrix of the latent layer
     Omega      = NA    , # precision matrix of the latent layer. Inverse of Sigma
-    S          = NA    , # variational parameters for the variances
+    S2         = NA    , # variational parameters for the variances
     M          = NA    , # variational parameters for the means
     Z          = NA    , # matrix of latent variable
     A          = NA    , # matrix of expected counts (under variational approximation)
@@ -244,7 +244,7 @@ PLNfit <- R6Class(
 
     vcov_sandwich_B = function(Y, X) {
       vcov_sand <- get_sandwich_variance_B(Y, X, private$A,
-                                           private$S, private$Sigma, diag(private$Omega)
+                                           sqrt(private$S2), private$Sigma, diag(private$Omega)
       )
       attr(private$B, "vcov_sandwich") <- vcov_sand
       attr(private$B, "variance_sandwich") <- matrix(diag(vcov_sand), nrow = self$d, ncol = self$p,
@@ -376,14 +376,14 @@ PLNfit <- R6Class(
         private$Sigma <- control$inception$model_par$Sigma
         private$B     <- control$inception$model_par$B
         private$M     <- control$inception$var_par$M
-        private$S     <- control$inception$var_par$S
+        private$S2    <- control$inception$var_par$S2
       } else {
         if (control$trace > 1) cat("\n Use LM after log transformation to define the inceptive model")
         start_point <- compute_PLN_starting_point(Y = responses, X = covariates, O = offsets, w = weights,
                                                    method = if (is.null(control$init_method)) "LM" else control$init_method)
-        private$B <- start_point$B
-        private$M <- start_point$M
-        private$S <- start_point$S
+        private$B  <- start_point$B
+        private$M  <- start_point$M
+        private$S2 <- start_point$S2
       }
       private$setup_optimizer(control$backend,
         nlopt_optimize_full,         newton_optimize_full,
@@ -404,12 +404,13 @@ PLNfit <- R6Class(
     #' @param A     matrix of fitted values
     #' @param monitoring a list with optimization monitoring quantities
     #' @return Update the current [`PLNfit`] object
-    update = function(B=NA, Sigma=NA, Omega=NA, M=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
+    update = function(B=NA, Sigma=NA, Omega=NA, M=NA, S2=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
       if (!identical(B,          NA)) private$B          <- B
       if (!identical(Sigma,      NA)) private$Sigma      <- Sigma
       if (!identical(Omega,      NA)) private$Omega      <- Omega
       if (!identical(M,          NA)) private$M          <- M
-      if (!identical(S,          NA)) private$S          <- S
+      if (!identical(S2,         NA)) private$S2         <- S2
+      if (!identical(S,          NA) && identical(S2, NA)) private$S2 <- S^2
       if (!identical(Z,          NA)) private$Z          <- Z
       if (!identical(A,          NA)) private$A          <- A
       if (!identical(Ji,         NA)) private$Ji         <- Ji
@@ -424,7 +425,7 @@ PLNfit <- R6Class(
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
       args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                   params = list(B = private$B, M = private$M, S = private$S),
+                   params = list(B = private$B, M = private$M, S2 = private$S2),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)
@@ -444,9 +445,9 @@ PLNfit <- R6Class(
       n <- nrow(responses); p <- ncol(responses)
       ## initialize variational parameters with current value if dimension is the same
       if ((p != self$p) || (n != self$n)) {
-        params0 <- list(M = covariates %*% B, S = matrix(.1, n, p))
+        params0 <- list(M = covariates %*% B, S2 = matrix(.01, n, p))
       } else {
-        params0 <- list(M = self$var_par$M, S = self$var_par$S)
+        params0 <- list(M = self$var_par$M, S2 = self$var_par$S2)
       }
       args <- list(data = list(Y = responses, X = covariates, O = offsets, w = weights),
                    ## Initialize the variational parameters with the new dimension of the data
@@ -479,8 +480,11 @@ PLNfit <- R6Class(
       }
       rownames(private$Sigma) <- colnames(private$Sigma) <- colnames(responses)
       rownames(private$Omega) <- colnames(private$Omega) <- colnames(responses)
-      rownames(private$M) <- rownames(private$S) <- rownames(responses)
-      colnames(private$S) <- 1:self$q
+      rownames(private$M) <- rownames(responses)
+      if (!identical(private$S2, NA) && ncol(private$S2) == self$q) {
+        rownames(private$S2) <- rownames(responses)
+        colnames(private$S2) <- 1:self$q
+      }
 
       ## OPTIONAL POST-TREATMENT (potentially costly)
       ## 1. compute and store approximated R2 with Poisson-based deviance
@@ -554,7 +558,7 @@ PLNfit <- R6Class(
         )
         M <- VE$M          # M_full
         colnames(M) <- colnames(private$B)
-        S2 <- (VE$S)**2
+        S2 <- VE$S2
       } else {
         # population prediction: M_full = X*B (M_res = 0)
         M <- X %*% private$B
@@ -622,7 +626,7 @@ PLNfit <- R6Class(
 
       M_res_VE <- VE$M - X %*% self$model_par$B[, cond, drop = FALSE]
       M <- tcrossprod(M_res_VE, A)
-      S <- map(1:n_new, ~crossprod(VE$S[., ] * t(A)) + Sigma21) %>% simplify2array()
+      S <- map(1:n_new, ~crossprod(sqrt(VE$S2)[., ] * t(A)) + Sigma21) %>% simplify2array()
 
       ## mean latent positions in the parameter space
       EZ <- X %*% private$B[, !cond, drop = FALSE] + M + O[, !cond, drop = FALSE]
@@ -686,7 +690,7 @@ PLNfit <- R6Class(
     #' @field model_par a list with the matrices of the model parameters: B (covariates), Sigma (covariance), Omega (precision matrix), plus some others depending on the variant)
     model_par  = function() {list(B = private$B, Sigma = private$Sigma, Omega = private$Omega, Theta = t(private$B))},
     #' @field var_par a list with the matrices of the variational parameters: M (means) and S2 (variances)
-    var_par    = function() {list(M = private$M, S2 = private$S**2, S = private$S)},
+    var_par    = function() {list(M = private$M, S2 = private$S2, S = sqrt(private$S2))},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par  = function() {private$monitoring},
     #' @field latent a matrix: values of the latent vector (Z in the model)
@@ -945,7 +949,7 @@ PLNfit_fixedcov <- R6Class(
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
       args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                   params = list(B = private$B, M = private$M, S = private$S, Omega = private$Omega),
+                   params = list(B = private$B, M = private$M, S2 = private$S2, Omega = private$Omega),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
       do.call(self$update, optim_out)

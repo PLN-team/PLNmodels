@@ -48,6 +48,7 @@ PLNPCAfit <- R6Class(
     private = list(
       C     = NULL,
       svdCM = NULL,
+      S     = NA   ,   # rank-reduced variational variances (n × q), separate from PLNfit's S2
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## PRIVATE TORCH METHODS FOR RANK-CONSTRAINED OPTIMIZATION
@@ -284,8 +285,9 @@ PLNPCAfit <- R6Class(
       #' @param monitoring a list with optimization monitoring quantities
       #' @return Update the current [`PLNPCAfit`] object
       update = function(B=NA, Sigma=NA, Omega=NA, C=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
-        super$update(B = B, Sigma = Sigma, Omega = Omega, M = M, S = S, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
+        super$update(B = B, Sigma = Sigma, Omega = Omega, M = M, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
         if (!anyNA(C)) private$C <- C
+        if (!anyNA(S)) private$S <- S
       },
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -379,6 +381,10 @@ PLNPCAfit <- R6Class(
         super$postTreatment(responses, covariates, offsets, weights, config_post, config_optim, nullModel)
         colnames(private$C) <- colnames(private$M) <- 1:self$q
         rownames(private$C) <- colnames(responses)
+        if (!identical(private$S, NA)) {
+          rownames(private$S) <- rownames(responses)
+          colnames(private$S) <- 1:self$q
+        }
         self$setVisualization()
       },
 
@@ -507,6 +513,8 @@ PLNPCAfit <- R6Class(
     ##  ACTIVE BINDINGS ----
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     active = list(
+      #' @field var_par variational parameters (M, S, S2) in the rank-q latent space
+      var_par = function() {list(M = private$M, S2 = private$S^2, S = private$S)},
       #' @field rank the dimension of the current model
       rank = function() {self$q},
       #' @field vcov_model character: the model used for the residual covariance

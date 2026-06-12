@@ -58,10 +58,10 @@ PLNnetworkfit <- R6Class(
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
       args <- list(data   = list(Y = data$Y, X = data$X, O = data$O, w = data$w),
-                   params = list(B = private$B, M = private$M, S = private$S),
+                   params = list(B = private$B, M = private$M, S2 = private$S2),
                    config = config)
       M_res_init <- private$M - private$X %*% private$B
-      private$Sigma <- crossprod(M_res_init)/self$n + diag(colMeans(private$S**2), self$p, self$p)
+      private$Sigma <- crossprod(M_res_init)/self$n + diag(colMeans(private$S2), self$p, self$p)
       while (!cond) {
         iter <- iter + 1
         if (config$trace > 1) cat("", iter)
@@ -80,7 +80,7 @@ PLNnetworkfit <- R6Class(
         if ((convergence[iter] < config$ftol_em) | (iter >= config$maxit_em)) cond <- TRUE
 
         ## Prepare next iterate
-        args$params <- list(B = private$B, M = private$M, S = private$S)
+        args$params <- list(B = private$B, M = private$M, S2 = private$S2)
         objective.old <- objective[iter]
       }
 
