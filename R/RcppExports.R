@@ -81,20 +81,20 @@ nlopt_optimize_genetic_modeling <- function(init_parameters, Y, X, O, w, C, conf
     .Call('_PLNmodels_nlopt_optimize_genetic_modeling', PACKAGE = 'PLNmodels', init_parameters, Y, X, O, w, C, configuration)
 }
 
-zipln_vloglik <- function(Y, X, O, Pi, Omega, B, R, M, S) {
-    .Call('_PLNmodels_zipln_vloglik', PACKAGE = 'PLNmodels', Y, X, O, Pi, Omega, B, R, M, S)
+zipln_vloglik <- function(Y, X, O, Pi, Omega, B, R, M, S2) {
+    .Call('_PLNmodels_zipln_vloglik', PACKAGE = 'PLNmodels', Y, X, O, Pi, Omega, B, R, M, S2)
 }
 
-optim_zipln_Omega_full <- function(M, X, B, S) {
-    .Call('_PLNmodels_optim_zipln_Omega_full', PACKAGE = 'PLNmodels', M, X, B, S)
+optim_zipln_Omega_full <- function(M, X, B, S2) {
+    .Call('_PLNmodels_optim_zipln_Omega_full', PACKAGE = 'PLNmodels', M, X, B, S2)
 }
 
-optim_zipln_Omega_spherical <- function(M, X, B, S) {
-    .Call('_PLNmodels_optim_zipln_Omega_spherical', PACKAGE = 'PLNmodels', M, X, B, S)
+optim_zipln_Omega_spherical <- function(M, X, B, S2) {
+    .Call('_PLNmodels_optim_zipln_Omega_spherical', PACKAGE = 'PLNmodels', M, X, B, S2)
 }
 
-optim_zipln_Omega_diagonal <- function(M, X, B, S) {
-    .Call('_PLNmodels_optim_zipln_Omega_diagonal', PACKAGE = 'PLNmodels', M, X, B, S)
+optim_zipln_Omega_diagonal <- function(M, X, B, S2) {
+    .Call('_PLNmodels_optim_zipln_Omega_diagonal', PACKAGE = 'PLNmodels', M, X, B, S2)
 }
 
 optim_zipln_B_dense <- function(M, X) {
@@ -105,32 +105,28 @@ optim_zipln_zipar_covar <- function(R, init_B0, X0, configuration) {
     .Call('_PLNmodels_optim_zipln_zipar_covar', PACKAGE = 'PLNmodels', R, init_B0, X0, configuration)
 }
 
-optim_zipln_R_var <- function(Y, X, O, M, S, Pi, B) {
-    .Call('_PLNmodels_optim_zipln_R_var', PACKAGE = 'PLNmodels', Y, X, O, M, S, Pi, B)
+optim_zipln_R_var <- function(Y, X, O, M, S2, Pi, B) {
+    .Call('_PLNmodels_optim_zipln_R_var', PACKAGE = 'PLNmodels', Y, X, O, M, S2, Pi, B)
 }
 
-optim_zipln_R_exact <- function(Y, X, O, M, S, Pi, B) {
-    .Call('_PLNmodels_optim_zipln_R_exact', PACKAGE = 'PLNmodels', Y, X, O, M, S, Pi, B)
+optim_zipln_R_exact <- function(Y, X, O, M, S2, Pi, B) {
+    .Call('_PLNmodels_optim_zipln_R_exact', PACKAGE = 'PLNmodels', Y, X, O, M, S2, Pi, B)
 }
 
-optim_zipln_M <- function(init_M, Y, X, O, R, S, B, Omega, configuration) {
-    .Call('_PLNmodels_optim_zipln_M', PACKAGE = 'PLNmodels', init_M, Y, X, O, R, S, B, Omega, configuration)
+optim_zipln_M <- function(init_M, Y, X, O, R, S2, B, Omega, configuration) {
+    .Call('_PLNmodels_optim_zipln_M', PACKAGE = 'PLNmodels', init_M, Y, X, O, R, S2, B, Omega, configuration)
 }
 
-optim_zipln_S <- function(init_S, O, M, R, B, diag_Omega, configuration) {
-    .Call('_PLNmodels_optim_zipln_S', PACKAGE = 'PLNmodels', init_S, O, M, R, B, diag_Omega, configuration)
+optim_zipln_psi <- function(init_S2, O, M, R, B, diag_Omega, configuration) {
+    .Call('_PLNmodels_optim_zipln_psi', PACKAGE = 'PLNmodels', init_S2, O, M, R, B, diag_Omega, configuration)
 }
 
-optim_zipln_M_S <- function(init_M, init_S, Y, X, O, R, B, Omega, configuration) {
-    .Call('_PLNmodels_optim_zipln_M_S', PACKAGE = 'PLNmodels', init_M, init_S, Y, X, O, R, B, Omega, configuration)
+optim_zipln_M_psi <- function(init_M, init_S2, Y, X, O, R, B, Omega, configuration) {
+    .Call('_PLNmodels_optim_zipln_M_psi', PACKAGE = 'PLNmodels', init_M, init_S2, Y, X, O, R, B, Omega, configuration)
 }
 
-optim_zipln_M_logS <- function(init_M, init_S, Y, X, O, R, B, Omega, configuration) {
-    .Call('_PLNmodels_optim_zipln_M_logS', PACKAGE = 'PLNmodels', init_M, init_S, Y, X, O, R, B, Omega, configuration)
-}
-
-optim_zipln_M_S_newton <- function(init_M, init_S, Y, X, O, R, B, Omega, maxiter, ftol_rel) {
-    .Call('_PLNmodels_optim_zipln_M_S_newton', PACKAGE = 'PLNmodels', init_M, init_S, Y, X, O, R, B, Omega, maxiter, ftol_rel)
+optim_zipln_M_psi_newton <- function(init_M, init_S2, Y, X, O, R, B, Omega, maxiter, ftol_rel) {
+    .Call('_PLNmodels_optim_zipln_M_psi_newton', PACKAGE = 'PLNmodels', init_M, init_S2, Y, X, O, R, B, Omega, maxiter, ftol_rel)
 }
 
 cpp_test_packing <- function() {

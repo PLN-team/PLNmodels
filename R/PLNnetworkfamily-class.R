@@ -97,9 +97,9 @@ Networkfamily <- R6Class(
         ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
         if (m < length(self$penalties))
           self$models[[m + 1]]$update(
-            B = self$models[[m]]$model_par$B,
-            M = self$models[[m]]$var_par$M,
-            S = self$models[[m]]$var_par$S
+            B  = self$models[[m]]$model_par$B,
+            M  = self$models[[m]]$var_par$M,
+            S2 = self$models[[m]]$var_par$S2
           )
 
         if (config$trace > 1) {
@@ -507,7 +507,7 @@ ZIPLNnetworkfamily <- R6Class(
         inception_$update(
           R  = inception_$var_par$R[subsample, ],
           M  = inception_$var_par$M[subsample, ],
-          S  = inception_$var_par$S[subsample, ]
+          S2 = inception_$var_par$S2[subsample, ]
         )
 
         ## force some control parameters

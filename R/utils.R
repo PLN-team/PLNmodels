@@ -315,7 +315,7 @@ create_parameters <- function(
 #' Helper function for PLN initialization.
 #'
 #' @description
-#' Barebone function to compute starting points for B, M and S when fitting a PLN. Mostly intended for internal use.
+#' Barebone function to compute starting points for B, M and S2 when fitting a PLN. Mostly intended for internal use.
 #'
 #' @param Y Response count matrix
 #' @param X Covariate matrix. Note that initialization will fail if the model matrix is singular.
@@ -324,7 +324,7 @@ create_parameters <- function(
 #' @param method character: strategy used to initialize B. Either `"LM"` (default, fast weighted
 #'   log-linear regression) or `"GLM"` (p independent Poisson GLMs, more accurate for complex
 #'   or unbalanced designs but slower).
-#' @return a named list of starting values for model parameter B and variational parameters M and S used in the iterative optimization algorithm of [PLN()]
+#' @return a named list of starting values for model parameter B and variational parameters M and S2 used in the iterative optimization algorithm of [PLN()]
 #'
 #' @details
 #' * **B**: estimated by weighted LM (`method = "LM"`, default) or p independent Poisson GLMs

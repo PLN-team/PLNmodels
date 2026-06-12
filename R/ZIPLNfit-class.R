@@ -44,25 +44,25 @@ ZIPLNfit <- R6Class(
     #' @param Omega precision matrix of the latent variables
     #' @param Sigma covariance matrix of the latent variables
     #' @param M     matrix of mean vectors for the variational approximation
-    #' @param S     matrix of standard deviation parameters for the variational approximation
+    #' @param S2    matrix of variance parameters for the variational approximation
     #' @param R     matrix of probabilities for the variational approximation
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
     #' @param Z     matrix of latent vectors (includes covariates and offset effects)
     #' @param A     matrix of fitted values
     #' @param monitoring a list with optimization monitoring quantities
     #' @return Update the current [`ZIPLNfit`] object
-    update = function(B=NA, B0=NA, Pi=NA, Omega=NA, Sigma=NA, M=NA, S=NA, R=NA, Ji=NA, Z=NA, A=NA, monitoring=NA) {
-      if (!anyNA(B))      private$B      <- B
-      if (!anyNA(B0))     private$B0     <- B0
-      if (!anyNA(Pi))     private$Pi     <- Pi
-      if (!anyNA(Omega))  private$Omega  <- Omega
-      if (!anyNA(Sigma))  private$Sigma  <- Sigma
-      if (!anyNA(M))      private$M      <- M
-      if (!anyNA(S))      private$S      <- S
-      if (!anyNA(R))      private$R      <- R
-      if (!anyNA(Z))      private$Z      <- Z
-      if (!anyNA(A))      private$A      <- A
-      if (!anyNA(Ji))     private$Ji     <- Ji
+    update = function(B=NA, B0=NA, Pi=NA, Omega=NA, Sigma=NA, M=NA, S2=NA, R=NA, Ji=NA, Z=NA, A=NA, monitoring=NA) {
+      if (!anyNA(B))          private$B          <- B
+      if (!anyNA(B0))         private$B0         <- B0
+      if (!anyNA(Pi))         private$Pi         <- Pi
+      if (!anyNA(Omega))      private$Omega      <- Omega
+      if (!anyNA(Sigma))      private$Sigma      <- Sigma
+      if (!anyNA(M))          private$M          <- M
+      if (!identical(S2, NA)) private$S2         <- S2
+      if (!anyNA(R))          private$R          <- R
+      if (!anyNA(Z))          private$Z          <- Z
+      if (!anyNA(A))          private$A          <- A
+      if (!anyNA(Ji))         private$Ji         <- Ji
       if (!anyNA(monitoring)) private$monitoring <- monitoring
     },
 
@@ -84,7 +84,7 @@ ZIPLNfit <- R6Class(
       if (isZIPLNfit(control$inception)) {
         private$R  <- control$inception$var_par$R
         private$M  <- control$inception$var_par$M
-        private$S  <- control$inception$var_par$S
+        private$S2 <- control$inception$var_par$S2
         private$B  <- control$inception$model_par$B
         private$B0 <- control$inception$model_par$B0
       } else {
@@ -122,7 +122,7 @@ ZIPLNfit <- R6Class(
         ## Initialization of the PLN component
         private$B <- B
         private$M <- M
-        private$S <- matrix(.1, n, p)
+        private$S2 <- matrix(.01, n, p)
       }
       private$Pi <- switch(control$ziparam,
                            "single" = matrix(    mean(private$R), n, p)              ,
@@ -148,10 +148,18 @@ ZIPLNfit <- R6Class(
       private$optimizer$MS <- if (identical(control$config_optim$algorithm, "NEWTON")) {
         ftol <- if (!is.null(control$config_optim$ftol_rel)) control$config_optim$ftol_rel else 1e-8
         maxiter <- as.integer(if (!is.null(control$config_optim$maxeval)) control$config_optim$maxeval else 200L)
-        function(init_M, init_S, Y, X, O, R, B, Omega, configuration)
-          optim_zipln_M_S_newton(init_M, init_S, Y, X, O, R, B, Omega, maxiter, ftol)
+        function(init_M, init_S2, Y, X, O, R, B, Omega, configuration)
+          optim_zipln_M_psi_newton(init_M, init_S2, Y, X, O, R, B, Omega, maxiter, ftol)
+      } else if (identical(control$config_optim$algorithm, "SPLIT")) {
+        # Separate M then ψ=log(S²) optimization via nlopt/CCSAQ
+        function(init_M, init_S2, Y, X, O, R, B, Omega, configuration) {
+          config_sub <- modifyList(configuration, list(algorithm = "CCSAQ"))
+          out_M   <- optim_zipln_M(init_M, Y, X, O, R, init_S2, B, Omega, config_sub)
+          out_psi <- optim_zipln_psi(init_S2, O, out_M$M, R, B, diag(Omega), config_sub)
+          list(M = out_M$M, S2 = out_psi$S2)
+        }
       } else {
-        optim_zipln_M_S
+        optim_zipln_M_psi
       }
 
     },
@@ -162,7 +170,7 @@ ZIPLNfit <- R6Class(
 
       parameters <-
         list(Omega = NA, B0 = private$B0, B = private$B, Pi = private$Pi,
-             M = private$M, S = private$S, R = private$R)
+             M = private$M, S2 = private$S2, R = private$R)
 
       # Outer loop
       nb_iter <- 0
@@ -182,7 +190,7 @@ ZIPLNfit <- R6Class(
         ### M Step
         # PLN part
         new_Omega <- private$optimizer$Omega(
-          M = parameters$M, X = data$X, B = parameters$B, S = parameters$S
+          M = parameters$M, X = data$X, B = parameters$B, S2 = parameters$S2
         )
         new_B <- private$optimizer$B(
           M = parameters$M, X = data$X
@@ -197,26 +205,26 @@ ZIPLNfit <- R6Class(
 
         ### VE Step
         # ZI part
-        new_R <- private$optimizer$R(Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = new_Pi, B = new_B)
+        new_R <- private$optimizer$R(Y = data$Y, X = data$X, O = data$O, M = parameters$M, S2 = parameters$S2, Pi = new_Pi, B = new_B)
 
-        # PLN part: joint optimization of M and S
+        # PLN part: joint optimization of M and ψ=log(S²)
         MS_out <- private$optimizer$MS(
-          init_M = parameters$M, init_S = parameters$S,
+          init_M = parameters$M, init_S2 = parameters$S2,
           Y = data$Y, X = data$X, O = data$O, R = new_R, B = new_B, Omega = new_Omega,
           configuration = control
         )
-        new_M <- MS_out$M
-        new_S <- MS_out$S
+        new_M  <- MS_out$M
+        new_S2 <- MS_out$S2
 
         # Check convergence
         new_parameters <- list(
           Omega = new_Omega, B = new_B, B0 = new_B0, Pi = new_Pi,
-          R = new_R, M = new_M, S = new_S
+          R = new_R, M = new_M, S2 = new_S2
         )
         nb_iter <- nb_iter + 1
 
         vloglik <- zipln_vloglik(
-          data$Y, data$X, data$O, new_Pi, new_Omega, new_B, new_R, new_M, new_S
+          data$Y, data$X, data$O, new_Pi, new_Omega, new_B, new_R, new_M, new_S2
         )
 
         criterion[nb_iter] <- new_objective <- -sum(vloglik)
@@ -250,10 +258,10 @@ ZIPLNfit <- R6Class(
         Omega  = parameters$Omega,
         Sigma =  tryCatch(Matrix::solve(symmpart(parameters$Omega)), error = function(e) {e}),
         M      = parameters$M,
-        S      = parameters$S,
+        S2     = parameters$S2,
         R      = parameters$R,
         Z      = data$O + parameters$M,
-        A      = exp(data$O + parameters$M + .5 * parameters$S^2),
+        A      = exp(data$O + parameters$M + .5 * parameters$S2),
         Ji     = vloglik,
         monitoring = list(
           iterations  = nb_iter,
@@ -270,17 +278,17 @@ ZIPLNfit <- R6Class(
       rownames(private$B0) <- colnames(data$X0)
       rownames(private$Omega)  <- colnames(private$Omega) <- colnames(private$Pi) <- colnames_Y
       dimnames(private$Sigma)  <- dimnames(private$Omega)
-      rownames(private$M) <- rownames(private$S) <- rownames(private$R) <- rownames(private$Pi) <- rownames(data$Y)
+      rownames(private$M) <- rownames(private$S2) <- rownames(private$R) <- rownames(private$Pi) <- rownames(data$Y)
 
     },
 
-    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S, R) and corresponding log likelihood values for fixed model parameters (Sigma, B, B0). Intended to position new data in the latent space.
+    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S2, R) and corresponding log likelihood values for fixed model parameters (Sigma, B, B0). Intended to position new data in the latent space.
     #' @param B Optional fixed value of the regression parameters in the PLN component
     #' @param B0 Optional fixed value of the regression parameters in the ZI component
     #' @param Omega inverse variance-covariance matrix of the latent variables
     #' @return A list with three components:
     #'  * the matrix `M` of variational means,
-    #'  * the matrix `S` of variational standard deviations
+    #'  * the matrix `S2` of variational variances
     #'  * the matrix `R` of variational ZI probabilities
     #'  * the vector `Ji` of (variational) log-likelihood of each new observation
     #'  * a list `monitoring` with information about convergence status
@@ -291,7 +299,7 @@ ZIPLNfit <- R6Class(
                                control = ZIPLN_param(backend = "nlopt")$config_optim) {
       n <- nrow(data$Y)
       parameters <-
-        list(M = matrix(0, n, self$p), S = matrix(0.1, n, self$p), R = matrix(0, n, self$p))
+        list(M = matrix(0, n, self$p), S2 = matrix(.01, n, self$p), R = matrix(0, n, self$p))
 
       # Outer loop
       nb_iter <- 0
@@ -316,21 +324,21 @@ ZIPLNfit <- R6Class(
 
         # VE Step
         new_R <- private$optimizer$R(
-          Y = data$Y, X = data$X, O = data$O, M = parameters$M, S = parameters$S, Pi = Pi, B = B
+          Y = data$Y, X = data$X, O = data$O, M = parameters$M, S2 = parameters$S2, Pi = Pi, B = B
         )
         MS_out <- private$optimizer$MS(
-          init_M = parameters$M, init_S = parameters$S,
+          init_M = parameters$M, init_S2 = parameters$S2,
           Y = data$Y, X = data$X, O = data$O, R = new_R, B = B, Omega = Omega,
           configuration = control
         )
-        new_M <- MS_out$M
-        new_S <- MS_out$S
+        new_M  <- MS_out$M
+        new_S2 <- MS_out$S2
         # Check convergence
-        new_parameters <- list(R = new_R, M = new_M, S = new_S)
+        new_parameters <- list(R = new_R, M = new_M, S2 = new_S2)
         nb_iter <- nb_iter + 1
 
         vloglik <- zipln_vloglik(
-          data$Y, data$X, data$O, Pi, Omega, B, new_R, new_M, new_S
+          data$Y, data$X, data$O, Pi, Omega, B, new_R, new_M, new_S2
         )
 
         criterion[nb_iter] <- new_objective <- -sum(vloglik)
@@ -361,7 +369,8 @@ ZIPLNfit <- R6Class(
 
       list(
         M      = parameters$M,
-        S      = parameters$S,
+        S2     = parameters$S2,
+        S      = sqrt(parameters$S2),
         R      = parameters$R,
         Ji     = vloglik,
         monitoring = list(
@@ -436,7 +445,7 @@ ZIPLNfit <- R6Class(
         )
         R <- VE$R
         M <- VE$M
-        S2 <- VE$S^2
+        S2 <- VE$S2
       } else {
         # otherwise set R to Pi, M to XB and S2 to diag(Sigma)
         R <- private$Pi[1:nrow(newdata), ]
@@ -495,7 +504,7 @@ ZIPLNfit <- R6Class(
     Pi         = NA, # the probability parameters for the ZI part
     Omega      = NA, # the precision matrix
     Sigma      = NA, # the covariance matrix
-    S          = NA, # the variational parameters for the standard deviations
+    S2         = NA, # the variational parameters for the variance
     M          = NA, # the variational parameters for the means
     Z          = NA, # the matrix of latent variable
     P          = NA, # the matrix of latent variable without covariates effect
@@ -541,7 +550,7 @@ ZIPLNfit <- R6Class(
     #' @field model_par a list with the matrices of parameters found in the model (B, Sigma, plus some others depending on the variant)
     model_par  = function() {list(B = private$B, B0 = private$B0, Pi = private$Pi, Omega = private$Omega, Sigma = private$Sigma)},
     #' @field var_par a list with two matrices, M and S2, which are the estimated parameters in the variational approximation
-    var_par    = function() {list(M = private$M, S2 = private$S^2, S = private$S, R = private$R)},
+    var_par    = function() {list(M = private$M, S2 = private$S2, S = sqrt(private$S2), R = private$R)},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par   = function() {private$monitoring},
     #' @field latent a matrix: values of the latent vector (Z in the model)
@@ -567,7 +576,7 @@ ZIPLNfit <- R6Class(
     #' @field entropy_ZI Entropy of the variational distribution
     entropy_ZI  = function() {-sum(.xlogx(1 - private$R)) - sum(.xlogx(private$R))},
     #' @field entropy_PLN Entropy of the Gaussian variational distribution in the PLN component
-    entropy_PLN = function() {.5 * (self$n * self$p * log(2*pi*exp(1)) + sum(log(private$S^2)))},
+    entropy_PLN = function() {.5 * (self$n * self$p * log(2*pi*exp(1)) + sum(log(private$S2)))},
     #' @field ICL variational lower bound of the ICL
     ICL         = function() {self$BIC - self$entropy},
     #' @field criteria a vector with loglik, BIC, ICL and number of parameters
@@ -702,7 +711,7 @@ ZIPLNfit_fixed <- R6Class(
     initialize = function(data, control) {
       super$initialize(data, control)
       private$Omega <- control$Omega
-      private$optimizer$Omega <- function(M, X, B, S) {private$Omega}
+      private$optimizer$Omega <- function(M, X, B, S2) {private$Omega}
     }
   ),
   active = list(
@@ -766,8 +775,8 @@ ZIPLNfit_sparse <- R6Class(
       private$lambda <- control$penalty
       private$rho    <- control$penalty_weights
       private$optimizer$Omega <-
-        function(M, X, B, S) {
-          glassoFast( crossprod(M - X %*% B)/self$n + diag(colMeans(S * S), self$p, self$p),
+        function(M, X, B, S2) {
+          glassoFast( crossprod(M - X %*% B)/self$n + diag(colMeans(S2), self$p, self$p),
                       rho = private$lambda * private$rho )$wi
         }
     },

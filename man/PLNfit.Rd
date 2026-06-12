@@ -121,7 +121,7 @@ print(myPLN)
   Sigma = NA,
   Omega = NA,
   M = NA,
-  S = NA,
+  S2 = NA,
   Ji = NA,
   R2 = NA,
   Z = NA,
@@ -137,7 +137,7 @@ print(myPLN)
       \item{\code{Sigma}}{variance-covariance matrix of the latent variables}
       \item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
       \item{\code{M}}{matrix of variational parameters for the mean}
-      \item{\code{S}}{matrix of variational parameters for the variance}
+      \item{\code{S2}}{matrix of variational parameters for the variance}
       \item{\code{Ji}}{vector of variational lower bounds of the log-likelihoods (one value per sample)}
       \item{\code{R2}}{approximate R^2 goodness-of-fit criterion}
       \item{\code{Z}}{matrix of latent vectors (includes covariates and offset effects)}
@@ -178,7 +178,7 @@ print(myPLN)
 \if{html}{\out{<a id="method-PLNfit-optimize_vestep"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit-optimize_vestep}{}}}
 \subsection{\code{PLNfit$optimize_vestep()}}{
-  Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
+  Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S2) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{PLNfit$optimize_vestep(

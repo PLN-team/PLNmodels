@@ -25,6 +25,8 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \section{Active bindings}{
   \if{html}{\out{<div class="r6-active-bindings">}}
   \describe{
+    \item{\code{var_par}}{variational parameters (M, S, S2) in the rank-q latent space}
+
     \item{\code{rank}}{the dimension of the current model}
 
     \item{\code{vcov_model}}{character: the model used for the residual covariance}

@@ -20,10 +20,10 @@ log-linear regression) or \code{"GLM"} (p independent Poisson GLMs, more accurat
 or unbalanced designs but slower).}
 }
 \value{
-a named list of starting values for model parameter B and variational parameters M and S used in the iterative optimization algorithm of \code{\link[=PLN]{PLN()}}
+a named list of starting values for model parameter B and variational parameters M and S2 used in the iterative optimization algorithm of \code{\link[=PLN]{PLN()}}
 }
 \description{
-Barebone function to compute starting points for B, M and S when fitting a PLN. Mostly intended for internal use.
+Barebone function to compute starting points for B, M and S2 when fitting a PLN. Mostly intended for internal use.
 }
 \details{
 \itemize{

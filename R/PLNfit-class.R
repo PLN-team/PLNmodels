@@ -397,20 +397,19 @@ PLNfit <- R6Class(
     #' @description
     #' Update a [`PLNfit`] object
     #' @param M     matrix of variational parameters for the mean
-    #' @param S     matrix of variational parameters for the variance
+    #' @param S2    matrix of variational parameters for the variance
     #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
     #' @param R2    approximate R^2 goodness-of-fit criterion
     #' @param Z     matrix of latent vectors (includes covariates and offset effects)
     #' @param A     matrix of fitted values
     #' @param monitoring a list with optimization monitoring quantities
     #' @return Update the current [`PLNfit`] object
-    update = function(B=NA, Sigma=NA, Omega=NA, M=NA, S2=NA, S=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
+    update = function(B=NA, Sigma=NA, Omega=NA, M=NA, S2=NA, Ji=NA, R2=NA, Z=NA, A=NA, monitoring=NA) {
       if (!identical(B,          NA)) private$B          <- B
       if (!identical(Sigma,      NA)) private$Sigma      <- Sigma
       if (!identical(Omega,      NA)) private$Omega      <- Omega
       if (!identical(M,          NA)) private$M          <- M
       if (!identical(S2,         NA)) private$S2         <- S2
-      if (!identical(S,          NA) && identical(S2, NA)) private$S2 <- S^2
       if (!identical(Z,          NA)) private$Z          <- Z
       if (!identical(A,          NA)) private$A          <- A
       if (!identical(Ji,         NA)) private$Ji         <- Ji
@@ -431,7 +430,7 @@ PLNfit <- R6Class(
       do.call(self$update, optim_out)
     },
 
-    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
+    #' @description Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S2) and corresponding log likelihood values for fixed model parameters (Sigma, B). Intended to position new data in the latent space.
     #' @param B Optional fixed value of the regression parameters
     #' @param Sigma variance-covariance matrix of the latent variables
     #' @return A list with three components:

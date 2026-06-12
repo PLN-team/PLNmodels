@@ -107,7 +107,7 @@ ZIPLN_param <- function(
   ## optimization config
   stopifnot(backend %in% c("nlopt"))
   algo_req <- if (!is.null(config_optim$algorithm)) config_optim$algorithm else "CCSAQ"
-  stopifnot(algo_req %in% available_algorithms_nlopt)
+  stopifnot(algo_req %in% c(available_algorithms_nlopt, "NEWTON", "SPLIT"))
   config_opt <- config_default_nlopt
   config_opt$algorithm  <- algo_req
   config_opt$trace      <- trace
