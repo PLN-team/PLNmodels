@@ -51,12 +51,12 @@ Rcpp::List newton_optimize_impl(
             const arma::mat XB    = X * B;
             const arma::mat M_res = M - XB;
 
-            // Joint Newton step for (M, ψ): gradient + 2×2 Newton per (i,j)
-            arma::mat grad_M, step_M, grad_psi, step_psi;
+            // Joint Newton step: compute_joint_step_MS also returns MO = M_res * Omega
+            // so we reuse it for the Armijo penalty — avoids a redundant O(n p²) product.
+            arma::mat grad_M, step_M, grad_psi, step_psi, MresO;
             Traits::compute_joint_step_MS(M_res, state, A, S2, Y, w, ones_row,
-                                          grad_M, step_M, grad_psi, step_psi);
+                                          grad_M, step_M, grad_psi, step_psi, MresO);
             const arma::mat Q_step  = step_M - X * (P_X * step_M);
-            const arma::mat MresO   = Traits::times_Omega(M_res, state);
             const arma::mat QstepO  = Traits::times_Omega(Q_step, state);
             double f0    = arma::accu(w.t() * (A - Y % Z - 0.5 * psi))
                          + Traits::penalty_M(MresO, M_res, w) + Traits::penalty_S(S2, state, w);
@@ -152,19 +152,17 @@ Rcpp::List newton_vestep_impl(
     double obj_prev = arma::datum::inf;
     int total_iter  = 0;
 
-    // Z and A are kept current at the end of each iteration; compute them once here.
     arma::mat Z = O + M;
     arma::mat A = arma::exp(Z + 0.5 * S2);
 
     for (int it = 0; it < maxiter; it++) {
-        // S2, Z, A are current.
-        arma::mat M_res = M - XB;          // M_res for KL terms (B is fixed)
+        arma::mat M_res = M - XB;
 
-        // ---- Joint Newton step for (M, ψ) ----
-        arma::mat grad_M, step_M, grad_psi, step_psi;
+        // Joint Newton step: MO = M_res * Omega returned to avoid recomputing it
+        // for the Armijo penalty evaluation.
+        arma::mat grad_M, step_M, grad_psi, step_psi, MO;
         Traits::compute_joint_step_MS(M_res, state, A, S2, Y, w, ones_row,
-                                      grad_M, step_M, grad_psi, step_psi);
-        const arma::mat MO  = Traits::times_Omega(M_res, state);
+                                      grad_M, step_M, grad_psi, step_psi, MO);
         const arma::mat dMO = Traits::times_Omega(step_M, state);
         double f0    = arma::accu(w.t() * (A - Y % Z - 0.5 * psi))
                      + Traits::penalty_M(MO, M_res, w) + Traits::penalty_S(S2, state, w);
@@ -186,12 +184,14 @@ Rcpp::List newton_vestep_impl(
         psi -= alpha * step_psi;
         S2   = arma::exp(psi);
         Z    = O + M;
+        A    = arma::exp(Z + 0.5 * S2);
 
-        // ---- Objective for convergence ----
-        A = arma::exp(Z + 0.5 * S2);
-        arma::mat M_res_new = M - XB;
+        // Post-update objective: reuse MO_new = MO - alpha*dMO = M_res_new * Omega
+        // (exact incremental update, avoids an extra O(n p²) product for full cov).
+        const arma::mat MO_new   = MO - alpha * dMO;
+        const arma::mat M_res_new = M - XB;
         double obj = arma::accu(w.t() * (A - Y % Z - 0.5 * psi))
-                   + Traits::objective_cov(M_res_new, S2, state, w);
+                   + Traits::penalty_M(MO_new, M_res_new, w) + Traits::penalty_S(S2, state, w);
         objective_vec.push_back(obj);
         total_iter++;
 
@@ -199,10 +199,8 @@ Rcpp::List newton_vestep_impl(
         obj_prev = obj;
     }
 
-    // ---- Final output ----
-    // S2, Z, A are current from the last iteration (fixed_point_psi + exp update).
     S  = arma::exp(0.5 * psi);
-    const arma::mat M_res = M - XB;      // for loglik KL terms
+    const arma::mat M_res = M - XB;
     arma::vec loglik = Traits::final_loglik(Y, Z, A, M_res, psi, state);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));

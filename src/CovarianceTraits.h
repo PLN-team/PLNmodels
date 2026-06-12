@@ -4,7 +4,7 @@
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared base for dense (full p×p) Omega variants (FullCovTraits and FixedCovTraits).
-// Contains the 6 static methods that are identical in both. Derived traits use
+// Contains the static methods that are identical in both. Derived traits use
 // struct inheritance to expose these methods without repetition.
 // ─────────────────────────────────────────────────────────────────────────────
 struct DenseOmegaImpl {
@@ -13,33 +13,7 @@ struct DenseOmegaImpl {
         arma::vec diag_Omega;
     };
 
-    static arma::mat cov_diag(const State & s, const arma::mat & ones_row) {
-        return ones_row * s.diag_Omega.t();
-    }
-
-    static void grad_hess_M(
-        const arma::mat & M, const State & s,
-        const arma::mat & A, const arma::mat & Y, const arma::vec & w, const arma::mat & ones_row,
-        arma::mat & grad_M, arma::mat & hess_M)
-    {
-        arma::mat MO = M * s.Omega;
-        grad_M = MO + A - Y; grad_M.each_col() %= w;
-        hess_M = A + ones_row * s.diag_Omega.t(); hess_M.each_col() %= w;
-    }
-
     static arma::mat times_Omega(const arma::mat & M, const State & s) { return M * s.Omega; }
-
-    static void compute_step_M(
-        const arma::mat & M, const State & s,
-        const arma::mat & A, const arma::mat & Y, const arma::vec & w, const arma::mat & ones_row,
-        arma::mat & grad_M, arma::mat & step_M)
-    {
-        const arma::mat MO = M * s.Omega;
-        grad_M = MO + A - Y; grad_M.each_col() %= w;
-        arma::mat hess = A + ones_row * s.diag_Omega.t(); hess.each_col() %= w;
-        hess.clamp(1e-10, arma::datum::inf);
-        step_M = grad_M / hess;
-    }
 
     static double penalty_M(const arma::mat & MO, const arma::mat & M, const arma::vec & w) {
         return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
@@ -50,14 +24,17 @@ struct DenseOmegaImpl {
     }
 
     // Joint Newton step for (M, ψ) where ψ = log(S²): diagonal 2×2 per (i,j).
+    // MO (output) = M * Omega — returned so the caller can reuse it for penalty/Armijo
+    // without an extra O(n p²) matrix product.
     static void compute_joint_step_MS(
         const arma::mat & M, const State & s,
         const arma::mat & A, const arma::mat & S2,
         const arma::mat & Y, const arma::vec & w, const arma::mat & ones_row,
         arma::mat & grad_M, arma::mat & step_M,
-        arma::mat & grad_psi, arma::mat & step_psi)
+        arma::mat & grad_psi, arma::mat & step_psi,
+        arma::mat & MO)
     {
-        const arma::mat MO      = M * s.Omega;
+        MO = M * s.Omega;
         const arma::mat omega_d = ones_row * s.diag_Omega.t();
         const arma::mat AS2     = A % S2;
 
@@ -72,12 +49,6 @@ struct DenseOmegaImpl {
         det.clamp(1e-20, arma::datum::inf);
         step_M   = (h_pp % grad_M   - h_mp % grad_psi) / det;
         step_psi = (h_mm % grad_psi - h_mp % grad_M  ) / det;
-    }
-
-    static double objective_cov(const arma::mat & M, const arma::mat & S2, const State & s, const arma::vec & w) {
-        arma::mat MO = M * s.Omega;
-        return 0.5 * (arma::as_scalar(w.t() * arma::sum(MO % M, 1))
-                    + arma::dot(s.diag_Omega, (w.t() * S2).t()));
     }
 
     static arma::vec final_loglik(const arma::mat & Y, const arma::mat & Z, const arma::mat & A,
@@ -148,31 +119,7 @@ struct DiagonalCovTraits {
         }
     };
 
-    static arma::mat cov_diag(const State & s, const arma::mat & ones_row) {
-        return ones_row * s.omega2;
-    }
-
-    static void grad_hess_M(
-        const arma::mat & M, const State & s,
-        const arma::mat & A, const arma::mat & Y, const arma::vec & w, const arma::mat & ones_row,
-        arma::mat & grad_M, arma::mat & hess_M)
-    {
-        grad_M = M.each_row() % s.omega2 + A - Y; grad_M.each_col() %= w;
-        hess_M = ones_row * s.omega2 + A;          hess_M.each_col() %= w;
-    }
-
     static arma::mat times_Omega(const arma::mat & M, const State & s) { return M.each_row() % s.omega2; }
-
-    static void compute_step_M(
-        const arma::mat & M, const State & s,
-        const arma::mat & A, const arma::mat & Y, const arma::vec & w, const arma::mat & ones_row,
-        arma::mat & grad_M, arma::mat & step_M)
-    {
-        grad_M = M.each_row() % s.omega2 + A - Y; grad_M.each_col() %= w;
-        arma::mat hess = ones_row * s.omega2 + A; hess.each_col() %= w;
-        hess.clamp(1e-10, arma::datum::inf);
-        step_M = grad_M / hess;
-    }
 
     static double penalty_M(const arma::mat & MO, const arma::mat & M, const arma::vec & w) {
         return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
@@ -182,17 +129,20 @@ struct DiagonalCovTraits {
         return 0.5 * arma::as_scalar((w.t() * S2) * s.omega2.t());
     }
 
+    // MO (output) = M.each_row() % omega2 — returned for caller reuse.
     static void compute_joint_step_MS(
         const arma::mat & M, const State & s,
         const arma::mat & A, const arma::mat & S2,
         const arma::mat & Y, const arma::vec & w, const arma::mat & ones_row,
         arma::mat & grad_M, arma::mat & step_M,
-        arma::mat & grad_psi, arma::mat & step_psi)
+        arma::mat & grad_psi, arma::mat & step_psi,
+        arma::mat & MO)
     {
         const arma::mat omega_d = ones_row * s.omega2;
         const arma::mat AS2     = A % S2;
-        grad_M   = M.each_row() % s.omega2 + A - Y;             grad_M.each_col()   %= w;
-        grad_psi = 0.5 * (AS2 + omega_d % S2 - 1.0);           grad_psi.each_col() %= w;
+        MO       = M.each_row() % s.omega2;
+        grad_M   = MO + A - Y;                            grad_M.each_col()   %= w;
+        grad_psi = 0.5 * (AS2 + omega_d % S2 - 1.0);     grad_psi.each_col() %= w;
 
         arma::mat h_pp = 0.5 * (S2 % (A % (1.0 + 0.5*S2) + omega_d)); h_pp.each_col() %= w;
         arma::mat h_mp = 0.5 * AS2;                                     h_mp.each_col() %= w;
@@ -202,10 +152,6 @@ struct DiagonalCovTraits {
         det.clamp(1e-20, arma::datum::inf);
         step_M   = (h_pp % grad_M   - h_mp % grad_psi) / det;
         step_psi = (h_mm % grad_psi - h_mp % grad_M  ) / det;
-    }
-
-    static double objective_cov(const arma::mat & M, const arma::mat & S2, const State & s, const arma::vec & w) {
-        return 0.5 * arma::as_scalar((w.t() * (M % M + S2)) * s.omega2.t());
     }
 
     static void mstep(State & s, const arma::mat & M, const arma::mat & S2,
@@ -257,36 +203,25 @@ struct SphericalCovTraits {
         }
     };
 
-    // returns double: fixed_point_psi<double> handles scalar broadcast
-    static double cov_diag(const State & s, const arma::mat & /*ones_row*/) {
-        return s.omega2;
-    }
-
-    static void grad_hess_M(
-        const arma::mat & M, const State & s,
-        const arma::mat & A, const arma::mat & Y, const arma::vec & w, const arma::mat & /*ones_row*/,
-        arma::mat & grad_M, arma::mat & hess_M)
-    {
-        grad_M = s.omega2 * M + A - Y; grad_M.each_col() %= w;
-        hess_M = s.omega2 + A;          hess_M.each_col() %= w;
-    }
-
     static arma::mat times_Omega(const arma::mat & M, const State & s) { return s.omega2 * M; }
 
     static double penalty_S(const arma::mat & S2, const State & s, const arma::vec & w) {
         return 0.5 * s.omega2 * arma::dot(w, arma::sum(S2, 1));
     }
 
+    // MO (output) = omega2 * M — returned for caller reuse.
     static void compute_joint_step_MS(
         const arma::mat & M, const State & s,
         const arma::mat & A, const arma::mat & S2,
         const arma::mat & Y, const arma::vec & w, const arma::mat & /*ones_row*/,
         arma::mat & grad_M, arma::mat & step_M,
-        arma::mat & grad_psi, arma::mat & step_psi)
+        arma::mat & grad_psi, arma::mat & step_psi,
+        arma::mat & MO)
     {
         const arma::mat AS2 = A % S2;
-        grad_M   = s.omega2 * M + A - Y;                       grad_M.each_col()   %= w;
-        grad_psi = 0.5 * (AS2 + s.omega2 * S2 - 1.0);         grad_psi.each_col() %= w;
+        MO       = s.omega2 * M;
+        grad_M   = MO + A - Y;                          grad_M.each_col()   %= w;
+        grad_psi = 0.5 * (AS2 + s.omega2 * S2 - 1.0);  grad_psi.each_col() %= w;
 
         arma::mat h_pp = 0.5 * (S2 % (A % (1.0 + 0.5*S2) + s.omega2)); h_pp.each_col() %= w;
         arma::mat h_mp = 0.5 * AS2;                                      h_mp.each_col() %= w;
@@ -298,23 +233,8 @@ struct SphericalCovTraits {
         step_psi = (h_mm % grad_psi - h_mp % grad_M  ) / det;
     }
 
-    static void compute_step_M(
-        const arma::mat & M, const State & s,
-        const arma::mat & A, const arma::mat & Y, const arma::vec & w, const arma::mat & /*ones_row*/,
-        arma::mat & grad_M, arma::mat & step_M)
-    {
-        grad_M = s.omega2 * M + A - Y; grad_M.each_col() %= w;
-        arma::mat hess = s.omega2 + A; hess.each_col() %= w;
-        hess.clamp(1e-10, arma::datum::inf);
-        step_M = grad_M / hess;
-    }
-
     static double penalty_M(const arma::mat & MO, const arma::mat & M, const arma::vec & w) {
         return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
-    }
-
-    static double objective_cov(const arma::mat & M, const arma::mat & S2, const State & s, const arma::vec & w) {
-        return 0.5 * s.omega2 * arma::accu(arma::diagmat(w) * (M % M + S2));
     }
 
     static void mstep(State & s, const arma::mat & M, const arma::mat & S2,
