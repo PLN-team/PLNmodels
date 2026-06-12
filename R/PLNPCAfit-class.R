@@ -48,13 +48,13 @@ PLNPCAfit <- R6Class(
     private = list(
       C     = NULL,
       svdCM = NULL,
-      S     = NA   ,   # rank-reduced variational variances (n × q), separate from PLNfit's S2
+      S2    = NA   ,   # rank-reduced variational variances (n × q)
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## PRIVATE TORCH METHODS FOR RANK-CONSTRAINED OPTIMIZATION
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      torch_elbo_rank_core = function(data, M, S, B, C, index) {
-        S2 <- torch_square(S[index])                        # (batch, q)
+      torch_elbo_rank_core = function(data, M, psi, B, C, index) {
+        S2 <- torch_exp(psi[index])                        # (batch, q); ψ = log(S²)
         C2 <- torch_square(C)                              # (p, q)
         Z  <- data$O[index] +
               torch_mm(M[index], torch_t(C)) +
@@ -62,22 +62,22 @@ PLNPCAfit <- R6Class(
         A  <- torch_exp(Z + 0.5 * torch_mm(S2, torch_t(C2)))
         lik_part <- torch_sum(data$w[index, NULL] * (A - data$Y[index] * Z))
         kl_part  <- 0.5 * torch_sum(data$w[index, NULL] *
-                      (torch_square(M[index]) + S2 - torch_log(S2) - 1))
+                      (torch_square(M[index]) + S2 - psi[index] - 1))
         lik_part + kl_part
       },
 
       torch_elbo_rank = function(data, params, index = torch_tensor(1:self$n)) {
-        private$torch_elbo_rank_core(data, params$M, params$S, params$B, params$C, index)
+        private$torch_elbo_rank_core(data, params$M, params$psi, params$B, params$C, index)
       },
 
       torch_vloglik_rank = function(data, params) {
-        S2 <- torch_square(params$S)
+        S2 <- torch_exp(params$psi)
         C2 <- torch_square(params$C)
         Z  <- data$O + torch_mm(params$M, torch_t(params$C)) + torch_mm(data$X, params$B)
         A  <- torch_exp(Z + 0.5 * torch_mm(S2, torch_t(C2)))
         Ji <- - torch_sum(.logfactorial_torch(data$Y), dim = 2) +
               torch_sum(data$Y * Z - A, dim = 2) -
-              0.5 * torch_sum(torch_square(params$M) + S2 - torch_log(S2) - 1, dim = 2)
+              0.5 * torch_sum(torch_square(params$M) + S2 - params$psi - 1, dim = 2)
         Ji <- .5 * self$p + as.numeric(Ji$cpu())
         attr(Ji, "weights") <- as.numeric(data$w$cpu())
         Ji
@@ -140,9 +140,12 @@ PLNPCAfit <- R6Class(
         if (config$trace > 1)
           message(paste("optimizing with device:", config$device))
 
-        n <- nrow(data$Y)
-        data   <- lapply(data,   torch_tensor, dtype = torch_float32(), device = config$device)
+        n      <- nrow(data$Y)
+        data   <- lapply(data, torch_tensor, dtype = torch_float32(), device = config$device)
+        S2_init <- params$S2
+        params$S2 <- NULL
         params <- lapply(params, torch_tensor, dtype = torch_float32(), requires_grad = TRUE, device = config$device)
+        params$psi <- torch_tensor(log(S2_init), dtype = torch_float32(), requires_grad = TRUE, device = config$device)
         B      <- torch_tensor(B, dtype = torch_float32(), device = config$device)
         C      <- torch_tensor(C, dtype = torch_float32(), device = config$device)
 
@@ -152,15 +155,17 @@ PLNPCAfit <- R6Class(
           config = config,
           n_obs  = n,
           loss_fn = function(index) {
-            private$torch_elbo_rank_core(data, params$M, params$S, B, C, index)
+            private$torch_elbo_rank_core(data, params$M, params$psi, B, C, index)
           }
         )
         params_r <- lapply(optim_out$params, function(x) as.matrix(x$cpu()))
+        params_r$S2  <- exp(params_r$psi)
+        params_r$psi <- NULL
         Ji_r <- private$torch_vloglik_rank(data, c(optim_out$params, list(B = B, C = C)))
 
         list(
           M          = params_r$M,
-          S          = params_r$S,
+          S2         = params_r$S2,
           Ji         = Ji_r,
           monitoring = list(
             objective  = optim_out$objective,
@@ -175,8 +180,11 @@ PLNPCAfit <- R6Class(
         if (config$trace > 1)
           message(paste("optimizing with device:", config$device))
 
-        data   <- lapply(data,   torch_tensor, dtype = torch_float32(), device = config$device)
-        params <- lapply(params, torch_tensor, dtype = torch_float32(), requires_grad = TRUE, device = config$device)
+        data    <- lapply(data, torch_tensor, dtype = torch_float32(), device = config$device)
+        S2_init  <- params$S2
+        params$S2 <- NULL
+        params  <- lapply(params, torch_tensor, dtype = torch_float32(), requires_grad = TRUE, device = config$device)
+        params$psi <- torch_tensor(log(S2_init), dtype = torch_float32(), requires_grad = TRUE, device = config$device)
 
         optim_out <- private$torch_optimize_rank_core(
           data   = data,
@@ -193,7 +201,7 @@ PLNPCAfit <- R6Class(
         data_r   <- lapply(data,   function(x) as.matrix(x$cpu()))
 
         q     <- ncol(params_r$M)
-        S2_r  <- params_r$S^2
+        S2_r  <- exp(params_r$psi)          # ψ → S²
         C2_r  <- params_r$C^2
         Z_r   <- data_r$O + params_r$M %*% t(params_r$C) + data_r$X %*% params_r$B
         A_r   <- exp(Z_r + 0.5 * S2_r %*% t(C2_r))
@@ -206,14 +214,14 @@ PLNPCAfit <- R6Class(
 
         Ji_r <- .5 * self$p - rowSums(.logfactorial(as.matrix(data_r$Y))) +
                 rowSums(data_r$Y * Z_r - A_r) -
-                0.5 * rowSums(params_r$M^2 + S2_r - log(S2_r) - 1)
+                0.5 * rowSums(params_r$M^2 + S2_r - params_r$psi - 1)
         attr(Ji_r, "weights") <- w_r
 
         list(
           B          = params_r$B,
           C          = params_r$C,
           M          = params_r$M,
-          S          = params_r$S,
+          S2         = S2_r,
           Z          = Z_r,
           A          = A_r,
           Sigma      = Sigma_r,
@@ -252,7 +260,7 @@ PLNPCAfit <- R6Class(
         }
         ### TODO: check that it is really better than initializing with zeros...
         private$M  <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
-        private$S  <- matrix(0.1, self$n, rank)
+        private$S2 <- matrix(0.01, self$n, rank)
         private$C  <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
       },
       #' @description Reinitialize parameters for sequential warm-starting from a lower-rank fit.
@@ -269,25 +277,25 @@ PLNPCAfit <- R6Class(
         private$C <- cbind(prev_fit$model_par$C, C_new_cols)
         private$M <- cbind(prev_fit$var_par$M,
                            matrix(0,   nrow = self$n, ncol = q_new - q_prev))
-        private$S <- cbind(prev_fit$var_par$S,
-                           matrix(0.1, nrow = self$n, ncol = q_new - q_prev))
+        private$S2 <- cbind(prev_fit$var_par$S2,
+                            matrix(0.01, nrow = self$n, ncol = q_new - q_prev))
         private$B <- prev_fit$model_par$B
       },
 
       #' @description Update a [`PLNPCAfit`] object
       #' @param M     matrix of mean vectors for the variational approximation
       #' @param C     matrix of PCA loadings (in the latent space)
-      #' @param S     matrix of variance vectors for the variational approximation
+      #' @param S2    matrix of variational variances (n × q)
       #' @param Ji    vector of variational lower bounds of the log-likelihoods (one value per sample)
       #' @param R2    approximate R^2 goodness-of-fit criterion
       #' @param Z     matrix of latent vectors (includes covariates and offset effects)
       #' @param A     matrix of fitted values
       #' @param monitoring a list with optimization monitoring quantities
       #' @return Update the current [`PLNPCAfit`] object
-      update = function(B=NA, Sigma=NA, Omega=NA, C=NA, M=NA, S=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
+      update = function(B=NA, Sigma=NA, Omega=NA, C=NA, M=NA, S2=NA, Z=NA, A=NA, Ji=NA, R2=NA, monitoring=NA) {
         super$update(B = B, Sigma = Sigma, Omega = Omega, M = M, Z = Z, A = A, Ji = Ji, R2 = R2, monitoring = monitoring)
-        if (!anyNA(C)) private$C <- C
-        if (!anyNA(S)) private$S <- S
+        if (!anyNA(C))  private$C  <- C
+        if (!anyNA(S2)) private$S2 <- S2
       },
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -295,7 +303,7 @@ PLNPCAfit <- R6Class(
       #' @description Call to the C++ optimizer and update of the relevant fields
       optimize = function(responses, covariates, offsets, weights, config) {
         args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                     params = list(B = private$B, C = private$C, M = private$M, S = private$S),
+                     params = list(B = private$B, C = private$C, M = private$M, S2 = private$S2),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         do.call(self$update, optim_out)
@@ -326,7 +334,7 @@ PLNPCAfit <- R6Class(
         ## Initialize the variational parameters with the appropriate new dimension of the data
         args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
                      ## Initialize the variational parameters with the new dimension of the data
-                     params = list(M = M_init, S = matrix(.1, n, q)),
+                     params = list(M = M_init, S2 = matrix(.01, n, q)),
                      B = private$B,
                      C = private$C,
                      config = control$config_optim)
@@ -381,9 +389,9 @@ PLNPCAfit <- R6Class(
         super$postTreatment(responses, covariates, offsets, weights, config_post, config_optim, nullModel)
         colnames(private$C) <- colnames(private$M) <- 1:self$q
         rownames(private$C) <- colnames(responses)
-        if (!identical(private$S, NA)) {
-          rownames(private$S) <- rownames(responses)
-          colnames(private$S) <- 1:self$q
+        if (!identical(private$S2, NA)) {
+          rownames(private$S2) <- rownames(responses)
+          colnames(private$S2) <- 1:self$q
         }
         self$setVisualization()
       },
@@ -513,8 +521,8 @@ PLNPCAfit <- R6Class(
     ##  ACTIVE BINDINGS ----
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     active = list(
-      #' @field var_par variational parameters (M, S, S2) in the rank-q latent space
-      var_par = function() {list(M = private$M, S2 = private$S^2, S = private$S)},
+      #' @field var_par variational parameters (M, S2) in the rank-q latent space
+      var_par = function() {list(M = private$M, S2 = private$S2)},
       #' @field rank the dimension of the current model
       rank = function() {self$q},
       #' @field vcov_model character: the model used for the residual covariance

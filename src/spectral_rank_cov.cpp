@@ -46,10 +46,10 @@ Rcpp::List spectral_optimize_rank(
     const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
     const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
     const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
-    arma::mat B = Rcpp::as<arma::mat>(params["B"]);
-    arma::mat C = Rcpp::as<arma::mat>(params["C"]);
-    arma::mat M = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S = Rcpp::as<arma::mat>(params["S"]);
+    arma::mat B  = Rcpp::as<arma::mat>(params["B"]);
+    arma::mat C  = Rcpp::as<arma::mat>(params["C"]);
+    arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
+    arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]); // variational variance
 
     const int    maxiter   = config.containsElementNamed("maxeval")  ? Rcpp::as<int>(config["maxeval"])     : 10000;
     const double ftol      = config.containsElementNamed("ftol_in") ? Rcpp::as<double>(config["ftol_in"]) : 1e-10;
@@ -58,10 +58,9 @@ Rcpp::List spectral_optimize_rank(
 
     const arma::mat Xw = X.each_col() % w;
 
-    // Initialise geometry with S exact
+    // Initialise geometry with S2 exact
     arma::mat C2  = C % C;
-    arma::mat psi = arma::log(S % S);
-    arma::mat S2  = arma::exp(psi);
+    arma::mat psi = arma::log(S2);
     arma::mat Z   = O + X * B + M * C.t();
     arma::mat A   = arma::exp(Z + 0.5 * S2 * C2.t());
     psi = arma::clamp(-arma::log(1. + A * C2), -40., 0.);
@@ -168,7 +167,6 @@ Rcpp::List spectral_optimize_rank(
     }
 
     // ---- Final output ----
-    S = arma::exp(0.5 * psi);
     const double w_bar = arma::accu(w);
     arma::mat nSig = M.t() * (M.each_col() % w) + arma::diagmat(arma::sum(S2.each_col() % w, 0));
     arma::mat Sigma = C * nSig * C.t() / w_bar;
@@ -183,7 +181,7 @@ Rcpp::List spectral_optimize_rank(
         Rcpp::Named("B",     B    ),
         Rcpp::Named("C",     C    ),
         Rcpp::Named("M",     M    ),
-        Rcpp::Named("S",     S    ),
+        Rcpp::Named("S2",    S2   ),
         Rcpp::Named("Z",     Z    ),
         Rcpp::Named("A",     A    ),
         Rcpp::Named("Sigma", Sigma),
@@ -213,8 +211,8 @@ Rcpp::List spectral_optimize_vestep_rank(
     const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
     const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
     const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
-    arma::mat M = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S = Rcpp::as<arma::mat>(params["S"]);
+    arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
+    arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]); // variational variance
 
     const int    maxiter   = config.containsElementNamed("maxeval")  ? Rcpp::as<int>(config["maxeval"])     : 10000;
     const double ftol      = config.containsElementNamed("ftol_in") ? Rcpp::as<double>(config["ftol_in"]) : 1e-10;
@@ -224,8 +222,7 @@ Rcpp::List spectral_optimize_vestep_rank(
     const arma::mat C2 = C % C;
     const arma::mat XB = X * B;
 
-    arma::mat psi = arma::log(S % S);
-    arma::mat S2  = arma::exp(psi);
+    arma::mat psi = arma::log(S2);
     arma::mat Z   = O + XB + M * C.t();
     arma::mat A   = arma::exp(Z + 0.5 * S2 * C2.t());
     psi = arma::clamp(-arma::log(1. + A * C2), -40., 0.);
@@ -295,7 +292,7 @@ Rcpp::List spectral_optimize_vestep_rank(
         M = M_t;  Z = Z_t;  A = A_t;  psi = psi_t;  S2 = S2_t;
     }
 
-    S = arma::exp(0.5 * psi);
+    S2 = arma::exp(psi);
     Z  = O + XB + M * C.t();
     arma::vec loglik = arma::sum(Y % Z - A, 1)
                      - 0.5 * arma::sum(M % M + S2 - psi - 1., 1)
@@ -305,7 +302,7 @@ Rcpp::List spectral_optimize_vestep_rank(
     Ji.attr("weights") = w;
     return Rcpp::List::create(
         Rcpp::Named("M")  = M,
-        Rcpp::Named("S")  = S,
+        Rcpp::Named("S2") = S2,
         Rcpp::Named("Ji") = Ji,
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status",     3            ),
