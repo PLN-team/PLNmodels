@@ -2,8 +2,8 @@
 ## Backend comparison: homemade Newton vs nlopt/CCSAQ
 ## Metrics: computation time, iterations, final loglik
 ## Datasets: trichoptera, barents, mollusk, oaks, microcosm, scRNA
-## Covariances: full, diagonal, spherical
-## Note: full covariance skipped for scRNA (p=500, prohibitive)
+## Covariances: full, diagonal, spherical (including scRNA full)
+## Output: inst/benchmark/
 ## ============================================================
 
 suppressPackageStartupMessages({
@@ -94,10 +94,15 @@ for (lbl in c("mic_nocov", "mic_cov")) {
   results[[length(results)+1]] <- compare_both(form, microcosm, "full", lbl)
 }
 
-cat("=== scRNA (n=3918, p=500) — full skipped ===\n")
+cat("=== scRNA (n=3918, p=500) ===\n")
 for (cov in c("diagonal", "spherical")) {
   results[[length(results)+1]] <- compare_both(counts ~ 1         + offset(log(total_counts)), scRNA, cov, "scr_nocov")
   results[[length(results)+1]] <- compare_both(counts ~ cell_line + offset(log(total_counts)), scRNA, cov, "scr_cov")
+}
+cat("  scRNA full covariance (very slow)...\n")
+for (lbl in c("scr_nocov", "scr_cov")) {
+  form <- if (lbl == "scr_nocov") counts ~ 1 + offset(log(total_counts)) else counts ~ cell_line + offset(log(total_counts))
+  results[[length(results)+1]] <- compare_both(form, scRNA, "full", lbl)
 }
 
 cat("All fits done.\n\n")
@@ -131,6 +136,9 @@ print(wide %>% select(label, covariance,
         mutate(across(where(is.numeric), ~ signif(., 4))),
       row.names = FALSE, width = 200)
 
+write.csv(wide, "inst/benchmark/backend_comparison.csv", row.names = FALSE)
+cat("Saved: backend_comparison.csv\n")
+
 ## ---- Plot 1: time comparison ----
 p1 <- ggplot(df, aes(x = paste(label, covariance, sep="\n"), y = time_s, fill = backend)) +
   geom_col(position = "dodge", width = 0.7) +
@@ -141,7 +149,7 @@ p1 <- ggplot(df, aes(x = paste(label, covariance, sep="\n"), y = time_s, fill = 
   theme_bw(base_size = 10) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7))
 
-ggsave("backend_time.pdf", p1, width = 18, height = 10)
+ggsave("inst/benchmark/backend_time.pdf", p1, width = 18, height = 10)
 cat("\nSaved: backend_time.pdf\n")
 
 ## ---- Plot 2: loglik difference (newton - nlopt) ----
@@ -163,7 +171,7 @@ p2 <- ggplot(df_wide, aes(x = fit, y = ll_diff,
   theme_bw(base_size = 10) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7))
 
-ggsave("backend_loglik.pdf", p2, width = 18, height = 10)
+ggsave("inst/benchmark/backend_loglik.pdf", p2, width = 18, height = 10)
 cat("Saved: backend_loglik.pdf\n")
 
 ## ---- Plot 3: speedup (nlopt_time / newton_time) ----
@@ -179,5 +187,5 @@ p3 <- ggplot(df_wide, aes(x = fit, y = time_s_nlopt / time_s_newton,
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7),
         legend.position = "none")
 
-ggsave("backend_speedup.pdf", p3, width = 18, height = 10)
+ggsave("inst/benchmark/backend_speedup.pdf", p3, width = 18, height = 10)
 cat("Saved: backend_speedup.pdf\n")

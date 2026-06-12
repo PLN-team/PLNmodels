@@ -26,10 +26,11 @@
 ^inst/check$
 ^inst/torch_for_r$
 ^inst/case_studies$
-^inst/test/
 ^inst/missing_data$
 ^inst/simus_PLNnetwork$
 ^inst/simus_ZIPLN$
+^inst/benchmark$
+^inst/binom$
 ^\.github$
 ^data-raw$
 ^CRAN-SUBMISSION$

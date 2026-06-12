@@ -5,8 +5,8 @@
 ##           microcosm (n=880, p=259), scRNA (n=3918, p=500)
 ## Covariances: full, diagonal, spherical
 ## With / without covariates
-## Note: full covariance skipped for scRNA (p=500, O(n·p²) M-step prohibitive)
-##       full covariance for microcosm is slow (~30–60s per fit)
+## Note: full covariance for microcosm (~30-60s) and scRNA (very slow) included
+## Output: inst/benchmark/
 ## ============================================================
 
 suppressPackageStartupMessages({
@@ -78,12 +78,17 @@ fits <- c(fits, list(
 ))
 
 ## ---- scRNA (n=3918, p=500) — full covariance skipped ----
-cat("Fitting scRNA (diagonal + spherical only — full covariance prohibitive at p=500)...\n")
+cat("Fitting scRNA diagonal + spherical (n=3918, p=500)...\n")
 fits <- c(fits, list(
   scr_diag_nocov = PLN(counts ~ 1         + offset(log(total_counts)), data = scRNA, control = ctrl("diagonal")),
   scr_sph_nocov  = PLN(counts ~ 1         + offset(log(total_counts)), data = scRNA, control = ctrl("spherical")),
   scr_diag_cov   = PLN(counts ~ cell_line + offset(log(total_counts)), data = scRNA, control = ctrl("diagonal")),
   scr_sph_cov    = PLN(counts ~ cell_line + offset(log(total_counts)), data = scRNA, control = ctrl("spherical"))
+))
+cat("Fitting scRNA full covariance (very slow — O(n·p²) M-step with n=3918, p=500)...\n")
+fits <- c(fits, list(
+  scr_full_nocov = PLN(counts ~ 1         + offset(log(total_counts)), data = scRNA, control = ctrl("full")),
+  scr_full_cov   = PLN(counts ~ cell_line + offset(log(total_counts)), data = scRNA, control = ctrl("full"))
 ))
 
 cat("All fits done.\n")
@@ -193,7 +198,7 @@ p1 <- ggplot(df_traj, aes(step, obj_norm + 1e-6, colour = covariance, linetype =
        colour = "Covariance", linetype = "Covariates") +
   theme_bw(base_size = 11)
 
-ggsave("convergence_trajectory.pdf", p1, width = 15, height = 8)
+ggsave("inst/benchmark/convergence_trajectory.pdf", p1, width = 15, height = 8)
 cat("\nSaved: convergence_trajectory.pdf\n")
 
 ## ---- Plot 2: per-step relative change ----
@@ -209,7 +214,7 @@ p2 <- ggplot(df_rel, aes(step, rel_change, colour = covariance, linetype = covar
        colour = "Covariance", linetype = "Covariates") +
   theme_bw(base_size = 11)
 
-ggsave("convergence_rel_change.pdf", p2, width = 15, height = 8)
+ggsave("inst/benchmark/convergence_rel_change.pdf", p2, width = 15, height = 8)
 cat("Saved: convergence_rel_change.pdf\n")
 
 ## ---- Plot 3: distribution of step sizes ----
@@ -223,5 +228,5 @@ p3 <- ggplot(df_rel, aes(rel_change, fill = covariance)) +
        x = "Relative change (log10)", fill = "Covariance") +
   theme_bw(base_size = 10)
 
-ggsave("convergence_step_dist.pdf", p3, width = 12, height = 14)
+ggsave("inst/benchmark/convergence_step_dist.pdf", p3, width = 12, height = 14)
 cat("Saved: convergence_step_dist.pdf\n")
