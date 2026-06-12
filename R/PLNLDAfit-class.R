@@ -422,16 +422,16 @@ PLNLDAfit_diagonal <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
-      S2 <- torch_square(params$S[index])
-      Z <- data$O[index] + params$M[index]              # Z = O + M_full
+      S2 <- torch_exp(params$psi[index])
+      Z  <- data$O[index] + params$M[index]
       res <- .5 * sum(data$w[index]) * sum(torch_log(private$torch_sigma_diag(data, params, index))) +
-        sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z -  .5 * torch_log(S2)))
+        sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z - .5 * params$psi[index]))
       res
     },
 
     torch_sigma_diag = function(data, params, index=torch_tensor(1:self$n)) {
-      M_res <- params$M[index] - torch_mm(data$X[index], params$B)  # M_res for covariance
-      torch_sum(data$w[index,NULL] * (torch_square(M_res) + torch_square(params$S[index])), 1) / sum(data$w[index])
+      M_res <- params$M[index] - torch_mm(data$X[index], params$B)
+      torch_sum(data$w[index,NULL] * (torch_square(M_res) + torch_exp(params$psi[index])), 1) / sum(data$w[index])
     },
 
     torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
@@ -439,12 +439,12 @@ PLNLDAfit_diagonal <- R6Class(
     },
 
     torch_vloglik = function(data, params) {
-      S2 <- torch_square(params$S)
-      M_res <- params$M - torch_mm(data$X, params$B)    # M_res for KL terms
+      S2    <- torch_exp(params$psi)
+      M_res <- params$M - torch_mm(data$X, params$B)
       omega_diag <- torch_pow(private$torch_sigma_diag(data, params), -1)
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
         .5 * sum(torch_log(omega_diag)) +
-          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2) -
+          torch_sum(data$Y * params$Z - params$A + .5 * params$psi -
                       .5 * (torch_square(M_res) + S2) * omega_diag[NULL,], dim = 2)
       )
       attr(Ji, "weights") <- as.numeric(data$w)
@@ -514,16 +514,16 @@ PLNLDAfit_spherical <- R6Class(
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
-      S2 <- torch_square(params$S[index])
-      Z <- data$O[index] + params$M[index]              # Z = O + M_full
+      S2 <- torch_exp(params$psi[index])
+      Z  <- data$O[index] + params$M[index]
       res <- .5 * sum(data$w[index]) * self$p * torch_log(private$torch_sigma2(data, params, index)) -
-        sum(data$w[index,NULL] * (data$Y[index] * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+        sum(data$w[index,NULL] * (data$Y[index] * Z - torch_exp(Z + .5 * S2) + .5 * params$psi[index]))
       res
     },
 
     torch_sigma2 = function(data, params, index=torch_tensor(1:self$n)) {
-      M_res <- params$M[index] - torch_mm(data$X[index], params$B)  # M_res for covariance
-      sum(data$w[index, NULL] * (torch_square(M_res) + torch_square(params$S[index]))) / (sum(data$w[index]) * self$p)
+      M_res <- params$M[index] - torch_mm(data$X[index], params$B)
+      sum(data$w[index, NULL] * (torch_square(M_res) + torch_exp(params$psi[index]))) / (sum(data$w[index]) * self$p)
     },
 
     torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
@@ -531,11 +531,12 @@ PLNLDAfit_spherical <- R6Class(
     },
 
     torch_vloglik = function(data, params) {
-      S2 <- torch_pow(params$S, 2)
-      M_res <- params$M - torch_mm(data$X, params$B)    # M_res for KL terms
+      S2    <- torch_exp(params$psi)
+      M_res <- params$M - torch_mm(data$X, params$B)
       sigma2 <- private$torch_sigma2(data, params)
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
-        torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2/sigma2) - .5 * (torch_pow(M_res, 2) + S2)/sigma2, dim = 2)
+        torch_sum(data$Y * params$Z - params$A + .5 * (params$psi - torch_log(sigma2)) -
+                    .5 * (torch_pow(M_res, 2) + S2)/sigma2, dim = 2)
       )
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
