@@ -58,10 +58,11 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'
 #' Helper to define list of parameters to control the PLNPCA fit. All arguments have defaults.
 #'
-#' @param backend optimization backend, either `"builtin"` (default, built-in joint L-BFGS
-#'   with strong Wolfe line search: all parameters B, C, M, ψ are optimised simultaneously
-#'   with a history of 10 curvature pairs; the Wolfe condition guarantees valid curvature
-#'   estimates at every step), `"nlopt"` (NLOPT/CCSAQ),
+#' @param backend optimization backend, either `"nlopt"` (default, NLOPT/CCSAQ — recommended
+#'   for PLNPCA: conservative per-variable steps reliably find the global basin even when
+#'   the singular-value ratio d[1]/sqrt(n) is large), `"builtin"` (joint L-BFGS with strong
+#'   Wolfe line search on all parameters simultaneously — faster per iteration but may
+#'   converge to inferior local optima on ill-conditioned datasets),
 #'   or `"torch"` (automatic differentiation via the torch package).
 #' @inheritParams PLN_param trace config_optim config_post inception
 #' @param sequential logical. If `TRUE`, ranks are fitted in ascending order and each model is
@@ -75,7 +76,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #' @inherit PLN_param details
 #' @export
 PLNPCA_param <- function(
-    backend       = c("builtin", "nlopt", "torch"),
+    backend       = c("nlopt", "builtin", "torch"),
     trace         = 1      ,
     config_optim  = list() ,
     config_post   = list() ,

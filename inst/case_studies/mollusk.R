@@ -7,8 +7,8 @@ mollusc <- prepare_data(mollusk$Abundance, mollusk$Covariate)#> Warning: Sample(
 ## simple PLN
 system.time(myPLN_M0 <- PLN(Abundance ~ 1 + offset(log(Offset)), data = mollusc))
 system.time(myPLN <- PLN(Abundance ~ 0 + site + offset(log(Offset)), data = mollusc))
-system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + site + offset(log(Offset)), data = mollusc, control = list(covariance = "diagonal")))
-system.time(myPLN_spherical <- PLN(Abundance ~ 0 + site + offset(log(Offset)), data = mollusc, control = list(covariance = "spherical")))
+system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + site + offset(log(Offset)), data = mollusc, control = PLN_param(covariance = "diagonal")))
+system.time(myPLN_spherical <- PLN(Abundance ~ 0 + site + offset(log(Offset)), data = mollusc, control = PLN_param(covariance = "spherical")))
 
 rbind(
   myPLN_M0$criteria,

@@ -11,9 +11,14 @@
 // Strong Wolfe line search guarantees s^T y > 0 at every accepted step, so the
 // L-BFGS history always accumulates valid curvature pairs including the bilinear
 // M·Cᵀ cross-curvature that block-coordinate methods miss.
+//
+// Note: for datasets with large d[1]/sqrt(n) (e.g. barents), joint L-BFGS may
+// converge to a local optimum inferior to nlopt-CCSAQ. The nlopt backend is
+// recommended when solution quality is the priority.
 
 // ---------------------------------------------------------------------------------------
 // L-BFGS two-loop recursion: returns search direction p = -H_k · g
+
 static arma::vec lbfgs_direction(
     const arma::vec & g,
     const std::deque<arma::vec> & sv,
@@ -49,13 +54,14 @@ struct WolfeStep { double scale; double f; arma::vec g; };
 template<typename FG>
 static WolfeStep wolfe_ls(
     const arma::vec & x0, const arma::vec & d,
-    double f0, double slope0, FG fg,
+    double f0, double slope0, FG && fg,
     const double c1 = 1e-4, const double c2 = 0.9
 ) {
     auto zoom = [&](double alo, double ahi, double flo) -> WolfeStep {
         for (int j = 0; j < 20; j++) {
             double a = 0.5 * (alo + ahi);
-            auto [fa, ga] = fg(x0 + a * d);
+            auto res = fg(x0 + a * d);
+            double fa = res.first; arma::vec ga = res.second;
             if (fa > f0 + c1*a*slope0 || fa >= flo) { ahi = a; }
             else {
                 double da = arma::dot(ga, d);
@@ -65,12 +71,13 @@ static WolfeStep wolfe_ls(
             }
         }
         double a = 0.5 * (alo + ahi);
-        auto [fa, ga] = fg(x0 + a * d);
-        return {a, fa, ga};
+        auto res = fg(x0 + a * d);
+        return {a, res.first, res.second};
     };
     double a = 1.0, ap = 0, fp = f0;
     for (int i = 0; i < 20; i++) {
-        auto [fa, ga] = fg(x0 + a * d);
+        auto res = fg(x0 + a * d);
+        double fa = res.first; arma::vec ga = res.second;
         if (fa > f0 + c1*a*slope0 || (i > 0 && fa >= fp)) return zoom(ap, a, fp);
         double da = arma::dot(ga, d);
         if (std::abs(da) <= -c2 * slope0) return {a, fa, ga};
@@ -78,8 +85,8 @@ static WolfeStep wolfe_ls(
         ap = a;  fp = fa;
         a  = std::min(2.0 * a, 1e6);
     }
-    auto [fa, ga] = fg(x0 + a * d);
-    return {a, fa, ga};
+    auto res = fg(x0 + a * d);
+    return {a, res.first, res.second};
 }
 
 // ---------------------------------------------------------------------------------------
@@ -132,7 +139,7 @@ Rcpp::List builtin_optimize_rank(
         double f = arma::accu(w.t() * (A_ - Y % Z_))
                  + 0.5 * arma::accu(w.t() * (M_ % M_ + S2_ - psi_ - 1.));
         arma::mat AmY  = A_ - Y;
-        arma::mat AmYw = AmY;  AmYw.each_col() %= w;
+        arma::mat AmYw = AmY; AmYw.each_col() %= w;
         arma::mat gB_  = Xw.t() * AmY;
         arma::mat gC_  = AmYw.t() * M_ + (A_.t() * (S2_.each_col() % w)) % C_;
         arma::mat gM_  = AmY * C_ + M_;  gM_.each_col() %= w;
@@ -143,11 +150,12 @@ Rcpp::List builtin_optimize_rank(
         return {f, g};
     };
 
-    // Initial packed state and evaluation
+    // Initial packed state
     arma::vec x = arma::join_cols(
         arma::join_cols(arma::vectorise(B), arma::vectorise(C)),
         arma::join_cols(arma::vectorise(M), arma::vectorise(psi)));
-    auto [f_cur, g_cur] = fg(x);
+
+    auto res0 = fg(x); double f_cur = res0.first; arma::vec g_cur = res0.second;
 
     std::deque<arma::vec> sv, yv;
     std::vector<double> objective_vec;
@@ -186,7 +194,6 @@ Rcpp::List builtin_optimize_rank(
 
         WolfeStep ws = wolfe_ls(x, d_lbfgs, f_cur, slope, fg);
 
-        // Update L-BFGS history (guarded by curvature condition)
         arma::vec s_new = ws.scale * d_lbfgs;
         arma::vec y_new = ws.g - g_cur;
         double sy = arma::dot(s_new, y_new), ss = arma::dot(s_new, s_new);
@@ -287,7 +294,7 @@ Rcpp::List builtin_optimize_vestep_rank(
     };
 
     arma::vec x = arma::join_cols(arma::vectorise(M), arma::vectorise(psi));
-    auto [f_cur, g_cur] = fg(x);
+    auto res0 = fg(x); double f_cur = res0.first; arma::vec g_cur = res0.second;
 
     std::deque<arma::vec> sv, yv;
     std::vector<double> objective_vec;

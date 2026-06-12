@@ -258,8 +258,8 @@ PLNPCAfit <- R6Class(
         } else {
           svdM <- svd(private$M, nu = rank, nv = self$p)
         }
-        ### TODO: check that it is really better than initializing with zeros...
-        private$M  <- svdM$u[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank) %*% t(svdM$v[1:rank, 1:rank, drop = FALSE])
+        # M*C^T ≈ M_PLN requires M = sqrt(n)*U when C = V*D/sqrt(n)
+        private$M  <- sqrt(self$n) * svdM$u[, 1:rank, drop = FALSE]
         private$S2 <- matrix(0.01, self$n, rank)
         private$C  <- svdM$v[, 1:rank, drop = FALSE] %*% diag(svdM$d[1:rank], nrow = rank, ncol = rank)/sqrt(self$n)
       },
