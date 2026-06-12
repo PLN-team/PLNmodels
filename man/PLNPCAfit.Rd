@@ -25,7 +25,7 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \section{Active bindings}{
   \if{html}{\out{<div class="r6-active-bindings">}}
   \describe{
-    \item{\code{var_par}}{variational parameters (M, S, S2) in the rank-q latent space}
+    \item{\code{var_par}}{variational parameters (M, S2) in the rank-q latent space}
 
     \item{\code{rank}}{the dimension of the current model}
 
@@ -142,7 +142,7 @@ are carried over; new columns are padded using the inception SVD (C) or zeros/0.
   Omega = NA,
   C = NA,
   M = NA,
-  S = NA,
+  S2 = NA,
   Z = NA,
   A = NA,
   Ji = NA,
@@ -159,7 +159,7 @@ are carried over; new columns are padded using the inception SVD (C) or zeros/0.
       \item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
       \item{\code{C}}{matrix of PCA loadings (in the latent space)}
       \item{\code{M}}{matrix of mean vectors for the variational approximation}
-      \item{\code{S}}{matrix of variance vectors for the variational approximation}
+      \item{\code{S2}}{matrix of variational variances (n × q)}
       \item{\code{Z}}{matrix of latent vectors (includes covariates and offset effects)}
       \item{\code{A}}{matrix of fitted values}
       \item{\code{Ji}}{vector of variational lower bounds of the log-likelihoods (one value per sample)}
