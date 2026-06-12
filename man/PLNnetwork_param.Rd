@@ -5,7 +5,7 @@
 \title{Control of PLNnetwork fit}
 \usage{
 PLNnetwork_param(
-  backend = c("nlopt", "homemade", "hybrid", "torch"),
+  backend = c("nlopt", "builtin", "hybrid", "torch"),
   inception_cov = c("full", "spherical", "diagonal"),
   trace = 1,
   n_penalties = 30,
@@ -18,8 +18,8 @@ PLNnetwork_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt", "homemade", "hybrid" or "torch". Default is "nlopt".
-Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "homemade".}
+\item{backend}{optimization back used, either "nlopt", "builtin", "hybrid" or "torch". Default is "nlopt".
+Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "builtin".}
 
 \item{inception_cov}{Covariance structure used for the inception model used to initialize the PLNfamily. Defaults to "full" and can be constrained to "diagonal" and "spherical".}
 
@@ -75,7 +75,7 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 }
 
-When "homemade" or "hybrid" backend is used, the following entries are relevant
+When "builtin" or "hybrid" backend is used, the following entries are relevant
 \itemize{
 \item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
 \item "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8

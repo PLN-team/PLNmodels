@@ -14,19 +14,19 @@ config_default_nlopt <-
   )
 
 
-config_default_homemade <-
+config_default_builtin <-
   list(
     algorithm           = "NEWTON",
-    backend             = "homemade",
+    backend             = "builtin",
     maxeval             = 10000,
     ftol_in             = 1e-8,
     maxit_em            = 200,
     ftol_em             = 1e-8
   )
 
-# Hybrid backend: two-phase optimizer — nlopt/CCSAQ (phase 1) then homemade Newton (phase 2).
+# Hybrid backend: two-phase optimizer — nlopt/CCSAQ (phase 1) then builtin Newton (phase 2).
 # Phase 1 (nlopt) uses looser tolerances to reach the basin quickly with quasi-Newton search.
-# Phase 2 (homemade, envelope-theorem Newton) refines to the full requested tolerance.
+# Phase 2 (builtin, envelope-theorem Newton) refines to the full requested tolerance.
 # Returns a closure with the same (data, params, config) signature as the C++ wrappers.
 #' @importFrom utils modifyList
 make_hybrid_optimizer <- function(opt_nlopt, opt_newton) {
@@ -38,7 +38,7 @@ make_hybrid_optimizer <- function(opt_nlopt, opt_newton) {
     ))
     res1 <- opt_nlopt(data, params, config1)
     params2 <- modifyList(params, list(B = res1$B, M = res1$M, S2 = res1$S2))
-    # Phase 2: homemade Newton with full tolerance
+    # Phase 2: builtin Newton with full tolerance
     res2 <- opt_newton(data, params2, config)
     res2$monitoring$objective  <- c(res1$monitoring$objective,  res2$monitoring$objective)
     res2$monitoring$iterations <- res1$monitoring$iterations + res2$monitoring$iterations
@@ -47,18 +47,13 @@ make_hybrid_optimizer <- function(opt_nlopt, opt_newton) {
   }
 }
 
-# Spectral gradient method (PLNPCA homemade backend): needs tighter tolerance
-# than the nlopt default (1e-8) because GLL nonmonotone acceptance causes
-# objective oscillations that fool consecutive convergence at 1e-8 into
-# stopping prematurely at suboptimal local minima.  1e-9 balances quality and
-# speed: on typical datasets spectral matches or exceeds NLOPT quality in
-# comparable wall-clock time.
-config_default_spectral <-
+# PLNPCA builtin backend: joint L-BFGS on [vec(B); vec(C); vec(M); vec(ψ)] with strong Wolfe
+# line search (m=10 pairs). Only maxeval and ftol_in are read by the C++ optimizer.
+config_default_plnpca <-
   list(
-    algorithm = "SPECTRAL",
-    backend   = "homemade",
-    maxeval   = 10000,
-    ftol_in   = 1e-9
+    backend = "builtin",
+    maxeval = 10000,
+    ftol_in = 1e-8
   )
 
 config_default_torch <-
@@ -81,12 +76,12 @@ config_default_torch <-
   )
 
 ## Build the optimizer config list from a backend name and user overrides.
-## `homemade_default` lets PLNPCA pass config_default_spectral instead of config_default_homemade.
+## `builtin_default` lets PLNPCA pass config_default_plnpca instead of config_default_builtin.
 ## `extra` is a named list of additional defaults applied BEFORE user overrides (so the user can
 ## still override them), used for outer-loop parameters like ftol_em/maxit_em in PLNnetwork and
 ## PLNmixture.
 make_config_optim <- function(backend, config_optim, trace,
-                              homemade_default = config_default_homemade,
+                              builtin_default = config_default_builtin,
                               extra = list()) {
   config_opt <- if (backend == "nlopt") {
     stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
@@ -95,7 +90,7 @@ make_config_optim <- function(backend, config_optim, trace,
     stopifnot(config_optim$algorithm %in% available_algorithms_torch)
     config_default_torch
   } else {
-    homemade_default
+    builtin_default
   }
   config_opt$trace <- trace
   config_opt[names(extra)] <- extra

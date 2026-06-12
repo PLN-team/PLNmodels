@@ -1,5 +1,5 @@
 ## ============================================================
-## Convergence analysis of the homemade Newton backend
+## Convergence analysis of the builtin Newton backend
 ## Datasets: trichoptera (n=49, p=17), barents (n=89, p=30),
 ##           mollusk (n=163, p=32),    oaks (n=116, p=114),
 ##           microcosm (n=880, p=259), scRNA (n=3918, p=500)
@@ -15,7 +15,7 @@ suppressPackageStartupMessages({
   library(tidyr)
 })
 
-ctrl <- function(cov) PLN_param(backend = "homemade", covariance = cov, trace = 0)
+ctrl <- function(cov) PLN_param(backend = "builtin", covariance = cov, trace = 0)
 
 ## ---- trichoptera (n=49, p=17) ----
 cat("Fitting trichoptera...\n")

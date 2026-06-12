@@ -49,8 +49,8 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #'
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
-#' @param backend optimization back used, either "nlopt", "homemade", "hybrid" or "torch". Default is "nlopt".
-#'   Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "homemade".
+#' @param backend optimization back used, either "nlopt", "builtin", "hybrid" or "torch". Default is "nlopt".
+#'   Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "builtin".
 #' @param inception_cov Covariance structure used for the inception model used to initialize the PLNfamily. Defaults to "full" and can be constrained to "diagonal" and "spherical".
 #' @param n_penalties an integer that specifies the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`
 #' @param min_ratio the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by `min_ratio`. Default is 0.1.
@@ -68,7 +68,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @seealso [PLN_param()]
 #' @export
 PLNnetwork_param <- function(
-    backend           = c("nlopt", "homemade", "hybrid", "torch"),
+    backend           = c("nlopt", "builtin", "hybrid", "torch"),
     inception_cov     = c("full", "spherical", "diagonal"),
     trace             = 1      ,
     n_penalties       = 30     ,

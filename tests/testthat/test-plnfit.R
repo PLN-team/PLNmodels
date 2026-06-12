@@ -9,7 +9,7 @@ test_that("PLN fit: check classes, getters and field access",  {
                              control = PLN_param(trace = 1)),
 "
  Initialization...
- Adjusting a full covariance PLN model with homemade optimizer
+ Adjusting a full covariance PLN model with builtin optimizer
  Post-treatments...
  DONE!"
   )
@@ -18,7 +18,7 @@ test_that("PLN fit: check classes, getters and field access",  {
                              control = PLN_param(trace = 1, inception = model)),
 "
  Initialization...
- Adjusting a full covariance PLN model with homemade optimizer
+ Adjusting a full covariance PLN model with builtin optimizer
  Post-treatments...
  DONE!"
   )

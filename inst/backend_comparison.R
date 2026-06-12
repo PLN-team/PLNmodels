@@ -1,5 +1,5 @@
 ## ============================================================
-## Backend comparison: homemade Newton vs nlopt/CCSAQ
+## Backend comparison: builtin Newton vs nlopt/CCSAQ
 ## Metrics: computation time, iterations, final loglik
 ## Datasets: trichoptera, barents, mollusk, oaks, microcosm, scRNA
 ## Covariances: full, diagonal, spherical (including scRNA full)
@@ -13,7 +13,7 @@ suppressPackageStartupMessages({
   library(tidyr)
 })
 
-ctrl_newton <- function(cov) PLN_param(backend = "homemade", covariance = cov, trace = 0)
+ctrl_newton <- function(cov) PLN_param(backend = "builtin", covariance = cov, trace = 0)
 ctrl_nlopt  <- function(cov) PLN_param(backend = "nlopt",    covariance = cov, trace = 0)
 
 ## ---- Helper: fit one model with timing, return summary row ----

@@ -5,7 +5,7 @@
 \title{Control of PLNPCA fit}
 \usage{
 PLNPCA_param(
-  backend = c("nlopt", "torch", "homemade"),
+  backend = c("builtin", "nlopt", "torch"),
   trace = 1,
   config_optim = list(),
   config_post = list(),
@@ -14,9 +14,11 @@ PLNPCA_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt", "torch", or "homemade". Default is "nlopt".
-Use "homemade" for the built-in coordinate-Newton optimizer (exact diagonal Newton steps for
-B, M, C, and closed-form update for S in log(S²) space), which does not depend on NLOPT.}
+\item{backend}{optimization backend, either \code{"builtin"} (default, built-in joint L-BFGS
+with strong Wolfe line search: all parameters B, C, M, ψ are optimised simultaneously
+with a history of 10 curvature pairs; the Wolfe condition guarantees valid curvature
+estimates at every step), \code{"nlopt"} (NLOPT/CCSAQ),
+or \code{"torch"} (automatic differentiation via the torch package).}
 
 \item{trace}{a integer for verbosity.}
 
@@ -30,8 +32,8 @@ which sometimes speeds up the inference.}
 
 \item{sequential}{logical. If \code{TRUE}, ranks are fitted in ascending order and each model is
 warm-started from the converged solution of the previous rank: loadings C are augmented
-with new columns from the inception SVD, while latent scores M and variances S are
-padded with zeros / 0.1 respectively. Disables parallel fitting across ranks.
+with new columns from the inception SVD, while latent scores M and variances S2 are
+padded with zeros / 0.01 respectively. Disables parallel fitting across ranks.
 Default is \code{FALSE}.}
 }
 \value{
@@ -68,7 +70,7 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 }
 
-When "homemade" or "hybrid" backend is used, the following entries are relevant
+When "builtin" or "hybrid" backend is used, the following entries are relevant
 \itemize{
 \item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
 \item "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8

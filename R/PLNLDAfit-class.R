@@ -412,8 +412,8 @@ PLNLDAfit_diagonal <- R6Class(
     initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
       super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
       private$setup_optimizer(control$backend,
-        nlopt_optimize_diagonal,         newton_optimize_diagonal,
-        nlopt_optimize_vestep_diagonal,  newton_optimize_vestep_diagonal)
+        nlopt_optimize_diagonal,         builtin_optimize_diagonal,
+        nlopt_optimize_vestep_diagonal,  builtin_optimize_vestep_diagonal)
     }
   ),
   private = list(
@@ -504,8 +504,8 @@ PLNLDAfit_spherical <- R6Class(
     initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
       super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
       private$setup_optimizer(control$backend,
-        nlopt_optimize_spherical,         newton_optimize_spherical,
-        nlopt_optimize_vestep_spherical,  newton_optimize_vestep_spherical)
+        nlopt_optimize_spherical,         builtin_optimize_spherical,
+        nlopt_optimize_vestep_spherical,  builtin_optimize_vestep_spherical)
     }
   ),
   private = list(

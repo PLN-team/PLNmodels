@@ -68,19 +68,19 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #'
 #' @inheritParams PLN_param
 #' @inheritParams PLNnetwork_param
-#' @param backend optimization backend, either `"homemade"` (default, built-in Newton optimizer for the joint VE step) or `"nlopt"` (NLOPT-based CCSAQ). Unlike [PLN_param()], `"hybrid"` and `"torch"` are not supported.
+#' @param backend optimization backend, either `"builtin"` (default, built-in Newton optimizer for the joint VE step) or `"nlopt"` (NLOPT-based CCSAQ). Unlike [PLN_param()], `"hybrid"` and `"torch"` are not supported.
 #' @param penalty a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).
 #' @return list of parameters used during the fit and post-processing steps
 #'
 #' @inherit PLN_param details
 #' @details See [PLN_param()] for a description of the generic `config_optim` entries (`ftol_rel`, `xtol_rel`, etc.). Like [PLNnetwork_param()], ZIPLN_param() has two parameters controlling the outer EM loop:
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than `ftol_out` multiplied by the absolute value of the parameter. Default is 1e-6
-#' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 200 for "homemade", 100 for "nlopt"
+#' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 200 for "builtin", 100 for "nlopt"
 #' and one additional parameter controlling the form of the variational approximation of the zero inflation:
 #'
 #' @export
 ZIPLN_param <- function(
-    backend       = c("homemade", "nlopt"),
+    backend       = c("builtin", "nlopt"),
     trace         = 1,
     covariance    = c("full", "diagonal", "spherical", "fixed", "sparse"),
     Omega         = NULL,
@@ -104,12 +104,12 @@ ZIPLN_param <- function(
   config_pst[names(config_post)] <- config_post
   config_pst$trace <- trace
 
-  ## optimization config — mirrors PLN_param: "homemade" = Newton, "nlopt" = CCSAQ/etc.
+  ## optimization config — mirrors PLN_param: "builtin" = Newton, "nlopt" = CCSAQ/etc.
   backend    <- match.arg(backend)
   config_opt <- make_config_optim(backend, config_optim, trace,
                                   extra = list(
                                     ftol_out  = 1e-6,
-                                    maxit_out = if (backend == "homemade") 200L else 100L
+                                    maxit_out = if (backend == "builtin") 200L else 100L
                                   ))
 
   structure(list(

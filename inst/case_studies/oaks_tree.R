@@ -66,7 +66,7 @@ myLDA_orientation <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = orie
 plot(myLDA_orientation)
 
 ## Dimension reduction with PCA
-system.time(myPLNPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = oaks, ranks = c(1, 5, 10, 20, 30)))
+system.time(myPLNPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = oaks, ranks = c(1, 5, 10, 20, 30, 35)))
 plot(myPLNPCAs)
 myPLNPCA <- getBestModel(myPLNPCAs)
 plot(myPLNPCA, ind_cols = oaks$tree)
@@ -78,7 +78,7 @@ factoextra::fviz_pca_biplot(
   ) + labs(col = "distance (cm)") + scale_color_viridis_d()
 
 ## Dimension reduction with PCA
-system.time(myPLNPCAs_tree <- PLNPCA(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, ranks = c(1, 5, 10, 20, 30)))
+system.time(myPLNPCAs_tree <- PLNPCA(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, ranks = c(1, 5, 10, 20, 30, 35)))
 plot(myPLNPCAs_tree)
 myPLNPCA_tree <- getBestModel(myPLNPCAs_tree)
 

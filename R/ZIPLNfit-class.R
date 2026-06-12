@@ -139,13 +139,13 @@ ZIPLNfit <- R6Class(
         "col"    = function(R, ...) list(Pi = matrix(colMeans(R), nrow(R), p, byrow = TRUE), B0 = matrix(NA, d0, p)),
         "covar"  = function(R, init_B0, X0, config) {
           # optim_zipln_zipar_covar is always nlopt-based
-          if (control$backend == "homemade") config <- config_default_nlopt
+          if (control$backend == "builtin") config <- config_default_nlopt
           optim_zipln_zipar_covar(R, init_B0, X0, config)
         }
       )
       private$optimizer$Omega <- optim_zipln_Omega_full
-      # Dispatch VE step on backend: "homemade" = Newton, "nlopt" = CCSAQ/etc.
-      private$optimizer$MS <- if (control$backend == "homemade") {
+      # Dispatch VE step on backend: "builtin" = Newton, "nlopt" = CCSAQ/etc.
+      private$optimizer$MS <- if (control$backend == "builtin") {
         ftol    <- if (!is.null(control$config_optim$ftol_in))  control$config_optim$ftol_in  else 1e-8
         maxiter <- as.integer(if (!is.null(control$config_optim$maxeval)) control$config_optim$maxeval else 10000L)
         function(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration)

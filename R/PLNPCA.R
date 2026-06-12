@@ -58,14 +58,16 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'
 #' Helper to define list of parameters to control the PLNPCA fit. All arguments have defaults.
 #'
-#' @param backend optimization back used, either "nlopt", "torch", or "homemade". Default is "nlopt".
-#'   Use "homemade" for the built-in coordinate-Newton optimizer (exact diagonal Newton steps for
-#'   B, M, C, and closed-form update for S in log(S²) space), which does not depend on NLOPT.
+#' @param backend optimization backend, either `"builtin"` (default, built-in joint L-BFGS
+#'   with strong Wolfe line search: all parameters B, C, M, ψ are optimised simultaneously
+#'   with a history of 10 curvature pairs; the Wolfe condition guarantees valid curvature
+#'   estimates at every step), `"nlopt"` (NLOPT/CCSAQ),
+#'   or `"torch"` (automatic differentiation via the torch package).
 #' @inheritParams PLN_param trace config_optim config_post inception
 #' @param sequential logical. If `TRUE`, ranks are fitted in ascending order and each model is
 #'    warm-started from the converged solution of the previous rank: loadings C are augmented
-#'    with new columns from the inception SVD, while latent scores M and variances S are
-#'    padded with zeros / 0.1 respectively. Disables parallel fitting across ranks.
+#'    with new columns from the inception SVD, while latent scores M and variances S2 are
+#'    padded with zeros / 0.01 respectively. Disables parallel fitting across ranks.
 #'    Default is `FALSE`.
 #'
 #' @return list of parameters configuring the fit.
@@ -73,7 +75,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #' @inherit PLN_param details
 #' @export
 PLNPCA_param <- function(
-    backend       = c("nlopt", "torch", "homemade"),
+    backend       = c("builtin", "nlopt", "torch"),
     trace         = 1      ,
     config_optim  = list() ,
     config_post   = list() ,
@@ -91,7 +93,7 @@ PLNPCA_param <- function(
   ## optimization config
   backend <- match.arg(backend)
   config_opt <- make_config_optim(backend, config_optim, trace,
-                                  homemade_default = config_default_spectral)
+                                  builtin_default = config_default_plnpca)
   config_opt$sequential <- sequential
 
   structure(list(

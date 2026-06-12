@@ -340,7 +340,7 @@ PLNfit <- R6Class(
                                nlopt_vestep_fn = NULL, newton_vestep_fn = NULL) {
       private$optimizer$main <- if (backend == "torch") {
         private$torch_optimize
-      } else if (backend == "homemade") {
+      } else if (backend == "builtin") {
         newton_fn
       } else if (backend == "hybrid") {
         make_hybrid_optimizer(nlopt_fn, newton_fn)
@@ -349,7 +349,7 @@ PLNfit <- R6Class(
       }
       if (!is.null(nlopt_vestep_fn))
         private$optimizer$vestep <-
-          if (backend %in% c("homemade", "hybrid")) newton_vestep_fn else nlopt_vestep_fn
+          if (backend %in% c("builtin", "hybrid")) newton_vestep_fn else nlopt_vestep_fn
     }
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -392,8 +392,8 @@ PLNfit <- R6Class(
         private$S2 <- start_point$S2
       }
       private$setup_optimizer(control$backend,
-        nlopt_optimize_full,         newton_optimize_full,
-        nlopt_optimize_vestep_full,  newton_optimize_vestep_full)
+        nlopt_optimize_full,         builtin_optimize_full,
+        nlopt_optimize_vestep_full,  builtin_optimize_vestep_full)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -772,8 +772,8 @@ PLNfit_diagonal <- R6Class(
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$setup_optimizer(control$backend,
-        nlopt_optimize_diagonal,         newton_optimize_diagonal,
-        nlopt_optimize_vestep_diagonal,  newton_optimize_vestep_diagonal)
+        nlopt_optimize_diagonal,         builtin_optimize_diagonal,
+        nlopt_optimize_vestep_diagonal,  builtin_optimize_vestep_diagonal)
     }
   ),
   private = list(
@@ -858,8 +858,8 @@ PLNfit_spherical <- R6Class(
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
       private$setup_optimizer(control$backend,
-        nlopt_optimize_spherical,         newton_optimize_spherical,
-        nlopt_optimize_vestep_spherical,  newton_optimize_vestep_spherical)
+        nlopt_optimize_spherical,         builtin_optimize_spherical,
+        nlopt_optimize_vestep_spherical,  builtin_optimize_vestep_spherical)
     }
   ),
   private = list(
@@ -948,8 +948,8 @@ PLNfit_fixedcov <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(responses, covariates, offsets, weights, formula, control) {
       super$initialize(responses, covariates, offsets, weights, formula, control)
-      private$setup_optimizer(control$backend, nlopt_optimize_fixed, newton_optimize_fixed,
-                              nlopt_optimize_vestep_full, newton_optimize_vestep_full)
+      private$setup_optimizer(control$backend, nlopt_optimize_fixed, builtin_optimize_fixed,
+                              nlopt_optimize_vestep_full, builtin_optimize_vestep_full)
       private$Omega <- control$Omega
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields

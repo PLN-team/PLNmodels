@@ -1,7 +1,7 @@
 #pragma once
 #include <RcppArmadillo.h>
 #include "utils.h"
-#include "CovarianceTraits.h"
+#include "builtin_covariance_pln.h"
 
 // M_full parameterization: M is the full variational mean of Z_i (= X_i*B + M_res),
 // consistent with the ZIPLN convention.  M_res = M - X*B is computed locally for KL.
@@ -17,7 +17,7 @@
 // optimizes (M, ψ) jointly for fixed Omega until convergence (ftol), then one Omega M-step.
 // Joint Newton step per inner iteration: diagonal 2×2 per (i,j) with cross-term H_Mψ.
 template<typename Traits>
-Rcpp::List newton_optimize_impl(
+Rcpp::List builtin_optimize_pln_impl(
     const arma::mat & Y, const arma::mat & X, const arma::mat & O, const arma::vec & w,
     arma::mat B, arma::mat M, arma::mat S2,
     typename Traits::State state,
@@ -132,7 +132,7 @@ Rcpp::List newton_optimize_impl(
 // Generic VE-step Newton optimizer (B and Omega fixed, only M and S updated).
 // State must be initialized from a fixed Omega via the explicit constructor.
 template<typename Traits>
-Rcpp::List newton_vestep_impl(
+Rcpp::List builtin_vestep_pln_impl(
     const arma::mat & Y, const arma::mat & X, const arma::mat & O, const arma::vec & w,
     arma::mat M, arma::mat S2,
     const arma::mat & B, const typename Traits::State & state,

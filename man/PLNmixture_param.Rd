@@ -5,7 +5,7 @@
 \title{Control of a PLNmixture fit}
 \usage{
 PLNmixture_param(
-  backend = c("homemade", "nlopt", "hybrid", "torch"),
+  backend = c("builtin", "nlopt", "hybrid", "torch"),
   trace = 1,
   covariance = "spherical",
   init_cl = "kmeans",
@@ -16,7 +16,7 @@ PLNmixture_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "homemade", "nlopt", "hybrid" or "torch". Default is "homemade".}
+\item{backend}{optimization back used, either "builtin", "nlopt", "hybrid" or "torch". Default is "builtin".}
 
 \item{trace}{a integer for verbosity.}
 
@@ -68,7 +68,7 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 }
 
-When "homemade" or "hybrid" backend is used, the following entries are relevant
+When "builtin" or "hybrid" backend is used, the following entries are relevant
 \itemize{
 \item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
 \item "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8

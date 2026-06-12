@@ -78,7 +78,7 @@ inline bool converged(double val, double prev, double tol) {
     return std::abs(val - prev) < tol * (1.0 + std::abs(prev));
 }
 
-// ---- Config extraction for homemade Newton optimizers ----
+// ---- Config extraction for builtin Newton optimizers ----
 // Centralises the containsElementNamed pattern replicated across all newton_*.cpp files.
 struct NewtonConfig {
     int    maxiter            = 200;

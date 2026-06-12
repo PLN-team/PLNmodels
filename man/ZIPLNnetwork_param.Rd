@@ -18,8 +18,8 @@ ZIPLNnetwork_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt", "homemade", "hybrid" or "torch". Default is "nlopt".
-Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "homemade".}
+\item{backend}{optimization back used, either "nlopt", "builtin", "hybrid" or "torch". Default is "nlopt".
+Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "builtin".}
 
 \item{inception_cov}{Covariance structure used for the inception model used to initialize the PLNfamily. Defaults to "full" and can be constrained to "diagonal" and "spherical".}
 
