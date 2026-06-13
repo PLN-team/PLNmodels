@@ -86,7 +86,10 @@ The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfa
 \if{html}{\out{<a id="method-PLNPCAfit-initialize"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-initialize}{}}}
 \subsection{\code{PLNPCAfit$new()}}{
-  Initialize a \code{\link{PLNPCAfit}} object
+  Initialize a \code{\link{PLNPCAfit}} object.
+Uses the shared SVD from \code{control$svdM} (computed once in \code{\link{PLNPCAfamily}}) to set
+the starting loadings \code{C} and scores \code{M}. The regression coefficients \code{B} are
+initialised by the parent \code{\link{PLNfit}} constructor (LM or user-provided inception).
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{PLNPCAfit$new(rank, responses, covariates, offsets, weights, formula, control)}

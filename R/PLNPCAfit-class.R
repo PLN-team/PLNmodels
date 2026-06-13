@@ -242,7 +242,10 @@ PLNPCAfit <- R6Class(
     public  = list(
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## Creation functions ----------------
-      #' @description Initialize a [`PLNPCAfit`] object
+      #' @description Initialize a [`PLNPCAfit`] object.
+      #'   Uses the shared SVD from `control$svdM` (computed once in [`PLNPCAfamily`]) to set
+      #'   the starting loadings `C` and scores `M`. The regression coefficients `B` are
+      #'   initialised by the parent [`PLNfit`] constructor (LM or user-provided inception).
       initialize = function(rank, responses, covariates, offsets, weights, formula, control) {
         super$initialize(responses, covariates, offsets, weights, formula, control)
         if (control$backend == "torch") {

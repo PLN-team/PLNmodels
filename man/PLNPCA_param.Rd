@@ -10,6 +10,7 @@ PLNPCA_param(
   config_optim = list(),
   config_post = list(),
   inception = NULL,
+  init_method = c("LM", "GLM"),
   sequential = FALSE
 )
 }
@@ -27,9 +28,19 @@ or \code{"torch"} (automatic differentiation via the torch package).}
 
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
-\item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
-log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
-which sometimes speeds up the inference.}
+\item{inception}{an optional pre-fitted \code{\link{PLNfit}} object. When provided, its variational
+means \code{M} and regression coefficients \code{B} are used to compute the shared SVD
+\code{svd(M - X*B)} that initialises all ranks simultaneously. This replaces the default
+LM-based starting point and can improve convergence for large ranks on datasets with
+strong covariate effects (e.g. \code{inception = PLN(formula, data)}). When \code{NULL} (default),
+a fast LM is used. \code{init_method} is ignored when \code{inception} is set.}
+
+\item{init_method}{character: strategy used to compute the starting point for the shared SVD.
+Either \code{"LM"} (default, fast: one multivariate \code{lm.fit} on log-transformed counts) or
+\code{"GLM"} (p independent Poisson GLMs, more accurate for complex or highly unbalanced
+designs). Ignored when \code{inception} is provided. Benchmarks show \code{"LM"} is as good as
+or better than \code{"GLM"} for PLNPCA in most cases; \code{"GLM"} is not recommended.
+See \code{\link[=compute_PLN_starting_point]{compute_PLN_starting_point()}}.}
 
 \item{sequential}{logical. If \code{TRUE}, ranks are fitted in ascending order and each model is
 warm-started from the converged solution of the previous rank: loadings C are augmented

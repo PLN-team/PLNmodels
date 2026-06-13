@@ -52,6 +52,9 @@ The function \code{\link[=PLNPCA]{PLNPCA()}}, the class \code{\link[=PLNPCAfit]{
 \if{latex}{\out{\hypertarget{method-PLNPCAfamily-initialize}{}}}
 \subsection{\code{PLNPCAfamily$new()}}{
   Initialize all models in the collection.
+A single SVD of the residual matrix \code{M - X*B} is computed once and shared across
+all ranks. \code{M} and \code{B} come from either a user-provided \code{\link{PLNfit}} inception or a
+fast LM on log-transformed counts (default, controlled by \code{init_method}).
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{PLNPCAfamily$new(

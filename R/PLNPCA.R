@@ -38,7 +38,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
   ## extract the data matrices and weights
   args <- extract_model(match.call(expand.dots = FALSE), parent.frame())
 
-  ## Instantiate the collection of PLN models, initialized by PLN with full rank
+  ## Instantiate the collection of PLN models; shared SVD initialisation (LM or user inception)
   if (control$trace > 0) cat("\n Initialization...")
   myPCA <- PLNPCAfamily$new(ranks, args$Y, args$X, args$O, args$w, args$formula, control)
 
@@ -64,7 +64,19 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'   Wolfe line search on all parameters simultaneously — faster per iteration but may
 #'   converge to inferior local optima on ill-conditioned datasets),
 #'   or `"torch"` (automatic differentiation via the torch package).
-#' @inheritParams PLN_param trace config_optim config_post inception
+#' @inheritParams PLN_param trace config_optim config_post
+#' @param init_method character: strategy used to compute the starting point for the shared SVD.
+#'   Either `"LM"` (default, fast: one multivariate `lm.fit` on log-transformed counts) or
+#'   `"GLM"` (p independent Poisson GLMs, more accurate for complex or highly unbalanced
+#'   designs). Ignored when `inception` is provided. Benchmarks show `"LM"` is as good as
+#'   or better than `"GLM"` for PLNPCA in most cases; `"GLM"` is not recommended.
+#'   See [compute_PLN_starting_point()].
+#' @param inception an optional pre-fitted [`PLNfit`] object. When provided, its variational
+#'   means `M` and regression coefficients `B` are used to compute the shared SVD
+#'   `svd(M - X*B)` that initialises all ranks simultaneously. This replaces the default
+#'   LM-based starting point and can improve convergence for large ranks on datasets with
+#'   strong covariate effects (e.g. `inception = PLN(formula, data)`). When `NULL` (default),
+#'   a fast LM is used. `init_method` is ignored when `inception` is set.
 #' @param sequential logical. If `TRUE`, ranks are fitted in ascending order and each model is
 #'    warm-started from the converged solution of the previous rank: loadings C are augmented
 #'    with new columns from the inception SVD, while latent scores M and variances S2 are
@@ -81,10 +93,12 @@ PLNPCA_param <- function(
     config_optim  = list() ,
     config_post   = list() ,
     inception     = NULL   , # pretrained PLNfit used as initialization
+    init_method   = c("LM", "GLM"),
     sequential    = FALSE    # fit ranks sequentially, warm-starting each from the previous
 ) {
 
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
+  init_method <- match.arg(init_method)
 
   ## post-treatment config
   config_pst <- config_post_default_PLNPCA
@@ -98,9 +112,10 @@ PLNPCA_param <- function(
   config_opt$sequential <- sequential
 
   structure(list(
-    backend       = backend   ,
-    trace         = trace     ,
-    config_optim  = config_opt,
-    config_post   = config_pst,
-    inception     = inception   ), class = "PLNmodels_param")
+    backend       = backend     ,
+    trace         = trace       ,
+    config_optim  = config_opt  ,
+    config_post   = config_pst  ,
+    inception     = inception   ,
+    init_method   = init_method   ), class = "PLNmodels_param")
 }
