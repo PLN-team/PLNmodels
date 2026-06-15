@@ -21,7 +21,11 @@ ZIPLNnetwork_param(
 \item{backend}{optimization back used, either "nlopt", "builtin" or "torch". Default is "nlopt".
 Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "builtin".}
 
-\item{inception_cov}{Covariance structure used for the inception model used to initialize the PLNfamily. Defaults to "full" and can be constrained to "diagonal" and "spherical".}
+\item{inception_cov}{Covariance structure used for the inception PLN:
+\code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. Non-full structures are now
+fully supported: when \code{inception_cov != "full"}, the penalty grid is built from the
+empirical covariance of latent residuals \verb{M − X·B} (a full-rank proxy for Σ),
+avoiding the broken \code{max_pen = 0} that previously occurred with diagonal/spherical.}
 
 \item{trace}{a integer for verbosity.}
 

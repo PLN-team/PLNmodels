@@ -10,7 +10,8 @@ PLNPCA_param(
   config_optim = list(),
   config_post = list(),
   inception = NULL,
-  init_method = c("LM", "GLM"),
+  init_method = c("LM", "GLM", "EM"),
+  init_niter = 5L,
   sequential = FALSE
 )
 }
@@ -20,7 +21,8 @@ for PLNPCA: conservative per-variable steps reliably find the global basin even 
 the singular-value ratio d1/sqrt(n) is large), \code{"builtin"} (joint L-BFGS with strong
 Wolfe line search on all parameters simultaneously — faster per iteration but may
 converge to inferior local optima on ill-conditioned datasets),
-or \code{"torch"} (automatic differentiation via the torch package).}
+or \code{"torch"} (\strong{experimental}: automatic differentiation via the torch package; tends to
+find lower loglik than \code{"nlopt"} and \code{"builtin"} on most datasets — not recommended).}
 
 \item{trace}{a integer for verbosity.}
 
@@ -31,16 +33,31 @@ or \code{"torch"} (automatic differentiation via the torch package).}
 \item{inception}{an optional pre-fitted \code{\link{PLNfit}} object. When provided, its variational
 means \code{M} and regression coefficients \code{B} are used to compute the shared SVD
 \code{svd(M - X*B)} that initialises all ranks simultaneously. This replaces the default
-LM-based starting point and can improve convergence for large ranks on datasets with
-strong covariate effects (e.g. \code{inception = PLN(formula, data)}). When \code{NULL} (default),
-a fast LM is used. \code{init_method} is ignored when \code{inception} is set.}
+LM-based starting point and gives the highest-quality initialisation for large ranks.
+When \code{NULL} (default), see \code{init_method}. \code{init_method} is ignored when \code{inception} is set.
+\strong{Recommendation}: for large ranks (\code{rank > sqrt(p)}) on complex datasets, prefer
+\code{init_method = "EM"} (cheap, most gains) or \code{inception = PLN(formula, data)} (maximum
+quality, full convergence cost). Benchmark: up to +135 loglik at rank=20, oaks p=114.}
 
 \item{init_method}{character: strategy used to compute the starting point for the shared SVD.
-Either \code{"LM"} (default, fast: one multivariate \code{lm.fit} on log-transformed counts) or
-\code{"GLM"} (p independent Poisson GLMs, more accurate for complex or highly unbalanced
-designs). Ignored when \code{inception} is provided. Benchmarks show \code{"LM"} is as good as
-or better than \code{"GLM"} for PLNPCA in most cases; \code{"GLM"} is not recommended.
-See \code{\link[=compute_PLN_starting_point]{compute_PLN_starting_point()}}.}
+\itemize{
+\item \code{"LM"} (default): fast multivariate \code{lm.fit} on log-transformed counts. Good for
+small to moderate ranks (\code{rank <= sqrt(p)}). Recommended default.
+\item \code{"GLM"}: p independent Poisson GLMs. Rarely better than \code{"LM"} for PLNPCA; not
+recommended.
+\item \code{"EM"}: run \code{init_niter} variational EM iterations of a full PLN (builtin backend)
+before computing the SVD, giving a latent mean M closer to the true posterior.
+\strong{Recommended for large ranks} (\code{rank > sqrt(p)}): benchmark on oaks (p=114)
+shows +135 loglik at rank=20 vs \code{"LM"}, with negligible extra cost (5 EM iterations).
+Caution: hurts for small ranks (e.g. rank=5, p=114: −800 loglik) because an
+over-converged M reduces low-rank SVD discriminability. Ignored when \code{inception}
+is provided.
+}}
+
+\item{init_niter}{integer: number of PLN EM iterations when \code{init_method = "EM"}.
+Default is 5. The sweet spot is 2–10: beyond ~10 the M over-converges toward the full
+PLN optimum, degrading the low-rank SVD and hurting small-rank models. Ignored for
+\code{"LM"} and \code{"GLM"}.}
 
 \item{sequential}{logical. If \code{TRUE}, ranks are fitted in ascending order and each model is
 warm-started from the converged solution of the previous rank: loadings C are augmented
