@@ -54,8 +54,10 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
-#' @param backend optimization back used, either "builtin" (default), "nlopt" or "torch".
-#'   "builtin" is the built-in envelope-theorem Newton optimizer (does not depend on NLOPT).
+#' @param backend optimization backend, either `"builtin"` (default), `"nlopt"` or `"torch"`.
+#'   `"builtin"` is the built-in envelope-theorem Newton optimizer; it is the fastest and most
+#'   accurate backend, especially for large p with full covariance.
+#'   `"torch"` is **experimental**: it may converge to suboptimal solutions or fail on some datasets.
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "fixed". Default is "full".
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma. Must be specified if `covariance` is "fixed"
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
@@ -128,6 +130,8 @@ PLN_param <- function(
 
   ## optimization config
   backend <- match.arg(backend)
+  if (backend == "torch")
+    message("torch backend is experimental: may converge to suboptimal solutions or fail on some datasets.")
   config_opt <- make_config_optim(backend, config_optim, trace)
 
   structure(list(

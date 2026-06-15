@@ -230,3 +230,8 @@ p3 <- ggplot(df_rel, aes(rel_change, fill = covariance)) +
 
 ggsave("inst/benchmark/convergence_step_dist.pdf", p3, width = 12, height = 14)
 cat("Saved: convergence_step_dist.pdf\n")
+
+## ---- Sauvegarde des données (pour regénérer les plots sans recalculer) ----
+out_rds <- "inst/benchmark/analyse_convergence_results.rds"
+saveRDS(list(summary = sumtab, trajectory = df_traj, rel_change = df_rel), out_rds)
+cat(sprintf("Saved: %s\n", out_rds))

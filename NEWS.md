@@ -1,4 +1,20 @@
-# PLNmodels 1.2.2-9100
+# PLNmodels 1.3.0
+
+## New backends and optimizers
+
+* **New built-in Newton optimizer** (`backend = "builtin"`) for PLN, ZIPLN and PLNPCA,
+  now the default for PLN and ZIPLN. Uses envelope-theorem Newton steps with strong Wolfe line search; does not depend on NLOPT. Substantially faster and more accurate than nlopt on large datasets with full covariance (e.g. +30 000 loglik on microcosm, p=259).
+
+* **Fix critical convergence bug** in PLN/PLNPCA with nlopt: premature termination due to ill-conditioned X scaling triggered the XTOL stopping criterion after very few iterations
+  (e.g. 14 iter on barents, loglik -8520 instead of -4400). The built-in backend is immune to this bug; nlopt is also fixed via better parameter scaling.
+
+* **ZIPLN joint VE step** (`backend = "builtin"`): variational parameters (M, ψ, R) are now optimised jointly in a single Newton step per EM iteration, instead of sequentially. Gains up to +666 loglik on oaks compared to the nlopt sequential approach.
+
+* **PLNPCA warm-start and shared SVD init**: the collection of PLNPCA models now shares a single SVD initialisation computed once from a fast LM (`init_method = "LM"`, default). A pre-fitted PLNfit can be supplied via `inception = PLN(...)` to improve convergence for large ranks (e.g. rank > `sqrt(p)`); see `?PLNPCA_param` for details.
+
+* **torch backend marked experimental**: the torch backend is now clearly documented as experimental. It emits a message on use and is not recommended for PLNPCA (systematically lower loglik than nlopt/builtin). It remains available for PLN on diagonal/spherical covariance where it can be faster.
+
+## Other changes
 
 * various fix in ZIPLN model (prediction and initialization #146, #149, #150, #152)
 * microcosm data now included (#153, #154)
@@ -28,7 +44,7 @@
 
 * Update documentation of PLN*_param() functions to include torch optimization parameters
 * Add (somehow) explicit error message when torch convergence fails
-* Change initialization in `variance_jackknife()` and `variance_bootstrap()` to prevent estimation recycling, results from those functions are now comparable to doing jackknife / bootstrap "by hand". 
+* Change initialization in `variance_jackknife()` and `variance_bootstrap()` to prevent estimation recycling, results from those functions are now comparable to doing jackknife / bootstrap "by hand".
 * Merge PR #110 from Cole Trapnell to add:
   - bootstrap estimation of the variance of model parameter
   - improved interface for model initialization / optimisation parameters, which
@@ -48,7 +64,7 @@
 
 # PLNmodels 1.0.3 (2023-07-06)
 
-* higher tolerance on a single test (among 700) that fails on the 'noLD' 
+* higher tolerance on a single test (among 700) that fails on the 'noLD'
   additional architecture on CRAN (tests without long double)
 
 # PLNmodels 1.0.2 (2023-06-21)
@@ -85,9 +101,9 @@ The use of 'control = list()' is deprecated: the code stop and send an error.
 
 * added Barents fish data set
 * support for PLN when (inverse) covariance is known/fixed
-* estimator of the variance of the model parameters 
+* estimator of the variance of the model parameters
     * integration of sandwich estimator of the variance-covariance of Theta when Sigma is fixed
-    * variational estimation of the variance-covariance based on variational approximation of the Fisher information 
+    * variational estimation of the variance-covariance based on variational approximation of the Fisher information
     * jackknife estimation of the variance of Theta and Sigma
     * bootstrap estimation of the variance of Theta and Sigma
 * handle list of penalty weights in PLNnetwork
@@ -101,7 +117,7 @@ The use of 'control = list()' is deprecated: the code stop and send an error.
 # PLNmodels 0.11.7
 
 * fix expression of ELBO in VEstep, related to #91
-* typos and regeneration of documentation( HTML5) 
+* typos and regeneration of documentation( HTML5)
 * added an S3 method predict_cond to perform conditional predictions
 * fix #89 bug by forcing an intercept in `PLNLDA()` and changing `extract_model()` to conform with `model.frame()`
 
@@ -112,7 +128,7 @@ The use of 'control = list()' is deprecated: the code stop and send an error.
 
 # PLNmodels 0.11.5
 
-* fixing #79 by using the same variational distribution to approximate 
+* fixing #79 by using the same variational distribution to approximate
     the spherical case as in the fully parametrized and diagonal cases
 * faster examples and build for vignettes
 * additional R6 method `$VEStep()` for PLN-PCA, dealing with low rank matrices
@@ -173,13 +189,13 @@ The use of 'control = list()' is deprecated: the code stop and send an error.
 
 # PLNmodels 0.10.3
 
-* Change in optimization for all PLN models (PLNs, PCA, LDA, networks): solving in S such that 
-S = S² for the variational parameters, thus avoiding lower bound and constrained optimization. 
+* Change in optimization for all PLN models (PLNs, PCA, LDA, networks): solving in S such that
+S = S² for the variational parameters, thus avoiding lower bound and constrained optimization.
 Slightly finer results/estimations for similar computational cost, but easier to maintain.
 
 # PLNmodels 0.10.2
 
-* Fix bug in predict() methods when factor levels differ between train and test datasets. 
+* Fix bug in predict() methods when factor levels differ between train and test datasets.
 * Fix bug in PLNPCAfit S3 plot() method
 * Some simplification in C++ code
 * correction/changes in PLN likelihoods? + added constant terms in all likelihoods of all PLN models

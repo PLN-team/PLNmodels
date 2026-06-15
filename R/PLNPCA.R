@@ -63,7 +63,8 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'   the singular-value ratio d1/sqrt(n) is large), `"builtin"` (joint L-BFGS with strong
 #'   Wolfe line search on all parameters simultaneously — faster per iteration but may
 #'   converge to inferior local optima on ill-conditioned datasets),
-#'   or `"torch"` (automatic differentiation via the torch package).
+#'   or `"torch"` (**experimental**: automatic differentiation via the torch package; tends to
+#'   find lower loglik than `"nlopt"` and `"builtin"` on most datasets — not recommended).
 #' @inheritParams PLN_param trace config_optim config_post
 #' @param init_method character: strategy used to compute the starting point for the shared SVD.
 #'   Either `"LM"` (default, fast: one multivariate `lm.fit` on log-transformed counts) or
@@ -77,6 +78,10 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'   LM-based starting point and can improve convergence for large ranks on datasets with
 #'   strong covariate effects (e.g. `inception = PLN(formula, data)`). When `NULL` (default),
 #'   a fast LM is used. `init_method` is ignored when `inception` is set.
+#'   **Recommendation for large rank or complex datasets**: providing a pre-fitted PLN can
+#'   substantially improve the ELBO, especially for high ranks (e.g. rank > `sqrt(p)`) where
+#'   the LM initialisation may miss a better basin. Benchmark shows gains of up to +87 loglik
+#'   on oaks (p=114, rank=20) vs the default LM init.
 #' @param sequential logical. If `TRUE`, ranks are fitted in ascending order and each model is
 #'    warm-started from the converged solution of the previous rank: loadings C are augmented
 #'    with new columns from the inception SVD, while latent scores M and variances S2 are
@@ -107,6 +112,8 @@ PLNPCA_param <- function(
 
   ## optimization config
   backend <- match.arg(backend)
+  if (backend == "torch")
+    message("torch backend is experimental: may converge to suboptimal solutions or fail on some datasets.")
   config_opt <- make_config_optim(backend, config_optim, trace,
                                   builtin_default = config_default_plnpca)
   config_opt$sequential <- sequential

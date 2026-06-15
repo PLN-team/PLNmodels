@@ -106,6 +106,8 @@ ZIPLN_param <- function(
 
   ## optimization config — mirrors PLN_param: "builtin" = Newton, "nlopt" = CCSAQ/etc.
   backend    <- match.arg(backend)
+  if (backend == "torch")
+    message("torch backend is experimental: may converge to suboptimal solutions or fail on some datasets.")
   config_opt <- make_config_optim(backend, config_optim, trace,
                                   extra = list(
                                     ftol_out  = 1e-6,
