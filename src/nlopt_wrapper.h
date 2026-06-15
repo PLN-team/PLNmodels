@@ -23,16 +23,6 @@ struct NloptDeleter {
 // xtol_rel, ftol_abs, ftol_rel, maxeval, maxtime.
 std::unique_ptr<NloptStruct, NloptDeleter> new_nlopt_optimizer(const Rcpp::List & config, std::size_t size);
 
-// Helpers to set xtol_abs (uniform or per-parameter packed array).
-// This is not done by new_nlopt_optimizer as it may require packing values, which must be user specified.
-// void set_uniform_xtol_abs(NloptStruct * opt, double value);
-// void set_per_value_xtol_abs(NloptStruct * opt, const std::vector<double> & xtol_abs);
-
-// Helpers to set x_weights (uniform or per-parameter packed array).
-// This is not done by new_nlopt_optimizer as it may require packing values, which must be user specified.
-// void set_uniform_x_weights(NloptStruct * opt, double value);
-// void set_per_value_x_weights(NloptStruct * opt, const std::vector<double> & x_weigths);
-
 struct OptimizerResult {
     nlopt_result status;
     double objective;

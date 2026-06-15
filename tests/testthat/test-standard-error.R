@@ -148,7 +148,7 @@ test_that("Check that variance estimation are coherent in PLNfit",  {
   expect_gt(tr_sandwich  , 0)
 })
 
-test_that("Check that variance estimation are coherent in PLNnetwork",  {
+test_that("Check that variance estimation are coherent in PLNPCA",  {
   myPCAs <- PLNPCA(Abundance ~ Var_1 + 0 + offset(log(Offset)), data = data, ranks = 1:3)
   myPCA <- myPCAs$models[[2]]
   B <- coef(myPCA); B[ , ] <- NA

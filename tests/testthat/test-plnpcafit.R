@@ -103,7 +103,7 @@ test_that("PLNPCA torch backend works for fit and project", {
   Y <- as.matrix(trichoptera$Abundance)
   expected_loglik_vec <- .5 * ncol(Y) - rowSums(PLNmodels:::.logfactorial(Y)) +
     rowSums(Y * torch_fit$latent - fitted(torch_fit)) -
-    .5 * rowSums(torch_fit$var_par$M^2 + torch_fit$var_par$S^2 - log(torch_fit$var_par$S^2) - 1)
+    .5 * rowSums(torch_fit$var_par$M^2 + torch_fit$var_par$S2 - log(torch_fit$var_par$S2) - 1)
 
   expect_equal(torch_fit$loglik_vec, expected_loglik_vec, tolerance = 1e-4, check.attributes = FALSE)
 

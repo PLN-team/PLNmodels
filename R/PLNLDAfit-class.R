@@ -84,13 +84,18 @@ PLNLDAfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Post treatment --------------------
     #' @description  Update R2, fisher and std_err fields and visualization
+    #' @param grouping a factor with group memberships
+    #' @param responses the matrix of responses (counts)
+    #' @param covariates the matrix of covariates
+    #' @param offsets the matrix of offsets
+    #' @param weights an optional vector of observation weights. Default is uniform weights.
     #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).
     #' @param config_optim list controlling the optimization parameters
-    postTreatment = function(grouping, responses, covariates, offsets, config_post, config_optim) {
+    postTreatment = function(grouping, responses, covariates, offsets, weights = rep(1, nrow(responses)), config_post, config_optim) {
       covariates <- cbind(covariates, model.matrix( ~ grouping + 0))
-      super$postTreatment(responses, covariates, offsets, config_post = config_post, config_optim = config_optim)
+      super$postTreatment(responses, covariates, offsets, weights, config_post = config_post, config_optim = config_optim)
       rownames(private$C) <- colnames(private$C) <- colnames(responses)
-      colnames(private$S) <- 1:self$q
+      colnames(private$S2) <- 1:self$q
       if (config_post$trace > 1) cat("\n\tCompute LD scores for visualization...")
       self$setVisualization()
     },
@@ -406,8 +411,9 @@ PLNLDAfit_diagonal <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
       super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_diagonal, private$torch_optimize)
-      private$optimizer$vestep <- nlopt_optimize_vestep_diagonal
+      private$setup_optimizer(control$backend,
+        nlopt_optimize_diagonal,         builtin_optimize_diagonal,
+        nlopt_optimize_vestep_diagonal,  builtin_optimize_vestep_diagonal)
     }
   ),
   private = list(
@@ -416,15 +422,16 @@ PLNLDAfit_diagonal <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
-      S2 <- torch_square(params$S[index])
-      Z <- data$O[index] + params$M[index] + torch_matmul(data$X[index], params$B)
+      S2 <- torch_exp(params$psi[index])
+      Z  <- data$O[index] + params$M[index]
       res <- .5 * sum(data$w[index]) * sum(torch_log(private$torch_sigma_diag(data, params, index))) +
-        sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z -  .5 * torch_log(S2)))
+        sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z - .5 * params$psi[index]))
       res
     },
 
     torch_sigma_diag = function(data, params, index=torch_tensor(1:self$n)) {
-      torch_sum(data$w[index,NULL] * (torch_square(params$M[index]) + torch_square(params$S[index])), 1) / sum(data$w[index])
+      M_res <- params$M[index] - torch_mm(data$X[index], params$B)
+      torch_sum(data$w[index,NULL] * (torch_square(M_res) + torch_exp(params$psi[index])), 1) / sum(data$w[index])
     },
 
     torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
@@ -432,13 +439,13 @@ PLNLDAfit_diagonal <- R6Class(
     },
 
     torch_vloglik = function(data, params) {
-      S2 <- torch_pow(params$S, 2)
+      S2    <- torch_exp(params$psi)
+      M_res <- params$M - torch_mm(data$X, params$B)
       omega_diag <- torch_pow(private$torch_sigma_diag(data, params), -1)
-
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
         .5 * sum(torch_log(omega_diag)) +
-          torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2), dim = 2) -
-          .5 * torch_matmul(torch_pow(params$M, 2) + S2, omega_diag)
+          torch_sum(data$Y * params$Z - params$A + .5 * params$psi -
+                      .5 * (torch_square(M_res) + S2) * omega_diag[NULL,], dim = 2)
       )
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji
@@ -496,8 +503,9 @@ PLNLDAfit_spherical <- R6Class(
     #' @description Initialize a [`PLNfit`] model
     initialize = function(grouping, responses, covariates, offsets, weights, formula, control) {
       super$initialize(grouping, responses, covariates, offsets, weights, formula, control)
-      private$optimizer$main   <- ifelse(control$backend == "nlopt", nlopt_optimize_spherical, private$torch_optimize)
-      private$optimizer$vestep <- nlopt_optimize_vestep_spherical
+      private$setup_optimizer(control$backend,
+        nlopt_optimize_spherical,         builtin_optimize_spherical,
+        nlopt_optimize_vestep_spherical,  builtin_optimize_vestep_spherical)
     }
   ),
   private = list(
@@ -506,15 +514,16 @@ PLNLDAfit_spherical <- R6Class(
     ## PRIVATE TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
-      S2 <- torch_square(params$S[index])
-      Z <- data$O[index] + params$M[index] + torch_mm(data$X[index], params$B)
+      S2 <- torch_exp(params$psi[index])
+      Z  <- data$O[index] + params$M[index]
       res <- .5 * sum(data$w[index]) * self$p * torch_log(private$torch_sigma2(data, params, index)) -
-        sum(data$w[index,NULL] * (data$Y[index] * Z - torch_exp(Z + .5 * S2) + .5 * torch_log(S2)))
+        sum(data$w[index,NULL] * (data$Y[index] * Z - torch_exp(Z + .5 * S2) + .5 * params$psi[index]))
       res
     },
 
     torch_sigma2 = function(data, params, index=torch_tensor(1:self$n)) {
-      sum(data$w[index, NULL] * (torch_square(params$M) + torch_square(params$S))) / (sum(data$w) * self$p)
+      M_res <- params$M[index] - torch_mm(data$X[index], params$B)
+      sum(data$w[index, NULL] * (torch_square(M_res) + torch_exp(params$psi[index]))) / (sum(data$w[index]) * self$p)
     },
 
     torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
@@ -522,10 +531,12 @@ PLNLDAfit_spherical <- R6Class(
     },
 
     torch_vloglik = function(data, params) {
-      S2 <- torch_pow(params$S, 2)
+      S2    <- torch_exp(params$psi)
+      M_res <- params$M - torch_mm(data$X, params$B)
       sigma2 <- private$torch_sigma2(data, params)
       Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
-        torch_sum(data$Y * params$Z - params$A + .5 * torch_log(S2/sigma2) - .5 * (torch_pow(params$M, 2) + S2)/sigma2, dim = 2)
+        torch_sum(data$Y * params$Z - params$A + .5 * (params$psi - torch_log(sigma2)) -
+                    .5 * (torch_pow(M_res, 2) + S2)/sigma2, dim = 2)
       )
       attr(Ji, "weights") <- as.numeric(data$w)
       Ji

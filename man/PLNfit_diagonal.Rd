@@ -28,127 +28,123 @@ print(myPLNLDA)
 }
 }
 \section{Super class}{
-\code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{PLNfit_diagonal}
+\code{\link[PLNmodels:PLNfit]{PLNfit}} -> \code{PLNfit_diagonal}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{nb_param}}{number of parameters in the current PLN model}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{vcov_model}}{character: the model used for the residual covariance}
-}
-\if{html}{\out{</div>}}
+    \item{\code{vcov_model}}{character: the model used for the residual covariance}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-PLNfit_diagonal-new}{\code{PLNfit_diagonal$new()}}
-\item \href{#method-PLNfit_diagonal-clone}{\code{PLNfit_diagonal$clone()}}
+  \itemize{
+    \item \href{#method-PLNfit_diagonal-initialize}{\code{PLNfit_diagonal$new()}}
+    \item \href{#method-PLNfit_diagonal-clone}{\code{PLNfit_diagonal$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details><summary>Inherited methods</summary>
+\if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize'><code>PLNmodels::PLNfit$optimize()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-postTreatment'><code>PLNmodels::PLNfit$postTreatment()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-show'><code>PLNmodels::PLNfit$show()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize'><code>PLNfit$optimize()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNfit$optimize_vestep()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-postTreatment'><code>PLNfit$postTreatment()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNfit$predict()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNfit$predict_cond()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNfit$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="show"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-show'><code>PLNfit$show()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNfit$update()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNfit_diagonal-new"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNfit_diagonal-new}{}}}
-\subsection{Method \code{new()}}{
-Initialize a \code{\link{PLNfit}} model
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-PLNfit_diagonal-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNfit_diagonal-initialize}{}}}
+\subsection{\code{PLNfit_diagonal$new()}}{
+  Initialize a \code{\link{PLNfit}} model
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNfit_diagonal$new(responses, covariates, offsets, weights, formula, control)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+      \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+      \item{\code{control}}{a list for controlling the optimization. See details.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNfit_diagonal-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNfit_diagonal-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNfit_diagonal$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNfit_diagonal$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNfit_diagonal$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }
 \section{Super classes}{
-\code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{\link[PLNmodels:PLNLDAfit]{PLNmodels::PLNLDAfit}} -> \code{PLNLDAfit_spherical}
+\code{\link[PLNmodels:PLNfit]{PLNfit}} -> \code{\link[PLNmodels:PLNLDAfit]{PLNLDAfit}} -> \code{PLNLDAfit_spherical}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{vcov_model}}{character: the model used for the residual covariance}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
-\item{\code{nb_param}}{number of parameters in the current PLN model}
-}
-\if{html}{\out{</div>}}
+    \item{\code{nb_param}}{number of parameters in the current PLN model}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-PLNLDAfit_spherical-new}{\code{PLNLDAfit_spherical$new()}}
-\item \href{#method-PLNLDAfit_spherical-clone}{\code{PLNLDAfit_spherical$clone()}}
+  \itemize{
+    \item \href{#method-PLNLDAfit_spherical-initialize}{\code{PLNLDAfit_spherical$new()}}
+    \item \href{#method-PLNLDAfit_spherical-clone}{\code{PLNLDAfit_spherical$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details><summary>Inherited methods</summary>
+\if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="optimize"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-optimize'><code>PLNmodels::PLNLDAfit$optimize()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="plot_LDA"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-plot_LDA'><code>PLNmodels::PLNLDAfit$plot_LDA()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="plot_correlation_map"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-plot_correlation_map'><code>PLNmodels::PLNLDAfit$plot_correlation_map()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="plot_individual_map"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-plot_individual_map'><code>PLNmodels::PLNLDAfit$plot_individual_map()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="postTreatment"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-postTreatment'><code>PLNmodels::PLNLDAfit$postTreatment()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="predict"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-predict'><code>PLNmodels::PLNLDAfit$predict()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="setVisualization"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-setVisualization'><code>PLNmodels::PLNLDAfit$setVisualization()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="show"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-show'><code>PLNmodels::PLNLDAfit$show()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNfit$optimize_vestep()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNfit$predict_cond()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNfit$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNfit$update()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="optimize"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-optimize'><code>PLNLDAfit$optimize()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="plot_LDA"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-plot_LDA'><code>PLNLDAfit$plot_LDA()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="plot_correlation_map"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-plot_correlation_map'><code>PLNLDAfit$plot_correlation_map()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="plot_individual_map"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-plot_individual_map'><code>PLNLDAfit$plot_individual_map()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="postTreatment"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-postTreatment'><code>PLNLDAfit$postTreatment()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="predict"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-predict'><code>PLNLDAfit$predict()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="setVisualization"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-setVisualization'><code>PLNLDAfit$setVisualization()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNLDAfit" data-id="show"><a href='../../PLNmodels/html/PLNLDAfit.html#method-PLNLDAfit-show'><code>PLNLDAfit$show()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNLDAfit_spherical-new"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNLDAfit_spherical-new}{}}}
-\subsection{Method \code{new()}}{
-Initialize a \code{\link{PLNfit}} model
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit_spherical$new(
+\if{html}{\out{<a id="method-PLNLDAfit_spherical-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit_spherical-initialize}{}}}
+\subsection{\code{PLNLDAfit_spherical$new()}}{
+  Initialize a \code{\link{PLNfit}} model
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit_spherical$new(
   grouping,
   responses,
   covariates,
@@ -156,44 +152,41 @@ Initialize a \code{\link{PLNfit}} model
   weights,
   formula,
   control
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
+      \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+      \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+      \item{\code{control}}{a list for controlling the optimization. See details.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
-
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNLDAfit_spherical-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNLDAfit_spherical-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit_spherical$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNLDAfit_spherical$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit_spherical$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

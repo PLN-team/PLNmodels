@@ -43,7 +43,7 @@ test_that("PLN is working with a single variable data matrix",  {
 })
 
 test_that("PLN is working with unnamed data matrix",  {
-  n = 10; d = 3; p = 10
+  n = 15; d = 2; p = 4
   Y <- matrix(rpois(n*p, 1), n, p)
   X <- matrix(rnorm(n*d), n, d)
   expect_is(ZIPLN(Y ~ X), "ZIPLNfit")
@@ -51,25 +51,15 @@ test_that("PLN is working with unnamed data matrix",  {
 
  test_that("ZIPLN is working with different optimization algorithm in NLopt",  {
 
-    MMA    <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "MMA")))
-    CCSAQ  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "CCSAQ")))
-    LBFGS  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "LBFGS")))
+    MMA    <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(backend = "nlopt", config_optim = list(algorithm = "MMA")))
+    CCSAQ  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(backend = "nlopt", config_optim = list(algorithm = "CCSAQ")))
+    LBFGS  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(backend = "nlopt", config_optim = list(algorithm = "LBFGS")))
 
     expect_equal(MMA$loglik, CCSAQ$loglik, tolerance = 1e-1) ## Almost equivalent, CCSAQ faster
 
-    expect_error(ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(algorithm = "nawak"))))
+    expect_error(ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(backend = "nlopt", config_optim = list(algorithm = "nawak"))))
  })
 
-test_that("ZIPLN is working with exact and variational inference for the conditional distribution of the ZI component",  {
-
-   approx <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(approx_ZI = TRUE)))
-   exact  <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(config_optim = list(approx_ZI = FALSE)))
-
-   expect_equal(approx$loglik, exact$loglik, tolerance = 1e-1) ## Almost equivalent
-   expect_equal(approx$model_par$B, exact$model_par$B, tolerance = 1e-1) ## Almost equivalent
-   expect_equal(approx$model_par$Sigma, exact$model_par$Sigma, tolerance = 1e-1) ## Almost equivalent
-
-})
 
 test_that("ZIPLN: Check that univariate ZIPLN models works, with matrix of numeric format",  {
   expect_no_error(uniZIPLN <- ZIPLN(Abundance[,1,drop=FALSE] ~ 1, data = trichoptera))

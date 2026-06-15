@@ -60,6 +60,9 @@ reference:
     - '`predict_cond.PLNfit`'
     - '`fitted.PLNfit`'
     - '`standard_error.PLNfit`'
+    - '`logLik.PLNfit`'
+    - '`AIC.PLNfit`'
+    - '`BIC.PLNfit`'
 - title: 'Zero Inflated Poisson lognormal fit'
   desc: >
     Description of the ZIPLNfit object and methods for its manipulation.
@@ -71,6 +74,9 @@ reference:
     - '`predict.ZIPLNfit`'
     - '`fitted.ZIPLNfit`'
     - '`plot.ZIPLNfit_sparse`'
+    - '`logLik.ZIPLNfit`'
+    - '`AIC.ZIPLNfit`'
+    - '`BIC.ZIPLNfit`'
 - title: 'Linear discriminant analysis via a Poisson lognormal fit'
   desc: >
     Description of the PLNLDAfit object and methods for its manipulation.
@@ -132,6 +138,7 @@ reference:
     - '`PLNfamily`'
     - '`plot.PLNfamily`'
     - '`rPLN`'
+    - '`ICL`'
     - '`compute_PLN_starting_point`'
 - title: Data sets
   desc: ~
@@ -142,4 +149,3 @@ reference:
     - '`barents`'
     - '`mollusk`'
     - '`scRNA`'
-

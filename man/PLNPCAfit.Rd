@@ -20,293 +20,300 @@ print(myPCA)
 The function \code{\link{PLNPCA}}, the class \code{\link[=PLNPCAfamily]{PLNPCAfamily}}
 }
 \section{Super class}{
-\code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{PLNPCAfit}
+\code{\link[PLNmodels:PLNfit]{PLNfit}} -> \code{PLNPCAfit}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{rank}}{the dimension of the current model}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{var_par}}{variational parameters (M, S2) in the rank-q latent space}
 
-\item{\code{vcov_model}}{character: the model used for the residual covariance}
+    \item{\code{rank}}{the dimension of the current model}
 
-\item{\code{nb_param}}{number of parameters in the current PLN model}
+    \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
-\item{\code{entropy}}{entropy of the variational distribution}
+    \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
+    \item{\code{entropy}}{entropy of the variational distribution}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: B (covariates), Sigma (covariance), Omega (precision) and C (loadings)}
+    \item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}
 
-\item{\code{percent_var}}{the percent of variance explained by each axis}
+    \item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the pPCA model: B (covariates), Sigma (covariance), Omega (precision) and C (loadings)}
 
-\item{\code{corr_circle}}{a matrix of correlations to plot the correlation circles}
+    \item{\code{percent_var}}{the percent of variance explained by each axis}
 
-\item{\code{scores}}{a matrix of scores to plot the individual factor maps (a.k.a. principal components)}
+    \item{\code{corr_circle}}{a matrix of correlations to plot the correlation circles}
 
-\item{\code{rotation}}{a matrix of rotation of the latent space}
+    \item{\code{scores}}{a matrix of scores to plot the individual factor maps (a.k.a. principal components)}
 
-\item{\code{eig}}{description of the eigenvalues, similar to percent_var but for use with external methods}
+    \item{\code{rotation}}{a matrix of rotation of the latent space}
 
-\item{\code{var}}{a list of data frames with PCA results for the variables: \code{coord} (coordinates of the variables), \code{cor} (correlation between variables and dimensions), \code{cos2} (Cosine of the variables) and \code{contrib} (contributions of the variable to the axes)}
+    \item{\code{eig}}{description of the eigenvalues, similar to percent_var but for use with external methods}
 
-\item{\code{ind}}{a list of data frames with PCA results for the individuals: \code{coord} (coordinates of the individuals), \code{cos2} (Cosine of the individuals), \code{contrib} (contributions of individuals to an axis inertia) and \code{dist} (distance of individuals to the origin).}
+    \item{\code{var}}{a list of data frames with PCA results for the variables: \code{coord} (coordinates of the variables), \code{cor} (correlation between variables and dimensions), \code{cos2} (Cosine of the variables) and \code{contrib} (contributions of the variable to the axes)}
 
-\item{\code{call}}{Hacky binding for compatibility with factoextra functions}
-}
-\if{html}{\out{</div>}}
+    \item{\code{ind}}{a list of data frames with PCA results for the individuals: \code{coord} (coordinates of the individuals), \code{cos2} (Cosine of the individuals), \code{contrib} (contributions of individuals to an axis inertia) and \code{dist} (distance of individuals to the origin).}
+
+    \item{\code{call}}{Hacky binding for compatibility with factoextra functions}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-PLNPCAfit-new}{\code{PLNPCAfit$new()}}
-\item \href{#method-PLNPCAfit-update}{\code{PLNPCAfit$update()}}
-\item \href{#method-PLNPCAfit-optimize}{\code{PLNPCAfit$optimize()}}
-\item \href{#method-PLNPCAfit-optimize_vestep}{\code{PLNPCAfit$optimize_vestep()}}
-\item \href{#method-PLNPCAfit-project}{\code{PLNPCAfit$project()}}
-\item \href{#method-PLNPCAfit-setVisualization}{\code{PLNPCAfit$setVisualization()}}
-\item \href{#method-PLNPCAfit-postTreatment}{\code{PLNPCAfit$postTreatment()}}
-\item \href{#method-PLNPCAfit-plot_individual_map}{\code{PLNPCAfit$plot_individual_map()}}
-\item \href{#method-PLNPCAfit-plot_correlation_circle}{\code{PLNPCAfit$plot_correlation_circle()}}
-\item \href{#method-PLNPCAfit-plot_PCA}{\code{PLNPCAfit$plot_PCA()}}
-\item \href{#method-PLNPCAfit-show}{\code{PLNPCAfit$show()}}
-\item \href{#method-PLNPCAfit-clone}{\code{PLNPCAfit$clone()}}
+  \itemize{
+    \item \href{#method-PLNPCAfit-initialize}{\code{PLNPCAfit$new()}}
+    \item \href{#method-PLNPCAfit-warm_start_from}{\code{PLNPCAfit$warm_start_from()}}
+    \item \href{#method-PLNPCAfit-update}{\code{PLNPCAfit$update()}}
+    \item \href{#method-PLNPCAfit-optimize}{\code{PLNPCAfit$optimize()}}
+    \item \href{#method-PLNPCAfit-optimize_vestep}{\code{PLNPCAfit$optimize_vestep()}}
+    \item \href{#method-PLNPCAfit-project}{\code{PLNPCAfit$project()}}
+    \item \href{#method-PLNPCAfit-setVisualization}{\code{PLNPCAfit$setVisualization()}}
+    \item \href{#method-PLNPCAfit-postTreatment}{\code{PLNPCAfit$postTreatment()}}
+    \item \href{#method-PLNPCAfit-plot_individual_map}{\code{PLNPCAfit$plot_individual_map()}}
+    \item \href{#method-PLNPCAfit-plot_correlation_circle}{\code{PLNPCAfit$plot_correlation_circle()}}
+    \item \href{#method-PLNPCAfit-plot_PCA}{\code{PLNPCAfit$plot_PCA()}}
+    \item \href{#method-PLNPCAfit-show}{\code{PLNPCAfit$show()}}
+    \item \href{#method-PLNPCAfit-clone}{\code{PLNPCAfit$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
+\if{html}{\out{<details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNmodels::PLNfit$predict()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict'><code>PLNfit$predict()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNfit$predict_cond()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNfit$print()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNPCAfit-new"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNPCAfit-new}{}}}
-\subsection{Method \code{new()}}{
-Initialize a \code{\link{PLNPCAfit}} object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$new(rank, responses, covariates, offsets, weights, formula, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-PLNPCAfit-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-initialize}{}}}
+\subsection{\code{PLNPCAfit$new()}}{
+  Initialize a \code{\link{PLNPCAfit}} object.
+Uses the shared SVD from \code{control$svdM} (computed once in \code{\link{PLNPCAfamily}}) to set
+the starting loadings \code{C} and scores \code{M}. The regression coefficients \code{B} are
+initialised by the parent \code{\link{PLNfit}} constructor (LM or user-provided inception).
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$new(rank, responses, covariates, offsets, weights, formula, control)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{rank}}{rank of the PCA (or equivalently, dimension of the latent space)}
+      \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+      \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+      \item{\code{control}}{a list for controlling the optimization. See details.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{rank}}{rank of the PCA (or equivalently, dimension of the latent space)}
-
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PLNPCAfit-warm_start_from"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNPCAfit-warm_start_from}{}}}
+\subsection{\code{PLNPCAfit$warm_start_from()}}{
+  Reinitialize parameters for sequential warm-starting from a lower-rank fit.
+Fitted loadings C, scores M, variances S, and regression coefficients B from \code{prev_fit}
+are carried over; new columns are padded using the inception SVD (C) or zeros/0.1 (M/S).
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$warm_start_from(prev_fit, svdM)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{prev_fit}}{a converged \code{\link{PLNPCAfit}} of rank \code{self$rank - k} (k >= 1)}
+      \item{\code{svdM}}{the inception SVD (from \code{PLNPCAfamily})}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-update"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-update}{}}}
-\subsection{Method \code{update()}}{
-Update a \code{\link{PLNPCAfit}} object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$update(
+\subsection{\code{PLNPCAfit$update()}}{
+  Update a \code{\link{PLNPCAfit}} object
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$update(
   B = NA,
   Sigma = NA,
   Omega = NA,
   C = NA,
   M = NA,
-  S = NA,
+  S2 = NA,
   Z = NA,
   A = NA,
   Ji = NA,
   R2 = NA,
   monitoring = NA
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{B}}{matrix of regression matrix}
+      \item{\code{Sigma}}{variance-covariance matrix of the latent variables}
+      \item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
+      \item{\code{C}}{matrix of PCA loadings (in the latent space)}
+      \item{\code{M}}{matrix of mean vectors for the variational approximation}
+      \item{\code{S2}}{matrix of variational variances (n × q)}
+      \item{\code{Z}}{matrix of latent vectors (includes covariates and offset effects)}
+      \item{\code{A}}{matrix of fitted values}
+      \item{\code{Ji}}{vector of variational lower bounds of the log-likelihoods (one value per sample)}
+      \item{\code{R2}}{approximate R^2 goodness-of-fit criterion}
+      \item{\code{monitoring}}{a list with optimization monitoring quantities}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Update the current \code{\link{PLNPCAfit}} object
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{B}}{matrix of regression matrix}
-
-\item{\code{Sigma}}{variance-covariance matrix of the latent variables}
-
-\item{\code{Omega}}{precision matrix of the latent variables. Inverse of Sigma.}
-
-\item{\code{C}}{matrix of PCA loadings (in the latent space)}
-
-\item{\code{M}}{matrix of mean vectors for the variational approximation}
-
-\item{\code{S}}{matrix of variance vectors for the variational approximation}
-
-\item{\code{Z}}{matrix of latent vectors (includes covariates and offset effects)}
-
-\item{\code{A}}{matrix of fitted values}
-
-\item{\code{Ji}}{vector of variational lower bounds of the log-likelihoods (one value per sample)}
-
-\item{\code{R2}}{approximate R^2 goodness-of-fit criterion}
-
-\item{\code{monitoring}}{a list with optimization monitoring quantities}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Update the current \code{\link{PLNPCAfit}} object
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-optimize}{}}}
-\subsection{Method \code{optimize()}}{
-Call to the C++ optimizer and update of the relevant fields
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$optimize(responses, covariates, offsets, weights, config)}\if{html}{\out{</div>}}
+\subsection{\code{PLNPCAfit$optimize()}}{
+  Call to the C++ optimizer and update of the relevant fields
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$optimize(responses, covariates, offsets, weights, config)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+      \item{\code{config}}{part of the \code{control} argument which configures the optimizer}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{config}}{part of the \code{control} argument which configures the optimizer}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-optimize_vestep"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-optimize_vestep}{}}}
-\subsection{Method \code{optimize_vestep()}}{
-Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (C, B). Intended to position new data in the latent space for further use with PCA.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$optimize_vestep(
+\subsection{\code{PLNPCAfit$optimize_vestep()}}{
+  Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (C, B). Intended to position new data in the latent space for further use with PCA.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$optimize_vestep(
   covariates,
   offsets,
   responses,
   weights = rep(1, self$n),
   control = PLNPCA_param(backend = "nlopt")
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A list with three components:
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+      \item{\code{control}}{a list for controlling the optimization. See details.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A list with three components:
 \itemize{
 \item the matrix \code{M} of variational means,
 \item the matrix \code{S2} of variational variances
 \item the vector \code{log.lik} of (variational) log-likelihood of each new observation
 }
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-project"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-project}{}}}
-\subsection{Method \code{project()}}{
-Project new samples into the PCA space using one VE step
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$project(newdata, control = PLNPCA_param(), envir = parent.frame())}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{newdata}}{A data frame in which to look for variables, offsets and counts  with which to predict.}
-
-\item{\code{control}}{a list for controlling the optimization. See \code{\link[=PLN]{PLN()}} for details.}
-
-\item{\code{envir}}{Environment in which the projection is evaluated}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\itemize{
+\subsection{\code{PLNPCAfit$project()}}{
+  Project new samples into the PCA space using one VE step
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$project(newdata, control = PLNPCA_param(), envir = parent.frame())}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{newdata}}{A data frame in which to look for variables, offsets and counts  with which to predict.}
+      \item{\code{control}}{a list for controlling the optimization. See \code{\link[=PLN]{PLN()}} for details.}
+      \item{\code{envir}}{Environment in which the projection is evaluated}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \itemize{
 \item the named matrix of scores for the newdata, expressed in the same coordinate system as \code{self$scores}
 }
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-setVisualization"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-setVisualization}{}}}
-\subsection{Method \code{setVisualization()}}{
-Compute PCA scores in the latent space and update corresponding fields.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$setVisualization(scale.unit = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNPCAfit$setVisualization()}}{
+  Compute PCA scores in the latent space and update corresponding fields.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$setVisualization(scale.unit = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{scale.unit}}{Logical. Should PCA scores be rescaled to have unit variance}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{scale.unit}}{Logical. Should PCA scores be rescaled to have unit variance}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-postTreatment}{}}}
-\subsection{Method \code{postTreatment()}}{
-Update R2, fisher, std_err fields and set up visualization
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$postTreatment(
+\subsection{\code{PLNPCAfit$postTreatment()}}{
+  Update R2, fisher, std_err fields and set up visualization
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$postTreatment(
   responses,
   covariates,
   offsets,
-  weights,
+  weights = rep(1, nrow(responses)),
   config_post,
   config_optim,
-  nullModel
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
-
-\item{\code{config_optim}}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
-
-\item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-The list of parameters \code{config_post} controls the post-treatment processing, with the following entries:
+  nullModel = NULL
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in \code{\link{PLNfamily}}}
+      \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+      \item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
+      \item{\code{config_optim}}{a list for controlling the optimizer (either "nlopt" or "torch" backend). See details}
+      \item{\code{nullModel}}{null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    The list of parameters \code{config_post} controls the post-treatment processing, with the following entries:
 \itemize{
 \item jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
 \item bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).
@@ -314,127 +321,128 @@ The list of parameters \code{config_post} controls the post-treatment processing
 \item rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE
 \item trace integer for verbosity. should be > 1 to see output in post-treatments
 }
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-plot_individual_map"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-plot_individual_map}{}}}
-\subsection{Method \code{plot_individual_map()}}{
-Plot the factorial map of the PCA
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$plot_individual_map(
+\subsection{\code{PLNPCAfit$plot_individual_map()}}{
+  Plot the factorial map of the PCA
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$plot_individual_map(
   axes = 1:min(2, self$rank),
   main = "Individual Factor Map",
   plot = TRUE,
   cols = "default"
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
+      \item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+      \item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+      \item{\code{cols}}{a character, factor or numeric to define the color associated with the individuals. By default, all individuals receive the default color of the current palette.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
-
-\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
-
-\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
-
-\item{\code{cols}}{a character, factor or numeric to define the color associated with the individuals. By default, all individuals receive the default color of the current palette.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-plot_correlation_circle"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-plot_correlation_circle}{}}}
-\subsection{Method \code{plot_correlation_circle()}}{
-Plot the correlation circle of a specified axis for a \code{\link{PLNLDAfit}} object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$plot_correlation_circle(
+\subsection{\code{PLNPCAfit$plot_correlation_circle()}}{
+  Plot the correlation circle of a specified axis for a \code{\link{PLNLDAfit}} object
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$plot_correlation_circle(
   axes = 1:min(2, self$rank),
   main = "Variable Factor Map",
   cols = "default",
   plot = TRUE
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
+      \item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+      \item{\code{cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
+      \item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
-
-\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
-
-\item{\code{cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
-
-\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-plot_PCA"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-plot_PCA}{}}}
-\subsection{Method \code{plot_PCA()}}{
-Plot a summary of the \code{\link{PLNPCAfit}} object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$plot_PCA(
+\subsection{\code{PLNPCAfit$plot_PCA()}}{
+  Plot a summary of the \code{\link{PLNPCAfit}} object
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$plot_PCA(
   nb_axes = min(3, self$rank),
   ind_cols = "ind_cols",
   var_cols = "var_cols",
   plot = TRUE
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{nb_axes}}{scalar: the number of axes to be considered when map = "both". The default is min(3,rank).}
+      \item{\code{ind_cols}}{a character, factor or numeric to define the color associated with the individuals. By default, all variables receive the default color of the current palette.}
+      \item{\code{var_cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
+      \item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link{grob}} object
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{nb_axes}}{scalar: the number of axes to be considered when map = "both". The default is min(3,rank).}
-
-\item{\code{ind_cols}}{a character, factor or numeric to define the color associated with the individuals. By default, all variables receive the default color of the current palette.}
-
-\item{\code{var_cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
-
-\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link{grob}} object
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-show"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-show}{}}}
-\subsection{Method \code{show()}}{
-User friendly print method
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$show()}\if{html}{\out{</div>}}
+\subsection{\code{PLNPCAfit$show()}}{
+  User friendly print method
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$show()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNPCAfit-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNPCAfit-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNPCAfit$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNPCAfit$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNPCAfit$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

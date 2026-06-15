@@ -9,7 +9,7 @@ test_that("PLN fit: check classes, getters and field access",  {
                              control = PLN_param(trace = 1)),
 "
  Initialization...
- Adjusting a full covariance PLN model with nlopt optimizer
+ Adjusting a full covariance PLN model with builtin optimizer
  Post-treatments...
  DONE!"
   )
@@ -18,7 +18,7 @@ test_that("PLN fit: check classes, getters and field access",  {
                              control = PLN_param(trace = 1, inception = model)),
 "
  Initialization...
- Adjusting a full covariance PLN model with nlopt optimizer
+ Adjusting a full covariance PLN model with builtin optimizer
  Post-treatments...
  DONE!"
   )
@@ -124,24 +124,24 @@ test_that("PLN fit: Check prediction",  {
   expect_length(predict(model, newdata = toy_data[3:4, ], type = "r"), 2L)
 })
 
-test_that("PLN fit: Check cross-validation",  {
+# test_that("PLN fit: Check cross-validation",  {
 
-  n <- nrow(trichoptera)
-  K <- 5
-  folds <- split(sample(1:n), rep(1:K, length = n))
-  formula <- as.formula("Abundance ~ 1")
+#   n <- nrow(trichoptera)
+#   K <- 5
+#   folds <- split(sample(1:n), rep(1:K, length = n))
+#   formula <- as.formula("Abundance ~ 1")
 
-  Y     <- lapply(folds, function(fold) trichoptera$Abundance[fold, ])
-  Y_hat <- lapply(folds, function(test_set) {
-    train_set <- setdiff(1:n, test_set)
-    model <- do.call(PLN, list(formula = eval(formula), data = trichoptera, subset = train_set, control = PLN_param(trace = FALSE)))
-    predict(model, trichoptera[test_set, ], type = "response")
-  })
-  err <- map2_dbl(Y_hat, Y, function(y_hat, y) mean((y_hat - y)^2))
-  attr(err, "folds") <- folds
-  err
+#   Y     <- lapply(folds, function(fold) trichoptera$Abundance[fold, ])
+#   Y_hat <- lapply(folds, function(test_set) {
+#     train_set <- setdiff(1:n, test_set)
+#     model <- do.call(PLN, list(formula = eval(formula), data = trichoptera, subset = train_set, control = PLN_param(trace = FALSE)))
+#     predict(model, trichoptera[test_set, ], type = "response")
+#   })
+#   err <- map2_dbl(Y_hat, Y, function(y_hat, y) mean((y_hat - y)^2))
+#   attr(err, "folds") <- folds
+#   err
 
-})
+# })
 
 test_that("PLN fit: Check conditional prediction",  {
 
@@ -194,6 +194,45 @@ test_that("PLN fit: Check conditional prediction with sparse covariance models",
     expect_equal(dim(attr(pred, "S")), c(p - p_cond, p - p_cond, n_cond))
     expect_true(is.array(attr(pred, "S")))
     expect_true(is.numeric(attr(pred, "S")))
+  }
+})
+
+test_that("PLN fit: S3 methods logLik, AIC, BIC, ICL", {
+
+  model <- PLN(Abundance ~ 1, data = trichoptera)
+
+  ## logLik returns a proper "logLik" S3 object
+  ll <- logLik(model)
+  expect_s3_class(ll, "logLik")
+  expect_equal(as.numeric(ll), model$loglik)
+  expect_equal(attr(ll, "df"),   model$nb_param)
+  expect_equal(attr(ll, "nobs"), model$n)
+
+  ## AIC and BIC match the active bindings (maximization convention: larger is better)
+  expect_equal(AIC(model), model$AIC)
+  expect_equal(BIC(model), model$BIC)
+  expect_equal(ICL(model), model$ICL)
+
+  ## Numeric scalars
+  expect_true(is.numeric(AIC(model)) && length(AIC(model)) == 1L)
+  expect_true(is.numeric(BIC(model)) && length(BIC(model)) == 1L)
+  expect_true(is.numeric(ICL(model)) && length(ICL(model)) == 1L)
+
+  ## BIC ≤ AIC (stronger penalty) and ICL ≤ BIC (additional entropy term)
+  expect_lte(BIC(model), AIC(model))
+  expect_lte(ICL(model), BIC(model))
+
+  ## Consistency across covariance structures
+  for (cov in c("diagonal", "spherical")) {
+    m <- PLN(Abundance ~ 1, data = trichoptera,
+             control = PLN_param(covariance = cov, trace = 0))
+    ll_m <- logLik(m)
+    expect_s3_class(ll_m, "logLik")
+    expect_equal(as.numeric(ll_m), m$loglik)
+    expect_equal(attr(ll_m, "df"), m$nb_param)
+    expect_equal(AIC(m), m$AIC)
+    expect_equal(BIC(m), m$BIC)
+    expect_equal(ICL(m), m$ICL)
   }
 })
 

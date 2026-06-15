@@ -1,4 +1,4 @@
-available_algorithms_nlopt <- c("MMA", "CCSAQ", "LBFGS", "VAR1", "VAR2") #"TNEWTON", "TNEWTON_PRECOND", "TNEWTON_PRECOND_RESTART"#
+available_algorithms_nlopt <- c("CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2")
 available_algorithms_torch <- c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")
 
 config_default_nlopt <-
@@ -11,6 +11,27 @@ config_default_nlopt <-
     ftol_abs      = 0.0    ,
     xtol_abs      = 0.0    ,
     maxtime       = -1
+  )
+
+
+config_default_builtin <-
+  list(
+    algorithm           = "NEWTON",
+    backend             = "builtin",
+    maxeval             = 10000,
+    ftol_in             = 1e-8,
+    maxit_em            = 200,
+    ftol_em             = 1e-8
+  )
+
+
+# PLNPCA builtin backend: joint L-BFGS on [vec(B); vec(C); vec(M); vec(ψ)] with strong Wolfe
+# line search (m=10 pairs). Only maxeval and ftol_in are read by the C++ optimizer.
+config_default_plnpca <-
+  list(
+    backend = "builtin",
+    maxeval = 10000,
+    ftol_in = 1e-8
   )
 
 config_default_torch <-
@@ -31,6 +52,29 @@ config_default_torch <-
     trace         = 1,
     device        = "cpu"
   )
+
+## Build the optimizer config list from a backend name and user overrides.
+## `builtin_default` lets PLNPCA pass config_default_plnpca instead of config_default_builtin.
+## `extra` is a named list of additional defaults applied BEFORE user overrides (so the user can
+## still override them), used for outer-loop parameters like ftol_em/maxit_em in PLNnetwork and
+## PLNmixture.
+make_config_optim <- function(backend, config_optim, trace,
+                              builtin_default = config_default_builtin,
+                              extra = list()) {
+  config_opt <- if (backend == "nlopt") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
+    config_default_nlopt
+  } else if (backend == "torch") {
+    stopifnot(config_optim$algorithm %in% available_algorithms_torch)
+    config_default_torch
+  } else {
+    builtin_default
+  }
+  config_opt$trace <- trace
+  config_opt[names(extra)] <- extra
+  config_opt[names(config_optim)] <- config_optim
+  config_opt
+}
 
 config_post_default_PLN <-
   list(
@@ -76,26 +120,6 @@ config_post_default_PLNmixture <-
     variational_var = FALSE,
     sandwich_var    = FALSE
   )
-
-status_to_message <- function(status) {
-  message <- switch(as.character(status),
-                    "1"  = "success",
-                    "2"  = "success, stopval was reached",
-                    "3"  = "success, ftol_rel or ftol_abs was reached",
-                    "4"  = "success, xtol_rel or xtol_abs was reached",
-                    "5"  = "success, maxeval was reached",
-                    "6"  = "success, maxtime was reached",
-                    "-1" = "failure",
-                    "-2" = "invalid arguments",
-                    "-3" = "out of memory.",
-                    "-4" = "roundoff errors led to a breakdown of the optimization algorithm",
-                    "-5" = "forced termination:",
-                    "Return status not recognized"
-  )
-  message
-}
-
-trace <- function(x) sum(diag(x))
 
 .xlogx <- function(x) ifelse(x < .Machine$double.eps, 0, x*log(x))
 
@@ -169,9 +193,17 @@ extract_model <- function(call, envir) {
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-  ## Save encountered levels for predict methods as attribute of the formula
-  attr(call$formula, "xlevels") <- .getXlevels(terms(frame), frame)
-  list(Y = Y, X = X, O = O, miss = is.na(Y), w = w, formula = call$formula)
+  ## Save encountered levels for predict methods as attribute of the formula.
+  ## Evaluate the formula expression to get the formula object before setting
+  ## attributes — avoids "cannot set an attribute on a 'symbol'" when the
+  ## formula was passed as a variable (e.g. PLN(my_formula, data = d)).
+  formula_obj <- if (!inherits(call$formula, "formula")) {
+    eval(call$formula, envir = envir)
+  } else {
+    call$formula
+  }
+  attr(formula_obj, "xlevels") <- .getXlevels(terms(frame), frame)
+  list(Y = Y, X = X, O = O, miss = is.na(Y), w = w, formula = formula_obj)
 }
 
 edge_to_node <- function(x, n = max(x)) {
@@ -182,16 +214,6 @@ edge_to_node <- function(x, n = max(x)) {
   i <- x - j.grid[j]
   ## Renumber i and j starting from 1 to stick with R convention
   return(data.frame(node1 = i + 1, node2 = j + 1))
-}
-
-node_pair_to_egde <- function(x, y, node.set = union(x, y)) {
-  ## Convert node labels to integers (starting from 0)
-  x <- match(x, node.set) - 1
-  y <- match(y, node.set) - 1
-  ## For each pair (x,y) return, corresponding edge number
-  n <- length(node.set)
-  j.grid <- cumsum(0:(n - 1))
-  x + j.grid[y] + 1
 }
 
 #' @title PLN RNG
@@ -266,16 +288,25 @@ create_parameters <- function(
 #' Helper function for PLN initialization.
 #'
 #' @description
-#' Barebone function to compute starting points for B, M and S when fitting a PLN. Mostly intended for internal use.
+#' Barebone function to compute starting points for B, M and S2 when fitting a PLN. Mostly intended for internal use.
 #'
 #' @param Y Response count matrix
 #' @param X Covariate matrix. Note that initialization will fail if the model matrix is singular.
 #' @param O Offset matrix (in log-scale)
 #' @param w Weight vector (defaults to 1)
-#' @param s Scale parameter for S (defaults to 0.1)
-#' @return a named list of starting values for model parameter B and variational parameters M and S used in the iterative optimization algorithm of [PLN()]
+#' @param method character: strategy used to initialize B. Either `"LM"` (default, fast weighted
+#'   log-linear regression) or `"GLM"` (p independent Poisson GLMs, more accurate for complex
+#'   or unbalanced designs but slower).
+#' @return a named list of starting values for model parameter B and variational parameters M and S2 used in the iterative optimization algorithm of [PLN()]
 #'
-#' @details The default strategy to estimate B and M is to fit a linear model with covariates `X` to the response count matrix (after adding a pseudocount of 1, scaling by the offset and taking the log). The regression matrix is used to initialize `B` and the residuals to initialize `M`. `S` is initialized as a constant conformable matrix with value `s`.
+#' @details
+#' * **B**: estimated by weighted LM (`method = "LM"`, default) or p independent Poisson GLMs
+#'   (`method = "GLM"`). The GLM option gives better B estimates for factorial or unbalanced
+#'   designs at the cost of p IRLS fits.
+#' * **M**: initialized to `log((1 + Y) / exp(O))` (M_full in the X*B + M_res parameterization).
+#' * **S**: initialized element-wise to `1 / sqrt(2 + Y)`, the approximate VE-step optimum at
+#'   Omega = I. This adapts automatically to count levels: high S for zero counts (high
+#'   uncertainty), low S for large counts.
 #'
 #' @rdname compute_PLN_starting_point
 #' @examples
@@ -284,17 +315,29 @@ create_parameters <- function(
 #' Y <- barents$Abundance
 #' X <- model.matrix(Abundance ~ Latitude + Longitude + Depth + Temperature, data = barents)
 #' O <- log(barents$Offset)
-#' w <-- rep(1, nrow(Y))
+#' w <- rep(1, nrow(Y))
 #' compute_PLN_starting_point(Y, X, O, w)
+#' compute_PLN_starting_point(Y, X, O, w, method = "GLM")
 #' }
 #'
-#' @importFrom stats lm.fit
+#' @importFrom stats lm.fit glm.fit poisson
 #' @export
-compute_PLN_starting_point <- function(Y, X, O, w, s = 0.1) {
-  # Y = responses, X = covariates, O = offsets (in log scale), w = weights
+compute_PLN_starting_point <- function(Y, X, O, w, method = c("LM", "GLM")) {
+  method <- match.arg(method)
   n <- nrow(Y); p <- ncol(Y); d <- ncol(X)
-  fits <- lm.fit(w * X, w * log((1 + Y)/exp(O)), singular.ok = FALSE)
-  list(B = matrix(fits$coefficients, d, p),
-       M = matrix(fits$residuals, n, p),
-       S = matrix(s, n, p))
+  Y0 <- replace(Y, is.na(Y), 0)  # treat missing counts as 0 for initialization only
+  expO <- exp(O)
+  if (method == "GLM") {
+    pois_fam <- poisson()
+    B <- vapply(seq_len(p), function(j)
+      glm.fit(X, Y0[, j], offset = O[, j], weights = w, family = pois_fam)$coefficients,
+      FUN.VALUE = numeric(d)
+    )
+  } else {
+    B <- lm.fit(w * X, w * log((1 + Y0) / expO), singular.ok = TRUE)$coefficients
+    B[is.na(B)] <- 0
+  }
+  list(B  = matrix(B, d, p),
+       M  = matrix(log((1 + Y0) / expO), n, p),
+       S2 = 1 / (2 + Y0))
 }

@@ -91,6 +91,45 @@ test_that("PLN fit: Check prediction",  {
   expect_length(predict(model, newdata = toy_data[3:4, ], type = "r"), 2L)
 })
 
+test_that("ZIPLN fit: S3 methods logLik, AIC, BIC, ICL", {
+
+  model <- ZIPLN(Abundance ~ 1, data = trichoptera)
+
+  ## logLik returns a proper "logLik" S3 object
+  ll <- logLik(model)
+  expect_s3_class(ll, "logLik")
+  expect_equal(as.numeric(ll), model$loglik)
+  expect_equal(attr(ll, "df"),   model$nb_param)
+  expect_equal(attr(ll, "nobs"), model$n)
+
+  ## AIC and BIC match the active bindings (maximization convention: larger is better)
+  expect_equal(AIC(model), model$AIC)
+  expect_equal(BIC(model), model$BIC)
+  expect_equal(ICL(model), model$ICL)
+
+  ## Numeric scalars
+  expect_true(is.numeric(AIC(model)) && length(AIC(model)) == 1L)
+  expect_true(is.numeric(BIC(model)) && length(BIC(model)) == 1L)
+  expect_true(is.numeric(ICL(model)) && length(ICL(model)) == 1L)
+
+  ## BIC ≤ AIC (stronger penalty) and ICL ≤ BIC (additional entropy term)
+  expect_lte(BIC(model), AIC(model))
+  expect_lte(ICL(model), BIC(model))
+
+  ## Consistency across covariance structures
+  for (cov in c("diagonal", "spherical")) {
+    m <- ZIPLN(Abundance ~ 1, data = trichoptera,
+               control = ZIPLN_param(covariance = cov, trace = 0))
+    ll_m <- logLik(m)
+    expect_s3_class(ll_m, "logLik")
+    expect_equal(as.numeric(ll_m), m$loglik)
+    expect_equal(attr(ll_m, "df"), m$nb_param)
+    expect_equal(AIC(m), m$AIC)
+    expect_equal(BIC(m), m$BIC)
+    expect_equal(ICL(m), m$ICL)
+  }
+})
+
 test_that("ZIPLN fit: Check number of parameters",  {
 
   p <- ncol(trichoptera$Abundance)

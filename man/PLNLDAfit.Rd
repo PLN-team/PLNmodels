@@ -23,59 +23,58 @@ print(myPLNLDA)
 The function \code{\link{PLNLDA}}.
 }
 \section{Super class}{
-\code{\link[PLNmodels:PLNfit]{PLNmodels::PLNfit}} -> \code{PLNLDAfit}
+\code{\link[PLNmodels:PLNfit]{PLNfit}} -> \code{PLNLDAfit}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{rank}}{the dimension of the current model}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{rank}}{the dimension of the current model}
 
-\item{\code{nb_param}}{number of parameters in the current PLN model}
+    \item{\code{nb_param}}{number of parameters in the current PLN model}
 
-\item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the PLN model: B (covariates), Sigma (latent covariance), C (latent loadings), P (latent position) and Mu (group means)}
+    \item{\code{model_par}}{a list with the matrices associated with the estimated parameters of the PLN model: B (covariates), Sigma (latent covariance), C (latent loadings), P (latent position) and Mu (group means)}
 
-\item{\code{percent_var}}{the percent of variance explained by each axis}
+    \item{\code{percent_var}}{the percent of variance explained by each axis}
 
-\item{\code{corr_map}}{a matrix of correlations to plot the correlation circles}
+    \item{\code{corr_map}}{a matrix of correlations to plot the correlation circles}
 
-\item{\code{scores}}{a matrix of scores to plot the individual factor maps}
+    \item{\code{scores}}{a matrix of scores to plot the individual factor maps}
 
-\item{\code{group_means}}{a matrix of group mean vectors in the latent space.}
-}
-\if{html}{\out{</div>}}
+    \item{\code{group_means}}{a matrix of group mean vectors in the latent space.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-PLNLDAfit-new}{\code{PLNLDAfit$new()}}
-\item \href{#method-PLNLDAfit-optimize}{\code{PLNLDAfit$optimize()}}
-\item \href{#method-PLNLDAfit-postTreatment}{\code{PLNLDAfit$postTreatment()}}
-\item \href{#method-PLNLDAfit-setVisualization}{\code{PLNLDAfit$setVisualization()}}
-\item \href{#method-PLNLDAfit-plot_individual_map}{\code{PLNLDAfit$plot_individual_map()}}
-\item \href{#method-PLNLDAfit-plot_correlation_map}{\code{PLNLDAfit$plot_correlation_map()}}
-\item \href{#method-PLNLDAfit-plot_LDA}{\code{PLNLDAfit$plot_LDA()}}
-\item \href{#method-PLNLDAfit-predict}{\code{PLNLDAfit$predict()}}
-\item \href{#method-PLNLDAfit-show}{\code{PLNLDAfit$show()}}
-\item \href{#method-PLNLDAfit-clone}{\code{PLNLDAfit$clone()}}
+  \itemize{
+    \item \href{#method-PLNLDAfit-initialize}{\code{PLNLDAfit$new()}}
+    \item \href{#method-PLNLDAfit-optimize}{\code{PLNLDAfit$optimize()}}
+    \item \href{#method-PLNLDAfit-postTreatment}{\code{PLNLDAfit$postTreatment()}}
+    \item \href{#method-PLNLDAfit-setVisualization}{\code{PLNLDAfit$setVisualization()}}
+    \item \href{#method-PLNLDAfit-plot_individual_map}{\code{PLNLDAfit$plot_individual_map()}}
+    \item \href{#method-PLNLDAfit-plot_correlation_map}{\code{PLNLDAfit$plot_correlation_map()}}
+    \item \href{#method-PLNLDAfit-plot_LDA}{\code{PLNLDAfit$plot_LDA()}}
+    \item \href{#method-PLNLDAfit-predict}{\code{PLNLDAfit$predict()}}
+    \item \href{#method-PLNLDAfit-show}{\code{PLNLDAfit$show()}}
+    \item \href{#method-PLNLDAfit-clone}{\code{PLNLDAfit$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
+\if{html}{\out{<details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNmodels::PLNfit$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNmodels::PLNfit$update()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-optimize_vestep'><code>PLNfit$optimize_vestep()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-predict_cond'><code>PLNfit$predict_cond()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-print'><code>PLNfit$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href='../../PLNmodels/html/PLNfit.html#method-PLNfit-update'><code>PLNfit$update()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNLDAfit-new"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNLDAfit-new}{}}}
-\subsection{Method \code{new()}}{
-Initialize a \code{\link{PLNLDAfit}} object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$new(
+\if{html}{\out{<a id="method-PLNLDAfit-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNLDAfit-initialize}{}}}
+\subsection{\code{PLNLDAfit$new()}}{
+  Initialize a \code{\link{PLNLDAfit}} object
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit$new(
   grouping,
   responses,
   covariates,
@@ -83,256 +82,248 @@ Initialize a \code{\link{PLNLDAfit}} object
   weights,
   formula,
   control
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
+      \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+      \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+      \item{\code{control}}{list controlling the optimization and the model}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
-
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{control}}{list controlling the optimization and the model}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNLDAfit-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNLDAfit-optimize}{}}}
-\subsection{Method \code{optimize()}}{
-Compute group means and axis of the LDA (noted B in the model) in the
+\subsection{\code{PLNLDAfit$optimize()}}{
+  Compute group means and axis of the LDA (noted B in the model) in the
 latent space, update corresponding fields
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$optimize(grouping, responses, covariates, offsets, weights, config)}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit$optimize(grouping, responses, covariates, offsets, weights, config)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
+      \item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{covariates}}{design matrix. Automatically built from the covariates and the formula from the call}
+      \item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
+      \item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
+      \item{\code{config}}{list controlling the optimization}
+      \item{\code{X}}{Abundance matrix.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
-
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix. Automatically built from the covariates and the formula from the call}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{weights}}{an optional vector of observation weights to be used in the fitting process.}
-
-\item{\code{config}}{list controlling the optimization}
-
-\item{\code{X}}{Abundance matrix.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNLDAfit-postTreatment"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNLDAfit-postTreatment}{}}}
-\subsection{Method \code{postTreatment()}}{
-Update R2, fisher and std_err fields and visualization
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$postTreatment(
+\subsection{\code{PLNLDAfit$postTreatment()}}{
+  Update R2, fisher and std_err fields and visualization
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit$postTreatment(
   grouping,
   responses,
   covariates,
   offsets,
+  weights = rep(1, nrow(responses)),
   config_post,
   config_optim
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{grouping}}{a factor with group memberships}
+      \item{\code{responses}}{the matrix of responses (counts)}
+      \item{\code{covariates}}{the matrix of covariates}
+      \item{\code{offsets}}{the matrix of offsets}
+      \item{\code{weights}}{an optional vector of observation weights. Default is uniform weights.}
+      \item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).}
+      \item{\code{config_optim}}{list controlling the optimization parameters}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{grouping}}{a factor specifying the class of each observation used for discriminant analysis.}
-
-\item{\code{responses}}{the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{covariates}}{design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{offsets}}{offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class}
-
-\item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).}
-
-\item{\code{config_optim}}{list controlling the optimization parameters}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNLDAfit-setVisualization"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNLDAfit-setVisualization}{}}}
-\subsection{Method \code{setVisualization()}}{
-Compute LDA scores in the latent space and update corresponding fields.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$setVisualization(scale.unit = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNLDAfit$setVisualization()}}{
+  Compute LDA scores in the latent space and update corresponding fields.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit$setVisualization(scale.unit = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{scale.unit}}{Logical. Should LDA scores be rescaled to have unit variance}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{scale.unit}}{Logical. Should LDA scores be rescaled to have unit variance}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNLDAfit-plot_individual_map"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNLDAfit-plot_individual_map}{}}}
-\subsection{Method \code{plot_individual_map()}}{
-Plot the factorial map of the LDA
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$plot_individual_map(
+\subsection{\code{PLNLDAfit$plot_individual_map()}}{
+  Plot the factorial map of the LDA
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit$plot_individual_map(
   axes = 1:min(2, self$rank),
   main = "Individual Factor Map",
   plot = TRUE
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
+      \item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+      \item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
-
-\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
-
-\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNLDAfit-plot_correlation_map"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNLDAfit-plot_correlation_map}{}}}
-\subsection{Method \code{plot_correlation_map()}}{
-Plot the correlation circle of a specified axis for a \code{\link{PLNLDAfit}} object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$plot_correlation_map(
+\subsection{\code{PLNLDAfit$plot_correlation_map()}}{
+  Plot the correlation circle of a specified axis for a \code{\link{PLNLDAfit}} object
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit$plot_correlation_map(
   axes = 1:min(2, self$rank),
   main = "Variable Factor Map",
   cols = "default",
   plot = TRUE
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
+      \item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
+      \item{\code{cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
+      \item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{axes}}{numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))}
-
-\item{\code{main}}{character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.}
-
-\item{\code{cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
-
-\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graphic
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNLDAfit-plot_LDA"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNLDAfit-plot_LDA}{}}}
-\subsection{Method \code{plot_LDA()}}{
-Plot a summary of the \code{\link{PLNLDAfit}} object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$plot_LDA(
+\subsection{\code{PLNLDAfit$plot_LDA()}}{
+  Plot a summary of the \code{\link{PLNLDAfit}} object
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit$plot_LDA(
   nb_axes = min(3, self$rank),
   var_cols = "default",
   plot = TRUE
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{nb_axes}}{scalar: the number of axes to be considered when map = "both". The default is min(3,rank).}
+      \item{\code{var_cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
+      \item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link{grob}} object
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{nb_axes}}{scalar: the number of axes to be considered when map = "both". The default is min(3,rank).}
-
-\item{\code{var_cols}}{a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.}
-
-\item{\code{plot}}{logical. Should the plot be displayed or sent back as ggplot object}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link{grob}} object
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNLDAfit-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNLDAfit-predict}{}}}
-\subsection{Method \code{predict()}}{
-Predict group of new samples
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$predict(
+\subsection{\code{PLNLDAfit$predict()}}{
+  Predict group of new samples
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit$predict(
   newdata,
   type = c("posterior", "response", "scores"),
   scale = c("log", "prob"),
   prior = NULL,
   control = PLN_param(backend = "nlopt"),
   envir = parent.frame()
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{newdata}}{A data frame in which to look for variables, offsets and counts  with which to predict.}
+      \item{\code{type}}{The type of prediction required. The default are posterior probabilities for each group (in either unnormalized log-scale or natural probabilities, see "scale" for details), "response" is the group with maximal posterior probability and "scores" is the average score along each separation axis in the latent space, with weights equal to the posterior probabilities.}
+      \item{\code{scale}}{The scale used for the posterior probability. Either log-scale ("log", default) or natural probabilities summing up to 1 ("prob").}
+      \item{\code{prior}}{User-specified prior group probabilities in the new data. If NULL (default), prior probabilities are computed from the learning set.}
+      \item{\code{control}}{a list for controlling the optimization. See \code{\link[=PLN]{PLN()}} for details.}
+      \item{\code{envir}}{Environment in which the prediction is evaluated}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{newdata}}{A data frame in which to look for variables, offsets and counts  with which to predict.}
-
-\item{\code{type}}{The type of prediction required. The default are posterior probabilities for each group (in either unnormalized log-scale or natural probabilities, see "scale" for details), "response" is the group with maximal posterior probability and "scores" is the average score along each separation axis in the latent space, with weights equal to the posterior probabilities.}
-
-\item{\code{scale}}{The scale used for the posterior probability. Either log-scale ("log", default) or natural probabilities summing up to 1 ("prob").}
-
-\item{\code{prior}}{User-specified prior group probabilities in the new data. If NULL (default), prior probabilities are computed from the learning set.}
-
-\item{\code{control}}{a list for controlling the optimization. See \code{\link[=PLN]{PLN()}} for details.}
-
-\item{\code{envir}}{Environment in which the prediction is evaluated}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNLDAfit-show"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNLDAfit-show}{}}}
-\subsection{Method \code{show()}}{
-User friendly print method
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$show()}\if{html}{\out{</div>}}
+\subsection{\code{PLNLDAfit$show()}}{
+  User friendly print method
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit$show()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNLDAfit-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNLDAfit-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNLDAfit$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNLDAfit$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNLDAfit$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

@@ -5,15 +5,22 @@
 \title{Control of PLNPCA fit}
 \usage{
 PLNPCA_param(
-  backend = c("nlopt", "torch"),
+  backend = c("nlopt", "builtin", "torch"),
   trace = 1,
   config_optim = list(),
   config_post = list(),
-  inception = NULL
+  inception = NULL,
+  init_method = c("LM", "GLM"),
+  sequential = FALSE
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt" or "torch". Default is "nlopt"}
+\item{backend}{optimization backend, either \code{"nlopt"} (default, NLOPT/CCSAQ, recommended
+for PLNPCA: conservative per-variable steps reliably find the global basin even when
+the singular-value ratio d1/sqrt(n) is large), \code{"builtin"} (joint L-BFGS with strong
+Wolfe line search on all parameters simultaneously — faster per iteration but may
+converge to inferior local optima on ill-conditioned datasets),
+or \code{"torch"} (automatic differentiation via the torch package).}
 
 \item{trace}{a integer for verbosity.}
 
@@ -21,9 +28,25 @@ PLNPCA_param(
 
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
-\item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
-log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
-which sometimes speeds up the inference.}
+\item{inception}{an optional pre-fitted \code{\link{PLNfit}} object. When provided, its variational
+means \code{M} and regression coefficients \code{B} are used to compute the shared SVD
+\code{svd(M - X*B)} that initialises all ranks simultaneously. This replaces the default
+LM-based starting point and can improve convergence for large ranks on datasets with
+strong covariate effects (e.g. \code{inception = PLN(formula, data)}). When \code{NULL} (default),
+a fast LM is used. \code{init_method} is ignored when \code{inception} is set.}
+
+\item{init_method}{character: strategy used to compute the starting point for the shared SVD.
+Either \code{"LM"} (default, fast: one multivariate \code{lm.fit} on log-transformed counts) or
+\code{"GLM"} (p independent Poisson GLMs, more accurate for complex or highly unbalanced
+designs). Ignored when \code{inception} is provided. Benchmarks show \code{"LM"} is as good as
+or better than \code{"GLM"} for PLNPCA in most cases; \code{"GLM"} is not recommended.
+See \code{\link[=compute_PLN_starting_point]{compute_PLN_starting_point()}}.}
+
+\item{sequential}{logical. If \code{TRUE}, ranks are fitted in ascending order and each model is
+warm-started from the converged solution of the previous rank: loadings C are augmented
+with new columns from the inception SVD, while latent scores M and variances S2 are
+padded with zeros / 0.01 respectively. Disables parallel fitting across ranks.
+Default is \code{FALSE}.}
 }
 \value{
 list of parameters configuring the fit.
@@ -57,6 +80,14 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "step_sizes" pair of minimal (default: 1e-6) and maximal (default: 50) allowed step sizes. Only used in RPROP
 \item "etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
+}
+
+When "builtin" backend is used, the following entries are relevant
+\itemize{
+\item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
+\item "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8
+\item "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
+\item "ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8
 }
 
 The list of parameters \code{config_post} controls the post-treatment processing (for most \verb{PLN*()} functions), with the following entries (defaults may vary depending on the specific function, check \verb{config_post_default_*} for defaults values):

@@ -2,7 +2,7 @@
 title: "Sparse structure estimation for multivariate count data with PLN-network"
 author: "PLN team"
 date: "`r Sys.Date()`"
-output: 
+output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 4
@@ -16,10 +16,10 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  screenshot.force = FALSE, 
+  screenshot.force = FALSE,
   echo = TRUE,
   rows.print = 5,
-  message = FALSE, 
+  message = FALSE,
   warning = FALSE)
 set.seed(178643)
 ```
@@ -51,21 +51,21 @@ The `trichoptera` data frame stores a matrix of counts (`trichoptera$Abundance`)
 ### Mathematical background
 
 The network model for multivariate count data that we introduce in @PLNnetwork is a variant of the Poisson Lognormal model of @AiH89, see [the PLN vignette](PLN.html) as a reminder. Compare to the standard PLN model we add a sparsity constraint on the inverse covariance matrix ${\boldsymbol\Sigma}^{-1}\triangleq \boldsymbol\Omega$ by means of the $\ell_1$-norm, such that $\|\boldsymbol\Omega\|_1 < c$. PLN-network is the equivalent of the sparse multivariate Gaussian model [@banerjee2008] in the PLN framework. It relates some $p$-dimensional observation vectors $\mathbf{Y}_i$ to some  $p$-dimensional vectors of Gaussian latent variables $\mathbf{Z}_i$ as follows
-\begin{equation} 
+\begin{equation}
   \begin{array}{rcl}
   \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}\left({\boldsymbol\mu},\boldsymbol\Omega^{-1}\right) &  \|\boldsymbol\Omega\|_1 < c \\
   \text{observation space } &  Y_{ij} | Z_{ij} \quad \text{indep.} & Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
   \end{array}
 \end{equation}
 
-The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying structure of dependence between the $p$ variables. 
+The parameter ${\boldsymbol\mu}$ corresponds to the main effects and the latent covariance matrix $\boldsymbol\Sigma$ describes the underlying structure of dependence between the $p$ variables.
 
 The $\ell_1$-penalty on $\boldsymbol\Omega$ induces sparsity and selection of important direct relationships between entities. Hence, the support of $\boldsymbol\Omega$ correspond to a network of underlying interactions. The sparsity level ($c$ in the above mathematical model), which corresponds to the number of edges in the network, is controlled by a penalty parameter in the optimization process sometimes referred to as $\lambda$. All mathematical details can be found in @PLNnetwork.
 
-#### Covariates and offsets 
+#### Covariates and offsets
 
 Just like PLN, PLN-network generalizes to a formulation close to a multivariate generalized linear model where the main effect is due to a linear combination of $d$ covariates $\mathbf{x}_i$ and to a vector $\mathbf{o}_i$ of $p$ offsets in sample $i$. The latent layer then reads
-\begin{equation} 
+\begin{equation}
   \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Omega^{-1}\right), \qquad \|\boldsymbol\Omega\|_1 < c ,
 \end{equation}
 where $\mathbf{B}$ is a $d\times p$ matrix of regression parameters.
@@ -81,7 +81,7 @@ More technical details can be found in @PLNnetwork
 
 ## Analysis of trichoptera data with a PLNnetwork model
 
-In the package, the sparse PLN-network model is adjusted with the function `PLNnetwork`, which we review in this section. This function adjusts the model for a series of value of the penalty parameter controlling the number of edges in the network. It then provides a collection of objects with class `PLNnetworkfit`, corresponding to networks with different levels of density, all stored in an object with class `PLNnetworkfamily`. 
+In the package, the sparse PLN-network model is adjusted with the function `PLNnetwork`, which we review in this section. This function adjusts the model for a series of value of the penalty parameter controlling the number of edges in the network. It then provides a collection of objects with class `PLNnetworkfit`, corresponding to networks with different levels of density, all stored in an object with class `PLNnetworkfamily`.
 
 ### Adjusting a collection of network - a.k.a. a regularization path
 
@@ -101,7 +101,7 @@ The `network_models` variable is an `R6` object with class `PLNnetworkfamily`, w
 network_models
 ```
 
-One can also easily access the successive values of the criteria in the collection 
+One can also easily access the successive values of the criteria in the collection
 
 ```{r collection criteria}
 network_models$criteria %>% head() %>% knitr::kable()
@@ -138,21 +138,21 @@ To pursue the analysis, we can represent the coefficient path (i.e., value of th
 
 
 ```{r path_coeff, fig.width=7, fig.height=7}
-coefficient_path(network_models, corr = TRUE) %>% 
-  ggplot(aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) + 
-    geom_line(show.legend = FALSE) +  coord_trans(x="log10") + theme_bw()
+coefficient_path(network_models, corr = TRUE) %>%
+  ggplot(aes(x = Penalty, y = Coeff, group = Edge, colour = Edge)) +
+    geom_line(show.legend = FALSE) +  coord_transform(x="log10") + theme_bw()
 ```
 
 ### Model selection issue: choosing a network
 
-To select a network with a specific level of penalty, one uses the `getModel(lambda)` S3 method. We can also extract the best model according to the BIC or EBIC with the method `getBestModel()`. 
+To select a network with a specific level of penalty, one uses the `getModel(lambda)` S3 method. We can also extract the best model according to the BIC or EBIC with the method `getBestModel()`.
 
 ```{r extract models}
 model_pen <- getModel(network_models, network_models$penalties[20]) # give some sparsity
 model_BIC <- getBestModel(network_models, "BIC")   # if no criteria is specified, the best BIC is used
 ```
 
-An alternative strategy is to use StARS [@stars], which performs resampling to evaluate the robustness of the network along the path of solutions in a similar fashion as the stability selection approach of @stabilitySelection, but in a network inference context. 
+An alternative strategy is to use StARS [@stars], which performs resampling to evaluate the robustness of the network along the path of solutions in a similar fashion as the stability selection approach of @stabilitySelection, but in a network inference context.
 
 Resampling can be computationally demanding but is easily parallelized: the function `stability_selection` integrates some features of the **future** package to perform parallel computing. We set our plan to speed the process by relying on 2 workers:
 
@@ -213,14 +213,13 @@ We can finally check that the fitted value of the counts -- even with sparse reg
 data.frame(
   fitted   = as.vector(fitted(model_StARS)),
   observed = as.vector(trichoptera$Abundance)
-) %>% 
-  ggplot(aes(x = observed, y = fitted)) + 
-    geom_point(size = .5, alpha =.25 ) + 
-    scale_x_log10(limits = c(1,1000)) + 
-    scale_y_log10(limits = c(1,1000)) + 
+) %>%
+  ggplot(aes(x = observed, y = fitted)) +
+    geom_point(size = .5, alpha =.25 ) +
+    scale_x_log10(limits = c(1,1000)) +
+    scale_y_log10(limits = c(1,1000)) +
     theme_bw() + annotation_logticks()
 ```
 
 
 ## References
-

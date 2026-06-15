@@ -103,21 +103,15 @@ test_that("plot_LDA works for 4 or more axes:", {
 test_that("PLNLDA fit: Check number of parameters",  {
 
   p <- ncol(trichoptera$Abundance)
+  g <- nlevels(trichoptera$Group)
 
-  mdl <- PLN(Abundance ~ 1, data = trichoptera)
-  expect_equal(mdl$nb_param, p*(p+1)/2 + p * 1)
+  ## no extra covariate: Sigma (p*(p+1)/2) + group means (p*g)
+  mdl0 <- PLNLDA(Abundance ~ 0 + offset(log(Offset)), grouping = Group, data = trichoptera)
+  expect_equal(mdl0$nb_param, p * (p + 1) / 2 + p * g)
 
-  mdl <- PLN(Abundance ~ 1 + Wind, data = trichoptera)
-  expect_equal(mdl$nb_param, p*(p+1)/2 + p * 2)
-
-  mdl <- PLN(Abundance ~ Group + 0 , data = trichoptera)
-  expect_equal(mdl$nb_param, p*(p+1)/2 + p * nlevels(trichoptera$Group))
-
-  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = PLNLDA_param(covariance = "diagonal"))
-  expect_equal(mdl$nb_param, p + p * 1)
-
-  mdl <- PLN(Abundance ~ 1, data = trichoptera, control = PLNLDA_param(covariance = "spherical"))
-  expect_equal(mdl$nb_param, 1 + p * 1)
+  ## one extra covariate: adds p regression coefficients
+  mdl1 <- PLNLDA(Abundance ~ Wind + offset(log(Offset)), grouping = Group, data = trichoptera)
+  expect_equal(mdl1$nb_param, p * (p + 1) / 2 + p * g + p * 1)
 
 })
 

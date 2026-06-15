@@ -1,11 +1,6 @@
 library(PLNmodels)
 library(factoextra)
 
-## setting up future for parallelism
-nb_cores <- 10
-options(future.fork.enable = TRUE)
-future::plan("multicore", workers = nb_cores)
-
 ## get oaks data set
 data(oaks)
 
@@ -53,8 +48,6 @@ rbind(
                               "ZIPLN diagonal single", "ZIPLN diagonal column prob", "ZIPLN diagonal row prob", "ZIPLN diagonal covar prob")) %>%
   knitr::kable()
 
-
-
 ## Discriminant Analysis with LDA
 myLDA_tree <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks)
 plot(myLDA_tree)
@@ -65,7 +58,7 @@ plot(myLDA_tree_diagonal)
 otu.family <- factor(rep(c("fungi", "E. aphiltoides", "bacteria"), c(47, 1, 66)))
 plot(myLDA_tree, "variable", var_cols = otu.family) ## TODO: add color for arrows to check
 
-myLDA_tree_spherical <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLN_param(covariance = "spherical"))
+myLDA_tree_spherical <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = tree, data = oaks, control = PLNLDA_param(covariance = "spherical"))
 plot(myLDA_tree_spherical)
 
 ## One dimensional check of plot
@@ -73,7 +66,7 @@ myLDA_orientation <- PLNLDA(Abundance ~ 1 + offset(log(Offset)), grouping = orie
 plot(myLDA_orientation)
 
 ## Dimension reduction with PCA
-system.time(myPLNPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = oaks, ranks = 1:30)) # about 40 secs.
+system.time(myPLNPCAs <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = oaks, ranks = c(1, 5, 10, 20, 30, 35)))
 plot(myPLNPCAs)
 myPLNPCA <- getBestModel(myPLNPCAs)
 plot(myPLNPCA, ind_cols = oaks$tree)
@@ -85,7 +78,7 @@ factoextra::fviz_pca_biplot(
   ) + labs(col = "distance (cm)") + scale_color_viridis_d()
 
 ## Dimension reduction with PCA
-system.time(myPLNPCAs_tree <- PLNPCA(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, ranks = 1:30)) # about 40 sec.
+system.time(myPLNPCAs_tree <- PLNPCA(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, ranks = c(1, 5, 10, 20, 30, 35)))
 plot(myPLNPCAs_tree)
 myPLNPCA_tree <- getBestModel(myPLNPCAs_tree)
 
@@ -96,8 +89,7 @@ factoextra::fviz_pca_biplot(
   labs(col = "distance (cm)") + scale_color_viridis_c()
 
 ## Network inference with sparce covariance estimation
-
-system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.1)))
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.02)))
 plot(myPLNnets)
 plot(getBestModel(myPLNnets, "EBIC"))
 # stability_selection(myPLNnets)
@@ -135,12 +127,9 @@ system.time(my_mixtures <- PLNmixture(Abundance ~ 0 + tree + distTOground + offs
 
 plot(my_mixtures, criteria = c("loglik", "ICL", "BIC"), reverse = TRUE)
 
-myPLN <- my_mixtures %>% getBestModel("ICL")
+myPLN <- my_mixtures %>% getModel(4)
 
 myPLN$plot_clustering_pca(main = 'clustering memberships in individual factor map')
 p <- myPLN$plot_clustering_data()
 
 aricode::ARI(myPLN$memberships, oaks$tree)
-
-
-future::plan("sequential")

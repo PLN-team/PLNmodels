@@ -31,7 +31,7 @@ PLNmixturefamily <-
         ## Control options
         control$trace <- FALSE
         config_fast <- control$config_optim
-        config_fast$maxit_out <- 2
+        config_fast$maxit_em <- 2
 
         ## Effective number of clusters (remove empty classes) and current clustering with clusters numbered in 1:k (with no gaps)
         cl  <- model$memberships
@@ -98,7 +98,7 @@ PLNmixturefamily <-
         ## Control options
         control$trace <- FALSE
         config_fast <- control$config_optim
-        config_fast$maxit_out <- 2
+        config_fast$maxit_em <- 2
 
         ## number of clusters
         if (is.null(k)) k <- length(model$components)
@@ -171,7 +171,7 @@ PLNmixturefamily <-
           myPLN <- PLNfit$new(responses, covariates, offsets, rep(1, nrow(responses)), formula, control)
           myPLN$optimize(responses, covariates, offsets, rep(1, nrow(responses)), control$config_optim)
           Sbar <- rowSums(myPLN$var_par$S2)
-          D <- sqrt(as.matrix(dist(myPLN$var_par$M)^2) + outer(Sbar,rep(1,myPLN$n)) + outer(rep(1, myPLN$n), Sbar))
+          D <- sqrt(as.matrix(dist(myPLN$latent_pos)^2) + outer(Sbar,rep(1,myPLN$n)) + outer(rep(1, myPLN$n), Sbar))
           clusterings <-switch(control$init_cl,
             "kmeans"  = lapply(clusters, function(k) kmeans(D, centers = k, nstart = 30)$cl),
             "ward.D2" = D %>% as.dist() %>% hclust(method = "ward.D2") %>% cutree(clusters) %>% as.data.frame() %>% as.list()

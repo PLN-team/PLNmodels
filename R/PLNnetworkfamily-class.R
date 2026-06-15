@@ -97,9 +97,9 @@ Networkfamily <- R6Class(
         ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
         if (m < length(self$penalties))
           self$models[[m + 1]]$update(
-            B = self$models[[m]]$model_par$B,
-            M = self$models[[m]]$var_par$M,
-            S = self$models[[m]]$var_par$S
+            B  = self$models[[m]]$model_par$B,
+            M  = self$models[[m]]$var_par$M,
+            S2 = self$models[[m]]$var_par$S2
           )
 
         if (config$trace > 1) {
@@ -177,7 +177,7 @@ Networkfamily <- R6Class(
     plot = function(criteria = c("loglik", "pen_loglik", "BIC", "EBIC"), reverse = FALSE, log.x = TRUE) {
       vlines <- sapply(intersect(criteria, c("BIC", "EBIC")) , function(crit) self$getBestModel(crit)$penalty)
       p <- super$plot(criteria, reverse) + xlab("penalty") + geom_vline(xintercept = vlines, linetype = "dashed", alpha = 0.25)
-      if (log.x) p <- p + ggplot2::coord_trans(x = "log10")
+      if (log.x) p <- p + ggplot2::coord_transform(x = "log10")
       p
     },
 
@@ -371,7 +371,7 @@ PLNnetworkfamily <- R6Class(
         inception_ <- self$getModel(self$penalties[1])
         inception_$update(
           M  = inception_$var_par$M[subsample, ],
-          S  = inception_$var_par$S[subsample, ]
+          S2 = inception_$var_par$S2[subsample, ]
         )
 
         ## force some control parameters
@@ -507,7 +507,7 @@ ZIPLNnetworkfamily <- R6Class(
         inception_$update(
           R  = inception_$var_par$R[subsample, ],
           M  = inception_$var_par$M[subsample, ],
-          S  = inception_$var_par$S[subsample, ]
+          S2 = inception_$var_par$S2[subsample, ]
         )
 
         ## force some control parameters

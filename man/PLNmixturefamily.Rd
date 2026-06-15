@@ -13,203 +13,212 @@ See the documentation for \code{\link[=getBestModel]{getBestModel()}}, \code{\li
 The function \code{\link{PLNmixture}}, the class \code{\link[=PLNmixturefit]{PLNmixturefit}}
 }
 \section{Super class}{
-\code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{PLNmixturefamily}
+\code{\link[PLNmodels:PLNfamily]{PLNfamily}} -> \code{PLNmixturefamily}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{clusters}}{vector indicating the number of clusters considered is the successively fitted models}
-}
-\if{html}{\out{</div>}}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{clusters}}{vector indicating the number of clusters considered is the successively fitted models}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-PLNmixturefamily-new}{\code{PLNmixturefamily$new()}}
-\item \href{#method-PLNmixturefamily-optimize}{\code{PLNmixturefamily$optimize()}}
-\item \href{#method-PLNmixturefamily-smooth}{\code{PLNmixturefamily$smooth()}}
-\item \href{#method-PLNmixturefamily-plot}{\code{PLNmixturefamily$plot()}}
-\item \href{#method-PLNmixturefamily-plot_objective}{\code{PLNmixturefamily$plot_objective()}}
-\item \href{#method-PLNmixturefamily-getBestModel}{\code{PLNmixturefamily$getBestModel()}}
-\item \href{#method-PLNmixturefamily-show}{\code{PLNmixturefamily$show()}}
-\item \href{#method-PLNmixturefamily-print}{\code{PLNmixturefamily$print()}}
-\item \href{#method-PLNmixturefamily-clone}{\code{PLNmixturefamily$clone()}}
+  \itemize{
+    \item \href{#method-PLNmixturefamily-initialize}{\code{PLNmixturefamily$new()}}
+    \item \href{#method-PLNmixturefamily-optimize}{\code{PLNmixturefamily$optimize()}}
+    \item \href{#method-PLNmixturefamily-smooth}{\code{PLNmixturefamily$smooth()}}
+    \item \href{#method-PLNmixturefamily-plot}{\code{PLNmixturefamily$plot()}}
+    \item \href{#method-PLNmixturefamily-plot_objective}{\code{PLNmixturefamily$plot_objective()}}
+    \item \href{#method-PLNmixturefamily-getBestModel}{\code{PLNmixturefamily$getBestModel()}}
+    \item \href{#method-PLNmixturefamily-show}{\code{PLNmixturefamily$show()}}
+    \item \href{#method-PLNmixturefamily-print}{\code{PLNmixturefamily$print()}}
+    \item \href{#method-PLNmixturefamily-clone}{\code{PLNmixturefamily$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
+\if{html}{\out{<details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-getModel'><code>PLNmodels::PLNfamily$getModel()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-getModel'><code>PLNfamily$getModel()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNfamily$postTreatment()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNmixturefamily-new"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNmixturefamily-new}{}}}
-\subsection{Method \code{new()}}{
-helper function for forward smoothing: split a group
+\if{html}{\out{<a id="method-PLNmixturefamily-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNmixturefamily-initialize}{}}}
+\subsection{\code{PLNmixturefamily$new()}}{
+  helper function for forward smoothing: split a group
 
 
-Initialize all models in the collection.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$new(
+  Initialize all models in the collection.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefamily$new(
   clusters,
   responses,
   covariates,
   offsets,
   formula,
   control
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{clusters}}{the dimensions of the successively fitted models}
+      \item{\code{responses}}{the matrix of responses common to every models}
+      \item{\code{covariates}}{the matrix of covariates common to every models}
+      \item{\code{offsets}}{the matrix of offsets common to every models}
+      \item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
+      \item{\code{control}}{a list for controlling the optimization. See details.}
+      \item{\code{control}}{a list for controlling the optimization. See details.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{clusters}}{the dimensions of the successively fitted models}
-
-\item{\code{responses}}{the matrix of responses common to every models}
-
-\item{\code{covariates}}{the matrix of covariates common to every models}
-
-\item{\code{offsets}}{the matrix of offsets common to every models}
-
-\item{\code{formula}}{model formula used for fitting, extracted from the formula in the upper-level call}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
-
-\item{\code{control}}{a list for controlling the optimization. See details.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefamily-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefamily-optimize}{}}}
-\subsection{Method \code{optimize()}}{
-Call to the optimizer on all models of the collection
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$optimize(config)}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefamily$optimize()}}{
+  Call to the optimizer on all models of the collection
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefamily$optimize(config)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{config}}{a list for controlling the optimization}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{config}}{a list for controlling the optimization}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefamily-smooth"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefamily-smooth}{}}}
-\subsection{Method \code{smooth()}}{
-function to restart clustering to avoid local minima by smoothing the loglikelihood values as a function of the number of clusters
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$smooth(control)}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefamily$smooth()}}{
+  function to restart clustering to avoid local minima by smoothing the loglikelihood values as a function of the number of clusters
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefamily$smooth(control)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{control}}{a list to control the smoothing process}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{control}}{a list to control the smoothing process}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefamily-plot"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefamily-plot}{}}}
-\subsection{Method \code{plot()}}{
-Lineplot of selected criteria for all models in the collection
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$plot(criteria = c("loglik", "BIC", "ICL"), reverse = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{criteria}}{A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).}
-
-\item{\code{reverse}}{A logical indicating whether to plot the value of the criteria in the "natural" direction
+\subsection{\code{PLNmixturefamily$plot()}}{
+  Lineplot of selected criteria for all models in the collection
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefamily$plot(criteria = c("loglik", "BIC", "ICL"), reverse = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{criteria}}{A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).}
+      \item{\code{reverse}}{A logical indicating whether to plot the value of the criteria in the "natural" direction
 (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
 natural direction, on the same scale as the log-likelihood..}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} object
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefamily-plot_objective"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefamily-plot_objective}{}}}
-\subsection{Method \code{plot_objective()}}{
-Plot objective value of the optimization problem along the penalty path
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$plot_objective()}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefamily$plot_objective()}}{
+  Plot objective value of the optimization problem along the penalty path
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefamily$plot_objective()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graph
+  }
 }
 
-\subsection{Returns}{
-a \code{\link[ggplot2:ggplot]{ggplot2::ggplot}} graph
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefamily-getBestModel"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefamily-getBestModel}{}}}
-\subsection{Method \code{getBestModel()}}{
-Extract best model in the collection
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$getBestModel(crit = c("BIC", "ICL", "loglik"))}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefamily$getBestModel()}}{
+  Extract best model in the collection
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefamily$getBestModel(crit = c("BIC", "ICL", "loglik"))}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{crit}}{a character for the criterion used to performed the selection. Either
+"BIC", "ICL" or "loglik". Default is \code{ICL}}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    a \code{\link{PLNmixturefit}} object
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{crit}}{a character for the criterion used to performed the selection. Either
-"BIC", "ICL" or "loglik". Default is \code{ICL}}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-a \code{\link{PLNmixturefit}} object
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefamily-show"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefamily-show}{}}}
-\subsection{Method \code{show()}}{
-User friendly print method
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$show()}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefamily$show()}}{
+  User friendly print method
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefamily$show()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefamily-print"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefamily-print}{}}}
-\subsection{Method \code{print()}}{
-User friendly print method
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$print()}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefamily$print()}}{
+  User friendly print method
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefamily$print()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNmixturefamily-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNmixturefamily-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNmixturefamily$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNmixturefamily$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNmixturefamily$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

@@ -152,7 +152,7 @@ model_selection %>% gt() %>%
           ),
           locations = cells_body(
           columns = c("ICL"), 
-          rows = c(2, 8, 17)
+          rows = c(2, 7, 17)
     ))
 ```
 

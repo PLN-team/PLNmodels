@@ -31,6 +31,14 @@ PLNPCAfamily <- R6Class(
   classname = "PLNPCAfamily",
   inherit = PLNfamily,
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PRIVATE MEMBERS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  private = list(
+    svdM = NULL  # SVD of the inception PLN M, shared across ranks
+  ),
+
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PUBLIC MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -38,13 +46,30 @@ PLNPCAfamily <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Creation -----------------------
     #' @description Initialize all models in the collection.
+    #'   A single SVD of the residual matrix `M - X*B` is computed once and shared across
+    #'   all ranks. `M` and `B` come from either a user-provided [`PLNfit`] inception or a
+    #'   fast LM on log-transformed counts (default, controlled by `init_method`).
     initialize = function(ranks, responses, covariates, offsets, weights, formula, control) {
       ## initialize the required fields
       super$initialize(responses, covariates, offsets, weights, control)
       private$params <- ranks
-      ## save some time by using a common SVD to define the inceptive models
-      control$inception <- PLNfit$new(responses, covariates, offsets, weights, formula, control)
-      control$svdM <- svd(control$inception$var_par$M, nu = max(ranks), nv = ncol(responses))
+      ## compute starting point for the common SVD:
+      ##   user-provided inception PLNfit → use its converged M and B
+      ##   otherwise: LM on log-transformed data (fast, no EM needed)
+      if (isPLNfit(control$inception)) {
+        init_B <- control$inception$model_par$B
+        init_M <- control$inception$var_par$M
+      } else {
+        lm_start <- compute_PLN_starting_point(
+          responses, covariates, offsets, weights,
+          method = if (is.null(control$init_method)) "LM" else control$init_method
+        )
+        init_B <- lm_start$B
+        init_M <- lm_start$M
+      }
+      ## SVD of the residual M - XB, shared across all ranks
+      private$svdM <- svd(init_M - covariates %*% init_B, nu = max(ranks), nv = ncol(responses))
+      control$svdM <- private$svdM
       ## instantiate as many models as ranks
       self$models <- lapply(ranks, function(rank){
         model <- PLNPCAfit$new(rank, responses, covariates, offsets, weights, formula, control)
@@ -57,18 +82,43 @@ PLNPCAfamily <- R6Class(
     #' @description Call to the C++ optimizer on all models of the collection
     #' @param config list controlling the optimization.
     optimize = function(config) {
-      self$models <- future.apply::future_lapply(self$models, function(model) {
-        if (config$trace == 1) {
-          cat("\t Rank approximation =",model$rank, "\r")
-          flush.console()
+      if (isTRUE(config$sequential)) {
+        ## Sequential fitting: ranks in ascending order, each warm-started from the previous
+        ord <- order(sapply(self$models, function(m) m$rank))
+        self$models <- self$models[ord]
+        prev_model <- NULL
+        for (i in seq_along(self$models)) {
+          model <- self$models[[i]]
+          if (config$trace == 1) {
+            cat("\t Rank approximation =", model$rank, "\r"); flush.console()
+          }
+          if (config$trace > 1) {
+            cat(" Rank approximation =", model$rank)
+            if (!is.null(prev_model))
+              cat("\n\t warm-start from rank", prev_model$rank)
+            else
+              cat("\n\t no warm-start (first rank)")
+          }
+          if (!is.null(prev_model))
+            model$warm_start_from(prev_model, private$svdM)
+          model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
+          prev_model <- model
+          self$models[[i]] <- model
         }
-        if (config$trace > 1) {
-          cat(" Rank approximation =",model$rank)
-          cat("\n\t conservative convex separable approximation for gradient descent")
-        }
-        model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
-        model
-      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      } else {
+        self$models <- future.apply::future_lapply(self$models, function(model) {
+          if (config$trace == 1) {
+            cat("\t Rank approximation =", model$rank, "\r")
+            flush.console()
+          }
+          if (config$trace > 1) {
+            cat(" Rank approximation =", model$rank)
+            cat("\n\t conservative convex separable approximation for gradient descent")
+          }
+          model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
+          model
+        }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      }
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

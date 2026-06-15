@@ -5,17 +5,19 @@
 \title{Control of a PLN fit}
 \usage{
 PLN_param(
-  backend = c("nlopt", "torch"),
+  backend = c("builtin", "nlopt", "torch"),
   trace = 1,
   covariance = c("full", "diagonal", "spherical", "fixed"),
   Omega = NULL,
   config_post = list(),
   config_optim = list(),
-  inception = NULL
+  inception = NULL,
+  init_method = c("LM", "GLM")
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt" or "torch". Default is "nlopt"}
+\item{backend}{optimization back used, either "builtin" (default), "nlopt" or "torch".
+"builtin" is the built-in envelope-theorem Newton optimizer (does not depend on NLOPT).}
 
 \item{trace}{a integer for verbosity.}
 
@@ -30,6 +32,8 @@ PLN_param(
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.}
+
+\item{init_method}{character: strategy for the starting-point computation (ignored when \code{inception} is a PLNfit). Either \code{"LM"} (default) or \code{"GLM"} (p independent Poisson GLMs, better for complex or unbalanced designs). See \code{\link[=compute_PLN_starting_point]{compute_PLN_starting_point()}}.}
 }
 \value{
 list of parameters configuring the fit.
@@ -63,6 +67,14 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "step_sizes" pair of minimal (default: 1e-6) and maximal (default: 50) allowed step sizes. Only used in RPROP
 \item "etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
+}
+
+When "builtin" backend is used, the following entries are relevant
+\itemize{
+\item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
+\item "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8
+\item "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
+\item "ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8
 }
 
 The list of parameters \code{config_post} controls the post-treatment processing (for most \verb{PLN*()} functions), with the following entries (defaults may vary depending on the specific function, check \verb{config_post_default_*} for defaults values):

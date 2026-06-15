@@ -22,93 +22,94 @@ class(fits)
 The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNnetworkfit}}
 }
 \section{Super classes}{
-\code{\link[PLNmodels:PLNfamily]{PLNmodels::PLNfamily}} -> \code{\link[PLNmodels:Networkfamily]{PLNmodels::Networkfamily}} -> \code{PLNnetworkfamily}
+\code{\link[PLNmodels:PLNfamily]{PLNfamily}} -> \code{\link[PLNmodels:Networkfamily]{Networkfamily}} -> \code{PLNnetworkfamily}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-PLNnetworkfamily-new}{\code{PLNnetworkfamily$new()}}
-\item \href{#method-PLNnetworkfamily-stability_selection}{\code{PLNnetworkfamily$stability_selection()}}
-\item \href{#method-PLNnetworkfamily-clone}{\code{PLNnetworkfamily$clone()}}
+  \itemize{
+    \item \href{#method-PLNnetworkfamily-initialize}{\code{PLNnetworkfamily$new()}}
+    \item \href{#method-PLNnetworkfamily-stability_selection}{\code{PLNnetworkfamily$stability_selection()}}
+    \item \href{#method-PLNnetworkfamily-clone}{\code{PLNnetworkfamily$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details><summary>Inherited methods</summary>
+\if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-getModel'><code>PLNmodels::PLNfamily$getModel()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-print'><code>PLNmodels::PLNfamily$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="coefficient_path"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-coefficient_path'><code>PLNmodels::Networkfamily$coefficient_path()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="getBestModel"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-getBestModel'><code>PLNmodels::Networkfamily$getBestModel()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="optimize"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-optimize'><code>PLNmodels::Networkfamily$optimize()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot'><code>PLNmodels::Networkfamily$plot()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_objective"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot_objective'><code>PLNmodels::Networkfamily$plot_objective()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_stars"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot_stars'><code>PLNmodels::Networkfamily$plot_stars()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="show"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-show'><code>PLNmodels::Networkfamily$show()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-getModel'><code>PLNfamily$getModel()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNfamily$postTreatment()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-print'><code>PLNfamily$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="coefficient_path"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-coefficient_path'><code>Networkfamily$coefficient_path()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="getBestModel"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-getBestModel'><code>Networkfamily$getBestModel()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="optimize"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-optimize'><code>Networkfamily$optimize()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot'><code>Networkfamily$plot()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_objective"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot_objective'><code>Networkfamily$plot_objective()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_stars"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot_stars'><code>Networkfamily$plot_stars()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="show"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-show'><code>Networkfamily$show()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PLNnetworkfamily-new"></a>}}
-\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-new}{}}}
-\subsection{Method \code{new()}}{
-Initialize all models in the collection
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$new(penalties, data, control)}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-PLNnetworkfamily-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-PLNnetworkfamily-initialize}{}}}
+\subsection{\code{PLNnetworkfamily$new()}}{
+  Initialize all models in the collection
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNnetworkfamily$new(penalties, data, control)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{penalties}}{a vector of positive real number controlling the level of sparsity of the underlying network.}
+      \item{\code{data}}{a named list used internally to carry the data matrices}
+      \item{\code{control}}{a list for controlling the optimization.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Update current \code{\link{PLNnetworkfit}} with smart starting values
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{penalties}}{a vector of positive real number controlling the level of sparsity of the underlying network.}
-
-\item{\code{data}}{a named list used internally to carry the data matrices}
-
-\item{\code{control}}{a list for controlling the optimization.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Update current \code{\link{PLNnetworkfit}} with smart starting values
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNnetworkfamily-stability_selection"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNnetworkfamily-stability_selection}{}}}
-\subsection{Method \code{stability_selection()}}{
-Compute the stability path by stability selection
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$stability_selection(
+\subsection{\code{PLNnetworkfamily$stability_selection()}}{
+  Compute the stability path by stability selection
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNnetworkfamily$stability_selection(
   subsamples = NULL,
   control = PLNnetwork_param()
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{subsamples}}{a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.}
+      \item{\code{control}}{a list controlling the main optimization process in each call to \code{\link[=PLNnetwork]{PLNnetwork()}}. See \code{\link[=PLNnetwork]{PLNnetwork()}} and \code{\link[=PLN_param]{PLN_param()}} for details.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{subsamples}}{a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size \code{10*sqrt(n)} if \code{n >= 144} and \code{0.8*n} otherwise following Liu et al. (2010) recommendations.}
-
-\item{\code{control}}{a list controlling the main optimization process in each call to \code{\link[=PLNnetwork]{PLNnetwork()}}. See \code{\link[=PLNnetwork]{PLNnetwork()}} and \code{\link[=PLN_param]{PLN_param()}} for details.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PLNnetworkfamily-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-PLNnetworkfamily-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PLNnetworkfamily$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{PLNnetworkfamily$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{PLNnetworkfamily$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

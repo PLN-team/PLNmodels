@@ -5,7 +5,7 @@
 \title{Control of a ZIPLN fit}
 \usage{
 ZIPLN_param(
-  backend = c("nlopt"),
+  backend = c("builtin", "nlopt"),
   trace = 1,
   covariance = c("full", "diagonal", "spherical", "fixed", "sparse"),
   Omega = NULL,
@@ -18,7 +18,7 @@ ZIPLN_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt" or "torch". Default is "nlopt"}
+\item{backend}{optimization backend, either \code{"builtin"} (default, built-in Newton optimizer for the joint VE step) or \code{"nlopt"} (NLOPT-based CCSAQ).}
 
 \item{trace}{a integer for verbosity.}
 
@@ -44,14 +44,13 @@ which sometimes speeds up the inference.}
 list of parameters used during the fit and post-processing steps
 }
 \description{
-Helper to define list of parameters to control the PLN fit. All arguments have defaults.
+Helper to define list of parameters to control the ZIPLN fit. All arguments have defaults.
 }
 \details{
-See \code{\link[=PLN_param]{PLN_param()}} and \code{\link[=PLNnetwork_param]{PLNnetwork_param()}} for a full description of the generic optimization parameters. Like \code{\link[=PLNnetwork_param]{PLNnetwork_param()}}, ZIPLN_param() has two parameters controlling the optimization due the inner-outer loop structure of the optimizer:
+See \code{\link[=PLN_param]{PLN_param()}} for a description of the generic \code{config_optim} entries (\code{ftol_rel}, \code{xtol_rel}, etc.). Like \code{\link[=PLNnetwork_param]{PLNnetwork_param()}}, ZIPLN_param() has two parameters controlling the outer EM loop:
 \itemize{
 \item "ftol_out" outer solver stops when an optimization step changes the objective function by less than \code{ftol_out} multiplied by the absolute value of the parameter. Default is 1e-6
-\item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 100
+\item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 200 for "builtin", 100 for "nlopt"
 and one additional parameter controlling the form of the variational approximation of the zero inflation:
-\item "approx_ZI" either uses an exact or approximated conditional distribution for the zero inflation. Default is FALSE
 }
 }

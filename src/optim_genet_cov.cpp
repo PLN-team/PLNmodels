@@ -44,8 +44,10 @@ Rcpp::List nlopt_optimize_genetic_modeling(
     arma::mat V;
     arma::eig_sym(Lambda, V, C);
 
+    const arma::mat Xw = X.each_col() % w;   // fixed: precomputed once
+
     // Optimize
-    auto objective_and_grad = [&metadata, &Y, &X, &O, &V, &Lambda, &w, &w_bar](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &Y, &X, &Xw, &O, &V, &Lambda, &w, &w_bar](const double * params, double * grad) -> double {
         const arma::mat Theta = metadata.map<THETA_ID>(params);
         const arma::mat M = metadata.map<M_ID>(params);
         const arma::mat S = metadata.map<S_ID>(params);
@@ -64,7 +66,7 @@ Rcpp::List nlopt_optimize_genetic_modeling(
               0.5 * trace(Omega * (M.t() * (M.each_col() % w) + diagmat(w.t() * S2))) +
               0.5 * w_bar * accu(log(u * sigma2));
 
-        metadata.map<THETA_ID>(grad) = (A - Y).t() * (X.each_col() % w);
+        metadata.map<THETA_ID>(grad) = (A - Y).t() * Xw;
         metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
         metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
         metadata.map<RHO_ID>(grad) = accu(0.5 * w_bar * (Lambda - 1) / u - (0.5/sigma2) * diagvec(R) % (Lambda - 1) / pow(u, 2) );

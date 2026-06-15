@@ -65,7 +65,7 @@ test_that("PLNnetwork fit accepts torch backend", {
       lr = 0.01,
       num_epoch = 5,
       num_batch = 1,
-      maxit_out = 2
+      maxit_em = 2
     )
   )
 

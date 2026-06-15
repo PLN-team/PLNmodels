@@ -1,6 +1,6 @@
 Package: PLNmodels
 Title: Poisson Lognormal Models
-Version: 1.2.2-9100
+Version: 1.3.0
 Authors@R: c(
     person("Julien", "Chiquet", , "julien.chiquet@inrae.fr", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3629-3429")),
@@ -25,7 +25,7 @@ URL: https://pln-team.github.io/PLNmodels/
 BugReports: https://github.com/pln-team/PLNmodels/issues
 License: GPL (>= 3)
 Depends: R (>= 4.1.0)
-Imports: 
+Imports:
     cli,
     corrplot,
     dplyr,
@@ -48,29 +48,27 @@ Imports:
     R6,
     Rcpp,
     rlang,
-    scales,
     stats,
     tidyr,
     torch
-Suggests: 
+Suggests:
     factoextra,
     knitr,
     rmarkdown,
     spelling,
     testthat
-LinkingTo: 
+LinkingTo:
     nloptr,
     Rcpp,
     RcppArmadillo
-VignetteBuilder: 
+VignetteBuilder:
     knitr
 biocViews:
 Encoding: UTF-8
 Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
-Collate: 
+Collate:
     'PLNfit-class.R'
     'PLN.R'
     'PLNLDA.R'
@@ -112,3 +110,4 @@ Collate:
     'utils-zipln.R'
     'utils.R'
     'zzz.R'
+Config/roxygen2/version: 8.0.0

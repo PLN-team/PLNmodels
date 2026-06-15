@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Rcpp.h>
 
 #define _USE_MATH_DEFINES

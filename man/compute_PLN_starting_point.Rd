@@ -4,7 +4,7 @@
 \alias{compute_PLN_starting_point}
 \title{Helper function for PLN initialization.}
 \usage{
-compute_PLN_starting_point(Y, X, O, w, s = 0.1)
+compute_PLN_starting_point(Y, X, O, w, method = c("LM", "GLM"))
 }
 \arguments{
 \item{Y}{Response count matrix}
@@ -15,16 +15,26 @@ compute_PLN_starting_point(Y, X, O, w, s = 0.1)
 
 \item{w}{Weight vector (defaults to 1)}
 
-\item{s}{Scale parameter for S (defaults to 0.1)}
+\item{method}{character: strategy used to initialize B. Either \code{"LM"} (default, fast weighted
+log-linear regression) or \code{"GLM"} (p independent Poisson GLMs, more accurate for complex
+or unbalanced designs but slower).}
 }
 \value{
-a named list of starting values for model parameter B and variational parameters M and S used in the iterative optimization algorithm of \code{\link[=PLN]{PLN()}}
+a named list of starting values for model parameter B and variational parameters M and S2 used in the iterative optimization algorithm of \code{\link[=PLN]{PLN()}}
 }
 \description{
-Barebone function to compute starting points for B, M and S when fitting a PLN. Mostly intended for internal use.
+Barebone function to compute starting points for B, M and S2 when fitting a PLN. Mostly intended for internal use.
 }
 \details{
-The default strategy to estimate B and M is to fit a linear model with covariates \code{X} to the response count matrix (after adding a pseudocount of 1, scaling by the offset and taking the log). The regression matrix is used to initialize \code{B} and the residuals to initialize \code{M}. \code{S} is initialized as a constant conformable matrix with value \code{s}.
+\itemize{
+\item \strong{B}: estimated by weighted LM (\code{method = "LM"}, default) or p independent Poisson GLMs
+(\code{method = "GLM"}). The GLM option gives better B estimates for factorial or unbalanced
+designs at the cost of p IRLS fits.
+\item \strong{M}: initialized to \code{log((1 + Y) / exp(O))} (M_full in the X*B + M_res parameterization).
+\item \strong{S}: initialized element-wise to \code{1 / sqrt(2 + Y)}, the approximate VE-step optimum at
+Omega = I. This adapts automatically to count levels: high S for zero counts (high
+uncertainty), low S for large counts.
+}
 }
 \examples{
 \dontrun{
@@ -32,8 +42,9 @@ data(barents)
 Y <- barents$Abundance
 X <- model.matrix(Abundance ~ Latitude + Longitude + Depth + Temperature, data = barents)
 O <- log(barents$Offset)
-w <-- rep(1, nrow(Y))
+w <- rep(1, nrow(Y))
 compute_PLN_starting_point(Y, X, O, w)
+compute_PLN_starting_point(Y, X, O, w, method = "GLM")
 }
 
 }
